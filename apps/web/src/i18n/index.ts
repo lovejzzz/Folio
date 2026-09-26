@@ -7,16 +7,16 @@ export type { Messages };
 const catalogs: Record<UiLanguage, Messages> = { en, 'zh-CN': zh };
 
 export function messagesFor(language: UiLanguage): Messages {
-  return catalogs[language];
+  return catalogs[language] ?? en;
 }
 
 /** The interface copy in the teacher's chosen language. */
 export function useT(): Messages {
-  return catalogs[usePrefs((s) => s.uiLanguage)];
+  return messagesFor(usePrefs((s) => s.uiLanguage));
 }
 
 export function currentMessages(): Messages {
-  return catalogs[usePrefs.getState().uiLanguage];
+  return messagesFor(usePrefs.getState().uiLanguage);
 }
 
 /** "3 minutes ago" in the interface language. */

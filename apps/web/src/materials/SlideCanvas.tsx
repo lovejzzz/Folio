@@ -17,6 +17,7 @@ function Bullets({ slide, onChange, lang }: { slide: Slide; onChange?: (s: Slide
   const t = useT();
   if (!slide.bullets.length && !onChange) return null;
   const plain = slide.layout === 'title' || slide.layout === 'quote';
+  const addLabel = slide.layout === 'title' ? t.lesson.addSubtitle : slide.layout === 'quote' ? t.lesson.addAttribution : t.lesson.addBullet;
   const set = (i: number, text: string) =>
     onChange?.({ ...slide, bullets: text.trim() ? slide.bullets.map((b, j) => (j === i ? text : b)) : slide.bullets.filter((_, j) => j !== i) });
   return (
@@ -27,15 +28,18 @@ function Bullets({ slide, onChange, lang }: { slide: Slide; onChange?: (s: Slide
           {onChange ? <EditableText value={b} label={`${t.lesson.bullet} ${i + 1}`} lang={lang} className="min-w-0 flex-1" onCommit={(v) => set(i, v)} /> : <span>{b}</span>}
         </li>
       ))}
-      {onChange && (
+      {onChange && (!plain || slide.bullets.length === 0) && (
         <li className="no-print">
           <button
             type="button"
-            className="font-ui text-ink-2 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent"
+            className={cx(
+              'font-ui text-ink-2 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent',
+              slide.layout !== 'bullets' && 'opacity-0 transition-opacity duration-120 group-hover/slide:opacity-100 focus-visible:opacity-100',
+            )}
             style={cq(2)}
-            onClick={() => onChange({ ...slide, bullets: [...slide.bullets, t.lesson.bullet] })}
+            onClick={() => onChange({ ...slide, bullets: [...slide.bullets, plain ? addLabel : t.lesson.bullet] })}
           >
-            + {t.lesson.addBullet}
+            + {addLabel}
           </button>
         </li>
       )}
@@ -56,7 +60,7 @@ export function SlideCanvas({ slide, lang, footer, onChange, className }: SlideC
     <h3>{slide.title}</h3>
   );
   return (
-    <div className={cx('folio-slide relative aspect-video w-full overflow-hidden bg-paper text-ink', className)} lang={lang}>
+    <div className={cx('folio-slide group/slide relative aspect-video w-full overflow-hidden bg-paper text-ink', className)} lang={lang}>
       <span aria-hidden className="folio-slide-tab" />
       <div
         className={cx(

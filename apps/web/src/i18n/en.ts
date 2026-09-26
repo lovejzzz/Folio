@@ -206,6 +206,8 @@ export const en = {
     slideTitle: 'Slide title',
     bullet: 'Point',
     addBullet: 'Add a point',
+    addSubtitle: 'Add a subtitle',
+    addAttribution: 'Add who said it',
     layout: 'Layout',
     layouts: { title: 'Title', bullets: 'Points', question: 'Question', quote: 'Quote' },
     slideOf: (n: number, total: number) => `Slide ${n} of ${total}`,

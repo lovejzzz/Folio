@@ -44,6 +44,29 @@ const safeStorage = createJSONStorage(() => ({
   },
 }));
 
+const PROVIDERS: ProviderId[] = ['anthropic', 'openai', 'google', 'local'];
+const oneOf = <T extends string>(allowed: readonly T[], value: unknown, fallback: T): T => (allowed.includes(value as T) ? (value as T) : fallback);
+const record = (value: unknown): Partial<Record<ProviderId, string>> =>
+  value && typeof value === 'object'
+    ? Object.fromEntries(Object.entries(value).filter(([k, v]) => PROVIDERS.includes(k as ProviderId) && typeof v === 'string'))
+    : {};
+
+/** Stored preferences are checked field by field, so a stale or edited value never breaks the app. */
+export function sanitizePrefs(stored: unknown, current: Prefs): Prefs {
+  const p = (stored && typeof stored === 'object' ? stored : {}) as Record<string, unknown>;
+  return {
+    ...current,
+    theme: oneOf(['system', 'light', 'dark'], p.theme, current.theme),
+    uiLanguage: oneOf(['en', 'zh-CN'], p.uiLanguage, current.uiLanguage),
+    density: oneOf(['comfortable', 'compact'], p.density, current.density),
+    railCollapsed: typeof p.railCollapsed === 'boolean' ? p.railCollapsed : current.railCollapsed,
+    keys: record(p.keys),
+    models: record(p.models),
+    provider: p.provider === null ? null : PROVIDERS.includes(p.provider as ProviderId) ? (p.provider as ProviderId) : current.provider,
+    localUrl: typeof p.localUrl === 'string' && p.localUrl ? p.localUrl : current.localUrl,
+  };
+}
+
 function defaultLanguage(): UiLanguage {
   return typeof navigator !== 'undefined' && navigator.language?.toLowerCase().startsWith('zh') ? 'zh-CN' : 'en';
 }
@@ -61,7 +84,7 @@ export const usePrefs = create<Prefs>()(
       localUrl: DEFAULT_LOCAL_URL,
       set: (patch) => set(patch),
     }),
-    { name: 'folio.prefs', storage: safeStorage, version: 1 },
+    { name: 'folio.prefs', storage: safeStorage, version: 1, merge: sanitizePrefs },
   ),
 );
 

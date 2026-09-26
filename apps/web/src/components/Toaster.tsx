@@ -7,7 +7,7 @@ import { useToasts } from '../state/toasts';
 /** Toasts stack bottom-centre and are announced politely. */
 export function Toaster() {
   const t = useT();
-  const { toasts, dismiss } = useToasts();
+  const { toasts, dismiss, hold, release } = useToasts();
   return (
     <div
       role="status"
@@ -17,6 +17,10 @@ export function Toaster() {
       {toasts.map((item) => (
         <div
           key={item.id}
+          onPointerEnter={() => hold(item.id)}
+          onPointerLeave={() => release(item.id)}
+          onFocus={() => hold(item.id)}
+          onBlur={() => release(item.id)}
           className={cx(
             'pointer-events-auto flex max-w-lg items-center gap-3 rounded-sheet bg-ink py-2 pl-4 pr-2 font-ui text-14 text-paper shadow-overlay animate-pop-in',
           )}

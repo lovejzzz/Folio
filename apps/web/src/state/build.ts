@@ -54,14 +54,14 @@ function finishToast(summary: Awaited<ReturnType<typeof runBuild>>): void {
   const store = activeStore();
   const openChanges = { label: t.build.review, run: () => useUi.getState().openDrawer('changes') };
   if (summary.fatal && summary.fatal.kind !== 'aborted') {
-    toast({ message: errorMessage(summary.fatal), tone: 'critical', duration: 0 });
+    toast({ key: 'build', message: errorMessage(summary.fatal), tone: 'critical', duration: 0 });
   } else if (summary.stopped) {
-    toast({ message: t.build.stopped });
+    toast({ key: 'build', message: t.build.stopped });
   } else if (summary.failed) {
-    toast({ message: t.build.failedSome(summary.failed), tone: 'attention', action: openChanges, duration: 0 });
+    toast({ key: 'build', message: t.build.failedSome(summary.failed), tone: 'attention', action: openChanges, duration: 0 });
   } else {
     const looks = store ? attentionItems(store.getState()).length : 0;
-    toast({ message: looks ? t.build.readyLook(looks) : t.build.ready, action: looks ? openChanges : undefined, duration: looks ? 0 : 6000 });
+    toast({ key: 'build', message: looks ? t.build.readyLook(looks) : t.build.ready, action: looks ? openChanges : undefined, duration: looks ? 12_000 : 6000 });
   }
 }
 

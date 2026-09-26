@@ -197,6 +197,8 @@ export const zh: Messages = {
     slideTitle: '页面标题',
     bullet: '要点',
     addBullet: '添加要点',
+    addSubtitle: '添加副标题',
+    addAttribution: '添加出处',
     layout: '版式',
     layouts: { title: '标题', bullets: '要点', question: '提问', quote: '引语' },
     slideOf: (n, total) => `第 ${n} 页，共 ${total} 页`,
