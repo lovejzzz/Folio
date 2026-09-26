@@ -54,3 +54,21 @@ test('an edited section shows the update beside the teacher’s version', async 
   await compare.getByRole('button', { name: 'Use the update' }).click();
   await expect(page.locator('#m-quiz').getByText(/which gas do plants take in/).first()).toBeVisible();
 });
+
+test('a source added in the drawer is cited by regenerated questions', async ({ page }) => {
+  await withKey(page);
+  await fakeAnthropic(page);
+  await openSample(page);
+  await page.getByRole('button', { name: 'Sources', exact: true }).click();
+  const drawer = page.getByRole('dialog', { name: 'Sources' });
+  await drawer.getByLabel('Title').fill('Class survey results');
+  await drawer.getByLabel('Source text').fill('Twenty-four students answered.\n\nMost walk to school; six take the bus.');
+  await drawer.getByRole('button', { name: 'Add source' }).click();
+  await expect(drawer.getByText('2 passages · Not cited yet')).toBeVisible();
+  await page.getByRole('link', { name: /Asking questions with data/ }).first().click();
+  await page.locator('#m-quiz').getByRole('button', { name: 'Update' }).click();
+  const chip = page.locator('#m-quiz').getByRole('button', { name: 'Source: Class survey results' });
+  await expect(chip).toBeVisible();
+  await chip.hover();
+  await expect(page.getByRole('tooltip')).toHaveText('Twenty-four students answered.');
+});

@@ -55,9 +55,11 @@ export function StudyEditor({ course, lesson }: { course: Course; lesson: Lesson
         <section key={p.id} className="group/pt relative">
           <EditableText as="h4" value={p.heading} label={t.lesson.addPoint} className="block text-18 font-semibold text-ink" onCommit={(heading) => setPoints(points.map((x) => (x.id === p.id ? { ...x, heading } : x)))} />
           <EditableText as="p" multiline value={p.explanation} label={p.heading} context={p.heading} className="mt-1 block" onCommit={(explanation) => setPoints(points.map((x) => (x.id === p.id ? { ...x, explanation } : x)))} />
-          <IconButton size="sm" label={`${t.common.remove}: ${p.heading}`} className="no-print absolute -right-9 top-0 opacity-0 group-focus-within/pt:opacity-100 group-hover/pt:opacity-100" onPress={() => setPoints(points.filter((x) => x.id !== p.id))}>
-            <Trash2 size={14} strokeWidth={1.5} />
-          </IconButton>
+          <span className="no-print absolute -right-9 top-0 hidden opacity-0 group-focus-within/pt:opacity-100 group-hover/pt:opacity-100 md:block">
+            <IconButton size="sm" label={`${t.common.remove}: ${p.heading}`} onPress={() => setPoints(points.filter((x) => x.id !== p.id))}>
+              <Trash2 size={14} strokeWidth={1.5} />
+            </IconButton>
+          </span>
         </section>
       ))}
       <AddButton label={t.lesson.addPoint} onPress={() => setPoints([...points, { id: newId('x'), heading: t.lesson.addPoint, explanation: '' }])} />

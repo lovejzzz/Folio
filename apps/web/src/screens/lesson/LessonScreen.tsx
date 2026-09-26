@@ -79,7 +79,7 @@ function Pager({ course, index }: { course: Course; index: number }) {
   const t = useT();
   const prev = course.lessonOrder[index - 1];
   const next = course.lessonOrder[index + 1];
-  const cls = 'group flex max-w-xs items-center gap-2 rounded-control px-2 py-1.5 font-ui text-14 text-ink-2 outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-accent';
+  const cls = 'group flex min-w-0 max-w-1/2 items-center gap-2 rounded-control px-2 py-1.5 font-ui text-14 text-ink-2 outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-accent';
   return (
     <nav aria-label={t.lesson.rail} className="no-print mx-auto mt-6 flex max-w-sheet justify-between gap-4">
       {prev ? (
@@ -115,10 +115,10 @@ export function LessonScreen() {
     <div className="flex items-start">
       <LessonRail currentId={lesson.id} />
       <div className="min-w-0 flex-1 px-3 pb-24 pt-6 md:px-8 md:pt-10">
-        <div className="mx-auto flex max-w-fit items-start justify-center">
+        <div className="mx-auto flex items-start justify-center xl:max-w-fit">
           <Sheet
             lang={course.language}
-            className="folio-doc"
+            className="folio-doc min-w-0"
             running={
               <>
                 <span className="truncate">{course.title}</span>

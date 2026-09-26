@@ -65,7 +65,7 @@ function answerFor(body: Body): unknown {
         difficulty: 2,
         expression: null,
         objective: 1,
-        sourcePassage: null,
+        sourcePassage: i === 0 && prompt.includes("Teacher's sources") ? 1 : null,
       })),
     };
   if (prompt.includes('Write one assignment'))

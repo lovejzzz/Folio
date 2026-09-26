@@ -6,6 +6,7 @@ import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { FlagNote } from './FlagNote';
 import { AddButton } from './EditableList';
+import { SourceChip } from './SourceChip';
 import { useSectionEdit } from './useSectionEdit';
 
 function Choices({ q, update }: { q: Question; update: (fields: Partial<Question>) => void }) {
@@ -107,6 +108,7 @@ export function QuestionCard({ course, q, n }: { course: Course; q: Question; n:
         <span>{t.quiz.formats[q.format]}</span>
         <span aria-hidden>·</span>
         <span>{t.quiz.difficulty[q.difficulty - 1]}</span>
+        {q.sourceRefs.length > 0 && <SourceChip course={course} refs={q.sourceRefs} />}
         <IconButton
           size="sm"
           label={t.quiz.removeQuestion}
