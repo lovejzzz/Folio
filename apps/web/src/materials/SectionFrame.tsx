@@ -78,7 +78,7 @@ export function SectionFrame({
   const built = !section || Boolean(lesson.gen[section]);
   const flag = section ? lesson.gen[section]?.flag : null;
   return (
-    <section id={hideHeading ? undefined : `m-${kind}`} aria-labelledby={hideHeading ? undefined : `h-${kind}`} className="scroll-mt-24 border-t border-rule pt-8 first:border-t-0 first:pt-0">
+    <section id={hideHeading ? undefined : `m-${kind}`} aria-labelledby={hideHeading ? undefined : `h-${kind}`} className={hideHeading ? undefined : 'scroll-mt-24 border-t border-rule pt-8 first:border-t-0 first:pt-0'}>
       {!hideHeading && (
         <h2 id={`h-${kind}`} className="mb-5">
           <BinderTab kind={kind} label={t.materialOne[kind]} meta={meta} />

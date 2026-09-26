@@ -57,3 +57,40 @@ test('tour, dark', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark' });
   await tour(page, 'dark');
 });
+
+test('tour, sample course', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await page.getByRole('grid').waitFor();
+  const base = page.url().replace(/\/map$/, '');
+  for (const kind of ['syllabus', 'map', 'quiz', 'plan', 'rubrics', 'discussions']) {
+    await page.goto(`${base}/m/${kind}`);
+    await shot(page, `sample-m-${kind}`);
+  }
+  await page.goto(`${base}/map`);
+  await page.getByRole('radio', { name: 'Compact' }).click();
+  await shot(page, 'sample-map-compact');
+  await page.getByRole('radio', { name: 'Comfortable' }).click();
+  await page.goto('/settings');
+  await page.getByRole('radio', { name: '简体中文' }).click();
+  await page.goto('/');
+  await shot(page, 'zh-home');
+  await page.goto(`${base}/map`);
+  await shot(page, 'zh-map');
+  await page.goto('/library');
+  await shot(page, 'zh-library');
+});
+
+test('tour, phone', async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  await page.goto('/');
+  await shot(page, 'phone-home');
+  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await page.getByText('Open a lesson to review it.').waitFor();
+  await shot(page, 'phone-map');
+  await page.getByRole('link', { name: /Picturing a distribution/ }).click();
+  await shot(page, 'phone-lesson');
+  await page.getByRole('button', { name: 'Changes', exact: true }).click();
+  await shot(page, 'phone-changes');
+  await page.close();
+});

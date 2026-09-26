@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('on a phone the map is a list of lessons and the sheet fits the screen', async ({ page }) => {
   await page.goto('/');

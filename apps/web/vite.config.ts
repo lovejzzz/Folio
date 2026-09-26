@@ -2,13 +2,16 @@ import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import { cspHashes, previewHeaders } from './headers.plugin';
 import { trimFonts } from './fonts.plugin';
 
 export default defineConfig({
-  plugins: [trimFonts(), react(), babel({ presets: [reactCompilerPreset()] }), tailwindcss()],
+  plugins: [trimFonts(), react(), babel({ presets: [reactCompilerPreset()] }), tailwindcss(), cspHashes(), previewHeaders()],
   worker: { format: 'es' },
   build: {
     target: 'es2022',
+    // Fonts are always separate files: the CSP allows fonts from 'self' only.
+    assetsInlineLimit: (file: string) => (/\.woff2?$/.test(file) ? false : undefined),
     sourcemap: false,
     chunkSizeWarningLimit: 900,
   },

@@ -14,7 +14,7 @@ function Examples() {
   const set = useDraft((s) => s.set);
   return (
     <div className="mt-12 flex flex-col items-center gap-3 text-center font-ui text-14 text-ink-2">
-      <p className="flex flex-wrap items-baseline justify-center gap-x-1 gap-y-2">
+      <p className="flex flex-col items-center gap-y-2 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-center sm:gap-x-1">
         <span className="mr-1">{t.home.tryLabel}</span>
         {t.home.examples.map((example, i) => (
           <span key={example} className="inline-flex items-baseline">
@@ -30,7 +30,7 @@ function Examples() {
             >
               {example}
             </button>
-            {i < t.home.examples.length - 1 && <span aria-hidden className="ml-1 text-ink-3">·</span>}
+            {i < t.home.examples.length - 1 && <span aria-hidden className="ml-1 hidden text-ink-3 sm:inline">·</span>}
           </span>
         ))}
       </p>

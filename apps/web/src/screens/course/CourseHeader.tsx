@@ -56,18 +56,58 @@ function ViewNav() {
   );
 }
 
-function Actions() {
+function MoreMenu() {
   const t = useT();
   const navigate = useNavigate();
   const store = useStore();
+  const { toggleDrawer } = useUi();
+  return (
+    <Menu
+      label={t.nav.more}
+      trigger={
+        <IconButton label={t.nav.more} tooltip={false}>
+          <MoreHorizontal size={18} strokeWidth={1.5} />
+        </IconButton>
+      }
+    >
+      <MenuItem id="undo" icon={<Undo2 size={16} />} hint={<Kbd>⌘Z</Kbd>} isDisabled={!store.canUndo()} onAction={() => undo()}>
+        {t.common.undo}
+      </MenuItem>
+      <MenuItem id="redo" icon={<Redo2 size={16} />} hint={<Kbd>⇧⌘Z</Kbd>} isDisabled={!store.canRedo()} onAction={() => redo()}>
+        {t.common.redo}
+      </MenuItem>
+      <MenuItem id="export" icon={<Download size={16} />} onAction={() => toggleDrawer('export')}>
+        {t.command.exportItem}
+      </MenuItem>
+      <MenuItem id="sources" icon={<BookMarked size={16} />} onAction={() => toggleDrawer('sources')}>
+        {t.command.sourcesItem}
+      </MenuItem>
+      <MenuSeparator />
+      <MenuItem id="new" icon={<Plus size={16} />} onAction={() => void navigate({ to: '/' })}>
+        {t.command.newCourse}
+      </MenuItem>
+      <MenuItem id="library" icon={<Library size={16} />} onAction={() => void navigate({ to: '/library' })}>
+        {t.nav.library}
+      </MenuItem>
+      <MenuItem id="settings" icon={<Settings size={16} />} onAction={() => void navigate({ to: '/settings' })}>
+        {t.nav.settings}
+      </MenuItem>
+    </Menu>
+  );
+}
+
+function Actions() {
+  const t = useT();
   const { drawer, toggleDrawer, setCommandOpen } = useUi();
   const changes = useChangeCount();
   const planning = useCourse().status === 'planning';
   return (
     <div className="flex items-center gap-1">
-      <IconButton label={`${t.nav.commandBar} (⌘K)`} onPress={() => setCommandOpen(true)} className="hidden sm:inline-flex">
-        <Search size={18} strokeWidth={1.5} />
-      </IconButton>
+      <span className="hidden sm:contents">
+        <IconButton label={`${t.nav.commandBar} (⌘K)`} onPress={() => setCommandOpen(true)}>
+          <Search size={18} strokeWidth={1.5} />
+        </IconButton>
+      </span>
       {!planning && (
         <>
           <span className="relative">
@@ -76,43 +116,18 @@ function Actions() {
             </IconButton>
             {changes > 0 && <span aria-hidden className="pointer-events-none absolute right-1 top-1 size-2 rotate-45 bg-attention ring-2 ring-desk" />}
           </span>
-          <IconButton label={t.sources.title} active={drawer === 'sources'} onPress={() => toggleDrawer('sources')}>
-            <BookMarked size={18} strokeWidth={1.5} />
-          </IconButton>
-          <Button variant={drawer === 'export' ? 'primary' : 'secondary'} onPress={() => toggleDrawer('export')} className="ml-1 hidden sm:inline-flex">
-            <Download size={16} strokeWidth={1.75} aria-hidden />
-            {t.export.title}
-          </Button>
+          <span className="hidden sm:contents">
+            <IconButton label={t.sources.title} active={drawer === 'sources'} onPress={() => toggleDrawer('sources')}>
+              <BookMarked size={18} strokeWidth={1.5} />
+            </IconButton>
+            <Button variant={drawer === 'export' ? 'primary' : 'secondary'} onPress={() => toggleDrawer('export')} className="ml-1">
+              <Download size={16} strokeWidth={1.75} aria-hidden />
+              {t.export.title}
+            </Button>
+          </span>
         </>
       )}
-      <Menu
-        label={t.nav.more}
-        trigger={
-          <IconButton label={t.nav.more} tooltip={false}>
-            <MoreHorizontal size={18} strokeWidth={1.5} />
-          </IconButton>
-        }
-      >
-        <MenuItem id="undo" icon={<Undo2 size={16} />} hint={<Kbd>⌘Z</Kbd>} isDisabled={!store.canUndo()} onAction={() => undo()}>
-          {t.common.undo}
-        </MenuItem>
-        <MenuItem id="redo" icon={<Redo2 size={16} />} hint={<Kbd>⇧⌘Z</Kbd>} isDisabled={!store.canRedo()} onAction={() => redo()}>
-          {t.common.redo}
-        </MenuItem>
-        <MenuItem id="export" icon={<Download size={16} />} onAction={() => toggleDrawer('export')}>
-          {t.command.exportItem}
-        </MenuItem>
-        <MenuSeparator />
-        <MenuItem id="new" icon={<Plus size={16} />} onAction={() => void navigate({ to: '/' })}>
-          {t.command.newCourse}
-        </MenuItem>
-        <MenuItem id="library" icon={<Library size={16} />} onAction={() => void navigate({ to: '/library' })}>
-          {t.nav.library}
-        </MenuItem>
-        <MenuItem id="settings" icon={<Settings size={16} />} onAction={() => void navigate({ to: '/settings' })}>
-          {t.nav.settings}
-        </MenuItem>
-      </Menu>
+      <MoreMenu />
     </div>
   );
 }

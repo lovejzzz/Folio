@@ -56,8 +56,8 @@ export function MapCell({ course, lesson, kind, view, error, compact, focused, o
         onFocus={onFocus}
         onClick={canBuild ? onBuild : onOpen}
         className={cx(
-          'group flex w-full flex-col items-start justify-between gap-2 rounded-control p-3 text-left font-ui outline-none transition-shadow duration-120 ease-ink',
-          compact ? 'h-12 flex-row items-center' : 'h-24',
+          'group flex w-full justify-between gap-2 rounded-control p-3 text-left font-ui outline-none transition-shadow duration-120 ease-ink',
+          compact ? 'h-12 flex-row items-center' : 'h-24 flex-col items-start',
           built && 'bg-paper shadow-sheet hover:shadow-overlay',
           !built && 'border border-dashed border-rule-strong hover:border-accent',
           view === 'error' && 'border-critical/50',

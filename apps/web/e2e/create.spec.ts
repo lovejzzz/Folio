@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { fakeAnthropic } from './fakeModel';
 
 test('describe, plan, build and land on a finished map', async ({ page }) => {
