@@ -104,6 +104,9 @@ importers:
       react-dom:
         specifier: ^19.3.0
         version: 19.3.0(react@19.3.0)
+      zod:
+        specifier: ^4.6.5
+        version: 4.6.5
       zustand:
         specifier: ^5.0.15
         version: 5.0.15(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0(react@19.3.0))
@@ -168,6 +171,9 @@ importers:
       '@folio/core':
         specifier: workspace:*
         version: link:../core
+      '@folio/ui':
+        specifier: workspace:*
+        version: link:../ui
       docx:
         specifier: ^9.7.2
         version: 9.7.2

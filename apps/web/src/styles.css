@@ -1,0 +1,222 @@
+@import 'tailwindcss';
+@import '@folio/ui/tokens.css';
+
+@source '../../../packages/ui/src';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+/* The current place in navigation (TanStack Router marks active links with data-status). */
+@custom-variant current (&[data-status='active'], &[aria-current='page']);
+
+@theme {
+  --animate-fade-in: fade-in var(--motion-settle) var(--motion-ease) both;
+  --animate-fade-out: fade-out var(--motion-quick) var(--motion-ease) both;
+  --animate-pop-in: pop-in var(--motion-settle) var(--motion-ease) both;
+  --animate-drawer-in: drawer-in var(--motion-settle) var(--motion-ease) both;
+  --animate-sheet-up: sheet-up var(--motion-settle) var(--motion-ease) both;
+  --animate-reveal: reveal var(--motion-reveal) var(--motion-ease) both;
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 1.4s ease-in-out infinite;
+}
+
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(4px) scale(0.985); } }
+@keyframes drawer-in { from { opacity: 0; transform: translateX(16px); } }
+@keyframes sheet-up { from { transform: translateY(24px); opacity: 0; } }
+@keyframes reveal { from { opacity: 0; transform: translateY(3px); } }
+@keyframes shimmer { 50% { opacity: 0.45; } }
+@keyframes pulse-soft { 50% { opacity: 0.35; transform: scale(0.8); } }
+@keyframes sweep { from { background-size: 0% 100%; } to { background-size: 100% 100%; } }
+
+@utility h-below-header {
+  height: calc(100dvh - 3.5rem);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'kern';
+  }
+
+  body {
+    margin: 0;
+    background: var(--folio-desk);
+    color: var(--folio-ink);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  ::selection {
+    background: var(--folio-accent-tint);
+    color: var(--folio-ink);
+  }
+
+  /* One focus ring, everywhere, never removed. */
+  :focus-visible {
+    outline: 2px solid var(--folio-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  button,
+  [role='button'] {
+    cursor: default;
+  }
+
+  /* Chinese: +1 px, looser leading, no faux italics. */
+  :lang(zh-CN) {
+    font-synthesis: weight;
+  }
+}
+
+@layer components {
+  /* Everything that sits on a sheet uses the reading serif. */
+  .folio-doc {
+    font-family: var(--font-reading);
+    font-size: 17px;
+    line-height: 28px;
+    font-optical-sizing: auto;
+    color: var(--folio-ink);
+  }
+  .folio-doc:lang(zh-CN) {
+    font-size: 18px;
+    line-height: 1.8;
+  }
+  .folio-doc h1,
+  .folio-doc h2,
+  .folio-doc h3 {
+    text-wrap: balance;
+  }
+  .folio-doc p {
+    text-wrap: pretty;
+  }
+
+  /* AI proposals: a soft marker sweep behind the words. */
+  .folio-highlight {
+    color: inherit;
+    background-image: linear-gradient(transparent 12%, var(--folio-highlight) 12%, var(--folio-highlight) 92%, transparent 92%);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    animation: sweep var(--motion-ripple) var(--motion-ease) both;
+    border-radius: 2px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  .folio-proposed :is(p, li, dd, td, h3, h4) {
+    background-color: var(--folio-highlight);
+    border-radius: 2px;
+  }
+
+  /* Inline editing: the text is the control. */
+  .folio-editable {
+    border-radius: 3px;
+    outline: none;
+    transition: background-color var(--motion-quick) var(--motion-ease), box-shadow var(--motion-quick) var(--motion-ease);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+  .folio-editable:hover {
+    background: var(--folio-well);
+    box-shadow: 0 0 0 3px var(--folio-well);
+  }
+  .folio-editable:focus {
+    background: var(--folio-paper);
+    box-shadow: 0 0 0 1px var(--folio-accent), 0 0 0 4px var(--folio-accent-tint);
+  }
+  .folio-editable:empty::before {
+    content: attr(data-placeholder);
+    color: var(--folio-ink-2);
+    pointer-events: none;
+  }
+
+  /* Slides are drawn in container units so one component serves as thumbnail and stage. */
+  .folio-slide {
+    container-type: inline-size;
+  }
+  .folio-slide-body {
+    padding: 6% 7%;
+  }
+  .folio-slide-tab {
+    position: absolute;
+    right: 0;
+    top: 38%;
+    height: 18%;
+    width: 1.1%;
+    background: var(--folio-tab-slides);
+  }
+  .folio-slide-title {
+    line-height: 1.08;
+  }
+  .folio-slide-gap {
+    margin-top: 3.5%;
+  }
+  .folio-slide-bullets > li {
+    display: flex;
+    gap: 0.6em;
+  }
+  .folio-slide-bullets > li + li {
+    margin-top: 0.5em;
+  }
+  .folio-slide-dot {
+    margin-top: 0.55em;
+    width: 0.3em;
+    height: 0.3em;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    background: var(--folio-tab-slides);
+  }
+  .folio-slide-footer {
+    position: absolute;
+    bottom: 4%;
+    left: 7%;
+    right: 7%;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: var(--motion-quick) !important;
+    animation-iteration-count: 1 !important;
+    animation-name: fade-in !important;
+    transition-duration: var(--motion-quick) !important;
+    transition-property: opacity !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  @page {
+    margin: 18mm 20mm;
+  }
+  :root {
+    color-scheme: light;
+  }
+  body {
+    background: white;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .folio-sheet {
+    box-shadow: none !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+  }
+  .print-break {
+    break-before: page;
+  }
+  .avoid-break {
+    break-inside: avoid;
+  }
+}

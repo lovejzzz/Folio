@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Folio turns a paragraph about what you want to teach into a course of linked, editable materials." />
+    <meta name="theme-color" content="#F3F0E8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141512" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Folio</title>
+    <script>
+      try {
+        var t = JSON.parse(localStorage.getItem('folio.prefs') || '{}').state;
+        if (t && t.theme && t.theme !== 'system') document.documentElement.dataset.theme = t.theme;
+        if (t && t.uiLanguage) document.documentElement.lang = t.uiLanguage;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -29,7 +29,8 @@ type Fields<T, K extends keyof T> = Partial<Pick<T, K>>;
 
 export type LessonFields = Fields<Lesson, 'title' | 'summary' | 'objectiveIds'>;
 export type PlanFields = Fields<Lesson, 'segments' | 'keyIdeas' | 'vocabulary'>;
-export type TaskFields = Partial<Omit<Task, 'id' | 'kind' | 'lessonId'>>;
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+export type TaskFields = Partial<DistributiveOmit<Task, 'id' | 'kind' | 'lessonId'>>;
 
 export interface SectionContent {
   plan: { segments: Segment[]; keyIdeas: string[]; vocabulary: Term[] };

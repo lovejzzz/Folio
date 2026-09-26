@@ -1,0 +1,137 @@
+import { Button, IconButton, cx } from '@folio/ui';
+import { useNavigate } from '@tanstack/react-router';
+import { ArrowRight, FileText, Paperclip, X } from 'lucide-react';
+import { useId, useRef, useState, type DragEvent } from 'react';
+import { useT } from '../../i18n';
+import { FileReadError, readSourceFile } from '../../lib/readFile';
+import { setBrief, useDraft } from '../../state/draft';
+import { currentInference } from '../../state/model';
+import { toast } from '../../state/toasts';
+import { useUi } from '../../state/ui';
+import { LanguageChip, LessonsChip, LevelChip } from './Chips';
+
+function useAttach() {
+  const t = useT();
+  return async (files: FileList | File[]) => {
+    for (const file of Array.from(files)) {
+      try {
+        const source = await readSourceFile(file);
+        const { files: current, set } = useDraft.getState();
+        set({ files: [...current, source] });
+      } catch (error) {
+        const reason = error instanceof FileReadError ? error.reason : 'type';
+        toast({ message: reason === 'size' ? t.home.fileTooBig(file.name) : t.home.fileUnsupported(file.name), tone: 'attention' });
+      }
+    }
+  };
+}
+
+/** One large box: "What do you want to teach?", with three quiet chips and files dropped on it. */
+export function BriefComposer() {
+  const t = useT();
+  const navigate = useNavigate();
+  const { brief, files, set } = useDraft();
+  const attach = useAttach();
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
+  const [error, setError] = useState(false);
+  const hintId = useId();
+
+  const go = () => {
+    if (!brief.trim() && files.length === 0) {
+      setError(true);
+      return;
+    }
+    const start = () => void navigate({ to: '/new' });
+    if (currentInference()) start();
+    else useUi.getState().requireModel(start);
+  };
+
+  const onDrop = (e: DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (e.dataTransfer.files.length) void attach(e.dataTransfer.files);
+  };
+
+  return (
+    <div
+      onDragOver={(e) => {
+        e.preventDefault();
+        setDragging(true);
+      }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={onDrop}
+      className={cx(
+        'relative rounded-sheet bg-paper shadow-sheet transition-shadow duration-200',
+        dragging && 'ring-2 ring-accent ring-offset-4 ring-offset-desk',
+      )}
+    >
+      <label htmlFor="brief" className="sr-only">
+        {t.home.inputLabel}
+      </label>
+      <textarea
+        id="brief"
+        value={brief}
+        rows={4}
+        onChange={(e) => {
+          setError(false);
+          setBrief(e.target.value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) go();
+        }}
+        placeholder={t.home.placeholder}
+        aria-describedby={error ? hintId : undefined}
+        aria-invalid={error || undefined}
+        className="block min-h-36 w-full resize-none bg-transparent px-5 pb-3 pt-5 font-reading text-18 leading-relaxed text-ink outline-none placeholder:text-ink-3 md:px-7 md:pt-6 md:text-22 md:leading-9"
+        style={{ fieldSizing: 'content' } as React.CSSProperties}
+      />
+      {dragging && (
+        <p className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-sheet bg-accent-tint font-ui text-16 font-medium text-accent">
+          {t.home.dropHere}
+        </p>
+      )}
+      {files.length > 0 && (
+        <ul className="flex flex-wrap gap-2 px-5 pb-3 md:px-7" aria-label={t.home.attached(files.length)}>
+          {files.map((f, i) => (
+            <li key={`${f.title}-${i}`} className="flex h-7 items-center gap-1.5 rounded-full bg-well pl-2.5 pr-1 font-ui text-13 text-ink">
+              <FileText size={14} strokeWidth={1.5} className="text-ink-2" aria-hidden />
+              <span className="max-w-48 truncate">{f.title}</span>
+              <IconButton size="sm" tooltip={false} label={`${t.common.remove} ${f.title}`} onPress={() => set({ files: files.filter((_, j) => j !== i) })} className="size-5">
+                <X size={12} strokeWidth={1.75} />
+              </IconButton>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="flex flex-wrap items-center gap-2 border-t border-rule px-3 py-3 md:px-5">
+        <LevelChip />
+        <LessonsChip />
+        <LanguageChip />
+        <IconButton label={t.home.attach} onPress={() => fileInput.current?.click()}>
+          <Paperclip size={17} strokeWidth={1.5} />
+        </IconButton>
+        <input
+          ref={fileInput}
+          type="file"
+          multiple
+          accept=".txt,.md,.markdown,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          className="hidden"
+          onChange={(e) => {
+            if (e.target.files) void attach(e.target.files);
+            e.target.value = '';
+          }}
+        />
+        <Button variant="primary" size="lg" className="ml-auto h-10 pl-5 pr-4" onPress={go}>
+          {t.home.continue}
+          <ArrowRight size={17} strokeWidth={1.75} aria-hidden />
+        </Button>
+      </div>
+      {error && (
+        <p id={hintId} role="alert" className="absolute -bottom-8 left-1 font-ui text-13 text-critical">
+          {t.home.emptyBrief}
+        </p>
+      )}
+    </div>
+  );
+}

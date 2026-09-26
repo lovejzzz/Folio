@@ -1,0 +1,95 @@
+import { useNavigate, Link } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
+import { SimpleHeader } from '../../components/AppHeader';
+import { CourseCard } from '../../components/CourseCard';
+import { useT } from '../../i18n';
+import { openSample } from '../../lib/sample';
+import { listCourses, type CourseSummary } from '../../state/db';
+import { setBrief, useDraft } from '../../state/draft';
+import { BriefComposer } from './BriefComposer';
+
+function useRecent(): CourseSummary[] {
+  const [courses, setCourses] = useState<CourseSummary[]>([]);
+  useEffect(() => {
+    let live = true;
+    listCourses()
+      .then((all) => live && setCourses(all.slice(0, 3)))
+      .catch(() => live && setCourses([]));
+    return () => {
+      live = false;
+    };
+  }, []);
+  return courses;
+}
+
+function Examples() {
+  const t = useT();
+  const navigate = useNavigate();
+  const set = useDraft((s) => s.set);
+  return (
+    <div className="mt-12 flex flex-col items-center gap-3 text-center font-ui text-14 text-ink-2">
+      <p className="flex flex-wrap items-baseline justify-center gap-x-1 gap-y-2">
+        <span className="mr-1">{t.home.tryLabel}</span>
+        {t.home.examples.map((example, i) => (
+          <span key={example} className="inline-flex items-baseline">
+            <button
+              type="button"
+              onClick={() => {
+                set({ pinned: { level: false, lessons: false, language: false } });
+                setBrief(example);
+                document.getElementById('brief')?.focus();
+              }}
+              lang={/[㐀-鿿]/.test(example) ? 'zh-CN' : undefined}
+              className="rounded-control px-1 text-ink underline decoration-rule-strong underline-offset-4 outline-none transition-colors duration-120 hover:decoration-accent focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              {example}
+            </button>
+            {i < t.home.examples.length - 1 && <span aria-hidden className="ml-1 text-ink-3">·</span>}
+          </span>
+        ))}
+      </p>
+      <button
+        type="button"
+        onClick={() => void openSample(navigate)}
+        className="rounded-control px-1 text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent"
+      >
+        {t.home.sample}
+      </button>
+    </div>
+  );
+}
+
+export function Home() {
+  const t = useT();
+  const recent = useRecent();
+  return (
+    <div className="min-h-dvh">
+      <SimpleHeader />
+      <main id="main" className="mx-auto max-w-3xl px-5 pb-24 pt-10 md:pt-20">
+        <h1 className="mb-8 text-center font-display text-48 leading-none tracking-tight text-ink md:mb-10 md:text-64">
+          {t.home.question}
+        </h1>
+        <BriefComposer />
+        <Examples />
+        {recent.length > 0 && (
+          <section aria-labelledby="recent" className="mt-20">
+            <div className="mb-4 flex items-baseline justify-between">
+              <h2 id="recent" className="font-ui text-14 font-semibold text-ink">
+                {t.home.recent}
+              </h2>
+              <Link to="/library" className="font-ui text-13 text-ink-2 underline-offset-4 hover:text-ink hover:underline">
+                {t.home.seeAll}
+              </Link>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-3">
+              {recent.map((c) => (
+                <CourseCard key={c.id} course={c} />
+              ))}
+            </div>
+          </section>
+        )}
+      </main>
+      <footer className="no-print pb-10 text-center font-display text-18 italic text-ink-2">{t.tagline}</footer>
+    </div>
+  );
+}

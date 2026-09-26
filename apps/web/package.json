@@ -28,6 +28,7 @@
     "react-aria": "^3.52.1",
     "react-aria-components": "^1.21.1",
     "react-dom": "^19.3.0",
+    "zod": "^4.6.5",
     "zustand": "^5.0.15"
   },
   "devDependencies": {

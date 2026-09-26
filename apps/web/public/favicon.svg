@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <style>.p{fill:#FCFBF7;stroke:#1E1C17}.f{fill:none;stroke:#1E1C17}.t{fill:#2B46C4}@media (prefers-color-scheme:dark){.p{fill:#1C1D19;stroke:#ECE8DF}.f{stroke:#ECE8DF}.t{fill:#8FA3FF}}</style>
+  <rect class="t" x="14.5" y="9.75" width="7" height="6" rx="1.25"/>
+  <path class="p" d="M3.25 2.75h9.25l4.5 4.5v14H3.25z" stroke-width="1.5" stroke-linejoin="round"/>
+  <path class="f" d="M12.5 2.75v4.5H17" stroke-width="1.5" stroke-linejoin="round"/>
+</svg>
