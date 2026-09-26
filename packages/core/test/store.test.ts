@@ -63,6 +63,14 @@ describe('CourseStore', () => {
     expect(store.getState().title).toBe('Built');
   });
 
+  it('keeps silent bookkeeping out of history', () => {
+    const { store } = courseWithLessons(1);
+    const before = store.getHistory().length;
+    store.apply([cmd('course.update', { status: 'ready' })], { label: { key: 's' }, source: 'ai', silent: true });
+    expect(store.getState().status).toBe('ready');
+    expect(store.getHistory()).toHaveLength(before);
+  });
+
   it('removes a lesson with its tasks and orphaned objectives', () => {
     const { store, ids } = courseWithLessons(2);
     const objective = { id: newId('o'), text: 'Know things' };

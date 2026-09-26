@@ -69,40 +69,84 @@ function QuestionBlock({ b }: { b: Extract<Block, { t: 'question' }> }) {
   );
 }
 
+type B<T extends Block['t']> = Extract<Block, { t: T }>;
+
+function Heading({ b }: { b: B<'heading'> }) {
+  if (b.level === 1) return <h2 className="mb-4 mt-10 text-28 font-semibold leading-9">{b.text}</h2>;
+  if (b.level === 2) return <h3 className="mb-3 mt-10 text-22 font-semibold leading-8 first:mt-0">{b.text}</h3>;
+  return <h4 className="mb-2 mt-6 text-18 font-semibold">{b.text}</h4>;
+}
+
+function ListBlock({ b }: { b: B<'list'> }) {
+  const L = b.ordered ? 'ol' : 'ul';
+  return <L className={cx('my-3 space-y-1 pl-6', b.ordered ? 'list-decimal' : 'list-disc marker:text-ink-3')}>{b.items.map((x, i) => <li key={i}>{x}</li>)}</L>;
+}
+
+function Meta({ b }: { b: B<'meta'> }) {
+  return (
+    <dl className="my-5 grid grid-cols-1 gap-x-6 gap-y-1 rounded-control bg-well px-4 py-3 font-ui text-14 sm:grid-cols-3">
+      {b.items.map((m) => (
+        <div key={m.label}>
+          <dt className="text-12 text-ink-2">{m.label}</dt>
+          <dd className="text-ink">{m.value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function Terms({ b }: { b: B<'terms'> }) {
+  return (
+    <dl className="my-3 divide-y divide-rule">
+      {b.items.map((x) => (
+        <div key={x.term} className="grid gap-x-6 py-1.5 sm:grid-cols-3">
+          <dt className="font-semibold">{x.term}</dt>
+          <dd className="sm:col-span-2">{x.definition}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function SlideBlock({ b, lang }: { b: B<'slide'>; lang: string }) {
+  return (
+    <div className="avoid-break my-4 overflow-hidden rounded-control shadow-sheet">
+      <SlideCanvas slide={{ id: String(b.n), layout: b.layout, title: b.title, bullets: b.bullets, notes: b.notes ?? '' }} lang={lang} footer={b.lesson} />
+      {b.notes && <p className="border-t border-rule px-4 py-2 font-ui text-13 text-ink-2">{b.notes}</p>}
+    </div>
+  );
+}
+
+function Answers({ b }: { b: B<'answers'> }) {
+  return (
+    <section className="my-6">
+      <h3 className="mb-3 text-22 font-semibold">{b.title}</h3>
+      <ol className="columns-2 gap-8 font-ui text-14 leading-6">
+        {b.items.map((x) => (
+          <li key={x.n} className="break-inside-avoid">
+            <span className="mr-1.5 font-semibold tabular">{x.n}.</span>
+            {x.answer}
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 function BlockView({ b, lang }: { b: Block; lang: string }) {
   switch (b.t) {
     case 'heading':
-      return b.level === 1 ? <h2 className="mb-4 mt-10 text-28 font-semibold leading-9">{b.text}</h2> : b.level === 2 ? <h3 className="mb-3 mt-10 text-22 font-semibold leading-8 first:mt-0">{b.text}</h3> : <h4 className="mb-2 mt-6 text-18 font-semibold">{b.text}</h4>;
+      return <Heading b={b} />;
     case 'para':
       return <p className={cx('my-3', b.tone === 'lead' && 'text-18 leading-8 text-ink-2', b.tone === 'muted' && 'font-ui text-14 text-ink-2')}>{b.text}</p>;
-    case 'list': {
-      const L = b.ordered ? 'ol' : 'ul';
-      return <L className={cx('my-3 space-y-1 pl-6', b.ordered ? 'list-decimal' : 'list-disc marker:text-ink-3')}>{b.items.map((x, i) => <li key={i}>{x}</li>)}</L>;
-    }
+    case 'list':
+      return <ListBlock b={b} />;
     case 'meta':
-      return (
-        <dl className="my-5 grid grid-cols-1 gap-x-6 gap-y-1 rounded-control bg-well px-4 py-3 font-ui text-14 sm:grid-cols-3">
-          {b.items.map((m) => (
-            <div key={m.label}>
-              <dt className="text-12 text-ink-2">{m.label}</dt>
-              <dd className="text-ink">{m.value}</dd>
-            </div>
-          ))}
-        </dl>
-      );
+      return <Meta b={b} />;
     case 'table':
       return <Table head={b.head} rows={b.rows} widths={b.widths} />;
     case 'terms':
-      return (
-        <dl className="my-3 divide-y divide-rule">
-          {b.items.map((x) => (
-            <div key={x.term} className="grid gap-x-6 py-1.5 sm:grid-cols-3">
-              <dt className="font-semibold">{x.term}</dt>
-              <dd className="sm:col-span-2">{x.definition}</dd>
-            </div>
-          ))}
-        </dl>
-      );
+      return <Terms b={b} />;
     case 'note':
       return (
         <div className="my-3 whitespace-pre-line rounded-control bg-well px-4 py-3 font-ui text-14 leading-6 text-ink-2">
@@ -114,26 +158,9 @@ function BlockView({ b, lang }: { b: Block; lang: string }) {
     case 'question':
       return <QuestionBlock b={b} />;
     case 'slide':
-      return (
-        <div className="avoid-break my-4 overflow-hidden rounded-control shadow-sheet">
-          <SlideCanvas slide={{ id: String(b.n), layout: b.layout, title: b.title, bullets: b.bullets, notes: b.notes ?? '' }} lang={lang} footer={b.lesson} />
-          {b.notes && <p className="border-t border-rule px-4 py-2 font-ui text-13 text-ink-2">{b.notes}</p>}
-        </div>
-      );
+      return <SlideBlock b={b} lang={lang} />;
     case 'answers':
-      return (
-        <section className="my-6">
-          <h3 className="mb-3 text-22 font-semibold">{b.title}</h3>
-          <ol className="columns-2 gap-8 font-ui text-14 leading-6">
-            {b.items.map((x) => (
-              <li key={x.n} className="break-inside-avoid">
-                <span className="mr-1.5 font-semibold tabular">{x.n}.</span>
-                {x.answer}
-              </li>
-            ))}
-          </ol>
-        </section>
-      );
+      return <Answers b={b} />;
     case 'break':
       return <hr className="print-break my-10 border-rule" />;
   }

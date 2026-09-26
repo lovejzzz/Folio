@@ -25,38 +25,38 @@ function OutlineSkeleton({ lessons }: { lessons: number }) {
   );
 }
 
-/** The first model call: an outline only, drafted while the teacher watches. */
-export function NewCourse() {
-  const t = useT();
+function requestFromDraft(): NewCourseRequest | null {
+  const d = useDraft.getState();
+  if (!d.brief.trim() && !d.files.length) return null;
+  return {
+    brief: d.brief || d.files.map((f) => f.title).join(', '),
+    lessonCount: d.lessons,
+    minutesPerLesson: 50,
+    quizSize: 5,
+    level: d.level,
+    language: d.language,
+    materials: d.materials.length ? d.materials : MATERIAL_KINDS,
+    sources: d.files,
+  };
+}
+
+/** Draft the outline once per attempt; StrictMode-safe, and harmless if the teacher leaves. */
+function useOutline(attempt: number): string | null {
   const navigate = useNavigate();
-  const draft = useDraft();
   const [error, setError] = useState<string | null>(null);
-  const [attempt, setAttempt] = useState(0);
   const started = useRef(-1);
   const mounted = useRef(true);
-
   useEffect(() => {
     mounted.current = true;
     return () => {
       mounted.current = false;
     };
   }, []);
-
   useEffect(() => {
-    const d = useDraft.getState();
+    const req = requestFromDraft();
     const inference = currentInference();
-    if (started.current === attempt || (!d.brief.trim() && !d.files.length) || !inference) return;
+    if (started.current === attempt || !req || !inference) return;
     started.current = attempt;
-    const req: NewCourseRequest = {
-      brief: d.brief || d.files.map((f) => f.title).join(', '),
-      lessonCount: d.lessons,
-      minutesPerLesson: 50,
-      quizSize: 5,
-      level: d.level,
-      language: d.language,
-      materials: d.materials.length ? d.materials : MATERIAL_KINDS,
-      sources: d.files,
-    };
     setError(null);
     generateOutline(inference, req)
       .then(async (outline) => {
@@ -70,10 +70,36 @@ export function NewCourse() {
         if (mounted.current) setError(errorMessage(e));
       });
   }, [attempt, navigate]);
+  return error;
+}
 
+function Failed({ error, onRetry }: { error: string; onRetry: () => void }) {
+  const t = useT();
+  const navigate = useNavigate();
+  return (
+    <div role="alert" className="mt-10">
+      <h1 className="font-display text-36 text-ink">{t.plan.failed}</h1>
+      <p className="mt-2 font-ui text-14 text-ink-2">{error}</p>
+      <div className="mt-6 flex gap-2">
+        <Button variant="primary" onPress={onRetry}>
+          {t.common.retry}
+        </Button>
+        <Button variant="quiet" onPress={() => void navigate({ to: '/' })}>
+          {t.nav.back}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/** The first model call: an outline only, drafted while the teacher watches. */
+export function NewCourse() {
+  const t = useT();
+  const draft = useDraft();
+  const [attempt, setAttempt] = useState(0);
+  const error = useOutline(attempt);
   if (!draft.brief.trim() && !draft.files.length) return <Navigate to="/" />;
   if (!currentInference()) return <Navigate to="/" />;
-
   return (
     <div className="min-h-dvh">
       <SimpleHeader />
@@ -84,18 +110,7 @@ export function NewCourse() {
             {draft.brief}
           </blockquote>
           {error ? (
-            <div role="alert" className="mt-10">
-              <h1 className="font-display text-36 text-ink">{t.plan.failed}</h1>
-              <p className="mt-2 font-ui text-14 text-ink-2">{error}</p>
-              <div className="mt-6 flex gap-2">
-                <Button variant="primary" onPress={() => setAttempt((a) => a + 1)}>
-                  {t.common.retry}
-                </Button>
-                <Button variant="quiet" onPress={() => void navigate({ to: '/' })}>
-                  {t.nav.back}
-                </Button>
-              </div>
-            </div>
+            <Failed error={error} onRetry={() => setAttempt((a) => a + 1)} />
           ) : (
             <>
               <h1 className="mt-8 font-display text-36 text-ink" aria-live="polite">

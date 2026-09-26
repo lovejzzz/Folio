@@ -1,13 +1,15 @@
 import { Highlight, cx } from '@folio/ui';
-import { createElement, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { createElement, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { registerEditable, type Suggestion } from './registry';
+
+type Tag = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span' | 'div' | 'li' | 'td';
 
 export interface EditableTextProps {
   value: string;
   onCommit: (next: string) => void;
   /** Accessible name, e.g. "Title of lesson 2". */
   label: string;
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span' | 'div' | 'li' | 'td';
+  as?: Tag;
   multiline?: boolean;
   placeholder?: string;
   className?: string;
@@ -18,87 +20,67 @@ export interface EditableTextProps {
 }
 
 function readText(el: HTMLElement): string {
-  return (el.innerText ?? el.textContent ?? '').replace(/ /g, ' ').replace(/\n$/, '');
+  return (el.innerText ?? el.textContent ?? '').replace(/\u00a0/g, ' ').replace(/\n$/, '');
+}
+
+const isHeading = (tag: Tag): boolean => tag === 'h1' || tag === 'h2' || tag === 'h3' || tag === 'h4';
+
+/** The original passage struck through, the proposal marker-highlighted beside it. */
+function SuggestionView({ value, suggestion }: { value: string; suggestion: Suggestion }): ReactNode {
+  return (
+    <span aria-live="polite">
+      {value.slice(0, suggestion.start)}
+      <del className="text-ink-2 decoration-critical/60">{value.slice(suggestion.start, suggestion.end)}</del>{' '}
+      <Highlight>{suggestion.text}</Highlight>
+      {value.slice(suggestion.end)}
+    </span>
+  );
+}
+
+/** Keeps the DOM text in step with the course and registers the field for the selection toolbar. */
+function useEditable(props: EditableTextProps) {
+  const ref = useRef<HTMLElement>(null);
+  const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
+  const latest = useRef({ value: props.value, onCommit: props.onCommit, context: props.context ?? '', lang: props.lang });
+  useLayoutEffect(() => {
+    latest.current = { value: props.value, onCommit: props.onCommit, context: props.context ?? '', lang: props.lang };
+  });
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el && document.activeElement !== el && readText(el) !== props.value) el.textContent = props.value;
+  }, [props.value, suggestion]);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    return registerEditable(el, { get: () => latest.current, commit: (next) => latest.current.onCommit(next), suggest: setSuggestion });
+  }, []);
+  return { ref, suggestion };
+}
+
+function onKeyDown(e: KeyboardEvent<HTMLElement>, value: string, multiline: boolean): void {
+  const el = e.currentTarget;
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    e.stopPropagation();
+    el.textContent = value;
+    el.blur();
+  } else if (e.key === 'Enter' && (!multiline || e.metaKey || e.ctrlKey)) {
+    e.preventDefault();
+    el.blur();
+  }
 }
 
 /**
  * The text is the control: it looks exactly like the document and becomes
  * editable in place. Changes commit as one command when focus leaves.
  */
-export function EditableText({
-  value,
-  onCommit,
-  label,
-  as = 'span',
-  multiline = false,
-  placeholder,
-  className,
-  lang,
-  context,
-  readOnly,
-}: EditableTextProps) {
-  const ref = useRef<HTMLElement | null>(null);
-  const [el, setEl] = useState<HTMLElement | null>(null);
-  const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
-  const latest = useRef({ value, onCommit, context: context ?? '', lang });
-  useLayoutEffect(() => {
-    latest.current = { value, onCommit, context: context ?? '', lang };
-  });
-
-  useLayoutEffect(() => {
-    if (el && document.activeElement !== el && readText(el) !== value) el.textContent = value;
-  }, [el, value]);
-
-  useEffect(() => {
-    if (!el) return;
-    return registerEditable(el, {
-      get: () => latest.current,
-      commit: (next) => latest.current.onCommit(next),
-      suggest: setSuggestion,
-    });
-  }, [el]);
-
-  const attach = (node: HTMLElement | null) => {
-    ref.current = node;
-    setEl(node);
-  };
-
-  const commit = () => {
-    const el = ref.current;
-    if (!el) return;
-    const next = multiline ? readText(el) : readText(el).replace(/\s*\n\s*/g, ' ');
-    if (next !== value) onCommit(next);
-  };
-
-  const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      e.stopPropagation();
-      if (ref.current) ref.current.textContent = value;
-      ref.current?.blur();
-    } else if (e.key === 'Enter' && (!multiline || e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      ref.current?.blur();
-    }
-  };
-
-  if (suggestion) {
-    return createElement(
-      as,
-      { className: cx(className, 'folio-suggesting'), lang, 'aria-label': label },
-      value.slice(0, suggestion.start),
-      <del key="d" className="text-ink-2 decoration-critical/60">
-        {value.slice(suggestion.start, suggestion.end)}
-      </del>,
-      ' ',
-      <Highlight key="h">{suggestion.text}</Highlight>,
-      value.slice(suggestion.end),
-    );
-  }
-
-  return createElement(as, {
-    ref: attach,
-    className: cx('folio-editable', className),
+export function EditableText(props: EditableTextProps) {
+  const { value, onCommit, label, as = 'span', multiline = false, placeholder, className, lang, readOnly } = props;
+  const { ref, suggestion } = useEditable(props);
+  const heading = isHeading(as);
+  const editable = createElement(heading ? 'span' : as, {
+    ref,
+    className: cx('folio-editable', !heading && className, suggestion && 'hidden'),
     contentEditable: readOnly ? undefined : 'plaintext-only',
     suppressContentEditableWarning: true,
     role: readOnly ? undefined : 'textbox',
@@ -106,14 +88,27 @@ export function EditableText({
     'aria-multiline': readOnly ? undefined : multiline,
     'data-placeholder': placeholder,
     spellCheck: true,
-    lang,
+    lang: heading ? undefined : lang,
     tabIndex: readOnly ? undefined : 0,
-    onBlur: commit,
-    onKeyDown,
+    onBlur: (e: React.FocusEvent<HTMLElement>) => {
+      const text = readText(e.currentTarget);
+      const next = multiline ? text : text.replace(/\s*\n\s*/g, ' ');
+      if (next !== value) onCommit(next);
+    },
+    onKeyDown: (e: KeyboardEvent<HTMLElement>) => onKeyDown(e, value, multiline),
     onPaste: (e: React.ClipboardEvent) => {
       e.preventDefault();
       document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
     },
-    children: undefined,
   });
+  const proposal = suggestion ? <SuggestionView value={value} suggestion={suggestion} /> : null;
+  /* Headings keep their semantics: the heading wraps an editable span. */
+  if (heading) return createElement(as, { className, lang }, editable, proposal);
+  if (!proposal) return editable;
+  return (
+    <>
+      {editable}
+      {createElement(as, { className, lang }, proposal)}
+    </>
+  );
 }

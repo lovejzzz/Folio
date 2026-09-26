@@ -38,6 +38,8 @@ export interface ApplyOptions {
   source: ChangeSource;
   /** Build steps are recorded in history but skipped by ⌘Z. */
   undoable?: boolean;
+  /** Bookkeeping (such as the build status) that never appears in history. */
+  silent?: boolean;
 }
 
 export type UndoResult = { ok: true } | { ok: false; reason: 'conflict' | 'nothing' };
@@ -130,9 +132,11 @@ export class CourseStore {
       undone: false,
     };
     this.commit(next);
-    this.entries.push(entry);
-    if (this.entries.length > HISTORY_LIMIT) this.entries.splice(0, this.entries.length - HISTORY_LIMIT);
-    this.redoStack = [];
+    if (!options.silent) {
+      this.entries.push(entry);
+      if (this.entries.length > HISTORY_LIMIT) this.entries.splice(0, this.entries.length - HISTORY_LIMIT);
+      this.redoStack = [];
+    }
     this.emit();
     return entry;
   }

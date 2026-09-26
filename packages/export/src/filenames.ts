@@ -6,6 +6,7 @@ function clean(part: string): string {
     .normalize('NFC')
     .replace(/[\\/|]/g, '-')
     .replace(/[:*?"<>]/g, '')
+    // eslint-disable-next-line no-control-regex -- control characters are exactly what is being removed.
     .replace(/[\u0000-\u001f\u007f-\u009f]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();

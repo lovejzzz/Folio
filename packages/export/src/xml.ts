@@ -1,5 +1,6 @@
 /** Characters XML 1.0 cannot carry at all, including lone surrogates. */
-const INVALID = /[^\u0009\u000A\u000D -퟿-�\u{10000}-\u{10FFFF}]/gu;
+// eslint-disable-next-line no-control-regex -- the allowed ranges start at tab, newline and carriage return.
+const INVALID = /[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD\u{10000}-\u{10FFFF}]/gu;
 
 /** Escape text for an XML element or attribute, dropping characters XML 1.0 forbids. */
 export function escapeXml(value: string): string {

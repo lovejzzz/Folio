@@ -1,7 +1,6 @@
 import { generateSection } from '@folio/ai';
 import { cmd, lessonNumber, type Command, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
-import { currentMessages } from '../i18n';
 import { currentInference, errorMessage } from './model';
 import { activeStore } from './session';
 import { toast } from './toasts';
@@ -64,9 +63,8 @@ export async function updateSection(lessonId: string, kind: GeneratedKind): Prom
 function applyUpdate(lessonId: string, kind: GeneratedKind, commands: Command[]): void {
   const store = activeStore();
   if (!store) return;
-  const t = currentMessages();
   const n = lessonNumber(store.getState(), lessonId);
-  store.apply(commands, { label: { key: 'updated', values: { material: t.materialOne[kind], n } }, source: 'ai' });
+  store.apply(commands, { label: { key: 'updated', values: { kind, n } }, source: 'ai' });
 }
 
 export function acceptProposal(lessonId: string, kind: GeneratedKind): void {
@@ -83,10 +81,9 @@ export function rejectProposal(lessonId: string, kind: GeneratedKind): void {
 export function keepMine(lessonId: string, kind: GeneratedKind): void {
   const store = activeStore();
   if (!store) return;
-  const t = currentMessages();
   setPending(key(lessonId, kind), null);
   const n = lessonNumber(store.getState(), lessonId);
-  store.apply([cmd('review.keep', { lessonId, kind })], { label: { key: 'kept', values: { material: t.materialOne[kind], n } }, source: 'teacher' });
+  store.apply([cmd('review.keep', { lessonId, kind })], { label: { key: 'kept', values: { kind, n } }, source: 'teacher' });
 }
 
 export function pendingFor(lessonId: string, kind: GeneratedKind): Pending | undefined {

@@ -1,4 +1,4 @@
-import { attentionItems, cmd, lessonNumber, staleItems, type AttentionItem, type HistoryEntry, type StaleItem } from '@folio/core';
+import { attentionItems, cmd, isMaterialKind, lessonNumber, staleItems, type AttentionItem, type HistoryEntry, type StaleItem } from '@folio/core';
 import { BinderTab, Button } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useState, type ReactNode } from 'react';
@@ -85,9 +85,15 @@ function StaleRow({ item }: { item: StaleItem }) {
   );
 }
 
+/** History labels are stored as keys and values, and worded in the current language. */
 export function historyLabel(entry: HistoryEntry, t: Messages): string {
+  const values: Record<string, string | number> = { ...entry.label.values };
+  const kind = values.kind;
+  if (typeof kind === 'string' && isMaterialKind(kind)) {
+    values.material = entry.label.key === 'toggledMaterial' ? t.materials[kind] : t.materialInline[kind];
+  }
   const fn = (t.history as Record<string, unknown>)[entry.label.key];
-  if (typeof fn === 'function') return (fn as (v: Record<string, string | number>) => string)(entry.label.values ?? {});
+  if (typeof fn === 'function') return (fn as (v: Record<string, string | number>) => string)(values);
   return t.history.edit;
 }
 

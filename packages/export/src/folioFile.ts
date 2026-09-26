@@ -44,7 +44,7 @@ export function writeFolio(course: Course, now = new Date().toISOString()): Uint
 
 function parseJson(bytes: Uint8Array, what: string): unknown {
   try {
-    return JSON.parse(strFromU8(bytes).replace(/^﻿/, ''));
+    return JSON.parse(strFromU8(bytes).replace(/^\uFEFF/, ''));
   } catch {
     throw new CourseFormatError(`The ${what} inside this file is damaged and cannot be read.`);
   }

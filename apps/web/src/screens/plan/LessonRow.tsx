@@ -57,13 +57,52 @@ function Objectives({ course, lesson, n }: { course: Course; lesson: Lesson; n: 
   );
 }
 
+function RowActions({ lesson, index, last }: { lesson: Lesson; index: number; last: number }) {
+  const t = useT();
+  const n = index + 1;
+  const move = (toIndex: number) => edit([cmd('lesson.move', { lessonId: lesson.id, toIndex })], { key: 'movedLesson' });
+  return (
+    <div className="flex shrink-0 flex-col gap-0.5 opacity-100 transition-opacity md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100">
+      <IconButton size="sm" label={t.plan.moveUp(n)} isDisabled={index === 0} onPress={() => move(index - 1)}>
+        <ArrowUp size={15} strokeWidth={1.5} />
+      </IconButton>
+      <IconButton size="sm" label={t.plan.moveDown(n)} isDisabled={n === last} onPress={() => move(index + 1)}>
+        <ArrowDown size={15} strokeWidth={1.5} />
+      </IconButton>
+      <IconButton size="sm" label={t.plan.removeLesson(n)} onPress={() => edit([cmd('lesson.remove', { lessonId: lesson.id })], { key: 'removedLesson', values: { n } })}>
+        <Trash2 size={15} strokeWidth={1.5} />
+      </IconButton>
+    </div>
+  );
+}
+
+function Handle({ lesson, n, onDragStart }: { lesson: Lesson; n: number; onDragStart: (id: string) => void }) {
+  const t = useT();
+  return (
+    <div className="flex w-10 shrink-0 flex-col items-center gap-1 pt-1">
+      <span
+        draggable
+        onDragStart={(e) => {
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', lesson.id);
+          onDragStart(lesson.id);
+        }}
+        aria-hidden
+        title={t.plan.drag(n)}
+        className="cursor-grab text-ink-3 opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
+      >
+        <GripVertical size={16} strokeWidth={1.5} />
+      </span>
+      <span className="font-mono text-13 text-ink-2 tabular">{String(n).padStart(2, '0')}</span>
+    </div>
+  );
+}
+
 /** One lesson in the outline: drag to reorder, rename in place, edit objectives. */
 export function LessonRow({ course, lesson, index, dragging, onDragStart, onDrop }: RowProps) {
   const t = useT();
   const n = index + 1;
   const [over, setOver] = useState(false);
-  const last = course.lessonOrder.length;
-  const move = (toIndex: number) => edit([cmd('lesson.move', { lessonId: lesson.id, toIndex })], { key: 'movedLesson' });
   return (
     <li
       onDragOver={(e: DragEvent) => {
@@ -83,22 +122,7 @@ export function LessonRow({ course, lesson, index, dragging, onDragStart, onDrop
         over && 'before:absolute before:inset-x-0 before:-top-px before:h-0.5 before:bg-accent',
       )}
     >
-      <div className="flex w-10 shrink-0 flex-col items-center gap-1 pt-1">
-        <span
-          draggable
-          onDragStart={(e) => {
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', lesson.id);
-            onDragStart(lesson.id);
-          }}
-          aria-hidden
-          title={t.plan.drag(n)}
-          className="cursor-grab text-ink-3 opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
-        >
-          <GripVertical size={16} strokeWidth={1.5} />
-        </span>
-        <span className="font-mono text-13 text-ink-2 tabular">{String(n).padStart(2, '0')}</span>
-      </div>
+      <Handle lesson={lesson} n={n} onDragStart={onDragStart} />
       <div className="min-w-0 flex-1" lang={course.language}>
         <EditableText
           as="h3"
@@ -118,21 +142,7 @@ export function LessonRow({ course, lesson, index, dragging, onDragStart, onDrop
         />
         <Objectives course={course} lesson={lesson} n={n} />
       </div>
-      <div className="flex shrink-0 flex-col gap-0.5 opacity-100 transition-opacity md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100">
-        <IconButton size="sm" label={t.plan.moveUp(n)} isDisabled={index === 0} onPress={() => move(index - 1)}>
-          <ArrowUp size={15} strokeWidth={1.5} />
-        </IconButton>
-        <IconButton size="sm" label={t.plan.moveDown(n)} isDisabled={n === last} onPress={() => move(index + 1)}>
-          <ArrowDown size={15} strokeWidth={1.5} />
-        </IconButton>
-        <IconButton
-          size="sm"
-          label={t.plan.removeLesson(n)}
-          onPress={() => edit([cmd('lesson.remove', { lessonId: lesson.id })], { key: 'removedLesson', values: { n } })}
-        >
-          <Trash2 size={15} strokeWidth={1.5} />
-        </IconButton>
-      </div>
+      <RowActions lesson={lesson} index={index} last={course.lessonOrder.length} />
     </li>
   );
 }

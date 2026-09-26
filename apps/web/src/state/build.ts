@@ -82,9 +82,8 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   for (const target of list) cells[targetKey(target)] = 'queued';
   useBuild.setState({ courseId: course.id, running: true, stopping: false, total: list.length, done: 0, cells, errors: {}, controller });
   if (course.status !== 'building') {
-    store.apply([cmd('course.update', { status: 'building' })], { label: { key: 'editedCourse' }, source: 'ai', undoable: false });
+    store.apply([cmd('course.update', { status: 'building' })], { label: { key: 'editedCourse' }, source: 'ai', silent: true });
   }
-  const t = currentMessages();
   const summary = await runBuild(
     {
       inference,
@@ -93,7 +92,7 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
       commit: (target, commands) => {
         const n = lessonNumber(store.getState(), target.lessonId);
         store.apply(commands, {
-          label: { key: 'built', values: { material: t.materialOne[target.kind], n, kind: target.kind } },
+          label: { key: 'built', values: { kind: target.kind, n } },
           source: 'ai',
           undoable: false,
         });
@@ -116,7 +115,7 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   );
   const stillMissing = missingTargets(store.getState()).length;
   if (!stillMissing) {
-    store.apply([cmd('course.update', { status: 'ready' })], { label: { key: 'editedCourse' }, source: 'ai', undoable: false });
+    store.apply([cmd('course.update', { status: 'ready' })], { label: { key: 'editedCourse' }, source: 'ai', silent: true });
   }
   const { cells: after } = useBuild.getState();
   const errorsOnly = Object.fromEntries(Object.entries(after).filter(([, v]) => v === 'error'));

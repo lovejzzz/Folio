@@ -31,12 +31,13 @@ function Outline({ course }: { course: Course }) {
 function PerLesson({ course, kind }: { course: Course; kind: MaterialKind }) {
   const t = useT();
   const Editor = lessonEditors[kind]!;
-  let questionNo = 1;
+  const lessons = orderedLessons(course);
+  /* Questions are numbered continuously across the whole bank. */
+  const starts = lessons.map((_, i) => 1 + lessons.slice(0, i).reduce((n, l) => n + lessonQuestions(course, l).length, 0));
   return (
     <div className="space-y-14">
-      {orderedLessons(course).map((lesson, i) => {
-        const startAt = questionNo;
-        if (kind === 'quiz') questionNo += lessonQuestions(course, lesson).length;
+      {lessons.map((lesson, i) => {
+        const startAt = starts[i]!;
         return (
           <section key={lesson.id} id={`l-${lesson.id}`} className="scroll-mt-24" aria-labelledby={`lh-${lesson.id}`}>
             <h2 id={`lh-${lesson.id}`} className="mb-6 flex items-baseline gap-3 border-b border-rule pb-3">

@@ -116,7 +116,7 @@ export function SlidesEditor({ course, focusLesson }: { course: Course; focusLes
   const slide = lesson.slides[index];
   if (!slide) return null;
   const n = course.lessonOrder.indexOf(lesson.id) + 1;
-  const save = (slides: Slide[]) => edit([cmd('slides.update', { lessonId: lesson.id, slides })], { key: 'editedMaterial', values: { material: t.materialOne.slides, n } });
+  const save = (slides: Slide[]) => edit([cmd('slides.update', { lessonId: lesson.id, slides })], { key: 'editedMaterial', values: { kind: 'slides', n } });
   const update = (next: Slide) => save(lesson.slides.map((s) => (s.id === next.id ? next : s)));
   return (
     <div className="flex items-start gap-8">

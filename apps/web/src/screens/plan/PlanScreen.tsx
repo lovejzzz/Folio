@@ -8,6 +8,37 @@ import { useCourse } from '../../state/session';
 import { LessonRow } from './LessonRow';
 import { PlanAside } from './PlanAside';
 
+function PlanHeader() {
+  const t = useT();
+  const course = useCourse();
+  return (
+    <>
+      <p id="plan-title" className="font-ui text-13 font-medium text-ink-2">
+        {t.plan.title}
+      </p>
+      <div lang={course.language}>
+        <EditableText
+          as="h1"
+          value={course.title}
+          label={t.plan.courseTitle}
+          className="mt-2 block font-display text-36 leading-tight text-ink md:text-48 md:leading-none"
+          onCommit={(title) => edit([cmd('course.update', { title })], { key: 'editedCourse' })}
+        />
+        <EditableText
+          as="p"
+          multiline
+          value={course.summary}
+          label={t.plan.summary}
+          placeholder={t.plan.summary}
+          className="mt-4 block max-w-2xl font-reading text-17 leading-7 text-ink-2"
+          onCommit={(summary) => edit([cmd('course.update', { summary })], { key: 'editedCourse' })}
+        />
+      </div>
+      <p className="mt-6 max-w-2xl font-ui text-14 leading-relaxed text-ink-2">{t.plan.lede}</p>
+    </>
+  );
+}
+
 /** Plan before you generate: the teacher agrees the outline, then builds. */
 export function PlanScreen() {
   const t = useT();
@@ -24,28 +55,7 @@ export function PlanScreen() {
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 pb-24 pt-8 md:px-8 md:pt-12 lg:flex-row lg:items-start">
       <section className="min-w-0 flex-1 rounded-sheet bg-paper px-5 py-8 shadow-sheet md:px-12 md:py-12" aria-labelledby="plan-title">
-        <p id="plan-title" className="font-ui text-13 font-medium text-ink-2">
-          {t.plan.title}
-        </p>
-        <div lang={course.language}>
-          <EditableText
-            as="h1"
-            value={course.title}
-            label={t.plan.courseTitle}
-            className="mt-2 block font-display text-36 leading-tight text-ink md:text-48 md:leading-none"
-            onCommit={(title) => edit([cmd('course.update', { title })], { key: 'editedCourse' })}
-          />
-          <EditableText
-            as="p"
-            multiline
-            value={course.summary}
-            label={t.plan.summary}
-            placeholder={t.plan.summary}
-            className="mt-4 block max-w-2xl font-reading text-17 leading-7 text-ink-2"
-            onCommit={(summary) => edit([cmd('course.update', { summary })], { key: 'editedCourse' })}
-          />
-        </div>
-        <p className="mt-6 max-w-2xl font-ui text-14 leading-relaxed text-ink-2">{t.plan.lede}</p>
+        <PlanHeader />
         <ol className="mt-8 border-t border-rule" onDragEnd={() => setDragging(null)}>
           {lessons.map((lesson, index) => (
             <LessonRow

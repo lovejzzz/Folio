@@ -47,7 +47,7 @@ function NotBuilt({ lesson, kind }: { lesson: Lesson; kind: MaterialKind }) {
   }
   return (
     <div className="no-print rounded-control border border-dashed border-rule-strong px-4 py-5 font-ui text-14 text-ink-2">
-      <p>{run === 'error' ? error : t.lesson.notBuilt(t.materialOne[kind])}</p>
+      <p>{run === 'error' ? error : t.lesson.notBuilt(t.materialInline[kind])}</p>
       {section && (
         <Button size="sm" variant="secondary" className="mt-3" onPress={() => retryCell(lesson.id, section)}>
           {run === 'error' ? t.common.retry : t.lesson.buildThis}

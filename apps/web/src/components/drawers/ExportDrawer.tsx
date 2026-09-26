@@ -1,10 +1,10 @@
-import { enabledKinds, orderedLessons, project, type MaterialKind } from '@folio/core';
+import { enabledKinds, orderedLessons, project, type Course, type MaterialKind } from '@folio/core';
 import { Button, Checkbox, SegmentedControl, cx, fieldClass } from '@folio/ui';
 import { FileArchive, FileSpreadsheet, FileText, FolderDown, Presentation, Printer, UploadCloud } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { Radio, RadioGroup } from 'react-aria-components';
 import { router } from '../../app/router';
-import { useT } from '../../i18n';
+import { useT, type Messages } from '../../i18n';
 import { download, makeExport } from '../../lib/exporter';
 import { uploadToGoogleDocs } from '../../lib/google';
 import { flushNow, useCourse } from '../../state/session';
@@ -73,6 +73,58 @@ function Preview({ choice }: { choice: ExportChoice }) {
   );
 }
 
+async function runExport(choice: ExportChoice, course: Course, t: Messages): Promise<void> {
+  const kinds = kindsFor(course, choice);
+  const lessonIds = lessonIdsFor(choice);
+  if (choice.format === 'pdf') {
+    await flushNow();
+    const { href } = router.buildLocation({
+      to: '/print/$courseId',
+      params: { courseId: course.id },
+      search: { kinds, audience: choice.audience, ...(lessonIds ? { lessons: lessonIds } : {}) },
+    });
+    window.open(href, '_blank', 'noopener');
+    return;
+  }
+  const format = choice.format === 'google' ? 'docx' : choice.format;
+  const file = await makeExport({ course, kinds, audience: choice.audience, format, ...(lessonIds ? { lessonIds } : {}) });
+  if (choice.format === 'google') {
+    const link = await uploadToGoogleDocs(googleClientId(), file.name, file.bytes);
+    toast({ message: t.export.uploaded, action: { label: t.export.openInDrive, run: () => window.open(link, '_blank', 'noopener') } });
+  } else {
+    download(file);
+    toast({ message: t.export.done(file.name), duration: 4000 });
+  }
+}
+
+function WhatField({ choice, set }: { choice: ExportChoice; set: (patch: Partial<ExportChoice>) => void }) {
+  const t = useT();
+  const course = useCourse();
+  return (
+    <Field label={t.export.what}>
+      <SegmentedControl label={t.export.what} value={choice.scope} onChange={(scope) => set({ scope })} className="w-full" options={[{ id: 'whole', label: t.export.whole }, { id: 'lesson', label: t.export.oneLesson }, { id: 'selected', label: t.export.selected }]} />
+      {choice.scope === 'lesson' && (
+        <select aria-label={t.export.lessonPick} value={choice.lessonId} onChange={(e) => set({ lessonId: e.target.value })} className={cx(fieldClass, 'h-9')}>
+          {orderedLessons(course).map((l, i) => (
+            <option key={l.id} value={l.id}>
+              {t.common.lesson(i + 1)} · {l.title}
+            </option>
+          ))}
+        </select>
+      )}
+      {choice.scope === 'selected' && (
+        <div className="grid grid-cols-1 gap-1.5 pt-1">
+          {enabledKinds(course).map((k: MaterialKind) => (
+            <Checkbox key={k} isSelected={choice.kinds.includes(k)} onChange={(on) => set({ kinds: on ? [...choice.kinds, k] : choice.kinds.filter((x) => x !== k) })}>
+              {t.materials[k]}
+            </Checkbox>
+          ))}
+        </div>
+      )}
+    </Field>
+  );
+}
+
 /** Export: what, for whom, in which format. Sensible defaults make it one click. */
 export function ExportDrawer() {
   const t = useT();
@@ -82,61 +134,17 @@ export function ExportDrawer() {
   const [busy, setBusy] = useState(false);
   const set = (patch: Partial<ExportChoice>) => setChoice({ ...choice, ...patch });
   const kinds = kindsFor(course, choice);
-  const run = async () => {
+  const run = () => {
     setBusy(true);
-    try {
-      if (choice.format === 'pdf') {
-        await flushNow();
-        const lessons = lessonIdsFor(choice);
-        const { href } = router.buildLocation({
-          to: '/print/$courseId',
-          params: { courseId: course.id },
-          search: { kinds, audience: choice.audience, ...(lessons ? { lessons } : {}) },
-        });
-        window.open(href, '_blank', 'noopener');
-        return;
-      }
-      const format = choice.format === 'google' ? 'docx' : choice.format;
-      const lessonIds = lessonIdsFor(choice);
-      const file = await makeExport({ course, kinds, audience: choice.audience, format, ...(lessonIds ? { lessonIds } : {}) });
-      if (choice.format === 'google') {
-        const link = await uploadToGoogleDocs(googleClientId(), file.name, file.bytes);
-        toast({ message: t.export.uploaded, action: { label: t.export.openInDrive, run: () => window.open(link, '_blank', 'noopener') } });
-      } else {
-        download(file);
-        toast({ message: t.export.done(file.name), duration: 4000 });
-      }
-    } catch (error) {
-      toast({ message: error instanceof Error && error.message ? error.message : t.export.failed, tone: 'critical' });
-    } finally {
-      setBusy(false);
-    }
+    runExport(choice, course, t)
+      .catch((error: unknown) => toast({ message: error instanceof Error && error.message ? error.message : t.export.failed, tone: 'critical' }))
+      .finally(() => setBusy(false));
   };
-  const noSlides = choice.format === 'pptx' && !lessons.some((l) => (!lessonIdsFor(choice) || l.id === choice.lessonId) && l.slides.length);
+  const noSlides = choice.format === 'pptx' && !lessons.some((l) => (choice.scope !== 'lesson' || l.id === choice.lessonId) && l.slides.length);
   const cta = choice.format === 'pdf' ? t.export.print : choice.format === 'google' ? t.export.uploadGoogle : t.export.download(t.export.formats[choice.format as keyof typeof t.export.formats]);
   return (
     <div className="space-y-6 p-5">
-      <Field label={t.export.what}>
-        <SegmentedControl label={t.export.what} value={choice.scope} onChange={(scope) => set({ scope })} className="w-full" options={[{ id: 'whole', label: t.export.whole }, { id: 'lesson', label: t.export.oneLesson }, { id: 'selected', label: t.export.selected }]} />
-        {choice.scope === 'lesson' && (
-          <select aria-label={t.export.lessonPick} value={choice.lessonId} onChange={(e) => set({ lessonId: e.target.value })} className={cx(fieldClass, 'h-9')}>
-            {lessons.map((l, i) => (
-              <option key={l.id} value={l.id}>
-                {t.common.lesson(i + 1)} · {l.title}
-              </option>
-            ))}
-          </select>
-        )}
-        {choice.scope === 'selected' && (
-          <div className="grid grid-cols-1 gap-1.5 pt-1">
-            {enabledKinds(course).map((k: MaterialKind) => (
-              <Checkbox key={k} isSelected={choice.kinds.includes(k)} onChange={(on) => set({ kinds: on ? [...choice.kinds, k] : choice.kinds.filter((x) => x !== k) })}>
-                {t.materials[k]}
-              </Checkbox>
-            ))}
-          </div>
-        )}
-      </Field>
+      <WhatField choice={choice} set={set} />
       <Field label={t.export.who}>
         <SegmentedControl label={t.export.who} value={choice.audience} onChange={(audience) => set({ audience })} className="w-full" options={[{ id: 'student', label: t.export.student }, { id: 'teacher', label: t.export.teacher }]} />
         {choice.audience === 'teacher' && <p className="font-ui text-12 text-ink-2">{t.export.teacherHint}</p>}
@@ -148,7 +156,7 @@ export function ExportDrawer() {
         <Preview choice={choice} />
       </Field>
       {noSlides && <p className="font-ui text-13 text-attention">{t.export.noSlides}</p>}
-      <Button variant="primary" size="lg" className="w-full" isDisabled={busy || kinds.length === 0 || noSlides} onPress={() => void run()}>
+      <Button variant="primary" size="lg" className="w-full" isDisabled={busy || kinds.length === 0 || noSlides} onPress={run}>
         {busy ? t.export.working : cta}
       </Button>
     </div>

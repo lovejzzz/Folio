@@ -73,7 +73,7 @@ export function SegmentedControl<K extends string>({
         <ToggleButton
           key={o.id}
           id={o.id}
-          className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded-control px-3 font-ui text-13 text-ink-2 outline-none transition-colors duration-120 data-hovered:text-ink data-selected:bg-paper data-selected:text-ink data-selected:shadow-sheet data-focus-visible:ring-2 data-focus-visible:ring-accent"
+          className="flex h-7 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-control px-2.5 font-ui text-13 text-ink-2 outline-none transition-colors duration-120 data-hovered:text-ink data-selected:bg-paper data-selected:text-ink data-selected:shadow-sheet data-focus-visible:ring-2 data-focus-visible:ring-accent"
         >
           {o.label}
         </ToggleButton>

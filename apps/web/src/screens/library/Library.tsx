@@ -49,16 +49,10 @@ function useCourses(): [CourseSummary[] | null, () => void] {
   return [courses, () => setTick((n) => n + 1)];
 }
 
-/** Every course on this device, as paper cards. */
-export function Library() {
+function Header() {
   const t = useT();
   const navigate = useNavigate();
-  const [courses, refresh] = useCourses();
-  const [query, setQuery] = useState('');
-  const [deleting, setDeleting] = useState<CourseSummary | null>(null);
   const file = useRef<HTMLInputElement>(null);
-  const shown = (courses ?? []).filter((c) => c.title.toLowerCase().includes(query.trim().toLowerCase()));
-
   const open = async (f: File) => {
     try {
       const { readFolio } = await import('@folio/export');
@@ -70,28 +64,76 @@ export function Library() {
       toast({ message: error instanceof Error ? error.message : t.errors.generic, tone: 'critical' });
     }
   };
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h1 className="font-display text-48 leading-none text-ink">{t.library.title}</h1>
+        <p className="mt-2 font-ui text-14 text-ink-2">{t.library.lede}</p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button onPress={() => file.current?.click()}>
+          <FolderOpen size={16} strokeWidth={1.5} aria-hidden />
+          {t.library.import}
+        </Button>
+        <input
+          ref={file}
+          type="file"
+          accept=".folio,.json,application/zip,application/json"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            e.target.value = '';
+            if (f) void open(f);
+          }}
+        />
+        <Link to="/" className="inline-flex h-8 items-center gap-2 rounded-control bg-accent px-3 font-ui text-14 font-medium text-accent-ink outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-desk">
+          <Plus size={16} strokeWidth={1.75} aria-hidden />
+          {t.library.newCourse}
+        </Link>
+      </div>
+    </div>
+  );
+}
 
+function DeleteDialog({ course, onClose, onDeleted }: { course: CourseSummary | null; onClose: () => void; onDeleted: () => void }) {
+  const t = useT();
+  return (
+    <Dialog isOpen={course !== null} onOpenChange={(o) => !o && onClose()} title={t.library.deleteCourse} size="sm">
+      <div className="px-6 pb-6">
+        <p className="mt-2 font-ui text-14 leading-relaxed text-ink-2">{course && t.library.deleteConfirm(course.title)}</p>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="quiet" onPress={onClose}>
+            {t.common.cancel}
+          </Button>
+          <Button
+            variant="destructive"
+            onPress={async () => {
+              if (course) await deleteCourse(course.id);
+              onClose();
+              onDeleted();
+              toast({ message: t.library.deleted });
+            }}
+          >
+            {t.common.delete}
+          </Button>
+        </div>
+      </div>
+    </Dialog>
+  );
+}
+
+/** Every course on this device, as paper cards. */
+export function Library() {
+  const t = useT();
+  const [courses, refresh] = useCourses();
+  const [query, setQuery] = useState('');
+  const [deleting, setDeleting] = useState<CourseSummary | null>(null);
+  const shown = (courses ?? []).filter((c) => c.title.toLowerCase().includes(query.trim().toLowerCase()));
   return (
     <div className="min-h-dvh">
       <SimpleHeader />
       <main id="main" className="mx-auto max-w-6xl px-5 pb-24 pt-8 md:px-8 md:pt-12">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="font-display text-48 leading-none text-ink">{t.library.title}</h1>
-            <p className="mt-2 font-ui text-14 text-ink-2">{t.library.lede}</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button onPress={() => file.current?.click()}>
-              <FolderOpen size={16} strokeWidth={1.5} aria-hidden />
-              {t.library.import}
-            </Button>
-            <input ref={file} type="file" accept=".folio,.json,application/zip,application/json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) void open(f); }} />
-            <Link to="/" className="inline-flex h-8 items-center gap-2 rounded-control bg-accent px-3 font-ui text-14 font-medium text-accent-ink outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-desk">
-              <Plus size={16} strokeWidth={1.75} aria-hidden />
-              {t.library.newCourse}
-            </Link>
-          </div>
-        </div>
+        <Header />
         {courses && courses.length > 0 && (
           <label className="relative mt-8 block max-w-sm">
             <span className="sr-only">{t.library.search}</span>
@@ -113,27 +155,7 @@ export function Library() {
           ))}
         </div>
       </main>
-      <Dialog isOpen={deleting !== null} onOpenChange={(o) => !o && setDeleting(null)} title={t.library.deleteCourse} size="sm">
-        <div className="px-6 pb-6">
-          <p className="mt-2 font-ui text-14 leading-relaxed text-ink-2">{deleting && t.library.deleteConfirm(deleting.title)}</p>
-          <div className="mt-6 flex justify-end gap-2">
-            <Button variant="quiet" onPress={() => setDeleting(null)}>{t.common.cancel}</Button>
-            <Button
-              variant="destructive"
-              onPress={async () => {
-                if (deleting) await deleteCourse(deleting.id);
-                setDeleting(null);
-                refresh();
-                toast({ message: t.library.deleted });
-              }}
-            >
-              {t.common.delete}
-            </Button>
-          </div>
-        </div>
-      </Dialog>
+      <DeleteDialog course={deleting} onClose={() => setDeleting(null)} onDeleted={refresh} />
     </div>
   );
 }
-
-export { saveFolio };

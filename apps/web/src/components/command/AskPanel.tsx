@@ -33,14 +33,10 @@ function describe(op: PlanOperation, t: Messages): string {
   }
 }
 
-/** A course-level request, planned by the model and previewed before anything changes. */
-export function AskPanel({ request, onDone, onBack }: { request: string; onDone: () => void; onBack: () => void }) {
-  const t = useT();
-  const course = useCourse();
+function usePlan(request: string, onDone: () => void): { proposal: Proposal | null; error: string | null } {
   const [proposal, setProposal] = useState<Proposal | null>(null);
   const [error, setError] = useState<string | null>(null);
   const started = useRef(false);
-
   useEffect(() => {
     if (started.current) return;
     started.current = true;
@@ -54,23 +50,56 @@ export function AskPanel({ request, onDone, onBack }: { request: string; onDone:
       .then(setProposal)
       .catch((e: unknown) => setError(errorMessage(e)));
   }, [request, onDone]);
+  return { proposal, error };
+}
 
-  const preview = proposal ? new CourseStore(course) : null;
-  preview?.apply(proposal!.commands, { label: { key: 'preview' }, source: 'ai' });
-  const before = new Set(staleItems(course).map((s) => `${s.lessonId}:${s.kind}`));
-  const newlyStale = preview ? staleItems(preview.getState()).filter((s) => !before.has(`${s.lessonId}:${s.kind}`)) : [];
+const staleKey = (s: { lessonId: string; kind: string }) => `${s.lessonId}:${s.kind}`;
+
+/** Apply the plan, then update what it made out of date and build any new lessons. */
+function applyPlan(proposal: Proposal, before: Set<string>): void {
+  const store = activeStore();
+  if (!store) return;
+  store.apply(proposal.commands, { label: { key: 'plan', values: { summary: proposal.rationale } }, source: 'ai' });
+  const state = store.getState();
+  for (const s of staleItems(state).filter((x) => !x.edited && !before.has(staleKey(x)))) void updateSection(s.lessonId, s.kind);
+  if (missingTargets(state).length) void startBuild();
+}
+
+function PlanPreview({ proposal, before }: { proposal: Proposal; before: Set<string> }) {
+  const t = useT();
+  const course = useCourse();
+  if (proposal.preview.length === 0) {
+    return (
+      <p className="font-ui text-14 text-ink-2">
+        {t.command.nothing} {proposal.rationale}
+      </p>
+    );
+  }
+  const preview = new CourseStore(course);
+  preview.apply(proposal.commands, { label: { key: 'preview' }, source: 'ai' });
+  const newlyStale = staleItems(preview.getState()).filter((s) => !before.has(staleKey(s)));
+  return (
+    <div className="rounded-control bg-well px-4 py-3">
+      <p className="font-ui text-13 font-semibold text-ink">{t.command.preview}</p>
+      <ul className="mt-2 space-y-1.5 font-ui text-14 text-ink">
+        {proposal.preview.map((op, i) => (
+          <li key={i}>
+            <span className="folio-highlight">{describe(op, t)}</span>
+          </li>
+        ))}
+      </ul>
+      {newlyStale.length > 0 && <p className="mt-2 font-ui text-13 text-ink-2">{t.command.thenUpdate(newlyStale.length)}</p>}
+    </div>
+  );
+}
+
+/** A course-level request, planned by the model and previewed before anything changes. */
+export function AskPanel({ request, onDone, onBack }: { request: string; onDone: () => void; onBack: () => void }) {
+  const t = useT();
+  const course = useCourse();
+  const { proposal, error } = usePlan(request, onDone);
+  const before = new Set(staleItems(course).map(staleKey));
   const changed = proposal !== null && proposal.basisRevision !== course.revision;
-
-  const apply = () => {
-    const store = activeStore();
-    if (!store || !proposal) return;
-    store.apply(proposal.commands, { label: { key: 'plan', values: { summary: proposal.rationale } }, source: 'ai' });
-    onDone();
-    const state = store.getState();
-    for (const s of staleItems(state).filter((x) => !x.edited && !before.has(`${x.lessonId}:${x.kind}`))) void updateSection(s.lessonId, s.kind);
-    if (missingTargets(state).length) void startBuild();
-  };
-
   return (
     <div className="p-5">
       <p className="flex items-start gap-2 font-ui text-14 text-ink">
@@ -85,31 +114,22 @@ export function AskPanel({ request, onDone, onBack }: { request: string; onDone:
           </div>
         )}
         {error && <p className="font-ui text-14 text-critical">{error}</p>}
-        {proposal && proposal.preview.length === 0 && (
-          <p className="font-ui text-14 text-ink-2">
-            {t.command.nothing} {proposal.rationale}
-          </p>
-        )}
-        {proposal && proposal.preview.length > 0 && (
-          <div className="rounded-control bg-well px-4 py-3">
-            <p className="font-ui text-13 font-semibold text-ink">{t.command.preview}</p>
-            <ul className="mt-2 space-y-1.5 font-ui text-14 text-ink">
-              {proposal.preview.map((op, i) => (
-                <li key={i}>
-                  <span className="folio-highlight">{describe(op, t)}</span>
-                </li>
-              ))}
-            </ul>
-            {newlyStale.length > 0 && <p className="mt-2 font-ui text-13 text-ink-2">{t.command.thenUpdate(newlyStale.length)}</p>}
-          </div>
-        )}
+        {proposal && <PlanPreview proposal={proposal} before={before} />}
         {changed && <p className="mt-2 font-ui text-13 text-attention">{t.command.changedMeanwhile}</p>}
       </div>
       <div className="mt-5 flex justify-end gap-2">
         <Button variant="quiet" onPress={onBack}>
           {t.nav.back}
         </Button>
-        <Button variant="primary" isDisabled={!proposal || proposal.preview.length === 0 || changed} onPress={apply}>
+        <Button
+          variant="primary"
+          isDisabled={!proposal || proposal.preview.length === 0 || changed}
+          onPress={() => {
+            if (!proposal) return;
+            onDone();
+            applyPlan(proposal, before);
+          }}
+        >
           {t.command.apply}
         </Button>
       </div>
