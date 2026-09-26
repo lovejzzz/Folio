@@ -1,0 +1,15 @@
+{
+  "name": "@folio/ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
+    "@folio/core": "workspace:*",
+    "zod": "^4.6.5"
+  }
+}

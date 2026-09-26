@@ -1,0 +1,78 @@
+import { describe, expect, it } from 'vitest';
+import { CourseStore, cmd, createCourse, newId, orderedLessons } from '../src';
+
+function courseWithLessons(n: number) {
+  const store = new CourseStore(createCourse({ title: 'Test' }));
+  const ids: string[] = [];
+  for (let i = 0; i < n; i++) {
+    const id = newId('l');
+    ids.push(id);
+    store.apply([cmd('lesson.insert', { lesson: { id, title: `L${i + 1}`, summary: '' }, afterId: ids[i - 1] ?? null })], {
+      label: { key: 't' },
+      source: 'teacher',
+    });
+  }
+  return { store, ids };
+}
+
+describe('CourseStore', () => {
+  it('applies commands and bumps the revision outside the patches', () => {
+    const { store, ids } = courseWithLessons(2);
+    expect(store.getState().revision).toBe(2);
+    expect(orderedLessons(store.getState()).map((l) => l.title)).toEqual(['L1', 'L2']);
+    store.apply([cmd('lesson.update', { lessonId: ids[0]!, title: 'Renamed' })], { label: { key: 't' }, source: 'teacher' });
+    expect(store.getState().lessons[ids[0]!]!.title).toBe('Renamed');
+  });
+
+  it('undoes and redoes', () => {
+    const { store, ids } = courseWithLessons(1);
+    store.apply([cmd('lesson.update', { lessonId: ids[0]!, title: 'New' })], { label: { key: 't' }, source: 'teacher' });
+    expect(store.undo()).toEqual({ ok: true });
+    expect(store.getState().lessons[ids[0]!]!.title).toBe('L1');
+    expect(store.redo()).toEqual({ ok: true });
+    expect(store.getState().lessons[ids[0]!]!.title).toBe('New');
+  });
+
+  it('keeps undo correct after lessons are reordered', () => {
+    const { store, ids } = courseWithLessons(3);
+    store.apply([cmd('lesson.update', { lessonId: ids[2]!, title: 'Third' })], { label: { key: 't' }, source: 'teacher' });
+    const rename = store.getHistory().at(-1)!;
+    store.apply([cmd('lesson.move', { lessonId: ids[2]!, toIndex: 0 })], { label: { key: 't' }, source: 'teacher' });
+    expect(store.undo(rename.id)).toEqual({ ok: true });
+    const state = store.getState();
+    expect(state.lessonOrder[0]).toBe(ids[2]);
+    expect(state.lessons[ids[2]!]!.title).toBe('L3');
+  });
+
+  it('refuses to undo a change that later edits touched', () => {
+    const { store, ids } = courseWithLessons(1);
+    store.apply([cmd('lesson.update', { lessonId: ids[0]!, title: 'A' })], { label: { key: 't' }, source: 'teacher' });
+    const first = store.getHistory().at(-1)!;
+    store.apply([cmd('lesson.update', { lessonId: ids[0]!, title: 'B' })], { label: { key: 't' }, source: 'teacher' });
+    expect(store.canUndoEntry(first.id)).toBe(false);
+    expect(store.undo(first.id)).toEqual({ ok: false, reason: 'conflict' });
+    expect(store.getState().lessons[ids[0]!]!.title).toBe('B');
+  });
+
+  it('skips build steps on plain undo', () => {
+    const { store, ids } = courseWithLessons(1);
+    store.apply([cmd('lesson.update', { lessonId: ids[0]!, summary: 'teacher' })], { label: { key: 't' }, source: 'teacher' });
+    store.apply([cmd('course.update', { title: 'Built' })], { label: { key: 'b' }, source: 'ai', undoable: false });
+    expect(store.undo()).toEqual({ ok: true });
+    expect(store.getState().lessons[ids[0]!]!.summary).toBe('');
+    expect(store.getState().title).toBe('Built');
+  });
+
+  it('removes a lesson with its tasks and orphaned objectives', () => {
+    const { store, ids } = courseWithLessons(2);
+    const objective = { id: newId('o'), text: 'Know things' };
+    store.apply([cmd('objective.add', { objective, lessonId: ids[0]! })], { label: { key: 't' }, source: 'teacher' });
+    store.apply([cmd('lesson.remove', { lessonId: ids[0]! })], { label: { key: 't' }, source: 'teacher' });
+    const state = store.getState();
+    expect(state.lessonOrder).toEqual([ids[1]]);
+    expect(state.objectives[objective.id]).toBeUndefined();
+    store.undo();
+    expect(store.getState().objectives[objective.id]?.text).toBe('Know things');
+    expect(store.getState().lessonOrder).toEqual(ids);
+  });
+});
