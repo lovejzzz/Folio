@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Types, lint, tests, budgets, end to end
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Tokens are generated from tokens.ts
+        run: pnpm tokens --check
+      - run: pnpm typecheck
+      - name: Lint (warnings fail)
+        run: pnpm lint
+      - name: Unit tests (every test file, by glob)
+        run: pnpm test
+      - run: pnpm build
+      - name: Bundle budgets
+        run: pnpm budget
+      - name: Install Chromium for Playwright
+        run: pnpm --filter @folio/web exec playwright install --with-deps chromium
+      - name: End-to-end, accessibility and CSP checks
+        run: pnpm test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: apps/web/test-results
+          retention-days: 7

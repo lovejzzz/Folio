@@ -14,10 +14,9 @@ function Examples() {
   const set = useDraft((s) => s.set);
   return (
     <div className="mt-12 flex flex-col items-center gap-3 text-center font-ui text-14 text-ink-2">
-      <p className="flex flex-col items-center gap-y-2 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-center sm:gap-x-1">
-        <span className="mr-1">{t.home.tryLabel}</span>
-        {t.home.examples.map((example, i) => (
-          <span key={example} className="inline-flex items-baseline">
+      <ul className="flex flex-wrap items-center justify-center gap-2" aria-label={t.home.tryLabel}>
+        {t.home.examples.map((example) => (
+          <li key={example}>
             <button
               type="button"
               onClick={() => {
@@ -25,15 +24,14 @@ function Examples() {
                 setBrief(example);
                 document.getElementById('brief')?.focus();
               }}
-              lang={/[㐀-鿿]/.test(example) ? 'zh-CN' : undefined}
-              className="rounded-control px-1 text-ink underline decoration-rule-strong underline-offset-4 outline-none transition-colors duration-120 hover:decoration-accent focus-visible:ring-2 focus-visible:ring-accent"
+              lang={/[\u3400-\u9fff]/.test(example) ? 'zh-CN' : undefined}
+              className="h-8 rounded-full border border-rule px-3.5 font-ui text-13 text-ink-2 outline-none transition-colors duration-120 hover:border-field hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
             >
               {example}
             </button>
-            {i < t.home.examples.length - 1 && <span aria-hidden className="ml-1 hidden text-ink-3 sm:inline">·</span>}
-          </span>
+          </li>
         ))}
-      </p>
+      </ul>
       <button
         type="button"
         onClick={() => void import('../../lib/sample').then((m) => m.openSample(navigate))}

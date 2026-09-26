@@ -94,3 +94,31 @@ test('tour, phone', async ({ browser }) => {
   await shot(page, 'phone-changes');
   await page.close();
 });
+
+test('tour, readme', async ({ browser }) => {
+  const make = async (scheme: 'light' | 'dark') => {
+    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: scheme });
+    return context.newPage();
+  };
+  const page = await make('light');
+  await page.goto('/');
+  await page.getByLabel('Describe your course').fill('A four-lesson introduction to statistics for grade 11. Real data from our school, lots of practice, one short quiz a lesson.');
+  await shot(page, 'readme-home');
+  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await page.getByRole('grid').waitFor();
+  await shot(page, 'readme-map');
+  const base = page.url().replace(/\/map$/, '');
+  await page.getByRole('link', { name: /Picturing a distribution/ }).first().click();
+  await page.locator('#m-plan').waitFor();
+  await page.evaluate(() => window.scrollTo(0, 560));
+  await shot(page, 'readme-lesson');
+  await page.goto(`${base}/m/slides`);
+  await shot(page, 'readme-slides');
+  const dark = await make('dark');
+  await dark.goto('/');
+  await dark.getByRole('button', { name: 'Or open the sample course' }).click();
+  await dark.getByRole('grid').waitFor();
+  await dark.goto(dark.url().replace(/\/map$/, '/m/quiz'));
+  await dark.getByRole('button', { name: 'Show answer' }).first().click();
+  await shot(dark, 'readme-quiz-dark');
+});
