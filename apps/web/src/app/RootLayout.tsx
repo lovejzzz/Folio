@@ -1,43 +1,13 @@
 import { Outlet } from '@tanstack/react-router';
-import { useEffect } from 'react';
-import { ConnectDialog } from '../components/ConnectDialog';
+import { lazy, Suspense, useEffect } from 'react';
 import { Toaster } from '../components/Toaster';
 import { useT } from '../i18n';
-import { redo, undo } from '../state/edit';
 import { applyTheme, usePrefs } from '../state/prefs';
-import { activeStore } from '../state/session';
 import { toast } from '../state/toasts';
 import { useUi } from '../state/ui';
 
-function isTyping(target: EventTarget | null): boolean {
-  const el = target as HTMLElement | null;
-  return Boolean(el && (el.isContentEditable || el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT'));
-}
-
-function useGlobalKeys(): void {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const mod = e.metaKey || e.ctrlKey;
-      if (mod && e.key.toLowerCase() === 'k') {
-        if (!activeStore()) return;
-        e.preventDefault();
-        useUi.getState().setCommandOpen(!useUi.getState().commandOpen);
-        return;
-      }
-      if (!mod || isTyping(e.target) || !activeStore()) return;
-      if (e.key.toLowerCase() === 'z') {
-        e.preventDefault();
-        if (e.shiftKey) redo();
-        else undo();
-      } else if (e.key.toLowerCase() === 'y') {
-        e.preventDefault();
-        redo();
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
-}
+/** Loaded only when a model needs connecting, so the first page stays small. */
+const ConnectDialog = lazy(() => import('../components/ConnectDialog').then((m) => ({ default: m.ConnectDialog })));
 
 function usePrintInLight(theme: string): void {
   useEffect(() => {
@@ -56,6 +26,7 @@ export function RootLayout() {
   const t = useT();
   const theme = usePrefs((s) => s.theme);
   const uiLanguage = usePrefs((s) => s.uiLanguage);
+  const connecting = useUi((s) => s.connectThen !== null);
   useEffect(() => applyTheme(theme), [theme]);
   useEffect(() => {
     document.documentElement.lang = uiLanguage;
@@ -65,7 +36,6 @@ export function RootLayout() {
     window.addEventListener('offline', offline);
     return () => window.removeEventListener('offline', offline);
   }, [t]);
-  useGlobalKeys();
   usePrintInLight(theme);
   return (
     <>
@@ -77,7 +47,11 @@ export function RootLayout() {
       </a>
       <Outlet />
       <Toaster />
-      <ConnectDialog />
+      {connecting && (
+        <Suspense fallback={null}>
+          <ConnectDialog />
+        </Suspense>
+      )}
     </>
   );
 }

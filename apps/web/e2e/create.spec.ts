@@ -5,7 +5,7 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   const model = await fakeAnthropic(page, { delayMs: 50 });
   await page.goto('/');
   await page.getByLabel('Describe your course').fill('Photosynthesis for year 7, three lessons, with a short quiz each lesson');
-  await expect(page.getByRole('button', { name: 'Lessons: 3' })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Lessons' })).toHaveValue('3');
   await page.getByRole('button', { name: 'Continue' }).click();
 
   // No model yet: the guided key setup appears.
@@ -35,7 +35,7 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   expect(model.calls.some((c) => c.messages[0]!.content.includes('Write one assignment'))).toBe(false);
 
   // Flagged items are listed in Changes and can be cleared.
-  await page.getByRole('button', { name: 'Changes' }).click();
+  await page.getByRole('button', { name: 'Changes', exact: true }).click();
   const drawer = page.getByRole('dialog', { name: 'Changes' });
   await expect(drawer.getByText('The answer is not one of the choices.').first()).toBeVisible();
   await drawer.getByRole('button', { name: 'Mark as fine' }).first().click();

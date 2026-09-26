@@ -1,4 +1,4 @@
-import { DEFAULT_LOCAL_URL, DEFAULT_MODELS, type ModelSettings, type ProviderId } from '@folio/ai';
+import { DEFAULT_LOCAL_URL, DEFAULT_MODELS, isConfigured, type ModelSettings, type ProviderId } from '@folio/ai';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -73,6 +73,11 @@ export function modelSettings(p: Pick<Prefs, 'provider' | 'keys' | 'models' | 'l
     model: p.models[provider] || DEFAULT_MODELS[provider],
     baseUrl: p.localUrl,
   };
+}
+
+/** Is a model set up? Answered from preferences alone, without loading any SDK. */
+export function hasModel(): boolean {
+  return isConfigured(modelSettings(usePrefs.getState()));
 }
 
 export function applyTheme(theme: Theme): void {

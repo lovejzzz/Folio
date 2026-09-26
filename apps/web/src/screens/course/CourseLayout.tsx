@@ -6,9 +6,11 @@ import { SelectionToolbar } from '../../components/selection/SelectionToolbar';
 import { useCourse } from '../../state/session';
 import { useUi } from '../../state/ui';
 import { CourseHeader } from './CourseHeader';
+import { useCourseKeys } from './useCourseKeys';
 
 export function CourseLayout() {
   const course = useCourse();
+  useCourseKeys();
   useEffect(() => {
     document.title = `${course.title || 'Folio'} · Folio`;
     return () => {

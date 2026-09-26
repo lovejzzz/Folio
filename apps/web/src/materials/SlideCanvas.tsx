@@ -31,7 +31,7 @@ function Bullets({ slide, onChange, lang }: { slide: Slide; onChange?: (s: Slide
         <li className="no-print">
           <button
             type="button"
-            className="font-ui text-ink-3 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent"
+            className="font-ui text-ink-2 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent"
             style={cq(2)}
             onClick={() => onChange({ ...slide, bullets: [...slide.bullets, t.lesson.bullet] })}
           >
@@ -79,7 +79,7 @@ export function SlideCanvas({ slide, lang, footer, onChange, className }: SlideC
         </div>
       </div>
       {footer && (
-        <p className="folio-slide-footer truncate font-ui text-ink-3" style={cq(1.5)}>
+        <p className="folio-slide-footer truncate font-ui text-ink-2" style={cq(1.5)}>
           {footer}
         </p>
       )}

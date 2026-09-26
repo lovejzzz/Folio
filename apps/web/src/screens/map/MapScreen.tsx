@@ -19,7 +19,7 @@ function LessonList() {
             params={{ courseId: course.id, lessonId: lesson.id }}
             className="block rounded-sheet bg-paper p-4 shadow-sheet outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
-            <span className="font-mono text-12 text-ink-3">{String(i + 1).padStart(2, '0')}</span>
+            <span className="font-mono text-12 text-ink-2">{String(i + 1).padStart(2, '0')}</span>
             <span lang={course.language} className="mt-0.5 block font-reading text-17 font-semibold leading-snug text-ink">
               {lesson.title}
             </span>

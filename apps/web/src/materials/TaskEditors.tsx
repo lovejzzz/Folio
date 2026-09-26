@@ -158,12 +158,12 @@ export function FaqEditor({ course, lesson }: { course: Course; lesson: Lesson }
             <dt>
               <EditableText value={f.question} label={t.tasks.addFaq} className="font-semibold text-ink" onCommit={(question) => save([cmd('faq.update', { faqId: f.id, question })])} />
             </dt>
-            <dd className="mt-1">
-              <EditableText multiline value={f.answer} label={`${t.tasks.newAnswer}: ${f.question}`} context={f.question} onCommit={(answer) => save([cmd('faq.update', { faqId: f.id, answer })])} />
+            <dd className="mt-1 flex items-start gap-1">
+              <EditableText multiline className="min-w-0 flex-1" value={f.answer} label={`${t.tasks.newAnswer}: ${f.question}`} context={f.question} onCommit={(answer) => save([cmd('faq.update', { faqId: f.id, answer })])} />
+              <IconButton size="sm" label={t.tasks.removeFaq} className="no-print opacity-0 group-focus-within/f:opacity-100 group-hover/f:opacity-100" onPress={() => save([cmd('faq.remove', { faqId: f.id })])}>
+                <Trash2 size={14} strokeWidth={1.5} />
+              </IconButton>
             </dd>
-            <IconButton size="sm" label={t.tasks.removeFaq} className="no-print absolute -right-9 top-0 opacity-0 group-focus-within/f:opacity-100 group-hover/f:opacity-100" onPress={() => save([cmd('faq.remove', { faqId: f.id })])}>
-              <Trash2 size={14} strokeWidth={1.5} />
-            </IconButton>
           </div>
         ))}
       </dl>

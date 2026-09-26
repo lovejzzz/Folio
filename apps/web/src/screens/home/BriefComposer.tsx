@@ -3,9 +3,8 @@ import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, FileText, Paperclip, X } from 'lucide-react';
 import { useId, useRef, useState, type DragEvent } from 'react';
 import { useT } from '../../i18n';
-import { FileReadError, readSourceFile } from '../../lib/readFile';
 import { setBrief, useDraft } from '../../state/draft';
-import { currentInference } from '../../state/model';
+import { hasModel } from '../../state/prefs';
 import { toast } from '../../state/toasts';
 import { useUi } from '../../state/ui';
 import { LanguageChip, LessonsChip, LevelChip } from './Chips';
@@ -13,6 +12,7 @@ import { LanguageChip, LessonsChip, LevelChip } from './Chips';
 function useAttach() {
   const t = useT();
   return async (files: FileList | File[]) => {
+    const { FileReadError, readSourceFile } = await import('../../lib/readFile');
     for (const file of Array.from(files)) {
       try {
         const source = await readSourceFile(file);
@@ -88,7 +88,7 @@ export function BriefComposer() {
     const { brief: text, files } = useDraft.getState();
     if (!text.trim() && files.length === 0) return setError(true);
     const start = () => void navigate({ to: '/new' });
-    if (currentInference()) start();
+    if (hasModel()) start();
     else useUi.getState().requireModel(start);
   };
   const onDrop = (e: DragEvent) => {

@@ -1,73 +1,59 @@
-import { NumberStepper, cx, popoverClass } from '@folio/ui';
+import type { Language } from '@folio/core';
 import { ChevronDown } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { Button, Dialog, DialogTrigger, Menu, MenuItem, MenuTrigger, Popover } from 'react-aria-components';
 import { useT } from '../../i18n';
 import { useDraft } from '../../state/draft';
 
-const chipClass =
-  'inline-flex h-8 items-center gap-1.5 rounded-full border border-rule bg-paper pl-3 pr-2 font-ui text-13 text-ink outline-none transition-colors duration-120 ' +
-  'data-hovered:border-field data-pressed:bg-well data-focus-visible:ring-2 data-focus-visible:ring-accent';
-
-function ChipButton({ label, children }: { label: string; children: ReactNode }) {
+/**
+ * The three quiet chips under the brief. They are native selects styled as
+ * chips: tiny to load, and phones open their own picker.
+ */
+function Chip({ label, value, onChange, children }: { label: string; value: string; onChange: (v: string) => void; children: ReactNode }) {
   return (
-    <Button aria-label={label} className={chipClass}>
-      {children}
-      <ChevronDown size={14} strokeWidth={1.75} className="text-ink-2" aria-hidden />
-    </Button>
+    <span className="relative inline-flex">
+      <select
+        aria-label={label}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-8 cursor-default appearance-none rounded-full border border-rule bg-paper pl-3 pr-7 font-ui text-13 text-ink outline-none transition-colors duration-120 hover:border-field focus-visible:ring-2 focus-visible:ring-accent"
+      >
+        {children}
+      </select>
+      <ChevronDown size={14} strokeWidth={1.75} className="pointer-events-none absolute right-2.5 top-2 text-ink-2" aria-hidden />
+    </span>
   );
 }
 
-const itemClass =
-  'flex h-8 cursor-default items-center rounded-control px-2.5 font-ui text-14 text-ink outline-none data-focused:bg-well data-selected:font-medium data-selected:text-accent';
+const LESSON_COUNTS = [1, 2, 3, 4, 5, 6, 8, 10, 12];
 
 export function LevelChip() {
   const t = useT();
   const { level, set, pinned } = useDraft();
   const options = [...new Set([level, ...t.levels].filter(Boolean))];
   return (
-    <MenuTrigger>
-      <ChipButton label={`${t.home.level}: ${level || t.home.levelAny}`}>{level || t.home.levelAny}</ChipButton>
-      <Popover placement="bottom start" offset={6} className={popoverClass}>
-        <Menu
-          aria-label={t.home.level}
-          selectionMode="single"
-          selectedKeys={[level || '__any']}
-          onAction={(key) => set({ level: key === '__any' ? '' : String(key), pinned: { ...pinned, level: true } })}
-          className="outline-none"
-        >
-          <MenuItem id="__any" className={itemClass}>
-            {t.home.levelAny}
-          </MenuItem>
-          {options.map((o) => (
-            <MenuItem key={o} id={o} className={itemClass}>
-              {o}
-            </MenuItem>
-          ))}
-        </Menu>
-      </Popover>
-    </MenuTrigger>
+    <Chip label={t.home.level} value={level} onChange={(v) => set({ level: v, pinned: { ...pinned, level: true } })}>
+      <option value="">{t.home.levelAny}</option>
+      {options.map((o) => (
+        <option key={o} value={o}>
+          {o}
+        </option>
+      ))}
+    </Chip>
   );
 }
 
 export function LessonsChip() {
   const t = useT();
   const { lessons, set, pinned } = useDraft();
+  const options = [...new Set([...LESSON_COUNTS, lessons])].sort((a, b) => a - b);
   return (
-    <DialogTrigger>
-      <ChipButton label={`${t.plan.lessonsCount}: ${lessons}`}>{t.home.lessonsChip(lessons)}</ChipButton>
-      <Popover placement="bottom start" offset={6} className={cx(popoverClass, 'p-3')}>
-        <Dialog aria-label={t.plan.lessonsCount} className="outline-none">
-          <NumberStepper
-            label={t.plan.lessonsCount}
-            minValue={1}
-            maxValue={20}
-            value={lessons}
-            onChange={(v) => set({ lessons: Number.isFinite(v) ? v : 1, pinned: { ...pinned, lessons: true } })}
-          />
-        </Dialog>
-      </Popover>
-    </DialogTrigger>
+    <Chip label={t.plan.lessonsCount} value={String(lessons)} onChange={(v) => set({ lessons: Number(v), pinned: { ...pinned, lessons: true } })}>
+      {options.map((n) => (
+        <option key={n} value={n}>
+          {t.home.lessonsChip(n)}
+        </option>
+      ))}
+    </Chip>
   );
 }
 
@@ -75,23 +61,12 @@ export function LanguageChip() {
   const t = useT();
   const { language, set, pinned } = useDraft();
   return (
-    <MenuTrigger>
-      <ChipButton label={`${t.home.language}: ${t.languages[language]}`}>{t.languages[language]}</ChipButton>
-      <Popover placement="bottom start" offset={6} className={popoverClass}>
-        <Menu
-          aria-label={t.home.language}
-          selectionMode="single"
-          selectedKeys={[language]}
-          onAction={(key) => set({ language: key as 'en' | 'zh-CN', pinned: { ...pinned, language: true } })}
-          className="outline-none"
-        >
-          {(['en', 'zh-CN'] as const).map((l) => (
-            <MenuItem key={l} id={l} className={itemClass} lang={l}>
-              {t.languages[l]}
-            </MenuItem>
-          ))}
-        </Menu>
-      </Popover>
-    </MenuTrigger>
+    <Chip label={t.home.language} value={language} onChange={(v) => set({ language: v as Language, pinned: { ...pinned, language: true } })}>
+      {(['en', 'zh-CN'] as const).map((l) => (
+        <option key={l} value={l} lang={l}>
+          {t.languages[l]}
+        </option>
+      ))}
+    </Chip>
   );
 }

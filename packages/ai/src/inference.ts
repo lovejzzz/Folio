@@ -23,6 +23,13 @@ export const DEFAULT_MODELS: Record<ProviderId, string> = {
   local: 'llama3.1',
 };
 
+/** True when there is enough to make a request. Cheap: no SDK is loaded to answer it. */
+export function isConfigured(settings: ModelSettings | null | undefined): settings is ModelSettings {
+  if (!settings || !settings.model.trim()) return false;
+  if (settings.provider === 'local') return Boolean(settings.baseUrl.trim());
+  return Boolean(settings.apiKey.trim());
+}
+
 export const DEFAULT_LOCAL_URL = 'http://localhost:11434/v1';
 
 export interface CompletionRequest {

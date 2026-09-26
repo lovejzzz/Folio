@@ -14,7 +14,7 @@ function OutlineSkeleton({ lessons }: { lessons: number }) {
     <ol className="mt-8 border-t border-rule" aria-hidden>
       {Array.from({ length: lessons }, (_, i) => (
         <li key={i} className="flex gap-4 border-t border-rule py-5 first:border-t-0">
-          <span className="w-10 pt-1 text-center font-mono text-13 text-ink-3">{String(i + 1).padStart(2, '0')}</span>
+          <span className="w-10 pt-1 text-center font-mono text-13 text-ink-2">{String(i + 1).padStart(2, '0')}</span>
           <div className="flex-1 space-y-3">
             <span className="block h-5 w-1/2 animate-shimmer rounded-full bg-well" />
             <Skeleton lines={2} />

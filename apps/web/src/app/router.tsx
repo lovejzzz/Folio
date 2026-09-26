@@ -8,7 +8,6 @@ import {
   redirect,
 } from '@tanstack/react-router';
 import { Home } from '../screens/home/Home';
-import { loadSession } from '../state/session';
 import { CourseNotFound, RouteError } from './errors';
 import { RootLayout } from './RootLayout';
 
@@ -43,6 +42,7 @@ export const courseRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/c/$courseId',
   loader: async ({ params }) => {
+    const { loadSession } = await import('../state/session');
     const store = await loadSession(params.courseId);
     if (!store) throw notFound();
     return null;
@@ -109,6 +109,7 @@ export const printRoute = createRoute({
     ...(Array.isArray(search.lessons) ? { lessons: search.lessons.filter((l): l is string => typeof l === 'string') } : {}),
   }),
   loader: async ({ params }) => {
+    const { loadSession } = await import('../state/session');
     const store = await loadSession(params.courseId);
     if (!store) throw notFound();
     return null;

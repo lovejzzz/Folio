@@ -49,7 +49,7 @@ function Filmstrip({ course, lessons, pos, onSelect }: { course: Course; lessons
               const active = pos?.slideId === s.id;
               return (
                 <li key={s.id} className="flex items-start gap-2">
-                  <span className="w-4 pt-1 text-right font-mono text-12 text-ink-3 tabular">{i + 1}</span>
+                  <span className="w-4 pt-1 text-right font-mono text-12 text-ink-2 tabular">{i + 1}</span>
                   <button
                     type="button"
                     aria-current={active || undefined}

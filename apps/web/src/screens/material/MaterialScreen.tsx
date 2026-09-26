@@ -18,7 +18,7 @@ function Outline({ course }: { course: Course }) {
         {orderedLessons(course).map((lesson, i) => (
           <li key={lesson.id}>
             <a href={`#l-${lesson.id}`} className="flex gap-2 rounded-control px-2 py-1.5 font-ui text-13 leading-5 text-ink-2 outline-none hover:bg-well hover:text-ink focus-visible:ring-2 focus-visible:ring-accent">
-              <span className="font-mono text-12 text-ink-3 tabular">{String(i + 1).padStart(2, '0')}</span>
+              <span className="font-mono text-12 text-ink-2 tabular">{String(i + 1).padStart(2, '0')}</span>
               <span className="line-clamp-2" lang={course.language}>{lesson.title}</span>
             </a>
           </li>
@@ -41,7 +41,7 @@ function PerLesson({ course, kind }: { course: Course; kind: MaterialKind }) {
         return (
           <section key={lesson.id} id={`l-${lesson.id}`} className="scroll-mt-24" aria-labelledby={`lh-${lesson.id}`}>
             <h2 id={`lh-${lesson.id}`} className="mb-6 flex items-baseline gap-3 border-b border-rule pb-3">
-              <span className="font-mono text-14 text-ink-3 tabular">{String(i + 1).padStart(2, '0')}</span>
+              <span className="font-mono text-14 text-ink-2 tabular">{String(i + 1).padStart(2, '0')}</span>
               <span className="font-display text-28 leading-tight text-ink">{lesson.title}</span>
             </h2>
             <SectionFrame course={course} lesson={lesson} kind={kind} hideHeading>

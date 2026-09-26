@@ -1,26 +1,12 @@
-import { useNavigate, Link } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
+import { lazy, Suspense } from 'react';
 import { SimpleHeader } from '../../components/AppHeader';
-import { CourseCard } from '../../components/CourseCard';
 import { useT } from '../../i18n';
-import { openSample } from '../../lib/sample';
-import { listCourses, type CourseSummary } from '../../state/db';
 import { setBrief, useDraft } from '../../state/draft';
 import { BriefComposer } from './BriefComposer';
 
-function useRecent(): CourseSummary[] {
-  const [courses, setCourses] = useState<CourseSummary[]>([]);
-  useEffect(() => {
-    let live = true;
-    listCourses()
-      .then((all) => live && setCourses(all.slice(0, 3)))
-      .catch(() => live && setCourses([]));
-    return () => {
-      live = false;
-    };
-  }, []);
-  return courses;
-}
+/** Below the fold and read from IndexedDB, so it loads after the first paint. */
+const RecentCourses = lazy(() => import('./RecentCourses').then((m) => ({ default: m.RecentCourses })));
 
 function Examples() {
   const t = useT();
@@ -50,7 +36,7 @@ function Examples() {
       </p>
       <button
         type="button"
-        onClick={() => void openSample(navigate)}
+        onClick={() => void import('../../lib/sample').then((m) => m.openSample(navigate))}
         className="rounded-control px-1 text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent"
       >
         {t.home.sample}
@@ -61,7 +47,6 @@ function Examples() {
 
 export function Home() {
   const t = useT();
-  const recent = useRecent();
   return (
     <div className="min-h-dvh">
       <SimpleHeader />
@@ -71,23 +56,9 @@ export function Home() {
         </h1>
         <BriefComposer />
         <Examples />
-        {recent.length > 0 && (
-          <section aria-labelledby="recent" className="mt-20">
-            <div className="mb-4 flex items-baseline justify-between">
-              <h2 id="recent" className="font-ui text-14 font-semibold text-ink">
-                {t.home.recent}
-              </h2>
-              <Link to="/library" className="font-ui text-13 text-ink-2 underline-offset-4 hover:text-ink hover:underline">
-                {t.home.seeAll}
-              </Link>
-            </div>
-            <div className="grid gap-5 sm:grid-cols-3">
-              {recent.map((c) => (
-                <CourseCard key={c.id} course={c} />
-              ))}
-            </div>
-          </section>
-        )}
+        <Suspense fallback={null}>
+          <RecentCourses />
+        </Suspense>
       </main>
       <footer className="no-print pb-10 text-center font-display text-18 italic text-ink-2">{t.tagline}</footer>
     </div>

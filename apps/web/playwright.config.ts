@@ -2,6 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 const port = Number(process.env.FOLIO_PORT ?? 4173);
 
+// Chromium needs a UTF-8 locale to keep non-ASCII download names (course titles, Chinese).
+process.env.LANG ||= 'C.UTF-8';
+
 export default defineConfig({
   testDir: './e2e',
   timeout: 60_000,
@@ -16,7 +19,7 @@ export default defineConfig({
     ...(process.env.PW_CHROMIUM ? { launchOptions: { executablePath: process.env.PW_CHROMIUM } } : {}),
   },
   projects: [
-    { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
+    { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } }, testIgnore: /phone\.spec\.ts/ },
     { name: 'phone', use: { ...devices['Pixel 7'] }, testMatch: /phone\.spec\.ts/ },
   ],
   webServer: {

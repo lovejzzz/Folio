@@ -50,7 +50,7 @@ function RowHeader({ course, lesson, n, compact }: { course: Course; lesson: Les
         params={{ courseId: course.id, lessonId: lesson.id }}
         className={cx('group flex h-full gap-3 rounded-control p-2 outline-none hover:bg-well focus-visible:ring-2 focus-visible:ring-accent', compact ? 'items-center' : 'items-start')}
       >
-        <span className="font-mono text-13 text-ink-3 tabular">{String(n).padStart(2, '0')}</span>
+        <span className="font-mono text-13 text-ink-2 tabular">{String(n).padStart(2, '0')}</span>
         <span className="min-w-0" lang={course.language}>
           <span className={cx('block font-reading text-16 font-semibold leading-snug text-ink group-hover:text-accent', compact ? 'truncate' : 'line-clamp-2')}>{lesson.title}</span>
           {!compact && (

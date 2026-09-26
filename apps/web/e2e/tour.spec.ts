@@ -31,9 +31,9 @@ async function tour(page: Page, theme: string) {
   await shot(page, `${theme}-05-map-building`);
   await page.getByText(/Course ready/).waitFor({ timeout: 40_000 });
   await shot(page, `${theme}-06-map-ready`);
-  await page.getByRole('button', { name: 'Changes' }).click();
+  await page.getByRole('button', { name: 'Changes', exact: true }).click();
   await shot(page, `${theme}-07-changes`);
-  await page.getByRole('button', { name: 'Export' }).click();
+  await page.getByRole('button', { name: 'Export', exact: true }).click();
   await shot(page, `${theme}-08-export`);
   await page.keyboard.press('Escape');
   await page.getByRole('link', { name: /Light and leaves/ }).first().click();

@@ -37,7 +37,7 @@ export function LessonRail({ currentId }: { currentId: string }) {
                   railCollapsed ? 'justify-center px-1' : 'px-2',
                 )}
               >
-                <span className="font-mono text-12 leading-5 text-ink-3 tabular">{String(i + 1).padStart(2, '0')}</span>
+                <span className="font-mono text-12 leading-5 text-ink-2 tabular">{String(i + 1).padStart(2, '0')}</span>
                 {!railCollapsed && (
                   <span className="line-clamp-2 min-w-0 flex-1" lang={course.language}>
                     {lesson.title}
