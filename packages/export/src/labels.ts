@@ -18,7 +18,7 @@ const en: ExportLabels = {
   slide: (n) => `Slide ${n}`,
   materials: 'Course materials',
   join: ', ',
-  formats: { choice: 'Multiple choice', truefalse: 'True / false', short: 'Short answer', numeric: 'Numeric' },
+  formats: { choice: 'Multiple choice', truefalse: 'True or false', short: 'Short answer', numeric: 'Number answer' },
   quizHead: {
     n: '#',
     lesson: 'Lesson',
@@ -26,7 +26,7 @@ const en: ExportLabels = {
     format: 'Format',
     choices: 'Choices',
     answer: 'Answer',
-    why: 'Explanation',
+    why: 'Why',
   },
 };
 
@@ -35,7 +35,7 @@ const zh: ExportLabels = {
   materials: '课程材料',
   join: '、',
   formats: { choice: '选择题', truefalse: '判断题', short: '简答题', numeric: '计算题' },
-  quizHead: { n: '#', lesson: '课时', question: '题目', format: '题型', choices: '选项', answer: '答案', why: '解析' },
+  quizHead: { n: '#', lesson: '课', question: '题目', format: '题型', choices: '选项', answer: '答案', why: '解析' },
 };
 
 export function exportLabels(language: Language): ExportLabels {

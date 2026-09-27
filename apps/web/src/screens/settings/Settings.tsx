@@ -134,6 +134,11 @@ function DataSection() {
         </Button>
       </div>
       <p className="mt-6 font-ui text-13 text-ink-2">{t.settings.accountNote}</p>
+      <p className="mt-2 font-ui text-13">
+        <a href="/fonts-licence.txt" className="text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">
+          {t.settings.fontsLicence}
+        </a>
+      </p>
       <Dialog isOpen={confirm} onOpenChange={setConfirm} title={t.settings.deleteAll} size="sm">
         <div className="px-6 pb-6">
           <p className="mt-2 font-ui text-14 text-ink-2">{t.settings.deleteAllConfirm}</p>

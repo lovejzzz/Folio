@@ -68,7 +68,7 @@ test('an outline that could not be drafted offline is drafted on Try again', asy
   await page.goto('/');
   await page.getByLabel('Describe your course').fill('Photosynthesis for year 7, two lessons');
   await page.getByRole('button', { name: 'Continue' }).click();
-  await expect(page.getByText('The outline could not be drafted.')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText(/The outline couldn’t be drafted/)).toBeVisible({ timeout: 30_000 });
   down = false;
   await page.getByRole('button', { name: 'Try again' }).click();
   await expect(page.getByRole('textbox', { name: 'Title of lesson 1' })).toBeVisible();

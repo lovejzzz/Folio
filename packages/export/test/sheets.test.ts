@@ -10,7 +10,7 @@ const course = sampleCourse();
 describe('quizRows', () => {
   it('lists every question under its lesson, with answers for the teacher', () => {
     const rows = quizRows(project(course, 'quiz', { audience: 'teacher' }));
-    expect(rows[0]).toEqual(['#', 'Lesson', 'Question', 'Format', 'Choices', 'Answer', 'Explanation']);
+    expect(rows[0]).toEqual(['#', 'Lesson', 'Question', 'Format', 'Choices', 'Answer', 'Why']);
     const first = rows[1] ?? [];
     expect(first[0]).toBe('1');
     expect(first[1]).toMatch(/^Lesson 1 · /);
