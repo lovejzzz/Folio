@@ -1,3 +1,4 @@
+import { Sep } from '../Sep';
 import { cmd, createSource, type Course } from '@folio/core';
 import { Button, IconButton, TextArea, TextField } from '@folio/ui';
 import { FileText, Paperclip, Trash2 } from 'lucide-react';
@@ -75,7 +76,9 @@ export function SourcesDrawer() {
             <div className="min-w-0 flex-1">
               <p className="truncate font-ui text-14 font-medium text-ink">{s.title}</p>
               <p className="font-ui text-12 text-ink-2">
-                {t.sources.passages(s.passages.length)} · {t.sources.cited(citations(course, s.id))}
+                {t.sources.passages(s.passages.length)}
+                <Sep />
+                {t.sources.cited(citations(course, s.id))}
               </p>
               <p className="mt-1.5 line-clamp-3 font-reading text-14 leading-5 text-ink-2">{s.text}</p>
             </div>

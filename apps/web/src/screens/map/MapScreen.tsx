@@ -1,3 +1,5 @@
+import { Fragment } from 'react';
+import { Sep } from '../../components/Sep';
 import { cellState, enabledKinds, orderedLessons } from '@folio/core';
 import { MaterialIcon, SegmentedControl, StatusMark, useMediaQuery } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
@@ -57,7 +59,14 @@ export function MapScreen() {
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0 max-w-3xl" lang={course.language}>
           <h1 className="font-display text-36 leading-tight text-ink md:text-48 md:leading-none">{course.title}</h1>
-          <p className="mt-3 font-ui text-14 text-ink-2">{meta.join(' · ')}</p>
+          <p className="mt-3 font-ui text-14 text-ink-2">
+            {meta.map((part, i) => (
+              <Fragment key={part}>
+                {i > 0 && <Sep />}
+                {part}
+              </Fragment>
+            ))}
+          </p>
         </div>
         {!phone && (
           <SegmentedControl

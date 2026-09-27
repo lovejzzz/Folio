@@ -65,7 +65,7 @@ test('a source added in the drawer is cited by regenerated questions', async ({ 
   await drawer.getByLabel('Title').fill('Class survey results');
   await drawer.getByLabel('Source text').fill('Twenty-four students answered the survey in March. Each gave their usual way of getting to school and how many minutes the journey takes on a normal day.\n\nMost walk to school; six take the bus and three come by car. Journeys range from four minutes to forty, with most between ten and fifteen minutes long.');
   await drawer.getByRole('button', { name: 'Add source' }).click();
-  await expect(drawer.getByText('2 passages · Not cited yet')).toBeVisible();
+  await expect(drawer.getByText(/^2 passages.Not cited yet$/)).toBeVisible();
   await page.getByRole('link', { name: /Asking questions with data/ }).first().click();
   await page.locator('#m-quiz').getByRole('button', { name: 'Update' }).click();
   const chip = page.locator('#m-quiz').getByRole('button', { name: 'Source: Class survey results' });

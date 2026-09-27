@@ -36,7 +36,7 @@ test('notes attached on the home page (.md and a real .docx) reach the model and
   await page.getByRole('button', { name: 'Sources', exact: true }).click();
   const drawer = page.getByRole('dialog', { name: 'Sources' });
   // The heading joins its paragraph: one passage, not two.
-  await expect(drawer.getByText(/^1 passage · /)).toBeVisible();
+  await expect(drawer.getByText(/^1 passage.Cited/)).toBeVisible();
   await expect(drawer.getByText('statistics', { exact: true })).toBeVisible();
 });
 

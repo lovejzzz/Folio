@@ -55,9 +55,7 @@ function RowHeader({ course, lesson, n, compact }: { course: Course; lesson: Les
         <span className="min-w-0" lang={course.language}>
           <span className={cx('block font-reading text-16 font-semibold leading-snug text-ink group-hover:text-accent', compact ? 'truncate' : 'line-clamp-2')}>{lesson.title}</span>
           {!compact && (
-            <span className="mt-1 block font-ui text-12 text-ink-2">
-              {t.lesson.objectives} · {lessonObjectives(course, lesson).length}
-            </span>
+            <span className="mt-1 line-clamp-2 font-ui text-12 leading-4 text-ink-2">{lesson.summary || t.common.objectives(lessonObjectives(course, lesson).length)}</span>
           )}
         </span>
       </Link>
