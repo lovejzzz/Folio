@@ -28,3 +28,14 @@ describe('the teacher’s locale', () => {
     expect(systemPrompt('zh-CN', 'zh-CN')).not.toContain('locale');
   });
 });
+
+describe('model text outside course content', () => {
+  it('sets text actions and ⌘K summaries in English with curly quotes', async () => {
+    const { runTextAction, planCourseChange } = await import('../src');
+    const { fakeInference, smallCourse } = await import('./fake');
+    const text = await runTextAction(fakeInference(() => ({ text: `It's the "big idea".` })), { action: 'simplify', selection: 'x', context: '', language: 'en' });
+    expect(text).toBe('It’s the “big idea”.');
+    const plan = await planCourseChange(fakeInference(() => ({ summary: `"Light and leaves" moves first.`, operations: [] })), smallCourse(), 'move it');
+    expect(plan.rationale).toBe('“Light and leaves” moves first.');
+  });
+});
