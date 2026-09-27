@@ -102,3 +102,12 @@ test('printing in dark mode still prints dark ink on white paper', async ({ page
   await page.goBack();
   await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).backgroundColor)).not.toBe('rgb(252, 251, 247)');
 });
+
+test('the print view opened on its own (a reload, a bookmark) prints the whole course', async ({ page }) => {
+  await openSample(page);
+  const courseId = page.url().match(/\/c\/([^/]+)/)![1];
+  await page.addInitScript(() => (window.print = () => {}));
+  await page.goto(`/print/${courseId}`);
+  await expect(page.getByRole('heading', { name: 'Syllabus' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Course FAQ' })).toBeVisible();
+});

@@ -561,7 +561,7 @@ export const zh: Messages = {
       anthropic: { name: '使用我的 Claude 密钥', short: '你的 Claude 密钥', note: 'Anthropic。按用量付费，用 Claude Sonnet 5 生成一门四节课的课程大约 1 美元。' },
       openai: { name: '使用我的 OpenAI 密钥', short: '你的 OpenAI 密钥', note: 'OpenAI。按用量付费。' },
       google: { name: '使用我的 Gemini 密钥', short: '你的 Gemini 密钥', note: 'Google。有带限额的免费额度。' },
-      deepseek: { name: '使用我的 DeepSeek 密钥', short: '你的 DeepSeek 密钥', note: 'DeepSeek。按用量付费，价格远低于顶级大模型，中文表现出色。' },
+      deepseek: { name: '使用我的 DeepSeek 密钥', short: '你的 DeepSeek 密钥', note: 'DeepSeek。按用量付费，一门四节课的课程大约 0.1 美元，中文表现出色。' },
       local: { name: '在本机运行', short: '本机上的模型', note: '通过电脑上的 Ollama 或 LM Studio 运行。私密、免费，但更慢，准确度也更低。' },
     },
     key: 'API 密钥',

@@ -130,9 +130,9 @@ export function SlidesEditor({ course, lessonId, slide: slideNumber, onGo }: Sli
         </div>
         <SlidePager course={course} lesson={lesson} index={pos.index} onPrev={onPrev} onNext={onNext} />
         <section className="mt-4 rounded-sheet bg-paper p-5 shadow-sheet">
-          <h3 className="mb-2 flex items-center gap-1.5 font-ui text-13 font-semibold text-ink">
-            {t.lesson.speakerNotes}
-            <span className="flex items-center gap-1 font-normal text-ink-2">
+          <h3 className="mb-2 flex flex-wrap items-center gap-x-1.5 font-ui text-13 font-semibold text-ink">
+            <span className="whitespace-nowrap">{t.lesson.speakerNotes}</span>
+            <span className="flex items-center gap-1 whitespace-nowrap font-normal text-ink-2">
               · <EyeOff size={12} strokeWidth={1.75} aria-hidden /> {t.quiz.teacherOnly}
             </span>
           </h3>

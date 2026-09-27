@@ -1,4 +1,4 @@
-import { docLabels, project } from '@folio/core';
+import { docLabels, enabledKinds, project } from '@folio/core';
 import { Button, cx } from '@folio/ui';
 import { Printer } from 'lucide-react';
 import { useEffect } from 'react';
@@ -12,7 +12,10 @@ import { useCourse } from '../../state/session';
 export function PrintScreen() {
   const t = useT();
   const course = useCourse();
-  const { kinds, audience, lessons } = printRoute.useSearch();
+  const search = printRoute.useSearch();
+  const { audience, lessons } = search;
+  // Opened without a choice (a reload, a bookmark): the whole course, as Export's "Whole course" would give.
+  const kinds = search.kinds.length ? search.kinds : enabledKinds(course);
   const l = docLabels(course.language);
   // This view stands for paper, so it is light on screen too.
   useEffect(() => {

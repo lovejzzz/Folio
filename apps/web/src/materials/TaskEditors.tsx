@@ -152,11 +152,14 @@ export function DiscussionEditor({ course, lesson }: { course: Course; lesson: L
             <div className="min-w-0 flex-1">
               <EditableText as="p" multiline value={d.prompt} label={t.tasks.discussionPrompt(i + 1)} context={lesson.title} className="block text-18 leading-8 text-ink" onCommit={(prompt) => save([cmd('task.update', { taskId: d.id, fields: { prompt } })])} />
               <div className="mt-3 rounded-control bg-well px-4 py-3 font-ui text-14 leading-6">
-                <p className="mb-1 flex items-center gap-1.5 text-12 text-ink-2">
-                  <EyeOff size={12} strokeWidth={1.75} aria-hidden />
-                  {t.tasks.followUps}
+                {/* Each label stays whole; on a phone the second one wraps under the first. */}
+                <p className="mb-1 flex flex-wrap items-center text-12 text-ink-2">
+                  <span className="flex items-center gap-1.5 whitespace-nowrap">
+                    <EyeOff size={12} strokeWidth={1.75} aria-hidden />
+                    {t.tasks.followUps}
+                  </span>
                   <Sep />
-                  {t.quiz.teacherOnly}
+                  <span className="whitespace-nowrap">{t.quiz.teacherOnly}</span>
                 </p>
                 <EditableList items={d.followUps} label={t.tasks.followUps} addLabel={t.tasks.addFollowUp} placeholder={t.tasks.followUp} lang={course.language} onChange={(followUps) => save([cmd('task.update', { taskId: d.id, fields: { followUps } })])} />
               </div>

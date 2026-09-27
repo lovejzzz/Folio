@@ -100,7 +100,7 @@ function AnswerFold({ q, update }: { q: Question; update: (fields: Partial<Quest
       </button>
       {open && (
         <div className="mt-2 space-y-2 rounded-control border-l-2 border-good bg-well px-4 py-3 text-16 leading-7 animate-fade-in">
-          <p className="flex items-center gap-1.5 font-ui text-12 text-ink-2">
+          <p className="flex items-center gap-1.5 whitespace-nowrap font-ui text-12 text-ink-2">
             <EyeOff size={12} strokeWidth={1.75} aria-hidden />
             {t.quiz.teacherOnly}
           </p>
@@ -138,12 +138,12 @@ export function QuestionCard({ course, q, n }: { course: Course; q: Question; n:
       aria-label={t.quiz.question(n)}
       onBlur={leaveBlank(q.id, blank, () => [cmd('task.remove', { taskId: q.id })], label)}
     >
-      <header className="mb-2 flex items-center gap-2 font-ui text-12 text-ink-2">
+      <header className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-ui text-12 text-ink-2">
         <span className="font-mono text-13 text-ink tabular">{String(n).padStart(2, '0')}</span>
         <span aria-hidden>·</span>
-        <span>{t.quiz.formats[q.format]}</span>
+        <span className="whitespace-nowrap">{t.quiz.formats[q.format]}</span>
         <span aria-hidden>·</span>
-        <span>{t.quiz.difficulty[q.difficulty - 1]}</span>
+        <span className="whitespace-nowrap">{t.quiz.difficulty[q.difficulty - 1]}</span>
         {q.sourceRefs.length > 0 && <SourceChip course={course} refs={q.sourceRefs} />}
         <IconButton
           size="sm"
