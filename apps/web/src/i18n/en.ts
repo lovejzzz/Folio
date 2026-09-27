@@ -159,6 +159,9 @@ export const en = {
     empty: 'This course has no lessons yet.',
     scheduled: 'On the schedule',
     phoneHint: 'Open a lesson to review it. Editing works best on a larger screen.',
+    moreColumns: (n: number) => `${n} more`,
+    showMore: (n: number) => (n === 1 ? 'Show 1 more material' : `Show ${n} more materials`),
+    showEarlier: 'Show earlier materials',
   },
   build: {
     progress: (n: number, total: number) => `Building lesson ${n} of ${total}`,
@@ -214,6 +217,8 @@ export const en = {
     layouts: { title: 'Title', bullets: 'Points', question: 'Question', quote: 'Quote' },
     slideOf: (n: number, total: number) => `Slide ${n} of ${total}`,
     filmstrip: 'Slides',
+    previousSlide: 'Previous slide',
+    nextSlide: 'Next slide',
   },
   quiz: {
     question: (n: number) => `Question ${n}`,
@@ -369,6 +374,7 @@ export const en = {
   },
   command: {
     placeholder: 'Go to a lesson, open a material, or ask for a change…',
+    placeholderShort: 'Search or ask for a change…',
     goTo: 'Go to',
     materials: 'Materials',
     actions: 'Actions',

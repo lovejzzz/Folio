@@ -12,6 +12,15 @@ export interface ExportChoice {
   format: FormatChoice;
 }
 
+/**
+ * Where the drawer starts: the whole course, or, when it is opened from a
+ * lesson, that one lesson. The teacher copy as a Word file either way.
+ */
+export function initialChoice(course: Course, lessonId: string | undefined): ExportChoice {
+  const here = lessonId && course.lessons[lessonId] ? lessonId : undefined;
+  return { scope: here ? 'lesson' : 'whole', lessonId: here ?? course.lessonOrder[0] ?? '', kinds: enabledKinds(course), audience: 'teacher', format: 'docx' };
+}
+
 export const FORMATS: FormatChoice[] = ['docx', 'pdf', 'pptx', 'xlsx', 'zip', 'folio', 'google'];
 
 /** Which materials an export covers, given the scope and format. */

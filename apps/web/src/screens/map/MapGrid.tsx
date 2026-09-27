@@ -1,13 +1,14 @@
 import { enabledKinds, lessonObjectives, orderedLessons, sectionFor, type Course, type Lesson, type MaterialKind } from '@folio/core';
 import { MaterialIcon, cx, tabBg } from '@folio/ui';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { useRef, useState, type KeyboardEvent } from 'react';
 import { useT } from '../../i18n';
 import { retryCell, useBuild } from '../../state/build';
 import { usePrefs } from '../../state/prefs';
 import { useCourse } from '../../state/session';
 import { cellView } from './cellInfo';
 import { MapCell } from './MapCell';
+import { ScrollCue } from './ScrollCue';
 
 function ColumnHeader({ kind, courseId }: { kind: MaterialKind; courseId: string }) {
   const t = useT();
@@ -85,24 +86,6 @@ function useGridFocus(rows: number, cols: number, grid: React.RefObject<HTMLDivE
   return { focus, setFocus, onKeyDown };
 }
 
-/** True while there is more of the grid to the right, to show a quiet fade at the edge. */
-function useMoreRight(scroller: React.RefObject<HTMLDivElement | null>): [boolean, () => void] {
-  const [more, setMore] = useState(false);
-  const measure = () => {
-    const el = scroller.current;
-    if (el) setMore(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-  };
-  useEffect(() => {
-    const el = scroller.current;
-    if (!el) return;
-    const observer = new ResizeObserver(() => setMore(el.scrollLeft + el.clientWidth < el.scrollWidth - 4));
-    observer.observe(el);
-    if (el.firstElementChild) observer.observe(el.firstElementChild);
-    return () => observer.disconnect();
-  }, [scroller]);
-  return [more, measure];
-}
-
 /** The course as a grid: rows are lessons, columns are materials. Arrow keys move, Enter opens. */
 export function MapGrid() {
   const t = useT();
@@ -114,7 +97,6 @@ export function MapGrid() {
   const kinds = enabledKinds(course);
   const gridRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [moreRight, measure] = useMoreRight(scrollRef);
   const { focus, setFocus, onKeyDown } = useGridFocus(lessons.length, kinds.length, gridRef);
   const runOf = (lessonId: string, kind: MaterialKind) => {
     const section = sectionFor(kind);
@@ -122,8 +104,7 @@ export function MapGrid() {
   };
   return (
     <div className="relative">
-    {moreRight && <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-desk to-transparent" />}
-    <div ref={scrollRef} onScroll={measure} className="overflow-x-auto pb-4" tabIndex={-1}>
+    <div ref={scrollRef} className="overflow-x-auto pb-4" tabIndex={-1}>
       <div
         ref={gridRef}
         role="grid"
@@ -160,6 +141,7 @@ export function MapGrid() {
         ))}
       </div>
     </div>
+    <ScrollCue scroller={scrollRef} />
     </div>
   );
 }

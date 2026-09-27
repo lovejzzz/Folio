@@ -32,6 +32,16 @@
   height: calc(100dvh - 3.5rem);
 }
 
+/* A side column that stays beside its page and scrolls on its own (sticky at top-20). */
+@utility max-h-filmstrip {
+  max-height: calc(100dvh - 9rem);
+}
+
+@utility scrollbar-quiet {
+  scrollbar-width: thin;
+  scrollbar-color: var(--folio-rule-strong) transparent;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
@@ -169,6 +179,17 @@
     flex-shrink: 0;
     border-radius: 9999px;
     background: var(--folio-tab-slides);
+  }
+  /*
+   * At thumbnail sizes a display face's word space rounds down to a pixel or
+   * less and words run together ("Casesand variables"), so small slides get
+   * a little extra space between words.
+   */
+  @container (max-width: 20rem) {
+    .folio-slide-title,
+    .folio-slide-bullets {
+      word-spacing: 0.14em;
+    }
   }
   .folio-slide-footer {
     position: absolute;
