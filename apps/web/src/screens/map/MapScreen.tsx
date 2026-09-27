@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { Sep } from '../../components/Sep';
-import { cellState, enabledKinds, orderedLessons, type Lesson } from '@folio/core';
-import { MaterialIcon, SegmentedControl, StatusMark, cx, useMediaQuery } from '@folio/ui';
+import { cellState, courseKinds, lessonKinds, orderedLessons, type Lesson } from '@folio/core';
+import { MaterialIcon, SegmentedControl, StatusMark, cx, tabBg, useMediaQuery } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
 import { usePageTitle } from '../../app/usePageTitle';
 import { useT } from '../../i18n';
@@ -17,7 +17,7 @@ import { MapGrid } from './MapGrid';
 function MaterialStates({ lesson }: { lesson: Lesson }) {
   const t = useT();
   const course = useCourse();
-  const kinds = enabledKinds(course);
+  const kinds = lessonKinds(course);
   const pending = kinds.map((kind) => ({ kind, state: cellState(course, lesson, kind) })).filter((k) => k.state !== 'ready');
   if (pending.length === 0) return null;
   return (
@@ -51,11 +51,41 @@ function LessonList() {
             <span lang={course.language} className="mt-0.5 block font-reading text-17 font-semibold leading-snug text-ink">
               {lesson.title}
             </span>
+            {lesson.summary && (
+              <span lang={course.language} className="mt-1 line-clamp-2 block font-ui text-13 leading-5 text-ink-2">
+                {lesson.summary}
+              </span>
+            )}
             <MaterialStates lesson={lesson} />
           </Link>
         </li>
       ))}
     </ol>
+  );
+}
+
+/** The syllabus and course map cover every lesson, so they sit beside the title rather than repeat down a column. */
+function CourseDocs() {
+  const t = useT();
+  const course = useCourse();
+  const kinds = courseKinds(course);
+  if (kinds.length === 0) return null;
+  return (
+    <nav aria-label={t.map.courseDocs} className="flex flex-wrap items-center gap-2 font-ui text-13">
+      <span className="text-ink-2">{t.map.courseDocs}</span>
+      {kinds.map((kind) => (
+        <Link
+          key={kind}
+          to="/c/$courseId/m/$kind"
+          params={{ courseId: course.id, kind }}
+          className="relative flex h-8 items-center gap-1.5 overflow-hidden rounded-control bg-paper pl-3.5 pr-3 font-medium text-ink shadow-sheet outline-none transition-shadow duration-120 ease-ink hover:shadow-overlay focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          <span aria-hidden className={cx('absolute inset-y-0 left-0 w-1', tabBg[kind])} />
+          <MaterialIcon kind={kind} size={15} className="text-ink-2" />
+          {t.materials[kind]}
+        </Link>
+      ))}
+    </nav>
   );
 }
 
@@ -81,15 +111,18 @@ export function MapScreen() {
           </p>
         </div>
         {!phone && (
-          <SegmentedControl
-            label={t.map.density}
-            value={density}
-            onChange={(d) => set({ density: d })}
-            options={[
-              { id: 'comfortable', label: t.map.comfortable },
-              { id: 'compact', label: t.map.compact },
-            ]}
-          />
+          <div className="flex flex-wrap items-center gap-4">
+            <CourseDocs />
+            <SegmentedControl
+              label={t.map.density}
+              value={density}
+              onChange={(d) => set({ density: d })}
+              options={[
+                { id: 'comfortable', label: t.map.comfortable },
+                { id: 'compact', label: t.map.compact },
+              ]}
+            />
+          </div>
         )}
       </div>
       {course.lessonOrder.length === 0 ? (

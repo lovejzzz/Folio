@@ -113,7 +113,8 @@ export function PlanAside() {
         <Button variant="primary" size="lg" className="w-full" isDisabled={count === 0 || enabled.length === 0} onPress={build}>
           {t.plan.build(count)}
         </Button>
-        {count === 0 && <p className="mt-2 font-ui text-13 text-ink-2">{t.plan.noLessons}</p>}
+        {/* Measured: four lessons take two to three minutes; lessons are written a few at a time. */}
+        <p className="mt-2 font-ui text-13 leading-5 text-ink-2">{count === 0 ? t.plan.noLessons : t.plan.buildTime(Math.max(2, Math.ceil(count * 0.6)))}</p>
       </div>
     </aside>
   );

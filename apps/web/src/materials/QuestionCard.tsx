@@ -96,7 +96,7 @@ function AnswerFold({ q, update }: { q: Question; update: (fields: Partial<Quest
         className="no-print inline-flex items-center gap-1 rounded-control font-ui text-13 font-medium text-ink-2 outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
       >
         <ChevronRight size={14} strokeWidth={1.75} className={cx('transition-transform duration-200 ease-ink', open && 'rotate-90')} aria-hidden />
-        {open ? t.quiz.hideAnswer : t.quiz.showAnswer}
+        {graded ? (open ? t.quiz.hideWhy : t.quiz.showWhy) : open ? t.quiz.hideAnswer : t.quiz.showAnswer}
       </button>
       {open && (
         <div className="mt-2 space-y-2 rounded-control border-l-2 border-good bg-well px-4 py-3 text-16 leading-7 animate-fade-in">

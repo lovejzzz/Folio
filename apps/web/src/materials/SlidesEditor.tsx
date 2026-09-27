@@ -63,12 +63,18 @@ function StageTools({ lesson, slide, index, save, go }: StageToolsProps) {
   };
   return (
     <div className="no-print mb-3 flex flex-wrap items-center justify-between gap-2">
-      <SegmentedControl<SlideLayout>
-        label={t.lesson.layout}
-        value={slide.layout}
-        onChange={(layout) => save(slides.map((s) => (s.id === slide.id ? { ...s, layout } : s)))}
-        options={(['title', 'bullets', 'question', 'quote'] as const).map((id) => ({ id, label: t.lesson.layouts[id] }))}
-      />
+      {/* Named: four words in a row read as a menu of slides, not as this slide's layout. */}
+      <div className="flex items-center gap-2">
+        <span aria-hidden className="font-ui text-12 text-ink-2">
+          {t.lesson.layout}
+        </span>
+        <SegmentedControl<SlideLayout>
+          label={t.lesson.layout}
+          value={slide.layout}
+          onChange={(layout) => save(slides.map((s) => (s.id === slide.id ? { ...s, layout } : s)))}
+          options={(['title', 'bullets', 'question', 'quote'] as const).map((id) => ({ id, label: t.lesson.layouts[id] }))}
+        />
+      </div>
       <div className="flex items-center gap-1">
         <IconButton label={t.lesson.moveSlideUp} isDisabled={index === 0} onPress={() => move(index - 1)}>
           <ArrowUp size={16} strokeWidth={1.5} />

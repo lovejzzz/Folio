@@ -38,7 +38,7 @@ describe('message catalogues', () => {
 
   it('use Chinese punctuation in Chinese labels', () => {
     expect(zh.map.cellLabel('第 1 课', '测验与题库', '5 道题')).toBe('第 1 课，测验与题库：5 道题');
-    expect(`${zh.map.stale}${zh.common.period}${zh.changes.because(zh.changes.reasonList(['这一课改了', '教案改了']))}`).toBe('需要更新。因为这一课改了，教案改了。');
+    expect(`${zh.map.stale}${zh.common.period}${zh.changes.because(zh.changes.reasonList(['课题改了', '教案改了']))}`).toBe('需要更新。因为课题改了，教案改了。');
     expect(en.history.leftOutMaterial({ material: en.materialsInline.syllabus })).toBe('Left out the syllabus');
   });
 });

@@ -117,12 +117,22 @@ function Actions() {
       </span>
       {!planning && (
         <>
-          <span className="relative">
+          {changes > 0 ? (
+            // A dot on a clock icon went unnoticed; the count in words says there is work waiting, and how much.
+            <Button
+              variant="quiet"
+              aria-label={`${t.changes.title}, ${t.changes.toReview(changes)}`}
+              onPress={() => toggleDrawer('changes')}
+              className={cx('gap-1.5 bg-attention-tint px-2.5 text-ink data-hovered:bg-attention-tint data-hovered:text-ink', drawer === 'changes' && 'ring-1 ring-inset ring-attention/40')}
+            >
+              <History size={16} strokeWidth={1.75} aria-hidden className="text-attention" />
+              <span className="tabular">{t.changes.toReview(changes)}</span>
+            </Button>
+          ) : (
             <IconButton label={t.changes.title} active={drawer === 'changes'} onPress={() => toggleDrawer('changes')}>
               <History size={18} strokeWidth={1.5} />
             </IconButton>
-            {changes > 0 && <span aria-hidden className="pointer-events-none absolute right-1 top-1 size-2 rotate-45 bg-attention ring-2 ring-desk" />}
-          </span>
+          )}
           <span className="hidden sm:contents">
             <IconButton label={t.sources.title} active={drawer === 'sources'} onPress={() => toggleDrawer('sources')}>
               <BookMarked size={18} strokeWidth={1.5} />

@@ -11,16 +11,16 @@ import type { Basis, Course, Lesson } from './schema';
  * updates it or chooses to keep it. Nothing is ever rewritten silently.
  */
 
-export type BasisKey = 'lesson' | 'readings' | 'objectives' | 'minutes' | 'quizSize' | 'audience' | 'plan' | 'sources';
+export type BasisKey = 'title' | 'readings' | 'objectives' | 'minutes' | 'quizSize' | 'audience' | 'plan' | 'sources';
 
 const DEPENDENCIES: Record<GeneratedKind, readonly BasisKey[]> = {
-  plan: ['lesson', 'readings', 'objectives', 'minutes', 'audience', 'sources'],
-  slides: ['lesson', 'objectives', 'audience', 'plan'],
-  study: ['lesson', 'objectives', 'audience', 'plan'],
-  quiz: ['lesson', 'objectives', 'quizSize', 'audience', 'sources', 'plan'],
-  assignments: ['lesson', 'objectives', 'audience', 'plan'],
-  discussions: ['lesson', 'readings', 'objectives', 'audience'],
-  faq: ['lesson', 'audience'],
+  plan: ['title', 'readings', 'objectives', 'minutes', 'audience', 'sources'],
+  slides: ['title', 'objectives', 'audience', 'plan'],
+  study: ['title', 'objectives', 'audience', 'plan'],
+  quiz: ['title', 'objectives', 'quizSize', 'audience', 'sources', 'plan'],
+  assignments: ['title', 'objectives', 'audience', 'plan'],
+  discussions: ['title', 'readings', 'objectives', 'audience'],
+  faq: ['title', 'audience'],
 };
 
 export function dependenciesOf(kind: GeneratedKind): readonly BasisKey[] {
@@ -29,8 +29,10 @@ export function dependenciesOf(kind: GeneratedKind): readonly BasisKey[] {
 
 function inputHash(course: Course, lesson: Lesson, key: BasisKey): string {
   switch (key) {
-    case 'lesson':
-      return hashValue([lesson.title, lesson.summary]);
+    case 'title':
+      // Only the title: rewording a summary once put every section of the lesson out of date. Sections stamped
+      // then carry a 'lesson' key that nothing reads, and stay up to date.
+      return hashValue(lesson.title);
     case 'readings':
       // Only the plan and discussions build on the reading. A section stamped before readings existed has no
       // 'readings' in its basis, so it stays up to date until it is next built.

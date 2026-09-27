@@ -1,4 +1,4 @@
-import { enabledKinds, lessonObjectives, orderedLessons, sectionFor, type Course, type Lesson, type MaterialKind } from '@folio/core';
+import { lessonKinds, lessonObjectives, orderedLessons, sectionFor, type Course, type Lesson, type MaterialKind } from '@folio/core';
 import { MaterialIcon, cx, tabBg } from '@folio/ui';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useRef, useState, type KeyboardEvent } from 'react';
@@ -95,7 +95,7 @@ export function MapGrid() {
   const compact = usePrefs((s) => s.density) === 'compact';
   const { cells, errors, courseId } = useBuild();
   const lessons = orderedLessons(course);
-  const kinds = enabledKinds(course);
+  const kinds = lessonKinds(course);
   const gridRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { focus, setFocus, onKeyDown } = useGridFocus(lessons.length, kinds.length, gridRef);

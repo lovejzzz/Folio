@@ -1,10 +1,10 @@
 import {
   cellState,
-  countWords,
   filledTexts,
   lessonAssignments,
   lessonDiscussions,
   lessonFaq,
+  lessonObjectives,
   lessonQuestions,
   sectionFor,
   staleReasons,
@@ -43,18 +43,53 @@ export function cellMetric(course: Course, lesson: Lesson, kind: MaterialKind, t
       if (!a) return '';
       if (kind === 'rubrics') {
         const r = a.rubricId ? course.rubrics[a.rubricId] : undefined;
-        return r ? `${r.criteria.length} × ${r.levels.length}` : '';
+        return r ? t.map.rubricSize(r.criteria.length, r.levels.length) : '';
       }
-      return t.common.words(countWords([a.prompt, ...a.steps].join(' ')));
+      return t.map.steps(filledTexts(a.steps).length);
     }
     case 'discussions':
-      return t.common.items(lessonDiscussions(course, lesson).length);
+      return t.map.prompts(lessonDiscussions(course, lesson).length);
     case 'quiz':
       return t.common.questions(lessonQuestions(course, lesson).length);
     case 'study':
-      return t.common.words(countWords([lesson.study.overview, ...lesson.study.points.map((p) => p.explanation)].join(' ')));
+      return t.map.sections(lesson.study.points.length);
     case 'faq':
-      return t.common.items(lessonFaq(course, lesson).length);
+      return t.common.questions(lessonFaq(course, lesson).length);
+  }
+}
+
+/**
+ * The opening words of what a cell holds, so the map reads as the course: the
+ * plan's stages, the slide titles, the first question. Grey bars in the shape
+ * of the content looked like a page still loading.
+ */
+export function cellPreview(course: Course, lesson: Lesson, kind: MaterialKind): string {
+  const joined = (texts: string[]) => filledTexts(texts).join(' · ');
+  switch (kind) {
+    case 'map':
+      return joined(lessonObjectives(course, lesson).map((o) => o.text));
+    case 'syllabus':
+      return joined(lesson.readings);
+    case 'plan':
+      return joined(lesson.segments.map((s) => s.title));
+    case 'slides':
+      // The first slide repeats the lesson title beside it.
+      return joined(lesson.slides.slice(1).map((s) => s.title));
+    case 'assignments':
+      return lessonAssignments(course, lesson)[0]?.title ?? '';
+    case 'rubrics': {
+      const a = lessonAssignments(course, lesson)[0];
+      const r = a?.rubricId ? course.rubrics[a.rubricId] : undefined;
+      return r ? joined(r.criteria.map((c) => c.name)) : '';
+    }
+    case 'discussions':
+      return lessonDiscussions(course, lesson)[0]?.prompt ?? '';
+    case 'quiz':
+      return lessonQuestions(course, lesson)[0]?.prompt ?? '';
+    case 'study':
+      return lesson.study.overview || joined(lesson.study.points.map((p) => p.heading));
+    case 'faq':
+      return lessonFaq(course, lesson)[0]?.question ?? '';
   }
 }
 

@@ -1,6 +1,7 @@
 import { missingTargets, runBuild, targetKey, type BuildEvent, type BuildTarget, type InferenceError } from '@folio/ai';
 import { attentionItems, cmd, lessonNumber, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
+import { router } from '../app/router';
 import { currentMessages } from '../i18n';
 import { canReach, currentInference, errorMessage } from './model';
 import { activeStore, onSessionChange } from './session';
@@ -72,7 +73,11 @@ function finishToast(summary: Awaited<ReturnType<typeof runBuild>>): void {
     toast({ key: 'build', message, tone: 'attention', action: openChanges, duration: 0 });
   } else {
     const looks = store ? attentionItems(store.getState()).length : 0;
-    toast({ key: 'build', message: looks ? t.build.readyLook(looks) : t.build.ready, action: looks ? openChanges : undefined, duration: looks ? 12_000 : 6000 });
+    // Ready is where the teacher's work starts: the toast offers the first lesson to read through.
+    const course = store?.getState();
+    const lessonId = course?.lessonOrder[0];
+    const openFirst = course && lessonId ? { label: t.build.openFirst, run: () => void router.navigate({ to: '/c/$courseId/lesson/$lessonId', params: { courseId: course.id, lessonId } }) } : undefined;
+    toast({ key: 'build', message: looks ? t.build.readyLook(looks) : t.build.ready, action: looks ? openChanges : openFirst, duration: 12_000 });
   }
 }
 

@@ -1,5 +1,5 @@
 import { newId } from './ids';
-import { MATERIAL_KINDS, type MaterialKind } from './materials';
+import { MATERIAL_KINDS, TEACHING_ORDER, type MaterialKind } from './materials';
 import {
   SCHEMA_VERSION,
   type Assignment,
@@ -132,6 +132,16 @@ export function lessonFaq(course: Course, lesson: Lesson): FaqEntry[] {
 
 export function enabledKinds(course: Course): MaterialKind[] {
   return MATERIAL_KINDS.filter((k) => course.materials[k].enabled);
+}
+
+/** The materials each lesson has, in the order they're taught. The course map and syllabus cover the whole course. */
+export function lessonKinds(course: Course): MaterialKind[] {
+  return TEACHING_ORDER.filter((k) => course.materials[k].enabled);
+}
+
+/** The whole-course documents that are switched on: the course map and the syllabus. */
+export function courseKinds(course: Course): MaterialKind[] {
+  return MATERIAL_KINDS.filter((k) => !TEACHING_ORDER.includes(k) && course.materials[k].enabled);
 }
 
 export function choiceText(question: Question, choiceId: string | null): string {

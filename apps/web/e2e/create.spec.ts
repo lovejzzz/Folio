@@ -24,7 +24,7 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   await page.keyboard.press('Enter');
   await expect(title2).toHaveText('Chloroplasts up close');
 
-  await page.getByRole('radio', { name: 'Core set' }).click();
+  await page.getByRole('radio', { name: 'Essentials' }).click();
   await page.getByRole('button', { name: 'Build 3 lessons' }).click();
 
   await expect(page.getByRole('grid', { name: 'Lessons and materials' })).toBeVisible();
@@ -36,7 +36,7 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   expect(model.calls.some((c) => c.messages[0]!.content.includes('Write one assignment'))).toBe(false);
 
   // Flagged items are listed in Changes and can be cleared.
-  await page.getByRole('button', { name: 'Changes', exact: true }).click();
+  await page.getByRole('button', { name: /^Changes\b/ }).click();
   const drawer = page.getByRole('dialog', { name: 'Changes' });
   await expect(drawer.getByText('The answer is not one of the choices.').first()).toBeVisible();
   await drawer.getByRole('button', { name: 'Mark as fine' }).first().click();

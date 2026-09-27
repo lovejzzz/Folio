@@ -114,16 +114,29 @@ function WhatField({ choice, set }: { choice: ExportChoice; set: (patch: Partial
           ))}
         </select>
       )}
-      {choice.scope === 'selected' && (
-        <div className="grid grid-cols-1 gap-1.5 pt-1">
-          {enabledKinds(course).map((k: MaterialKind) => (
-            <Checkbox key={k} isSelected={choice.kinds.includes(k)} onChange={(on) => set({ kinds: on ? [...choice.kinds, k] : choice.kinds.filter((x) => x !== k) })}>
-              {t.materials[k]}
-            </Checkbox>
-          ))}
-        </div>
-      )}
+      {choice.scope === 'selected' && <KindPicker choice={choice} set={set} />}
     </Field>
+  );
+}
+
+/** Which materials to export. Picking two of ten meant unticking eight, so the list can be cleared in one go. */
+function KindPicker({ choice, set }: { choice: ExportChoice; set: (patch: Partial<ExportChoice>) => void }) {
+  const t = useT();
+  const kinds = enabledKinds(useCourse());
+  const all = kinds.every((k) => choice.kinds.includes(k));
+  return (
+    <div className="pt-1">
+      <button type="button" onClick={() => set({ kinds: all ? [] : kinds })} className="mb-2 rounded-control font-ui text-13 font-medium text-accent outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">
+        {all ? t.export.clearAll : t.export.selectAll}
+      </button>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+        {kinds.map((k: MaterialKind) => (
+          <Checkbox key={k} isSelected={choice.kinds.includes(k)} onChange={(on) => set({ kinds: on ? [...choice.kinds, k] : choice.kinds.filter((x) => x !== k) })}>
+            {t.materials[k]}
+          </Checkbox>
+        ))}
+      </div>
+    </div>
   );
 }
 

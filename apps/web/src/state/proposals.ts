@@ -68,6 +68,20 @@ function applyUpdate(lessonId: string, kind: GeneratedKind, commands: Command[])
   store.apply(commands, { label: { key: 'updated', values: { kind, n } }, source: 'ai' });
 }
 
+/**
+ * Update several sections at once. The lesson plan goes first: the slides, the
+ * quiz and the rest are built on it, and updated alongside it they came back
+ * out of date at once, built on the plan it replaced.
+ */
+export async function updateSections(items: { lessonId: string; kind: GeneratedKind }[]): Promise<void> {
+  const course = activeStore()?.getState();
+  if (!course) return;
+  const [first, rest] = [items.filter((i) => i.kind === 'plan'), items.filter((i) => i.kind !== 'plan')];
+  if (first.length && rest.length) for (const i of rest) setPending(key(i.lessonId, i.kind), { status: 'working', commands: [], basisRevision: course.revision });
+  await Promise.all(first.map((i) => updateSection(i.lessonId, i.kind)));
+  await Promise.all(rest.map((i) => updateSection(i.lessonId, i.kind)));
+}
+
 export function acceptProposal(lessonId: string, kind: GeneratedKind): void {
   const p = useProposals.getState().pending[key(lessonId, kind)];
   if (!p || p.status !== 'ready') return;
@@ -89,4 +103,18 @@ export function keepMine(lessonId: string, kind: GeneratedKind): void {
 
 export function pendingFor(lessonId: string, kind: GeneratedKind): Pending | undefined {
   return useProposals.getState().pending[key(lessonId, kind)];
+}
+
+/** Keep several sections of one lesson as they are, as one change. */
+export function keepAll(items: { lessonId: string; kind: GeneratedKind }[]): void {
+  const store = activeStore();
+  const first = items[0];
+  if (!store || !first) return;
+  if (items.length === 1) return keepMine(first.lessonId, first.kind);
+  for (const i of items) setPending(key(i.lessonId, i.kind), null);
+  const n = lessonNumber(store.getState(), first.lessonId);
+  store.apply(
+    items.map((i) => cmd('review.keep', { lessonId: i.lessonId, kind: i.kind })),
+    { label: { key: 'keptAll', values: { n, count: items.length } }, source: 'teacher' },
+  );
 }

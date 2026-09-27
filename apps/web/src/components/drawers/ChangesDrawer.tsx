@@ -1,12 +1,12 @@
 import { attentionItems, cmd, isMaterialKind, lessonNumber, staleItems, type AttentionItem, type GeneratedKind, type HistoryEntry, type StaleItem } from '@folio/core';
-import { BinderTab, Button } from '@folio/ui';
+import { BinderTab, Button, StatusMark } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useState, type ReactNode } from 'react';
 import { flagText, relativeTime, useT, type Messages } from '../../i18n';
 import { retryCell, startBuild, useBuild } from '../../state/build';
 import { edit, undo } from '../../state/edit';
 import { usePrefs } from '../../state/prefs';
-import { keepMine, updateSection, useProposals } from '../../state/proposals';
+import { keepAll, keepMine, updateSection, updateSections, useProposals } from '../../state/proposals';
 import { useCourse, useStore } from '../../state/session';
 import { CompareDialog } from './CompareDialog';
 import { Sep } from '../Sep';
@@ -73,7 +73,7 @@ function StaleRow({ item }: { item: StaleItem }) {
   return (
     <li className="rounded-control bg-well p-3">
       <ItemHead lessonId={item.lessonId} kind={item.kind} n={lessonNumber(course, item.lessonId)} />
-      <p className="mt-2 font-ui text-13 leading-5 text-ink">{t.changes.because(t.changes.reasonList(item.reasons.map((r) => t.changes.reasons[r])))}</p>
+      <p className="mt-2 font-ui text-13 leading-5 text-ink">{because(item, t)}</p>
       {item.edited && !pending && <p className="mt-1 font-ui text-12 leading-5 text-ink-2">{t.changes.edited}</p>}
       <div className="mt-3 flex flex-wrap gap-1.5">
         {pending?.status === 'ready' ? (
@@ -86,11 +86,95 @@ function StaleRow({ item }: { item: StaleItem }) {
           </Button>
         )}
         <Button size="sm" variant="quiet" onPress={() => keepMine(item.lessonId, item.kind)}>
-          {t.changes.keepMine}
+          {item.edited ? t.changes.keepMine : t.changes.keepAsIs}
         </Button>
       </div>
       {comparing && <CompareDialog lessonId={item.lessonId} kind={item.kind} onClose={() => setComparing(false)} />}
     </li>
+  );
+}
+
+const because = (item: StaleItem, t: Messages) => t.changes.because(t.changes.reasonList(item.reasons.map((r) => t.changes.reasons[r])));
+
+/**
+ * The sections of one lesson that went out of date for one reason, as one
+ * card with one Update: six cards saying "Because its objectives changed"
+ * over and over said it six times.
+ */
+function StaleGroup({ items }: { items: StaleItem[] }) {
+  const t = useT();
+  const course = useCourse();
+  const pending = useProposals((s) => s.pending);
+  const first = items[0]!;
+  const working = items.some((i) => pending[`${i.lessonId}:${i.kind}`]);
+  return (
+    <li className="rounded-control bg-well p-3">
+      <p className="flex items-baseline gap-2 font-ui text-12 text-ink-2">
+        <span className="shrink-0 font-medium text-ink">{t.common.lesson(lessonNumber(course, first.lessonId))}</span>
+        <span className="truncate" lang={course.language}>
+          {course.lessons[first.lessonId]?.title}
+        </span>
+      </p>
+      <p className="mt-2 font-ui text-13 leading-5 text-ink">
+        {because(first, t)} {t.changes.builtOn(items.length)}
+      </p>
+      <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1.5">
+        {items.map((i) => (
+          <li key={i.kind} className="flex items-center gap-1.5">
+            <BinderTab kind={i.kind} size="sm" label={t.materialOne[i.kind]} />
+            {pending[`${i.lessonId}:${i.kind}`] && <StatusMark kind="building" label={t.changes.updating} />}
+          </li>
+        ))}
+      </ul>
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        <Button size="sm" isDisabled={working} onPress={() => void updateSections(items)}>
+          {working ? t.changes.updating : t.changes.updateN(items.length)}
+        </Button>
+        <Button size="sm" variant="quiet" isDisabled={working} onPress={() => keepAll(items)}>
+          {t.changes.keepAll}
+        </Button>
+      </div>
+    </li>
+  );
+}
+
+/** Sections nobody edited, grouped by lesson and reason. Edited ones stay apart: each needs its own compare. */
+function staleGroups(stale: StaleItem[]): { alone: StaleItem[]; groups: StaleItem[][] } {
+  const byCause = new Map<string, StaleItem[]>();
+  for (const s of stale.filter((i) => !i.edited)) {
+    const k = `${s.lessonId}|${s.reasons.join(',')}`;
+    byCause.set(k, [...(byCause.get(k) ?? []), s]);
+  }
+  const groups = [...byCause.values()].filter((g) => g.length > 1);
+  const grouped = new Set(groups.flat());
+  return { alone: stale.filter((s) => !grouped.has(s)), groups };
+}
+
+function StaleSection({ stale }: { stale: StaleItem[] }) {
+  const t = useT();
+  const updatable = stale.filter((s) => !s.edited);
+  const { alone, groups } = staleGroups(stale);
+  // One group already has its own Update; a second button saying the same would be noise.
+  const cards = alone.length + groups.length;
+  return (
+    <Group
+      title={t.changes.stale}
+      count={stale.length}
+      action={
+        cards > 1 && updatable.length > 1 ? (
+          <Button size="sm" variant="quiet" onPress={() => void updateSections(updatable)}>
+            {t.changes.updateAll(updatable.length)}
+          </Button>
+        ) : undefined
+      }
+    >
+      {groups.map((g) => (
+        <StaleGroup key={`${g[0]!.lessonId}:${g[0]!.reasons.join()}`} items={g} />
+      ))}
+      {alone.map((s) => (
+        <StaleRow key={`${s.lessonId}:${s.kind}`} item={s} />
+      ))}
+    </Group>
   );
 }
 
@@ -210,7 +294,6 @@ export function ChangesDrawer() {
   const attention = attentionItems(course);
   const stale = staleItems(course);
   const history = [...store.getHistory()].reverse().slice(0, 60);
-  const updatable = stale.filter((s) => !s.edited);
   const failed = useFailed(course.id, course.lessons);
   return (
     <div>
@@ -228,23 +311,7 @@ export function ChangesDrawer() {
           ))}
         </Group>
       )}
-      {stale.length > 0 && (
-        <Group
-          title={t.changes.stale}
-          count={stale.length}
-          action={
-            updatable.length > 1 ? (
-              <Button size="sm" variant="quiet" onPress={() => void Promise.all(updatable.map((s) => updateSection(s.lessonId, s.kind)))}>
-                {t.changes.updateAll(updatable.length)}
-              </Button>
-            ) : undefined
-          }
-        >
-          {stale.map((s) => (
-            <StaleRow key={`${s.lessonId}:${s.kind}`} item={s} />
-          ))}
-        </Group>
-      )}
+      {stale.length > 0 && <StaleSection stale={stale} />}
       <Group title={t.changes.history} count={history.length}>
         {history.length === 0 ? <li className="font-ui text-13 text-ink-2">{t.changes.noHistory}</li> : history.map((e) => <HistoryRow key={e.id} entry={e} />)}
       </Group>

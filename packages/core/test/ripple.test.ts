@@ -56,8 +56,6 @@ describe('ripple', () => {
   it('keeps a course saved before readings existed up to date', () => {
     const course = sampleCourse();
     const lesson = orderedLessons(course)[0]!;
-    // The basis a section was stamped with before lessons had readings.
-    expect(lesson.gen.plan!.basis.lesson).toBe(hashValue([lesson.title, lesson.summary]));
     const saved = JSON.parse(JSON.stringify(course)) as Record<string, unknown>;
     delete saved.grading;
     for (const l of Object.values(saved.lessons as Record<string, Record<string, unknown>>)) delete l.readings;
@@ -65,6 +63,23 @@ describe('ripple', () => {
     expect(loaded.lessons[lesson.id]!.readings).toEqual([]);
     expect(loaded.grading).toEqual([]);
     expect(staleItems(loaded)).toEqual([]);
+  });
+
+  it('keeps sections stamped with the old title-and-summary basis up to date, and a summary edit changes nothing', () => {
+    const course = sampleCourse();
+    const lesson = orderedLessons(course)[0]!;
+    for (const meta of Object.values(lesson.gen)) {
+      const { title: _, ...rest } = meta!.basis;
+      meta!.basis = { ...rest, lesson: hashValue([lesson.title, lesson.summary]) };
+    }
+    const store = new CourseStore(course);
+    expect(staleItems(store.getState())).toEqual([]);
+    store.apply([cmd('lesson.update', { lessonId: lesson.id, summary: 'Put more simply.' })], { label: { key: 't' }, source: 'teacher' });
+    expect(store.getState().lessons[lesson.id]!.summary).toBe('Put more simply.');
+    expect(staleItems(store.getState())).toEqual([]);
+    const fresh = new CourseStore(sampleCourse());
+    fresh.apply([cmd('lesson.update', { lessonId: fresh.getState().lessonOrder[0]!, title: 'Another lesson' })], { label: { key: 't' }, source: 'teacher' });
+    expect(staleItems(fresh.getState()).map((s) => s.reasons)).toContainEqual(['title']);
   });
 
   it('marks only the plan and discussions out of date when readings change, and undo restores them', () => {

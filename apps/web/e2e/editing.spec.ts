@@ -15,7 +15,7 @@ test('edit in place, undo, and see the change in history', async ({ page }) => {
   await expect(page.getByText('Undone.')).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Centre and spread');
 
-  await page.getByRole('button', { name: 'Changes', exact: true }).click();
+  await page.getByRole('button', { name: /^Changes\b/ }).click();
   await expect(page.getByRole('dialog', { name: 'Changes' }).getByText('Renamed lesson 3')).toBeVisible();
 });
 
@@ -72,4 +72,22 @@ test('a source added in the drawer is cited by regenerated questions', async ({ 
   await expect(chip).toBeVisible();
   await chip.hover();
   await expect(page.getByRole('tooltip')).toHaveText('Twenty-four students answered the survey in March. Each gave their usual way of getting to school and how many minutes the journey takes on a normal day.');
+});
+
+test('rewording a summary leaves the lesson up to date; an objective puts its sections in one card to update or keep', async ({ page }) => {
+  await openSample(page);
+  await page.getByRole('link', { name: /Picturing a distribution/ }).first().click();
+  await retype(page, 'Summary of lesson 2', 'Dot plots and histograms, and what their shape tells us.');
+  await expect(page.getByText('Out of date.')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /to review/ })).toHaveCount(0);
+
+  await retype(page, 'Objective 1 of lesson 2', 'Read a histogram and describe its shape, centre and spread');
+  await page.getByRole('button', { name: 'Changes, 6 to review' }).click();
+  const changes = page.getByRole('dialog', { name: 'Changes' });
+  await expect(changes.getByText('Because its objectives changed. These 6 were built on it:')).toHaveCount(1);
+  await expect(changes.getByRole('button', { name: 'Update 6' })).toBeVisible();
+  await changes.getByRole('button', { name: 'Keep as they are' }).click();
+  await expect(changes.getByText('Everything is up to date.')).toBeVisible();
+  await expect(changes.getByText('Kept 6 sections of lesson 2 as they are')).toBeVisible();
+  await expect(page.getByRole('button', { name: /to review/ })).toHaveCount(0);
 });

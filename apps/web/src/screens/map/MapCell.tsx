@@ -1,8 +1,8 @@
 import { sectionFor, type Course, type Lesson, type MaterialKind } from '@folio/core';
 import { StatusMark, cx } from '@folio/ui';
 import { useT } from '../../i18n';
-import { cellMetric, cellReason, type CellView } from './cellInfo';
-import { Thumb } from './Thumb';
+import { InlineText } from '../../components/InlineText';
+import { cellMetric, cellPreview, cellReason, type CellView } from './cellInfo';
 
 interface MapCellProps {
   course: Course;
@@ -38,7 +38,20 @@ function Placeholder({ view, compact }: { view: CellView; compact: boolean }) {
   return <span className="text-12 text-ink-2">{view === 'error' ? t.map.failed : t.map.notBuilt}</span>;
 }
 
-/** One lesson × material cell: a miniature, a count, and at most one status mark. */
+/** A count, or in its place what needs doing: a cell out of date says so in words, not only with a mark. */
+function CellCaption({ view, metric, reason }: { view: CellView; metric: string; reason: string }) {
+  const t = useT();
+  if (view === 'ready') return <span className="w-full truncate text-12 text-ink-2 tabular">{metric}</span>;
+  const stale = view === 'stale';
+  return (
+    <span className={cx('flex w-full items-center gap-1.5 text-12 font-medium', stale ? 'text-ink' : 'text-attention')}>
+      <StatusMark kind={stale ? 'stale' : 'attention'} label={reason} />
+      <span aria-hidden className="truncate">{stale ? t.map.stale : t.map.attention}</span>
+    </span>
+  );
+}
+
+/** One lesson × material cell: the opening words of what it holds, a count, and what needs doing. */
 export function MapCell({ course, lesson, kind, view, error, compact, focused, onOpen, onBuild, onFocus }: MapCellProps) {
   const t = useT();
   const built = view === 'ready' || view === 'attention' || view === 'stale';
@@ -59,7 +72,7 @@ export function MapCell({ course, lesson, kind, view, error, compact, focused, o
         onClick={canBuild ? onBuild : onOpen}
         className={cx(
           'group flex w-full justify-between gap-2 rounded-control p-3 text-left font-ui outline-none transition-shadow duration-120 ease-ink',
-          compact ? 'h-12 flex-row items-center' : 'h-24 flex-col items-start',
+          compact ? 'h-12 flex-row items-center' : 'h-28 flex-col items-start',
           built && 'bg-paper shadow-sheet hover:shadow-overlay',
           !built && 'border border-dashed border-rule-strong hover:border-accent',
           view === 'error' && 'border-critical/50',
@@ -69,16 +82,13 @@ export function MapCell({ course, lesson, kind, view, error, compact, focused, o
       >
         {built ? (
           <>
-            {/* Zero intrinsic width: a thumbnail wraps to its column and never widens it, so the map keeps its columns once built. */}
+            {/* Zero intrinsic width: the preview wraps to its column and never widens it, so the map keeps its columns once built. */}
             {!compact && (
-              <span className="block w-0 min-w-full">
-                <Thumb course={course} lesson={lesson} kind={kind} />
+              <span lang={course.language} className={cx('line-clamp-3 w-0 min-w-full font-reading text-13 leading-snug', view === 'stale' ? 'text-ink-2' : 'text-ink')}>
+                <InlineText text={cellPreview(course, lesson, kind)} />
               </span>
             )}
-            <span className="flex w-full items-center justify-between gap-2 text-12 text-ink-2 tabular">
-              <span className="truncate">{cellMetric(course, lesson, kind, t)}</span>
-              {view !== 'ready' && <StatusMark kind={view === 'stale' ? 'stale' : 'attention'} label={reason} />}
-            </span>
+            <CellCaption view={view} metric={cellMetric(course, lesson, kind, t)} reason={reason} />
           </>
         ) : (
           <>

@@ -31,7 +31,7 @@ async function tour(page: Page, theme: string) {
   await shot(page, `${theme}-05-map-building`);
   await page.getByText(/Course ready/).waitFor({ timeout: 40_000 });
   await shot(page, `${theme}-06-map-ready`);
-  await page.getByRole('button', { name: 'Changes', exact: true }).click();
+  await page.getByRole('button', { name: /^Changes\b/ }).click();
   await shot(page, `${theme}-07-changes`);
   await page.getByRole('button', { name: 'Export', exact: true }).click();
   await shot(page, `${theme}-08-export`);
@@ -90,7 +90,7 @@ test('tour, phone', async ({ browser }) => {
   await shot(page, 'phone-map');
   await page.getByRole('link', { name: /Picturing a distribution/ }).click();
   await shot(page, 'phone-lesson');
-  await page.getByRole('button', { name: 'Changes', exact: true }).click();
+  await page.getByRole('button', { name: /^Changes\b/ }).click();
   await shot(page, 'phone-changes');
   await page.close();
 });
@@ -119,6 +119,6 @@ test('tour, readme', async ({ browser }) => {
   await dark.getByRole('button', { name: 'Or open the sample course' }).click();
   await dark.getByRole('grid').waitFor();
   await dark.goto(dark.url().replace(/\/map$/, '/m/quiz'));
-  await dark.getByRole('button', { name: 'Show answer' }).first().click();
+  await dark.getByRole('button', { name: /^Show (answer|why)$/ }).first().click();
   await shot(dark, 'readme-quiz-dark');
 });

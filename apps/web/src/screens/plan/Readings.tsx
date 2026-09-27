@@ -123,11 +123,13 @@ export function WellReadings({ course, lesson, n, readings }: ReadingsProps) {
 export function SuggestedReadings({ course, lesson, n, readings, compact = false }: ReadingsProps & { compact?: boolean }) {
   const t = useT();
   if (!lesson.suggestedReadings.length) return null;
+  // On the plan the note to check them is said once, at the first lesson with suggestions, not under every lesson.
+  const hint = !compact || course.lessonOrder.find((id) => course.lessons[id]?.suggestedReadings.length) === lesson.id;
   return (
     <section className={cx('no-print', compact ? 'mt-3' : 'mt-5')} aria-label={t.plan.suggested}>
       <h4 className={cx('font-ui text-12 text-ink-2', compact && 'pl-5')}>
         {t.plan.suggested}
-        <span className="text-ink-3"> · {t.plan.suggestedHint}</span>
+        {hint && <span className="text-ink-3"> · {t.plan.suggestedHint}</span>}
       </h4>
       <ul className="mt-1 space-y-1">
         {lesson.suggestedReadings.map((s, i) => (
