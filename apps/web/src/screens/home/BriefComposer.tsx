@@ -8,6 +8,7 @@ import { hasModel } from '../../state/prefs';
 import { toast } from '../../state/toasts';
 import { useUi } from '../../state/ui';
 import { LanguageChip, LessonsChip, LevelChip } from './Chips';
+import { asksForSources } from './sourceHint';
 
 function useAttach() {
   const t = useT();
@@ -52,33 +53,38 @@ function AttachedFiles() {
   );
 }
 
-function ComposerBar({ onAttach, onGo }: { onAttach: (files: FileList) => void; onGo: () => void }) {
+function ComposerBar({ onPick, onGo }: { onPick: () => void; onGo: () => void }) {
   const t = useT();
-  const fileInput = useRef<HTMLInputElement>(null);
   return (
     <div className="flex flex-wrap items-center gap-2 border-t border-rule px-3 py-3 md:px-5">
       <LevelChip />
       <LessonsChip />
       <LanguageChip />
-      <IconButton label={t.home.attach} onPress={() => fileInput.current?.click()}>
+      <IconButton label={t.home.attach} onPress={onPick}>
         <Paperclip size={17} strokeWidth={1.5} />
       </IconButton>
-      <input
-        ref={fileInput}
-        type="file"
-        multiple
-        accept=".txt,.md,.markdown,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        className="hidden"
-        onChange={(e) => {
-          if (e.target.files) onAttach(e.target.files);
-          e.target.value = '';
-        }}
-      />
       <Button variant="primary" size="lg" className="ml-auto h-10 pl-5 pr-4" onPress={onGo}>
         {t.home.continue}
         <ArrowRight size={17} strokeWidth={1.75} aria-hidden />
       </Button>
     </div>
+  );
+}
+
+/** Source work without the sources: the model could only name extracts, so the composer asks for them. */
+function SourcesHint({ onPick }: { onPick: () => void }) {
+  const t = useT();
+  const brief = useDraft((s) => s.brief);
+  const files = useDraft((s) => s.files);
+  if (files.length || !asksForSources(brief)) return null;
+  return (
+    <p className="flex flex-wrap items-center gap-x-2 gap-y-1 px-5 pb-3 font-ui text-13 leading-5 text-ink-2 animate-fade-in md:px-7">
+      <Paperclip size={14} strokeWidth={1.5} aria-hidden className="shrink-0 text-ink-3" />
+      <span>{t.home.sourcesHint}</span>
+      <button type="button" onClick={onPick} className="rounded-control font-medium text-accent outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">
+        {t.home.attachSources}
+      </button>
+    </p>
   );
 }
 
@@ -91,6 +97,8 @@ export function BriefComposer() {
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState(false);
   const hintId = useId();
+  const fileInput = useRef<HTMLInputElement>(null);
+  const pick = () => fileInput.current?.click();
   const go = () => {
     const { brief: text, files } = useDraft.getState();
     if (!text.trim() && files.length === 0) return setError(true);
@@ -133,7 +141,19 @@ export function BriefComposer() {
       />
       {dragging && <p className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-sheet bg-accent-tint font-ui text-16 font-medium text-accent">{t.home.dropHere}</p>}
       <AttachedFiles />
-      <ComposerBar onAttach={(files) => void attach(files)} onGo={go} />
+      <SourcesHint onPick={pick} />
+      <ComposerBar onPick={pick} onGo={go} />
+      <input
+        ref={fileInput}
+        type="file"
+        multiple
+        accept=".txt,.md,.markdown,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files) void attach(e.target.files);
+          e.target.value = '';
+        }}
+      />
       {error && (
         <p id={hintId} role="alert" className="absolute -bottom-8 left-1 font-ui text-13 text-critical">
           {t.home.emptyBrief}

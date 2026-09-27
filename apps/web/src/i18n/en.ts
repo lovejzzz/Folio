@@ -131,6 +131,8 @@ export const en = {
     recent: 'Recent courses',
     seeAll: 'See all',
     emptyBrief: 'Write a sentence or two about what you want to teach first.',
+    sourcesHint: 'Folio writes best from the sources themselves, and quotes only what you attach.',
+    attachSources: 'Attach them',
     fileTooBig: (name: string) => `${name} is too large. Files up to 2 MB can be attached.`,
     fileUnsupported: (name: string) => `${name} can’t be read. Attach .txt, .md or .docx files, or paste the text.`,
     filesRefused: (names: string[]) => `${new Intl.ListFormat('en-GB', { type: 'conjunction' }).format(names)} can’t be attached. Attach .txt, .md or .docx files up to 2 MB.`,

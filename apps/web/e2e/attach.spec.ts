@@ -52,3 +52,17 @@ test('files that cannot be attached are refused in one message', async ({ page }
   await expect(page.getByText('broken.docx, huge.txt and photo.png can’t be attached. Attach .txt, .md or .docx files up to 2 MB.')).toBeVisible();
   await expect(page.getByRole('status').getByText(/can’t be/)).toHaveCount(1);
 });
+
+test('a brief built on sources, with none attached, suggests attaching them', async ({ page }) => {
+  await page.goto('/');
+  const hint = page.getByText('Folio writes best from the sources themselves, and quotes only what you attach.');
+  await page.getByLabel('Describe your course').fill('Renewable sources of energy for year 8, three lessons.');
+  await expect(hint).toHaveCount(0);
+  await page.getByLabel('Describe your course').fill('GCSE History, four lessons built around source analysis.');
+  await expect(hint).toBeVisible();
+  const chooser = page.waitForEvent('filechooser');
+  await page.getByRole('button', { name: 'Attach them' }).click();
+  await (await chooser).setFiles({ name: 'sources.md', mimeType: 'text/markdown', buffer: Buffer.from('Source A: a 1908 cartoon of the Kaiser.') });
+  await expect(page.getByRole('button', { name: /^Remove sources/ })).toBeVisible();
+  await expect(hint).toHaveCount(0);
+});

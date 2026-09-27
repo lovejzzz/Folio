@@ -114,6 +114,8 @@ export const zh: Messages = {
     recent: '最近的课程',
     seeAll: '全部',
     emptyBrief: '先写一两句话，说说你想教什么。',
+    sourcesHint: '附上原始材料，Folio 会以它们为依据，引用也只来自其中。',
+    attachSources: '添加文件',
     fileTooBig: (name) => `${name} 太大了。只能添加 2 MB 以内的文件。`,
     fileUnsupported: (name) => `无法读取 ${name}。请添加 .txt、.md 或 .docx 文件，或直接粘贴文字。`,
     filesRefused: (names: string[]) => `无法附加 ${new Intl.ListFormat('zh', { type: 'conjunction' }).format(names)}。请附加不超过 2 MB 的 .txt、.md 或 .docx 文件。`,
