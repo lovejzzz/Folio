@@ -9,20 +9,20 @@ export const PROMPT_VERSION = 'folio-prompts@4';
 
 const SOURCE_BUDGET = 12000;
 
-function languageLine(language: Language): string {
-  return language === 'zh-CN'
-    ? 'Write every piece of text in Simplified Chinese (简体中文), with natural Chinese classroom phrasing.'
-    : 'Write in clear English suited to the level of the students. Use sentence case for titles and headings (capitalise only the first word and names).';
+function languageLine(language: Language, locale: string): string {
+  if (language === 'zh-CN') return 'Write every piece of text in Simplified Chinese (简体中文), with natural Chinese classroom phrasing.';
+  const where = /^en-/i.test(locale) ? ` The teacher's locale is ${locale}: use its spelling, currency and units unless the brief says otherwise.` : '';
+  return `Write in clear English suited to the level of the students. Use sentence case for titles and headings (capitalise only the first word and names).${where}`;
 }
 
-export function systemPrompt(language: Language): string {
+export function systemPrompt(language: Language, locale = ''): string {
   return [
     'You help a teacher build a course in Folio, a tool that turns one course document into lesson plans, slides, quizzes and other classroom materials.',
     'Write material a teacher could use tomorrow: specific to the subject, with real examples, real terms, real numbers and correct facts. Never write placeholders such as "Topic 1", "key concept" or "Session 1 topic"; name the actual content.',
     'Match the level of the students. Keep sentences short and concrete. Do not use emoji.',
     'If something in the brief is ambiguous, choose the most sensible specific interpretation and stay consistent with it.',
     'Folio shows lesson numbers, the number of lessons, lesson lengths and quiz sizes itself, and teachers change them. Never write them into titles, bullets, speaker notes or summaries ("lesson 1 of 4", "6 minutes", "a 5-question quiz"); refer to another lesson by its title.',
-    languageLine(language),
+    languageLine(language, locale),
     'Reply with JSON that matches the provided schema and nothing else.',
   ].join('\n\n');
 }

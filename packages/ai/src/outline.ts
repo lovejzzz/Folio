@@ -11,6 +11,8 @@ export interface NewCourseRequest {
   quizSize: number;
   level: string;
   language: Language;
+  /** The teacher's locale, e.g. "en-GB". */
+  locale?: string;
   materials: readonly MaterialKind[];
   sources: { title: string; text: string }[];
 }
@@ -20,7 +22,7 @@ export async function generateOutline(inference: Inference, req: NewCourseReques
   const input: OutlineInput = { ...req };
   const result = await runJob(inference, {
     task: 'folio_outline',
-    system: systemPrompt(req.language),
+    system: systemPrompt(req.language, req.locale),
     prompt: outlinePrompt(input),
     schema: OutlineDraft,
     check: (v): Problem[] =>
@@ -39,6 +41,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
     summary: outline.summary,
     brief: req.brief,
     language: req.language,
+    locale: req.locale ?? '',
     level: req.level || outline.level,
     subject: outline.subject,
     minutesPerLesson: req.minutesPerLesson,

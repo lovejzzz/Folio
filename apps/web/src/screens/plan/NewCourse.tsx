@@ -36,6 +36,7 @@ function requestFromDraft(): NewCourseRequest | null {
     quizSize: 5,
     level: d.level,
     language: d.language,
+    locale: typeof navigator === 'undefined' ? '' : navigator.language,
     materials: d.materials.length ? d.materials : MATERIAL_KINDS,
     sources: d.files,
   };

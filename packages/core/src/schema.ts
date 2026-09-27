@@ -217,6 +217,8 @@ export const CourseSchema = z.object({
   /** What the teacher originally asked for, kept for context. */
   brief: text,
   language: LanguageSchema,
+  /** The teacher's locale (e.g. "en-GB"), so spelling, currency and units follow it. Empty if unknown. */
+  locale: z.string().default(''),
   audience: z.object({ level: text, subject: text }),
   shape: z.object({
     minutesPerLesson: z.number().int().min(5).max(600),

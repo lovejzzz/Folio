@@ -231,7 +231,7 @@ export async function generateSection(
   const run = async <T>(job: SectionJob<T>): Promise<SectionResult> => {
     const result = await runJob(inference, {
       task: `folio_${kind}`,
-      system: systemPrompt(course.language),
+      system: systemPrompt(course.language, course.locale),
       prompt: sectionPrompt(course, lesson, kind),
       schema: job.schema,
       check: job.check ? (v) => job.check!(v, course, lesson) : undefined,

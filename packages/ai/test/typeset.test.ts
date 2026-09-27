@@ -19,3 +19,12 @@ describe('smart quotes', () => {
     expect(typesetDraft(draft, 'zh-CN')).toBe(draft);
   });
 });
+
+describe('the teacher’s locale', () => {
+  it('is passed to the model for English courses', async () => {
+    const { systemPrompt } = await import('../src/prompts');
+    expect(systemPrompt('en', 'en-GB')).toContain('The teacher’s locale is en-GB'.replace('’', "'"));
+    expect(systemPrompt('en', '')).not.toContain('locale');
+    expect(systemPrompt('zh-CN', 'zh-CN')).not.toContain('locale');
+  });
+});

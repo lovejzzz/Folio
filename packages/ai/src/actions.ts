@@ -42,7 +42,7 @@ export async function planCourseChange(
 ): Promise<Proposal> {
   const r = await runJob(inference, {
     task: 'folio_course_plan',
-    system: systemPrompt(course.language),
+    system: systemPrompt(course.language, course.locale),
     prompt: coursePlanPrompt(course, request),
     schema: CoursePlanDraft,
     signal,

@@ -19,6 +19,7 @@ export interface NewCourseInput {
   summary?: string;
   brief?: string;
   language?: Language;
+  locale?: string;
   level?: string;
   subject?: string;
   minutesPerLesson?: number;
@@ -61,6 +62,7 @@ export function createCourse(input: NewCourseInput, now = new Date().toISOString
     summary: input.summary ?? '',
     brief: input.brief ?? '',
     language: input.language ?? 'en',
+    locale: input.locale ?? '',
     audience: { level: input.level ?? '', subject: input.subject ?? '' },
     shape: { minutesPerLesson: input.minutesPerLesson ?? 50, quizSize: input.quizSize ?? 5 },
     policies: '',
