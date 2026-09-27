@@ -74,12 +74,12 @@ describe('the syllabus', () => {
   const tables = (c: typeof course) => project(c, 'syllabus', { audience: 'teacher' }).blocks.filter((b) => b.t === 'table');
 
   it('adds a reading column, and the lesson plan a reading list, only once a lesson has readings', () => {
-    expect(tables(course)[0]).toMatchObject({ head: ['#', 'Lessons', 'Focus'] });
+    expect(tables(course)[0]).toMatchObject({ head: ['#', 'Lesson', 'Focus'] });
     const store = new CourseStore(course);
     const lesson = orderedLessons(course)[1]!;
     store.apply([cmd('lesson.update', { lessonId: lesson.id, readings: ['Freedman, Statistics, ch. 3', 'Handout: reading a histogram'] })], meta);
     const schedule = tables(store.getState())[0]!;
-    expect(schedule).toMatchObject({ head: ['#', 'Lessons', 'Focus', 'Reading'] });
+    expect(schedule).toMatchObject({ head: ['#', 'Lesson', 'Focus', 'Reading'] });
     expect(schedule.t === 'table' && schedule.rows.map((r) => r[3])).toEqual(['', 'Freedman, Statistics, ch. 3\nHandout: reading a histogram', '', '']);
     const plan = project(store.getState(), 'plan', { audience: 'student', lessonIds: [lesson.id] }).blocks;
     const at = plan.findIndex((b) => b.t === 'heading' && b.text === 'Before class');

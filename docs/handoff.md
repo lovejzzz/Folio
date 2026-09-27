@@ -94,6 +94,7 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
     - The map dropped from six material columns to four once built, because the slide thumbnail's row of boxes set the column width. Thumbnails no longer size their column.
     - The syllabus cells all said "On the schedule"; they now show the lesson's reading count.
     - "Add objective" is now "Add an objective", like every other add button.
+  - Round 12, phil again: 30 calls, 1 repair, $0.086. Confirmed: the map keeps six columns once built, syllabus cells read "1 reading", and every discussion has follow-ups. UI pass: the syllabus and course-map tables headed a one-lesson-per-row column "Lessons"; it now reads "Lesson".
 
 ## Next
 

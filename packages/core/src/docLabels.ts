@@ -21,6 +21,8 @@ const en = {
   } satisfies Record<MaterialKind, string>,
   lesson: (n: number) => `Lesson ${n}`,
   lessons: 'Lessons',
+  /** A table column in which each row is one lesson. */
+  lessonColumn: 'Lesson',
   minutes: (n: number) => `${n} min`,
   audience: 'Audience',
   length: 'Length',
@@ -86,6 +88,7 @@ const zh: DocLabels = {
   },
   lesson: (n) => `第 ${n} 课`,
   lessons: '课时',
+  lessonColumn: '课',
   minutes: (n) => `${n} 分钟`,
   audience: '对象',
   length: '课时安排',

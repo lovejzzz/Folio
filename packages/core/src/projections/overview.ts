@@ -10,7 +10,7 @@ export function projectMap(ctx: Ctx): Block[] {
   const blocks: Block[] = [
     {
       t: 'table',
-      head: [l.lessons, l.objectives, l.assessedBy],
+      head: [l.lessonColumn, l.objectives, l.assessedBy],
       widths: [30, 40, 30],
       rows: lessons.map((lesson) => {
         const n = lessonNumber(course, lesson.id);
@@ -66,7 +66,7 @@ export function projectSyllabus(ctx: Ctx): Block[] {
   const withReadings = lessons.some((lesson) => filledTexts(lesson.readings).length > 0);
   blocks.push({
     t: 'table',
-    head: withReadings ? ['#', l.lessons, l.focus, l.reading] : ['#', l.lessons, l.focus],
+    head: withReadings ? ['#', l.lessonColumn, l.focus, l.reading] : ['#', l.lessonColumn, l.focus],
     widths: withReadings ? [6, 28, 38, 28] : [8, 36, 56],
     rows: lessons.map((lesson) => {
       const row = [String(lessonNumber(course, lesson.id)), lesson.title, lesson.summary || statedObjectives(course, lesson)[0]?.text || ''];
