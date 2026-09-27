@@ -86,9 +86,10 @@ export function closeSession(): void {
   for (const l of listeners) l();
 }
 
-/** Forget the open course if it is this one (it was deleted or replaced). */
-export function dropSession(id: string): void {
-  if (active?.id !== id) return;
+/** Forget the open course without saving it, if it is this one (it was deleted), or whichever is open. */
+export function dropSession(id?: string): void {
+  if (!active || (id !== undefined && active.id !== id)) return;
+  id = active.id;
   const session = active;
   if (session.timer) clearTimeout(session.timer);
   session.unsubscribe();
@@ -182,6 +183,11 @@ if (typeof window !== 'undefined') {
     if (document.visibilityState === 'hidden') onLeave(false);
   });
   channel?.addEventListener('message', (e: MessageEvent<{ id: string; version: string }>) => void onRemoteSave(e.data.id, e.data.version));
+}
+
+/** Called whenever a different course (or none) becomes the open one. */
+export function onSessionChange(listener: () => void): () => void {
+  return subscribeActive(listener);
 }
 
 function subscribeActive(listener: () => void): () => void {

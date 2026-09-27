@@ -11,6 +11,7 @@ import { useT } from '../../i18n';
 import { download } from '../../lib/exporter';
 import { deleteCourse, isQuotaError, listCourses, loadCourse, saveCourse, type CourseSummary } from '../../state/db';
 import { toast } from '../../state/toasts';
+import { dropSession } from '../../state/session';
 
 async function saveFolio(course: Course): Promise<void> {
   const { writeFolio, slugFilename, MIME } = await import('@folio/export');
@@ -57,7 +58,9 @@ function Header() {
   const open = async (f: File) => {
     try {
       const { readFolio } = await import('@folio/export');
-      const course = readFolio(new Uint8Array(await f.arrayBuffer()));
+      const read = readFolio(new Uint8Array(await f.arrayBuffer()));
+      // Opening a backup never replaces a course already here: it arrives as a copy.
+      const course = (await loadCourse(read.id)) ? { ...read, id: newId('c'), title: t.library.copyOf(read.title) } : read;
       await saveCourse(course);
       toast({ message: t.library.imported(course.title) });
       await navigate({ to: '/c/$courseId/map', params: { courseId: course.id } });
@@ -110,7 +113,10 @@ function DeleteDialog({ course, onClose, onDeleted }: { course: CourseSummary | 
           <Button
             variant="destructive"
             onPress={async () => {
-              if (course) await deleteCourse(course.id);
+              if (course) {
+                dropSession(course.id);
+                await deleteCourse(course.id);
+              }
               onClose();
               onDeleted();
               toast({ message: t.library.deleted });

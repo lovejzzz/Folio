@@ -3,7 +3,7 @@ import { attentionItems, cmd, lessonNumber, type GeneratedKind } from '@folio/co
 import { create } from 'zustand';
 import { currentMessages } from '../i18n';
 import { currentInference, errorMessage } from './model';
-import { activeStore } from './session';
+import { activeStore, onSessionChange } from './session';
 import { toast } from './toasts';
 import { useUi } from './ui';
 
@@ -58,6 +58,8 @@ function finishToast(summary: Awaited<ReturnType<typeof runBuild>>): void {
     // A key problem is fixed in the connect dialog, and the build picks up where it stopped.
     const fixKey = { label: t.build.fixKey, run: () => useUi.getState().requireModel(() => void startBuild()) };
     toast({ key: 'build', message: errorMessage(summary.fatal), tone: 'critical', duration: 0, action: fixable ? fixKey : undefined });
+  } else if (summary.stopped && switchedFrom) {
+    toast({ key: 'build', message: t.build.stoppedBySwitch(switchedFrom) });
   } else if (summary.stopped) {
     toast({ key: 'build', message: t.build.stopped });
   } else if (summary.failed) {
@@ -66,6 +68,31 @@ function finishToast(summary: Awaited<ReturnType<typeof runBuild>>): void {
     const looks = store ? attentionItems(store.getState()).length : 0;
     toast({ key: 'build', message: looks ? t.build.readyLook(looks) : t.build.ready, action: looks ? openChanges : undefined, duration: looks ? 12_000 : 6000 });
   }
+}
+
+/** Title of the course whose build stopped because another course was opened. */
+let switchedFrom: string | null = null;
+let buildingTitle = '';
+
+// A build belongs to the course it started in: opening another one stops it,
+// rather than spending calls on results that could no longer be saved.
+onSessionChange(() => {
+  const { running, courseId } = useBuild.getState();
+  if (!running || activeStore()?.getState().id === courseId) return;
+  switchedFrom = buildingTitle;
+  stopBuild();
+});
+
+/** Queue these targets; failures from an earlier run of this course stay marked until retried. */
+function queuedCells(courseId: string, list: BuildTarget[]): Pick<BuildState, 'cells' | 'errors'> {
+  const earlier = useBuild.getState().courseId === courseId ? useBuild.getState() : { cells: {}, errors: {} };
+  const cells: Record<string, CellRun> = { ...earlier.cells };
+  const errors: Record<string, string> = { ...earlier.errors };
+  for (const target of list) {
+    cells[targetKey(target)] = 'queued';
+    delete errors[targetKey(target)];
+  }
+  return { cells, errors };
 }
 
 /** Build sections for the open course. With no targets, builds everything missing. */
@@ -81,9 +108,10 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   const list = targets ?? missingTargets(course);
   if (!list.length) return;
   const controller = new AbortController();
-  const cells: Record<string, CellRun> = {};
-  for (const target of list) cells[targetKey(target)] = 'queued';
-  useBuild.setState({ courseId: course.id, running: true, stopping: false, total: list.length, done: 0, cells, errors: {}, controller });
+  const { cells, errors } = queuedCells(course.id, list);
+  switchedFrom = null;
+  buildingTitle = course.title;
+  useBuild.setState({ courseId: course.id, running: true, stopping: false, total: list.length, done: 0, cells, errors, controller });
   if (course.status !== 'building') {
     store.apply([cmd('course.update', { status: 'building' })], { label: { key: 'editedCourse' }, source: 'ai', silent: true });
   }
@@ -124,6 +152,7 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   const errorsOnly = Object.fromEntries(Object.entries(after).filter(([, v]) => v === 'error'));
   useBuild.setState({ running: false, stopping: false, controller: null, cells: errorsOnly });
   finishToast(summary);
+  switchedFrom = null;
 }
 
 export function stopBuild(): void {

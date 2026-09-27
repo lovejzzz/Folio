@@ -178,6 +178,7 @@ export const zh: Messages = {
     ready: '课程已就绪。',
     readyLook: (n) => `课程已就绪。有 ${n} 处需要看看。`,
     stopped: '已停止生成。已完成的部分都已保存。',
+    stoppedBySwitch: (title: string) => `打开另一门课程时，“${title}”的生成已停止。已完成的部分都已保存，可回到该课程继续。`,
     failedSome: (n) => `有 ${n} 部分没能生成。`,
     review: '查看',
     fixKey: '修改密钥',

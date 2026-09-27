@@ -10,7 +10,7 @@ import { download } from '../../lib/exporter';
 import { allCourses, db } from '../../state/db';
 import { errorMessage } from '../../state/model';
 import { usePrefs } from '../../state/prefs';
-import { closeSession } from '../../state/session';
+import { dropSession } from '../../state/session';
 import { toast } from '../../state/toasts';
 
 function Section({ title, lede, children }: { title: string; lede?: string; children: ReactNode }) {
@@ -128,7 +128,7 @@ function DataSection() {
             <Button
               variant="destructive"
               onPress={async () => {
-                closeSession();
+                dropSession();
                 await db.courses.clear();
                 setConfirm(false);
                 toast({ message: t.library.deleted });

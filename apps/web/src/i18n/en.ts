@@ -195,6 +195,7 @@ export const en = {
     ready: 'Course ready.',
     readyLook: (n: number) => (n === 1 ? 'Course ready. 1 item needs a look.' : `Course ready. ${n} items need a look.`),
     stopped: 'Building stopped. What was finished is saved.',
+    stoppedBySwitch: (title: string) => `Building “${title}” stopped when another course was opened. What was finished is saved; resume it from that course.`,
     failedSome: (n: number) => (n === 1 ? '1 section could not be built.' : `${n} sections could not be built.`),
     review: 'Review',
     fixKey: 'Fix the key',
