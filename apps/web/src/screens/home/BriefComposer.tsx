@@ -71,6 +71,43 @@ function ComposerBar({ onPick, onGo }: { onPick: () => void; onGo: () => void })
   );
 }
 
+/** Files dropped anywhere on the composer are attached; it lights up while they hover. */
+function useDropZone(onFiles: (files: FileList) => void) {
+  const [dragging, setDragging] = useState(false);
+  const zone = {
+    onDragOver: (e: DragEvent) => {
+      e.preventDefault();
+      setDragging(true);
+    },
+    onDragLeave: () => setDragging(false),
+    onDrop: (e: DragEvent) => {
+      e.preventDefault();
+      setDragging(false);
+      if (e.dataTransfer.files.length) onFiles(e.dataTransfer.files);
+    },
+  };
+  return { dragging, zone };
+}
+
+/** One hidden file input, opened from the paperclip and from the sources hint. */
+function useFilePicker(onFiles: (files: FileList) => void) {
+  const ref = useRef<HTMLInputElement>(null);
+  const input = (
+    <input
+      ref={ref}
+      type="file"
+      multiple
+      accept=".txt,.md,.markdown,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      className="hidden"
+      onChange={(e) => {
+        if (e.target.files) onFiles(e.target.files);
+        e.target.value = '';
+      }}
+    />
+  );
+  return { input, pick: () => ref.current?.click() };
+}
+
 /** Source work without the sources: the model could only name extracts, so the composer asks for them. */
 function SourcesHint({ onPick }: { onPick: () => void }) {
   const t = useT();
@@ -94,11 +131,9 @@ export function BriefComposer() {
   const navigate = useNavigate();
   const brief = useDraft((s) => s.brief);
   const attach = useAttach();
-  const [dragging, setDragging] = useState(false);
   const [error, setError] = useState(false);
   const hintId = useId();
-  const fileInput = useRef<HTMLInputElement>(null);
-  const pick = () => fileInput.current?.click();
+  const picker = useFilePicker((files) => void attach(files));
   const go = () => {
     const { brief: text, files } = useDraft.getState();
     if (!text.trim() && files.length === 0) return setError(true);
@@ -106,19 +141,10 @@ export function BriefComposer() {
     if (hasModel()) start();
     else useUi.getState().requireModel(start);
   };
-  const onDrop = (e: DragEvent) => {
-    e.preventDefault();
-    setDragging(false);
-    if (e.dataTransfer.files.length) void attach(e.dataTransfer.files);
-  };
+  const { dragging, zone } = useDropZone((files) => void attach(files));
   return (
     <div
-      onDragOver={(e) => {
-        e.preventDefault();
-        setDragging(true);
-      }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={onDrop}
+      {...zone}
       className={cx('relative rounded-sheet bg-paper shadow-sheet transition-shadow duration-200', dragging && 'ring-2 ring-accent ring-offset-4 ring-offset-desk')}
     >
       <label htmlFor="brief" className="sr-only">
@@ -141,19 +167,9 @@ export function BriefComposer() {
       />
       {dragging && <p className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-sheet bg-accent-tint font-ui text-16 font-medium text-accent">{t.home.dropHere}</p>}
       <AttachedFiles />
-      <SourcesHint onPick={pick} />
-      <ComposerBar onPick={pick} onGo={go} />
-      <input
-        ref={fileInput}
-        type="file"
-        multiple
-        accept=".txt,.md,.markdown,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        className="hidden"
-        onChange={(e) => {
-          if (e.target.files) void attach(e.target.files);
-          e.target.value = '';
-        }}
-      />
+      <SourcesHint onPick={picker.pick} />
+      <ComposerBar onPick={picker.pick} onGo={go} />
+      {picker.input}
       {error && (
         <p id={hintId} role="alert" className="absolute -bottom-8 left-1 font-ui text-13 text-critical">
           {t.home.emptyBrief}
