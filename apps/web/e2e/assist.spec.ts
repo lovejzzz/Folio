@@ -78,3 +78,31 @@ test('an explanation closes with Esc or a click elsewhere, and the bar stays wit
   await page.mouse.click(1300, 700);
   await expect(page.getByText('This is the key idea of the lesson.')).toHaveCount(0);
 });
+
+test('⌘K leaves out steps that can’t be done, and says why', async ({ page }) => {
+  await withKey(page);
+  await fakeAnthropic(page);
+  await openSample(page);
+  await page.keyboard.press('ControlOrMeta+k');
+  await page.keyboard.type('remove lesson 99, make quizzes 40 questions and rename lesson 1');
+  await page.getByRole('option', { name: /remove lesson 99/ }).click();
+  await expect(page.getByText('Rename lesson 1 to “Asking good questions”')).toBeVisible();
+  await expect(page.getByText('Left out 2 steps that can’t be done:')).toBeVisible();
+  await expect(page.getByText('Remove lesson 99: the course has only 4 lessons.')).toBeVisible();
+  await expect(page.getByText('Make every quiz 40 questions: it has to be between 1 and 30.')).toBeVisible();
+  await page.getByRole('button', { name: 'Apply' }).click();
+  await expect(page.getByRole('link', { name: /Asking good questions/ }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /Samples and bias/ }).first()).toBeVisible();
+});
+
+test('⌘K shows there is nothing to do when no step can be done', async ({ page }) => {
+  await withKey(page);
+  await fakeAnthropic(page);
+  await openSample(page);
+  await page.keyboard.press('ControlOrMeta+k');
+  await page.keyboard.type('remove lesson 99');
+  await page.getByRole('option', { name: /remove lesson 99/ }).click();
+  await expect(page.getByText('There’s nothing to change.')).toBeVisible();
+  await expect(page.getByText('Remove lesson 99: the course has only 4 lessons.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Apply' })).toBeDisabled();
+});

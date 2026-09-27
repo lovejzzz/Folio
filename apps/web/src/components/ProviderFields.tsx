@@ -2,7 +2,7 @@ import { DEFAULT_MODELS, type ProviderId } from '@folio/ai';
 import { TextField, cx } from '@folio/ui';
 import { ExternalLink } from 'lucide-react';
 import { Radio, RadioGroup } from 'react-aria-components';
-import { useT } from '../i18n';
+import { useT, type Messages } from '../i18n';
 import { usePrefs } from '../state/prefs';
 
 const PROVIDERS: ProviderId[] = ['anthropic', 'openai', 'google', 'local'];
@@ -40,8 +40,19 @@ export function ProviderChoice({ value, onChange, compact }: { value: ProviderId
   );
 }
 
+/** A cloud provider is ready to use once it has a key; a local server once a connection test passes. */
+export function hasKey(provider: ProviderId): boolean {
+  return provider !== 'local' && Boolean(usePrefs.getState().keys[provider]?.trim());
+}
+
+/** What still has to be filled in before a provider can be tried, or null. */
+export function missingSetup(provider: ProviderId, t: Messages): string | null {
+  if (provider === 'local') return usePrefs.getState().localUrl.trim() ? null : t.settings.addressFirst;
+  return hasKey(provider) ? null : t.settings.keyFirst;
+}
+
 /** The key (or server address) and model for one provider, saved as you type. */
-export function ProviderFields({ provider, showModel = true }: { provider: ProviderId; showModel?: boolean }) {
+export function ProviderFields({ provider, showModel = true, onKey }: { provider: ProviderId; showModel?: boolean; onKey?: (key: string) => void }) {
   const t = useT();
   const { keys, models, localUrl, set } = usePrefs();
   const keyPage = KEY_PAGES[provider];
@@ -57,7 +68,10 @@ export function ProviderFields({ provider, showModel = true }: { provider: Provi
             autoComplete="off"
             description={t.settings.keyHint}
             value={keys[provider] ?? ''}
-            onChange={(v) => set({ keys: { ...usePrefs.getState().keys, [provider]: v.trim() } })}
+            onChange={(v) => {
+              set({ keys: { ...usePrefs.getState().keys, [provider]: v.trim() } });
+              onKey?.(v.trim());
+            }}
           />
           {keyPage && (
             <a
@@ -75,8 +89,9 @@ export function ProviderFields({ provider, showModel = true }: { provider: Provi
       {(showModel || provider === 'local') && (
         <TextField
           label={t.settings.model}
-          description={t.settings.modelHint}
-          value={models[provider] ?? DEFAULT_MODELS[provider]}
+          description={t.settings.modelHint(DEFAULT_MODELS[provider])}
+          placeholder={DEFAULT_MODELS[provider]}
+          value={models[provider] ?? ''}
           onChange={(v) => set({ models: { ...usePrefs.getState().models, [provider]: v.trim() } })}
         />
       )}

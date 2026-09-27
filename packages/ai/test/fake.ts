@@ -1,4 +1,4 @@
-import type { CompletionRequest, Inference } from '../src';
+import { parseJsonText, type CompletionRequest, type Inference } from '../src';
 
 /** A scripted model for tests: answers by task name, records every request. */
 export function fakeInference(answer: (req: CompletionRequest, call: number) => unknown): Inference & { calls: CompletionRequest[] } {
@@ -13,6 +13,15 @@ export function fakeInference(answer: (req: CompletionRequest, call: number) => 
       return answer(req, calls.length);
     },
   };
+}
+
+/**
+ * A scripted model that answers in text, the way a provider does: the text
+ * goes through the same JSON parsing as a real adapter, so a malformed
+ * answer fails the way it would in the app.
+ */
+export function fakeTextInference(answer: (req: CompletionRequest, call: number) => string): Inference & { calls: CompletionRequest[] } {
+  return fakeInference((req, call) => parseJsonText(answer(req, call)));
 }
 
 export const planDraft = {

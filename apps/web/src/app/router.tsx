@@ -8,7 +8,7 @@ import {
   redirect,
 } from '@tanstack/react-router';
 import { Home } from '../screens/home/Home';
-import { CourseNotFound, RouteError } from './errors';
+import { COURSE_MISSING, CourseRouteNotFound, MaterialNotFound, PageNotFound, RouteError } from './errors';
 import { RootLayout } from './RootLayout';
 
 /**
@@ -16,7 +16,7 @@ import { RootLayout } from './RootLayout';
  * links all work: /c/:courseId/map, /c/:courseId/lesson/:lessonId, /c/:courseId/m/:kind.
  */
 
-const rootRoute = createRootRoute({ component: RootLayout, errorComponent: RouteError });
+const rootRoute = createRootRoute({ component: RootLayout, errorComponent: RouteError, notFoundComponent: PageNotFound });
 
 const homeRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: Home });
 
@@ -44,10 +44,10 @@ export const courseRoute = createRoute({
   loader: async ({ params }) => {
     const { loadSession } = await import('../state/session');
     const store = await loadSession(params.courseId);
-    if (!store) throw notFound();
+    if (!store) throw notFound({ data: COURSE_MISSING });
     return null;
   },
-  notFoundComponent: CourseNotFound,
+  notFoundComponent: CourseRouteNotFound,
   component: lazyRouteComponent(() => import('../screens/course/CourseLayout'), 'CourseLayout'),
 });
 
@@ -95,6 +95,8 @@ export const materialRoute = createRoute({
     },
     stringify: (p: { kind: MaterialKind }) => ({ kind: p.kind }),
   },
+  // Shown inside the course layout: the course is fine, only the material is unknown.
+  notFoundComponent: MaterialNotFound,
   validateSearch: (search: Record<string, unknown>): MaterialSearch => {
     const slide = Number(search.slide);
     return {
@@ -122,10 +124,10 @@ export const printRoute = createRoute({
   loader: async ({ params }) => {
     const { loadSession } = await import('../state/session');
     const store = await loadSession(params.courseId);
-    if (!store) throw notFound();
+    if (!store) throw notFound({ data: COURSE_MISSING });
     return null;
   },
-  notFoundComponent: CourseNotFound,
+  notFoundComponent: CourseRouteNotFound,
   component: lazyRouteComponent(() => import('../screens/print/PrintScreen'), 'PrintScreen'),
 });
 
@@ -143,6 +145,7 @@ export const router = createRouter({
   defaultPreload: 'intent',
   scrollRestoration: true,
   defaultPendingMinMs: 0,
+  defaultNotFoundComponent: PageNotFound,
 });
 
 declare module '@tanstack/react-router' {

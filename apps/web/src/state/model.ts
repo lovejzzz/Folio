@@ -1,6 +1,7 @@
-import { createInference, isConfigured, type Inference, type InferenceError } from '@folio/ai';
+import { createInference, isConfigured, type Inference, type InferenceError, type ProviderId } from '@folio/ai';
 import { currentMessages } from '../i18n';
 import { modelSettings, usePrefs } from './prefs';
+import { toast } from './toasts';
 
 /** The configured model, or null if none is set up yet. */
 export function currentInference(): Inference | null {
@@ -13,11 +14,24 @@ export function useModelReady(): boolean {
   return isConfigured(settings);
 }
 
-export function errorMessage(error: unknown): string {
+const isOffline = (): boolean => typeof navigator !== 'undefined' && navigator.onLine === false;
+
+/**
+ * A cloud model can't be reached offline. Say so before asking, rather than
+ * fail a moment later with a network error. A local server still works.
+ */
+export function canReach(inference: Pick<Inference, 'provider'>): boolean {
+  if (inference.provider === 'local' || !isOffline()) return true;
+  toast({ key: 'offline', message: currentMessages().errors.offlineAction, tone: 'attention' });
+  return false;
+}
+
+/** The teacher-facing sentence for a failed model call, worded for the provider it went to. */
+export function errorMessage(error: unknown, provider: ProviderId | null = usePrefs.getState().provider): string {
   const t = currentMessages();
-  if (error && typeof error === 'object' && 'kind' in error) {
-    const kind = (error as InferenceError).kind;
-    return t.errors[kind] ?? t.errors.generic;
-  }
-  return t.errors.generic;
+  if (!error || typeof error !== 'object' || !('kind' in error)) return t.errors.generic;
+  const kind = (error as InferenceError).kind;
+  if (provider === 'local' && (kind === 'auth' || kind === 'network')) return t.errors.local[kind];
+  if (kind === 'network' && isOffline()) return t.errors.offlineAction;
+  return t.errors[kind] ?? t.errors.generic;
 }

@@ -1,6 +1,7 @@
 import { cmd, newId, orderedLessons, type Command, type Course, type Language } from '@folio/core';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
+import { checkOperations, type SkippedOperation } from './planCheck';
 import { coursePlanPrompt, systemPrompt, textActionPrompt, type TextAction } from './prompts';
 import { CoursePlanDraft, ExplanationDraft, TextDraft, type PlanOperation } from './schemas';
 
@@ -28,6 +29,8 @@ export interface Proposal {
   commands: Command[];
   /** Human-readable lines for the preview, in the order they will happen. */
   preview: PlanOperation[];
+  /** Steps the model proposed that can't be done here, or would change nothing, with why. */
+  skipped: SkippedOperation[];
 }
 
 /** ⌘K course-level requests become a typed plan the teacher previews before applying. */
@@ -44,17 +47,20 @@ export async function planCourseChange(
     schema: CoursePlanDraft,
     signal,
   });
+  const { operations, skipped } = checkOperations(course, r.value.operations);
   return {
     basisRevision: course.revision,
     rationale: r.value.summary,
-    commands: operationsToCommands(course, r.value.operations),
-    preview: r.value.operations,
+    commands: operationsToCommands(course, operations),
+    preview: operations,
+    skipped,
   };
 }
 
 /**
  * Lesson numbers in a plan refer to the course as it was when the plan was
  * made, so they are resolved to IDs up front, before any operation runs.
+ * Expects operations that passed checkOperations.
  */
 export function operationsToCommands(course: Course, operations: PlanOperation[]): Command[] {
   const ids = orderedLessons(course).map((l) => l.id);

@@ -1,0 +1,84 @@
+import type { Page } from '@playwright/test';
+import { expect, test } from './fixtures';
+import { fakeAnthropic } from './fakeModel';
+import { withKey } from './helpers';
+
+async function planLessons(page: Page, brief: string) {
+  await withKey(page);
+  const model = await fakeAnthropic(page);
+  await page.goto('/');
+  await page.getByLabel('Describe your course').fill(brief);
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByRole('textbox', { name: 'Title of lesson 1' }).waitFor();
+  return model;
+}
+
+const titles = (page: Page) => page.getByRole('textbox', { name: /^Title of lesson \d+$/ }).allTextContents();
+
+test('the lesson stepper counts the lessons that are there, down to none', async ({ page }) => {
+  await planLessons(page, 'Photosynthesis for year 7, two lessons');
+  const stepper = page.getByRole('textbox', { name: 'Lessons' });
+  await expect(stepper).toHaveValue('2');
+  await page.getByRole('button', { name: 'Remove lesson 2' }).click();
+  await expect(stepper).toHaveValue('1');
+  await page.getByRole('button', { name: 'Remove lesson 1' }).click();
+  await expect(page.getByRole('textbox', { name: /^Title of lesson/ })).toHaveCount(0);
+  await expect(stepper).toHaveValue('0');
+  await expect(page.getByRole('button', { name: 'Increase Lessons' })).toBeEnabled();
+
+  await page.getByRole('button', { name: 'Increase Lessons' }).click();
+  await expect(stepper).toHaveValue('1');
+  await expect(page.getByRole('textbox', { name: /^Title of lesson/ })).toHaveCount(1);
+  // One lesson is the least the stepper itself goes down to.
+  await expect(page.getByRole('button', { name: 'Decrease Lessons' })).toBeDisabled();
+});
+
+test('dragging a lesson down drops it where the line shows', async ({ page }) => {
+  // Tall enough that every row is on screen: a native drag can't scroll the page as it goes.
+  await page.setViewportSize({ width: 1440, height: 1800 });
+  await planLessons(page, 'Photosynthesis for year 7, four lessons');
+  const before = await titles(page);
+  expect(before).toHaveLength(4);
+  const rows = page.locator('ol > li');
+  await rows.nth(0).hover();
+  const handle = rows.nth(0).locator('[draggable="true"]');
+
+  // The top half of lesson 3: the line is drawn above lesson 3, so lesson 1 lands between 2 and 3.
+  await handle.dragTo(rows.nth(2), { targetPosition: { x: 200, y: 8 } });
+  await expect.poll(() => titles(page)).toEqual([before[1], before[0], before[2], before[3]]);
+
+  // The bottom half of the last lesson: it goes to the end.
+  const box = await rows.nth(3).boundingBox();
+  await rows.nth(0).hover();
+  await rows.nth(0).locator('[draggable="true"]').dragTo(rows.nth(3), { targetPosition: { x: 200, y: box!.height - 8 } });
+  await expect.poll(() => titles(page)).toEqual([before[0], before[2], before[3], before[1]]);
+
+  // Dragging up still lands above the line.
+  await rows.nth(3).hover();
+  await rows.nth(3).locator('[draggable="true"]').dragTo(rows.nth(0), { targetPosition: { x: 200, y: 8 } });
+  await expect.poll(() => titles(page)).toEqual([before[1], before[0], before[2], before[3]]);
+});
+
+test('a course with only course-level materials finishes building and opens like any other', async ({ page }) => {
+  const model = await planLessons(page, 'Photosynthesis for year 7, two lessons');
+  for (const name of ['Lesson plans', 'Slide decks', 'Assignments', 'Rubrics', 'Discussions', 'Quiz & exam bank', 'Study guides', 'Course FAQ', 'Course map']) {
+    const box = page.getByRole('checkbox', { name, exact: true });
+    if (await box.isChecked()) await box.uncheck({ force: true });
+  }
+  await expect(page.getByRole('checkbox', { name: 'Syllabus', exact: true })).toBeChecked();
+  const calls = model.calls.length;
+  await page.getByRole('button', { name: 'Build 2 lessons' }).click();
+
+  await expect(page.getByText('Course ready.')).toBeVisible();
+  const nav = page.getByRole('navigation', { name: 'More' });
+  await expect(nav.getByRole('link', { name: 'Map' })).toBeVisible();
+  await expect(nav.getByRole('link', { name: 'Lessons' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Export', exact: true })).toBeVisible();
+  expect(model.calls.length).toBe(calls);
+
+  // It stays ready after a reload, and the library doesn't list it as still planning.
+  await page.reload();
+  await expect(page.getByRole('navigation', { name: 'More' }).getByRole('link', { name: 'Map' })).toBeVisible();
+  await page.goto('/library');
+  await expect(page.getByText('Outline', { exact: true })).toHaveCount(0);
+});

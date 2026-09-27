@@ -1,8 +1,8 @@
-import { missingTargets, runBuild, targetKey, type BuildTarget, type InferenceError } from '@folio/ai';
+import { missingTargets, runBuild, targetKey, type BuildEvent, type BuildTarget, type InferenceError } from '@folio/ai';
 import { attentionItems, cmd, lessonNumber, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
 import { currentMessages } from '../i18n';
-import { currentInference, errorMessage } from './model';
+import { canReach, currentInference, errorMessage } from './model';
 import { activeStore, onSessionChange } from './session';
 import { toast } from './toasts';
 import { useUi } from './ui';
@@ -97,18 +97,50 @@ function queuedCells(courseId: string, list: BuildTarget[]): Pick<BuildState, 'c
   return { cells, errors };
 }
 
-/** Build sections for the open course. With no targets, builds everything missing. */
+type Store = NonNullable<ReturnType<typeof activeStore>>;
+
+function markReady(store: Store): void {
+  if (store.getState().status === 'ready') return;
+  store.apply([cmd('course.update', { status: 'ready' })], { label: { key: 'editedCourse' }, source: 'ai', silent: true });
+}
+
+function trackEvent(store: Store, event: BuildEvent): void {
+  const key = targetKey(event.target);
+  if (event.type === 'start') {
+    setCell(key, 'building');
+    useBuild.setState({ currentLesson: lessonNumber(store.getState(), event.target.lessonId) });
+  } else if (event.type === 'done') {
+    setCell(key, null);
+    useBuild.setState({ done: useBuild.getState().done + 1 });
+  } else {
+    setCell(key, (event.error as InferenceError).kind === 'aborted' ? null : 'error', errorMessage(event.error));
+    useBuild.setState({ done: useBuild.getState().done + 1 });
+  }
+}
+
+/**
+ * Build sections for the open course. With no targets, builds everything
+ * missing; a course whose materials are all course-level (the syllabus, the
+ * map) has nothing to write per lesson and is ready straight away.
+ */
 export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   const store = activeStore();
   if (!store || useBuild.getState().running) return;
+  const course = store.getState();
+  const list = targets ?? missingTargets(course);
+  if (!list.length) {
+    if (!targets && course.status !== 'ready') {
+      markReady(store);
+      toast({ key: 'build', message: currentMessages().build.ready, duration: 6000 });
+    }
+    return;
+  }
   const inference = currentInference();
   if (!inference) {
     useUi.getState().requireModel(() => void startBuild(targets));
     return;
   }
-  const course = store.getState();
-  const list = targets ?? missingTargets(course);
-  if (!list.length) return;
+  if (!canReach(inference)) return;
   const controller = new AbortController();
   const { cells, errors } = queuedCells(course.id, list);
   switchedFrom = null;
@@ -130,31 +162,29 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
           undoable: false,
         });
       },
-      onEvent: (event) => {
-        const key = targetKey(event.target);
-        if (event.type === 'start') {
-          setCell(key, 'building');
-          useBuild.setState({ currentLesson: lessonNumber(store.getState(), event.target.lessonId) });
-        } else if (event.type === 'done') {
-          setCell(key, null);
-          useBuild.setState({ done: useBuild.getState().done + 1 });
-        } else {
-          setCell(key, (event.error as InferenceError).kind === 'aborted' ? null : 'error', errorMessage(event.error));
-          useBuild.setState({ done: useBuild.getState().done + 1 });
-        }
-      },
+      onEvent: (event) => trackEvent(store, event),
     },
     list,
   );
-  const stillMissing = missingTargets(store.getState()).length;
-  if (!stillMissing) {
-    store.apply([cmd('course.update', { status: 'ready' })], { label: { key: 'editedCourse' }, source: 'ai', silent: true });
-  }
+  if (!missingTargets(store.getState()).length) markReady(store);
   const { cells: after } = useBuild.getState();
   const errorsOnly = Object.fromEntries(Object.entries(after).filter(([, v]) => v === 'error'));
   useBuild.setState({ running: false, stopping: false, controller: null, cells: errorsOnly });
   finishToast(summary);
   switchedFrom = null;
+}
+
+/**
+ * Whether a build can start from the plan screen. Offline, a build that needs
+ * a cloud model says so and the teacher stays on the plan, rather than landing
+ * on a map that can't fill in.
+ */
+export function readyToBuild(): boolean {
+  const store = activeStore();
+  if (!store) return false;
+  if (!missingTargets(store.getState()).length) return true;
+  const inference = currentInference();
+  return !inference || canReach(inference);
 }
 
 export function stopBuild(): void {

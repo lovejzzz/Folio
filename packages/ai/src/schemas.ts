@@ -119,8 +119,10 @@ export const PlanOperation = z.discriminatedUnion('op', [
   z.object({ op: z.literal('renameLesson'), lesson: lessonNo, title: line }),
   z.object({ op: z.literal('moveLesson'), lesson: lessonNo, to: lessonNo }),
   z.object({ op: z.literal('addObjective'), lesson: lessonNo, text: line }),
-  z.object({ op: z.literal('setQuizSize'), size: z.number().int().min(1).max(40) }),
-  z.object({ op: z.literal('setMinutes'), minutes: z.number().int().min(5).max(600) }),
+  // Ranges are checked against SHAPE_LIMITS after parsing (see planCheck.ts), so an
+  // out-of-range request is shown to the teacher as such rather than quietly "repaired".
+  z.object({ op: z.literal('setQuizSize'), size: z.number().int().min(1).describe('Questions per quiz') }),
+  z.object({ op: z.literal('setMinutes'), minutes: z.number().int().min(1).describe('Minutes per lesson') }),
   z.object({ op: z.literal('setLevel'), level: line }),
   z.object({
     op: z.literal('setMaterial'),

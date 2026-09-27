@@ -1,4 +1,4 @@
-import { planCourseChange, missingTargets, type PlanOperation, type Proposal } from '@folio/ai';
+import { planCourseChange, missingTargets, type PlanOperation, type Proposal, type SkipReason, type SkippedOperation } from '@folio/ai';
 import { CourseStore, staleItems } from '@folio/core';
 import { Button, Skeleton } from '@folio/ui';
 import { Sparkles } from 'lucide-react';
@@ -31,6 +31,35 @@ function describe(op: PlanOperation, t: Messages): string {
     case 'setMaterial':
       return t.command.ops.setMaterial({ material: t.materials[op.material], enabled: op.enabled });
   }
+}
+
+function reason(r: SkipReason, t: Messages): string {
+  switch (r.code) {
+    case 'noLesson':
+      return t.command.skip.noLesson(r);
+    case 'range':
+      return t.command.skip.range(r);
+    case 'tooMany':
+      return t.command.skip.tooMany(r);
+    default:
+      return t.command.skip[r.code];
+  }
+}
+
+/** Steps the model proposed that can't be done here, each with the reason. */
+function Skipped({ skipped }: { skipped: SkippedOperation[] }) {
+  const t = useT();
+  if (!skipped.length) return null;
+  return (
+    <div className="mt-3">
+      <p className="font-ui text-13 text-ink-2">{t.command.skipped(skipped.length)}</p>
+      <ul className="mt-1 space-y-1 font-ui text-13 text-ink-2">
+        {skipped.map((s, i) => (
+          <li key={i}>{t.command.skipLine(describe(s.op, t), reason(s.reason, t))}</li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 function usePlan(request: string, onDone: () => void): { proposal: Proposal | null; error: string | null } {
@@ -69,7 +98,12 @@ function PlanPreview({ proposal, before }: { proposal: Proposal; before: Set<str
   const t = useT();
   const course = useCourse();
   if (proposal.preview.length === 0) {
-    return (
+    return proposal.skipped.length ? (
+      <div>
+        <p className="font-ui text-14 text-ink">{t.command.nothingToDo}</p>
+        <Skipped skipped={proposal.skipped} />
+      </div>
+    ) : (
       <p className="font-ui text-14 text-ink-2">
         {t.command.nothing} {proposal.rationale}
       </p>
@@ -89,6 +123,7 @@ function PlanPreview({ proposal, before }: { proposal: Proposal; before: Set<str
         ))}
       </ul>
       {newlyStale.length > 0 && <p className="mt-2 font-ui text-13 text-ink-2">{t.command.thenUpdate(newlyStale.length)}</p>}
+      <Skipped skipped={proposal.skipped} />
     </div>
   );
 }

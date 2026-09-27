@@ -1,7 +1,7 @@
 import { generateSection } from '@folio/ai';
 import { cmd, lessonNumber, type Command, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
-import { currentInference, errorMessage } from './model';
+import { canReach, currentInference, errorMessage } from './model';
 import { activeStore } from './session';
 import { toast } from './toasts';
 import { useUi } from './ui';
@@ -41,6 +41,7 @@ export async function updateSection(lessonId: string, kind: GeneratedKind): Prom
     useUi.getState().requireModel(() => void updateSection(lessonId, kind));
     return;
   }
+  if (!canReach(inference)) return;
   const k = key(lessonId, kind);
   const course = store.getState();
   const edited = course.lessons[lessonId]?.gen[kind]?.edited ?? false;

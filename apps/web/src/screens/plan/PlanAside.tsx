@@ -1,10 +1,10 @@
-import { CORE_SET, MATERIAL_KINDS, cmd, newId, type MaterialKind } from '@folio/core';
+import { CORE_SET, MATERIAL_KINDS, SHAPE_LIMITS, cmd, newId, type MaterialKind } from '@folio/core';
 import { Button, MaterialIcon, NumberStepper, SegmentedControl, cx, tabBg } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { Check } from 'lucide-react';
 import { Checkbox } from 'react-aria-components';
 import { useT } from '../../i18n';
-import { startBuild } from '../../state/build';
+import { readyToBuild, startBuild } from '../../state/build';
 import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
 
@@ -49,12 +49,14 @@ function Shape() {
       edit(drop.map((lessonId) => cmd('lesson.remove', { lessonId })), { key: 'removedLesson', values: { n: n + 1 } });
     }
   };
+  const { lessons, minutesPerLesson: minutes, quizSize: quiz } = SHAPE_LIMITS;
   const shape = (patch: Partial<typeof course.shape>) => edit([cmd('course.update', { shape: patch })], { key: 'changedShape' });
   return (
     <div className="space-y-3">
-      <NumberStepper label={t.plan.lessonsCount} minValue={1} maxValue={20} value={count} onChange={setCount} />
-      <NumberStepper label={t.plan.minutes} minValue={10} maxValue={240} step={5} value={course.shape.minutesPerLesson} onChange={(v) => Number.isFinite(v) && shape({ minutesPerLesson: v })} />
-      <NumberStepper label={t.plan.quizSize} minValue={1} maxValue={30} value={course.shape.quizSize} onChange={(v) => Number.isFinite(v) && shape({ quizSize: v })} />
+      {/* The range always includes the real count, so the field never shows a number of lessons that isn't there. */}
+      <NumberStepper label={t.plan.lessonsCount} minValue={Math.min(lessons.min, count)} maxValue={Math.max(lessons.max, count)} value={count} onChange={setCount} />
+      <NumberStepper label={t.plan.minutes} minValue={minutes.min} maxValue={minutes.max} step={minutes.step} value={course.shape.minutesPerLesson} onChange={(v) => Number.isFinite(v) && shape({ minutesPerLesson: v })} />
+      <NumberStepper label={t.plan.quizSize} minValue={quiz.min} maxValue={quiz.max} value={course.shape.quizSize} onChange={(v) => Number.isFinite(v) && shape({ quizSize: v })} />
     </div>
   );
 }
@@ -74,6 +76,7 @@ export function PlanAside() {
   };
   const count = course.lessonOrder.length;
   const build = () => {
+    if (!readyToBuild()) return;
     void navigate({ to: '/c/$courseId/map', params: { courseId: course.id } });
     void startBuild();
   };

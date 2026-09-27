@@ -49,7 +49,7 @@ The dependencies point one way: `core` ← `ai`/`export` ← `ui` ← `web`. ESL
 - **Commands, undo, history.** Every change, whether you typed it or the model proposed it, is a typed command applied with Immer patches. Undo checks that nothing changed the same content since, so you can undo any single entry in the history, not only the last one, and it refuses when undoing would clobber later work. Build steps appear in history but are skipped by `⌘Z`.
 - **Ripple.** A generated section records hashes of the inputs it was built from: lesson, objectives, minutes, quiz size, level and language, plan, sources. If a hash no longer matches, the section is out of date, and the reason can be named.
 - **Projections.** Each material is a pure function, `project(course, kind, { audience, lessonIds }) → SemanticDoc`. The screen's print view, the export preview and every exporter read the same projection. Overrides let one material word a shared entity differently.
-- **Schema-first AI.** Jobs are small and typed: an outline, then per lesson a plan, slides, study guide, questions, an assignment with its rubric, discussions and FAQ. Each job asks for JSON against a Zod-derived schema, validates it, then runs deterministic checks: the answer must be one of the choices, choices must be distinct, arithmetic answers are recomputed from the model's working, and segment minutes must add up. It is allowed one repair call that quotes the problems. Anything still wrong is kept and marked "needs a look", never patched with a regex. Claude runs through the official Anthropic SDK with structured outputs; `claude-opus-5` is the default and refusals fall back server-side.
+- **Schema-first AI.** Jobs are small and typed: an outline, then per lesson a plan, slides, study guide, questions, an assignment with its rubric, discussions and FAQ. Each job asks for JSON against a Zod-derived schema, validates it, then runs deterministic checks: the answer must be one of the choices, choices must be distinct, arithmetic answers are recomputed from the model's working, and segment minutes must add up. It is allowed one repair call that quotes the problems, and an answer that is not valid JSON, or was cut off, gets the same one call. Anything still wrong is kept and marked "needs a look", never patched with a regex. Claude runs through the official Anthropic SDK with structured outputs; `claude-opus-5` is the default and refusals fall back server-side.
 - **Local-first.** Each change is written to IndexedDB (Dexie) within 300 ms, and nothing is ever pruned. Word and PowerPoint files are made in a Web Worker (Comlink). A `.folio` file is a zip of `course.json`, `manifest.json` and `sources/`.
 
 ## Design system
@@ -62,9 +62,9 @@ The look is "paper and ink": warm desk, paper sheets, one fountain-pen blue, and
 | --- | --- | --- |
 | Types (strict) | `pnpm typecheck` | clean |
 | Lint (warnings fail; files ≤ 400 lines, functions ≤ 60) | `pnpm lint` | clean |
-| Unit tests (one glob, every file runs) | `pnpm test` | 172 tests |
-| End to end + axe (WCAG 2.2 AA) + CSP guard | `pnpm test:e2e` | 14 tests, light, dark and phone |
-| Budgets | `pnpm build && pnpm budget` | initial JS 140 KB gzip (≤ 150), all JS 2.8 MB (≤ 3), dist 6.7 MB (≤ 8) |
+| Unit tests (one glob, every file runs) | `pnpm test` | 277 tests |
+| End to end + axe (WCAG 2.2 AA) + CSP guard | `pnpm test:e2e` | 52 tests, light, dark and phone |
+| Budgets | `pnpm build && pnpm budget` | initial JS 147 KB gzip (≤ 150), all JS 2.8 MB (≤ 3), dist 6.7 MB (≤ 8) |
 
 `pnpm check` runs everything except the end-to-end tests. The end-to-end tests run the production build under the production Content-Security-Policy, with a stand-in for the Anthropic API that answers each job from its prompt. Any CSP violation or uncaught error fails a test. `cd apps/web && FOLIO_TOUR=/tmp/tour npx playwright test tour` takes a screenshot of every screen for design review.
 

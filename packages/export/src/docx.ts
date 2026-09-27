@@ -4,6 +4,7 @@ import { printPalette } from '@folio/ui/tokens';
 import { renderBlock, runs, type BlockCtx, type DocxChild } from './docxBlocks';
 import { MARGIN, SIZE, contentWidth, documentStyles, fontFor, numbering, pageSize } from './docxTheme';
 import { exportLabels } from './labels';
+import { ExportError } from './errors';
 
 export interface DocxOptions {
   courseTitle: string;
@@ -72,7 +73,7 @@ function section(doc: SemanticDoc, courseTitle: string, lists: { count: number }
  */
 export async function renderDocx(docs: SemanticDoc[], opts: DocxOptions): Promise<Uint8Array> {
   const first = docs[0];
-  if (!first) throw new Error('Choose at least one material to export.');
+  if (!first) throw new ExportError('noMaterials', 'Choose at least one material to export.');
   const lists = { count: 0 };
   const document = new Document({
     title: opts.courseTitle,

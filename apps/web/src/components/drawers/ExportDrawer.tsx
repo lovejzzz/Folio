@@ -7,6 +7,7 @@ import { Radio, RadioGroup } from 'react-aria-components';
 import { router } from '../../app/router';
 import { useT, type Messages } from '../../i18n';
 import { download, makeExport } from '../../lib/exporter';
+import { exportErrorMessage } from '../../lib/exportErrors';
 import { uploadToGoogleDocs } from '../../lib/google';
 import { flushNow, useCourse } from '../../state/session';
 import { toast } from '../../state/toasts';
@@ -140,7 +141,7 @@ export function ExportDrawer() {
   const run = () => {
     setBusy(true);
     runExport(effectiveChoice(choice), course, t)
-      .catch((error: unknown) => toast({ message: error instanceof Error && error.message ? error.message : t.export.failed, tone: 'critical' }))
+      .catch((error: unknown) => toast({ message: exportErrorMessage(error, t), tone: 'critical' }))
       .finally(() => setBusy(false));
   };
   const noSlides = choice.format === 'pptx' && !lessons.some((l) => (choice.scope !== 'lesson' || l.id === choice.lessonId) && l.slides.length);
