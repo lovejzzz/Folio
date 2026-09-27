@@ -11,6 +11,15 @@ def course_stats(c):
     choice = [q for q in qs if q['format'] == 'choice' and q['correct']]
     pos = collections.Counter('ABCDEF'[[x['id'] for x in q['choices']].index(q['correct'])] for q in choice)
     longest = sum(1 for q in choice if max(q['choices'], key=lambda x: len(x['text']))['id'] == q['correct'])
+    def stands_out(q):
+        right = next(len(x['text'].strip()) for x in q['choices'] if x['id'] == q['correct'])
+        others = [len(x['text'].strip()) for x in q['choices'] if x['id'] != q['correct']]
+        return len(q['choices']) >= 3 and right > max(others) * 1.15 and right >= sum(others) / len(others) * 1.3
+    standout = sum(1 for q in choice if stands_out(q))
+    def ratio(q):
+        right = next(len(x['text'].strip()) for x in q['choices'] if x['id'] == q['correct'])
+        return right / max(len(x['text'].strip()) for x in q['choices'] if x['id'] != q['correct'])
+    ratios = sorted(ratio(q) for q in choice)
     tf = [q for q in qs if q['format'] == 'truefalse']
     tf_true = sum(1 for q in tf if next((x['text'] for x in q['choices'] if x['id'] == q['correct']), '') in ('True', '正确', '对'))
     tf_prefix = sum(1 for q in tf if re.match(r'\s*(true or false|判断)', q['prompt'], re.I))
@@ -27,6 +36,8 @@ def course_stats(c):
     return {
         'choice correct position': dict(sorted(pos.items())),
         'longest choice is correct': f'{longest}/{len(choice)}',
+        'right answer stands out by length': f'{standout}/{len(choice)}',
+        'right / longest wrong (median, max)': f'{st.median(ratios):.2f}, {max(ratios):.2f}' if ratios else '-',
         'true/false true': f'{tf_true}/{len(tf)}',
         'true/false prefixed': tf_prefix,
         'Title Case lesson titles': f'{sum(1 for t in titles if TITLE_CASE.match(t))}/{len(titles)}',
@@ -47,7 +58,9 @@ for root in sys.argv[1:] or ['apps/web/live-results']:
         if not os.path.exists(path):
             continue
         d = json.load(open(path))
-        print(f'== {name}: outline {d["marks"]["outline"]/1000:.0f}s, build {d["marks"]["build"]/1000:.0f}s, {len(d["calls"])} calls, toast: {d["toast"]}')
+        quiz_calls = sum(1 for x in d['calls'] if x['kind'] == 'quiz questions')
+        lessons = len(d['course']['lessonOrder'])
+        print(f'== {name}: outline {d["marks"]["outline"]/1000:.0f}s, build {d["marks"]["build"]/1000:.0f}s, {len(d["calls"])} calls ({quiz_calls - lessons} quiz repairs), toast: {d["toast"]}')
         for k, v in course_stats(d['course']).items():
             print(f'   {k:42s} {v}')
     path = os.path.join(root, 'live-assist.json')

@@ -2,6 +2,7 @@ import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
 import {
   checkMinutes,
+  answerStandsOut,
   checkQuestion,
   cmd,
   duplicatePrompts,
@@ -124,6 +125,7 @@ const quiz: SectionJob<QuizDraft> = {
     const dupes = new Set(duplicatePrompts(v.questions.map((q) => q.prompt)));
     v.questions.forEach((q, index) => {
       if (dupes.has(q.prompt)) problems.push({ index, flag: { code: 'repeatsQuestion' } });
+      if (answerStandsOut(q)) problems.push({ index, flag: { code: 'answerStandsOut' }, advisory: true });
     });
     if (v.questions.length !== course.shape.quizSize) {
       problems.push({ index: null, flag: { code: 'questionCount', values: { got: v.questions.length, want: course.shape.quizSize } } });

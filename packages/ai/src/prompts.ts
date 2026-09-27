@@ -5,7 +5,7 @@ import { SHAPE_LIMITS, lessonNumber, orderedLessons, statedObjectives, type Cour
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@5';
+export const PROMPT_VERSION = 'folio-prompts@7';
 
 const SOURCE_BUDGET = 12000;
 
@@ -110,17 +110,28 @@ function planSummary(lesson: Lesson): string {
   return `The lesson plan's key ideas:\n${ideas}\n\nThe lesson runs like this:\n${flow}`;
 }
 
+/**
+ * Asked to "make about half true", models swing to all false or all true. So
+ * Folio sets the order: alternating within a quiz, starting true or false by
+ * lesson, so a course comes out close to even.
+ */
+function trueFalseOrder(lesson: Lesson): string {
+  const startTrue = [...lesson.id].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 2 === 0;
+  const [first, second] = startTrue ? ['true', 'false'] : ['false', 'true'];
+  return `If you include true/false questions, make the first statement ${first}, the second ${second}, and keep alternating.`;
+}
+
 export type SectionPromptKind = 'plan' | 'slides' | 'study' | 'quiz' | 'assignments' | 'discussions' | 'faq';
 
-const asks: Record<SectionPromptKind, (course: Course) => string> = {
+const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string> = {
   plan: (c) =>
     `Write the lesson plan: two to five key ideas, a sequence of segments (warm-up, teaching, practice, discussion, check, close as fits) whose minutes add up to ${c.shape.minutesPerLesson}, and the vocabulary students need. Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
   slides: () =>
     'Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes.',
   study: () =>
     'Write a study guide for students to read after the lesson: a short overview, then two to four key points, each with a heading and a clear explanation that includes an example.',
-  quiz: (c) =>
-    `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer, true/false or numeric questions where they fit. For choice and true/false questions, "answer" must repeat the correct choice exactly. Use plausible wrong choices that reflect real misconceptions, as long, specific and carefully worded as the right one, so the right answer can't be spotted by its length. Never refer to a choice by its letter or position. Write a true/false question as a plain statement, without "True or false:" in front, and make about half of the true/false statements true. Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression".`,
+  quiz: (c, lesson) =>
+    `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer, true/false or numeric questions where they fit. For choice and true/false questions, "answer" must repeat the correct choice exactly. Use plausible wrong choices that reflect real misconceptions, as long, specific and carefully worded as the right one, so the right answer can't be spotted by its length. Never refer to a choice by its letter or position. Write a true/false question as a plain statement, without "True or false:" in front. ${trueFalseOrder(lesson)} Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression".`,
   assignments: () =>
     'Write one assignment that lets students apply this lesson, with numbered steps, and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
   discussions: () =>
@@ -139,7 +150,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     const sources = sourcesBlock(course);
     if (sources) parts.push(sources, 'Where a question draws on a passage, give its number in "sourcePassage".');
   }
-  parts.push(asks[kind](course));
+  parts.push(asks[kind](course, lesson));
   return parts.join('\n\n');
 }
 
@@ -180,6 +191,6 @@ export function coursePlanPrompt(course: Course, request: string): string {
     `The teacher asks: """${request.trim()}"""`,
     `Limits: ${lessonLimit.min}–${lessonLimit.max} lessons, ${quiz.min}–${quiz.max} questions per quiz, ${minutes.min}–${minutes.max} minutes per lesson.`,
     'Turn the request into the smallest list of operations that does it. Lesson numbers refer to the list above, before any change. If an existing lesson already covers what is asked, prefer changing it over adding a near-copy.',
-    'The summary is one short sentence to the teacher saying what will change and why, naming lessons by title (for example that an existing lesson already covers the topic). Do not write in the first person or offer other help. If the request is not about the course structure, return no operations and say in one sentence that Folio can only change the course.',
+    'The summary is one short sentence to the teacher saying exactly what will change, with the concrete values and lesson titles (for example: every lesson becomes 45 minutes; "Samples and bias" moves after "Picturing a distribution" because it already covers the topic). Never say "as requested" or "the new setting". Do not write in the first person or offer other help. If the request is not about the course structure, return no operations and say in one sentence that Folio can only change the course.',
   ].join('\n\n');
 }

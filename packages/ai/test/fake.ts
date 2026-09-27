@@ -1,3 +1,4 @@
+import { cmd, CourseStore, createCourse, newId, type Course } from '@folio/core';
 import { parseJsonText, type CompletionRequest, type Inference } from '../src';
 
 /** A scripted model for tests: answers by task name, records every request. */
@@ -49,4 +50,16 @@ export function quizDraft(n: number, overrides: Record<number, object> = {}) {
       ...overrides[i],
     })),
   };
+}
+
+/** Two lessons, one objective each, quizzes of three. */
+export function smallCourse(): Course {
+  const store = new CourseStore(createCourse({ title: 'Photosynthesis', quizSize: 3, minutesPerLesson: 50 }));
+  for (const title of ['Light and leaves', 'The Calvin cycle']) {
+    store.apply(
+      [cmd('lesson.insert', { lesson: { id: newId('l'), title, summary: '' }, afterId: store.getState().lessonOrder.at(-1) ?? null, objectives: [{ id: newId('o'), text: `Explain ${title}` }] })],
+      { label: { key: 't' }, source: 'teacher' },
+    );
+  }
+  return store.getState();
 }

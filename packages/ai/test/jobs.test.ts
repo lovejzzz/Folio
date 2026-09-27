@@ -1,19 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { cmd, CourseStore, createCourse, newId, orderedLessons, staleItems, type Course } from '@folio/core';
+import { CourseStore, orderedLessons, staleItems } from '@folio/core';
 import { generateSection, InferenceError, missingTargets, runBuild, runJob, type BuildTarget } from '../src';
-import { fakeInference, planDraft, quizDraft } from './fake';
+import { fakeInference, planDraft, quizDraft, smallCourse } from './fake';
 import { z } from 'zod';
-
-function smallCourse(): Course {
-  const store = new CourseStore(createCourse({ title: 'Photosynthesis', quizSize: 3, minutesPerLesson: 50 }));
-  for (const title of ['Light and leaves', 'The Calvin cycle']) {
-    store.apply(
-      [cmd('lesson.insert', { lesson: { id: newId('l'), title, summary: '' }, afterId: store.getState().lessonOrder.at(-1) ?? null, objectives: [{ id: newId('o'), text: `Explain ${title}` }] })],
-      { label: { key: 't' }, source: 'teacher' },
-    );
-  }
-  return store.getState();
-}
 
 describe('runJob', () => {
   const schema = z.object({ n: z.number() });

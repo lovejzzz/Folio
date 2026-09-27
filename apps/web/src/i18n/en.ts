@@ -358,6 +358,7 @@ export const en = {
       `The steps add up to ${v.total === 1 ? '1 minute' : `${v.total} minutes`}, not ${v.target}.`,
     unknownObjective: (v: { objective: number }) => `It refers to objective ${v.objective}, which doesn’t exist.`,
     repeatsQuestion: () => 'It repeats an earlier question.',
+    answerStandsOut: () => 'The right answer is much longer than the wrong ones.',
     questionCount: (v: { got: number; want: number }) =>
       v.got === 1 ? `There is 1 question instead of ${v.want}.` : `There are ${v.got} questions instead of ${v.want}.`,
     lessonCount: (v: { got: number; want: number }) =>

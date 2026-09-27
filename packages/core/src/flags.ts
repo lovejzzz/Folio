@@ -25,6 +25,7 @@ export const FlagSchema = z.discriminatedUnion('code', [
   withValues('minutesMismatch', { total: z.number(), target: z.number() }),
   withValues('unknownObjective', { objective: z.number() }),
   plain('repeatsQuestion'),
+  plain('answerStandsOut'),
   withValues('questionCount', count),
   withValues('lessonCount', count),
   withValues('criterionLevels', { criterion: z.string() }),
@@ -70,6 +71,8 @@ export function describeFlag(flag: Flag): string {
       return `It refers to objective ${flag.values.objective}, which does not exist.`;
     case 'repeatsQuestion':
       return 'It repeats an earlier question.';
+    case 'answerStandsOut':
+      return 'The right answer is noticeably longer and more detailed than every wrong choice, so it can be picked by its length. Rewrite the wrong choices to be as long, specific and plausible as the right one (or trim the right one), keeping the right answer correct.';
     case 'questionCount':
       return `There ${flag.values.got === 1 ? 'is 1 question' : `are ${flag.values.got} questions`} instead of ${flag.values.want}.`;
     case 'lessonCount':

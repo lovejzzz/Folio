@@ -12,6 +12,8 @@ export interface Problem {
   /** Index of the item the problem belongs to, or null for the whole job. */
   index: number | null;
   flag: Flag;
+  /** Worth one repair call, but not worth the teacher's attention if it remains (a style tell, not an error). */
+  advisory?: boolean;
 }
 
 export interface JobSpec<T> {
@@ -70,6 +72,9 @@ function repairPrompt(prompt: string, raw: unknown, problems: Problem[]): string
   return `${prompt}\n\nYour previous answer was:\n${quote(raw)}\n\nIt has these problems:\n${list}\n\nReturn a corrected version of the whole answer, as JSON only.`;
 }
 
+/** Only real problems reach the teacher as "needs a look". */
+const shown = (problems: Problem[]) => problems.filter((p) => !p.advisory);
+
 export async function runJob<T>(inference: Inference, spec: JobSpec<T>): Promise<JobResult<T>> {
   const request = { task: spec.task, system: spec.system, schema: spec.schema, signal: spec.signal };
   const first = await attempt(inference, request, spec.prompt, spec);
@@ -77,7 +82,10 @@ export async function runJob<T>(inference: Inference, spec: JobSpec<T>): Promise
     return { value: first.value, problems: [], repaired: false };
   }
   const second = await attempt(inference, request, repairPrompt(spec.prompt, first.raw, first.problems), spec);
-  if (second.value !== undefined) return { value: second.value, problems: second.problems, repaired: true };
-  if (first.value !== undefined) return { value: first.value, problems: first.problems, repaired: false };
+  // A repair that made things worse is not taken: keep whichever answer has fewer real problems.
+  if (second.value !== undefined && (first.value === undefined || shown(second.problems).length <= shown(first.problems).length)) {
+    return { value: second.value, problems: shown(second.problems), repaired: true };
+  }
+  if (first.value !== undefined) return { value: first.value, problems: shown(first.problems), repaired: false };
   throw new InferenceError('invalid', 'The model returned something Folio could not use, twice.');
 }

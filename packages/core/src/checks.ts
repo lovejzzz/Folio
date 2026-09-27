@@ -33,6 +33,22 @@ export function checkQuestion(q: DraftQuestion): Flag[] {
   return problems;
 }
 
+/**
+ * The right answer gives itself away by length: clearly longer than every
+ * wrong choice. Test-wise students pick the longest option; models tend to
+ * write the right one with more care, so it is.
+ */
+export function answerStandsOut(q: DraftQuestion): boolean {
+  if (q.format !== 'choice' || q.choices.length < 3) return false;
+  const right = q.choices.find((c) => norm(c) === norm(q.answer));
+  if (right === undefined) return false;
+  const others = q.choices.filter((c) => c !== right).map((c) => c.trim().length);
+  const longest = Math.max(...others);
+  const mean = others.reduce((a, b) => a + b, 0) / others.length;
+  const length = right.trim().length;
+  return length > longest * 1.15 && length >= mean * 1.3;
+}
+
 function checkNumeric(q: DraftQuestion): Flag[] {
   const stated = parseNumber(q.answer);
   if (stated === null) return [{ code: 'answerNotNumber' }];

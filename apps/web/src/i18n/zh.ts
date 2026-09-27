@@ -339,6 +339,7 @@ export const zh: Messages = {
     minutesMismatch: (v) => `各环节加起来是 ${v.total} 分钟，而不是 ${v.target} 分钟。`,
     unknownObjective: (v) => `这道题对应第 ${v.objective} 个学习目标，但这个目标不存在。`,
     repeatsQuestion: () => '这道题与前面的题目重复。',
+    answerStandsOut: () => '正确答案明显比错误选项长。',
     questionCount: (v) => `现在有 ${v.got} 道题，而不是 ${v.want} 道。`,
     lessonCount: (v) => `现在有 ${v.got} 课，而不是 ${v.want} 课。`,
     criterionLevels: (v) => `评价维度“${v.criterion}”没有描述每一个等级。`,
