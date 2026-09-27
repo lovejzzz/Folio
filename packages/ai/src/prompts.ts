@@ -5,14 +5,14 @@ import { SHAPE_LIMITS, lessonNumber, orderedLessons, statedObjectives, type Cour
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@2';
+export const PROMPT_VERSION = 'folio-prompts@3';
 
 const SOURCE_BUDGET = 12000;
 
 function languageLine(language: Language): string {
   return language === 'zh-CN'
     ? 'Write every piece of text in Simplified Chinese (简体中文), with natural Chinese classroom phrasing.'
-    : 'Write in clear English suited to the level of the students.';
+    : 'Write in clear English suited to the level of the students. Use sentence case for titles and headings (capitalise only the first word and names).';
 }
 
 export function systemPrompt(language: Language): string {
@@ -43,7 +43,8 @@ export function outlinePrompt(input: OutlineInput): string {
   const parts = [
     `The teacher wrote: """${input.brief.trim()}"""`,
     `Plan exactly ${input.lessonCount} lessons of ${input.minutesPerLesson} minutes each${input.level ? ` for ${input.level}` : ''}.`,
-    'Order the lessons so each builds on the last. Give each lesson a title that names what is taught, a one-sentence summary and one to three measurable objectives.',
+    'Order the lessons so each builds on the last. Give each lesson a short title that names what is taught, a one-sentence summary of under 25 words, and one to three measurable objectives of under 15 words each.',
+    'Do not mention the lesson length, the number of quiz questions or which materials a lesson has: Folio keeps those as settings the teacher can change, so they must not be repeated in the text.',
   ];
   if (input.sources.length) {
     const each = Math.floor(SOURCE_BUDGET / input.sources.length);
@@ -111,13 +112,13 @@ export type SectionPromptKind = 'plan' | 'slides' | 'study' | 'quiz' | 'assignme
 
 const asks: Record<SectionPromptKind, (course: Course) => string> = {
   plan: (c) =>
-    `Write the lesson plan: two to five key ideas, a sequence of segments (warm-up, teaching, practice, discussion, check, close as fits) whose minutes add up to ${c.shape.minutesPerLesson}, and the vocabulary students need. Descriptions say exactly what happens, with the examples to use.`,
+    `Write the lesson plan: two to five key ideas, a sequence of segments (warm-up, teaching, practice, discussion, check, close as fits) whose minutes add up to ${c.shape.minutesPerLesson}, and the vocabulary students need. Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
   slides: () =>
     'Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes.',
   study: () =>
     'Write a study guide for students to read after the lesson: a short overview, then two to four key points, each with a heading and a clear explanation that includes an example.',
   quiz: (c) =>
-    `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer, true/false or numeric questions where they fit. For choice and true/false questions, "answer" must repeat the correct choice exactly. Use plausible wrong choices that reflect real misconceptions. For numeric answers, give the calculation in "expression".`,
+    `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer, true/false or numeric questions where they fit. For choice and true/false questions, "answer" must repeat the correct choice exactly. Use plausible wrong choices that reflect real misconceptions, as long, specific and carefully worded as the right one, so the right answer can't be spotted by its length. Never refer to a choice by its letter or position. Write a true/false question as a plain statement, without "True or false:" in front, and make about half of the true/false statements true. Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression".`,
   assignments: () =>
     'Write one assignment that lets students apply this lesson, with numbered steps, and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
   discussions: () =>
@@ -144,12 +145,12 @@ export type TextAction = 'rewrite' | 'simplify' | 'harder' | 'easier' | 'transla
 
 const actionAsks: Record<TextAction, (language: Language) => string> = {
   rewrite: () => 'Rewrite the selected text so it reads more clearly. Keep its meaning and length.',
-  simplify: () => 'Rewrite the selected text in simpler words for younger or less confident readers. Keep it accurate.',
-  harder: () => 'Rewrite the selected text so it is more challenging, for students who need stretch.',
+  simplify: () => 'Rewrite the selected text in simpler words for younger or less confident readers. Keep it accurate, and no longer than it is now.',
+  harder: () => 'Rewrite the selected text so it is more challenging, for students who need stretch: more precise terms and a sharper demand, not more sentences.',
   easier: () => 'Rewrite the selected text so it is easier, with more support, for students who find this hard.',
   translate: (language) =>
     language === 'zh-CN' ? 'Translate the selected text into English.' : 'Translate the selected text into Simplified Chinese.',
-  explain: () => 'Explain the selected text for the teacher in two or three sentences: what it means and why it matters here.',
+  explain: () => 'Explain the selected text for the teacher in two or three sentences, under 70 words in all: what it means and why it matters here.',
 };
 
 export function textActionPrompt(action: TextAction, selection: string, context: string, language: Language): string {
@@ -157,8 +158,13 @@ export function textActionPrompt(action: TextAction, selection: string, context:
     `Context: ${context}`,
     `Selected text: """${selection}"""`,
     actionAsks[action](language),
+    action === 'explain' || action === 'translate'
+      ? ''
+      : 'Keep the form of the selection: a title stays a title, a one-line summary stays about one line, a list item stays one item. Keep its spelling conventions (British or American) and its tone.',
     action === 'explain' ? 'Return the explanation.' : 'Return only the replacement text, with no quotation marks.',
-  ].join('\n\n');
+  ]
+    .filter(Boolean)
+    .join('\n\n');
 }
 
 export function coursePlanPrompt(course: Course, request: string): string {
@@ -171,6 +177,7 @@ export function coursePlanPrompt(course: Course, request: string): string {
     `Lessons:\n${lessons}`,
     `The teacher asks: """${request.trim()}"""`,
     `Limits: ${lessonLimit.min}–${lessonLimit.max} lessons, ${quiz.min}–${quiz.max} questions per quiz, ${minutes.min}–${minutes.max} minutes per lesson.`,
-    'Turn the request into the smallest list of operations that does it. Lesson numbers refer to the list above, before any change. If the request is not about the course structure, return no operations and say so in the summary.',
+    'Turn the request into the smallest list of operations that does it. Lesson numbers refer to the list above, before any change. If an existing lesson already covers what is asked, prefer changing it over adding a near-copy.',
+    'The summary is one short sentence to the teacher saying what will change and why, naming lessons by title (for example that an existing lesson already covers the topic). Do not write in the first person or offer other help. If the request is not about the course structure, return no operations and say in one sentence that Folio can only change the course.',
   ].join('\n\n');
 }

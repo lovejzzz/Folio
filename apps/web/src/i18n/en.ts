@@ -483,10 +483,10 @@ export const en = {
     noResults: 'Nothing matches.',
     ops: {
       addLesson: (v: { title: string; after: number }) => (v.after === 0 ? `Add “${v.title}” as the first lesson` : `Add “${v.title}” after lesson ${v.after}`),
-      removeLesson: (v: { lesson: number }) => `Remove lesson ${v.lesson}`,
-      renameLesson: (v: { lesson: number; title: string }) => `Rename lesson ${v.lesson} to “${v.title}”`,
-      moveLesson: (v: { lesson: number; to: number }) => `Move lesson ${v.lesson} to position ${v.to}`,
-      addObjective: (v: { lesson: number; text: string }) => `Add the objective “${v.text}” to lesson ${v.lesson}`,
+      removeLesson: (v: { lesson: number; name?: string }) => (v.name ? `Remove lesson ${v.lesson}, “${v.name}”` : `Remove lesson ${v.lesson}`),
+      renameLesson: (v: { lesson: number; title: string; name?: string }) => (v.name ? `Rename lesson ${v.lesson}, “${v.name}”, to “${v.title}”` : `Rename lesson ${v.lesson} to “${v.title}”`),
+      moveLesson: (v: { lesson: number; to: number; name?: string }) => (v.name ? `Move “${v.name}” from lesson ${v.lesson} to lesson ${v.to}` : `Move lesson ${v.lesson} to lesson ${v.to}`),
+      addObjective: (v: { lesson: number; text: string; name?: string }) => (v.name ? `Add the objective “${v.text}” to “${v.name}”` : `Add the objective “${v.text}” to lesson ${v.lesson}`),
       setQuizSize: (v: { size: number }) => `Make every quiz ${v.size} questions`,
       setMinutes: (v: { minutes: number }) => `Make every lesson ${v.minutes} minutes`,
       setLevel: (v: { level: string }) => `Set the level to ${v.level}`,
@@ -550,7 +550,7 @@ export const en = {
     ai: 'AI model',
     aiLede: 'Folio writes with a model you choose. Your key stays in this browser and requests go straight to the provider.',
     providers: {
-      anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use; a course costs roughly a few cents to a dollar.' },
+      anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use; a four-lesson course costs about $1–2 with Claude Opus.' },
       openai: { name: 'Use my OpenAI key', short: 'your OpenAI key', note: 'OpenAI. You pay per use.' },
       google: { name: 'Use my Gemini key', short: 'your Gemini key', note: 'Google. Has a free tier with limits.' },
       local: { name: 'On this device', short: 'the model on this device', note: 'Runs through Ollama or LM Studio on your computer. Private and free, but slower and less accurate.' },

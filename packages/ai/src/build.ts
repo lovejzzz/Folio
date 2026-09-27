@@ -56,7 +56,9 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
   const summary: BuildSummary = { built: 0, failed: 0, flagged: 0, stopped: false, fatal: null };
   const pending = [...targets];
   const running = new Map<string, Promise<void>>();
-  const limit = host.concurrency ?? 3;
+  // Four at a time: with section jobs taking 30–70 s each, three left a four-lesson course at about
+  // seven and a half minutes; four brings it near five and a half without crowding rate limits.
+  const limit = host.concurrency ?? 4;
 
   const blocked = (t: BuildTarget): boolean =>
     (t.kind === 'slides' || t.kind === 'study') &&

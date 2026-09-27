@@ -52,7 +52,7 @@ export function InlineNumber({ label, value, onChange, minValue, maxValue, fract
       }}
       className={cx('inline-flex flex-col', className)}
     >
-      <Group className="inline-flex items-baseline gap-1">
+      <Group className="inline-flex items-baseline">
         <Input
           size={String(maxValue).length + (fractionDigits ? fractionDigits + 1 : 0)}
           onInput={(e) => (typed.current = e.currentTarget.value)}

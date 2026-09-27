@@ -1,3 +1,4 @@
+import { balanceChoices, stripTrueFalsePrefix } from './balance';
 import {
   checkMinutes,
   checkQuestion,
@@ -55,7 +56,7 @@ function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flags:
     sourceRefs: passage ? [{ sourceId: passage.sourceId, passageId: passage.passageId }] : [],
     flags,
     format: draft.format,
-    prompt: draft.prompt,
+    prompt: draft.format === 'truefalse' ? stripTrueFalsePrefix(draft.prompt) : draft.prompt,
     choices,
     correct,
     answer: graded ? '' : draft.answer,
@@ -133,7 +134,7 @@ const quiz: SectionJob<QuizDraft> = {
       lessonId: lesson.id,
       kind: 'quiz',
       flags: flagsAt(problems, null),
-      tasks: v.questions.map((q, i) => toQuestion(q, course, lesson, flagsAt(problems, i))),
+      tasks: balanceChoices(v.questions.map((q, i) => toQuestion(q, course, lesson, flagsAt(problems, i)))),
     }),
   ],
 };

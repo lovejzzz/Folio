@@ -462,10 +462,10 @@ export const zh: Messages = {
     noResults: '没有匹配的结果。',
     ops: {
       addLesson: (v) => (v.after === 0 ? `把“${v.title}”添加为第一课` : `在第 ${v.after} 课后添加“${v.title}”`),
-      removeLesson: (v) => `移除第 ${v.lesson} 课`,
-      renameLesson: (v) => `把第 ${v.lesson} 课改名为“${v.title}”`,
-      moveLesson: (v) => `把第 ${v.lesson} 课移到第 ${v.to} 位`,
-      addObjective: (v) => `给第 ${v.lesson} 课添加目标“${v.text}”`,
+      removeLesson: (v) => (v.name ? `移除第 ${v.lesson} 课“${v.name}”` : `移除第 ${v.lesson} 课`),
+      renameLesson: (v) => (v.name ? `把第 ${v.lesson} 课“${v.name}”改名为“${v.title}”` : `把第 ${v.lesson} 课改名为“${v.title}”`),
+      moveLesson: (v) => (v.name ? `把“${v.name}”从第 ${v.lesson} 课移到第 ${v.to} 课` : `把第 ${v.lesson} 课移到第 ${v.to} 课`),
+      addObjective: (v) => (v.name ? `给“${v.name}”添加目标“${v.text}”` : `给第 ${v.lesson} 课添加目标“${v.text}”`),
       setQuizSize: (v) => `每次测验改为 ${v.size} 道题`,
       setMinutes: (v) => `每课改为 ${v.minutes} 分钟`,
       setLevel: (v) => `年级设为${v.level}`,
@@ -528,7 +528,7 @@ export const zh: Messages = {
     ai: 'AI 模型',
     aiLede: 'Folio 用你选择的模型来写作。你的密钥只保存在这个浏览器里，请求直接发送给模型提供方。',
     providers: {
-      anthropic: { name: '使用我的 Claude 密钥', short: '你的 Claude 密钥', note: 'Anthropic。按用量付费，一门课大约几美分到一美元。' },
+      anthropic: { name: '使用我的 Claude 密钥', short: '你的 Claude 密钥', note: 'Anthropic。按用量付费，用 Claude Opus 生成一门四节课的课程大约 1–2 美元。' },
       openai: { name: '使用我的 OpenAI 密钥', short: '你的 OpenAI 密钥', note: 'OpenAI。按用量付费。' },
       google: { name: '使用我的 Gemini 密钥', short: '你的 Gemini 密钥', note: 'Google。有带限额的免费额度。' },
       local: { name: '在本机运行', short: '本机上的模型', note: '通过电脑上的 Ollama 或 LM Studio 运行。私密、免费，但更慢，准确度也更低。' },

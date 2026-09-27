@@ -60,7 +60,8 @@ describe('generateSection', () => {
     expect(inf.calls[1]!.prompt).toContain('Item 2: The answer is not one of the choices.');
     expect(inf.calls).toHaveLength(2);
     const first = questions[0]!;
-    expect(first.kind === 'question' && first.correct).toBe(first.kind === 'question' ? first.choices[0]!.id : null);
+    // The right answer is kept, though its position is balanced across the quiz.
+    expect(first.kind === 'question' && first.choices.find((c) => c.id === first.correct)?.text).toBe('Glucose');
     expect(first.objectiveIds).toEqual(lesson.objectiveIds);
   });
 
@@ -129,6 +130,7 @@ describe('runBuild', () => {
       missingTargets(store.getState()),
     );
     expect(summary.fatal?.kind).toBe('auth');
-    expect(inf.calls.length).toBeLessThanOrEqual(3);
+    // Only the first batch (four at a time) is ever sent.
+    expect(inf.calls.length).toBeLessThanOrEqual(4);
   });
 });

@@ -1,5 +1,5 @@
 import { planCourseChange, missingTargets, type PlanOperation, type Proposal, type SkipReason, type SkippedOperation } from '@folio/ai';
-import { CourseStore, staleItems } from '@folio/core';
+import { CourseStore, orderedLessons, staleItems, type Course } from '@folio/core';
 import { Button, Skeleton } from '@folio/ui';
 import { Sparkles } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -10,18 +10,20 @@ import { updateSection } from '../../state/proposals';
 import { activeStore, useCourse } from '../../state/session';
 import { useUi } from '../../state/ui';
 
-function describe(op: PlanOperation, t: Messages): string {
+/** A step in words, naming lessons by title as well as number (numbers are as the course stands now). */
+function describe(op: PlanOperation, t: Messages, course: Course): string {
+  const name = (n: number) => orderedLessons(course)[n - 1]?.title || undefined;
   switch (op.op) {
     case 'addLesson':
       return t.command.ops.addLesson(op);
     case 'removeLesson':
-      return t.command.ops.removeLesson(op);
+      return t.command.ops.removeLesson({ ...op, name: name(op.lesson) });
     case 'renameLesson':
-      return t.command.ops.renameLesson(op);
+      return t.command.ops.renameLesson({ ...op, name: name(op.lesson) });
     case 'moveLesson':
-      return t.command.ops.moveLesson(op);
+      return t.command.ops.moveLesson({ ...op, name: name(op.lesson) });
     case 'addObjective':
-      return t.command.ops.addObjective(op);
+      return t.command.ops.addObjective({ ...op, name: name(op.lesson) });
     case 'setQuizSize':
       return t.command.ops.setQuizSize(op);
     case 'setMinutes':
@@ -49,13 +51,14 @@ function reason(r: SkipReason, t: Messages): string {
 /** Steps the model proposed that can't be done here, each with the reason. */
 function Skipped({ skipped }: { skipped: SkippedOperation[] }) {
   const t = useT();
+  const course = useCourse();
   if (!skipped.length) return null;
   return (
     <div className="mt-3">
       <p className="font-ui text-13 text-ink-2">{t.command.skipped(skipped.length)}</p>
       <ul className="mt-1 space-y-1 font-ui text-13 text-ink-2">
         {skipped.map((s, i) => (
-          <li key={i}>{t.command.skipLine(describe(s.op, t), reason(s.reason, t))}</li>
+          <li key={i}>{t.command.skipLine(describe(s.op, t, course), reason(s.reason, t))}</li>
         ))}
       </ul>
     </div>
@@ -114,11 +117,12 @@ function PlanPreview({ proposal, before }: { proposal: Proposal; before: Set<str
   const newlyStale = staleItems(preview.getState()).filter((s) => !before.has(staleKey(s)));
   return (
     <div className="rounded-control bg-well px-4 py-3">
+      {proposal.rationale && <p className="mb-3 font-ui text-14 leading-relaxed text-ink">{proposal.rationale}</p>}
       <p className="font-ui text-13 font-semibold text-ink">{t.command.preview}</p>
       <ul className="mt-2 space-y-1.5 font-ui text-14 text-ink">
         {proposal.preview.map((op, i) => (
           <li key={i}>
-            <span className="folio-highlight">{describe(op, t)}</span>
+            <span className="folio-highlight">{describe(op, t, course)}</span>
           </li>
         ))}
       </ul>
@@ -156,9 +160,10 @@ export function AskPanel({ request, onDone, onBack }: { request: string; onDone:
         <Button variant="quiet" onPress={onBack}>
           {t.nav.back}
         </Button>
+        {proposal?.preview.length !== 0 && (
         <Button
           variant="primary"
-          isDisabled={!proposal || proposal.preview.length === 0 || changed}
+          isDisabled={!proposal || changed}
           onPress={() => {
             if (!proposal) return;
             onDone();
@@ -167,6 +172,7 @@ export function AskPanel({ request, onDone, onBack }: { request: string; onDone:
         >
           {t.command.apply}
         </Button>
+        )}
       </div>
     </div>
   );

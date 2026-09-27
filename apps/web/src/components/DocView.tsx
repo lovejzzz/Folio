@@ -138,7 +138,7 @@ function BlockView({ b, lang }: { b: Block; lang: string }) {
     case 'heading':
       return <Heading b={b} />;
     case 'para':
-      return <p className={cx('my-3', b.tone === 'lead' && 'text-18 leading-8 text-ink-2', b.tone === 'muted' && 'font-ui text-14 text-ink-2')}>{b.text}</p>;
+      return <p className={cx('my-3 whitespace-pre-line', b.tone === 'lead' && 'text-18 leading-8 text-ink-2', b.tone === 'muted' && 'font-ui text-14 text-ink-2')}>{b.text}</p>;
     case 'list':
       return <ListBlock b={b} />;
     case 'meta':
