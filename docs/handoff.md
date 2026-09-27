@@ -103,6 +103,7 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
   - Round 14, UI pass on export, changes and library (sample course, no model calls):
     - The export drawer's Download button sat below the preview, off a laptop screen. It is now pinned to the drawer's bottom.
     - In the Changes drawer, "…shows up here" and "…appear here" read as the same sentence twice. The two empty states now say what each section is for, and "History · 0" drops the zero.
+  - Round 15, phone pass (sample course): each lesson card on the phone map carried ten grey icons that meant nothing without hover. Cards now name only the materials that need something ("Quiz ◆", "Slides" not built yet) and show nothing when all is ready. The phone slide caption repeats the lesson title on purpose (the slide's own footer is about 9px there). One full e2e run had 2 `toHaveText` failures that didn't recur in the next four runs: worth watching.
 
 ## Next
 
