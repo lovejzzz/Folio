@@ -1,13 +1,15 @@
 import { CourseStore, type Course } from '@folio/core';
 import { useSyncExternalStore } from 'react';
 import { currentMessages } from '../i18n';
-import { isQuotaError, loadCourse, saveCourse } from './db';
+import { SaveConflictError, isQuotaError, loadCourse, saveCourse, saveCourseIfUnchanged, versionOf } from './db';
+import { clearJournal, takeJournal, writeJournal } from './journal';
 import { toast } from './toasts';
 import { useUi } from './ui';
 
 /**
  * The open course. Every command is written to IndexedDB within 300 ms;
  * typing never waits on a save, and nothing is dropped when storage is full.
+ * A save only lands if no other tab saved the course since this one did.
  */
 
 const SAVE_DELAY = 300;
@@ -17,26 +19,47 @@ interface Session {
   store: CourseStore;
   timer: ReturnType<typeof setTimeout> | null;
   unsubscribe: () => void;
+  /** The version in IndexedDB as far as this tab knows. */
+  savedVersion: string;
+  /** Saves run one after another so each checks against the last. */
+  saving: Promise<void>;
+  /** Set while replacing the course with another tab's copy, so that isn't saved back. */
+  quiet: boolean;
 }
 
 let active: Session | null = null;
 const listeners = new Set<() => void>();
+const channel = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('folio.courses');
 
-async function flush(session: Session): Promise<void> {
-  if (session.timer) clearTimeout(session.timer);
-  session.timer = null;
+const dirty = (s: Session) => versionOf(s.store.getState()) !== s.savedVersion;
+
+async function save(session: Session): Promise<void> {
   const ui = useUi.getState();
+  if (ui.conflict || !dirty(session)) return;
+  const course = session.store.getState();
   try {
-    await saveCourse(session.store.getState());
-    ui.setSaveState('saved');
+    await saveCourseIfUnchanged(course, session.savedVersion);
+    session.savedVersion = versionOf(course);
+    clearJournal(course.id);
+    channel?.postMessage({ id: course.id, version: session.savedVersion });
+    ui.setSaveState(dirty(session) ? 'saving' : 'saved');
   } catch (error) {
     ui.setSaveState('error');
+    if (error instanceof SaveConflictError) return ui.setConflict(error.reason);
     const t = currentMessages();
     toast({ message: isQuotaError(error) ? t.errors.storageFull : t.errors.generic, tone: 'critical', duration: 0 });
   }
 }
 
+function flush(session: Session): Promise<void> {
+  if (session.timer) clearTimeout(session.timer);
+  session.timer = null;
+  session.saving = session.saving.then(() => save(session));
+  return session.saving;
+}
+
 function schedule(session: Session): void {
+  if (session.quiet) return;
   useUi.getState().setSaveState('saving');
   if (session.timer) clearTimeout(session.timer);
   session.timer = setTimeout(() => void flush(session), SAVE_DELAY);
@@ -46,9 +69,10 @@ export function openSession(course: Course): CourseStore {
   if (active?.id === course.id) return active.store;
   closeSession();
   const store = new CourseStore(course);
-  const session: Session = { id: course.id, store, timer: null, unsubscribe: () => {} };
+  const session: Session = { id: course.id, store, timer: null, unsubscribe: () => {}, savedVersion: versionOf(course), saving: Promise.resolve(), quiet: false };
   session.unsubscribe = store.subscribe(() => schedule(session));
   active = session;
+  useUi.getState().setConflict(null);
   for (const l of listeners) l();
   return store;
 }
@@ -62,16 +86,76 @@ export function closeSession(): void {
   for (const l of listeners) l();
 }
 
+/** Forget the open course if it is this one (it was deleted or replaced). */
+export function dropSession(id: string): void {
+  if (active?.id !== id) return;
+  const session = active;
+  if (session.timer) clearTimeout(session.timer);
+  session.unsubscribe();
+  clearJournal(id);
+  active = null;
+  for (const l of listeners) l();
+}
+
 /** Load a saved course into the session, or return null if it isn't on this device. */
 export async function loadSession(id: string): Promise<CourseStore | null> {
   if (active?.id === id) return active.store;
-  const course = await loadCourse(id);
-  return course ? openSession(course) : null;
+  const saved = await loadCourse(id);
+  if (!saved) return null;
+  const store = openSession(saved);
+  // Work that was typed as the page closed last time, and never reached IndexedDB.
+  const unsaved = takeJournal(id, versionOf(saved));
+  if (unsaved && active?.id === id) {
+    store.reset(unsaved);
+    active.savedVersion = versionOf(saved);
+    void flush(active);
+  }
+  return store;
 }
 
 export async function createSession(course: Course): Promise<CourseStore> {
   await saveCourse(course);
   return openSession(course);
+}
+
+/** Take the stored copy (another tab's), dropping this tab's unsaved changes. */
+export async function reloadFromDisk(): Promise<void> {
+  const session = active;
+  if (!session) return;
+  const saved = await loadCourse(session.id);
+  useUi.getState().setConflict(null);
+  if (!saved) return dropSession(session.id);
+  replace(session, saved);
+}
+
+/** Keep this tab's version, overwriting what the other tab saved. */
+export async function keepThisVersion(): Promise<void> {
+  const session = active;
+  if (!session) return;
+  const saved = await loadCourse(session.id);
+  session.savedVersion = saved ? versionOf(saved) : '';
+  useUi.getState().setConflict(null);
+  if (!saved) await saveCourse(session.store.getState());
+  else await flush(session);
+}
+
+function replace(session: Session, course: Course): void {
+  if (session.timer) clearTimeout(session.timer);
+  session.timer = null;
+  session.quiet = true;
+  session.store.reset(course);
+  session.quiet = false;
+  session.savedVersion = versionOf(course);
+  useUi.getState().setSaveState('saved');
+}
+
+/** Another tab saved: follow along if this tab has nothing unsaved, else say so. */
+async function onRemoteSave(id: string, version: string): Promise<void> {
+  const session = active;
+  if (!session || session.id !== id || version === session.savedVersion) return;
+  if (dirty(session)) return useUi.getState().setConflict('changed');
+  const saved = await loadCourse(id);
+  if (saved && active === session && !dirty(session)) replace(session, saved);
 }
 
 export function activeStore(): CourseStore | null {
@@ -82,11 +166,22 @@ export function flushNow(): Promise<void> {
   return active ? flush(active) : Promise.resolve();
 }
 
+/** As the page goes away: commit the field being typed in, and keep a synchronous copy. */
+function onLeave(commitFocused: boolean): void {
+  if (commitFocused && document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  const session = active;
+  if (!session || !dirty(session) || useUi.getState().conflict) return;
+  writeJournal(session.store.getState(), session.savedVersion);
+  void flush(session);
+}
+
 if (typeof window !== 'undefined') {
-  window.addEventListener('pagehide', () => void flushNow());
+  window.addEventListener('pagehide', () => onLeave(true));
+  window.addEventListener('beforeunload', () => onLeave(true));
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') void flushNow();
+    if (document.visibilityState === 'hidden') onLeave(false);
   });
+  channel?.addEventListener('message', (e: MessageEvent<{ id: string; version: string }>) => void onRemoteSave(e.data.id, e.data.version));
 }
 
 function subscribeActive(listener: () => void): () => void {

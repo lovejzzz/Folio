@@ -470,6 +470,14 @@ export const zh: Messages = {
     connectAndContinue: '连接并继续',
     orSample: '只是看看？先打开示例课程吧。',
   },
+  conflict: {
+    changed: '这门课程已在另一个标签页或窗口中修改。此处已暂停保存，两份内容都不会丢失。',
+    deleted: '这门课程已在另一个标签页或窗口中删除。此处的修改不会被保存。',
+    loadLatest: '载入最新版本',
+    keepMine: '保留当前版本',
+    restore: '保留这门课程',
+    leave: '关闭',
+  },
   errors: {
     config: '还没有设置模型。请在设置中添加。',
     auth: '模型提供方不接受这个密钥。请在设置中检查。',

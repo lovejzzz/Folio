@@ -479,6 +479,14 @@ export const en = {
     connectAndContinue: 'Connect and continue',
     orSample: 'Just looking? Open the sample course instead.',
   },
+  conflict: {
+    changed: 'This course was changed in another tab or window. Saving here is paused so neither copy is lost.',
+    deleted: 'This course was deleted in another tab or window. Changes here aren’t being saved.',
+    loadLatest: 'Load the latest',
+    keepMine: 'Keep this version',
+    restore: 'Keep the course',
+    leave: 'Close it',
+  },
   errors: {
     config: 'No model is set up yet. Add one in Settings.',
     auth: 'The model provider didn’t accept the key. Check it in Settings.',

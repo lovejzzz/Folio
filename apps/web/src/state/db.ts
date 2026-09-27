@@ -44,6 +44,26 @@ export async function saveCourse(course: Course): Promise<void> {
   await db.courses.put(rowOf(course));
 }
 
+/** Someone else (another tab or window) saved this course since we last did. */
+export class SaveConflictError extends Error {
+  constructor(readonly reason: 'changed' | 'deleted') {
+    super(`The course was ${reason} elsewhere.`);
+  }
+}
+
+/** Identifies one saved state of a course. Revisions alone repeat when two tabs edit from the same start. */
+export const versionOf = (course: Pick<Course, 'revision' | 'updatedAt'>): string => `${course.revision}@${course.updatedAt}`;
+
+/** Save only if the stored copy is still the one this tab last saved or loaded. */
+export async function saveCourseIfUnchanged(course: Course, expected: string): Promise<void> {
+  await db.transaction('rw', db.courses, async () => {
+    const row = await db.courses.get(course.id);
+    if (!row) throw new SaveConflictError('deleted');
+    if (versionOf(row.data) !== expected) throw new SaveConflictError('changed');
+    await db.courses.put(rowOf(course));
+  });
+}
+
 export async function loadCourse(id: string): Promise<Course | null> {
   const row = await db.courses.get(id);
   return row ? parseCourse(row.data) : null;

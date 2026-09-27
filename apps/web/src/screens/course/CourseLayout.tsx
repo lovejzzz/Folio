@@ -5,6 +5,7 @@ import { DrawerHost } from '../../components/drawers/DrawerHost';
 import { SelectionToolbar } from '../../components/selection/SelectionToolbar';
 import { useCourse } from '../../state/session';
 import { useUi } from '../../state/ui';
+import { ConflictBanner } from './ConflictBanner';
 import { CourseHeader } from './CourseHeader';
 import { useCourseKeys } from './useCourseKeys';
 
@@ -21,6 +22,7 @@ export function CourseLayout() {
   return (
     <div className="min-h-dvh">
       <CourseHeader />
+      <ConflictBanner />
       <div className="flex items-start">
         <main id="main" className="min-w-0 flex-1">
           <Outlet />
