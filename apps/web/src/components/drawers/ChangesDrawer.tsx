@@ -110,9 +110,14 @@ function FailedRow({ item }: { item: Failed }) {
   const course = useCourse();
   const running = useBuild((s) => s.running);
   return (
-    <li className="rounded-control bg-critical-tint p-3">
+    <li className="rounded-control bg-well p-3">
       <ItemHead lessonId={item.lessonId} kind={item.kind} n={lessonNumber(course, item.lessonId)} />
-      {item.error && <p className="mt-2 font-ui text-13 leading-5 text-ink">{item.error}</p>}
+      {item.error && (
+        <p className="mt-2 flex gap-2 font-ui text-13 leading-5 text-ink">
+          <span aria-hidden className="mt-1.5 size-2 shrink-0 rotate-45 bg-critical" />
+          {item.error}
+        </p>
+      )}
       <div className="mt-3">
         <Button size="sm" isDisabled={running} onPress={() => retryCell(item.lessonId, item.kind)}>
           {t.common.retry}
