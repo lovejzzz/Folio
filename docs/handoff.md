@@ -86,6 +86,8 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
 - **Loop log** (one line per round):
   - Round 5, assist and zh interface: 33 calls, $0.044. Text actions came back blank on 4 of 8 calls, because "Return only the replacement text" fought DeepSeek's JSON mode. Reworded to 'Put only the replacement text in "text"': 0 blank in 12 tries. Missing question fields (choices, expression, source passage) now default instead of costing a repair.
   - Round 6, vague brief ("teach my kids about money"): 33 calls, $0.069. Sensible KS2 course. Lesson 1's slides failed outright: a slide had six bullets, and the repair sent back the same slide. Slides with more than five bullets are now split into two ("… (continued)") locally.
+  - Round 7, attached sources (plant history notes): 15 calls, 0 repairs, $0.031. Faithful to the notes: 9 of 10 questions cite a passage, and the figures match.
+  - Round 8, UI pass on the DeepSeek courses: the pages look right. Speaker notes and plans said "the first lesson" and "over the next two hours", because every request opened with "This is lesson N". Requests now name the lesson by title only, and the rule lists the phrasings seen. "The next lesson" persists; ripple already marks such sections out of date when the order or length changes.
 
 ## Next
 

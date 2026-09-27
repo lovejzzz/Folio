@@ -11,7 +11,7 @@ interface Body {
 }
 
 function lessonTitle(prompt: string): string {
-  return prompt.match(/This is lesson \d+: "([^"]+)"/)?.[1] ?? 'Photosynthesis';
+  return prompt.match(/This is the lesson "([^"]+)"/)?.[1] ?? 'Photosynthesis';
 }
 
 function quizSize(prompt: string): number {

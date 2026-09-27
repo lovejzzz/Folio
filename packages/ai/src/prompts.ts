@@ -1,4 +1,4 @@
-import { SHAPE_LIMITS, filledTexts, lessonNumber, orderedLessons, statedObjectives, type Course, type Language, type Lesson } from '@folio/core';
+import { SHAPE_LIMITS, filledTexts, orderedLessons, statedObjectives, type Course, type Language, type Lesson } from '@folio/core';
 import type { Effort } from './inference';
 
 /**
@@ -23,7 +23,7 @@ export function systemPrompt(language: Language, locale = ''): string {
     'Write material a teacher could use tomorrow: specific to the subject, with real examples, real terms, real numbers and correct facts. Never write placeholders such as "Topic 1", "key concept" or "Session 1 topic"; name the actual content.',
     'Match the level of the students. Keep sentences short and concrete. Do not use emoji.',
     'If something in the brief is ambiguous, choose the most sensible specific interpretation and stay consistent with it.',
-    'Folio shows lesson numbers, the number of lessons, lesson lengths and quiz sizes itself, and teachers change them. Never write them into titles, bullets, speaker notes or summaries ("lesson 1 of 4", "6 minutes", "a 5-question quiz"); refer to another lesson by its title.',
+    'Folio shows lesson numbers, the number of lessons, lesson lengths and quiz sizes itself, and teachers change them. Never write them anywhere, speaker notes included: no "lesson 1 of 4", "the first lesson", "over the next two hours" or "a 5-question quiz". Refer to another lesson by its title.',
     languageLine(language, locale),
     'Reply with JSON that matches the provided schema and nothing else.',
   ].join('\n\n');
@@ -109,7 +109,6 @@ export function courseBackground(course: Course): string {
 
 /** The lesson a section is for: the part of the request that changes from call to call. */
 export function lessonContext(course: Course, lesson: Lesson): string {
-  const n = lessonNumber(course, lesson.id);
   const objectives = statedObjectives(course, lesson)
     .map((o, i) => `${i + 1}. ${o.text}`)
     .join('\n');
@@ -117,7 +116,8 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     .map((r) => `- ${r}`)
     .join('\n');
   return [
-    `This is lesson ${n}: "${lesson.title}". ${lesson.summary}`,
+    // No number: given one, models write "lesson 3" into the materials. The background lists the order.
+    `This is the lesson "${lesson.title}". ${lesson.summary}`,
     objectives ? `Its objectives:\n${objectives}` : '',
     readings ? `Students read before this lesson:\n${readings}` : '',
   ]
