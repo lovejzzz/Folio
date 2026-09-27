@@ -173,11 +173,27 @@ The econ brief (with the week 3 notes), run twice on each model: once before the
 - Sonnet 5 follows the true/false order loosely (T, T in one lesson). Over a course it stays balanced.
 - DeepSeek follows instructions more literally; Sonnet writes tighter.
 
+## Readiness pass (the user asked for "ready")
+
+A screenshot audit of every screen with a real DeepSeek course (desktop light and dark, phone, Chinese interface), then the error paths, then the open items.
+
+- **Maths typesetting.** The web font subsets carry no combining circumflex (U+0302) and no subscript digits. So β̂'s hat and every ₀ came from some other font: hats drifted, subscripts changed size, and teacher notes (sans) lost x̄'s bar. The fix, in `packages/core/src/inlineCode.ts`:
+  - Unicode sub- and superscripts become ordinary letters in sub/sup runs, the same style as `β̂_educ`.
+  - Words with Greek or combining marks take the reading face.
+  - A 38 KB 'Folio Math' cut of Source Serif 4 handles Latin letters with marks.
+  - No shipped face anchors marks on Greek, so a Greek letter's accent is drawn centred over it with CSS (`.folio-accent`), higher over tall letters.
+- **Print view.** `/print/:id` opened on its own (a reload, a bookmark) printed only the title. It now prints the whole course.
+- **Phone.** "Multiple choice" and "Follow-up questions · Teacher copy only" broke inside their words. Each label now stays whole.
+- **Errors.** The bad-key message said "Check it in Settings" inside the connect dialog and in Settings itself. When one cause explains every failed section (a rate limit, the network), the build toast now names it.
+- **Map.** A long lesson title clamps to three lines; `block` beside `line-clamp` had cancelled the clamp.
+- **Sources hint.** A brief asking for source work, with nothing attached, gets "Folio writes best from the sources themselves…" and an "Attach them" button (`screens/home/sourceHint.ts`).
+- **Sonnet's long right answers, measured and left alone.** Replaying 12 real quiz requests gave 0 stand-outs with the current prompt. Adding a hard length cap gave 2 stand-outs and 28% more output. The check plus one repair covers the occasional case.
+- **Copy.** The DeepSeek note gives the measured cost (about $0.10 a course). The README describes the default model, marks, university features and live testing.
+
 ## Next
 
-1. **Sonnet 5 through the API.** The costs above come from the CLI bridge. A run with a real API key would settle the pricing note ("about $1").
-2. **Sonnet's long right answers.** They cost 2–3 repairs a course. Worth trying: a line in the quiz prompt that shows a bad example, measured on replays.
-3. **Source analysis without sources.** A GCSE brief asked for source work but attached nothing, so the models could only name extracts. The brief screen could suggest attaching sources when the brief mentions them.
+1. **Sonnet 5 through the API.** The per-course cost came from the CLI bridge. A run with a real API key would confirm the "about $1" note.
+2. **Display maths and callouts** are the one text feature teachers might still miss. Inline marks cover what the models write today.
 
 **DeepSeek key.**
 - The key the user first gave was revoked on 2026-09-27, after a *different* key of theirs (named "Test") leaked and was drained of $19.20. Folio's own key had spent $0.80 by then. A code audit found no path in Folio that could run up cost unattended:
