@@ -53,7 +53,10 @@ function RowHeader({ course, lesson, n, compact }: { course: Course; lesson: Les
       >
         <span className="font-mono text-13 text-ink-2 tabular">{String(n).padStart(2, '0')}</span>
         <span className="min-w-0" lang={course.language}>
-          <span className={cx('block font-reading text-16 font-semibold leading-snug text-ink group-hover:text-accent', compact ? 'truncate' : 'line-clamp-2')}>{lesson.title}</span>
+          {/* line-clamp needs its own display, so "block" goes only with truncate. */}
+          <span title={lesson.title} className={cx('font-reading text-16 font-semibold leading-snug text-ink group-hover:text-accent', compact ? 'block truncate' : 'line-clamp-3')}>
+            {lesson.title}
+          </span>
           {!compact && (
             <span className="mt-1 line-clamp-2 font-ui text-12 leading-4 text-ink-2">{lesson.summary || t.common.objectives(lessonObjectives(course, lesson).length)}</span>
           )}

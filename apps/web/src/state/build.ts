@@ -64,7 +64,11 @@ function finishToast(summary: Awaited<ReturnType<typeof runBuild>>): void {
     toast({ key: 'build', message: t.build.stopped });
   } else if (summary.failed) {
     const looks = store ? attentionItems(store.getState()).length : 0;
-    const message = looks ? `${t.build.failedSome(summary.failed)}${t.common.sentenceGap}${t.build.looksToo(looks)}` : t.build.failedSome(summary.failed);
+    // When every failure had one cause (a rate limit, the network), the toast says what it was.
+    const causes = new Set(Object.values(useBuild.getState().errors).filter(Boolean));
+    const cause = causes.size === 1 ? [...causes][0]! : '';
+    const failed = cause ? `${t.build.failedSome(summary.failed)}${t.common.sentenceGap}${cause}` : t.build.failedSome(summary.failed);
+    const message = looks ? `${failed}${t.common.sentenceGap}${t.build.looksToo(looks)}` : failed;
     toast({ key: 'build', message, tone: 'attention', action: openChanges, duration: 0 });
   } else {
     const looks = store ? attentionItems(store.getState()).length : 0;

@@ -635,7 +635,7 @@ export const en = {
   },
   errors: {
     config: 'No model is set up yet. Add one in Settings.',
-    auth: 'The model provider didn’t accept the key. Check it in Settings.',
+    auth: 'The model provider didn’t accept the key. Check that it was copied in full.',
     rate: 'The model provider is busy or your limit was reached. Wait a moment and try again.',
     network: 'Folio couldn’t reach the model provider. Check your connection.',
     server: 'The model provider had a problem. Try again in a moment.',

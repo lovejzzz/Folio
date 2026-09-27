@@ -22,7 +22,7 @@ test('a key that stops working mid-build is fixed from the toast, and the build 
   await planTwoLessons(page);
   bad = true;
   await page.getByRole('button', { name: 'Build 2 lessons' }).click();
-  await expect(page.getByText('The model provider didn’t accept the key. Check it in Settings.')).toBeVisible();
+  await expect(page.getByText('The model provider didn’t accept the key. Check that it was copied in full.')).toBeVisible();
   await expect(page.getByText(/^Paused · \d+ sections left$/)).toBeVisible();
 
   await page.getByRole('button', { name: 'Fix the key' }).click();
