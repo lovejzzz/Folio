@@ -440,6 +440,8 @@ export const zh: Messages = {
     preview: '预览',
     download: (label) => `下载 ${label}`,
     print: '打开打印视图',
+    printHint: '在打印对话框中，把打印机选为“另存为 PDF”。',
+    printNow: '打印或另存为 PDF',
     working: '正在准备…',
     done: (name) => `已保存 ${name}`,
     failed: '导出失败。',

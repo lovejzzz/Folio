@@ -32,10 +32,10 @@ export function PrintScreen() {
   return (
     <div className="bg-paper">
       <div className="no-print sticky top-0 flex items-center justify-between gap-4 border-b border-rule bg-desk px-5 py-3">
-        <p className="font-ui text-13 text-ink-2">{t.export.formatHints.pdf}</p>
+        <p className="font-ui text-13 text-ink-2">{t.export.printHint}</p>
         <Button variant="primary" onPress={() => window.print()}>
           <Printer size={16} strokeWidth={1.5} aria-hidden />
-          {t.export.formats.pdf}
+          {t.export.printNow}
         </Button>
       </div>
       <main id="main" className="mx-auto max-w-sheet px-6 py-12 print:max-w-none print:p-0" lang={course.language}>

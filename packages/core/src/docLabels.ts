@@ -29,6 +29,8 @@ const en = {
   lengthValue: (lessons: number, minutes: number) => `${lessons} lessons · ${minutes} minutes each`,
   subject: 'Subject',
   objectives: 'Objectives',
+  /** A table column in which each row is one objective. */
+  objectiveColumn: 'Objective',
   whatYouLearn: 'What you will learn',
   schedule: 'Schedule',
   focus: 'Focus',
@@ -95,6 +97,7 @@ const zh: DocLabels = {
   lengthValue: (lessons, minutes) => `共 ${lessons} 课 · 每课 ${minutes} 分钟`,
   subject: '学科',
   objectives: '学习目标',
+  objectiveColumn: '学习目标',
   whatYouLearn: '你将学到',
   schedule: '课程安排',
   focus: '重点',

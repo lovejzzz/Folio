@@ -32,7 +32,7 @@ export function projectMap(ctx: Ctx): Block[] {
     blocks.push({ t: 'heading', level: 2, text: l.objectives });
     blocks.push({
       t: 'table',
-      head: [l.objectives, l.coveredIn],
+      head: [l.objectiveColumn, l.coveredIn],
       widths: [70, 30],
       rows: objectives.map((o) => {
         const where = lessons

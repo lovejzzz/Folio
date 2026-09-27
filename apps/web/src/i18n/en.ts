@@ -461,6 +461,9 @@ export const en = {
     preview: 'Preview',
     download: (label: string) => `Download ${label}`,
     print: 'Open print view',
+    /** On the print view itself. */
+    printHint: 'In the print dialog, choose “Save as PDF” as the printer.',
+    printNow: 'Print or save as PDF',
     working: 'Preparing…',
     done: (name: string) => `Saved ${name}`,
     failed: 'The export could not be made.',
