@@ -39,6 +39,10 @@ describe('university courses', () => {
     expect(sectionPrompt(us, lesson(us), 'assignments')).toMatch(/"A", "B"/);
     const school = smallCourse();
     expect(sectionPrompt(school, lesson(school), 'assignments')).not.toMatch(/grade bands|degree classes|letter grades/);
+    expect(sectionPrompt({ ...school, rubrics: {} }, lesson(school), 'assignments')).toMatch(/exactly "Excellent", "Good", "Developing" and "Beginning"/);
+    // A course with a rubric passes its levels on, a teacher's renaming included.
+    const renamed = { ...school, rubrics: { r1: { id: 'r1', title: 'R', levels: [{ id: 'a', label: 'Gold', points: 3 }, { id: 'b', label: 'Silver', points: 2 }, { id: 'c', label: 'Bronze', points: 1 }], criteria: [] } } } as Course;
+    expect(sectionPrompt(renamed, lesson(renamed), 'assignments')).toMatch(/exactly: "Gold" \(3\), "Silver" \(2\), "Bronze" \(1\)/);
   });
 });
 

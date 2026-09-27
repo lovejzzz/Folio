@@ -52,6 +52,7 @@ describe('sub- and superscripts', () => {
       { text: '2', code: false, script: 'sup' },
       { text: '.', code: false },
     ]);
+    expect(textRuns('100(e^β̂₁ − 1)')[1]).toEqual({ text: 'β̂₁', code: false, script: 'sup' });
     for (const plain of ['log_wage and problem_set_2', 'a lone _ here', 'wage1$educ']) expect(textRuns(plain)).toEqual([{ text: plain, code: false }]);
   });
 

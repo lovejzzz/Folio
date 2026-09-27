@@ -95,7 +95,7 @@ describe('openai and local adapters', () => {
     expect(seen[0]!.url).toBe('https://api.deepseek.com/chat/completions');
     const body = JSON.parse(String(seen[0]!.init.body));
     expect(body.response_format).toEqual({ type: 'json_object' });
-    expect(body.max_tokens).toBe(8000);
+    expect(body.max_tokens).toBe(16000);
     expect(body.thinking).toEqual({ type: 'disabled' });
     await createInference(settings('deepseek'), fn).complete({ ...req, effort: 'medium' });
     expect(JSON.parse(String(seen[1]!.init.body)).reasoning_effort).toBe('low');

@@ -101,3 +101,13 @@ describe('repairing malformed output', () => {
     expect(repair.messages[1]!.content).toContain('{"n": 12, "notes": "a very long');
   });
 });
+
+describe('reading JSON a model typed', () => {
+  it('takes a raw line break or tab inside a string as meant', () => {
+    expect(parseJsonText('{"a": "one\ntwo\tthree", "b": "q\\"uote"}')).toEqual({ a: 'one\ntwo\tthree', b: 'q"uote' });
+  });
+
+  it('still refuses JSON that is broken some other way', () => {
+    expect(() => parseJsonText('{"a": "one" "b": 2}')).toThrow(MalformedOutputError);
+  });
+});

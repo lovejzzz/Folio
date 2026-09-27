@@ -57,7 +57,7 @@ function toChat(request) {
   return {
     model: MODEL,
     messages,
-    max_tokens: Math.min(request.max_tokens ?? 8000, Number(process.env.DS_MAX_TOKENS ?? 8000)),
+    max_tokens: Math.min(request.max_tokens ?? 16000, Number(process.env.DS_MAX_TOKENS ?? 16000)),
     ...(schema ? { response_format: { type: 'json_object' } } : {}),
     ...thinking(THINK[request.output_config?.effort] ?? THINK.low),
   };

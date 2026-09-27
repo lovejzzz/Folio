@@ -17,7 +17,7 @@ const CODE = /`([^`\n]+)`/g;
 // Not global: test() on a global pattern moves its lastIndex, and matchAll starts from there.
 const ANY_CODE = /`[^`\n]+`/;
 /** "_educ" after a lone letter (β̂_educ, x_ik); "^2" after a letter, digit or bracket (R^2, e^{0.092}). */
-const SCRIPT = /(?:(?<=(?:^|[^\p{L}\p{N}_])\p{L}[̀-ͯ]*)_|(?<=[\p{L}\p{N})\]̀-ͯ])\^)(?:\{([^{}\n]{1,24})\}|([−-]?[\p{L}\p{N}]+(?:\.\p{N}+)?))/gu;
+const SCRIPT = /(?:(?<=(?:^|[^\p{L}\p{N}_])\p{L}\p{M}*)_|(?<=(?:[\p{L}\p{N})\]]|\p{M}))\^)(?:\{([^{}\n]{1,24})\}|([−-]?[\p{L}\p{N}][\p{L}\p{M}\p{N}]*(?:\.\p{N}+)?))/gu;
 const ANY_SCRIPT = new RegExp(SCRIPT.source, 'u');
 
 /** One run with where it sits in the stored text: `inner` is where its shown text starts. */

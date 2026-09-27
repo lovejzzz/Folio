@@ -112,9 +112,32 @@ export function parseJsonText(text: string): unknown {
   try {
     return JSON.parse(trimmed);
   } catch (error) {
+    // A line break or tab typed straight into a string is the one slip that has one meaning: take it as meant.
+    try {
+      return JSON.parse(escapeControlsInStrings(trimmed));
+    } catch {
+      /* fall through to the repair call */
+    }
     const detail = error instanceof Error ? ` (${error.message})` : '';
     throw new MalformedOutputError(text, trimmed ? `It is not valid JSON${detail}.` : 'It was empty.');
   }
+}
+
+/** Raw control characters inside JSON strings, escaped; everything outside strings is left as it is. */
+function escapeControlsInStrings(text: string): string {
+  let out = '';
+  let inString = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i]!;
+    if (inString && ch === '\\') {
+      out += ch + (text[++i] ?? '');
+      continue;
+    }
+    if (ch === '"') inString = !inString;
+    if (inString && ch < ' ') out += ch === '\n' ? '\\n' : ch === '\t' ? '\\t' : ch === '\r' ? '\\r' : '';
+    else out += ch;
+  }
+  return out;
 }
 
 /** An answer that stopped at the token limit: kept so the repair call can ask for a shorter one. */

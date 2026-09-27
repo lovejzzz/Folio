@@ -26,7 +26,7 @@ export function systemPrompt(language: Language, locale = ''): string {
     'Quote word for word only from the teacher\'s sources shown to you. Anything else, paraphrase and point to the chapter or section: never invent a quotation or a page number.',
     'Write maths in Unicode with real subscripts and superscripts (β₀, xᵢ, x², σ̂², ≤, √), never LaTeX. Where Unicode has none, write _ or ^ and the rest as one word or in braces (β̂_educ, t_{n−k−1}, e^{0.092}): Folio sets them as sub- and superscripts.',
     'Put code, commands and function names in backticks, e.g. `lm(wage ~ educ, data = wage1)`, one line of code per pair. Use backticks for nothing else, and never fenced code blocks.',
-    'Folio shows lesson numbers, the number of lessons, lesson lengths and quiz sizes itself, and teachers change them. Never write them anywhere, speaker notes included: no "lesson 1 of 4", "the first lesson", "over the next two hours" or "a 5-question quiz". Refer to another lesson by its title.',
+    'Folio shows lesson numbers, the number of lessons, lesson lengths and quiz sizes itself, and teachers change them. Never write them anywhere, speaker notes included: no "lesson 1 of 4", "the first lesson", "the next lesson", "last week", "over the next two hours" or "a 5-question quiz". Refer to another lesson by its title, since teachers reorder them.',
     languageLine(language, locale),
     'Reply with JSON that matches the provided schema and nothing else.',
   ].join('\n\n');
@@ -194,6 +194,24 @@ function universityRubric(locale: string): string {
   return `Name the rubric levels after ${bands}. Write each descriptor as a marker would, for work at that band.`;
 }
 
+/**
+ * One scale for every rubric in a course. Each assignment is written on its
+ * own, and a history course came back with four scales in four lessons. A
+ * course that has a rubric already passes its levels on, so a teacher's
+ * renamed levels carry to the next assignment.
+ */
+function rubricLevels(course: Course): string {
+  const existing = Object.values(course.rubrics).find((r) => r.levels.length >= 3);
+  if (existing) {
+    const levels = existing.levels.map((l) => `"${l.label}" (${l.points})`).join(', ');
+    return `Use the same levels as the course's other rubrics, exactly: ${levels}.`;
+  }
+  if (isHigherEducation(course.audience.level)) return universityRubric(course.locale);
+  return course.language === 'zh-CN'
+    ? 'Name the rubric levels exactly "优秀", "良好", "发展中" and "起步", with 4, 3, 2 and 1 as the points.'
+    : 'Name the rubric levels exactly "Excellent", "Good", "Developing" and "Beginning", with 4, 3, 2 and 1 as the points.';
+}
+
 export type SectionPromptKind = 'plan' | 'slides' | 'study' | 'quiz' | 'assignments' | 'discussions' | 'faq';
 
 /** Sections written from the lesson plan: they wait for it, and go out of date when it changes. */
@@ -211,7 +229,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
   assignments: (c) =>
     [
       'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
-      isHigherEducation(c.audience.level) ? universityRubric(c.locale) : '',
+      rubricLevels(c),
     ]
       .filter(Boolean)
       .join(' '),

@@ -51,8 +51,9 @@ export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch
           { role: 'system', content: [request.system, request.context, schemaNote].filter(Boolean).join('\n\n') },
           { role: 'user', content: request.prompt },
         ],
-        // DeepSeek stops at 4K output tokens unless asked for more; a lesson plan can run past that.
-        ...(jsonMode ? { max_tokens: request.maxTokens ?? 8000, ...deepseekThinking(request.effort) } : {}),
+        // DeepSeek stops at 4K output tokens unless asked for more, and its thinking counts against the cap:
+        // a two-hour seminar plan thought for 7K tokens and was cut off at 8K. A runaway at 16K costs two cents.
+        ...(jsonMode ? { max_tokens: request.maxTokens ?? 16000, ...deepseekThinking(request.effort) } : {}),
         response_format: jsonMode
           ? { type: 'json_object' }
           : { type: 'json_schema', json_schema: { name: request.task, schema, strict: false } },
