@@ -1,5 +1,5 @@
 import { docLabels, type Language } from '@folio/core';
-import type { AssignmentDraft, DiscussionsDraft, QuestionDraft } from './schemas';
+import type { AssignmentDraft, DiscussionsDraft, OutlineDraft, QuestionDraft } from './schemas';
 
 /**
  * Small, certain fixes made locally instead of by a repair call, which would
@@ -30,4 +30,20 @@ export const FOLLOW_UPS = 3;
 /** Follow-ups are optional prompts for the teacher: past three, the extras are dropped. */
 export function tidyFollowUps(v: DiscussionsDraft): DiscussionsDraft {
   return { discussions: v.discussions.map((d) => ({ ...d, followUps: d.followUps.slice(0, FOLLOW_UPS) })) };
+}
+
+const QUOTE_PAIRS: [string, string][] = [['“', '”'], ['"', '"'], ['「', '」'], ['‘', '’'], ["'", "'"]];
+
+/** A title the model wrapped in quotation marks, “Like this”, loses the marks; quotes inside a title stay. */
+export function unquote(title: string): string {
+  const t = title.trim();
+  for (const [open, close] of QUOTE_PAIRS) {
+    const inner = t.slice(open.length, -close.length);
+    if (t.length > 2 && t.startsWith(open) && t.endsWith(close) && !inner.includes(open) && !inner.includes(close)) return inner.trim();
+  }
+  return t;
+}
+
+export function tidyOutline(v: OutlineDraft): OutlineDraft {
+  return { ...v, title: unquote(v.title), lessons: v.lessons.map((l) => ({ ...l, title: unquote(l.title) })) };
 }

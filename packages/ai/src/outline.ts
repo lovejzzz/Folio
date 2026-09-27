@@ -3,6 +3,7 @@ import type { Inference } from './inference';
 import { runJob, type Problem } from './jobs';
 import { outlinePrompt, systemPrompt, type OutlineInput } from './prompts';
 import { OutlineDraft } from './schemas';
+import { tidyOutline } from './tidy';
 
 export interface NewCourseRequest {
   brief: string;
@@ -25,6 +26,7 @@ export async function generateOutline(inference: Inference, req: NewCourseReques
     system: systemPrompt(req.language, req.locale),
     prompt: outlinePrompt(input),
     schema: OutlineDraft,
+    tidy: tidyOutline,
     check: (v): Problem[] =>
       v.lessons.length === req.lessonCount
         ? []

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { tidyFollowUps, tidySteps, tidyTrueFalse } from '../src/tidy';
+import { tidyFollowUps, tidySteps, tidyTrueFalse, unquote } from '../src/tidy';
 import type { QuestionDraft } from '../src/schemas';
 
 const tf = (answer: string, choices: string[] = []): QuestionDraft =>
@@ -35,5 +35,18 @@ describe('tidySteps', () => {
 describe('tidyFollowUps', () => {
   it('keeps the first three', () => {
     expect(tidyFollowUps({ discussions: [{ prompt: 'p', followUps: ['a', 'b', 'c', 'd'] }] }).discussions[0]!.followUps).toEqual(['a', 'b', 'c']);
+  });
+});
+
+describe('unquote', () => {
+  it('drops quotation marks around a whole title', () => {
+    expect(unquote('“知觉：从感觉输入到物体识别”')).toBe('知觉：从感觉输入到物体识别');
+    expect(unquote('"Sampling bias"')).toBe('Sampling bias');
+  });
+
+  it('keeps quotes that belong to the title', () => {
+    expect(unquote('《认知心理学》导读')).toBe('《认知心理学》导读');
+    expect(unquote('“Nudge” and its critics')).toBe('“Nudge” and its critics');
+    expect(unquote('“Free will” or “determinism”')).toBe('“Free will” or “determinism”');
   });
 });

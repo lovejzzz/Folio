@@ -48,11 +48,39 @@ It builds the course and screenshots every material into `live-results/prof-<nam
 
 Overall, about 47% of output tokens were thinking. `python3 scripts/token-report.py --grep econometrics` prints the table.
 
-## DeepSeek status (this session)
+## DeepSeek status
 
-- **Blocked on the key.** `DEEPSEEK_API_KEY` in the environment is rejected by DeepSeek with 401 "Authentication Fails" (key ending `4cf4`), on `/models`, `/user/balance` and `/chat/completions` alike. Nothing has been spent. The model id for "DeepSeek-V4.1-Flash" is still unconfirmed; `deepseek-chat` is the placeholder default until `/models` answers.
-- **DeepSeek is a provider in the app.** It uses the OpenAI-compatible adapter with JSON mode (`json_object`); the schema goes at the end of the system prompt, after the cacheable course context; `max_tokens` defaults to 8000. `api.deepseek.com` is in the CSP. Browsers can call it directly: the CORS preflight allows any origin.
-- **`scripts/deepseek-bridge.mjs`** is a drop-in for `claude-bridge.mjs`: `node scripts/deepseek-bridge.mjs`, then `PROF=econ pnpm test:live professor` as before. It logs the same rows (`overhead: 0`, so `token-report.py` doesn't subtract the CLI's tokens) and keeps a ledger in `live-results/deepseek-spend.json`. It refuses calls past `RUN_BUDGET_USD` (3) or `BUDGET_USD` (15 in total), and prints the account balance at start and exit. Prices default to V3.2's ($0.28 in, $0.028 cached, $0.42 out per M); set `DS_PRICE_*` once V4.1-Flash's prices are known. Thinking is off unless `DEEPSEEK_THINKING=1`.
+- **The key works once its first letter is a lowercase `s`.** The environment still holds it with a capital `S`: fix it in the environment settings, or prefix commands with `export DEEPSEEK_API_KEY="s${DEEPSEEK_API_KEY:1}"`.
+- **Model and API.** The model is `deepseek-flash` (DeepSeek-V4.1-Flash, 1M context). Peak prices per million tokens: $0.30 input, $0.006 cached input, $1.20 output; off-peak is half.
+  - It does not accept `json_schema`, so the adapter uses `json_object` and puts the schema at the end of the system prompt.
+  - It thinks by default. `thinking: {type: 'disabled'}` turns thinking off; `reasoning_effort` takes `low`, `high` or `max`.
+  - Browsers can call it directly (CORS allows it).
+- **In the app.** Jobs with effort `medium` (plan, quiz, outline) send `reasoning_effort: 'low'`; all other jobs turn thinking off. `DEFAULT_MODELS.deepseek` is `deepseek-flash`.
+- **`scripts/deepseek-bridge.mjs`.** Drop-in for `claude-bridge.mjs`. It maps effort to thinking the same way the app does (`DS_THINK_LOW`, `DS_THINK_MEDIUM`). It keeps a ledger in `live-results/deepseek-spend.json` and caps spending at $3 per run and $15 in total.
+- **Runs**, each a four-lesson course (logs and courses under `apps/web/live-results/*-ds*`):
+
+| Run | Thinking | Calls | Repairs | Cost | Build |
+|---|---|---|---|---|---|
+| econ 1 | low on plan, quiz, outline | 29 | 0 | $0.078 | 89 s |
+| econ 2 | off everywhere | 36 | 7 | $0.056 | 56 s |
+| psych (zh) 3 | as econ 1, with the local fixes | 31 | 2 | $0.074 | 95 s |
+
+  Opus 5.5 cost about $1.30 per course, so DeepSeek is roughly 17× cheaper. Real spend so far is $0.17 (balance $19.97 → $19.80).
+- **Quality.** Classroom-ready in English and Chinese:
+  - The econometrics maths, t statistics and wage1 figures are correct.
+  - The Chinese psychology course cites the classic studies accurately (Sperling, Craik and Tulving, Godden and Baddeley).
+  - The distractors target real misconceptions.
+  - Readings and the grading scheme come through from the brief.
+- **Fixed from these runs** (all applied locally, without a repair call; see `packages/ai/src/tidy.ts`):
+  - A true/false question returned with no choices now gets the course language's True/False (正确/错误).
+  - Numbers the model wrote into assignment steps are removed, because the page numbered them again ("1. 1. …").
+  - Follow-up questions past three are dropped.
+  - Lesson titles the model wrapped in quotation marks (“知觉：…”) lose the marks.
+  - The assignment prompt now says "two to six steps".
+- **Open.**
+  - Without thinking, the cheap model makes more arithmetic slips and more "right answer stands out" quiz items. The checks catch these and each costs one repair; that is why the quiz keeps low thinking.
+  - The econ plan and the quiz used different standard errors for educ (0.007 and 0.0074). Each job invents what the sources don't give.
+  - One psych spacing-effect question had a defensible second answer ("5 h weekly for 5 weeks"). The checks can't catch this; the quiz prompt could ask that exactly one choice is defensible.
 
 ## Next
 
