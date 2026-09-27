@@ -1,6 +1,6 @@
 import { describeFlag, type Flag } from '@folio/core';
 import type { z } from 'zod';
-import { InferenceError, MalformedOutputError, type CompletionRequest, type Inference } from './inference';
+import { InferenceError, MalformedOutputError, type CompletionRequest, type Effort, type Inference } from './inference';
 
 /**
  * One job: ask, validate against the schema, run deterministic checks, and
@@ -19,8 +19,12 @@ export interface Problem {
 export interface JobSpec<T> {
   task: string;
   system: string;
+  context?: string;
   prompt: string;
+  effort?: Effort;
   schema: z.ZodType<T>;
+  /** Fix what can be fixed without asking again (e.g. drop a question too many), before the check. */
+  tidy?: (value: T) => T;
   check?: (value: T) => Problem[];
   signal?: AbortSignal;
 }
@@ -56,7 +60,8 @@ async function attempt<T>(inference: Inference, request: Omit<CompletionRequest,
   }
   const parsed = spec.schema.safeParse(raw);
   if (!parsed.success) return { raw, problems: describeIssues(parsed.error) };
-  return { raw, value: parsed.data, problems: spec.check?.(parsed.data) ?? [] };
+  const value = spec.tidy ? spec.tidy(parsed.data) : parsed.data;
+  return { raw, value, problems: spec.check?.(value) ?? [] };
 }
 
 /** Long enough to show the model what it wrote; short enough not to crowd out the request. */
@@ -76,7 +81,7 @@ function repairPrompt(prompt: string, raw: unknown, problems: Problem[]): string
 const shown = (problems: Problem[]) => problems.filter((p) => !p.advisory);
 
 export async function runJob<T>(inference: Inference, spec: JobSpec<T>): Promise<JobResult<T>> {
-  const request = { task: spec.task, system: spec.system, schema: spec.schema, signal: spec.signal };
+  const request = { task: spec.task, system: spec.system, context: spec.context, effort: spec.effort, schema: spec.schema, signal: spec.signal };
   const first = await attempt(inference, request, spec.prompt, spec);
   if (first.value !== undefined && first.problems.length === 0) {
     return { value: first.value, problems: [], repaired: false };

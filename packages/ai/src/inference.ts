@@ -32,11 +32,21 @@ export function isConfigured(settings: ModelSettings | null | undefined): settin
 
 export const DEFAULT_LOCAL_URL = 'http://localhost:11434/v1';
 
+/** How hard the model thinks before answering. Thinking is billed as output. */
+export type Effort = 'low' | 'medium';
+
 export interface CompletionRequest {
   /** Short name of the job, used as the schema name. */
   task: string;
   system: string;
+  /**
+   * Background shared by many calls (the course and its sources), sent right
+   * after the system prompt so a provider can cache the common prefix.
+   */
+  context?: string;
   prompt: string;
+  /** Defaults to medium. */
+  effort?: Effort;
   schema: z.ZodType;
   signal?: AbortSignal;
   maxTokens?: number;

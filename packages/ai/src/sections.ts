@@ -18,7 +18,7 @@ import {
 } from '@folio/core';
 import type { Inference } from './inference';
 import { runJob, type JobSpec, type Problem } from './jobs';
-import { numberedPassages, sectionPrompt, systemPrompt } from './prompts';
+import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
 import {
   AssignmentDraft,
   DiscussionsDraft,
@@ -33,6 +33,7 @@ import {
 /** Everything one generated section needs: its schema, its checks and how it becomes commands. */
 interface SectionJob<T> {
   schema: JobSpec<T>['schema'];
+  tidy?: (value: T, course: Course) => T;
   check?: (value: T, course: Course, lesson: Lesson) => Problem[];
   toCommands: (value: T, problems: Problem[], course: Course, lesson: Lesson) => Command[];
 }
@@ -112,8 +113,25 @@ const study: SectionJob<StudyDraft> = {
   ],
 };
 
+/**
+ * One question too many is dropped here rather than asked for again: a repair
+ * call resends the whole request and answer. The dropped one is a middling
+ * question, so the easy and hard ones that give the quiz its spread stay.
+ */
+export function trimQuiz(v: QuizDraft, size: number): QuizDraft {
+  const questions = [...v.questions];
+  while (questions.length > size) {
+    const hard = questions.filter((q) => q.difficulty === 3).length;
+    let drop = questions.findLastIndex((q) => q.difficulty === 2);
+    if (drop < 0) drop = questions.findLastIndex((q) => q.difficulty !== 3 || hard > 1);
+    questions.splice(drop < 0 ? questions.length - 1 : drop, 1);
+  }
+  return { ...v, questions };
+}
+
 const quiz: SectionJob<QuizDraft> = {
   schema: QuizDraft,
+  tidy: (v, course) => trimQuiz(v, course.shape.quizSize),
   check: (v, course, lesson) => {
     const problems: Problem[] = [];
     v.questions.forEach((q, index) => {
@@ -234,8 +252,11 @@ export async function generateSection(
     const result = await runJob(inference, {
       task: `folio_${kind}`,
       system: systemPrompt(course.language, course.locale),
+      context: courseBackground(course),
       prompt: sectionPrompt(course, lesson, kind),
+      effort: SECTION_EFFORT[kind],
       schema: job.schema,
+      tidy: job.tidy ? (v) => job.tidy!(v, course) : undefined,
       check: job.check ? (v) => job.check!(v, course, lesson) : undefined,
       signal,
     });

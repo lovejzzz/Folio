@@ -60,7 +60,7 @@ createServer(async (req, res) => {
     const structured = out.structured_output;
     const text = structured !== undefined ? JSON.stringify(structured) : (out.result ?? '');
     const ms = Date.now() - started;
-    appendFileSync(LOG, JSON.stringify({ id, ms, requestedModel: request.model, system, prompt, schemaKeys: schema ? Object.keys(schema.properties ?? {}) : null, isError: out.is_error, subtype: out.subtype, text, cost: out.total_cost_usd, usage: out.usage && { in: out.usage.input_tokens + (out.usage.cache_read_input_tokens ?? 0) + (out.usage.cache_creation_input_tokens ?? 0), out: out.usage.output_tokens } }) + '\n');
+    appendFileSync(LOG, JSON.stringify({ id, at: new Date().toISOString(), ms, model: MODEL, effort: effort ?? null, requestedModel: request.model, system, prompt, schemaKeys: schema ? Object.keys(schema.properties ?? {}) : null, isError: out.is_error, subtype: out.subtype, text, cost: out.total_cost_usd, usage: out.usage && { in: out.usage.input_tokens + (out.usage.cache_read_input_tokens ?? 0) + (out.usage.cache_creation_input_tokens ?? 0), cacheRead: out.usage.cache_read_input_tokens ?? 0, out: out.usage.output_tokens } }) + '\n');
     if (out.is_error) {
       res.writeHead(500, { ...cors, 'content-type': 'application/json' });
       return res.end(JSON.stringify({ type: 'error', error: { type: 'api_error', message: String(out.result ?? out.subtype) } }));

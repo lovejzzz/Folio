@@ -17,10 +17,10 @@ export async function runTextAction(
   const out: Language = args.action === 'translate' ? (args.language === 'zh-CN' ? 'en' : 'zh-CN') : args.language;
   const system = systemPrompt(out);
   if (args.action === 'explain') {
-    const r = await runJob(inference, { task: 'folio_explain', system, prompt, schema: ExplanationDraft, signal: args.signal });
+    const r = await runJob(inference, { task: 'folio_explain', system, prompt, effort: 'low', schema: ExplanationDraft, signal: args.signal });
     return typesetDraft(r.value.explanation, out);
   }
-  const r = await runJob(inference, { task: 'folio_text', system, prompt, schema: TextDraft, signal: args.signal });
+  const r = await runJob(inference, { task: 'folio_text', system, prompt, effort: 'low', schema: TextDraft, signal: args.signal });
   return typesetDraft(r.value.text.trim(), out);
 }
 

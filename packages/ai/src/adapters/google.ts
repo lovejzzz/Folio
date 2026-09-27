@@ -18,7 +18,7 @@ export function googleInference(settings: ModelSettings, fetchImpl: typeof fetch
     async complete(request: CompletionRequest) {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.model)}:generateContent`;
       const body = {
-        systemInstruction: { parts: [{ text: request.system }] },
+        systemInstruction: { parts: [{ text: [request.system, request.context].filter(Boolean).join('\n\n') }] },
         contents: [{ role: 'user', parts: [{ text: request.prompt }] }],
         generationConfig: {
           responseMimeType: 'application/json',

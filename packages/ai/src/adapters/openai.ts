@@ -27,7 +27,7 @@ export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch
       const body = {
         model: settings.model,
         messages: [
-          { role: 'system', content: request.system },
+          { role: 'system', content: [request.system, request.context].filter(Boolean).join('\n\n') },
           { role: 'user', content: request.prompt },
         ],
         response_format: {

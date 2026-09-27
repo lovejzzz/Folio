@@ -6,7 +6,7 @@ import type { Page, Route } from '@playwright/test';
  */
 
 interface Body {
-  system?: string;
+  system?: string | { text: string }[];
   messages: { content: string }[];
 }
 
@@ -46,7 +46,8 @@ function coursePlan(prompt: string) {
 }
 
 function answerFor(body: Body): unknown {
-  const prompt = body.messages.map((m) => m.content).join('\n');
+  const system = typeof body.system === 'string' ? body.system : (body.system ?? []).map((b) => b.text).join('\n');
+  const prompt = [system, ...body.messages.map((m) => m.content)].join('\n');
   const title = lessonTitle(prompt);
   if (prompt.includes('Return {"ok": true}')) return { ok: true };
   if (prompt.includes('Plan exactly')) return outline(prompt);

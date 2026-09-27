@@ -24,16 +24,16 @@ Common student error: reading the R² as the share of the "effect" explained, or
 const SCENARIOS: Record<string, { brief: string; locale?: string; files?: { name: string; text: string }[] }> = {
   econ: {
     brief:
-      'Introductory econometrics for second-year economics undergraduates. Eight weekly 90-minute lectures. Students know basic calculus and probability. Cover simple and multiple regression with OLS, inference, dummy variables and heteroskedasticity. Main text: Wooldridge, Introductory Econometrics. Assessment: weekly problem sets (30%), a midterm (30%) and a final exam (40%). Problem sets use real datasets in R.',
+      'Introductory econometrics for second-year economics undergraduates. A four-week module of weekly 90-minute lectures. Students know basic calculus and probability. Cover simple and multiple regression with OLS, then inference with t tests. Main text: Wooldridge, Introductory Econometrics. Assessment: weekly problem sets (30%), a midterm (30%) and a final exam (40%). Problem sets use real datasets in R.',
     files: [{ name: 'week 3 notes.md', text: NOTES }],
   },
   phil: {
     brief:
-      'Graduate seminar in political philosophy on the social contract. Six two-hour seminars. Readings: Hobbes, Leviathan ch. 13–17; Locke, Second Treatise ch. 2, 5, 8, 9; Rousseau, The Social Contract Books I–II; Rawls, A Theory of Justice §§3–4, 24; Nozick, Anarchy, State, and Utopia ch. 7; Pateman, The Sexual Contract ch. 1. Each week one student presents; the course ends with a 3,000-word essay.',
+      'Graduate seminar in political philosophy on the social contract. Four two-hour seminars. Readings: Hobbes, Leviathan ch. 13–17; Locke, Second Treatise ch. 2, 5, 8, 9; Rawls, A Theory of Justice §§3–4, 24; Pateman, The Sexual Contract ch. 1. Each week one student presents; the course ends with a 3,000-word essay.',
   },
   psych: {
     brief:
-      '认知心理学导论，面向心理学专业本科二年级，共6周，每周一次100分钟的课。内容包括注意、知觉、记忆、语言和决策。教材是Goldstein《认知心理学》，每周布置阅读，期末交一篇课程论文。',
+      '认知心理学导论，面向心理学专业本科二年级，共4周，每周一次100分钟的课。内容包括知觉、注意、记忆和决策。教材是Goldstein《认知心理学》，每周布置阅读。成绩：平时作业40%，期末课程论文60%。',
   },
 };
 

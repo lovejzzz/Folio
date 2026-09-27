@@ -42,10 +42,16 @@ export function anthropicInference(settings: ModelSettings, fetchImpl?: typeof f
           {
             model,
             max_tokens: request.maxTokens ?? 16000,
-            system: request.system,
+            // The course background is the same for every call in a build: cached, it costs a tenth as much after the first call.
+            system: request.context
+              ? [
+                  { type: 'text' as const, text: request.system },
+                  { type: 'text' as const, text: request.context, cache_control: { type: 'ephemeral' as const } },
+                ]
+              : request.system,
             messages: [{ role: 'user', content: request.prompt }],
             output_config: {
-              ...(acceptsEffort(model) ? { effort: 'medium' as const } : {}),
+              ...(acceptsEffort(model) ? { effort: request.effort ?? 'medium' } : {}),
               format: { type: 'json_schema', schema: format.schema },
             },
             ...(FALLBACK_MODELS.has(model) ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' as const } : {}),

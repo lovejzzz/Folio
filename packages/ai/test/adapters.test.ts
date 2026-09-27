@@ -45,6 +45,17 @@ describe('anthropic adapter', () => {
     expect(body.system).toBe('sys');
   });
 
+  it('sends the shared course background as a cached block, and the effort asked for', async () => {
+    const { fn, seen } = mockFetch(200, anthropicMessage('{"title":"x"}'));
+    await createInference(settings('anthropic'), fn).complete({ ...req, context: 'The course', effort: 'low' });
+    const body = JSON.parse(String(seen[0]!.init.body));
+    expect(body.system).toEqual([
+      { type: 'text', text: 'sys' },
+      { type: 'text', text: 'The course', cache_control: { type: 'ephemeral' } },
+    ]);
+    expect(body.output_config.effort).toBe('low');
+  });
+
   it('reports refusals and bad keys plainly', async () => {
     await expect(createInference(settings('anthropic'), mockFetch(200, anthropicMessage('', 'refusal')).fn).complete(req)).rejects.toMatchObject({ kind: 'refused' });
     const bad = mockFetch(401, { type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } });

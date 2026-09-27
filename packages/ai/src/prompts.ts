@@ -1,11 +1,12 @@
 import { SHAPE_LIMITS, lessonNumber, orderedLessons, statedObjectives, type Course, type Language, type Lesson } from '@folio/core';
+import type { Effort } from './inference';
 
 /**
  * Prompt templates. Each has a version so evaluation results can be tied to
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@7';
+export const PROMPT_VERSION = 'folio-prompts@8';
 
 const SOURCE_BUDGET = 12000;
 
@@ -82,25 +83,35 @@ function sourcesBlock(course: Course): string {
   return `Teacher's sources (numbered passages):\n${lines.join('\n')}`;
 }
 
-export function courseContext(course: Course, lesson: Lesson): string {
-  const n = lessonNumber(course, lesson.id);
+/**
+ * What every section of every lesson shares: the course, its lessons and the
+ * teacher's sources. It is sent as one block after the system prompt, the
+ * same for every call in a build, so providers can cache it and each call
+ * pays only for what is new.
+ */
+export function courseBackground(course: Course): string {
   const all = orderedLessons(course)
-    .map((l, i) => `${i + 1}. ${l.title}${l.id === lesson.id ? '  ← this lesson' : ''}`)
-    .join('\n');
-  const objectives = statedObjectives(course, lesson)
-    .map((o, i) => `${i + 1}. ${o.text}`)
+    .map((l, i) => `${i + 1}. ${l.title}`)
     .join('\n');
   const audience = [course.audience.level, course.audience.subject].filter(Boolean).join(', ');
   return [
     `Course: ${course.title}${audience ? ` (${audience})` : ''}`,
     course.summary ? `About the course: ${course.summary}` : '',
     `Lessons:\n${all}`,
-    `This is lesson ${n}: "${lesson.title}". ${lesson.summary}`,
-    objectives ? `Its objectives:\n${objectives}` : '',
     `Each lesson lasts ${course.shape.minutesPerLesson} minutes.`,
+    sourcesBlock(course),
   ]
     .filter(Boolean)
     .join('\n\n');
+}
+
+/** The lesson a section is for: the part of the request that changes from call to call. */
+export function lessonContext(course: Course, lesson: Lesson): string {
+  const n = lessonNumber(course, lesson.id);
+  const objectives = statedObjectives(course, lesson)
+    .map((o, i) => `${i + 1}. ${o.text}`)
+    .join('\n');
+  return [`This is lesson ${n}: "${lesson.title}". ${lesson.summary}`, objectives ? `Its objectives:\n${objectives}` : ''].filter(Boolean).join('\n\n');
 }
 
 function planSummary(lesson: Lesson): string {
@@ -140,19 +151,35 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
     'Write two or three questions students commonly ask about this lesson, with short, accurate answers.',
 };
 
+/** The per-call part of a section request; the course itself goes in courseBackground. */
 export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromptKind): string {
-  const parts = [courseContext(course, lesson)];
+  const parts = [lessonContext(course, lesson)];
   if (kind === 'slides' || kind === 'study') {
     const plan = planSummary(lesson);
     if (plan) parts.push(plan);
   }
-  if (kind === 'plan' || kind === 'quiz') {
-    const sources = sourcesBlock(course);
-    if (sources) parts.push(sources, 'Where a question draws on a passage, give its number in "sourcePassage".');
+  if ((kind === 'plan' || kind === 'quiz') && course.sourceOrder.length) {
+    parts.push('Base this on the teacher\'s sources where they apply. Where a question draws on a passage, give its number in "sourcePassage".');
   }
   parts.push(asks[kind](course, lesson));
   return parts.join('\n\n');
 }
+
+/**
+ * How much thinking each job gets. Planning a lesson and writing a quiz with
+ * checked answers repay it; writing slides, a study guide or discussion
+ * prompts from a settled plan mostly doesn't, and thinking is billed as
+ * output, the dearest tokens.
+ */
+export const SECTION_EFFORT: Record<SectionPromptKind, Effort> = {
+  plan: 'medium',
+  quiz: 'medium',
+  assignments: 'low',
+  slides: 'low',
+  study: 'low',
+  discussions: 'low',
+  faq: 'low',
+};
 
 export type TextAction = 'rewrite' | 'simplify' | 'harder' | 'easier' | 'translate' | 'explain';
 
