@@ -14,6 +14,11 @@ export interface ExportChoice {
 
 export const FORMATS: FormatChoice[] = ['docx', 'pdf', 'pptx', 'xlsx', 'zip', 'folio', 'google'];
 
+/** A Folio file is always the whole course with answers, whatever was chosen before. */
+export function effectiveChoice(choice: ExportChoice): ExportChoice {
+  return choice.format === 'folio' ? { ...choice, scope: 'whole', audience: 'teacher' } : choice;
+}
+
 /** Which materials an export covers, given the scope and format. */
 export function kindsFor(course: Course, choice: ExportChoice): MaterialKind[] {
   const enabled = enabledKinds(course);

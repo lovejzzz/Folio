@@ -26,7 +26,7 @@ describe('exportCourse', () => {
     });
   }
 
-  it('bundles one Word file per material, the deck, the quiz csv and a backup', async () => {
+  it('bundles one Word file per material, the deck and the quiz csv; a student copy has no backup', async () => {
     const req: ExportRequest = { ...base, kinds: ['syllabus', 'slides', 'quiz'], audience: 'student', format: 'zip' };
     const file = await exportCourse(req);
     const names = Object.keys(unzipSync(file.bytes)).sort();
@@ -37,12 +37,33 @@ describe('exportCourse', () => {
         'Reading the world with data — Quiz & exam bank (Student copy).docx',
         'Reading the world with data — Slide decks (Student copy).pptx',
         'Reading the world with data — Quiz & exam bank (Student copy).csv',
-        'Reading the world with data.folio',
       ].sort(),
     );
     expect(describeExport(req).contents.sort()).toEqual(names);
-    const folio = unzipSync(file.bytes)['Reading the world with data.folio'];
+  });
+
+  it('adds the .folio backup only to a whole-course teacher copy', async () => {
+    const teacher = await exportCourse({ ...base, kinds: ['quiz'], format: 'zip' });
+    const folio = unzipSync(teacher.bytes)['Reading the world with data.folio'];
     expect(folio && readFolio(folio)).toEqual(course);
+    const oneLesson = await exportCourse({ ...base, kinds: ['quiz'], lessonIds: [course.lessonOrder[0]!], format: 'zip' });
+    expect(Object.keys(unzipSync(oneLesson.bytes)).some((n) => n.endsWith('.folio'))).toBe(false);
+  });
+
+  it('refuses a student copy of a Folio file, which always holds the answers', async () => {
+    await expect(exportCourse({ ...base, audience: 'student', format: 'folio' })).rejects.toThrow(/teacher copy/);
+  });
+
+  it('never puts an answer, explanation or teacher note anywhere in a student zip', async () => {
+    const secrets = teacherOnlyText(course);
+    expect(secrets.length).toBeGreaterThan(10);
+    const kinds = ['map', 'syllabus', 'plan', 'slides', 'assignments', 'rubrics', 'discussions', 'quiz', 'study', 'faq'] as const;
+    const file = await exportCourse({ ...base, kinds: [...kinds], audience: 'student', format: 'zip' });
+    const text = allText(file.bytes);
+    for (const secret of secrets) expect(text, secret).not.toContain(secret);
+    // The same scan finds them in a teacher copy, so it can see a leak.
+    const teacher = allText((await exportCourse({ ...base, kinds: [...kinds], format: 'zip' })).bytes);
+    expect(secrets.filter((x) => !teacher.includes(x))).toEqual([]);
   });
 
   it('exports slides for the chosen lessons even when slides are not picked', async () => {
@@ -76,3 +97,32 @@ describe('slugFilename', () => {
     expect(Array.from(name).length).toBeLessThanOrEqual(125);
   });
 });
+
+/** Text only a teacher may see: explanations, model answers, teacher and speaker notes. */
+function teacherOnlyText(c: ReturnType<typeof sampleCourse>): string[] {
+  const out: string[] = [];
+  for (const task of Object.values(c.tasks)) {
+    if (task.kind !== 'question') continue;
+    out.push(task.explanation);
+    if (task.format === 'short' || task.format === 'numeric') out.push(task.answer);
+  }
+  const walk = (v: unknown): void => {
+    if (Array.isArray(v)) v.forEach(walk);
+    else if (v && typeof v === 'object')
+      for (const [k, x] of Object.entries(v)) {
+        if ((k === 'teacherNotes' || k === 'notes') && typeof x === 'string') out.push(x);
+        else walk(x);
+      }
+  };
+  walk(c.lessons);
+  // Long enough to be unmistakable; short ones ("12") could appear legitimately.
+  return out.map((x) => x.trim()).filter((x) => x.length >= 16);
+}
+
+/** Every piece of text in a zip, looking inside Office files too. */
+function allText(zip: Uint8Array): string {
+  const decode = (s: string) => s.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'");
+  return Object.entries(unzipSync(zip))
+    .map(([name, bytes]) => (/\.(docx|pptx|xlsx|folio)$/.test(name) ? Object.values(unzipSync(bytes)).map((b) => decode(strFromU8(b))).join('\n') : strFromU8(bytes)))
+    .join('\n');
+}

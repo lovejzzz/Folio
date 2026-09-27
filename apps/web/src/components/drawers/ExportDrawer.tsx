@@ -1,6 +1,6 @@
 import { enabledKinds, orderedLessons, project, type Course, type MaterialKind } from '@folio/core';
 import { Button, Checkbox, SegmentedControl, cx, fieldClass } from '@folio/ui';
-import { FileArchive, FileSpreadsheet, FileText, FolderDown, Presentation, Printer, UploadCloud } from 'lucide-react';
+import { EyeOff, FileArchive, FileSpreadsheet, FileText, FolderDown, Presentation, Printer, UploadCloud } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { Radio, RadioGroup } from 'react-aria-components';
 import { router } from '../../app/router';
@@ -10,7 +10,7 @@ import { uploadToGoogleDocs } from '../../lib/google';
 import { flushNow, useCourse } from '../../state/session';
 import { toast } from '../../state/toasts';
 import { DocView } from '../DocView';
-import { FORMATS, googleClientId, kindsFor, lessonIdsFor, type ExportChoice, type FormatChoice } from './exportOptions';
+import { FORMATS, effectiveChoice, googleClientId, kindsFor, lessonIdsFor, type ExportChoice, type FormatChoice } from './exportOptions';
 
 const ICONS: Record<FormatChoice, ReactNode> = {
   docx: <FileText size={18} strokeWidth={1.5} />,
@@ -133,10 +133,11 @@ export function ExportDrawer() {
   const [choice, setChoice] = useState<ExportChoice>({ scope: 'whole', lessonId: lessons[0]?.id ?? '', kinds: enabledKinds(course), audience: 'teacher', format: 'docx' });
   const [busy, setBusy] = useState(false);
   const set = (patch: Partial<ExportChoice>) => setChoice({ ...choice, ...patch });
-  const kinds = kindsFor(course, choice);
+  const kinds = kindsFor(course, effectiveChoice(choice));
+  const backup = choice.format === 'folio';
   const run = () => {
     setBusy(true);
-    runExport(choice, course, t)
+    runExport(effectiveChoice(choice), course, t)
       .catch((error: unknown) => toast({ message: error instanceof Error && error.message ? error.message : t.export.failed, tone: 'critical' }))
       .finally(() => setBusy(false));
   };
@@ -144,11 +145,20 @@ export function ExportDrawer() {
   const cta = choice.format === 'pdf' ? t.export.print : choice.format === 'google' ? t.export.uploadGoogle : t.export.download(t.export.formats[choice.format as keyof typeof t.export.formats]);
   return (
     <div className="space-y-6 p-5">
-      <WhatField choice={choice} set={set} />
-      <Field label={t.export.who}>
-        <SegmentedControl label={t.export.who} value={choice.audience} onChange={(audience) => set({ audience })} className="w-full" options={[{ id: 'student', label: t.export.student }, { id: 'teacher', label: t.export.teacher }]} />
-        {choice.audience === 'teacher' && <p className="font-ui text-12 text-ink-2">{t.export.teacherHint}</p>}
-      </Field>
+      {backup ? (
+        <p className="flex gap-2.5 rounded-control bg-well px-4 py-3 font-ui text-13 leading-relaxed text-ink-2">
+          <EyeOff size={15} strokeWidth={1.5} className="mt-0.5 shrink-0" aria-hidden />
+          {t.export.folioNote}
+        </p>
+      ) : (
+        <>
+          <WhatField choice={choice} set={set} />
+          <Field label={t.export.who}>
+            <SegmentedControl label={t.export.who} value={choice.audience} onChange={(audience) => set({ audience })} className="w-full" options={[{ id: 'student', label: t.export.student }, { id: 'teacher', label: t.export.teacher }]} />
+            {choice.audience === 'teacher' && <p className="font-ui text-12 text-ink-2">{t.export.teacherHint}</p>}
+          </Field>
+        </>
+      )}
       <Field label={t.export.format}>
         <FormatPicker value={choice.format} onChange={(format) => set({ format })} />
       </Field>

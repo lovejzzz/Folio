@@ -1,4 +1,5 @@
 import { expect, test } from './fixtures';
+import { unzipSync } from 'fflate';
 import { readFile } from 'node:fs/promises';
 import { openSample } from './helpers';
 
@@ -49,4 +50,21 @@ test('the print view shows the student quiz without answers', async ({ page, con
   await expect(print.getByRole('heading', { name: 'Quiz & exam bank' })).toBeVisible();
   await expect(print.getByText('Which of these is a statistical question?')).toBeVisible();
   await expect(print.getByText('Answer key')).toHaveCount(0);
+});
+
+test('a student copy never carries the Folio backup, and a Folio file is always the teacher’s', async ({ page }) => {
+  await openSample(page);
+  await page.getByRole('button', { name: 'Export', exact: true }).click();
+  const drawer = page.getByRole('dialog', { name: 'Export' });
+  await drawer.getByRole('radio', { name: 'Student copy' }).click();
+  await drawer.getByText('Everything (ZIP)', { exact: true }).click();
+  const zip = page.waitForEvent('download');
+  await drawer.getByRole('button', { name: 'Download Everything (ZIP)' }).click();
+  const names = Object.keys(unzipSync(await readFile((await (await zip).path())!)));
+  expect(names.length).toBeGreaterThan(5);
+  expect(names.filter((n) => n.endsWith('.folio'))).toEqual([]);
+
+  await drawer.getByText('Folio file', { exact: true }).click();
+  await expect(drawer.getByRole('radio', { name: 'Student copy' })).toHaveCount(0);
+  await expect(drawer.getByText(/not for students/)).toBeVisible();
 });

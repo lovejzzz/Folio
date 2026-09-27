@@ -99,7 +99,8 @@ function zipContents(req: ExportRequest): Planned[] {
   const files = req.kinds.map((k) => docxFile(req, [k], l.materials[k]));
   if (req.kinds.includes('slides')) files.push(pptxFile(req));
   if (req.kinds.includes('quiz')) files.push(quizFile(req, 'csv'));
-  files.push(folioFile(req));
+  // A .folio is the whole course with every answer: only a whole-course teacher copy carries one.
+  if (req.audience === 'teacher' && !req.lessonIds) files.push(folioFile(req));
   return files;
 }
 
@@ -113,6 +114,7 @@ function plan(req: ExportRequest): Planned {
     case 'csv':
       return quizFile(req, req.format);
     case 'folio':
+      if (req.audience !== 'teacher') throw new Error('A Folio file holds the whole course with answers, so it is always a teacher copy.');
       return folioFile(req);
     case 'zip': {
       const contents = zipContents(req);
