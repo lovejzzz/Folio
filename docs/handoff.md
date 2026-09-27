@@ -104,6 +104,7 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
     - The export drawer's Download button sat below the preview, off a laptop screen. It is now pinned to the drawer's bottom.
     - In the Changes drawer, "…shows up here" and "…appear here" read as the same sentence twice. The two empty states now say what each section is for, and "History · 0" drops the zero.
   - Round 15, phone pass (sample course): each lesson card on the phone map carried ten grey icons that meant nothing without hover. Cards now name only the materials that need something ("Quiz ◆", "Slides" not built yet) and show nothing when all is ready. The phone slide caption repeats the lesson title on purpose (the slide's own footer is about 9px there). One full e2e run had 2 `toHaveText` failures that didn't recur in the next four runs: worth watching.
+  - Round 16, GCSE history (new scenario): 31 calls, 2 repairs, $0.078. Accurate and GCSE-shaped: Bismarck's alliances and the Reinsurance Treaty, source work, an essay question. Every true/false answer was "True". The model had followed Folio's order exactly; the lesson-id hash that picks each quiz's first answer came up "true" four times. Lessons now alternate by position. Numeric questions are asked for only when the lesson involves calculation ("How many years from 1882 to 1907?" in a history quiz).
 
 ## Next
 

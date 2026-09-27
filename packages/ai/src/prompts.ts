@@ -134,11 +134,13 @@ function planSummary(lesson: Lesson): string {
 
 /**
  * Asked to "make about half true", models swing to all false or all true. So
- * Folio sets the order: alternating within a quiz, starting true or false by
- * lesson, so a course comes out close to even.
+ * Folio sets the order: alternating within a quiz, and starting true in odd
+ * lessons and false in even ones. A quiz often has a single true/false
+ * question, so starting by a hash of the lesson id could make every answer
+ * in a course "true" (it did, in a live run); by position it comes out even.
  */
-function trueFalseOrder(lesson: Lesson): string {
-  const startTrue = [...lesson.id].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 2 === 0;
+function trueFalseOrder(course: Course, lesson: Lesson): string {
+  const startTrue = course.lessonOrder.indexOf(lesson.id) % 2 === 0;
   const [first, second] = startTrue ? ['true', 'false'] : ['false', 'true'];
   return `If you include true/false questions, make the first statement ${first}, the second ${second}, and keep alternating.`;
 }
@@ -153,7 +155,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
   study: () =>
     'Write a study guide for students to read after the lesson: a short overview, then two to four key points, each with a heading and a clear explanation that includes an example.',
   quiz: (c, lesson) =>
-    `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer, true/false or numeric questions where they fit. For choice and true/false questions, "answer" must repeat the correct choice exactly. Use plausible wrong choices that reflect real misconceptions, as long, specific and carefully worded as the right one, so the right answer can't be spotted by its length. Each wrong choice must be clearly wrong to an expert; if a teacher could argue for it, rewrite it. Never refer to a choice by its letter or position. Write a true/false question as a plain statement, without "True or false:" in front. ${trueFalseOrder(lesson)} Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression".`,
+    `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer and true/false questions where they fit, and numeric ones only when the lesson itself involves calculation. For choice and true/false questions, "answer" must repeat the correct choice exactly. Use plausible wrong choices that reflect real misconceptions, as long, specific and carefully worded as the right one, so the right answer can't be spotted by its length. Each wrong choice must be clearly wrong to an expert; if a teacher could argue for it, rewrite it. Never refer to a choice by its letter or position. Write a true/false question as a plain statement, without "True or false:" in front. ${trueFalseOrder(c, lesson)} Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression".`,
   assignments: () =>
     'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
   discussions: () =>

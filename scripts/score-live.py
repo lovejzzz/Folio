@@ -53,7 +53,7 @@ def course_stats(c):
 
 for root in sys.argv[1:] or ['apps/web/live-results']:
     print(f'######## {root}')
-    for name in ('en', 'zh', 'stats', 'sources', 'vague'):
+    for name in ('en', 'zh', 'stats', 'sources', 'vague', 'history'):
         path = os.path.join(root, f'live-{name}.json')
         if not os.path.exists(path):
             continue

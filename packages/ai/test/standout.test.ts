@@ -47,14 +47,12 @@ describe('quizzes', () => {
 });
 
 describe('true/false balance', () => {
-  it('tells the model the order, starting differently across lessons', async () => {
+  it('tells the model the order, starting true and false in turn across lessons', async () => {
     const { sectionPrompt } = await import('../src/prompts');
     const course = smallCourse();
     const firsts = orderedLessons(course).map((l) => sectionPrompt(course, l, 'quiz').match(/make the first statement (true|false)/)?.[1]);
-    expect(firsts.every(Boolean)).toBe(true);
-    // Over many lessons, both starting values occur.
-    const ids = Array.from({ length: 20 }, (_, i) => `l_${i.toString(16).padStart(12, '0')}`);
-    const starts = new Set(ids.map((id) => sectionPrompt(course, { ...orderedLessons(course)[0]!, id }, 'quiz').match(/first statement (true|false)/)?.[1]));
-    expect(starts).toEqual(new Set(['true', 'false']));
+    // One true/false question per quiz is common, so the course only balances if lessons alternate.
+    expect(firsts).toEqual(firsts.map((_, i) => (i % 2 === 0 ? 'true' : 'false')));
+    expect(firsts.length).toBeGreaterThan(1);
   });
 });
