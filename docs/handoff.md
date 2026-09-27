@@ -100,6 +100,9 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
     - The Accept/Reject bar for a rewrite floated in the top-left corner, anchored to the field hidden behind the suggestion. It now sits under the highlighted text, and the e2e test checks its position.
     - The ⌘K preview said each change twice: the model's summary, then "This will: …". The model now adds a `note` only when the plan departs from the request ("… already covers sampling bias, so no new lesson is added"). The preview shows that note and the list; the summary only labels the history entry.
     - "Then update 4 sections that depend on it" now reads "Then update the 4 sections built on what changes".
+  - Round 14, UI pass on export, changes and library (sample course, no model calls):
+    - The export drawer's Download button sat below the preview, off a laptop screen. It is now pinned to the drawer's bottom.
+    - In the Changes drawer, "…shows up here" and "…appear here" read as the same sentence twice. The two empty states now say what each section is for, and "History · 0" drops the zero.
 
 ## Next
 

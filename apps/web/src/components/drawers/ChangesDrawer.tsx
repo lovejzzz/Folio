@@ -17,8 +17,13 @@ function Group({ title, count, action, children }: { title: string; count: numbe
       <div className="mb-3 flex items-center justify-between gap-2">
         <h3 className="font-ui text-13 font-semibold text-ink">
           {title}
-          <Sep />
-          <span className="font-normal text-ink-2 tabular">{count}</span>
+          {/* A zero beside "No edits yet" says the same thing twice. */}
+          {count > 0 && (
+            <>
+              <Sep />
+              <span className="font-normal text-ink-2 tabular">{count}</span>
+            </>
+          )}
         </h3>
         {action}
       </div>

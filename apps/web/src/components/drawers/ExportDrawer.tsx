@@ -147,31 +147,36 @@ export function ExportDrawer() {
   const noSlides = choice.format === 'pptx' && !lessons.some((l) => (choice.scope !== 'lesson' || l.id === choice.lessonId) && l.slides.length);
   const cta = choice.format === 'pdf' ? t.export.print : choice.format === 'google' ? t.export.uploadGoogle : t.export.download(t.export.formats[choice.format as keyof typeof t.export.formats]);
   return (
-    <div className="space-y-6 p-5">
-      {backup ? (
-        <p className="flex gap-2.5 rounded-control bg-well px-4 py-3 font-ui text-13 leading-relaxed text-ink-2">
-          <EyeOff size={15} strokeWidth={1.5} className="mt-0.5 shrink-0" aria-hidden />
-          {t.export.folioNote}
-        </p>
-      ) : (
-        <>
-          <WhatField choice={choice} set={set} />
-          <Field label={t.export.who}>
-            <SegmentedControl label={t.export.who} value={choice.audience} onChange={(audience) => set({ audience })} className="w-full" options={[{ id: 'student', label: t.export.student }, { id: 'teacher', label: t.export.teacher }]} />
-            {choice.audience === 'teacher' && <p className="font-ui text-12 text-ink-2">{t.export.teacherHint}</p>}
-          </Field>
-        </>
-      )}
-      <Field label={t.export.format}>
-        <FormatPicker value={choice.format} onChange={(format) => set({ format })} />
-      </Field>
-      <Field label={t.export.preview}>
-        <Preview choice={choice} />
-      </Field>
-      {noSlides && <p className="font-ui text-13 text-attention">{t.export.noSlides}</p>}
-      <Button variant="primary" size="lg" className="w-full" isDisabled={busy || kinds.length === 0 || noSlides} onPress={run}>
-        {busy ? t.export.working : cta}
-      </Button>
-    </div>
+    <>
+      <div className="space-y-6 p-5">
+        {backup ? (
+          <p className="flex gap-2.5 rounded-control bg-well px-4 py-3 font-ui text-13 leading-relaxed text-ink-2">
+            <EyeOff size={15} strokeWidth={1.5} className="mt-0.5 shrink-0" aria-hidden />
+            {t.export.folioNote}
+          </p>
+        ) : (
+          <>
+            <WhatField choice={choice} set={set} />
+            <Field label={t.export.who}>
+              <SegmentedControl label={t.export.who} value={choice.audience} onChange={(audience) => set({ audience })} className="w-full" options={[{ id: 'student', label: t.export.student }, { id: 'teacher', label: t.export.teacher }]} />
+              {choice.audience === 'teacher' && <p className="font-ui text-12 text-ink-2">{t.export.teacherHint}</p>}
+            </Field>
+          </>
+        )}
+        <Field label={t.export.format}>
+          <FormatPicker value={choice.format} onChange={(format) => set({ format })} />
+        </Field>
+        <Field label={t.export.preview}>
+          <Preview choice={choice} />
+        </Field>
+      </div>
+      {/* The action stays in view while the choices above scroll; the preview pushed it off a laptop screen. */}
+      <div className="sticky bottom-0 space-y-2 border-t border-rule bg-paper p-4">
+        {noSlides && <p className="font-ui text-13 text-attention">{t.export.noSlides}</p>}
+        <Button variant="primary" size="lg" className="w-full" isDisabled={busy || kinds.length === 0 || noSlides} onPress={run}>
+          {busy ? t.export.working : cta}
+        </Button>
+      </div>
+    </>
   );
 }
