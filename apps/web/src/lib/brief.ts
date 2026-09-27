@@ -147,3 +147,27 @@ export function guessLanguage(text: string): Language | null {
   if (text.trim().length < 4) return null;
   return cjk / text.replace(/\s/g, '').length > 0.3 ? 'zh-CN' : 'en';
 }
+
+const zhOrDigits = (raw: string): number | null => zhNumber(raw) ?? (/^\d+$/.test(raw) ? Number(raw) : null);
+const within = (n: number | null, min: number, max: number): number | null => (n !== null && n >= min && n <= max ? n : null);
+
+/** How long each lesson is: "45-minute lessons", "50 minutes", "an hour", "每节课45分钟", "一小时". */
+export function guessMinutes(text: string): number | null {
+  const en = text.match(/\b(\d{1,3})[\s-]*(?:min(?:ute)?s?|mins?)\b/i);
+  if (en) return within(Number(en[1]), 5, 600);
+  const zh = text.match(/(\d{1,3}|[一二两三四五六七八九十]{1,3})\s*分钟/);
+  if (zh) return within(zhOrDigits(zh[1]!), 5, 600);
+  if (/\b(?:an?|one)[\s-]+hour\b|\bhour[\s-]long\b|\b60[\s-]*min/i.test(text) || /(?:一|1)\s*(?:个)?小时/.test(text)) return 60;
+  if (/\bhalf[\s-]an[\s-]hour\b|半小时/.test(text)) return 30;
+  if (/\b(?:an?|one)\s+hour\s+and\s+a\s+half\b|一个半小时/.test(text)) return 90;
+  return null;
+}
+
+/** How many quiz questions: "a 10-question quiz", "quizzes of 8 questions", "每课5道题". */
+export function guessQuizSize(text: string): number | null {
+  const en = text.match(new RegExp(String.raw`\b(${EN_NUMBER})[\s-]+(?:multiple[\s-]choice[\s-]+)?questions?\b`, 'i'));
+  if (en) return within(enNumber(en[1]!), 1, 30);
+  const zh = text.match(new RegExp(String.raw`(${ZH_NUMBER})\s*(?:道|个)(?:测验|选择|练习)?题`));
+  if (zh) return within(zhNumber(zh[1]!), 1, 30);
+  return null;
+}

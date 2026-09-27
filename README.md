@@ -62,11 +62,24 @@ The look is "paper and ink": warm desk, paper sheets, one fountain-pen blue, and
 | --- | --- | --- |
 | Types (strict) | `pnpm typecheck` | clean |
 | Lint (warnings fail; files ≤ 400 lines, functions ≤ 60) | `pnpm lint` | clean |
-| Unit tests (one glob, every file runs) | `pnpm test` | 308 tests |
+| Unit tests (one glob, every file runs) | `pnpm test` | 330 tests |
 | End to end + axe (WCAG 2.2 AA) + CSP guard | `pnpm test:e2e` | 63 tests, light, dark and phone |
 | Budgets | `pnpm build && pnpm budget` | initial JS 140 KB gzip (≤ 150), all JS 2.8 MB (≤ 3), dist 6.7 MB (≤ 8) |
 
 `pnpm check` runs everything except the end-to-end tests. The end-to-end tests run the production build under the production Content-Security-Policy, with a stand-in for the Anthropic API that answers each job from its prompt. Any CSP violation or uncaught error fails a test. `cd apps/web && FOLIO_TOUR=/tmp/tour npx playwright test tour` takes a screenshot of every screen for design review.
+
+## Testing against a real model
+
+The end-to-end suite uses a stand-in model. To see what a real model does with Folio's prompts, schemas and checks, route the app's Claude calls through the local Claude CLI:
+
+```sh
+node scripts/claude-bridge.mjs                # an Anthropic-style endpoint on :8787 that answers via `claude -p` (Opus 5.5 by default)
+LIVE=en pnpm test:live build                  # build a whole course: en, zh, stats, sources or vague
+pnpm test:live assist zh-interface            # selection actions, ⌘K requests, a ripple update; the Chinese interface
+python3 scripts/score-live.py                 # answer positions, true/false balance, lengths, flags, timing, cost
+```
+
+Each run saves the course, every call and screenshots under `apps/web/live-results/`. Runs against Opus 5.5 shaped several fixes: correct answers used to sit at choice A in 22 of 26 questions (quizzes now balance positions after generation), every true/false answer was "False", text actions grew one-line summaries into paragraphs, slides wrote "lesson 1 of 4" into the text, a British teacher's course came back in dollars, and the brief's lesson length was ignored. On its own a four-lesson course builds in about two and a half minutes for about $1.30.
 
 ## Deploying
 

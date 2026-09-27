@@ -8,3 +8,4 @@ playwright-report
 .DS_Store
 apps/web/qa
 .claude/worktrees/
+apps/web/live-results

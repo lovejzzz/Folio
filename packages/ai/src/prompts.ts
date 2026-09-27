@@ -5,12 +5,13 @@ import { SHAPE_LIMITS, lessonNumber, orderedLessons, statedObjectives, type Cour
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@4';
+export const PROMPT_VERSION = 'folio-prompts@5';
 
 const SOURCE_BUDGET = 12000;
 
 function languageLine(language: Language, locale: string): string {
-  if (language === 'zh-CN') return 'Write every piece of text in Simplified Chinese (简体中文), with natural Chinese classroom phrasing.';
+  if (language === 'zh-CN')
+    return 'Write every piece of text in Simplified Chinese (简体中文), with natural Chinese classroom phrasing. Use 《》 only for titles of works (poems, books, articles); when naming a lesson, put its title in “”.';
   const where = /^en-/i.test(locale) ? ` The teacher's locale is ${locale}: use its spelling, currency and units unless the brief says otherwise.` : '';
   return `Write in clear English suited to the level of the students. Use sentence case for titles and headings (capitalise only the first word and names).${where}`;
 }

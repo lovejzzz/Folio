@@ -1,4 +1,5 @@
 import { courseFromOutline, generateOutline, type NewCourseRequest } from '@folio/ai';
+import { guessMinutes, guessQuizSize } from '../../lib/brief';
 import { MATERIAL_KINDS } from '@folio/core';
 import { Button, Skeleton } from '@folio/ui';
 import { Navigate, useNavigate } from '@tanstack/react-router';
@@ -32,8 +33,8 @@ function requestFromDraft(): NewCourseRequest | null {
   return {
     brief: d.brief || d.files.map((f) => f.title).join(', '),
     lessonCount: d.lessons,
-    minutesPerLesson: 50,
-    quizSize: 5,
+    minutesPerLesson: guessMinutes(d.brief) ?? 50,
+    quizSize: guessQuizSize(d.brief) ?? 5,
     level: d.level,
     language: d.language,
     locale: typeof navigator === 'undefined' ? '' : navigator.language,

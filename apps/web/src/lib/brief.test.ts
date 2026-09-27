@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { SHAPE_LIMITS } from '@folio/core';
 import { en } from '../i18n/en';
-import { MAX_GUESSED_LESSONS, guessLanguage, guessLessons, guessLevel } from './brief';
+import { MAX_GUESSED_LESSONS, guessLanguage, guessLessons, guessLevel, guessMinutes, guessQuizSize } from './brief';
 
 describe('reading the brief for the chips', () => {
   it.each([
@@ -124,4 +124,25 @@ describe('reading the brief for the chips', () => {
     expect(guessLanguage('The French Revolution')).toBe('en');
     expect(guessLanguage('ab')).toBeNull();
   });
+});
+
+describe('lesson length and quiz size from the brief', () => {
+  it.each([
+    ['Photosynthesis for Year 7, four lessons of 50 minutes.', 50],
+    ['six 45-minute lessons on the French Revolution', 45],
+    ['Three hour-long workshops', 60],
+    ['Two lessons, an hour each', 60],
+    ['唐诗入门，三节课，每节课45分钟', 45],
+    ['古诗词鉴赏入门，两节课，每节四十分钟', 40],
+    ['每节课一小时', 60],
+    ['Twelve lessons for grade 11', null],
+  ])('%s → %s minutes', (brief, minutes) => expect(guessMinutes(brief)).toBe(minutes));
+
+  it.each([
+    ['a short 10-question quiz each lesson', 10],
+    ['quizzes of eight questions', 8],
+    ['每课5道题的小测验', 5],
+    ['每节课做十道选择题', 10],
+    ['Four lessons for grade 9', null],
+  ])('%s → %s questions', (brief, size) => expect(guessQuizSize(brief)).toBe(size));
 });
