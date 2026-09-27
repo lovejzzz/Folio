@@ -29,7 +29,7 @@ import type {
 
 type Fields<T, K extends keyof T> = Partial<Pick<T, K>>;
 
-export type LessonFields = Fields<Lesson, 'title' | 'summary' | 'objectiveIds' | 'readings' | 'suggestedReadings'>;
+export type LessonFields = Fields<Lesson, 'title' | 'summary' | 'objectiveIds' | 'readings' | 'suggestedReadings' | 'homework'>;
 export type PlanFields = Fields<Lesson, 'segments' | 'keyIdeas' | 'vocabulary'>;
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 export type TaskFields = Partial<DistributiveOmit<Task, 'id' | 'kind' | 'lessonId'>>;
@@ -56,6 +56,8 @@ export type CommandMap = {
   'objective.remove': { objectiveId: string };
   'lesson.insert': { lesson: Pick<Lesson, 'id' | 'title' | 'summary'>; afterId: string | null; objectives?: Objective[] };
   'lesson.update': { lessonId: string } & LessonFields;
+  /** Set what students hand in. None also takes away the assignment already written, so nothing exports it. */
+  'lesson.homework': { lessonId: string; homework: Lesson['homework'] };
   'lesson.remove': { lessonId: string };
   'lesson.move': { lessonId: string; toIndex: number };
   'section.fill': {
@@ -167,6 +169,17 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     const at = p.afterId === null ? 0 : draft.lessonOrder.indexOf(p.afterId) + 1;
     draft.lessonOrder.splice(at < 0 ? draft.lessonOrder.length : at, 0, lesson.id);
   },
+  'lesson.homework': (draft, p) => {
+    const lesson = lessonOf(draft, p.lessonId);
+    lesson.homework = { ...p.homework };
+    if (p.homework.kind !== 'none') return;
+    lesson.taskIds = lesson.taskIds.filter((id) => {
+      if (draft.tasks[id]?.kind !== 'assignment') return true;
+      removeTaskEntity(draft, id);
+      return false;
+    });
+    delete lesson.gen.assignments;
+  },
   'lesson.update': (draft, p) => {
     const lesson = lessonOf(draft, p.lessonId);
     if (p.title !== undefined) lesson.title = p.title;
@@ -174,6 +187,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     if (p.objectiveIds !== undefined) lesson.objectiveIds = [...p.objectiveIds];
     if (p.readings !== undefined) lesson.readings = [...p.readings];
     if (p.suggestedReadings !== undefined) lesson.suggestedReadings = [...p.suggestedReadings];
+    if (p.homework !== undefined) lesson.homework = { ...p.homework };
   },
   'lesson.remove': (draft, p) => {
     const lesson = lessonOf(draft, p.lessonId);

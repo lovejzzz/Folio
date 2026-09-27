@@ -45,6 +45,8 @@ export function projectAssignments(ctx: Ctx): Block[] {
       blocks.push(lessonHeading(ctx, lesson));
       blocks.push({ t: 'heading', level: 3, text: field(ctx, a.id, 'title', a.title) });
       blocks.push({ t: 'para', text: field(ctx, a.id, 'prompt', a.prompt) });
+      const toward = lesson.homework.toward.trim();
+      if (lesson.homework.kind === 'step' && toward) blocks.push({ t: 'para', text: l.buildsToward(toward), tone: 'muted' });
       const steps = filledTexts(a.steps);
       if (steps.length) {
         blocks.push({ t: 'heading', level: 3, text: l.steps });

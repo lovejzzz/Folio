@@ -20,16 +20,19 @@ export function tidyTrueFalse(q: QuestionDraft, language: Language): QuestionDra
   return { ...q, choices: [trueWord, falseWord], answer: truth ? trueWord : falseWord };
 }
 
-/** The page numbers the steps, so a number the model wrote in would show twice. */
 /** The points already show a band's floor, so "First (70+)" reads as "First", as other runs wrote it. */
 const BAND_RANGE = /\s*[(（]\s*\d+\s*(?:\+|[–—-]\s*\d+)\s*%?\s*[)）]\s*$/;
 
+/** The page numbers the steps, so a number the model wrote in would show twice. */
+export function unnumberSteps<T extends { steps: string[] }>(v: T): T {
+  return { ...v, steps: v.steps.map((s) => s.replace(/^\s*(?:step\s*\d{1,2}\s*[.:)：]|\d{1,2}(?:[.)]\s|、))\s*/i, '').replace(/^\s*第[一二三四五六七八九十\d]+步\s*[:：、]?\s*/, '')) };
+}
+
 export function tidySteps(v: AssignmentDraft): AssignmentDraft {
-  return {
+  return unnumberSteps({
     ...v,
     rubric: { ...v.rubric, levels: v.rubric.levels.map((lv) => ({ ...lv, label: lv.label.replace(BAND_RANGE, '') || lv.label })) },
-    steps: v.steps.map((s) => s.replace(/^\s*(?:step\s*\d{1,2}\s*[.:)：]|\d{1,2}(?:[.)]\s|、))\s*/i, '').replace(/^\s*第[一二三四五六七八九十\d]+步\s*[:：、]?\s*/, '')),
-  };
+  });
 }
 
 /** "Passage [2].", "(source [1])": pointers into the numbered passages, which the teacher never sees numbered. */

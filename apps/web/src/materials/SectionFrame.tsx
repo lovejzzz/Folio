@@ -1,10 +1,11 @@
-import { sectionFor, staleReasons, type Course, type Lesson, type MaterialKind } from '@folio/core';
+import { sectionFor, setsWork, staleReasons, type Course, type Lesson, type MaterialKind } from '@folio/core';
 import { BinderTab, Button, Skeleton, StatusMark } from '@folio/ui';
 import type { ReactNode } from 'react';
 import { useT } from '../i18n';
 import { retryCell, useBuild } from '../state/build';
 import { keepMine, updateSection, useProposals } from '../state/proposals';
 import { FlagNote } from './FlagNote';
+import { HomeworkPicker, NoWork } from './Homework';
 
 function StaleBar({ course, lesson, kind }: { course: Course; lesson: Lesson; kind: MaterialKind }) {
   const t = useT();
@@ -79,6 +80,9 @@ export function SectionFrame({
   const t = useT();
   const section = sectionFor(kind);
   const built = !section || Boolean(lesson.gen[section]);
+  // The assignment and its rubric follow the lesson's homework: none, or a step, which has no rubric.
+  const work = kind === 'assignments' || kind === 'rubrics' ? kind : null;
+  const none = work !== null && !setsWork(lesson, kind);
   const flags = section ? (lesson.gen[section]?.flags ?? []) : [];
   return (
     <section id={hideHeading ? undefined : `m-${kind}`} aria-labelledby={hideHeading ? undefined : `h-${kind}`} className={hideHeading ? undefined : 'scroll-mt-24 border-t border-rule pt-8 first:border-t-0 first:pt-0'}>
@@ -87,9 +91,16 @@ export function SectionFrame({
           <BinderTab kind={kind} label={t.materialOne[kind]} meta={meta} />
         </h2>
       )}
-      {built && <StaleBar course={course} lesson={lesson} kind={kind} />}
-      {built && flags.length > 0 && section && <FlagNote flags={flags} lessonId={lesson.id} kind={section} itemId={null} />}
-      {built ? children : <NotBuilt lesson={lesson} kind={kind} />}
+      {kind === 'assignments' && <HomeworkPicker course={course} lesson={lesson} />}
+      {none && work ? (
+        <NoWork lesson={lesson} kind={work} />
+      ) : (
+        <>
+          {built && <StaleBar course={course} lesson={lesson} kind={kind} />}
+          {built && flags.length > 0 && section && <FlagNote flags={flags} lessonId={lesson.id} kind={section} itemId={null} />}
+          {built ? children : <NotBuilt lesson={lesson} kind={kind} />}
+        </>
+      )}
     </section>
   );
 }

@@ -48,6 +48,20 @@ describe('the outline', () => {
     expect(new Set(course.grading.map((g) => g.id)).size).toBe(3);
   });
 
+  it('sets each lesson’s homework from the assessment plan, defaulting to an assignment', () => {
+    const draft = OutlineDraft.parse({
+      title: 'E', summary: 'S.', subject: 'Philosophy', level: 'University',
+      lessons: [{ ...lessons[0], homework: 'step', homeworkToward: ' Final essay ' }, { ...lessons[1], homework: 'none', homeworkToward: 'Final essay' }],
+    });
+    expect(orderedLessons(courseFromOutline(req, draft)).map((l) => l.homework)).toEqual([
+      { kind: 'step', toward: 'Final essay' },
+      { kind: 'none', toward: '' },
+    ]);
+    const silent = OutlineDraft.parse({ title: 'E', summary: 'S.', subject: 'P', level: 'U', lessons });
+    expect(orderedLessons(courseFromOutline(req, silent)).map((l) => l.homework.kind)).toEqual(['assignment', 'assignment']);
+    expect(outlinePrompt({ ...req, sources: [] })).toContain('Under "homework"');
+  });
+
   it('suggests each further reading once, and never one already assigned', () => {
     const draft = OutlineDraft.parse({
       title: 'E', summary: 'S.', subject: 'Economics', level: 'University',

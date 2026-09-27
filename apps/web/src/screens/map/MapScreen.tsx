@@ -17,7 +17,7 @@ function MaterialStates({ lesson }: { lesson: Lesson }) {
   const t = useT();
   const course = useCourse();
   const kinds = lessonKinds(course);
-  const pending = kinds.map((kind) => ({ kind, state: cellState(course, lesson, kind) })).filter((k) => k.state !== 'ready');
+  const pending = kinds.map((kind) => ({ kind, state: cellState(course, lesson, kind) })).filter((k) => k.state !== 'ready' && k.state !== 'none');
   if (pending.length === 0) return null;
   return (
     <span className="mt-3 flex flex-wrap gap-1.5">

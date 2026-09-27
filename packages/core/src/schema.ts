@@ -71,6 +71,21 @@ export type Slide = z.infer<typeof SlideSchema>;
 export const StudyPointSchema = z.object({ id, heading: text, explanation: text });
 export type StudyPoint = z.infer<typeof StudyPointSchema>;
 
+/**
+ * What students hand in from a lesson, as the course's assessment plan has it:
+ * a graded assignment, a short ungraded step toward a larger graded piece (a
+ * thesis, an outline, a draft), or nothing. A course graded by weekly quizzes
+ * and one final essay has an essay to write once, not every week.
+ */
+export const HomeworkKindSchema = z.enum(['assignment', 'step', 'none']);
+export type HomeworkKind = z.infer<typeof HomeworkKindSchema>;
+export const HomeworkSchema = z.object({
+  kind: HomeworkKindSchema,
+  /** The graded component it counts toward, in the grading's words ("Final essay"); empty if none is named. */
+  toward: text,
+});
+export type Homework = z.infer<typeof HomeworkSchema>;
+
 export const LessonSchema = z.object({
   id,
   title: text,
@@ -83,6 +98,8 @@ export const LessonSchema = z.object({
    * never exported, and it joins the readings only when the teacher adds it.
    */
   suggestedReadings: z.array(text).default([]),
+  // Courses saved before this had an assignment in every lesson.
+  homework: HomeworkSchema.default({ kind: 'assignment', toward: '' }),
   segments: z.array(SegmentSchema),
   keyIdeas: z.array(text),
   vocabulary: z.array(TermSchema),
@@ -210,6 +227,7 @@ export const OverrideSchema = z.object({
 export type Override = z.infer<typeof OverrideSchema>;
 
 /** One component of the course grade, e.g. "Midterm exam" at 30%. */
+/** A weight of 0 is one the brief didn't state: the component is shown without a share until the teacher gives one. */
 export const GradeItemSchema = z.object({ id, item: text, weight: z.number().min(0).max(100) });
 export type GradeItem = z.infer<typeof GradeItemSchema>;
 

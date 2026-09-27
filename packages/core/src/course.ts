@@ -35,6 +35,7 @@ export function emptyLesson(idValue: string, title: string, summary = ''): Lesso
     objectiveIds: [],
     readings: [],
     suggestedReadings: [],
+    homework: { kind: 'assignment', toward: '' },
     segments: [],
     keyIdeas: [],
     vocabulary: [],

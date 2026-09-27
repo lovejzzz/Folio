@@ -23,6 +23,11 @@ export const OutlineDraft = z.object({
           .max(6)
           .default([])
           .describe('What students read before this lesson, one reading each, e.g. "Hobbes, Leviathan, ch. 13–17"; empty if the brief gives nothing to go on'),
+        homework: z
+          .enum(['assignment', 'step', 'none'])
+          .default('assignment')
+          .describe('What students hand in after this lesson, following how the brief says the course is assessed'),
+        homeworkToward: z.string().default('').describe('The graded component the homework counts toward, named as under "grading"; empty if none'),
         suggestedReadings: z
           .array(line)
           .max(3)
@@ -35,11 +40,11 @@ export const OutlineDraft = z.object({
     .array(
       z.object({
         item: line.describe('A graded component, e.g. "Problem sets" or "Final exam"'),
-        weight: z.number().min(0).max(100).describe('Its share of the final grade, in percent'),
+        weight: z.number().min(0).max(100).nullable().default(null).describe('Its share of the final grade, in percent; null when the brief gives none'),
       }),
     )
     .default([])
-    .describe('Only the components and weights the brief states; empty if it does not say'),
+    .describe('Every graded component the brief names, with the weights it states; empty if it does not say how the course is graded'),
 });
 export type OutlineDraft = z.infer<typeof OutlineDraft>;
 
@@ -113,6 +118,14 @@ export const AssignmentDraft = z.object({
   }),
 });
 export type AssignmentDraft = z.infer<typeof AssignmentDraft>;
+
+/** A short ungraded step toward a larger graded piece: no rubric, since the piece has its own. */
+export const StepDraft = z.object({
+  title: line,
+  prompt: line,
+  steps: z.array(line).min(1).max(6),
+});
+export type StepDraft = z.infer<typeof StepDraft>;
 
 export const DiscussionsDraft = z.object({
   discussions: z.array(z.object({ prompt: line, followUps: z.array(line).max(6).describe('Up to three') })).min(1).max(3),

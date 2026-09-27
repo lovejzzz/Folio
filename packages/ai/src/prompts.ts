@@ -6,7 +6,7 @@ import type { Effort } from './inference';
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@9';
+export const PROMPT_VERSION = 'folio-prompts@10';
 
 const SOURCE_BUDGET = 12000;
 
@@ -53,7 +53,8 @@ export function outlinePrompt(input: OutlineInput): string {
     'Do not mention the number of lessons or weeks, the lesson length, the number of quiz questions or which materials a lesson has: Folio keeps those as settings the teacher can change, so they must not be repeated in the text.',
     'Under "readings", list what students read before each lesson, taken from the brief or the attached sources. When the brief names a textbook but not its chapters, name the chapter that matches the lesson, by its topic if you are unsure of the number. Never invent works, authors or page numbers; leave the readings empty when the brief gives nothing to go on.',
     'Under "suggestedReadings", for a university course only, suggest up to three well-known further readings per lesson that the brief does not already list: established works a lecturer would recognise on that lesson\'s topic, with author and title, and a chapter only when you are sure of it. Suggest each work once in the course, for the lesson it fits best. The teacher checks them before anything is assigned, so leave the list empty rather than guess.',
-    'Under "grading", give only the graded components and weights the brief states, with the weights summing to 100. Leave it empty if the brief does not say how the course is graded.',
+    'Under "grading", list every graded component the brief names, such as weekly quizzes and a final essay, with the weight the brief gives each; when it gives no weight, set it to null rather than guess. Leave the list empty if the brief does not say how the course is graded.',
+    'Under "homework", decide what students hand in after each lesson, from how the brief says the course is assessed. "assignment" is a graded piece set in that lesson: every lesson when the brief sets weekly problem sets or homework; only the lesson where it is set when there is one final essay, project or portfolio. "step" is a short ungraded step toward a larger graded piece, such as choosing a question, an outline or a draft section; use it in the lessons leading up to that piece. "none" is for a lesson where nothing is handed in, for example when the course is assessed by quizzes and exams alone. When the brief does not say how the course is assessed, use "assignment" for every lesson. Under "homeworkToward", name the graded component the homework counts toward, as you named it under "grading".',
   ];
   if (input.sources.length) {
     const each = Math.floor(SOURCE_BUDGET / input.sources.length);
@@ -109,7 +110,7 @@ function briefLine(course: Course): string {
 
 /** The graded components, so in-class ones get a place in the plans and assignments can say what they prepare for. */
 function gradingLine(course: Course): string {
-  const items = course.grading.map((g) => `${g.item} (${g.weight}%)`).join(', ');
+  const items = course.grading.map((g) => (g.weight ? `${g.item} (${g.weight}%)` : g.item)).join(', ');
   return [
     items ? `The course is graded by: ${items}.` : '',
     'Anything the brief or the grading has happen in class, such as a student presentation, a debate or a test, needs a place in the lesson plans; work that prepares for a graded component says which one. State a weight or a mark only as the grading gives it; never infer one.',
@@ -226,13 +227,19 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
     'Write a study guide for students to read after the lesson: a short overview, then two to four key points, each with a heading and a clear explanation that includes an example.',
   quiz: (c, lesson) =>
     `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer and true/false questions where they fit, and numeric ones only when the lesson itself involves calculation. For a choice question, "answer" repeats the correct choice exactly. For a true/false question, "choices" is ["True", "False"] and "answer" is "True" or "False", never the statement. Use plausible wrong choices that reflect real misconceptions. Write all the choices to the same length and level of detail: first draft the right answer, then write each wrong choice with about as many words and the same kind of qualifying detail. If the right answer needs a clause of explanation, so does every wrong choice. Each wrong choice must be clearly wrong to an expert; if a teacher could argue for it, rewrite it. Never refer to a choice by its letter or position. Write a true/false question as a plain statement, without "True or false:" in front. ${trueFalseOrder(c, lesson)} Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression". Where a calculation has competing conventions (quartiles, percentiles, rounding), say in the question which method to use, so only one answer is right.`,
-  assignments: (c) =>
-    [
-      'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
+  assignments: (c, lesson) => {
+    const toward = lesson.homework.toward.trim();
+    if (lesson.homework.kind === 'step')
+      return `Write one short, ungraded step toward ${toward ? `"${toward}"` : 'the larger graded piece the course builds to'}, suited to where this lesson falls in the course: for example choosing a question, gathering evidence, an outline or a draft section. It should take students well under an hour. Give a title, what to do, and one to four steps (the page numbers them, so leave numbers out).`;
+    return [
+      toward
+        ? `Write the assignment "${toward}" as the brief describes it, with its length and requirements, set in this lesson and drawing on the course so far: two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.`
+        : 'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
       rubricLevels(c),
     ]
       .filter(Boolean)
-      .join(' '),
+      .join(' ');
+  },
   discussions: () =>
     'Write two discussion prompts that make students think and disagree productively, each with two or three follow-up questions for the teacher.',
   faq: () =>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CourseStore, orderedLessons, staleItems } from '@folio/core';
+import { CourseStore, cmd, orderedLessons, staleItems } from '@folio/core';
 import { generateSection, InferenceError, missingTargets, runBuild, runJob, type BuildTarget } from '../src';
 import { fakeInference, planDraft, quizDraft, smallCourse } from './fake';
 import { z } from 'zod';
@@ -63,6 +63,22 @@ describe('generateSection', () => {
     const inf = fakeInference(() => ({ slides: [1, 2, 3].map((n) => ({ layout: 'bullets', title: `S${n}`, bullets: ['a'], notes: '' })) }));
     await generateSection(inf, store.getState(), lesson.id, 'slides');
     expect(inf.calls[0]!.prompt).toContain('Walk through 6CO2 + 6H2O.');
+  });
+});
+
+describe('homework', () => {
+  it('writes a step toward the final piece without a rubric, and nothing for a lesson with no homework', async () => {
+    const store = new CourseStore(smallCourse());
+    const [first, second] = orderedLessons(store.getState());
+    store.apply([cmd('lesson.homework', { lessonId: first!.id, homework: { kind: 'step', toward: 'Final essay' } }), cmd('lesson.homework', { lessonId: second!.id, homework: { kind: 'none', toward: '' } })], { label: { key: 'b' }, source: 'teacher' });
+    const targets = missingTargets(store.getState());
+    expect(targets.filter((t) => t.kind === 'assignments').map((t) => t.lessonId)).toEqual([first!.id]);
+    const inf = fakeInference(() => ({ title: 'Choose your question', prompt: 'Pick one of the three essay questions.', steps: ['1. Read them', 'Pick one'] }));
+    const result = await generateSection(inf, store.getState(), first!.id, 'assignments');
+    expect(inf.calls[0]!.prompt).toContain('ungraded step toward "Final essay"');
+    store.apply(result.commands, { label: { key: 'b' }, source: 'ai' });
+    const task = store.getState().tasks[store.getState().lessons[first!.id]!.taskIds.at(-1)!]!;
+    expect(task.kind === 'assignment' && [task.rubricId, task.steps]).toEqual([null, ['Read them', 'Pick one']]);
   });
 });
 

@@ -11,14 +11,14 @@ import type { Basis, Course, Lesson } from './schema';
  * updates it or chooses to keep it. Nothing is ever rewritten silently.
  */
 
-export type BasisKey = 'title' | 'readings' | 'objectives' | 'minutes' | 'quizSize' | 'audience' | 'plan' | 'sources';
+export type BasisKey = 'title' | 'homework' | 'readings' | 'objectives' | 'minutes' | 'quizSize' | 'audience' | 'plan' | 'sources';
 
 const DEPENDENCIES: Record<GeneratedKind, readonly BasisKey[]> = {
   plan: ['title', 'readings', 'objectives', 'minutes', 'audience', 'sources'],
   slides: ['title', 'objectives', 'audience', 'plan'],
   study: ['title', 'objectives', 'audience', 'plan'],
   quiz: ['title', 'objectives', 'quizSize', 'audience', 'sources', 'plan'],
-  assignments: ['title', 'objectives', 'audience', 'plan'],
+  assignments: ['title', 'objectives', 'audience', 'plan', 'homework'],
   discussions: ['title', 'readings', 'objectives', 'audience'],
   faq: ['title', 'audience'],
 };
@@ -33,6 +33,8 @@ function inputHash(course: Course, lesson: Lesson, key: BasisKey): string {
       // Only the title: rewording a summary once put every section of the lesson out of date. Sections stamped
       // then carry a 'lesson' key that nothing reads, and stay up to date.
       return hashValue(lesson.title);
+    case 'homework':
+      return hashValue([lesson.homework.kind, lesson.homework.toward]);
     case 'readings':
       // Only the plan and discussions build on the reading. A section stamped before readings existed has no
       // 'readings' in its basis, so it stays up to date until it is next built.
@@ -67,13 +69,22 @@ export function staleReasons(course: Course, lesson: Lesson, kind: GeneratedKind
   return DEPENDENCIES[kind].filter((key) => meta.basis[key] !== undefined && meta.basis[key] !== now[key]);
 }
 
-export type CellState = 'off' | 'empty' | 'ready' | 'attention' | 'stale';
+/** 'none': the lesson sets no homework, or a step toward a larger piece, which has no rubric of its own. */
+export type CellState = 'off' | 'none' | 'empty' | 'ready' | 'attention' | 'stale';
+
+/** Whether a lesson has anything to write for this material: no homework, no assignment; a step, no rubric. */
+export function setsWork(lesson: Lesson, kind: MaterialKind): boolean {
+  if (kind === 'assignments') return lesson.homework.kind !== 'none';
+  if (kind === 'rubrics') return lesson.homework.kind === 'assignment';
+  return true;
+}
 
 /** The state of one map cell, before any in-flight build status is layered on. */
 export function cellState(course: Course, lesson: Lesson, kind: MaterialKind): CellState {
   if (!course.materials[kind].enabled) return 'off';
   const section = sectionFor(kind);
   if (!section) return 'ready';
+  if (!setsWork(lesson, kind)) return 'none';
   const meta = lesson.gen[section];
   if (!meta) return 'empty';
   if (staleReasons(course, lesson, section).length > 0) return 'stale';

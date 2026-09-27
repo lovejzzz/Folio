@@ -58,6 +58,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   for (const draft of outline.lessons) {
     const lesson = emptyLesson(newId('l'), draft.title, draft.summary);
     lesson.readings = draft.readings.map(clean).filter(Boolean);
+    lesson.homework = { kind: draft.homework, toward: draft.homework === 'none' ? '' : draft.homeworkToward.trim() };
     lesson.suggestedReadings = draft.suggestedReadings
       .map(clean)
       .filter((r) => r && !seen.has(key(r)) && seen.add(key(r)));
@@ -69,7 +70,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
     course.lessons[lesson.id] = lesson;
     course.lessonOrder.push(lesson.id);
   }
-  course.grading = outline.grading.filter((g) => g.item.trim()).map((g) => ({ id: newId('g'), item: g.item.trim(), weight: g.weight }));
+  course.grading = outline.grading.filter((g) => g.item.trim()).map((g) => ({ id: newId('g'), item: g.item.trim(), weight: g.weight ?? 0 }));
   for (const s of req.sources) {
     const source = createSource(s.title, s.text, 'file');
     course.sources[source.id] = source;

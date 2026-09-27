@@ -16,7 +16,7 @@ import {
 import { flagText, type Messages } from '../../i18n';
 import type { CellRun } from '../../state/build';
 
-export type CellView = 'empty' | 'queued' | 'building' | 'error' | 'ready' | 'attention' | 'stale';
+export type CellView = 'none' | 'empty' | 'queued' | 'building' | 'error' | 'ready' | 'attention' | 'stale';
 
 export function cellView(course: Course, lesson: Lesson, kind: MaterialKind, run: CellRun | undefined): CellView {
   if (run) return run;
@@ -96,6 +96,7 @@ export function cellPreview(course: Course, lesson: Lesson, kind: MaterialKind):
 /** Why a cell has a mark, as a sentence for its tooltip and screen readers. */
 export function cellReason(course: Course, lesson: Lesson, kind: MaterialKind, view: CellView, t: Messages, error?: string): string {
   if (view === 'error') return error ?? t.map.failed;
+  if (view === 'none') return kind === 'rubrics' ? t.homework.noRubricShort : t.homework.kinds.none;
   const section = sectionFor(kind);
   if (view === 'stale' && section) {
     const reasons = staleReasons(course, lesson, section).map((r) => t.changes.reasons[r]);

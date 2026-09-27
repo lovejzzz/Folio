@@ -38,8 +38,25 @@ function PlanHeader() {
           onCommit={(summary) => edit([cmd('course.update', { summary })], { key: 'editedCourse' })}
         />
       </div>
+      <Marking />
       <p className="mt-6 max-w-2xl font-ui text-14 leading-relaxed text-ink-2">{t.plan.lede}</p>
     </>
+  );
+}
+
+/** How the course is marked, as the brief said: the homework of each lesson below follows from it. */
+function Marking() {
+  const t = useT();
+  const course = useCourse();
+  return (
+    <p className="mt-6 max-w-2xl rounded-control bg-well px-4 py-3 font-ui text-14 leading-relaxed text-ink-2" lang={course.language}>
+      <span className="font-medium text-ink">
+        {t.homework.marked}
+        {t.common.colon}
+      </span>
+      {t.common.sentenceGap}
+      {course.grading.length ? course.grading.map((g) => (g.weight ? `${g.item} ${g.weight}%` : g.item)).join(' · ') : t.homework.notStated}
+    </p>
   );
 }
 

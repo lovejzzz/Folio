@@ -1,4 +1,4 @@
-import { GENERATED_KINDS, orderedLessons, type Command, type Course, type GeneratedKind } from '@folio/core';
+import { GENERATED_KINDS, orderedLessons, setsWork, type Command, type Course, type GeneratedKind } from '@folio/core';
 import { InferenceError, type Inference } from './inference';
 import { generateSection } from './sections';
 import { BUILT_ON_PLAN } from './prompts';
@@ -44,7 +44,8 @@ function wantedKinds(course: Course): GeneratedKind[] {
 export function missingTargets(course: Course, lessonIds?: readonly string[]): BuildTarget[] {
   const kinds = wantedKinds(course);
   const lessons = orderedLessons(course).filter((l) => !lessonIds || lessonIds.includes(l.id));
-  return lessons.flatMap((l) => kinds.filter((kind) => !l.gen[kind]).map((kind) => ({ lessonId: l.id, kind })));
+  // A lesson that sets no homework has no assignment to write.
+  return lessons.flatMap((l) => kinds.filter((kind) => !l.gen[kind] && setsWork(l, kind)).map((kind) => ({ lessonId: l.id, kind })));
 }
 
 const FATAL = new Set(['auth', 'config', 'aborted']);

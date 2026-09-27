@@ -38,6 +38,12 @@ function Placeholder({ view, compact }: { view: CellView; compact: boolean }) {
   return <span className="text-12 text-ink-2">{view === 'error' ? t.map.failed : t.map.notBuilt}</span>;
 }
 
+/** A lesson that sets no homework, or a step with no rubric: nothing is missing, so the cell is quiet, not dashed. */
+function NoWork({ kind }: { kind: MaterialKind }) {
+  const t = useT();
+  return <span className="text-12 text-ink-2">{kind === 'rubrics' ? t.homework.noRubricShort : t.homework.kinds.none}</span>;
+}
+
 /** A count, or in its place what needs doing: a cell out of date says so in words, not only with a mark. */
 function CellCaption({ view, metric, reason }: { view: CellView; metric: string; reason: string }) {
   const t = useT();
@@ -74,7 +80,8 @@ export function MapCell({ course, lesson, kind, view, error, compact, focused, o
           'group flex w-full justify-between gap-2 rounded-control p-3 text-left font-ui outline-none transition-shadow duration-120 ease-ink',
           compact ? 'h-12 flex-row items-center' : 'h-28 flex-col items-start',
           built && 'bg-paper shadow-sheet hover:shadow-overlay',
-          !built && 'border border-dashed border-rule-strong hover:border-accent',
+          view === 'none' && 'bg-well/60 hover:bg-well',
+          !built && view !== 'none' && 'border border-dashed border-rule-strong hover:border-accent',
           view === 'error' && 'border-critical/50',
           'focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-desk',
           built && 'animate-reveal',
@@ -90,6 +97,8 @@ export function MapCell({ course, lesson, kind, view, error, compact, focused, o
             )}
             <CellCaption view={view} metric={cellMetric(course, lesson, kind, t)} reason={reason} />
           </>
+        ) : view === 'none' ? (
+          <NoWork kind={kind} />
         ) : (
           <>
             <Placeholder view={view} compact={compact} />

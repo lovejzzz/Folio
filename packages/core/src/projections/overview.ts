@@ -100,12 +100,14 @@ function gradingBlocks(ctx: Ctx): Block[] {
   const items = course.grading.filter((g) => nonEmpty(g.item));
   if (!items.length) return [];
   const total = Math.round(items.reduce((sum, g) => sum + g.weight, 0) * 10) / 10;
+  // No weights stated: a list of what is graded, not a column of zeros.
+  if (total === 0) return [{ t: 'list', ordered: false, items: items.map((g) => g.item) }];
   const blocks: Block[] = [
     {
       t: 'table',
       head: [l.gradeItem, l.weight],
       widths: [76, 24],
-      rows: [...items.map((g) => [g.item, percent(g.weight)]), [l.total, percent(total)]],
+      rows: [...items.map((g) => [g.item, g.weight ? percent(g.weight) : '—']), [l.total, percent(total)]],
     },
   ];
   // A gentle note in the teacher's copy only; students just see the total.

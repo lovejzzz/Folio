@@ -8,6 +8,7 @@ import { edit } from '../../state/edit';
 import { leaveBlank } from '../../materials/newItems';
 import { PlanReadings, SuggestedReadings, useReadings } from './Readings';
 import { gapAt, moveIndexForGap } from './reorder';
+import { HomeworkPicker } from '../../materials/Homework';
 import { useObjectiveDraft, type ObjectiveDraft } from './useObjectiveDraft';
 
 interface RowProps {
@@ -148,6 +149,7 @@ function LessonDetails({ course, lesson, n }: { course: Course; lesson: Lesson; 
       <Objectives course={course} lesson={lesson} n={n} draft={draft} />
       <PlanReadings course={course} lesson={lesson} n={n} readings={readings} />
       <SuggestedReadings course={course} lesson={lesson} n={n} readings={readings} compact />
+      {course.materials.assignments.enabled && <HomeworkPicker course={course} lesson={lesson} className="mt-3" />}
       <div className="mt-1.5 flex flex-wrap gap-x-3">
         <AddLine label={t.plan.addObjective} onPress={draft.start} />
         <AddLine label={t.plan.addReading} onPress={readings.start} />

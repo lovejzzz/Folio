@@ -91,3 +91,17 @@ test('rewording a summary leaves the lesson up to date; an objective puts its se
   await expect(changes.getByText('Kept 6 parts of lesson 2 as they are')).toBeVisible();
   await expect(page.getByRole('button', { name: /to do/ })).toHaveCount(0);
 });
+
+test('a lesson can set no homework: the assignment and rubric go, the overview says so, and it can be set again', async ({ page }) => {
+  await openSample(page);
+  await page.getByRole('link', { name: /Centre and spread/ }).first().click();
+  const assignment = page.locator('#m-assignments');
+  await assignment.getByRole('combobox', { name: 'Homework' }).selectOption('none');
+  await expect(assignment.getByText('No homework in this lesson.')).toBeVisible();
+  await expect(page.locator('#m-rubrics').getByText('No homework in this lesson.')).toBeVisible();
+  await page.getByRole('link', { name: 'Overview', exact: true }).click();
+  await expect(page.getByRole('button', { name: /^Lesson 3, Assignments: No homework/ })).toBeVisible();
+  await page.getByRole('link', { name: /Centre and spread/ }).first().click();
+  await assignment.getByRole('combobox', { name: 'Homework' }).selectOption('assignment');
+  await expect(assignment.getByRole('button', { name: 'Write it now' })).toBeVisible();
+});

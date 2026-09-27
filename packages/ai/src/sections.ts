@@ -1,6 +1,6 @@
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
-import { tidyFaq, tidyFollowUps, tidyPlanSources, tidySlides, tidySteps, tidyTrueFalse } from './tidy';
+import { tidyFaq, tidyFollowUps, tidyPlanSources, tidySlides, tidySteps, tidyTrueFalse, unnumberSteps } from './tidy';
 import {
   checkMinutes,
   answerStandsOut,
@@ -22,6 +22,7 @@ import { runJob, type JobSpec, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
 import {
   AssignmentDraft,
+  StepDraft,
   DiscussionsDraft,
   FaqDraft,
   PlanDraft,
@@ -197,6 +198,25 @@ const assignments: SectionJob<AssignmentDraft> = {
   },
 };
 
+const step: SectionJob<StepDraft> = {
+  schema: StepDraft,
+  tidy: unnumberSteps,
+  toCommands: (v, problems, _course, lesson) => {
+    const task: Task = {
+      ...base(lesson),
+      id: newId('t'),
+      kind: 'assignment',
+      objectiveIds: [...lesson.objectiveIds],
+      flags: [],
+      title: v.title,
+      prompt: v.prompt,
+      steps: v.steps,
+      rubricId: null,
+    };
+    return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: flagsAt(problems, null), tasks: [task], rubrics: [] })];
+  },
+};
+
 const discussions: SectionJob<DiscussionsDraft> = {
   schema: DiscussionsDraft,
   tidy: tidyFollowUps,
@@ -278,7 +298,7 @@ export async function generateSection(
     case 'quiz':
       return run(quiz);
     case 'assignments':
-      return run(assignments);
+      return lesson.homework.kind === 'step' ? run(step) : run(assignments);
     case 'discussions':
       return run(discussions);
     case 'faq':
