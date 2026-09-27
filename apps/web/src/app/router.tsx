@@ -79,6 +79,12 @@ export const lessonRoute = createRoute({
   component: lazyRouteComponent(() => import('../screens/lesson/LessonScreen'), 'LessonScreen'),
 });
 
+/** Which lesson to open a material at and, for slides, which slide (counted from 1 within that lesson). */
+export interface MaterialSearch {
+  lesson?: string;
+  slide?: number;
+}
+
 export const materialRoute = createRoute({
   getParentRoute: () => courseRoute,
   path: 'm/$kind',
@@ -89,8 +95,13 @@ export const materialRoute = createRoute({
     },
     stringify: (p: { kind: MaterialKind }) => ({ kind: p.kind }),
   },
-  validateSearch: (search: Record<string, unknown>): { lesson?: string } =>
-    typeof search.lesson === 'string' ? { lesson: search.lesson } : {},
+  validateSearch: (search: Record<string, unknown>): MaterialSearch => {
+    const slide = Number(search.slide);
+    return {
+      ...(typeof search.lesson === 'string' ? { lesson: search.lesson } : {}),
+      ...(Number.isInteger(slide) && slide >= 1 ? { slide } : {}),
+    };
+  },
   component: lazyRouteComponent(() => import('../screens/material/MaterialScreen'), 'MaterialScreen'),
 });
 

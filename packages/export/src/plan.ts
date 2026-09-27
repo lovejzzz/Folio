@@ -45,6 +45,14 @@ function audienceLabel(req: ExportRequest): string {
   return req.audience === 'teacher' ? l.teacherCopy : l.studentCopy;
 }
 
+/** "Lesson 2 · Samples and bias" when the export covers one lesson, so its files are not named like the whole course's. */
+function scopeName(req: ExportRequest): string {
+  const [only, ...more] = req.lessonIds ?? [];
+  const lesson = only && !more.length ? req.course.lessons[only] : undefined;
+  if (!lesson) return '';
+  return `${docLabels(req.course.language).lesson(req.course.lessonOrder.indexOf(lesson.id) + 1)} · ${lesson.title}`;
+}
+
 /** "Syllabus", "Syllabus, Quiz & exam bank", or "Course materials" for longer picks. */
 function partName(req: ExportRequest): string {
   const x = exportLabels(req.course.language);
@@ -58,7 +66,7 @@ function projectOne(req: ExportRequest, kind: MaterialKind) {
 
 function docxFile(req: ExportRequest, kinds: MaterialKind[], part: string): Planned {
   return {
-    name: slugFilename(req.course.title, part, audienceLabel(req), 'docx'),
+    name: slugFilename(req.course.title, part, audienceLabel(req), 'docx', scopeName(req)),
     mime: MIME.docx,
     make: () => renderDocx(kinds.map((k) => projectOne(req, k)), { courseTitle: req.course.title }),
   };
@@ -67,7 +75,7 @@ function docxFile(req: ExportRequest, kinds: MaterialKind[], part: string): Plan
 function pptxFile(req: ExportRequest): Planned {
   const part = docLabels(req.course.language).materials.slides;
   return {
-    name: slugFilename(req.course.title, part, audienceLabel(req), 'pptx'),
+    name: slugFilename(req.course.title, part, audienceLabel(req), 'pptx', scopeName(req)),
     mime: MIME.pptx,
     make: () => renderPptx(projectOne(req, 'slides')),
   };
@@ -76,7 +84,7 @@ function pptxFile(req: ExportRequest): Planned {
 function quizFile(req: ExportRequest, format: 'xlsx' | 'csv'): Planned {
   const part = docLabels(req.course.language).materials.quiz;
   return {
-    name: slugFilename(req.course.title, part, audienceLabel(req), format),
+    name: slugFilename(req.course.title, part, audienceLabel(req), format, scopeName(req)),
     mime: MIME[format],
     make: async () => {
       const rows = quizRows(projectOne(req, 'quiz'));
@@ -119,7 +127,7 @@ function plan(req: ExportRequest): Planned {
     case 'zip': {
       const contents = zipContents(req);
       return {
-        name: slugFilename(req.course.title, partName(req), audienceLabel(req), 'zip'),
+        name: slugFilename(req.course.title, partName(req), audienceLabel(req), 'zip', scopeName(req)),
         mime: MIME.zip,
         make: async () => {
           const files = await Promise.all(contents.map(async (f) => ({ name: f.name, bytes: await f.make() })));

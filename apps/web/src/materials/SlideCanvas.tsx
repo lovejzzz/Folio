@@ -83,7 +83,7 @@ export function SlideCanvas({ slide, lang, footer, onChange, className }: SlideC
         </div>
       </div>
       {footer && (
-        <p className="folio-slide-footer truncate font-ui text-ink-2" style={cq(1.5)}>
+        <p className="folio-slide-footer truncate font-ui text-ink-2" style={{ fontSize: 'max(1.5cqw, 10px)' }}>
           {footer}
         </p>
       )}

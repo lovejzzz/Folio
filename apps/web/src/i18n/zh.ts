@@ -169,6 +169,9 @@ export const zh: Messages = {
     empty: '这门课还没有课时。',
     scheduled: '已排入课表',
     phoneHint: '打开一课来查看。在大屏幕上编辑更方便。',
+    moreColumns: (n) => `还有 ${n} 项`,
+    showMore: (n) => `显示另外 ${n} 种材料`,
+    showEarlier: '显示前面的材料',
   },
   build: {
     progress: (n, total) => `正在生成第 ${n} 课，共 ${total} 课`,
@@ -230,6 +233,8 @@ export const zh: Messages = {
     layouts: { title: '标题', bullets: '要点', question: '提问', quote: '引语' },
     slideOf: (n, total) => `第 ${n} 页，共 ${total} 页`,
     filmstrip: '课件页面',
+    previousSlide: '上一页',
+    nextSlide: '下一页',
   },
   quiz: {
     question: (n) => `第 ${n} 题`,
@@ -415,6 +420,7 @@ export const zh: Messages = {
   },
   command: {
     placeholder: '跳到某一课、打开一种材料，或者提出修改…',
+    placeholderShort: '搜索，或提出修改…',
     goTo: '跳转',
     materials: '材料',
     actions: '操作',

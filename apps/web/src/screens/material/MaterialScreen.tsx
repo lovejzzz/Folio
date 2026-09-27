@@ -1,5 +1,6 @@
 import { cmd, docLabels, lessonQuestions, orderedLessons, project, type Course, type MaterialKind } from '@folio/core';
 import { BinderTab, Sheet } from '@folio/ui';
+import { useNavigate } from '@tanstack/react-router';
 import { materialRoute } from '../../app/router';
 import { usePageTitle } from '../../app/usePageTitle';
 import { DocView } from '../../components/DocView';
@@ -80,15 +81,21 @@ export function MaterialScreen() {
   const t = useT();
   const course = useCourse();
   const { kind } = materialRoute.useParams();
-  const { lesson } = materialRoute.useSearch();
+  const { lesson, slide } = materialRoute.useSearch();
   usePageTitle(t.materials[kind], course.title || t.common.untitled);
+  const navigate = useNavigate({ from: materialRoute.fullPath });
   if (kind === 'slides') {
     return (
       <div className="px-4 pb-24 pt-8 md:px-8">
         <h1 className="mb-6">
           <BinderTab kind="slides" label={t.materials.slides} />
         </h1>
-        <SlidesEditor course={course} focusLesson={lesson} />
+        <SlidesEditor
+          course={course}
+          lessonId={lesson}
+          slide={slide}
+          onGo={(p) => void navigate({ search: { lesson: p.lessonId, slide: p.index + 1 }, replace: true, resetScroll: false })}
+        />
       </div>
     );
   }

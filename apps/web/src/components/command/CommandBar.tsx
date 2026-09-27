@@ -1,4 +1,4 @@
-import { Dialog, Kbd, cx } from '@folio/ui';
+import { Dialog, Kbd, cx, useMediaQuery } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { Search, Sparkles } from 'lucide-react';
 import { useId, useState, type KeyboardEvent } from 'react';
@@ -71,6 +71,7 @@ function CommandList({ listId, items, ask, activeId, onRun, onHover }: ListProps
 
 function SearchInput({ listId, activeId, value, onChange }: { listId: string; activeId: string | undefined; value: string; onChange: (v: string) => void }) {
   const t = useT();
+  const narrow = useMediaQuery('(max-width: 639px)');
   return (
     <div className="flex items-center gap-3 border-b border-rule px-4">
       <Search size={18} strokeWidth={1.5} className="shrink-0 text-ink-2" aria-hidden />
@@ -83,10 +84,12 @@ function SearchInput({ listId, activeId, value, onChange }: { listId: string; ac
         aria-label={t.nav.commandBar}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={t.command.placeholder}
+        placeholder={narrow ? t.command.placeholderShort : t.command.placeholder}
         className="h-14 min-w-0 flex-1 bg-transparent font-ui text-16 text-ink outline-none placeholder:text-ink-2"
       />
-      <Kbd>esc</Kbd>
+      <span className="hidden sm:contents">
+        <Kbd>esc</Kbd>
+      </span>
     </div>
   );
 }

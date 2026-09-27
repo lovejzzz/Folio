@@ -34,3 +34,35 @@ test('no screen is wider than a phone', async ({ page }) => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(width);
   }
 });
+
+test('on a phone the slide editor steps from slide to slide, and on into the next lesson', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
+  await page.goto(page.url().replace(/\/map$/, '/m/slides'));
+  const title = page.getByRole('textbox', { name: 'Slide title' });
+  const previous = page.getByRole('button', { name: 'Previous slide' });
+  const next = page.getByRole('button', { name: 'Next slide' });
+  await expect(title).toHaveText('Asking questions with data');
+  await expect(page.getByText('Slide 1 of 5').filter({ visible: true })).toBeVisible();
+  await expect(previous).toBeDisabled();
+  await next.click();
+  await expect(title).toHaveText('Which question needs data from many people?');
+  await expect(page.getByText('Slide 2 of 5').filter({ visible: true })).toBeVisible();
+  for (let i = 0; i < 4; i++) await next.click();
+  await expect(title).toHaveText('Picturing a distribution');
+  await expect(page.getByText(/^Lesson 2\s*·\s*Slide 1 of 5$/)).toBeVisible();
+  await expect(page).toHaveURL(/slide=1/);
+  await previous.click();
+  await expect(title).toHaveText('Two kinds of variable');
+  await expect(next).toBeInViewport();
+});
+
+test('on a phone a rubric stacks its levels instead of scrolling sideways', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
+  await page.goto(page.url().replace(/\/map$/, '/m/rubrics'));
+  await expect(page.getByRole('table')).toHaveCount(0);
+  await expect(page.getByRole('textbox', { name: 'Statistical question, Beginning' }).first()).toBeVisible();
+});

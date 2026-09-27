@@ -33,6 +33,18 @@ test('exports a Word file, a deck and a Folio backup that opens again', async ({
   await expect(page.getByRole('grid', { name: 'Lessons and materials' })).toBeVisible();
 });
 
+test('opened from a lesson, Export starts with that lesson and names the file after it', async ({ page }) => {
+  await openSample(page);
+  await page.getByRole('link', { name: /Picturing a distribution/ }).first().click();
+  await page.getByRole('button', { name: 'Export', exact: true }).click();
+  const drawer = page.getByRole('dialog', { name: 'Export' });
+  await expect(drawer.getByRole('radio', { name: 'One lesson' })).toBeChecked();
+  await expect(drawer.getByRole('combobox', { name: 'Lesson' }).locator('option:checked')).toHaveText('Lesson 2 · Picturing a distribution');
+  const docx = page.waitForEvent('download');
+  await drawer.getByRole('button', { name: 'Download Word' }).click();
+  expect((await docx).suggestedFilename()).toBe('Reading the world with data — Lesson 2 · Picturing a distribution — Course materials (Teacher copy).docx');
+});
+
 test('the print view shows the student quiz without answers', async ({ page, context }) => {
   await openSample(page);
   await page.getByRole('button', { name: 'Export', exact: true }).click();

@@ -1,5 +1,5 @@
 import { enabledKinds } from '@folio/core';
-import { Button, IconButton, Kbd, MaterialIcon, Menu, MenuItem, MenuSeparator, cx } from '@folio/ui';
+import { Button, IconButton, Kbd, MaterialIcon, Menu, MenuItem, MenuSeparator, cx, useMediaQuery } from '@folio/ui';
 import { Link, useMatchRoute, useNavigate } from '@tanstack/react-router';
 import { BookMarked, ChevronDown, Download, History, Library, MoreHorizontal, Plus, Redo2, Search, Settings, Undo2 } from 'lucide-react';
 import { Button as AriaButton } from 'react-aria-components';
@@ -60,7 +60,9 @@ function MoreMenu() {
   const t = useT();
   const navigate = useNavigate();
   const store = useStore();
-  const { toggleDrawer } = useUi();
+  const { toggleDrawer, setCommandOpen } = useUi();
+  // Below sm the header has no room for the search button, so it lives here.
+  const narrow = useMediaQuery('(max-width: 639px)');
   return (
     <Menu
       label={t.nav.more}
@@ -70,6 +72,11 @@ function MoreMenu() {
         </IconButton>
       }
     >
+      {narrow && (
+        <MenuItem id="search" icon={<Search size={16} />} onAction={() => setCommandOpen(true)}>
+          {t.nav.commandBar}
+        </MenuItem>
+      )}
       <MenuItem id="undo" icon={<Undo2 size={16} />} hint={<Kbd>⌘Z</Kbd>} isDisabled={!store.canUndo()} onAction={() => undo()}>
         {t.common.undo}
       </MenuItem>

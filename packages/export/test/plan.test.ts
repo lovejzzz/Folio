@@ -80,6 +80,17 @@ describe('exportCourse', () => {
     expect(xml.indexOf('Quiz &amp; exam bank')).toBeLessThan(xml.indexOf('Syllabus'));
   });
 
+  it('names a one-lesson export after the lesson, and a whole-course one after the course only', () => {
+    const lessonId = course.lessonOrder[1] ?? '';
+    const kinds = ['plan', 'slides', 'assignments', 'rubrics'] as const;
+    const one: ExportRequest = { ...base, kinds: [...kinds], lessonIds: [lessonId], audience: 'student', format: 'docx' };
+    expect(describeExport(one).files).toEqual(['Reading the world with data — Lesson 2 · Picturing a distribution — Course materials (Student copy).docx']);
+    expect(describeExport({ ...one, format: 'pptx' }).files).toEqual(['Reading the world with data — Lesson 2 · Picturing a distribution — Slide decks (Student copy).pptx']);
+    expect(describeExport({ ...one, format: 'zip' }).contents).toContain('Reading the world with data — Lesson 2 · Picturing a distribution — Rubrics (Student copy).docx');
+    expect(describeExport({ ...one, lessonIds: undefined }).files).toEqual(['Reading the world with data — Course materials (Student copy).docx']);
+    expect(describeExport({ ...one, audience: 'teacher', format: 'folio' }).files).toEqual(['Reading the world with data.folio']);
+  });
+
   it('refuses a Word export with nothing chosen', async () => {
     await expect(exportCourse({ ...base, kinds: [], format: 'docx' })).rejects.toThrow('Choose at least one material');
   });
@@ -89,6 +100,13 @@ describe('slugFilename', () => {
   it('keeps CJK and strips characters file systems refuse', () => {
     expect(slugFilename('统计：用数据/读世界?', '测验与题库', '教师版', 'docx')).toBe('统计：用数据-读世界 — 测验与题库 (教师版).docx');
     expect(slugFilename('A "big" <idea>: part\u0007two', 'Quiz', '', '.csv')).toBe('A big idea part two — Quiz.csv');
+  });
+
+  it('puts a scope such as one lesson between the course and the part, shortening a long one', () => {
+    expect(slugFilename('Stats', 'Syllabus', 'Student copy', 'docx', 'Lesson 2 · Samples: and bias?')).toBe('Stats — Lesson 2 · Samples and bias — Syllabus (Student copy).docx');
+    const name = slugFilename('Stats', 'Quiz', 'Teacher copy', 'csv', `Lesson 1 · ${'y'.repeat(200)}`);
+    expect(name.endsWith('… — Quiz (Teacher copy).csv')).toBe(true);
+    expect(name.startsWith('Stats — Lesson 1 · y')).toBe(true);
   });
 
   it('shortens long titles and keeps the part and extension', () => {

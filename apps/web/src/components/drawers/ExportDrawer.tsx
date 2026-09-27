@@ -2,6 +2,7 @@ import { enabledKinds, orderedLessons, project, type Course, type MaterialKind }
 import { Button, Checkbox, SegmentedControl, cx, fieldClass } from '@folio/ui';
 import { EyeOff, FileArchive, FileSpreadsheet, FileText, FolderDown, Presentation, Printer, UploadCloud } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
+import { useParams } from '@tanstack/react-router';
 import { Radio, RadioGroup } from 'react-aria-components';
 import { router } from '../../app/router';
 import { useT, type Messages } from '../../i18n';
@@ -10,7 +11,7 @@ import { uploadToGoogleDocs } from '../../lib/google';
 import { flushNow, useCourse } from '../../state/session';
 import { toast } from '../../state/toasts';
 import { DocView } from '../DocView';
-import { FORMATS, effectiveChoice, googleClientId, kindsFor, lessonIdsFor, type ExportChoice, type FormatChoice } from './exportOptions';
+import { FORMATS, effectiveChoice, googleClientId, initialChoice, kindsFor, lessonIdsFor, type ExportChoice, type FormatChoice } from './exportOptions';
 
 const ICONS: Record<FormatChoice, ReactNode> = {
   docx: <FileText size={18} strokeWidth={1.5} />,
@@ -130,7 +131,8 @@ export function ExportDrawer() {
   const t = useT();
   const course = useCourse();
   const lessons = orderedLessons(course);
-  const [choice, setChoice] = useState<ExportChoice>({ scope: 'whole', lessonId: lessons[0]?.id ?? '', kinds: enabledKinds(course), audience: 'teacher', format: 'docx' });
+  const { lessonId } = useParams({ strict: false });
+  const [choice, setChoice] = useState<ExportChoice>(() => initialChoice(course, lessonId));
   const [busy, setBusy] = useState(false);
   const set = (patch: Partial<ExportChoice>) => setChoice({ ...choice, ...patch });
   const kinds = kindsFor(course, effectiveChoice(choice));
