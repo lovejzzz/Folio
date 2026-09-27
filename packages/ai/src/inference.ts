@@ -23,7 +23,7 @@ export const DEFAULT_MODELS: Record<ProviderId, string> = {
   anthropic: 'claude-opus-5',
   openai: 'gpt-5',
   google: 'gemini-2.5-flash',
-  deepseek: 'deepseek-chat',
+  deepseek: 'deepseek-flash',
   local: 'llama3.1',
 };
 
