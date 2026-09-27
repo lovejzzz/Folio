@@ -104,6 +104,12 @@
   .folio-doc p {
     text-wrap: pretty;
   }
+  /* Chinese headings break at punctuation ("读出唐诗的节奏：/绝句与律诗"), never inside a word. */
+  :is(h1, h2, h3, h4):lang(zh-CN) {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
 
   /* AI proposals: a soft marker sweep behind the words. */
   .folio-highlight {
