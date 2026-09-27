@@ -44,6 +44,20 @@ describe('CourseStore', () => {
     expect(state.lessons[ids[2]!]!.title).toBe('L3');
   });
 
+  it('undoes several changes to the same list one after another', () => {
+    const { store } = courseWithLessons(1);
+    store.apply([cmd('lesson.insert', { lesson: { id: newId('l'), title: 'L2', summary: '' }, afterId: null })], { label: { key: 't' }, source: 'teacher' });
+    store.apply([cmd('lesson.insert', { lesson: { id: newId('l'), title: 'L3', summary: '' }, afterId: null })], { label: { key: 't' }, source: 'teacher' });
+    const [a, b] = orderedLessons(store.getState());
+    store.apply([cmd('lesson.move', { lessonId: a!.id, toIndex: 2 })], { label: { key: 't' }, source: 'teacher' });
+    store.apply([cmd('lesson.move', { lessonId: b!.id, toIndex: 2 })], { label: { key: 't' }, source: 'teacher' });
+    const final = orderedLessons(store.getState()).map((l) => l.title);
+    for (let i = 0; i < 4; i++) expect(store.undo()).toEqual({ ok: true });
+    expect(orderedLessons(store.getState()).map((l) => l.title)).toEqual(['L1']);
+    for (let i = 0; i < 4; i++) expect(store.redo()).toEqual({ ok: true });
+    expect(orderedLessons(store.getState()).map((l) => l.title)).toEqual(final);
+  });
+
   it('refuses to undo a change that later edits touched', () => {
     const { store, ids } = courseWithLessons(1);
     store.apply([cmd('lesson.update', { lessonId: ids[0]!, title: 'A' })], { label: { key: 't' }, source: 'teacher' });
