@@ -10,9 +10,16 @@ import { RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { router } from './app/router';
+import { loadCatalog } from './i18n';
+import { usePrefs } from './state/prefs';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-);
+// Chinese copy is its own chunk: fetch it before the first paint so the page never flashes English.
+void loadCatalog(usePrefs.getState().uiLanguage)
+  .catch(() => {})
+  .then(() =>
+    createRoot(document.getElementById('root')!).render(
+      <StrictMode>
+        <RouterProvider router={router} />
+      </StrictMode>,
+    ),
+  );

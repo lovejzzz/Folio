@@ -1,19 +1,41 @@
 import type { Flag } from '@folio/core';
+import { useSyncExternalStore } from 'react';
 import { usePrefs, type UiLanguage } from '../state/prefs';
 import { en, type Messages } from './en';
-import { zh } from './zh';
 
 export type { Messages };
 
-const catalogs: Record<UiLanguage, Messages> = { en, 'zh-CN': zh };
+/** English ships with the page; Chinese loads only for those who use it. */
+const catalogs: Partial<Record<UiLanguage, Messages>> = { en };
+const loaders: Record<Exclude<UiLanguage, 'en'>, () => Promise<Messages>> = {
+  'zh-CN': () => import('./zh').then((m) => m.zh),
+};
+const listeners = new Set<() => void>();
+let loaded = 0;
+
+/** Fetch a language's copy; resolves at once if it is already here. */
+export async function loadCatalog(language: UiLanguage): Promise<void> {
+  if (catalogs[language] || language === 'en') return;
+  catalogs[language] = await loaders[language]();
+  loaded++;
+  for (const l of listeners) l();
+}
 
 export function messagesFor(language: UiLanguage): Messages {
+  if (!catalogs[language]) void loadCatalog(language);
   return catalogs[language] ?? en;
+}
+
+function subscribe(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
 }
 
 /** The interface copy in the teacher's chosen language. */
 export function useT(): Messages {
-  return messagesFor(usePrefs((s) => s.uiLanguage));
+  const language = usePrefs((s) => s.uiLanguage);
+  useSyncExternalStore(subscribe, () => loaded);
+  return messagesFor(language);
 }
 
 export function currentMessages(): Messages {

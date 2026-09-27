@@ -5,7 +5,7 @@ import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { probeModel } from '../../components/ConnectDialog';
 import { ProviderChoice, ProviderFields, hasKey, missingSetup } from '../../components/ProviderFields';
-import { useT } from '../../i18n';
+import { loadCatalog, useT } from '../../i18n';
 import { download } from '../../lib/exporter';
 import { allCourses, db } from '../../state/db';
 import { errorMessage } from '../../state/model';
@@ -102,7 +102,7 @@ function AppearanceSection() {
         <SegmentedControl label={t.settings.density} value={density} onChange={(v) => set({ density: v })} options={[{ id: 'comfortable', label: t.map.comfortable }, { id: 'compact', label: t.map.compact }]} />
       </Row>
       <Row label={t.settings.interfaceLanguage}>
-        <SegmentedControl label={t.settings.interfaceLanguage} value={uiLanguage} onChange={(v) => set({ uiLanguage: v })} options={[{ id: 'en', label: 'English' }, { id: 'zh-CN', label: '简体中文' }]} />
+        <SegmentedControl label={t.settings.interfaceLanguage} value={uiLanguage} onChange={(v) => void loadCatalog(v).then(() => set({ uiLanguage: v }))} options={[{ id: 'en', label: 'English' }, { id: 'zh-CN', label: '简体中文' }]} />
       </Row>
     </Section>
   );
