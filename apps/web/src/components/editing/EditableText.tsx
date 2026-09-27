@@ -1,5 +1,7 @@
+import { hasCode, storedOffset } from '@folio/core';
 import { Highlight, cx } from '@folio/ui';
 import { createElement, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { drawInlineText } from '../InlineText';
 import { normalisePaste } from './pasteText';
 import { registerEditable, type Suggestion } from './registry';
 
@@ -40,6 +42,37 @@ function insertPlainText(text: string): void {
   });
 }
 
+/** How far into the field's text, as shown, a point or the selection falls. */
+function shownOffset(el: HTMLElement, node: Node, offset: number): number {
+  const before = document.createRange();
+  before.selectNodeContents(el);
+  before.setEnd(node, offset);
+  return before.toString().length;
+}
+
+/**
+ * At rest a field shows its code as code; while it is edited the backticks show,
+ * so what is typed is what is stored. The caret keeps its letter across the swap.
+ */
+function revealMarks(el: HTMLElement, value: string, shown: number | null): void {
+  if (!hasCode(value) || readText(el) === value) return;
+  el.textContent = value;
+  const text = el.firstChild;
+  const sel = window.getSelection();
+  if (shown === null || !text || !sel) return;
+  sel.collapse(text, Math.min(storedOffset(value, shown), text.textContent?.length ?? 0));
+}
+
+/** A click places the caret against the text as shown, so it is read before the marks appear and move the letters. */
+function caretAtPoint(el: HTMLElement, x: number, y: number): number | null {
+  const doc = document as Document & { caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null };
+  const pos = doc.caretPositionFromPoint?.(x, y);
+  if (pos && el.contains(pos.offsetNode)) return shownOffset(el, pos.offsetNode, pos.offset);
+  const range = document.caretRangeFromPoint?.(x, y);
+  if (range && el.contains(range.startContainer)) return shownOffset(el, range.startContainer, range.startOffset);
+  return null;
+}
+
 const isHeading = (tag: Tag): boolean => tag === 'h1' || tag === 'h2' || tag === 'h3' || tag === 'h4';
 
 /** The original passage struck through, the proposal marker-highlighted beside it. */
@@ -64,7 +97,7 @@ function useEditable(props: EditableTextProps) {
   });
   useLayoutEffect(() => {
     const el = ref.current;
-    if (el && document.activeElement !== el && readText(el) !== props.value) el.textContent = props.value;
+    if (el && document.activeElement !== el && (hasCode(props.value) || readText(el) !== props.value)) drawInlineText(el, props.value);
   }, [props.value, suggestion]);
   useEffect(() => {
     const el = ref.current;
@@ -112,11 +145,31 @@ export function EditableText(props: EditableTextProps) {
     spellCheck: true,
     lang: heading ? undefined : lang,
     tabIndex: readOnly ? undefined : 0,
+    onMouseDown: (e: React.MouseEvent<HTMLElement>) => {
+      const el = e.currentTarget;
+      if (readOnly || e.button !== 0 || document.activeElement === el || !hasCode(value)) return;
+      const at = caretAtPoint(el, e.clientX, e.clientY);
+      e.preventDefault();
+      // Marks first, so focusing finds them shown; then the caret, which focusing would move.
+      el.textContent = value;
+      el.focus();
+      const text = el.firstChild;
+      if (at !== null && text) window.getSelection()?.collapse(text, Math.min(storedOffset(value, at), value.length));
+    },
+    onFocus: (e: React.FocusEvent<HTMLElement>) => {
+      const el = e.currentTarget;
+      const sel = window.getSelection();
+      revealMarks(el, value, sel?.rangeCount && el.contains(sel.focusNode) ? shownOffset(el, sel.focusNode!, sel.focusOffset) : null);
+    },
     onBlur: (e: React.FocusEvent<HTMLElement>) => {
-      const text = readText(e.currentTarget);
+      const el = e.currentTarget;
+      const text = readText(el);
       const next = multiline ? text : text.replace(/\s*\n\s*/g, ' ');
-      if (props.required && !next.trim()) e.currentTarget.textContent = value;
-      else if (next !== value) onCommit(next);
+      if (props.required && !next.trim()) drawInlineText(el, value);
+      else {
+        if (next !== value) onCommit(next);
+        if (hasCode(next)) drawInlineText(el, next);
+      }
     },
     onKeyDown: (e: KeyboardEvent<HTMLElement>) => onKeyDown(e, value, multiline),
     onPaste: (e: React.ClipboardEvent) => {

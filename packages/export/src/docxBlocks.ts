@@ -14,8 +14,8 @@ import {
   type IRunOptions,
   type ParagraphChild,
 } from 'docx';
-import type { Block, DocLabels, Language } from '@folio/core';
-import { printPalette } from '@folio/ui/tokens';
+import { textRuns, type Block, type DocLabels, type Language } from '@folio/core';
+import { printFonts, printPalette } from '@folio/ui/tokens';
 import { choiceLetter, type ExportLabels } from './labels';
 import { BULLETS, NUMBERS, SIZE, fontFor, hairline, type FontRole } from './docxTheme';
 
@@ -35,11 +35,32 @@ export interface BlockCtx {
 
 type RunStyle = Omit<IRunOptions, 'text' | 'children' | 'break' | 'font'> & { role?: FontRole };
 
-/** Runs for text that may hold line breaks; every run carries the course fonts. */
+/**
+ * Runs for text that may hold line breaks; every run carries the course fonts,
+ * and code marked with backticks takes the mono face on a light well.
+ */
 export function runs(ctx: BlockCtx, text: string, style: RunStyle = {}): TextRun[] {
   const { role = 'body', ...rest } = style;
-  return text.split('\n').map((line, i) => new TextRun({ ...rest, text: line, font: fontFor(ctx.language, role), ...(i ? { break: 1 } : {}) }));
+  return text.split('\n').flatMap((line, i) =>
+    textRuns(line).map(
+      (r, j) =>
+        new TextRun({
+          ...rest,
+          text: r.text,
+          font: fontFor(ctx.language, role),
+          ...(r.code ? CODE_RUN(role, rest.size) : {}),
+          ...(i && !j ? { break: 1 } : {}),
+        }),
+    ),
+  );
 }
+
+/** Consolas sets larger than Georgia at one size, so body code drops a point; headings keep theirs. */
+const CODE_RUN = (role: FontRole, size: IRunOptions['size']): Partial<IRunOptions> => ({
+  font: { ascii: printFonts.mono, hAnsi: printFonts.mono, cs: printFonts.mono },
+  shading: { type: ShadingType.CLEAR, color: 'auto', fill: printPalette.well },
+  ...(role === 'body' ? { size: (typeof size === 'number' ? size : SIZE.body) - 2 } : {}),
+});
 
 const HEADINGS = {
   1: HeadingLevel.HEADING_2,

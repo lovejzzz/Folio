@@ -68,3 +68,27 @@ export function tidySlides(v: SlidesDraft, language: Language): SlidesDraft {
     }),
   };
 }
+
+const FENCE = /```(?:[\w+-]*[ \t]*\n)?([\s\S]*?)\n?[ \t]*```/g;
+
+/**
+ * Fields are plain text with code marked inline, so a fenced block becomes
+ * one marked line per line of code. Blank lines inside it stay blank.
+ */
+export function unfence(text: string): string {
+  if (!text.includes('```')) return text;
+  return text.replace(FENCE, (_, body: string) =>
+    body
+      .split('\n')
+      .map((line) => (line.trim() ? `\`${line.replace(/`/g, "'")}\`` : ''))
+      .join('\n'),
+  );
+}
+
+/** Every string in a model's answer, fences undone. */
+export function unfenceAll<T>(value: T): T {
+  if (typeof value === 'string') return unfence(value) as T;
+  if (Array.isArray(value)) return value.map(unfenceAll) as T;
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, unfenceAll(v)])) as T;
+  return value;
+}

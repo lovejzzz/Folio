@@ -20,7 +20,7 @@ export interface ModelSettings {
 }
 
 export const DEFAULT_MODELS: Record<ProviderId, string> = {
-  anthropic: 'claude-opus-5',
+  anthropic: 'claude-sonnet-5',
   openai: 'gpt-5',
   google: 'gemini-2.5-flash',
   deepseek: 'deepseek-flash',

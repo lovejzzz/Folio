@@ -1,6 +1,7 @@
 import { describeFlag, type Flag } from '@folio/core';
 import type { z } from 'zod';
 import { InferenceError, MalformedOutputError, type CompletionRequest, type Effort, type Inference } from './inference';
+import { unfenceAll } from './tidy';
 
 /**
  * One job: ask, validate against the schema, run deterministic checks, and
@@ -60,7 +61,8 @@ async function attempt<T>(inference: Inference, request: Omit<CompletionRequest,
   }
   const parsed = spec.schema.safeParse(raw);
   if (!parsed.success) return { raw, problems: describeIssues(parsed.error) };
-  const value = spec.tidy ? spec.tidy(parsed.data) : parsed.data;
+  const data = unfenceAll(parsed.data);
+  const value = spec.tidy ? spec.tidy(data) : data;
   return { raw, value, problems: spec.check?.(value) ?? [] };
 }
 

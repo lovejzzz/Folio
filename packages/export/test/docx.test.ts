@@ -56,6 +56,16 @@ describe('renderDocx', () => {
     expect(pairs.some((ratio) => Math.abs(ratio - 76 / 24) < 0.01)).toBe(true);
   });
 
+  it('sets code marked with backticks in Consolas, without the marks', async () => {
+    const c: Course = structuredClone(course);
+    const first = c.lessons[c.lessonOrder[0]!]!;
+    first.readings = ['Run `summary(wage1)` before class'];
+    const xml = await documentXml(c, ['syllabus'], 'student');
+    expect(xml).toMatch(/<w:rFonts w:ascii="Consolas"[^>]*\/>.*?<w:t xml:space="preserve">summary\(wage1\)<\/w:t>/s);
+    expect(xml).toContain('>Run </w:t>');
+    expect(xml).not.toContain('`');
+  });
+
   it('writes the course title into the document properties', async () => {
     const bytes = await renderDocx([project(course, 'map', { audience: 'student' })], { courseTitle: course.title });
     expect(unzipText(bytes).text('docProps/core.xml')).toContain(course.title);

@@ -25,6 +25,7 @@ export function systemPrompt(language: Language, locale = ''): string {
     'If something in the brief is ambiguous, choose the most sensible specific interpretation and stay consistent with it.',
     'Quote word for word only from the teacher\'s sources shown to you. Anything else, paraphrase and point to the chapter or section: never invent a quotation or a page number.',
     'Write maths in Unicode with real subscripts and superscripts (β₀, x², σ̂², ≤, √), never LaTeX, ^ or _.',
+    'Put code, commands and function names in backticks, e.g. `lm(wage ~ educ, data = wage1)`, one line of code per pair. Use backticks for nothing else, and never fenced code blocks.',
     'Folio shows lesson numbers, the number of lessons, lesson lengths and quiz sizes itself, and teachers change them. Never write them anywhere, speaker notes included: no "lesson 1 of 4", "the first lesson", "over the next two hours" or "a 5-question quiz". Refer to another lesson by its title.',
     languageLine(language, locale),
     'Reply with JSON that matches the provided schema and nothing else.',
@@ -94,7 +95,7 @@ export function isHigherEducation(level: string): boolean {
 }
 
 const UNIVERSITY_TEACHING =
-  'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. A seminar runs on discussion of the reading: keep the tutor\'s exposition short and let students lead. Leave out school routines such as warm-up games, slips collected at the door or reading aloud in turn.';
+  'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. A seminar runs on discussion of the reading: keep the tutor\'s exposition short and let students lead. Leave out school routines such as warm-up games, exit tickets or written responses collected at the end, or reading aloud in turn.';
 
 /**
  * The teacher's own words. Sections otherwise see only what the outline kept,
@@ -111,7 +112,7 @@ function gradingLine(course: Course): string {
   const items = course.grading.map((g) => `${g.item} (${g.weight}%)`).join(', ');
   return [
     items ? `The course is graded by: ${items}.` : '',
-    'Anything the brief or the grading has happen in class, such as a student presentation, a debate or a test, needs a place in the lesson plans; work that prepares for a graded component says which one.',
+    'Anything the brief or the grading has happen in class, such as a student presentation, a debate or a test, needs a place in the lesson plans; work that prepares for a graded component says which one. State a weight or a mark only as the grading gives it; never infer one.',
   ]
     .filter(Boolean)
     .join(' ');

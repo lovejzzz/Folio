@@ -27,6 +27,8 @@ describe('university courses', () => {
     expect(bg).toContain('The teacher\'s brief: "Four two-hour seminars. Each week one student presents."');
     expect(bg).toMatch(/student presentation.*needs a place in the lesson plans/);
     expect(bg).not.toMatch(/graded by/);
+    expect(bg).toMatch(/never infer one/);
+    expect(bg).toMatch(/exit tickets/);
   });
 
   it('names rubric levels after the local grade bands', () => {

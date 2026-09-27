@@ -103,6 +103,8 @@ export const printFonts = {
   heading: 'Georgia',
   body: 'Georgia',
   ui: 'Arial',
+  /** Code marked with backticks; ships with Office on Windows and Mac. */
+  mono: 'Consolas',
   zhHeading: 'SimSun',
   zhBody: 'SimSun',
 };

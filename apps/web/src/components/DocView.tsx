@@ -1,6 +1,7 @@
 import type { Block, SemanticDoc } from '@folio/core';
 import { cx } from '@folio/ui';
 import { useT } from '../i18n';
+import { InlineText } from './InlineText';
 import { SlideCanvas } from '../materials/SlideCanvas';
 
 function Table({ head, rows, widths }: { head: string[]; rows: string[][]; widths?: number[] }) {
@@ -28,7 +29,7 @@ function Table({ head, rows, widths }: { head: string[]; rows: string[][]; width
             <tr key={r} className="avoid-break align-top">
               {row.map((cell, c) => (
                 <td key={c} className={cx('whitespace-pre-line border-b border-rule px-2 py-2.5', c === 0 ? 'font-medium text-ink' : 'text-ink-2')}>
-                  {cell}
+                  <InlineText text={cell} />
                 </td>
               ))}
             </tr>
@@ -45,14 +46,16 @@ function QuestionBlock({ b }: { b: Extract<Block, { t: 'question' }> }) {
     <div className="avoid-break my-5">
       <p>
         <span className="mr-2 font-ui text-14 font-semibold text-ink tabular">{b.n}.</span>
-        {b.prompt}
+        <InlineText text={b.prompt} />
       </p>
       {b.choices.length > 0 && (
         <ol className="mt-2 space-y-1 pl-7">
           {b.choices.map((c, i) => (
             <li key={i} className="flex gap-2">
               <span className="font-ui text-14 text-ink-2">{String.fromCharCode(65 + i)}.</span>
-              {c}
+              <span>
+                <InlineText text={c} />
+              </span>
             </li>
           ))}
         </ol>
@@ -61,8 +64,12 @@ function QuestionBlock({ b }: { b: Extract<Block, { t: 'question' }> }) {
       {b.answer && (
         <p className="mt-2 pl-7 font-ui text-14 leading-6 text-ink-2">
           <span className="font-semibold text-good">{t.common.labelled(t.quiz.answer, '')}</span>
-          {b.answer}
-          {b.explanation && <span className="block">{b.explanation}</span>}
+          <InlineText text={b.answer} />
+          {b.explanation && (
+            <span className="block">
+              <InlineText text={b.explanation} />
+            </span>
+          )}
         </p>
       )}
     </div>
@@ -72,14 +79,14 @@ function QuestionBlock({ b }: { b: Extract<Block, { t: 'question' }> }) {
 type B<T extends Block['t']> = Extract<Block, { t: T }>;
 
 function Heading({ b }: { b: B<'heading'> }) {
-  if (b.level === 1) return <h2 className="mb-4 mt-10 text-28 font-semibold leading-9">{b.text}</h2>;
-  if (b.level === 2) return <h3 className="mb-3 mt-10 text-22 font-semibold leading-8 first:mt-0">{b.text}</h3>;
-  return <h4 className="mb-2 mt-6 text-18 font-semibold">{b.text}</h4>;
+  if (b.level === 1) return <h2 className="mb-4 mt-10 text-28 font-semibold leading-9"><InlineText text={b.text} /></h2>;
+  if (b.level === 2) return <h3 className="mb-3 mt-10 text-22 font-semibold leading-8 first:mt-0"><InlineText text={b.text} /></h3>;
+  return <h4 className="mb-2 mt-6 text-18 font-semibold"><InlineText text={b.text} /></h4>;
 }
 
 function ListBlock({ b }: { b: B<'list'> }) {
   const L = b.ordered ? 'ol' : 'ul';
-  return <L className={cx('my-3 space-y-1 pl-6', b.ordered ? 'list-decimal' : 'list-disc marker:text-ink-3')}>{b.items.map((x, i) => <li key={i}>{x}</li>)}</L>;
+  return <L className={cx('my-3 space-y-1 pl-6', b.ordered ? 'list-decimal' : 'list-disc marker:text-ink-3')}>{b.items.map((x, i) => <li key={i}><InlineText text={x} /></li>)}</L>;
 }
 
 function Meta({ b }: { b: B<'meta'> }) {
@@ -101,7 +108,9 @@ function Terms({ b }: { b: B<'terms'> }) {
       {b.items.map((x) => (
         <div key={x.term} className="grid gap-x-6 py-1.5 sm:grid-cols-3">
           <dt className="font-semibold">{x.term}</dt>
-          <dd className="sm:col-span-2">{x.definition}</dd>
+          <dd className="sm:col-span-2">
+            <InlineText text={x.definition} />
+          </dd>
         </div>
       ))}
     </dl>
@@ -112,7 +121,11 @@ function SlideBlock({ b, lang }: { b: B<'slide'>; lang: string }) {
   return (
     <div className="avoid-break my-4 overflow-hidden rounded-control shadow-sheet">
       <SlideCanvas slide={{ id: String(b.n), layout: b.layout, title: b.title, bullets: b.bullets, notes: b.notes ?? '' }} lang={lang} footer={b.lesson} />
-      {b.notes && <p className="border-t border-rule px-4 py-2 font-ui text-13 text-ink-2">{b.notes}</p>}
+      {b.notes && (
+        <p className="border-t border-rule px-4 py-2 font-ui text-13 text-ink-2">
+          <InlineText text={b.notes} />
+        </p>
+      )}
     </div>
   );
 }
@@ -125,7 +138,7 @@ function Answers({ b }: { b: B<'answers'> }) {
         {b.items.map((x) => (
           <li key={x.n} className="break-inside-avoid">
             <span className="mr-1.5 font-semibold tabular">{x.n}.</span>
-            {x.answer}
+            <InlineText text={x.answer} />
           </li>
         ))}
       </ol>
@@ -138,7 +151,11 @@ function BlockView({ b, lang }: { b: Block; lang: string }) {
     case 'heading':
       return <Heading b={b} />;
     case 'para':
-      return <p className={cx('my-3 whitespace-pre-line', b.tone === 'lead' && 'text-18 leading-8 text-ink-2', b.tone === 'muted' && 'font-ui text-14 text-ink-2')}>{b.text}</p>;
+      return (
+        <p className={cx('my-3 whitespace-pre-line', b.tone === 'lead' && 'text-18 leading-8 text-ink-2', b.tone === 'muted' && 'font-ui text-14 text-ink-2')}>
+          <InlineText text={b.text} />
+        </p>
+      );
     case 'list':
       return <ListBlock b={b} />;
     case 'meta':
@@ -152,7 +169,7 @@ function BlockView({ b, lang }: { b: Block; lang: string }) {
         <div className="my-3 whitespace-pre-line rounded-control bg-well px-4 py-3 font-ui text-14 leading-6 text-ink-2">
           <span className="font-semibold text-ink">{b.label}</span>
           {'\n'}
-          {b.text}
+          <InlineText text={b.text} />
         </div>
       );
     case 'question':

@@ -1,5 +1,6 @@
+import { unzipSync, zipSync, strFromU8, strToU8, type Zippable } from 'fflate';
 import PptxGenJS from 'pptxgenjs';
-import type { Block, SemanticDoc } from '@folio/core';
+import { plainText, textRuns, type Block, type SemanticDoc } from '@folio/core';
 import { printFonts, printPalette } from '@folio/ui/tokens';
 import { ExportError } from './errors';
 
@@ -60,29 +61,41 @@ function footer(slide: PptSlide, f: Faces, lesson: string): void {
   });
 }
 
-function bulletRuns(items: string[], f: Faces, size: number, lettered: boolean): PptxGenJS.TextProps[] {
-  return items.map((text) => ({
-    text,
+type RunOptions = PptxGenJS.TextPropsOptions;
+
+/** One line as runs, code marked with backticks in the mono face on a light well. */
+function lineRuns(text: string, base: RunOptions, first: RunOptions = {}): PptxGenJS.TextProps[] {
+  const parts = textRuns(text);
+  return parts.map((r, i) => ({
+    text: r.text,
     options: {
-      bullet: lettered ? { type: 'number', numberType: 'alphaUcPeriod' } : { indent: 22 },
-      fontFace: f.body,
-      fontSize: size,
-      color: printPalette.ink2,
-      lang: f.lang,
-      paraSpaceAfter: 10,
-      breakLine: true,
+      ...base,
+      ...(i === 0 ? first : {}),
+      ...(r.code ? { fontFace: printFonts.mono, highlight: printPalette.well } : {}),
+      ...(i === parts.length - 1 ? { breakLine: true } : {}),
     },
   }));
 }
 
+/** Plain lines stay a string, so a slide without code is written as before. */
+function inline(text: string, base: RunOptions): string | PptxGenJS.TextProps[] {
+  return text.includes('`') ? text.split('\n').flatMap((line) => lineRuns(line, base)) : text;
+}
+
+function bulletRuns(items: string[], f: Faces, size: number, lettered: boolean): PptxGenJS.TextProps[] {
+  const base: RunOptions = { fontFace: f.body, fontSize: size, color: printPalette.ink2, lang: f.lang };
+  const first: RunOptions = { bullet: lettered ? { type: 'number', numberType: 'alphaUcPeriod' } : { indent: 22 }, paraSpaceAfter: 10 };
+  return items.flatMap((text) => lineRuns(text, base, first));
+}
+
 function titleSlide(slide: PptSlide, s: Slide, f: Faces): void {
-  slide.addText(s.title, {
+  slide.addText(inline(s.title, { fontFace: f.title }), {
     x: LEFT, y: 1.6, w: TEXT_W, h: 2.4, fontFace: f.title, fontSize: 48, color: printPalette.ink,
     valign: 'bottom', fit: 'shrink', lang: f.lang, margin: 0,
   });
   slide.addShape('line', { x: LEFT, y: 4.25, w: 1.4, h: 0, line: { color: printPalette.tab.slides, width: 2 } });
   if (s.bullets.length) {
-    slide.addText(s.bullets.join('\n'), {
+    slide.addText(inline(s.bullets.join('\n'), { fontFace: f.body }), {
       x: LEFT, y: 4.5, w: TEXT_W, h: 1.8, fontFace: f.body, fontSize: 22, color: printPalette.ink2,
       valign: 'top', fit: 'shrink', lang: f.lang, margin: 0, paraSpaceAfter: 6,
     });
@@ -90,7 +103,7 @@ function titleSlide(slide: PptSlide, s: Slide, f: Faces): void {
 }
 
 function bulletsSlide(slide: PptSlide, s: Slide, f: Faces): void {
-  slide.addText(s.title, {
+  slide.addText(inline(s.title, { fontFace: f.title }), {
     x: LEFT, y: 0.55, w: TEXT_W, h: 1.1, fontFace: f.title, fontSize: 32, color: printPalette.ink,
     valign: 'bottom', fit: 'shrink', lang: f.lang, margin: 0,
   });
@@ -102,7 +115,7 @@ function bulletsSlide(slide: PptSlide, s: Slide, f: Faces): void {
 }
 
 function questionSlide(slide: PptSlide, s: Slide, f: Faces): void {
-  slide.addText(s.title, {
+  slide.addText(inline(s.title, { fontFace: f.title }), {
     x: LEFT, y: 0.9, w: TEXT_W, h: 2.3, fontFace: f.title, fontSize: 36, color: printPalette.ink,
     valign: 'middle', fit: 'shrink', lang: f.lang, margin: 0,
   });
@@ -114,12 +127,12 @@ function questionSlide(slide: PptSlide, s: Slide, f: Faces): void {
 }
 
 function quoteSlide(slide: PptSlide, s: Slide, f: Faces): void {
-  slide.addText(s.title, {
+  slide.addText(inline(s.title, { fontFace: f.title }), {
     x: LEFT + 0.6, y: 1.2, w: TEXT_W - 1.2, h: 3.4, fontFace: f.title, fontSize: 38, italic: true,
     color: printPalette.ink, valign: 'middle', fit: 'shrink', lang: f.lang, margin: 0,
   });
   if (s.bullets.length) {
-    slide.addText(s.bullets.join('\n'), {
+    slide.addText(inline(s.bullets.join('\n'), { fontFace: f.body }), {
       x: LEFT + 0.6, y: 4.8, w: TEXT_W - 1.2, h: 1.4, fontFace: f.body, fontSize: 20, color: printPalette.ink2,
       align: 'right', valign: 'top', fit: 'shrink', lang: f.lang, margin: 0,
     });
@@ -138,6 +151,28 @@ function toBytes(out: string | ArrayBuffer | Blob | Uint8Array): Uint8Array {
   if (out instanceof Uint8Array) return new Uint8Array(out.buffer, out.byteOffset, out.byteLength);
   if (out instanceof ArrayBuffer) return new Uint8Array(out);
   throw new ExportError('slidesUnwritten', 'The slide deck could not be written.');
+}
+
+/**
+ * pptxgenjs writes paragraph properties before every run, not only the first;
+ * a paragraph holds one, so PowerPoint offers to repair the file. A line with
+ * code is several runs, so the extra ones come out here.
+ */
+const EXTRA_PPR = /(<\/a:r>)<a:pPr\b[^>]*?(?:\/>|>.*?<\/a:pPr>)/gs;
+
+export function oneParagraphProps(file: Uint8Array): Uint8Array {
+  const parts = unzipSync(file);
+  let changed = false;
+  for (const name of Object.keys(parts)) {
+    if (!/^ppt\/slides\/slide\d+\.xml$/.test(name)) continue;
+    const xml = strFromU8(parts[name]!);
+    const fixed = xml.replace(EXTRA_PPR, '$1');
+    if (fixed !== xml) {
+      parts[name] = strToU8(fixed);
+      changed = true;
+    }
+  }
+  return changed ? zipSync(parts as Zippable, { level: 6 }) : file;
 }
 
 /**
@@ -161,7 +196,7 @@ export async function renderPptx(doc: SemanticDoc): Promise<Uint8Array> {
     const slide = pptx.addSlide({ masterName: MASTER });
     LAYOUTS[s.layout](slide, s, f);
     footer(slide, f, s.lesson);
-    if (s.notes) slide.addNotes(s.notes);
+    if (s.notes) slide.addNotes(plainText(s.notes));
   }
-  return toBytes(await pptx.write({ outputType: 'uint8array', compression: true }));
+  return oneParagraphProps(toBytes(await pptx.write({ outputType: 'uint8array', compression: true })));
 }

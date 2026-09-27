@@ -36,11 +36,11 @@ test('an empty model field shows the default it will use', async ({ page }) => {
   await page.goto('/settings');
   const model = page.getByRole('textbox', { name: 'Model' });
   await expect(model).toHaveValue('');
-  await expect(model).toHaveAttribute('placeholder', 'claude-opus-5');
-  await expect(page.getByText('Leave empty to use the default, claude-opus-5.')).toBeVisible();
+  await expect(model).toHaveAttribute('placeholder', 'claude-sonnet-5');
+  await expect(page.getByText('Leave empty to use the default, claude-sonnet-5.')).toBeVisible();
   await model.fill('claude-fable-5-1');
   await model.fill('');
-  await expect(model).toHaveAttribute('placeholder', 'claude-opus-5');
+  await expect(model).toHaveAttribute('placeholder', 'claude-sonnet-5');
 });
 
 test('a local server that refuses the request is described as a local server', async ({ page }) => {

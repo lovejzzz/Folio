@@ -1,6 +1,7 @@
 import type { Slide } from '@folio/core';
 import { cx } from '@folio/ui';
 import { EditableText } from '../components/editing/EditableText';
+import { InlineText } from '../components/InlineText';
 import { useT } from '../i18n';
 
 interface SlideCanvasProps {
@@ -25,7 +26,7 @@ function Bullets({ slide, onChange, lang }: { slide: Slide; onChange?: (s: Slide
       {slide.bullets.map((b, i) => (
         <li key={i}>
           {plain ? null : <span aria-hidden className="folio-slide-dot" />}
-          {onChange ? <EditableText value={b} label={`${t.lesson.bullet} ${i + 1}`} lang={lang} className="min-w-0 flex-1" onCommit={(v) => set(i, v)} /> : <span>{b}</span>}
+          {onChange ? <EditableText value={b} label={`${t.lesson.bullet} ${i + 1}`} lang={lang} className="min-w-0 flex-1" onCommit={(v) => set(i, v)} /> : <span><InlineText text={b} /></span>}
         </li>
       ))}
       {onChange && (!plain || slide.bullets.length === 0) && (
@@ -57,7 +58,9 @@ export function SlideCanvas({ slide, lang, footer, onChange, className }: SlideC
   const title = onChange ? (
     <EditableText as="h3" value={slide.title} label={t.lesson.slideTitle} required lang={lang} className="block" onCommit={(v) => onChange({ ...slide, title: v })} />
   ) : (
-    <h3>{slide.title}</h3>
+    <h3>
+      <InlineText text={slide.title} />
+    </h3>
   );
   return (
     <div data-item={slide.id} className={cx('folio-slide group/slide relative aspect-video w-full overflow-hidden bg-paper text-ink', className)} lang={lang}>

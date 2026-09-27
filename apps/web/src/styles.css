@@ -128,6 +128,20 @@
     border-radius: 2px;
   }
 
+  /* Code marked with backticks: a quiet mono chip that reads over the well and the page alike. */
+  .folio-code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    font-style: normal;
+    letter-spacing: 0;
+    padding: 0.08em 0.32em;
+    border-radius: 3px;
+    background: color-mix(in oklab, var(--folio-ink) 6.5%, transparent);
+    color: var(--folio-ink);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
   /* Inline editing: the text is the control. */
   .folio-editable {
     border-radius: 3px;

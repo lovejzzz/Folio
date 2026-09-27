@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { tidyFollowUps, tidySlides, tidySteps, tidyTrueFalse, unquote } from '../src/tidy';
+import { tidyFollowUps, tidySlides, tidySteps, tidyTrueFalse, unquote, unfence, unfenceAll } from '../src/tidy';
 import { QuestionDraft } from '../src/schemas';
 
 const tf = (answer: string, choices: string[] = []): QuestionDraft =>
@@ -64,5 +64,19 @@ describe('tidySlides', () => {
     const v = tidySlides({ slides: [crowded] }, 'en');
     expect(v.slides.map((s) => [s.title, s.bullets.join('')])).toEqual([['Needs and wants', 'abc'], ['Needs and wants (continued)', 'def']]);
     expect(v.slides[1]!.notes).toBe('');
+  });
+});
+
+describe('fenced code', () => {
+  it('becomes one marked line per line of code', () => {
+    expect(unfence('Fit the model:\n```r\nfit <- lm(wage ~ educ, data = wage1)\n\nsummary(fit)\n```\nThen read the table.')).toBe(
+      'Fit the model:\n`fit <- lm(wage ~ educ, data = wage1)`\n\n`summary(fit)`\nThen read the table.',
+    );
+    expect(unfence('Call ```summary(fit)``` once.')).toBe('Call `summary(fit)` once.');
+    expect(unfence('No code here.')).toBe('No code here.');
+  });
+
+  it('reaches every string in an answer', () => {
+    expect(unfenceAll({ a: ['```\nx\n```'], b: { c: 'plain', n: 3 } })).toEqual({ a: ['`x`'], b: { c: 'plain', n: 3 } });
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { project } from '@folio/core';
+import { project, type SemanticDoc } from '@folio/core';
 import { sampleCourse } from '@folio/core/sample';
 import { printPalette } from '@folio/ui/tokens';
 import { renderPptx } from '../src';
@@ -56,5 +56,34 @@ describe('renderPptx', () => {
     const doc = project(course, 'slides', { audience: 'student', lessonIds: [] });
     const zip = unzipText(await renderPptx(doc));
     expect(zip.names.filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n)).length).toBe(1);
+  });
+});
+
+describe('code in slides', () => {
+  it('sets code marked with backticks in the mono face, in titles and bullets alike', async () => {
+    const doc: SemanticDoc = {
+      kind: 'slides',
+      title: 'Regression in R',
+      subtitle: '',
+      language: 'en',
+      audience: 'teacher',
+      blocks: [
+        { t: 'slide', n: 1, layout: 'bullets', title: 'Fitting with `lm()`', bullets: ['Run `lm(log(wage) ~ educ, data = wage1)`', 'Read the output'], lesson: 'OLS', notes: 'Show `summary()` output.' },
+      ],
+    };
+    const zip = unzipText(await renderPptx(doc));
+    const xml = zip.text('ppt/slides/slide1.xml');
+    expect(xml).toContain('lm(log(wage) ~ educ, data = wage1)');
+    expect(xml).not.toContain('`');
+    expect(xml.match(/typeface="Consolas"/g)?.length).toBeGreaterThanOrEqual(2);
+    // Each bullet is still one paragraph, with its bullet on the first run.
+    expect(xml).toContain('Read the output');
+    expect(xml.match(/<a:buChar/g)?.length).toBe(2);
+    // One set of paragraph properties per paragraph, before its first run.
+    for (const para of xml.match(/<a:p>.*?<\/a:p>/gs) ?? []) {
+      expect(para.match(/<a:pPr\b/g)?.length ?? 0).toBeLessThanOrEqual(1);
+      expect(para).not.toMatch(/<\/a:r><a:pPr/);
+    }
+    expect(notesText(zip)).toContain('Show summary() output.');
   });
 });
