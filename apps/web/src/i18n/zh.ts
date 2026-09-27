@@ -395,6 +395,7 @@ export const zh: Messages = {
     newCourse: '新建课程',
   },
   selection: {
+    stale: '生成建议期间文字已被修改，所以没有应用。请重新选中后再试。',
     toolbar: '处理选中的文字',
     rewrite: '改写',
     simplify: '简化',

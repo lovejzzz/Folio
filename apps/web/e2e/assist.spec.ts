@@ -38,3 +38,43 @@ test('selecting text offers a rewrite that is accepted inline', async ({ page })
   await page.getByRole('button', { name: 'Accept' }).click();
   await expect(summary).toHaveText('A clearer version of the sentence.');
 });
+
+test('a pending suggestion is dropped when you move to another lesson, never written there', async ({ page }) => {
+  await withKey(page);
+  await fakeAnthropic(page);
+  await openSample(page);
+  await page.getByRole('link', { name: /Asking questions with data/ }).first().click();
+  await page.getByRole('textbox', { name: 'Summary of lesson 1' }).selectText();
+  await page.getByRole('toolbar', { name: 'Ask about the selected text' }).getByRole('button', { name: 'Simplify' }).click();
+  await expect(page.locator('mark.folio-highlight')).toBeVisible();
+  const summary2 = page.getByRole('textbox', { name: 'Summary of lesson 2' });
+  await page.getByRole('navigation', { name: 'Lessons' }).getByRole('link', { name: /Picturing a distribution/ }).first().click();
+  await expect(summary2).toBeVisible();
+  const before = await summary2.textContent();
+  await expect(page.getByRole('button', { name: 'Accept' })).toHaveCount(0);
+  await expect(summary2).toHaveText(before!);
+});
+
+test('an explanation closes with Esc or a click elsewhere, and the bar stays with its text on scroll', async ({ page }) => {
+  await withKey(page);
+  await fakeAnthropic(page);
+  await openSample(page);
+  await page.getByRole('link', { name: /Asking questions with data/ }).first().click();
+  const summary = page.getByRole('textbox', { name: 'Summary of lesson 1' });
+  await summary.selectText();
+  const bar = page.getByRole('toolbar', { name: 'Ask about the selected text' });
+  const y0 = (await bar.boundingBox())!.y;
+  await page.mouse.wheel(0, 120);
+  await expect.poll(async () => (await bar.boundingBox())?.y ?? 0).toBeLessThan(y0 - 60);
+
+  await bar.getByRole('button', { name: 'Explain' }).click();
+  await expect(page.getByText('This is the key idea of the lesson.')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByText('This is the key idea of the lesson.')).toHaveCount(0);
+
+  await summary.selectText();
+  await bar.getByRole('button', { name: 'Explain' }).click();
+  await expect(page.getByText('This is the key idea of the lesson.')).toBeVisible();
+  await page.mouse.click(1300, 700);
+  await expect(page.getByText('This is the key idea of the lesson.')).toHaveCount(0);
+});

@@ -404,6 +404,7 @@ export const en = {
     newCourse: 'New course',
   },
   selection: {
+    stale: 'The text changed while the suggestion was made, so it was not applied. Select it and ask again.',
     toolbar: 'Ask about the selected text',
     rewrite: 'Rewrite',
     simplify: 'Simplify',

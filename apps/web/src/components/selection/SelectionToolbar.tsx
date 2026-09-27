@@ -1,7 +1,8 @@
 import { runTextAction, type TextAction } from '@folio/ai';
-import { Button } from '@folio/ui';
+import { Button, cx } from '@folio/ui';
 import { Sparkles, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useRouterState } from '@tanstack/react-router';
+import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { useT } from '../../i18n';
 import { currentInference, errorMessage } from '../../state/model';
 import { useCourse } from '../../state/session';
@@ -11,13 +12,15 @@ import { editableFor, selectionOffsets, type EditableHandle } from '../editing/r
 
 interface Target {
   handle: EditableHandle;
+  el: HTMLElement;
   start: number;
   end: number;
   text: string;
-  rect: DOMRect;
+  /** The selection's box relative to its field, so the bar can follow the field as the page scrolls. */
+  offset: { top: number; bottom: number; centre: number };
 }
 
-type Phase = { kind: 'idle' } | { kind: 'working' } | { kind: 'suggesting'; next: string } | { kind: 'explaining'; text: string };
+type Phase = { kind: 'idle' } | { kind: 'working' } | { kind: 'suggesting'; base: string; next: string } | { kind: 'explaining'; text: string };
 
 const ACTIONS: TextAction[] = ['rewrite', 'simplify', 'harder', 'easier', 'translate', 'explain'];
 
@@ -33,12 +36,71 @@ function useSelectionTarget(frozen: boolean): [Target | null, (t: Target | null)
       const text = range.toString();
       if (!found || text.trim().length < 2) return setTarget(null);
       const { start, end } = selectionOffsets(found.el, range);
-      setTarget({ handle: found.handle, start, end, text, rect: range.getBoundingClientRect() });
+      const r = range.getBoundingClientRect();
+      const box = found.el.getBoundingClientRect();
+      setTarget({ handle: found.handle, el: found.el, start, end, text, offset: { top: r.top - box.top, bottom: r.bottom - box.top, centre: r.left + r.width / 2 - box.left } });
     };
     document.addEventListener('selectionchange', onChange);
     return () => document.removeEventListener('selectionchange', onChange);
   }, [frozen]);
   return [target, setTarget];
+}
+
+interface Position {
+  top: number;
+  left: number;
+  hidden: boolean;
+}
+
+function measure(target: Target, below: boolean): Position | null {
+  if (!target.el.isConnected) return null;
+  const box = target.el.getBoundingClientRect();
+  const top = below ? box.top + target.offset.bottom + 12 : box.top + target.offset.top - 48;
+  const left = Math.min(window.innerWidth - 16, Math.max(16, box.left + target.offset.centre));
+  // Out of view (under the header or off screen): hide rather than float over other text.
+  return { top, left, hidden: top < 56 || top > window.innerHeight - 24 };
+}
+
+/** Where the bar goes: re-measured on scroll and resize so it stays with its text. */
+function usePosition(target: Target | null, below: boolean): Position | null {
+  const [pos, setPos] = useState<Position | null>(null);
+  useLayoutEffect(() => {
+    if (!target) return;
+    const update = () => setPos(measure(target, below));
+    update();
+    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update, true);
+      window.removeEventListener('resize', update);
+    };
+  }, [target, below]);
+  return target ? pos : null;
+}
+
+/** Leaving the page, Esc, or clicking elsewhere puts the bar away. */
+function useDismiss(active: boolean, explaining: boolean, bar: RefObject<HTMLDivElement | null>, close: () => void): void {
+  const href = useRouterState({ select: (s) => s.location.href });
+  const latest = useRef(close);
+  useEffect(() => {
+    latest.current = close;
+  });
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) first.current = false;
+    else latest.current();
+  }, [href]);
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && latest.current();
+    const onDown = (e: PointerEvent) => explaining && !bar.current?.contains(e.target as Node) && latest.current();
+    document.addEventListener('keydown', onKey, true);
+    document.addEventListener('pointerdown', onDown);
+    return () => {
+      document.removeEventListener('keydown', onKey, true);
+      document.removeEventListener('pointerdown', onDown);
+    };
+  }, [active, explaining, bar]);
 }
 
 function IdleBar({ onAct }: { onAct: (a: TextAction) => void }) {
@@ -93,14 +155,17 @@ function PhaseView({ phase, onAct, onAccept, onClose }: { phase: Phase; onAct: (
 export function SelectionToolbar() {
   const t = useT();
   const course = useCourse();
+  const bar = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<Phase>({ kind: 'idle' });
   const [target, setTarget] = useSelectionTarget(phase.kind !== 'idle');
-  if (!target) return null;
   const finish = () => {
-    target.handle.suggest(null);
+    target?.handle.suggest(null);
     setPhase({ kind: 'idle' });
     setTarget(null);
   };
+  useDismiss(target !== null, phase.kind === 'explaining', bar, finish);
+  const pos = usePosition(target, phase.kind === 'suggesting' || phase.kind === 'explaining');
+  if (!target || !pos) return null;
   const act = async (action: TextAction): Promise<void> => {
     const inference = currentInference();
     if (!inference) return useUi.getState().requireModel(() => void act(action));
@@ -111,23 +176,28 @@ export function SelectionToolbar() {
       const result = await runTextAction(inference, { action, selection: target.text, context: `${course.title}. ${context || value}`, language });
       if (action === 'explain') return setPhase({ kind: 'explaining', text: result });
       target.handle.suggest({ start: target.start, end: target.end, text: result });
-      setPhase({ kind: 'suggesting', next: value.slice(0, target.start) + result + value.slice(target.end) });
+      setPhase({ kind: 'suggesting', base: value, next: value.slice(0, target.start) + result + value.slice(target.end) });
     } catch (error) {
       toast({ message: errorMessage(error), tone: 'critical' });
       finish();
     }
   };
-  const below = phase.kind === 'suggesting' || phase.kind === 'explaining';
-  const left = Math.min(window.innerWidth - 16, Math.max(16, target.rect.left + target.rect.width / 2));
+  const accept = (base: string, next: string) => {
+    // Only into the text it was made for: if the field changed meanwhile, drop it.
+    if (target.el.isConnected && target.handle.get().value === base) target.handle.commit(next);
+    else toast({ message: t.selection.stale, tone: 'attention' });
+    finish();
+  };
   return (
     <div
+      ref={bar}
       role="toolbar"
       aria-label={t.selection.toolbar}
-      className="no-print fixed z-40 -translate-x-1/2 animate-pop-in"
-      style={{ top: below ? target.rect.bottom + 12 : Math.max(64, target.rect.top - 48), left }}
+      className={cx('no-print fixed z-40 -translate-x-1/2 animate-pop-in', pos.hidden && 'invisible')}
+      style={{ top: pos.top, left: pos.left }}
       onMouseDown={(e) => e.preventDefault()}
     >
-      <PhaseView phase={phase} onAct={(a) => void act(a)} onAccept={(next) => { target.handle.commit(next); finish(); }} onClose={finish} />
+      <PhaseView phase={phase} onAct={(a) => void act(a)} onAccept={(next) => phase.kind === 'suggesting' && accept(phase.base, next)} onClose={finish} />
     </div>
   );
 }
