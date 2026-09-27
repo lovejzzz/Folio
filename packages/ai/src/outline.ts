@@ -26,7 +26,7 @@ export async function generateOutline(inference: Inference, req: NewCourseReques
     check: (v): Problem[] =>
       v.lessons.length === req.lessonCount
         ? []
-        : [{ index: null, message: `There are ${v.lessons.length} lessons instead of ${req.lessonCount}.` }],
+        : [{ index: null, flag: { code: 'lessonCount', values: { got: v.lessons.length, want: req.lessonCount } } }],
     signal,
   });
   return result.value;

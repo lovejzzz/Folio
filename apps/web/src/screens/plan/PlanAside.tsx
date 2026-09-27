@@ -13,7 +13,7 @@ function MaterialToggle({ kind, selected }: { kind: MaterialKind; selected: bool
   return (
     <Checkbox
       isSelected={selected}
-      onChange={(enabled) => edit([cmd('material.set', { kind, enabled })], { key: 'toggledMaterial', values: { kind } })}
+      onChange={(enabled) => edit([cmd('material.set', { kind, enabled })], { key: enabled ? 'includedMaterial' : 'leftOutMaterial', values: { kind } })}
       className="group flex h-9 cursor-default items-center gap-2.5 rounded-control px-2 font-ui text-14 text-ink outline-none data-hovered:bg-well data-focus-visible:ring-2 data-focus-visible:ring-accent"
     >
       <span aria-hidden className={cx('h-4 w-1 rounded-full transition-opacity', tabBg[kind], !selected && 'opacity-30')} />

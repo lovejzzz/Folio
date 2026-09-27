@@ -1,6 +1,8 @@
+import type { Flag } from './flags';
+
 /**
  * Deterministic checks run on generated content before it is committed.
- * Each returns plain sentences; an empty list means the item passed.
+ * Each returns flags (codes, not sentences); an empty list means the item passed.
  */
 
 export interface DraftQuestion {
@@ -14,32 +16,32 @@ export interface DraftQuestion {
 
 const norm = (s: string): string => s.trim().toLowerCase().replace(/\s+/g, ' ');
 
-export function checkQuestion(q: DraftQuestion): string[] {
-  const problems: string[] = [];
-  if (!q.prompt.trim()) problems.push('The question has no text.');
+export function checkQuestion(q: DraftQuestion): Flag[] {
+  const problems: Flag[] = [];
+  if (!q.prompt.trim()) problems.push({ code: 'noPrompt' });
   if (q.format === 'choice' || q.format === 'truefalse') {
     const choices = q.choices.map(norm);
-    if (q.format === 'choice' && choices.length < 3) problems.push('A multiple-choice question needs at least three choices.');
-    if (q.format === 'truefalse' && choices.length !== 2) problems.push('A true/false question needs exactly two choices.');
-    if (choices.some((c) => !c)) problems.push('One of the choices is empty.');
-    if (new Set(choices).size !== choices.length) problems.push('Two of the choices are the same.');
-    if (!choices.includes(norm(q.answer))) problems.push('The answer is not one of the choices.');
+    if (q.format === 'choice' && choices.length < 3) problems.push({ code: 'tooFewChoices' });
+    if (q.format === 'truefalse' && choices.length !== 2) problems.push({ code: 'trueFalseChoices' });
+    if (choices.some((c) => !c)) problems.push({ code: 'emptyChoice' });
+    if (new Set(choices).size !== choices.length) problems.push({ code: 'duplicateChoices' });
+    if (!choices.includes(norm(q.answer))) problems.push({ code: 'answerNotInChoices' });
   } else if (!q.answer.trim()) {
-    problems.push('The question has no model answer.');
+    problems.push({ code: 'noModelAnswer' });
   }
   if (q.format === 'numeric') problems.push(...checkNumeric(q));
   return problems;
 }
 
-function checkNumeric(q: DraftQuestion): string[] {
+function checkNumeric(q: DraftQuestion): Flag[] {
   const stated = parseNumber(q.answer);
-  if (stated === null) return ['The answer to a numeric question is not a number.'];
+  if (stated === null) return [{ code: 'answerNotNumber' }];
   if (!q.expression) return [];
   const computed = evaluate(q.expression);
   if (computed === null) return [];
   const tolerance = Math.max(1e-6, Math.abs(computed) * 0.005);
   if (Math.abs(computed - stated) > tolerance) {
-    return [`The stated answer (${q.answer.trim()}) does not match the working (${round(computed)}).`];
+    return [{ code: 'answerMismatch', values: { stated: q.answer.trim(), computed: round(computed) } }];
   }
   return [];
 }
@@ -68,11 +70,11 @@ export function duplicatePrompts(prompts: string[]): string[] {
   return dupes;
 }
 
-export function checkMinutes(segmentMinutes: number[], target: number): string[] {
+export function checkMinutes(segmentMinutes: number[], target: number): Flag[] {
   const total = segmentMinutes.reduce((a, b) => a + b, 0);
   const slack = Math.max(3, Math.round(target * 0.1));
   if (Math.abs(total - target) > slack) {
-    return [`The segments add up to ${total} minutes, not ${target}.`];
+    return [{ code: 'minutesMismatch', values: { total, target } }];
   }
   return [];
 }

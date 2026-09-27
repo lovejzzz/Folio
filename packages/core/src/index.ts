@@ -6,6 +6,7 @@ export * from './ripple';
 export * from './commands';
 export * from './store';
 export * from './checks';
+export * from './flags';
 export * from './semantic';
 export * from './docLabels';
 export * from './migrate';

@@ -19,7 +19,7 @@ export function SlidesStrip({ course, lesson }: { course: Course; lesson: Lesson
             to="/c/$courseId/m/$kind"
             params={{ courseId: course.id, kind: 'slides' }}
             search={{ lesson: lesson.id }}
-            aria-label={`${t.lesson.slideOf(i + 1, lesson.slides.length)}: ${s.title}`}
+            aria-label={t.common.labelled(t.lesson.slideOf(i + 1, lesson.slides.length), s.title)}
             className="block overflow-hidden rounded-control shadow-sheet outline-none transition-shadow duration-200 hover:shadow-overlay focus-visible:ring-2 focus-visible:ring-accent"
           >
             <SlideCanvas slide={s} lang={course.language} />
@@ -53,7 +53,7 @@ function Filmstrip({ course, lessons, pos, onSelect }: { course: Course; lessons
                   <button
                     type="button"
                     aria-current={active || undefined}
-                    aria-label={`${t.lesson.slideOf(i + 1, lesson.slides.length)}: ${s.title}`}
+                    aria-label={t.common.labelled(t.lesson.slideOf(i + 1, lesson.slides.length), s.title)}
                     onClick={() => onSelect({ lessonId: lesson.id, slideId: s.id })}
                     className={cx('block flex-1 overflow-hidden rounded-control shadow-sheet outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-accent', active && 'ring-2 ring-accent')}
                   >

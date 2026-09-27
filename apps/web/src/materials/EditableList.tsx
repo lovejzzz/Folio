@@ -38,7 +38,7 @@ export function EditableList({ items, onChange, label, addLabel, newItem, ordere
               <IconButton
                 size="sm"
                 tooltip={false}
-                label={`${t.common.remove}: ${label} ${i + 1}`}
+                label={t.common.labelled(t.common.remove, `${label} ${i + 1}`)}
                 className="no-print mt-0.5 size-6 opacity-0 group-focus-within/item:opacity-100 group-hover/item:opacity-100"
                 onPress={() => onChange(items.filter((_, j) => j !== i))}
               >

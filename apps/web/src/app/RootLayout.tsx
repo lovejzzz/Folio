@@ -1,7 +1,8 @@
 import { Outlet } from '@tanstack/react-router';
 import { lazy, Suspense, useEffect } from 'react';
+import { I18nProvider } from 'react-aria-components';
 import { Toaster } from '../components/Toaster';
-import { useT } from '../i18n';
+import { ariaLocale, useT } from '../i18n';
 import { applyTheme, usePrefs } from '../state/prefs';
 import { toast } from '../state/toasts';
 import { useUi } from '../state/ui';
@@ -38,7 +39,7 @@ export function RootLayout() {
   }, [t]);
   usePrintInLight(theme);
   return (
-    <>
+    <I18nProvider locale={ariaLocale(uiLanguage)}>
       <a
         href="#main"
         className="no-print sr-only rounded-control bg-paper px-3 py-2 font-ui text-14 text-ink shadow-overlay focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50"
@@ -52,6 +53,6 @@ export function RootLayout() {
           <ConnectDialog />
         </Suspense>
       )}
-    </>
+    </I18nProvider>
   );
 }

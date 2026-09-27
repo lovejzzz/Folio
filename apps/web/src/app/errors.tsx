@@ -2,8 +2,10 @@ import { Link, type ErrorComponentProps } from '@tanstack/react-router';
 import { Button } from '@folio/ui';
 import { useT } from '../i18n';
 import { SimpleHeader } from '../components/AppHeader';
+import { usePageTitle } from './usePageTitle';
 
 function Message({ title, body, action }: { title: string; body?: string; action: React.ReactNode }) {
+  usePageTitle(title);
   return (
     <div className="min-h-dvh">
       <SimpleHeader />

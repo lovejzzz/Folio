@@ -79,7 +79,7 @@ export function SourcesDrawer() {
               </p>
               <p className="mt-1.5 line-clamp-3 font-reading text-14 leading-5 text-ink-2">{s.text}</p>
             </div>
-            <IconButton size="sm" label={`${t.sources.remove}: ${s.title}`} onPress={() => edit([cmd('source.remove', { sourceId: s.id })], { key: 'removedSource' })}>
+            <IconButton size="sm" label={t.common.labelled(t.sources.remove, s.title)} onPress={() => edit([cmd('source.remove', { sourceId: s.id })], { key: 'removedSource' })}>
               <Trash2 size={14} strokeWidth={1.5} />
             </IconButton>
           </li>

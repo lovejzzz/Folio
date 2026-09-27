@@ -28,6 +28,7 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   await page.getByRole('button', { name: 'Build 3 lessons' }).click();
 
   await expect(page.getByRole('grid', { name: 'Lessons and materials' })).toBeVisible();
+  await expect(page).toHaveTitle('Course map · How plants make food · Folio');
   await expect(page.getByText(/Course ready\. 3 items need a look\./)).toBeVisible({ timeout: 30_000 });
   const plan = model.calls.filter((c) => c.messages[0]!.content.includes('Write the lesson plan'));
   expect(plan).toHaveLength(3);

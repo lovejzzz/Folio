@@ -1,3 +1,4 @@
+import { describeFlag, type Flag } from '@folio/core';
 import type { z } from 'zod';
 import { InferenceError, type Inference } from './inference';
 
@@ -10,7 +11,7 @@ import { InferenceError, type Inference } from './inference';
 export interface Problem {
   /** Index of the item the problem belongs to, or null for the whole job. */
   index: number | null;
-  message: string;
+  flag: Flag;
 }
 
 export interface JobSpec<T> {
@@ -31,7 +32,7 @@ export interface JobResult<T> {
 function describeIssues(error: z.ZodError): Problem[] {
   return error.issues.slice(0, 12).map((issue) => ({
     index: null,
-    message: `${issue.path.join('.') || 'root'}: ${issue.message}`,
+    flag: { code: 'schemaIssue', values: { path: issue.path.join('.') || 'root', issue: issue.message } },
   }));
 }
 
@@ -42,7 +43,7 @@ function evaluate<T>(spec: JobSpec<T>, raw: unknown): { value?: T; problems: Pro
 }
 
 function repairPrompt(prompt: string, raw: unknown, problems: Problem[]): string {
-  const list = problems.map((p) => `- ${p.index === null ? '' : `Item ${p.index + 1}: `}${p.message}`).join('\n');
+  const list = problems.map((p) => `- ${p.index === null ? '' : `Item ${p.index + 1}: `}${describeFlag(p.flag)}`).join('\n');
   return `${prompt}\n\nYour previous answer was:\n${JSON.stringify(raw)}\n\nIt has these problems:\n${list}\n\nReturn a corrected version of the whole answer.`;
 }
 

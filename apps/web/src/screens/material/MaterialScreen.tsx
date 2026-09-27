@@ -1,6 +1,7 @@
 import { cmd, docLabels, lessonQuestions, orderedLessons, project, type Course, type MaterialKind } from '@folio/core';
 import { BinderTab, Sheet } from '@folio/ui';
 import { materialRoute } from '../../app/router';
+import { usePageTitle } from '../../app/usePageTitle';
 import { DocView } from '../../components/DocView';
 import { EditableText } from '../../components/editing/EditableText';
 import { useT } from '../../i18n';
@@ -80,6 +81,7 @@ export function MaterialScreen() {
   const course = useCourse();
   const { kind } = materialRoute.useParams();
   const { lesson } = materialRoute.useSearch();
+  usePageTitle(t.materials[kind], course.title || t.common.untitled);
   if (kind === 'slides') {
     return (
       <div className="px-4 pb-24 pt-8 md:px-8">

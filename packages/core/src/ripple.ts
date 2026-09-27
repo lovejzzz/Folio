@@ -1,4 +1,5 @@
 import { lessonObjectives, orderedLessons } from './course';
+import type { Flag } from './flags';
 import { hashValue } from './ids';
 import { sectionFor, type GeneratedKind, type MaterialKind } from './materials';
 import type { Basis, Course, Lesson } from './schema';
@@ -68,24 +69,24 @@ export function cellState(course: Course, lesson: Lesson, kind: MaterialKind): C
   const meta = lesson.gen[section];
   if (!meta) return 'empty';
   if (staleReasons(course, lesson, section).length > 0) return 'stale';
-  if (meta.flag || itemFlags(course, lesson, kind).length > 0) return 'attention';
+  if (meta.flags.length > 0 || itemFlags(course, lesson, kind).length > 0) return 'attention';
   return 'ready';
 }
 
 /** Per-item "needs a look" notes within one lesson and material. */
-export function itemFlags(course: Course, lesson: Lesson, kind: MaterialKind): { id: string; flag: string }[] {
-  const out: { id: string; flag: string }[] = [];
+export function itemFlags(course: Course, lesson: Lesson, kind: MaterialKind): { id: string; flags: Flag[] }[] {
+  const out: { id: string; flags: Flag[] }[] = [];
   const want = kind === 'quiz' ? 'question' : kind === 'assignments' ? 'assignment' : kind === 'discussions' ? 'discussion' : null;
   if (want) {
     for (const id of lesson.taskIds) {
       const task = course.tasks[id];
-      if (task && task.kind === want && task.flag) out.push({ id, flag: task.flag });
+      if (task && task.kind === want && task.flags.length > 0) out.push({ id, flags: task.flags });
     }
   }
   if (kind === 'faq') {
     for (const id of lesson.faqIds) {
       const entry = course.faq[id];
-      if (entry?.flag) out.push({ id, flag: entry.flag });
+      if (entry && entry.flags.length > 0) out.push({ id, flags: entry.flags });
     }
   }
   return out;
@@ -114,7 +115,7 @@ export interface AttentionItem {
   lessonId: string;
   kind: GeneratedKind;
   itemId: string | null;
-  flag: string;
+  flags: Flag[];
 }
 
 export function attentionItems(course: Course): AttentionItem[] {
@@ -122,9 +123,9 @@ export function attentionItems(course: Course): AttentionItem[] {
   for (const lesson of orderedLessons(course)) {
     for (const kind of Object.keys(lesson.gen) as GeneratedKind[]) {
       const meta = lesson.gen[kind];
-      if (meta?.flag) out.push({ lessonId: lesson.id, kind, itemId: null, flag: meta.flag });
+      if (meta && meta.flags.length > 0) out.push({ lessonId: lesson.id, kind, itemId: null, flags: meta.flags });
       for (const item of itemFlags(course, lesson, kind)) {
-        out.push({ lessonId: lesson.id, kind, itemId: item.id, flag: item.flag });
+        out.push({ lessonId: lesson.id, kind, itemId: item.id, flags: item.flags });
       }
     }
   }

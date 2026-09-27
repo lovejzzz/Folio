@@ -46,7 +46,7 @@ function parseJson(bytes: Uint8Array, what: string): unknown {
   try {
     return JSON.parse(strFromU8(bytes).replace(/^\uFEFF/, ''));
   } catch {
-    throw new CourseFormatError(`The ${what} inside this file is damaged and cannot be read.`);
+    throw new CourseFormatError('unreadable', `The ${what} inside this file is damaged and cannot be read.`);
   }
 }
 
@@ -61,31 +61,31 @@ function looksLikeJson(bytes: Uint8Array): boolean {
 
 function unzip(bytes: Uint8Array): Unzipped {
   const isZip = bytes.length > 4 && bytes[0] === 0x50 && bytes[1] === 0x4b;
-  if (!isZip) throw new CourseFormatError('This is not a Folio course file.');
+  if (!isZip) throw new CourseFormatError('notFolio', 'This is not a Folio course file.');
   try {
     return unzipSync(bytes);
   } catch {
-    throw new CourseFormatError('This Folio file is damaged and cannot be opened.');
+    throw new CourseFormatError('damagedFile', 'This Folio file is damaged and cannot be opened.');
   }
 }
 
 function checkManifest(value: unknown): void {
   const m = value && typeof value === 'object' ? (value as Partial<FolioManifest>) : {};
-  if (m.format !== FOLIO_FORMAT) throw new CourseFormatError('This is not a Folio course file.');
-  if (typeof m.version !== 'number') throw new CourseFormatError('This Folio file is damaged and cannot be opened.');
-  if (m.version > FOLIO_VERSION) throw new CourseFormatError('This file was made with a newer version of Folio.');
+  if (m.format !== FOLIO_FORMAT) throw new CourseFormatError('notFolio', 'This is not a Folio course file.');
+  if (typeof m.version !== 'number') throw new CourseFormatError('damagedFile', 'This Folio file is damaged and cannot be opened.');
+  if (m.version > FOLIO_VERSION) throw new CourseFormatError('newerVersion', 'This file was made with a newer version of Folio.');
 }
 
 /**
  * Read a course from .folio bytes, or from a bare course JSON file.
- * Throws CourseFormatError with a sentence a teacher can act on.
+ * Throws CourseFormatError with a code the interface words for the teacher.
  */
 export function readFolio(bytes: Uint8Array): Course {
   if (looksLikeJson(bytes)) return parseCourse(parseJson(bytes, 'course'));
   const files = unzip(bytes);
   const manifest = files['manifest.json'];
   const course = files['course.json'];
-  if (!manifest || !course) throw new CourseFormatError('This is not a Folio course file.');
+  if (!manifest || !course) throw new CourseFormatError('notFolio', 'This is not a Folio course file.');
   checkManifest(parseJson(manifest, 'file description'));
   return parseCourse(parseJson(course, 'course'));
 }

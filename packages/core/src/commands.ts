@@ -1,5 +1,6 @@
 import type { Draft } from 'immer';
 import { emptyLesson } from './course';
+import type { Flag } from './flags';
 import type { GeneratedKind, MaterialKind } from './materials';
 import { computeBasis } from './ripple';
 import type {
@@ -56,7 +57,7 @@ export type CommandMap = {
   'lesson.remove': { lessonId: string };
   'lesson.move': { lessonId: string; toIndex: number };
   'section.fill': {
-    [K in keyof SectionContent]: { lessonId: string; kind: K; content: SectionContent[K]; flag: string | null };
+    [K in keyof SectionContent]: { lessonId: string; kind: K; content: SectionContent[K]; flags: Flag[] };
   }[keyof SectionContent];
   'plan.update': { lessonId: string } & PlanFields;
   'slides.update': { lessonId: string; slides: Slide[] };
@@ -66,13 +67,13 @@ export type CommandMap = {
     kind: 'quiz' | 'assignments' | 'discussions';
     tasks: Task[];
     rubrics?: Rubric[];
-    flag: string | null;
+    flags: Flag[];
   };
   'task.add': { task: Task; afterId: string | null };
   'task.update': { taskId: string; fields: TaskFields };
   'task.remove': { taskId: string };
   'rubric.update': { rubricId: string; rubric: Omit<Rubric, 'id'> };
-  'faq.fill': { lessonId: string; entries: FaqEntry[]; flag: string | null };
+  'faq.fill': { lessonId: string; entries: FaqEntry[]; flags: Flag[] };
   'faq.add': { entry: FaqEntry };
   'faq.update': { faqId: string; question?: string; answer?: string };
   'faq.remove': { faqId: string };
@@ -111,8 +112,8 @@ function sectionOfTask(task: Task): GeneratedKind {
   return task.kind === 'question' ? 'quiz' : task.kind === 'assignment' ? 'assignments' : 'discussions';
 }
 
-function stamp(draft: Draft<Course>, lesson: Draft<Lesson>, kind: GeneratedKind, flag: string | null, at: string): void {
-  lesson.gen[kind] = { basis: computeBasis(draft as Course, lesson as Lesson, kind), at, edited: false, flag };
+function stamp(draft: Draft<Course>, lesson: Draft<Lesson>, kind: GeneratedKind, flags: Flag[], at: string): void {
+  lesson.gen[kind] = { basis: computeBasis(draft as Course, lesson as Lesson, kind), at, edited: false, flags };
 }
 
 function removeTaskEntity(draft: Draft<Course>, taskId: string): void {
@@ -200,7 +201,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     } else {
       lesson.study = { overview: p.content.overview, points: p.content.points };
     }
-    stamp(draft, lesson, p.kind, p.flag, at);
+    stamp(draft, lesson, p.kind, p.flags, at);
   },
   'plan.update': (draft, p) => {
     const lesson = lessonOf(draft, p.lessonId);
@@ -232,7 +233,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     for (const rubric of p.rubrics ?? []) draft.rubrics[rubric.id] = rubric;
     for (const task of p.tasks) draft.tasks[task.id] = task;
     lesson.taskIds = [...keep, ...p.tasks.map((t) => t.id)];
-    stamp(draft, lesson, p.kind, p.flag, at);
+    stamp(draft, lesson, p.kind, p.flags, at);
   },
   'task.add': (draft, p) => {
     const lesson = lessonOf(draft, p.task.lessonId);
@@ -274,7 +275,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     for (const id of lesson.faqIds) delete draft.faq[id];
     for (const entry of p.entries) draft.faq[entry.id] = entry;
     lesson.faqIds = p.entries.map((e) => e.id);
-    stamp(draft, lesson, 'faq', p.flag, at);
+    stamp(draft, lesson, 'faq', p.flags, at);
   },
   'faq.add': (draft, p) => {
     draft.faq[p.entry.id] = p.entry;
@@ -326,11 +327,11 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     const lesson = lessonOf(draft, p.lessonId);
     if (p.itemId === null) {
       const meta = lesson.gen[p.kind];
-      if (meta) meta.flag = null;
+      if (meta) meta.flags = [];
     } else if (draft.tasks[p.itemId]) {
-      draft.tasks[p.itemId]!.flag = null;
+      draft.tasks[p.itemId]!.flags = [];
     } else if (draft.faq[p.itemId]) {
-      draft.faq[p.itemId]!.flag = null;
+      draft.faq[p.itemId]!.flags = [];
     }
   },
   'override.set': (draft, p) => {

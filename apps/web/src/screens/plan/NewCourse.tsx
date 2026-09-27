@@ -3,6 +3,7 @@ import { MATERIAL_KINDS } from '@folio/core';
 import { Button, Skeleton } from '@folio/ui';
 import { Navigate, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
+import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { useT } from '../../i18n';
 import { useDraft } from '../../state/draft';
@@ -98,6 +99,7 @@ export function NewCourse() {
   const draft = useDraft();
   const [attempt, setAttempt] = useState(0);
   const error = useOutline(attempt);
+  usePageTitle(t.library.newCourse);
   if (!draft.brief.trim() && !draft.files.length) return <Navigate to="/" />;
   if (!currentInference()) return <Navigate to="/" />;
   return (

@@ -74,7 +74,21 @@ describe('parseCourse', () => {
     expect(parseCourse(JSON.parse(JSON.stringify(course)))).toEqual(course);
   });
 
-  it('rejects newer and damaged files with plain messages', () => {
+  it('migrates version 1 flag sentences into notes', () => {
+    const lesson = orderedLessons(course)[0]!;
+    // Version 1 stored one sentence (or null) where version 2 stores a list of flags.
+    const raw = JSON.parse(JSON.stringify({ ...course, schemaVersion: 1 }).replace(/"flags":\[\]/g, '"flag":null'));
+    raw.lessons[lesson.id].gen.quiz.flag = 'There are 1 questions instead of 5.';
+    const migrated = parseCourse(raw);
+    expect(migrated.schemaVersion).toBe(2);
+    expect(migrated.lessons[lesson.id]!.gen.quiz!.flags).toEqual([{ code: 'note', values: { text: 'There are 1 questions instead of 5.' } }]);
+    expect(migrated.tasks[lesson.taskIds[0]!]!.flags).toEqual([]);
+    expect(migrated).toEqual({ ...course, lessons: migrated.lessons });
+  });
+
+  it('rejects newer and damaged files with codes and plain messages', () => {
+    expect(() => parseCourse({ ...course, schemaVersion: 99 })).toThrow(expect.objectContaining({ code: 'newerVersion' }));
+
     expect(() => parseCourse({ ...course, schemaVersion: 99 })).toThrow('newer version');
     expect(() => parseCourse({ ...course, lessons: 3 })).toThrow('damaged');
     expect(() => parseCourse('nope')).toThrow('does not contain');

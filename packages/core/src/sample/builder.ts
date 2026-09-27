@@ -51,7 +51,7 @@ function question(spec: QuestionSpec, lessonId: string, objectiveIds: string[]):
     sourceRefs: [],
     origin: 'teacher',
     edited: false,
-    flag: null,
+    flags: [],
     format: spec.f,
     prompt: spec.p,
     choices,
@@ -79,7 +79,7 @@ function fillLesson(course: Course, lesson: Lesson, spec: LessonSpec, levels: Co
     points: spec.study.points.map(([heading, explanation]) => ({ id: newId('x'), heading, explanation })),
   };
   const objectiveIds = lesson.objectiveIds;
-  const base = { lessonId: lesson.id, objectiveIds, sourceRefs: [], origin: 'teacher' as const, edited: false, flag: null };
+  const base = { lessonId: lesson.id, objectiveIds, sourceRefs: [], origin: 'teacher' as const, edited: false, flags: [] };
   const tasks = spec.quiz.map((q) => question(q, lesson.id, objectiveIds));
   const levelRows = levels.map(([label, points]) => ({ id: newId('x'), label, points }));
   const rubricId = newId('r');
@@ -103,7 +103,7 @@ function fillLesson(course: Course, lesson: Lesson, spec: LessonSpec, levels: Co
   lesson.taskIds = all.map((t) => t.id);
   for (const [q, a] of spec.faq) {
     const id = newId('f');
-    course.faq[id] = { id, lessonId: lesson.id, question: q, answer: a, origin: 'teacher', edited: false, flag: null };
+    course.faq[id] = { id, lessonId: lesson.id, question: q, answer: a, origin: 'teacher', edited: false, flags: [] };
     lesson.faqIds.push(id);
   }
 }
@@ -126,7 +126,7 @@ export function buildCourse(spec: CourseSpec): Course {
   const at = course.createdAt;
   for (const lesson of Object.values(course.lessons)) {
     for (const kind of GENERATED_KINDS) {
-      lesson.gen[kind] = { basis: computeBasis(course, lesson, kind), at, edited: false, flag: null };
+      lesson.gen[kind] = { basis: computeBasis(course, lesson, kind), at, edited: false, flags: [] };
     }
   }
   return course;

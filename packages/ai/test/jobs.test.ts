@@ -41,8 +41,8 @@ describe('runJob', () => {
 
   it('returns failing checks as problems instead of throwing', async () => {
     const inf = fakeInference(() => ({ n: 5 }));
-    const r = await runJob(inf, { task: 't', system: '', prompt: 'p', schema, check: (v) => (v.n > 3 ? [{ index: null, message: 'Too big' }] : []) });
-    expect(r.problems).toEqual([{ index: null, message: 'Too big' }]);
+    const r = await runJob(inf, { task: 't', system: '', prompt: 'p', schema, check: (v) => (v.n > 3 ? [{ index: null, flag: { code: 'note', values: { text: 'Too big' } } }] : []) });
+    expect(r.problems).toEqual([{ index: null, flag: { code: 'note', values: { text: 'Too big' } } }]);
   });
 });
 
@@ -56,7 +56,8 @@ describe('generateSection', () => {
     const store = new CourseStore(course);
     store.apply(result.commands, { label: { key: 'b' }, source: 'ai' });
     const questions = store.getState().lessons[lesson.id]!.taskIds.map((id) => store.getState().tasks[id]!);
-    expect(questions.map((q) => q.flag)).toEqual([null, 'The answer is not one of the choices.', null]);
+    expect(questions.map((q) => q.flags)).toEqual([[], [{ code: 'answerNotInChoices' }], []]);
+    expect(inf.calls[1]!.prompt).toContain('Item 2: The answer is not one of the choices.');
     expect(inf.calls).toHaveLength(2);
     const first = questions[0]!;
     expect(first.kind === 'question' && first.correct).toBe(first.kind === 'question' ? first.choices[0]!.id : null);

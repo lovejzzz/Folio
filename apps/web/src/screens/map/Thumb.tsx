@@ -28,7 +28,7 @@ export function Thumb({ course, lesson, kind }: { course: Course; lesson: Lesson
       return (
         <span aria-hidden className="flex flex-wrap gap-1">
           {lessonQuestions(course, lesson).map((q) => (
-            <span key={q.id} className={q.flag ? 'size-2 rotate-45 bg-attention' : 'size-2 rounded-full bg-rule-strong'} />
+            <span key={q.id} className={q.flags.length > 0 ? 'size-2 rotate-45 bg-attention' : 'size-2 rounded-full bg-rule-strong'} />
           ))}
         </span>
       );
