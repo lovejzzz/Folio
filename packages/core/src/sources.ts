@@ -1,13 +1,30 @@
 import { newId } from './ids';
 import type { Passage, Source } from './schema';
 
+/** A passage is a citable chunk: short paragraphs (headings, list items, table cells) join the next. */
+const MIN_PASSAGE = 120;
+const MAX_PASSAGE = 1200;
+
 /** Split source text into paragraph passages that questions can cite. */
 export function splitPassages(text: string): Passage[] {
   const passages: Passage[] = [];
   const re = /\S[\s\S]*?(?=\n\s*\n|$)/g;
+  let open: { start: number; end: number } | null = null;
   for (const match of text.matchAll(re)) {
     const start = match.index ?? 0;
-    passages.push({ id: newId('p'), start, end: start + match[0].trimEnd().length });
+    const end = start + match[0].trimEnd().length;
+    if (open && open.end - open.start < MIN_PASSAGE && end - open.start <= MAX_PASSAGE) {
+      open.end = end;
+      continue;
+    }
+    if (open) passages.push({ id: newId('p'), ...open });
+    open = { start, end };
+  }
+  if (open) {
+    const last = passages.at(-1);
+    // A short tail joins the passage before it rather than standing alone.
+    if (last && open.end - open.start < MIN_PASSAGE && open.end - last.start <= MAX_PASSAGE) last.end = open.end;
+    else passages.push({ id: newId('p'), ...open });
   }
   return passages;
 }

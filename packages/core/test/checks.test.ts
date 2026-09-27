@@ -36,8 +36,10 @@ describe('other checks', () => {
     expect(checkMinutes([10, 10], 50)[0]).toMatch('20 minutes, not 50');
   });
   it('splits sources into citable passages', () => {
-    const s = createSource('Notes', 'First para.\n\nSecond para\nstill second.\n\n\nThird.');
+    const long = (label: string) => `${label} para about how leaves take in carbon dioxide through the stomata on their underside, and release oxygen back into the air around them.`;
+    const second = `${long('Second')}\nstill second, on its own line.`;
+    const s = createSource('Notes', `${long('First')}\n\n${second}\n\n\n${long('Third')}`);
     expect(s.passages).toHaveLength(3);
-    expect(passageText(s, s.passages[1]!.id)).toBe('Second para\nstill second.');
+    expect(passageText(s, s.passages[1]!.id)).toBe(second);
   });
 });

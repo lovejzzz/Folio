@@ -54,7 +54,10 @@ function finishToast(summary: Awaited<ReturnType<typeof runBuild>>): void {
   const store = activeStore();
   const openChanges = { label: t.build.review, run: () => useUi.getState().openDrawer('changes') };
   if (summary.fatal && summary.fatal.kind !== 'aborted') {
-    toast({ key: 'build', message: errorMessage(summary.fatal), tone: 'critical', duration: 0 });
+    const fixable = summary.fatal.kind === 'auth' || summary.fatal.kind === 'config';
+    // A key problem is fixed in the connect dialog, and the build picks up where it stopped.
+    const fixKey = { label: t.build.fixKey, run: () => useUi.getState().requireModel(() => void startBuild()) };
+    toast({ key: 'build', message: errorMessage(summary.fatal), tone: 'critical', duration: 0, action: fixable ? fixKey : undefined });
   } else if (summary.stopped) {
     toast({ key: 'build', message: t.build.stopped });
   } else if (summary.failed) {

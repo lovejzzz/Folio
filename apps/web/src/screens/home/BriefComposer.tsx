@@ -12,17 +12,24 @@ import { LanguageChip, LessonsChip, LevelChip } from './Chips';
 function useAttach() {
   const t = useT();
   return async (files: FileList | File[]) => {
+    // Copy first: an input's FileList is emptied when it is reset, and a drop's
+    // DataTransfer once the event ends, both before the import below resolves.
+    const list = Array.from(files);
     const { FileReadError, readSourceFile } = await import('../../lib/readFile');
-    for (const file of Array.from(files)) {
+    const refused: { name: string; reason: 'size' | 'type' }[] = [];
+    for (const file of list) {
       try {
         const source = await readSourceFile(file);
         const { files: current, set } = useDraft.getState();
         set({ files: [...current, source] });
       } catch (error) {
-        const reason = error instanceof FileReadError ? error.reason : 'type';
-        toast({ message: reason === 'size' ? t.home.fileTooBig(file.name) : t.home.fileUnsupported(file.name), tone: 'attention' });
+        refused.push({ name: file.name, reason: error instanceof FileReadError ? error.reason : 'type' });
       }
     }
+    // One message for the whole drop, however many files were refused.
+    const [only] = refused;
+    if (refused.length === 1 && only) toast({ message: only.reason === 'size' ? t.home.fileTooBig(only.name) : t.home.fileUnsupported(only.name), tone: 'attention' });
+    else if (refused.length > 1) toast({ message: t.home.filesRefused(refused.map((r) => r.name)), tone: 'attention' });
   };
 }
 

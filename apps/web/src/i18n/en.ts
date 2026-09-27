@@ -107,7 +107,8 @@ export const en = {
     seeAll: 'See all',
     emptyBrief: 'Write a sentence or two about what you want to teach first.',
     fileTooBig: (name: string) => `${name} is too large. Files up to 2 MB can be attached.`,
-    fileUnsupported: (name: string) => `${name} can't be read. Attach .txt, .md or .docx files, or paste the text.`,
+    fileUnsupported: (name: string) => `${name} can’t be read. Attach .txt, .md or .docx files, or paste the text.`,
+    filesRefused: (names: string[]) => `${new Intl.ListFormat('en-GB', { type: 'conjunction' }).format(names)} can’t be attached. Attach .txt, .md or .docx files up to 2 MB.`,
   },
   levels: ['Primary', 'Middle school', 'Grade 9–10', 'Grade 11–12', 'University', 'Adult learners'],
   languages: { en: 'English', 'zh-CN': '简体中文' },
@@ -169,6 +170,7 @@ export const en = {
     stopped: 'Building stopped. What was finished is saved.',
     failedSome: (n: number) => (n === 1 ? '1 section could not be built.' : `${n} sections could not be built.`),
     review: 'Review',
+    fixKey: 'Fix the key',
   },
   lesson: {
     objectives: 'Objectives',

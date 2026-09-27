@@ -99,6 +99,7 @@ export const zh: Messages = {
     emptyBrief: '先写一两句话，说说你想教什么。',
     fileTooBig: (name) => `${name} 太大了。只能添加 2 MB 以内的文件。`,
     fileUnsupported: (name) => `无法读取 ${name}。请添加 .txt、.md 或 .docx 文件，或直接粘贴文字。`,
+    filesRefused: (names: string[]) => `无法附加 ${new Intl.ListFormat('zh', { type: 'conjunction' }).format(names)}。请附加不超过 2 MB 的 .txt、.md 或 .docx 文件。`,
   },
   levels: ['小学', '初中', '高一至高二', '高三', '大学', '成人学习者'],
   languages: { en: 'English', 'zh-CN': '简体中文' },
@@ -160,6 +161,7 @@ export const zh: Messages = {
     stopped: '已停止生成。已完成的部分都已保存。',
     failedSome: (n) => `有 ${n} 部分没能生成。`,
     review: '查看',
+    fixKey: '修改密钥',
   },
   lesson: {
     objectives: '学习目标',

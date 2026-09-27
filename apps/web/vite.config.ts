@@ -2,8 +2,8 @@ import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import { cspHashes, previewHeaders } from './headers.plugin';
-import { trimFonts } from './fonts.plugin';
+import { cspHashes, previewHeaders } from './headers.plugin.ts';
+import { trimFonts } from './fonts.plugin.ts';
 
 export default defineConfig({
   plugins: [trimFonts(), react(), babel({ presets: [reactCompilerPreset()] }), tailwindcss(), cspHashes(), previewHeaders()],

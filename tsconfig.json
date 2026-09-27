@@ -15,6 +15,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "types": ["node", "vite/client"]
   },
   "include": ["packages/*/src", "packages/*/scripts", "packages/*/test", "apps/web/src", "apps/web/e2e", "apps/web/*.ts", "scripts", "vitest.config.ts"]
