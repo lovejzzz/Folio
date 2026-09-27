@@ -155,9 +155,9 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
   quiz: (c, lesson) =>
     `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer, true/false or numeric questions where they fit. For choice and true/false questions, "answer" must repeat the correct choice exactly. Use plausible wrong choices that reflect real misconceptions, as long, specific and carefully worded as the right one, so the right answer can't be spotted by its length. Never refer to a choice by its letter or position. Write a true/false question as a plain statement, without "True or false:" in front. ${trueFalseOrder(lesson)} Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression".`,
   assignments: () =>
-    'Write one assignment that lets students apply this lesson, with numbered steps, and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
+    'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
   discussions: () =>
-    'Write two discussion prompts that make students think and disagree productively, each with up to three follow-up questions for the teacher.',
+    'Write two discussion prompts that make students think and disagree productively, each with at most three follow-up questions for the teacher.',
   faq: () =>
     'Write two or three questions students commonly ask about this lesson, with short, accurate answers.',
 };

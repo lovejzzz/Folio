@@ -1,5 +1,6 @@
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
+import { tidyFollowUps, tidySteps, tidyTrueFalse } from './tidy';
 import {
   checkMinutes,
   answerStandsOut,
@@ -131,7 +132,7 @@ export function trimQuiz(v: QuizDraft, size: number): QuizDraft {
 
 const quiz: SectionJob<QuizDraft> = {
   schema: QuizDraft,
-  tidy: (v, course) => trimQuiz(v, course.shape.quizSize),
+  tidy: (v, course) => trimQuiz({ questions: v.questions.map((q) => tidyTrueFalse(q, course.language)) }, course.shape.quizSize),
   check: (v, course, lesson) => {
     const problems: Problem[] = [];
     v.questions.forEach((q, index) => {
@@ -162,6 +163,7 @@ const quiz: SectionJob<QuizDraft> = {
 
 const assignments: SectionJob<AssignmentDraft> = {
   schema: AssignmentDraft,
+  tidy: tidySteps,
   check: (v) =>
     v.rubric.criteria
       .filter((c) => c.descriptors.length !== v.rubric.levels.length)
@@ -195,6 +197,7 @@ const assignments: SectionJob<AssignmentDraft> = {
 
 const discussions: SectionJob<DiscussionsDraft> = {
   schema: DiscussionsDraft,
+  tidy: tidyFollowUps,
   toCommands: (v, problems, _course, lesson) => [
     cmd('tasks.fill', {
       lessonId: lesson.id,

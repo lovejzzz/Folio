@@ -108,7 +108,7 @@ export const AssignmentDraft = z.object({
 export type AssignmentDraft = z.infer<typeof AssignmentDraft>;
 
 export const DiscussionsDraft = z.object({
-  discussions: z.array(z.object({ prompt: line, followUps: z.array(line).max(3) })).min(1).max(3),
+  discussions: z.array(z.object({ prompt: line, followUps: z.array(line).max(6).describe('Up to three') })).min(1).max(3),
 });
 export type DiscussionsDraft = z.infer<typeof DiscussionsDraft>;
 

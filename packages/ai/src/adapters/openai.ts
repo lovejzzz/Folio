@@ -18,6 +18,15 @@ const BASES: Partial<Record<ModelSettings['provider'], string>> = {
 const NAMES: Partial<Record<ModelSettings['provider'], string>> = { openai: 'OpenAI', deepseek: 'DeepSeek' };
 
 /**
+ * DeepSeek thinks at length by default. Jobs Folio runs at medium effort
+ * (plans, quizzes, where answers must be right) think briefly; the rest
+ * don't think at all, which in live runs cost no quality.
+ */
+function deepseekThinking(effort: CompletionRequest['effort']) {
+  return effort === 'medium' ? { reasoning_effort: 'low' } : { thinking: { type: 'disabled' } };
+}
+
+/**
  * OpenAI chat completions with a JSON Schema response format. The same
  * adapter talks to DeepSeek and to local OpenAI-compatible servers such as
  * Ollama or LM Studio, which is how "on this device" works without a browser
@@ -43,7 +52,7 @@ export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch
           { role: 'user', content: request.prompt },
         ],
         // DeepSeek stops at 4K output tokens unless asked for more; a lesson plan can run past that.
-        ...(jsonMode ? { max_tokens: request.maxTokens ?? 8000 } : {}),
+        ...(jsonMode ? { max_tokens: request.maxTokens ?? 8000, ...deepseekThinking(request.effort) } : {}),
         response_format: jsonMode
           ? { type: 'json_object' }
           : { type: 'json_schema', json_schema: { name: request.task, schema, strict: false } },
