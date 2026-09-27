@@ -4,6 +4,7 @@ import {
   errorFromStatus,
   isAbort,
   parseJsonText,
+  truncatedOutput,
   type CompletionRequest,
   type Inference,
   type ModelSettings,
@@ -52,8 +53,9 @@ export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch
       };
       const choice = data.choices?.[0];
       if (choice?.message?.refusal) throw new InferenceError('refused', choice.message.refusal);
-      if (choice?.finish_reason === 'length') throw new InferenceError('invalid', 'The answer was cut off before it finished.');
-      return parseJsonText(choice?.message?.content ?? '');
+      const text = choice?.message?.content ?? '';
+      if (choice?.finish_reason === 'length') throw truncatedOutput(text);
+      return parseJsonText(text);
     },
   };
 }

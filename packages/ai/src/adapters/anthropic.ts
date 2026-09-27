@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
-import { InferenceError, isAbort, parseJsonText, type CompletionRequest, type Inference, type ModelSettings } from '../inference';
+import { InferenceError, isAbort, parseJsonText, truncatedOutput, type CompletionRequest, type Inference, type ModelSettings } from '../inference';
 
 /** Models that accept the server-side refusal fallback chain. */
 const FALLBACK_MODELS = new Set(['claude-opus-5', 'claude-fable-5-1']);
@@ -55,10 +55,8 @@ export function anthropicInference(settings: ModelSettings, fetchImpl?: typeof f
         if (response.stop_reason === 'refusal') {
           throw new InferenceError('refused', response.stop_details?.explanation ?? 'The model declined this request.');
         }
-        if (response.stop_reason === 'max_tokens') {
-          throw new InferenceError('invalid', 'The answer was cut off before it finished.');
-        }
         const text = response.content.flatMap((block) => (block.type === 'text' ? [block.text] : [])).join('');
+        if (response.stop_reason === 'max_tokens') throw truncatedOutput(text);
         return parseJsonText(text);
       } catch (error) {
         throw mapError(error);

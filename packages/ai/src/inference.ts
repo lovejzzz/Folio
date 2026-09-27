@@ -77,13 +77,35 @@ export function errorFromStatus(status: number, detail: string): InferenceError 
   return new InferenceError('invalid', detail);
 }
 
+/**
+ * The model answered, but not with usable JSON: it is malformed, or it was
+ * cut off. Unlike other errors this one can be repaired, so runJob quotes
+ * the text back to the model once instead of giving up.
+ */
+export class MalformedOutputError extends InferenceError {
+  constructor(
+    readonly text: string,
+    /** What is wrong, worded for the repair prompt. */
+    readonly problem: string,
+  ) {
+    super('invalid', 'The model did not return valid JSON.', text);
+    this.name = 'MalformedOutputError';
+  }
+}
+
 export function parseJsonText(text: string): unknown {
   const trimmed = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
   try {
     return JSON.parse(trimmed);
-  } catch {
-    throw new InferenceError('invalid', 'The model did not return valid JSON.', text);
+  } catch (error) {
+    const detail = error instanceof Error ? ` (${error.message})` : '';
+    throw new MalformedOutputError(text, trimmed ? `It is not valid JSON${detail}.` : 'It was empty.');
   }
+}
+
+/** An answer that stopped at the token limit: kept so the repair call can ask for a shorter one. */
+export function truncatedOutput(text: string): MalformedOutputError {
+  return new MalformedOutputError(text, 'It was cut off before it finished. Give a complete answer that is more concise.');
 }
 
 export function isAbort(error: unknown): boolean {

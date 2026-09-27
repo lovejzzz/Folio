@@ -6,3 +6,4 @@ export { writeFolio, readFolio, FOLIO_FORMAT, FOLIO_VERSION, type FolioManifest 
 export { zipFiles } from './bundle';
 export { slugFilename } from './filenames';
 export { exportCourse, describeExport, MIME, type ExportFormat, type ExportRequest, type ExportFile } from './plan';
+export { ExportError, isExportError, type ExportErrorCode } from './errors';

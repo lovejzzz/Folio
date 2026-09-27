@@ -1,11 +1,11 @@
-import { lessonNumber, lessonObjectives, orderedLessons, type Course, type Language, type Lesson } from '@folio/core';
+import { SHAPE_LIMITS, lessonNumber, lessonObjectives, orderedLessons, type Course, type Language, type Lesson } from '@folio/core';
 
 /**
  * Prompt templates. Each has a version so evaluation results can be tied to
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@1';
+export const PROMPT_VERSION = 'folio-prompts@2';
 
 const SOURCE_BUDGET = 12000;
 
@@ -162,6 +162,7 @@ export function textActionPrompt(action: TextAction, selection: string, context:
 }
 
 export function coursePlanPrompt(course: Course, request: string): string {
+  const { lessons: lessonLimit, quizSize: quiz, minutesPerLesson: minutes } = SHAPE_LIMITS;
   const lessons = orderedLessons(course)
     .map((l, i) => `${i + 1}. ${l.title}: ${lessonObjectives(course, l).map((o) => o.text).join('; ')}`)
     .join('\n');
@@ -169,6 +170,7 @@ export function coursePlanPrompt(course: Course, request: string): string {
     `Course: ${course.title} (${course.audience.level || 'no level set'}). Quiz size: ${course.shape.quizSize}. Minutes per lesson: ${course.shape.minutesPerLesson}.`,
     `Lessons:\n${lessons}`,
     `The teacher asks: """${request.trim()}"""`,
+    `Limits: ${lessonLimit.min}–${lessonLimit.max} lessons, ${quiz.min}–${quiz.max} questions per quiz, ${minutes.min}–${minutes.max} minutes per lesson.`,
     'Turn the request into the smallest list of operations that does it. Lesson numbers refer to the list above, before any change. If the request is not about the course structure, return no operations and say so in the summary.',
   ].join('\n\n');
 }

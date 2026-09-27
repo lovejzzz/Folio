@@ -34,6 +34,17 @@ function outline(prompt: string) {
   };
 }
 
+/** ⌘K plans. Some requests get steps that can't be done, as a real model sometimes proposes. */
+function coursePlan(prompt: string) {
+  const request = prompt.match(/The teacher asks: """([^"]*)"""/)?.[1] ?? '';
+  const operations: unknown[] = [];
+  if (request.includes('lesson 99')) operations.push({ op: 'removeLesson', lesson: 99 });
+  if (request.includes('40 questions')) operations.push({ op: 'setQuizSize', size: 40 });
+  if (request.includes('rename lesson 1')) operations.push({ op: 'renameLesson', lesson: 1, title: 'Asking good questions' });
+  if (!operations.length) return { summary: 'Quizzes get three questions.', operations: [{ op: 'setQuizSize', size: 3 }] };
+  return { summary: 'As asked.', operations };
+}
+
 function answerFor(body: Body): unknown {
   const prompt = body.messages.map((m) => m.content).join('\n');
   const title = lessonTitle(prompt);
@@ -72,7 +83,7 @@ function answerFor(body: Body): unknown {
     return { title: `${title} poster`, prompt: 'Make a poster that explains the process.', steps: ['Draw a leaf', 'Label the inputs and outputs'], rubric: { levels: [{ label: 'Excellent', points: 3 }, { label: 'Good', points: 2 }, { label: 'Beginning', points: 1 }], criteria: [{ name: 'Accuracy', descriptors: ['All correct', 'Mostly correct', 'Several errors'] }, { name: 'Clarity', descriptors: ['Very clear', 'Clear', 'Hard to follow'] }] } };
   if (prompt.includes('discussion prompts')) return { discussions: [{ prompt: 'Could a plant live in a sealed jar?', followUps: ['What would it need?'] }] };
   if (prompt.includes('commonly ask')) return { entries: [{ question: 'Do plants breathe?', answer: 'Yes, they respire all the time, day and night.' }] };
-  if (prompt.includes('Turn the request into')) return { summary: 'Quizzes get three questions.', operations: [{ op: 'setQuizSize', size: 3 }] };
+  if (prompt.includes('Turn the request into')) return coursePlan(prompt);
   if (prompt.includes('Selected text')) return prompt.includes('Explain') ? { explanation: 'This is the key idea of the lesson.' } : { text: 'A clearer version of the sentence.' };
   return {};
 }

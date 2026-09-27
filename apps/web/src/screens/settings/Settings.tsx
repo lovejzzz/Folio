@@ -1,15 +1,15 @@
-import type { ProviderId } from '@folio/ai';
+import { isConfigured, type ProviderId } from '@folio/ai';
 import { Button, Dialog, SegmentedControl } from '@folio/ui';
 import { useEffect, useState, type ReactNode } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { probeModel } from '../../components/ConnectDialog';
-import { ProviderChoice, ProviderFields } from '../../components/ProviderFields';
+import { ProviderChoice, ProviderFields, hasKey, missingSetup } from '../../components/ProviderFields';
 import { useT } from '../../i18n';
 import { download } from '../../lib/exporter';
 import { allCourses, db } from '../../state/db';
 import { errorMessage } from '../../state/model';
-import { usePrefs } from '../../state/prefs';
+import { modelSettings, usePrefs } from '../../state/prefs';
 import { dropSession } from '../../state/session';
 import { toast } from '../../state/toasts';
 
@@ -32,33 +32,43 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
+/** Which provider Folio is using, when it isn't the one on screen. */
+function ActiveNote({ provider }: { provider: ProviderId }) {
+  const t = useT();
+  const active = usePrefs((s) => s.provider);
+  const activeReady = usePrefs((s) => isConfigured(modelSettings(s)));
+  if (!active || active === provider || !activeReady) return null;
+  return <p className="mt-3 font-ui text-13 text-ink-2">{t.settings.stillUsing(t.settings.providers[active].short, provider === 'local')}</p>;
+}
+
 function ModelSection() {
   const t = useT();
   const prefs = usePrefs();
   const [provider, setProvider] = useState<ProviderId>(prefs.provider ?? 'anthropic');
   const [status, setStatus] = useState<{ busy: boolean; message: string | null; ok: boolean }>({ busy: false, message: null, ok: false });
   const test = async () => {
+    const missing = missingSetup(provider, t);
+    if (missing) return setStatus({ busy: false, message: missing, ok: false });
     setStatus({ busy: true, message: null, ok: false });
     try {
       await probeModel(provider);
       prefs.set({ provider });
       setStatus({ busy: false, message: t.settings.testOk, ok: true });
     } catch (error) {
-      setStatus({ busy: false, message: errorMessage(error), ok: false });
+      setStatus({ busy: false, message: errorMessage(error, provider), ok: false });
     }
+  };
+  // Choosing a provider only looks at it; Folio switches once it has a key (or, for a local server, once it connects).
+  const choose = (p: ProviderId) => {
+    setProvider(p);
+    if (hasKey(p)) prefs.set({ provider: p });
+    setStatus({ busy: false, message: null, ok: false });
   };
   return (
     <Section title={t.settings.ai} lede={t.settings.aiLede}>
-      <ProviderChoice
-        value={provider}
-        onChange={(p) => {
-          setProvider(p);
-          prefs.set({ provider: p });
-          setStatus({ busy: false, message: null, ok: false });
-        }}
-      />
+      <ProviderChoice value={provider} onChange={choose} />
       <div className="mt-6 max-w-md">
-        <ProviderFields provider={provider} />
+        <ProviderFields provider={provider} onKey={(key) => key && prefs.set({ provider })} />
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <Button variant="primary" isDisabled={status.busy} onPress={() => void test()}>
             {status.busy ? t.settings.testing : t.settings.test}
@@ -74,6 +84,7 @@ function ModelSection() {
             {status.message}
           </p>
         )}
+        <ActiveNote provider={provider} />
       </div>
     </Section>
   );

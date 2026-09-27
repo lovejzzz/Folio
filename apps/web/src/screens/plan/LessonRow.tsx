@@ -5,14 +5,17 @@ import { useState, type DragEvent } from 'react';
 import { EditableText } from '../../components/editing/EditableText';
 import { useT } from '../../i18n';
 import { edit } from '../../state/edit';
+import { gapAt, moveIndexForGap } from './reorder';
 
 interface RowProps {
   course: Course;
   lesson: Lesson;
   index: number;
-  dragging: string | null;
+  /** Index of the lesson being dragged, or -1. */
+  dragFrom: number;
   onDragStart: (id: string) => void;
-  onDrop: (toIndex: number) => void;
+  /** Drop into a gap between rows: 0 is above the first, n below the last. */
+  onDrop: (gap: number) => void;
 }
 
 function Objectives({ course, lesson, n }: { course: Course; lesson: Lesson; n: number }) {
@@ -99,27 +102,36 @@ function Handle({ lesson, n, onDragStart }: { lesson: Lesson; n: number; onDragS
 }
 
 /** One lesson in the outline: drag to reorder, rename in place, edit objectives. */
-export function LessonRow({ course, lesson, index, dragging, onDragStart, onDrop }: RowProps) {
+export function LessonRow({ course, lesson, index, dragFrom, onDragStart, onDrop }: RowProps) {
   const t = useT();
   const n = index + 1;
-  const [over, setOver] = useState(false);
+  const [gap, setGap] = useState<number | null>(null);
+  const gapFor = (e: DragEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const at = gapAt(index, e.clientY, rect.top, rect.height);
+    return moveIndexForGap(dragFrom, at) === null ? null : at;
+  };
   return (
     <li
       onDragOver={(e: DragEvent) => {
-        if (!dragging || dragging === lesson.id) return;
-        e.preventDefault();
-        setOver(true);
+        const at = gapFor(e);
+        setGap(at);
+        // Only a gap that would change the order accepts the drop.
+        if (at !== null) e.preventDefault();
       }}
-      onDragLeave={() => setOver(false)}
+      onDragLeave={() => setGap(null)}
       onDrop={(e) => {
         e.preventDefault();
-        setOver(false);
-        onDrop(index);
+        const at = gapFor(e);
+        setGap(null);
+        if (at !== null) onDrop(at);
       }}
       className={cx(
         'group relative flex gap-3 border-t border-rule py-5 transition-opacity duration-120 first:border-t-0 md:gap-4',
-        dragging === lesson.id && 'opacity-40',
-        over && 'before:absolute before:inset-x-0 before:-top-px before:h-0.5 before:bg-accent',
+        index === dragFrom && 'opacity-40',
+        gap !== null && 'before:absolute before:inset-x-0 before:h-0.5 before:bg-accent',
+        gap === index && 'before:-top-px',
+        gap === index + 1 && 'before:-bottom-px',
       )}
     >
       <Handle lesson={lesson} n={n} onDragStart={onDragStart} />

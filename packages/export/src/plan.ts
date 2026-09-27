@@ -7,6 +7,7 @@ import { writeFolio } from './folioFile';
 import { exportLabels } from './labels';
 import { renderPptx } from './pptx';
 import { quizRows, renderXlsx } from './xlsx';
+import { ExportError } from './errors';
 
 export type ExportFormat = 'docx' | 'pptx' | 'xlsx' | 'csv' | 'zip' | 'folio';
 
@@ -122,7 +123,7 @@ function plan(req: ExportRequest): Planned {
     case 'csv':
       return quizFile(req, req.format);
     case 'folio':
-      if (req.audience !== 'teacher') throw new Error('A Folio file holds the whole course with answers, so it is always a teacher copy.');
+      if (req.audience !== 'teacher') throw new ExportError('folioIsTeacherCopy', 'A Folio file holds the whole course with answers, so it is always a teacher copy.');
       return folioFile(req);
     case 'zip': {
       const contents = zipContents(req);
@@ -144,7 +145,7 @@ function plan(req: ExportRequest): Planned {
  * bundles one file per material plus a .folio backup; folio is the course.
  */
 export async function exportCourse(req: ExportRequest): Promise<ExportFile> {
-  if (req.format === 'docx' && !req.kinds.length) throw new Error('Choose at least one material to export.');
+  if (req.format === 'docx' && !req.kinds.length) throw new ExportError('noMaterials', 'Choose at least one material to export.');
   const planned = plan(req);
   return { name: planned.name, mime: planned.mime, bytes: await planned.make() };
 }

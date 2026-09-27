@@ -4,6 +4,7 @@ import {
   errorFromStatus,
   isAbort,
   parseJsonText,
+  truncatedOutput,
   type CompletionRequest,
   type Inference,
   type ModelSettings,
@@ -44,8 +45,9 @@ export function googleInference(settings: ModelSettings, fetchImpl: typeof fetch
       if (data.promptFeedback?.blockReason) throw new InferenceError('refused', data.promptFeedback.blockReason);
       const candidate = data.candidates?.[0];
       if (candidate?.finishReason === 'SAFETY') throw new InferenceError('refused', 'Blocked by safety settings.');
-      if (candidate?.finishReason === 'MAX_TOKENS') throw new InferenceError('invalid', 'The answer was cut off before it finished.');
-      return parseJsonText(candidate?.content?.parts?.map((p) => p.text ?? '').join('') ?? '');
+      const text = candidate?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
+      if (candidate?.finishReason === 'MAX_TOKENS') throw truncatedOutput(text);
+      return parseJsonText(text);
     },
   };
 }

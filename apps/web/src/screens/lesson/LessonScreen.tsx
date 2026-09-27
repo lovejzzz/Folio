@@ -14,7 +14,7 @@ import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
 import { EdgeTabs } from './EdgeTabs';
 import { LessonRail } from './LessonRail';
-import { CourseNotFound } from '../../app/errors';
+import { LessonNotFound } from '../../app/errors';
 
 function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
   const t = useT();
@@ -112,8 +112,8 @@ export function LessonScreen() {
   const kinds = TEACHING_ORDER.filter((k) => course.materials[k].enabled && lessonEditors[k]);
   const active = usePosition(kinds, m, lessonId);
   const index = course.lessonOrder.indexOf(lessonId);
-  usePageTitle(...(lesson ? [lesson.title || t.common.lesson(index + 1), course.title || t.common.untitled] : [t.errors.notFound]));
-  if (!lesson) return <CourseNotFound />;
+  usePageTitle(...(lesson ? [lesson.title || t.common.lesson(index + 1), course.title || t.common.untitled] : [t.errors.lessonNotFound]));
+  if (!lesson) return <LessonNotFound />;
   return (
     <div className="flex items-start">
       <LessonRail currentId={lesson.id} />

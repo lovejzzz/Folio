@@ -1,6 +1,6 @@
 import { expect, test } from './fixtures';
 import { fakeAnthropic } from './fakeModel';
-import { withKey } from './helpers';
+import { openSample, retype, withKey } from './helpers';
 import type { Page } from '@playwright/test';
 
 const cors = { 'access-control-allow-origin': '*' };
@@ -72,4 +72,42 @@ test('an outline that could not be drafted offline is drafted on Try again', asy
   down = false;
   await page.getByRole('button', { name: 'Try again' }).click();
   await expect(page.getByRole('textbox', { name: 'Title of lesson 1' })).toBeVisible();
+});
+
+test('offline, the banner says what waits, and Update says you’re offline instead of failing', async ({ page, context }) => {
+  await withKey(page);
+  const model = await fakeAnthropic(page);
+  await openSample(page);
+  await page.getByRole('link', { name: /Picturing a distribution/ }).first().click();
+  await retype(page, 'Objective 1 of lesson 2', 'Read a histogram and describe its shape');
+  const quiz = page.locator('#m-quiz');
+  await expect(quiz.getByText('Out of date.')).toBeVisible();
+
+  await context.setOffline(true);
+  await expect(page.getByText('You’re offline. Reading and editing still work; building and updates need a connection.')).toBeVisible();
+  const calls = model.calls.length;
+  await quiz.getByRole('button', { name: 'Update' }).click();
+  await expect(page.getByText('You’re offline. Connect to the internet, then try again.')).toBeVisible();
+  await expect(page.getByText(/couldn’t reach the model provider/)).toHaveCount(0);
+  await expect(quiz.getByText('Out of date.')).toBeVisible();
+  expect(model.calls.length).toBe(calls);
+
+  await context.setOffline(false);
+  await quiz.getByRole('button', { name: 'Update' }).click();
+  await expect(quiz.getByText('Out of date.')).toHaveCount(0);
+});
+
+test('offline, Build keeps the plan open and says why; back online it builds', async ({ page, context }) => {
+  await withKey(page);
+  await fakeAnthropic(page);
+  await planTwoLessons(page);
+  await context.setOffline(true);
+  await page.getByRole('button', { name: 'Build 2 lessons' }).click();
+  await expect(page.getByText('You’re offline. Connect to the internet, then try again.')).toBeVisible();
+  await expect(page).toHaveURL(/\/plan$/);
+  await expect(page.getByRole('textbox', { name: 'Title of lesson 1' })).toBeVisible();
+
+  await context.setOffline(false);
+  await page.getByRole('button', { name: 'Build 2 lessons' }).click();
+  await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 30_000 });
 });

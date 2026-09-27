@@ -1,4 +1,4 @@
-import { createInference, DEFAULT_MODELS, type ProviderId } from '@folio/ai';
+import { createInference, type ProviderId } from '@folio/ai';
 import { Button, Dialog } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
@@ -7,7 +7,7 @@ import { errorMessage } from '../state/model';
 import { modelSettings, usePrefs } from '../state/prefs';
 import { useUi } from '../state/ui';
 import { openSample } from '../lib/sample';
-import { ProviderChoice, ProviderFields } from './ProviderFields';
+import { ProviderChoice, ProviderFields, missingSetup } from './ProviderFields';
 import { z } from 'zod';
 
 const ProbeSchema = z.object({ ok: z.boolean() });
@@ -27,29 +27,37 @@ export async function probeModel(provider: ProviderId): Promise<void> {
   ProbeSchema.parse(out);
 }
 
+/** Check the chosen provider works, make it the one Folio uses, and carry on with what was waiting. */
+function useConnect(provider: ProviderId, then: (() => void) | null, close: () => void) {
+  const t = useT();
+  const [state, setState] = useState<{ busy: boolean; error: string | null }>({ busy: false, error: null });
+  const connect = async () => {
+    const missing = missingSetup(provider, t);
+    if (missing) return setState({ busy: false, error: missing });
+    setState({ busy: true, error: null });
+    try {
+      await probeModel(provider);
+      // An empty model field means "the default", so it is left empty rather than filled in here.
+      usePrefs.getState().set({ provider });
+      const run = then;
+      close();
+      setState({ busy: false, error: null });
+      run?.();
+    } catch (error) {
+      setState({ busy: false, error: errorMessage(error, provider) });
+    }
+  };
+  return { state, connect };
+}
+
 /** A three-step guided setup: choose a provider, paste a key, check it works. */
 export function ConnectDialog() {
   const t = useT();
   const navigate = useNavigate();
   const then = useUi((s) => s.connectThen);
   const close = useUi((s) => s.closeConnect);
-  const prefs = usePrefs();
-  const [provider, setProvider] = useState<ProviderId>(prefs.provider ?? 'anthropic');
-  const [state, setState] = useState<{ busy: boolean; error: string | null }>({ busy: false, error: null });
-
-  const connect = async () => {
-    setState({ busy: true, error: null });
-    try {
-      await probeModel(provider);
-      usePrefs.getState().set({ provider, models: { ...usePrefs.getState().models, [provider]: usePrefs.getState().models[provider] || DEFAULT_MODELS[provider] } });
-      const run = then;
-      close();
-      setState({ busy: false, error: null });
-      run?.();
-    } catch (error) {
-      setState({ busy: false, error: errorMessage(error) });
-    }
-  };
+  const [provider, setProvider] = useState<ProviderId>(() => usePrefs.getState().provider ?? 'anthropic');
+  const { state, connect } = useConnect(provider, then, close);
 
   return (
     <Dialog isOpen={then !== null} onOpenChange={(open) => !open && close()} title={t.connect.title} size="md">
@@ -61,7 +69,7 @@ export function ConnectDialog() {
             <ProviderChoice value={provider} onChange={setProvider} compact />
           </li>
           <li>
-            <StepLabel n={2}>{t.connect.step2}</StepLabel>
+            <StepLabel n={2}>{provider === 'local' ? t.connect.step2Local : t.connect.step2}</StepLabel>
             <ProviderFields provider={provider} showModel={false} />
           </li>
           <li>

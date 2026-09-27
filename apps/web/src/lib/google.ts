@@ -24,6 +24,19 @@ declare global {
   }
 }
 
+export type GoogleErrorCode = 'googleLoad' | 'googleUnavailable' | 'googleCancelled' | 'googleRefused';
+
+/** Why an upload to Google Drive failed, as a code the interface words in the teacher's language. */
+export class GoogleUploadError extends Error {
+  constructor(
+    readonly code: GoogleErrorCode,
+    detail: string,
+  ) {
+    super(detail);
+    this.name = 'GoogleUploadError';
+  }
+}
+
 let loading: Promise<void> | null = null;
 
 function loadScript(): Promise<void> {
@@ -32,7 +45,10 @@ function loadScript(): Promise<void> {
     s.src = 'https://accounts.google.com/gsi/client';
     s.async = true;
     s.onload = () => resolve();
-    s.onerror = () => reject(new Error('Could not load Google sign-in.'));
+    s.onerror = () => {
+      loading = null;
+      reject(new GoogleUploadError('googleLoad', 'Could not load Google sign-in.'));
+    };
     document.head.append(s);
   });
   return loading;
@@ -41,12 +57,12 @@ function loadScript(): Promise<void> {
 async function token(clientId: string): Promise<string> {
   await loadScript();
   const accounts = window.google?.accounts;
-  if (!accounts) throw new Error('Google sign-in is unavailable.');
+  if (!accounts) throw new GoogleUploadError('googleUnavailable', 'Google sign-in is unavailable.');
   return new Promise((resolve, reject) => {
     const client = accounts.oauth2.initTokenClient({
       client_id: clientId,
       scope: 'https://www.googleapis.com/auth/drive.file',
-      callback: (r) => (r.access_token ? resolve(r.access_token) : reject(new Error(r.error ?? 'Sign-in was cancelled.'))),
+      callback: (r) => (r.access_token ? resolve(r.access_token) : reject(new GoogleUploadError('googleCancelled', r.error ?? 'Sign-in was cancelled.'))),
     });
     client.requestAccessToken();
   });
@@ -68,7 +84,7 @@ export async function uploadToGoogleDocs(clientId: string, name: string, bytes: 
     headers: { authorization: `Bearer ${access}`, 'content-type': `multipart/related; boundary=${boundary}` },
     body,
   });
-  if (!response.ok) throw new Error(`Google Drive refused the upload (${response.status}).`);
+  if (!response.ok) throw new GoogleUploadError('googleRefused', `Google Drive refused the upload (${response.status}).`);
   const data = (await response.json()) as { webViewLink?: string; id: string };
   return data.webViewLink ?? `https://docs.google.com/document/d/${data.id}/edit`;
 }

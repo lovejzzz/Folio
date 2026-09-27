@@ -8,6 +8,7 @@ import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
 import { LessonRow } from './LessonRow';
 import { PlanAside } from './PlanAside';
+import { moveIndexForGap } from './reorder';
 
 function PlanHeader() {
   const t = useT();
@@ -47,6 +48,7 @@ export function PlanScreen() {
   const course = useCourse();
   const lessons = orderedLessons(course);
   const [dragging, setDragging] = useState<string | null>(null);
+  const from = dragging ? course.lessonOrder.indexOf(dragging) : -1;
   usePageTitle(t.plan.title, course.title || t.common.untitled);
 
   const addLesson = () =>
@@ -66,10 +68,11 @@ export function PlanScreen() {
               course={course}
               lesson={lesson}
               index={index}
-              dragging={dragging}
+              dragFrom={from}
               onDragStart={setDragging}
-              onDrop={(toIndex) => {
-                if (dragging) edit([cmd('lesson.move', { lessonId: dragging, toIndex })], { key: 'movedLesson' });
+              onDrop={(gap) => {
+                const toIndex = moveIndexForGap(from, gap);
+                if (dragging && toIndex !== null) edit([cmd('lesson.move', { lessonId: dragging, toIndex })], { key: 'movedLesson' });
                 setDragging(null);
               }}
             />

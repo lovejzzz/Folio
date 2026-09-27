@@ -1,6 +1,7 @@
 import PptxGenJS from 'pptxgenjs';
 import type { Block, SemanticDoc } from '@folio/core';
 import { printFonts, printPalette } from '@folio/ui/tokens';
+import { ExportError } from './errors';
 
 /**
  * Slide decks in the "paper and ink" look: paper background, Georgia ink
@@ -136,7 +137,7 @@ const LAYOUTS: Record<Slide['layout'], (slide: PptSlide, s: Slide, f: Faces) => 
 function toBytes(out: string | ArrayBuffer | Blob | Uint8Array): Uint8Array {
   if (out instanceof Uint8Array) return new Uint8Array(out.buffer, out.byteOffset, out.byteLength);
   if (out instanceof ArrayBuffer) return new Uint8Array(out);
-  throw new Error('The slide deck could not be written.');
+  throw new ExportError('slidesUnwritten', 'The slide deck could not be written.');
 }
 
 /**
