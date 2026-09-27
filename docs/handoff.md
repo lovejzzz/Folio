@@ -194,7 +194,7 @@ A screenshot audit of every screen with a real DeepSeek course (desktop light an
 
 ## Next
 
-1. **Sonnet 5 through the API.** There is no Anthropic key in this environment, and the CLI's managed credentials are not for the app. Direct mode is ready and its plumbing tested: an invalid key reached the API and came back 401 through the app's own request. Add the key to the environment settings as `FOLIO_ANTHROPIC_KEY` (cloud sessions don't pass `ANTHROPIC_API_KEY` through; a new session picks it up), then run `BRIDGE=direct PROF=econ pnpm test:live professor` and `python3 scripts/token-report.py --log apps/web/live-results/direct.jsonl`. Estimate from the one-turn CLI runs, priced at API rates without caching: $0.45–0.83 a four-lesson course. If a real run confirms it, the pricing note can say "under $1".
+1. **Sonnet 5 through the API: done.** The econ course through the real API (direct mode, key as `FOLIO_ANTHROPIC_KEY`; the cloud environment doesn't pass `ANTHROPIC_API_KEY` through) cost **$0.63**. It took 31 calls with 2 repairs (plan minutes 100 not 90; one stand-out right answer) and built in 2 min 41 s. Cache reads outweighed writes 2.7 : 1. Answers were spread over A–D, true/false followed the order, rubrics were First–Third, and there were no passage numbers or LaTeX. There were 47 code marks, and suggested readings came with correct chapters. "The next lesson" appeared twice, a Sonnet habit. The pricing note now says about $0.60. Record: `docs/sonnet-api-run.md` and `docs/sonnet-api-run/`.
 2. **Display maths and callouts** are the one text feature teachers might still miss. Inline marks cover what the models write today.
 
 **DeepSeek key.**
