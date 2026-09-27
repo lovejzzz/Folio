@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { printRoute } from '../../app/router';
 import { DocView } from '../../components/DocView';
 import { useT } from '../../i18n';
+import { pinTheme } from '../../state/prefs';
 import { useCourse } from '../../state/session';
 
 /** The print view is the sheet, without chrome. "Save as PDF" from here gives the PDF. */
@@ -13,6 +14,11 @@ export function PrintScreen() {
   const course = useCourse();
   const { kinds, audience, lessons } = printRoute.useSearch();
   const l = docLabels(course.language);
+  // This view stands for paper, so it is light on screen too.
+  useEffect(() => {
+    pinTheme('light');
+    return () => pinTheme(null);
+  }, []);
   useEffect(() => {
     document.title = `${course.title} · ${audience === 'teacher' ? l.teacherCopy : l.studentCopy}`;
     let cancelled = false;

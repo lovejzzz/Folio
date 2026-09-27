@@ -17,6 +17,8 @@ export interface EditableTextProps {
   /** A sentence of surrounding context for AI actions on a selection. */
   context?: string;
   readOnly?: boolean;
+  /** Titles and the like can't be emptied: clearing one puts the old text back. */
+  required?: boolean;
 }
 
 function readText(el: HTMLElement): string {
@@ -86,14 +88,16 @@ export function EditableText(props: EditableTextProps) {
     role: readOnly ? undefined : 'textbox',
     'aria-label': label,
     'aria-multiline': readOnly ? undefined : multiline,
-    'data-placeholder': placeholder,
+    // Empty fields show their name, so they keep a shape to click on.
+    'data-placeholder': placeholder ?? label,
     spellCheck: true,
     lang: heading ? undefined : lang,
     tabIndex: readOnly ? undefined : 0,
     onBlur: (e: React.FocusEvent<HTMLElement>) => {
       const text = readText(e.currentTarget);
       const next = multiline ? text : text.replace(/\s*\n\s*/g, ' ');
-      if (next !== value) onCommit(next);
+      if (props.required && !next.trim()) e.currentTarget.textContent = value;
+      else if (next !== value) onCommit(next);
     },
     onKeyDown: (e: KeyboardEvent<HTMLElement>) => onKeyDown(e, value, multiline),
     onPaste: (e: React.ClipboardEvent) => {

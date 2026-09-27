@@ -78,7 +78,7 @@ export function AssignmentEditor({ course, lesson, showRubric = true }: { course
         return (
           <article key={a.id} className="space-y-4">
             {a.flags.length > 0 && <FlagNote flags={a.flags} lessonId={lesson.id} kind="assignments" itemId={a.id} />}
-            <EditableText as="h4" value={a.title} label={t.tasks.assignmentTitle} className="block text-22 font-semibold leading-8 text-ink" onCommit={(title) => update({ title })} />
+            <EditableText as="h4" value={a.title} label={t.tasks.assignmentTitle} required className="block text-22 font-semibold leading-8 text-ink" onCommit={(title) => update({ title })} />
             <EditableText as="p" multiline value={a.prompt} label={a.title} context={a.title} className="block" onCommit={(prompt) => update({ prompt })} />
             <div>
               <h5 className="mb-2 font-ui text-13 font-semibold text-ink">{t.tasks.steps}</h5>

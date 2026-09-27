@@ -197,6 +197,7 @@ export const en = {
     stopped: 'Building stopped. What was finished is saved.',
     stoppedBySwitch: (title: string) => `Building “${title}” stopped when another course was opened. What was finished is saved; resume it from that course.`,
     failedSome: (n: number) => (n === 1 ? '1 section could not be built.' : `${n} sections could not be built.`),
+    looksToo: (n: number) => (n === 1 ? '1 item needs a look.' : `${n} items need a look.`),
     review: 'Review',
     fixKey: 'Fix the key',
   },
@@ -293,6 +294,8 @@ export const en = {
     policiesPlaceholder: 'Add your class policies: materials to bring, late work, how to get help.',
   },
   changes: {
+    failed: 'Couldn’t build',
+    retryAll: (n: number) => `Try all ${n} again`,
     title: 'Changes',
     attention: 'Needs a look',
     stale: 'Out of date',

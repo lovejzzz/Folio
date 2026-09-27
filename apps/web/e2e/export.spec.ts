@@ -68,3 +68,25 @@ test('a student copy never carries the Folio backup, and a Folio file is always 
   await expect(drawer.getByRole('radio', { name: 'Student copy' })).toHaveCount(0);
   await expect(drawer.getByText(/not for students/)).toBeVisible();
 });
+
+test('printing in dark mode still prints dark ink on white paper', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await openSample(page);
+  const courseId = page.url().match(/\/c\/([^/]+)/)![1];
+  await page.addInitScript(() => (window.print = () => {}));
+  await page.goto(`/print/${courseId}?kinds=%5B%22quiz%22%5D&audience=%22student%22`);
+  const heading = page.getByRole('heading', { name: 'Quiz & exam bank' });
+  await expect(heading).toBeVisible();
+  const luminance = () =>
+    heading.evaluate((el) => {
+      const [r, g, b] = getComputedStyle(el).color.match(/\d+/g)!.map(Number);
+      return (0.2126 * r! + 0.7152 * g! + 0.0722 * b!) / 255;
+    });
+  // On screen the print view is paper too.
+  expect(await luminance()).toBeLessThan(0.3);
+  await page.emulateMedia({ colorScheme: 'dark', media: 'print' });
+  expect(await luminance()).toBeLessThan(0.3);
+  // Leaving it restores the teacher's theme.
+  await page.goBack();
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).backgroundColor)).not.toBe('rgb(252, 251, 247)');
+});

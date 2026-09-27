@@ -128,6 +128,7 @@ export function LessonRow({ course, lesson, index, dragging, onDragStart, onDrop
           as="h3"
           value={lesson.title}
           label={t.plan.lessonTitle(n)}
+          required
           className="font-reading text-22 font-semibold leading-8 text-ink"
           onCommit={(title) => edit([cmd('lesson.update', { lessonId: lesson.id, title })], { key: 'renamedLesson', values: { n } })}
         />

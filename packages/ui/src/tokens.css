@@ -112,6 +112,44 @@
   color-scheme: dark;
 }
 
+/* Paper is white: printing always uses the light palette, whatever the theme. */
+@media print {
+  :root:root:root {
+    --folio-desk: #F3F0E8;
+    --folio-paper: #FCFBF7;
+    --folio-well: #F6F3EC;
+    --folio-ink: #1E1C17;
+    --folio-ink-2: #5C584F;
+    --folio-ink-3: #8A857A;
+    --folio-rule: #E3DED3;
+    --folio-rule-strong: #CFC8BA;
+    --folio-field: #928C7F;
+    --folio-accent: #2B46C4;
+    --folio-accent-ink: #FFFFFF;
+    --folio-accent-tint: #EDF0FC;
+    --folio-good: #37704E;
+    --folio-attention: #94600E;
+    --folio-attention-tint: #FBF1DE;
+    --folio-critical: #B23C2B;
+    --folio-critical-tint: #FBE9E5;
+    --folio-highlight: rgb(255 233 138 / 0.55);
+    --folio-scrim: rgb(30 28 23 / 0.04);
+    --folio-tab-map: #5B6B7F;
+    --folio-tab-syllabus: #4E5FB0;
+    --folio-tab-plan: #2F8078;
+    --folio-tab-slides: #C0673F;
+    --folio-tab-assignments: #B38A2E;
+    --folio-tab-rubrics: #7C8A3E;
+    --folio-tab-discussions: #8A5A93;
+    --folio-tab-quiz: #B0546B;
+    --folio-tab-study: #3E7FA8;
+    --folio-tab-faq: #9A7B5C;
+    --folio-shadow-sheet: 0 0 0 1px rgb(30 28 23 / 0.07), 0 1px 2px rgb(30 28 23 / 0.05), 0 3px 8px rgb(30 28 23 / 0.04);
+    --folio-shadow-overlay: 0 12px 32px rgb(30 28 23 / 0.14), 0 2px 6px rgb(30 28 23 / 0.06);
+    color-scheme: light;
+  }
+}
+
 @theme inline {
   --color-*: initial;
   --color-desk: var(--folio-desk);

@@ -180,6 +180,7 @@ export const zh: Messages = {
     stopped: '已停止生成。已完成的部分都已保存。',
     stoppedBySwitch: (title: string) => `打开另一门课程时，“${title}”的生成已停止。已完成的部分都已保存，可回到该课程继续。`,
     failedSome: (n) => `有 ${n} 部分没能生成。`,
+    looksToo: (n: number) => `另有 ${n} 处需要看看。`,
     review: '查看',
     fixKey: '修改密钥',
   },
@@ -276,6 +277,8 @@ export const zh: Messages = {
     policiesPlaceholder: '写下你的课堂规则：要带的材料、迟交作业怎么办、遇到困难找谁。',
   },
   changes: {
+    failed: '没能生成',
+    retryAll: (n: number) => `全部 ${n} 项重试`,
     title: '变更',
     attention: '需要看看',
     stale: '需要更新',

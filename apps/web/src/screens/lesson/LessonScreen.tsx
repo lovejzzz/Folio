@@ -25,6 +25,7 @@ function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
         as="h1"
         value={lesson.title}
         label={t.plan.lessonTitle(n)}
+        required
         className="block font-display text-36 leading-tight text-ink md:text-48 md:leading-none"
         onCommit={(title) => edit([cmd('lesson.update', { lessonId: lesson.id, title })], { key: 'renamedLesson', values: { n } })}
       />

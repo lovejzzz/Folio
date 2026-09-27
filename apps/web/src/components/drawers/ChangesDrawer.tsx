@@ -1,8 +1,9 @@
-import { attentionItems, cmd, isMaterialKind, lessonNumber, staleItems, type AttentionItem, type HistoryEntry, type StaleItem } from '@folio/core';
+import { attentionItems, cmd, isMaterialKind, lessonNumber, staleItems, type AttentionItem, type GeneratedKind, type HistoryEntry, type StaleItem } from '@folio/core';
 import { BinderTab, Button } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useState, type ReactNode } from 'react';
 import { flagText, relativeTime, useT, type Messages } from '../../i18n';
+import { retryCell, startBuild, useBuild } from '../../state/build';
 import { edit, undo } from '../../state/edit';
 import { usePrefs } from '../../state/prefs';
 import { keepMine, updateSection, useProposals } from '../../state/proposals';
@@ -85,6 +86,66 @@ function StaleRow({ item }: { item: StaleItem }) {
   );
 }
 
+interface Failed {
+  lessonId: string;
+  kind: GeneratedKind;
+  error: string;
+}
+
+/** Sections the last build couldn't make, with why, for this course. */
+function useFailed(courseId: string, lessons: Record<string, unknown>): Failed[] {
+  const { courseId: built, cells, errors } = useBuild();
+  if (built !== courseId) return [];
+  return Object.entries(cells)
+    .filter(([, state]) => state === 'error')
+    .map(([key]) => {
+      const [lessonId = '', kind = ''] = key.split(':');
+      return { lessonId, kind: kind as GeneratedKind, error: errors[key] ?? '' };
+    })
+    .filter((f) => f.lessonId in lessons);
+}
+
+function FailedRow({ item }: { item: Failed }) {
+  const t = useT();
+  const course = useCourse();
+  const running = useBuild((s) => s.running);
+  return (
+    <li className="rounded-control bg-critical-tint p-3">
+      <ItemHead lessonId={item.lessonId} kind={item.kind} n={lessonNumber(course, item.lessonId)} />
+      {item.error && <p className="mt-2 font-ui text-13 leading-5 text-ink">{item.error}</p>}
+      <div className="mt-3">
+        <Button size="sm" isDisabled={running} onPress={() => retryCell(item.lessonId, item.kind)}>
+          {t.common.retry}
+        </Button>
+      </div>
+    </li>
+  );
+}
+
+function FailedGroup({ failed }: { failed: Failed[] }) {
+  const t = useT();
+  const running = useBuild((s) => s.running);
+  if (!failed.length) return null;
+  const retryAll = () => void startBuild(failed.map(({ lessonId, kind }) => ({ lessonId, kind })));
+  return (
+    <Group
+      title={t.changes.failed}
+      count={failed.length}
+      action={
+        failed.length > 1 ? (
+          <Button size="sm" variant="quiet" isDisabled={running} onPress={retryAll}>
+            {t.changes.retryAll(failed.length)}
+          </Button>
+        ) : undefined
+      }
+    >
+      {failed.map((f) => (
+        <FailedRow key={`${f.lessonId}:${f.kind}`} item={f} />
+      ))}
+    </Group>
+  );
+}
+
 /** History labels are stored as keys and values, and worded in the current language. */
 export function historyLabel(entry: HistoryEntry, t: Messages): string {
   const values: Record<string, string | number> = { ...entry.label.values };
@@ -129,9 +190,11 @@ export function ChangesDrawer() {
   const stale = staleItems(course);
   const history = [...store.getHistory()].reverse().slice(0, 60);
   const updatable = stale.filter((s) => !s.edited);
+  const failed = useFailed(course.id, course.lessons);
   return (
     <div>
-      {attention.length === 0 && stale.length === 0 && (
+      <FailedGroup failed={failed} />
+      {attention.length === 0 && stale.length === 0 && failed.length === 0 && (
         <div className="px-5 py-8 text-center">
           <p className="font-display text-22 text-ink">{t.changes.nothing}</p>
           <p className="mt-1 font-ui text-13 text-ink-2">{t.changes.nothingHint}</p>

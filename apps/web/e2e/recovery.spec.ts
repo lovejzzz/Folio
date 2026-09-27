@@ -47,6 +47,11 @@ test('sections that failed on a server error are rebuilt by Resume', async ({ pa
   await page.getByRole('button', { name: 'Build 2 lessons' }).click();
   await expect(page.getByText('2 sections could not be built.')).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText('Couldn’t build')).toHaveCount(2);
+  // Review lists what failed and why.
+  await page.getByRole('button', { name: 'Review' }).click();
+  const changes = page.getByRole('dialog', { name: 'Changes' });
+  await expect(changes.getByRole('heading', { name: /Couldn’t build · 2/ })).toBeVisible();
+  await page.keyboard.press('Escape');
   fail = false;
   await page.getByRole('button', { name: 'Resume' }).click();
   await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 30_000 });

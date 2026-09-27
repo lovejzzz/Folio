@@ -55,7 +55,7 @@ export function SlideCanvas({ slide, lang, footer, onChange, className }: SlideC
   const t = useT();
   const titleSize = { title: 7.2, bullets: 5.2, question: 5.6, quote: 5 }[slide.layout];
   const title = onChange ? (
-    <EditableText as="h3" value={slide.title} label={t.lesson.slideTitle} lang={lang} className="block" onCommit={(v) => onChange({ ...slide, title: v })} />
+    <EditableText as="h3" value={slide.title} label={t.lesson.slideTitle} required lang={lang} className="block" onCommit={(v) => onChange({ ...slide, title: v })} />
   ) : (
     <h3>{slide.title}</h3>
   );

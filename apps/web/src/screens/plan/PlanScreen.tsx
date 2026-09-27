@@ -22,6 +22,7 @@ function PlanHeader() {
           as="h1"
           value={course.title}
           label={t.plan.courseTitle}
+          required
           className="mt-2 block font-display text-36 leading-tight text-ink md:text-48 md:leading-none"
           onCommit={(title) => edit([cmd('course.update', { title })], { key: 'editedCourse' })}
         />

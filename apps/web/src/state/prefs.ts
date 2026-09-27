@@ -103,8 +103,17 @@ export function hasModel(): boolean {
   return isConfigured(modelSettings(usePrefs.getState()));
 }
 
+/** A screen that must look one way (the print view is paper) pins the theme while it is open. */
+let pinned: Theme | null = null;
+
+export function pinTheme(theme: Theme | null): void {
+  pinned = theme;
+  applyTheme(usePrefs.getState().theme);
+}
+
 export function applyTheme(theme: Theme): void {
   const root = document.documentElement;
-  if (theme === 'system') delete root.dataset.theme;
-  else root.dataset.theme = theme;
+  const shown = pinned ?? theme;
+  if (shown === 'system') delete root.dataset.theme;
+  else root.dataset.theme = shown;
 }

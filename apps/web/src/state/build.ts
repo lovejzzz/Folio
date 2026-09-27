@@ -63,7 +63,9 @@ function finishToast(summary: Awaited<ReturnType<typeof runBuild>>): void {
   } else if (summary.stopped) {
     toast({ key: 'build', message: t.build.stopped });
   } else if (summary.failed) {
-    toast({ key: 'build', message: t.build.failedSome(summary.failed), tone: 'attention', action: openChanges, duration: 0 });
+    const looks = store ? attentionItems(store.getState()).length : 0;
+    const message = looks ? `${t.build.failedSome(summary.failed)}${t.common.sentenceGap}${t.build.looksToo(looks)}` : t.build.failedSome(summary.failed);
+    toast({ key: 'build', message, tone: 'attention', action: openChanges, duration: 0 });
   } else {
     const looks = store ? attentionItems(store.getState()).length : 0;
     toast({ key: 'build', message: looks ? t.build.readyLook(looks) : t.build.ready, action: looks ? openChanges : undefined, duration: looks ? 12_000 : 6000 });
