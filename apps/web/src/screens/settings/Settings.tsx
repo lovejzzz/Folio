@@ -113,7 +113,7 @@ function DataSection() {
   const [used, setUsed] = useState<string | null>(null);
   const [confirm, setConfirm] = useState(false);
   useEffect(() => {
-    void navigator.storage?.estimate?.().then((e) => setUsed(e.usage ? `${(e.usage / 1024 / 1024).toFixed(1)} MB` : null));
+    void navigator.storage?.estimate?.().then((e) => setUsed(e.usage ? size(e.usage) : null));
   }, []);
   const saveAll = async () => {
     const { writeFolio, zipFiles, slugFilename } = await import('@folio/export');
@@ -155,6 +155,12 @@ function DataSection() {
 }
 
 /** One page, not a modal maze. */
+/** "40 KB" or "3.2 MB": small sizes never read as "0.0 MB". */
+function size(bytes: number): string {
+  const kb = bytes / 1024;
+  return kb < 1024 ? `${Math.max(1, Math.round(kb))} KB` : `${(kb / 1024).toFixed(1)} MB`;
+}
+
 export function Settings() {
   const t = useT();
   usePageTitle(t.settings.title);
