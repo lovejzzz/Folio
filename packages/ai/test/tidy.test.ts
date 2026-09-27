@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { tidyFollowUps, tidySteps, tidyTrueFalse, unquote } from '../src/tidy';
-import type { QuestionDraft } from '../src/schemas';
+import { QuestionDraft } from '../src/schemas';
 
 const tf = (answer: string, choices: string[] = []): QuestionDraft =>
   ({ format: 'truefalse', prompt: 'A low R² means the estimates are biased.', choices, answer, explanation: '', difficulty: 2, objective: 1 }) as QuestionDraft;
@@ -48,5 +48,12 @@ describe('unquote', () => {
     expect(unquote('《认知心理学》导读')).toBe('《认知心理学》导读');
     expect(unquote('“Nudge” and its critics')).toBe('“Nudge” and its critics');
     expect(unquote('“Free will” or “determinism”')).toBe('“Free will” or “determinism”');
+  });
+});
+
+describe('QuestionDraft', () => {
+  it('reads a missing choices, expression or source passage as empty, not as an error', () => {
+    const q = QuestionDraft.parse({ format: 'short', prompt: 'Why?', answer: 'Because.', explanation: 'It follows.', difficulty: 2, objective: 1 });
+    expect(q).toMatchObject({ choices: [], expression: null, sourcePassage: null });
   });
 });
