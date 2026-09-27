@@ -190,6 +190,8 @@ A screenshot audit of every screen with a real DeepSeek course (desktop light an
 - **Sonnet's long right answers, measured and left alone.** Replaying 12 real quiz requests gave 0 stand-outs with the current prompt. Adding a hard length cap gave 2 stand-outs and 28% more output. The check plus one repair covers the occasional case.
 - **Copy.** The DeepSeek note gives the measured cost (about $0.10 a course). The README describes the default model, marks, university features and live testing.
 
+**Sign-off runs** (final build, DeepSeek): a Year 7 photosynthesis course and the graduate seminar each took the minimum 29 calls with 0 repairs ($0.06 and $0.09). Answers were spread over A–D, true/false alternated strictly, each course had one rubric scale, and there were no passage numbers or lesson counts in the text. The exported Word, PowerPoint and spreadsheet open in python-docx, python-pptx and openpyxl. Word carries 54 code runs, 484 subscripts and 254 superscripts, with no stray backticks. LibreOffice here can't import Office files, so they weren't rendered.
+
 ## Next
 
 1. **Sonnet 5 through the API.** The per-course cost came from the CLI bridge. A run with a real API key would confirm the "about $1" note.
