@@ -48,6 +48,18 @@ describe('the outline', () => {
     expect(new Set(course.grading.map((g) => g.id)).size).toBe(3);
   });
 
+  it('suggests each further reading once, and never one already assigned', () => {
+    const draft = OutlineDraft.parse({
+      title: 'E', summary: 'S.', subject: 'Economics', level: 'University',
+      lessons: [
+        { ...lessons[0], readings: ['Wooldridge, ch. 2'], suggestedReadings: ['Stock and Watson, Introduction to Econometrics', 'Wooldridge, ch. 3'] },
+        { ...lessons[1], readings: ['Wooldridge, ch. 3'], suggestedReadings: ['Stock and Watson, Introduction to Econometrics.', 'Greene, Econometric Analysis.', 'Wooldridge et al.'] },
+      ],
+    });
+    const course = courseFromOutline(req, draft);
+    expect(orderedLessons(course).map((l) => l.suggestedReadings)).toEqual([['Stock and Watson, Introduction to Econometrics'], ['Greene, Econometric Analysis', 'Wooldridge et al.']]);
+  });
+
   it('asks for readings and grading only from what the brief gives', () => {
     const prompt = outlinePrompt({ ...req, sources: [] });
     expect(prompt).toContain('"readings"');

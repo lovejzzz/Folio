@@ -50,10 +50,17 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
     quizSize: req.quizSize,
     materials: req.materials,
   });
+  // One general textbook suggested for every lesson is noise: each work is suggested once, and never when assigned.
+  // A reading is a list item, not a sentence: "Goldberger, A course in econometrics." loses its full stop.
+  const clean = (r: string) => r.trim().replace(/(?<!\b(?:al|ed|eds|ch|vol|pp|p|no|n\.d))\.$/i, '');
+  const key = (r: string) => r.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const seen = new Set(outline.lessons.flatMap((d) => d.readings.map(key)));
   for (const draft of outline.lessons) {
     const lesson = emptyLesson(newId('l'), draft.title, draft.summary);
-    lesson.readings = draft.readings.map((r) => r.trim()).filter(Boolean);
-    lesson.suggestedReadings = draft.suggestedReadings.map((r) => r.trim()).filter((r) => r && !lesson.readings.includes(r));
+    lesson.readings = draft.readings.map(clean).filter(Boolean);
+    lesson.suggestedReadings = draft.suggestedReadings
+      .map(clean)
+      .filter((r) => r && !seen.has(key(r)) && seen.add(key(r)));
     for (const text of draft.objectives) {
       const id = newId('o');
       course.objectives[id] = { id, text };

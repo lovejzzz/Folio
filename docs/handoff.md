@@ -1,6 +1,6 @@
 # Handoff: where Folio stands and what's next
 
-Written for the next working session. Branch: `claude/nice-fermat-6why6q`. Reply to the user in Chinese; they care a lot about UI/UX and taste.
+Written for the next working session. Branch: `claude/hopeful-edison-5oki79` (continues `claude/jolly-wozniak-rdu0k3`). Reply to the user in Chinese; they care a lot about UI/UX and taste.
 
 ## Done
 
@@ -110,19 +110,21 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
   - Round 19, stats again: the quartile questions now name their method, and every answer checks out by hand. One quiz call spent all 8,000 output tokens thinking and returned nothing; the repair succeeded. That is 1 in 460 calls (thinking per call: median 2,558, p99 6,608). Raising the cap would only let a runaway think longer, so it stays at 8,000. The plan screen UI pass found nothing to fix.
   - Round 20, vague brief again: 29 calls, 0 repairs, $0.069. Every lesson has its slides; the map keeps its columns. This was the second round in a row with nothing to fix, so the loop stopped here.
 - **Where it ended.** A four-lesson English course on deepseek-flash takes the minimum 29 calls, with 0 to 1 repairs, for about $0.06 to $0.07. Round 1 had cost $0.078 with 0 repairs but no local fixes, and Opus 5.5 cost about $1.30. Real DeepSeek spend over the whole session: $0.92 (balance $19.97 → $19.05).
+- **University work, verified on DeepSeek** (four runs, $0.38 in all; logs under `apps/web/live-results/*-ds.jsonl`):
+  - phil 1: 30 calls, 1 repair, 104 s. Seminars were 120 minutes, the suggested reading was real and distinct per lesson, and there were no invented quotations. But no plan gave the weekly student presentation a place: the brief states no weight for it, so `course.grading` was empty and nothing carried it to the sections. The teacher's brief now goes into the cached course background (`briefLine` in `prompts.ts`), with "anything the brief or the grading has happen in class needs a place in the lesson plans", "leave the brief's counts and durations out", and "a seminar runs on discussion of the reading".
+  - phil 2: 29 calls, 0 repairs, 92 s. Every seminar has a 20–35 minute presentation slot, and the closing segments set up the 3,000-word essay. One slide note opened "Two-hour graduate seminar."; that led to the "counts and durations" line.
+  - econ 1: 30 calls, 1 repair, 111 s. Rubric levels read First (70+) … Third (40–49) with 70/60/50/40. Maths is Unicode (β̂₀, ûᵢ, Σ); only word subscripts use `_` (β_educ). Plan, quiz and assignment share the standard errors (0.0074, 0.0017, 0.0031; discussions and FAQ round to 0.007). But Stock and Watson, Kennedy, and Angrist and Pischke were suggested for three lessons out of four. Each work is now suggested once per course, never when assigned (`courseFromOutline`), and the prompt asks for works on the lesson's topic.
+  - econ 2: 31 calls, 2 repairs, 125 s. One distinct, apt book per lesson (Goldberger; Kleiber and Zeileis for the R lesson), no "90-minute" leaks. The model had sentence-cased the book titles ("Introduction to econometrics.") because of the sentence-case rule: the rule now keeps the published capitalisation of cited works, and a reading's trailing full stop is dropped locally.
+  - UI: on the plan screen, the suggestion's Add button sat 2px above its line (smaller line height); it now takes the line's leading.
+  - Build times ran 92–125 s with the quiz and assignment waiting for the plan (was 75–110 s).
 
 ## Next
 
-1. **Verify the university work on DeepSeek** (commit "University courses: seminar teaching…"). It was built and unit/e2e tested, but not yet run against a real model, because the key was revoked mid-session.
-   - Run `PROF=phil` and `PROF=econ`. Read them as a lecturer:
-     - The seminar has no school routines, and it gives the 20% presentation a place in the plans.
-     - Rubric levels read First / Upper second / Lower second / Third (en-GB), and the points are 70/60/50/40.
-     - Suggested further reading appears only for university lessons, apart from the assigned readings.
-     - The quiz uses the plan's figures (one standard error for educ).
-     - There are no invented quotations, and maths is set as β₀ and x², not LaTeX.
-   - Quiz and assignments now wait for the plan, so check the build time too (it was 75–110 s).
-2. **Code in monospace** is a separate suggested task: fields are plain text, so it needs a small inline-code layer.
-3. **Consider Sonnet 5 as the Anthropic default** (`DEFAULT_MODELS` in `packages/ai/src/inference.ts`) and update the pricing note in en.ts and zh.ts.
+1. **Code in monospace** is a separate suggested task: fields are plain text, so it needs a small inline-code layer. The econ course has R calls (`lm(log(wage) ~ educ, data = wage1)`, `summary()`) in plans and slides.
+2. **Consider Sonnet 5 as the Anthropic default** (`DEFAULT_MODELS` in `packages/ai/src/inference.ts`) and update the pricing note in en.ts and zh.ts.
+3. **Small things seen in the university runs, not yet fixed:**
+   - Plans still end some seminars with a school-style "written exit response"; the university line could name it among the routines to leave out.
+   - A seminar plan said the essay "carries the whole mark", which the brief doesn't say.
 
 **DeepSeek key.**
 - The key the user first gave was revoked on 2026-09-27, after a *different* key of theirs (named "Test") leaked and was drained of $19.20. Folio's own key had spent $0.80 by then. A code audit found no path in Folio that could run up cost unattended:

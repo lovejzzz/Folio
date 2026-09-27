@@ -140,7 +140,7 @@ export function SuggestedReadings({ course, lesson, n, readings, compact = false
               type="button"
               aria-label={t.plan.addSuggestedLabel(s, n)}
               onClick={() => readings.accept(i)}
-              className="shrink-0 rounded-control px-1 font-ui text-12 font-medium text-accent outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent"
+              className="shrink-0 rounded-control px-1 font-ui text-12 leading-5 font-medium text-accent outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent"
             >
               {t.plan.addSuggested}
             </button>

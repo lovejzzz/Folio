@@ -21,6 +21,14 @@ describe('university courses', () => {
     expect(courseBackground(smallCourse())).not.toMatch(/university teaching/);
   });
 
+  it('passes the brief on, so what happens in class survives without a grade weight', () => {
+    const c = { ...university(), grading: [], brief: 'Four two-hour seminars.\nEach week one student presents.' };
+    const bg = courseBackground(c);
+    expect(bg).toContain('The teacher\'s brief: "Four two-hour seminars. Each week one student presents."');
+    expect(bg).toMatch(/student presentation.*needs a place in the lesson plans/);
+    expect(bg).not.toMatch(/graded by/);
+  });
+
   it('names rubric levels after the local grade bands', () => {
     const lesson = (c: Course) => orderedLessons(c)[0]!;
     const uk = university('en-GB');

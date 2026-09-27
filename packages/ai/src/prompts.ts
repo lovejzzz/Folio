@@ -14,7 +14,7 @@ function languageLine(language: Language, locale: string): string {
   if (language === 'zh-CN')
     return 'Write every piece of text in Simplified Chinese (简体中文), with natural Chinese classroom phrasing. Use 《》 only for titles of works (poems, books, articles); when naming a lesson, put its title in “”.';
   const where = /^en-/i.test(locale) ? ` The teacher's locale is ${locale}: use its spelling, currency and units unless the brief says otherwise.` : '';
-  return `Write in clear English suited to the level of the students. Use sentence case for titles and headings (capitalise only the first word and names).${where}`;
+  return `Write in clear English suited to the level of the students. Use sentence case for titles and headings (capitalise only the first word and names), but keep the published capitalisation of works you cite.${where}`;
 }
 
 export function systemPrompt(language: Language, locale = ''): string {
@@ -51,7 +51,7 @@ export function outlinePrompt(input: OutlineInput): string {
     'Order the lessons so each builds on the last. Give each lesson a short title that names what is taught, a one-sentence summary of under 25 words, and one to three measurable objectives of under 15 words each.',
     'Do not mention the lesson length, the number of quiz questions or which materials a lesson has: Folio keeps those as settings the teacher can change, so they must not be repeated in the text.',
     'Under "readings", list what students read before each lesson, taken from the brief or the attached sources. When the brief names a textbook but not its chapters, name the chapter that matches the lesson, by its topic if you are unsure of the number. Never invent works, authors or page numbers; leave the readings empty when the brief gives nothing to go on.',
-    'Under "suggestedReadings", for a university course only, suggest up to three well-known further readings per lesson that the brief does not already list: established works a lecturer would recognise, with author and title, and a chapter only when you are sure of it. The teacher checks them before anything is assigned, so leave the list empty rather than guess.',
+    'Under "suggestedReadings", for a university course only, suggest up to three well-known further readings per lesson that the brief does not already list: established works a lecturer would recognise on that lesson\'s topic, with author and title, and a chapter only when you are sure of it. Suggest each work once in the course, for the lesson it fits best. The teacher checks them before anything is assigned, so leave the list empty rather than guess.',
     'Under "grading", give only the graded components and weights the brief states, with the weights summing to 100. Leave it empty if the brief does not say how the course is graded.',
   ];
   if (input.sources.length) {
@@ -94,13 +94,27 @@ export function isHigherEducation(level: string): boolean {
 }
 
 const UNIVERSITY_TEACHING =
-  'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. Leave out school routines such as warm-up games, slips collected at the door or reading aloud in turn.';
+  'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. A seminar runs on discussion of the reading: keep the tutor\'s exposition short and let students lead. Leave out school routines such as warm-up games, slips collected at the door or reading aloud in turn.';
+
+/**
+ * The teacher's own words. Sections otherwise see only what the outline kept,
+ * and "each week one student presents" was lost: it carries no grade weight.
+ */
+function briefLine(course: Course): string {
+  const brief = course.brief.trim().replace(/\s+/g, ' ').slice(0, 2000);
+  if (!brief) return '';
+  return `The teacher's brief: "${brief}"\nThe lessons, their order and length may have changed since: follow the list above, and leave the brief's counts and durations out of what you write.`;
+}
 
 /** The graded components, so in-class ones get a place in the plans and assignments can say what they prepare for. */
 function gradingLine(course: Course): string {
-  if (!course.grading.length) return '';
   const items = course.grading.map((g) => `${g.item} (${g.weight}%)`).join(', ');
-  return `The course is graded by: ${items}. A component that happens in class, such as a presentation, a debate or a test, needs a place in the lesson plans; work that prepares for a component says which one.`;
+  return [
+    items ? `The course is graded by: ${items}.` : '',
+    'Anything the brief or the grading has happen in class, such as a student presentation, a debate or a test, needs a place in the lesson plans; work that prepares for a graded component says which one.',
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 /**
@@ -120,6 +134,7 @@ export function courseBackground(course: Course): string {
     `Lessons:\n${all}`,
     `Each lesson lasts ${course.shape.minutesPerLesson} minutes.`,
     isHigherEducation(course.audience.level) ? UNIVERSITY_TEACHING : '',
+    briefLine(course),
     gradingLine(course),
     sourcesBlock(course),
   ]
