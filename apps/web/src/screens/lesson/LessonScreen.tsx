@@ -16,6 +16,7 @@ import { EdgeTabs } from './EdgeTabs';
 import { LessonRail } from './LessonRail';
 import { LessonNotFound } from '../../app/errors';
 import { useObjectiveDraft } from '../plan/useObjectiveDraft';
+import { Sep } from '../../components/Sep';
 
 function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
   const t = useT();
@@ -95,14 +96,18 @@ function Pager({ course, index }: { course: Course; index: number }) {
       {prev ? (
         <Link to="/c/$courseId/lesson/$lessonId" params={{ courseId: course.id, lessonId: prev }} className={cls}>
           <ArrowLeft size={16} strokeWidth={1.5} aria-hidden />
-          <span className="truncate">{t.common.lesson(index)} · {course.lessons[prev]?.title}</span>
+          <span className="truncate">{t.common.lesson(index)}
+            <Sep />
+            {course.lessons[prev]?.title}</span>
         </Link>
       ) : (
         <span />
       )}
       {next && (
         <Link to="/c/$courseId/lesson/$lessonId" params={{ courseId: course.id, lessonId: next }} className={cls}>
-          <span className="truncate">{t.common.lesson(index + 2)} · {course.lessons[next]?.title}</span>
+          <span className="truncate">{t.common.lesson(index + 2)}
+            <Sep />
+            {course.lessons[next]?.title}</span>
           <ArrowRight size={16} strokeWidth={1.5} aria-hidden />
         </Link>
       )}

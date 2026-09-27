@@ -50,7 +50,7 @@ test('sections that failed on a server error are rebuilt by Resume', async ({ pa
   // Review lists what failed and why.
   await page.getByRole('button', { name: 'Review' }).click();
   const changes = page.getByRole('dialog', { name: 'Changes' });
-  await expect(changes.getByRole('heading', { name: /Couldn’t build · 2/ })).toBeVisible();
+  await expect(changes.getByRole('heading', { name: /Couldn’t build\W*2/ })).toBeVisible();
   await page.keyboard.press('Escape');
   fail = false;
   await page.getByRole('button', { name: 'Resume' }).click();

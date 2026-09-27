@@ -9,13 +9,16 @@ import { usePrefs } from '../../state/prefs';
 import { keepMine, updateSection, useProposals } from '../../state/proposals';
 import { useCourse, useStore } from '../../state/session';
 import { CompareDialog } from './CompareDialog';
+import { Sep } from '../Sep';
 
 function Group({ title, count, action, children }: { title: string; count: number; action?: ReactNode; children: ReactNode }) {
   return (
     <section className="border-b border-rule px-5 py-5 last:border-b-0">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h3 className="font-ui text-13 font-semibold text-ink">
-          {title} <span className="font-normal text-ink-2 tabular">· {count}</span>
+          {title}
+          <Sep />
+          <span className="font-normal text-ink-2 tabular">{count}</span>
         </h3>
         {action}
       </div>
@@ -174,7 +177,9 @@ function HistoryRow({ entry }: { entry: HistoryEntry }) {
       <span className="min-w-0">
         <span className={entry.undone ? 'text-ink-2 line-through' : 'text-ink'}>{historyLabel(entry, t)}</span>
         <span className="block text-12 text-ink-2">
-          {entry.source === 'ai' ? t.changes.ai : t.changes.you} · {entry.undone ? t.changes.undone : relativeTime(entry.at, language)}
+          {entry.source === 'ai' ? t.changes.ai : t.changes.you}
+          <Sep />
+          {entry.undone ? t.changes.undone : relativeTime(entry.at, language)}
         </span>
       </span>
       {!entry.undone &&

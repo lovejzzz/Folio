@@ -9,6 +9,7 @@ import { addItem, leaveBlank } from './newItems';
 import { QuestionCard } from './QuestionCard';
 import { RubricTable } from './RubricTable';
 import { sectionLabel, useSectionEdit } from './useSectionEdit';
+import { Sep } from '../components/Sep';
 
 export function QuizEditor({ course, lesson, startAt = 1 }: { course: Course; lesson: Lesson; startAt?: number }) {
   const t = useT();
@@ -153,7 +154,9 @@ export function DiscussionEditor({ course, lesson }: { course: Course; lesson: L
               <div className="mt-3 rounded-control bg-well px-4 py-3 font-ui text-14 leading-6">
                 <p className="mb-1 flex items-center gap-1.5 text-12 text-ink-2">
                   <EyeOff size={12} strokeWidth={1.75} aria-hidden />
-                  {t.tasks.followUps} · {t.quiz.teacherOnly}
+                  {t.tasks.followUps}
+                  <Sep />
+                  {t.quiz.teacherOnly}
                 </p>
                 <EditableList items={d.followUps} label={t.tasks.followUps} addLabel={t.tasks.addFollowUp} placeholder={t.tasks.followUp} lang={course.language} onChange={(followUps) => save([cmd('task.update', { taskId: d.id, fields: { followUps } })])} />
               </div>
