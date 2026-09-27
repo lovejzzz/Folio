@@ -68,7 +68,7 @@ describe('code in slides', () => {
       language: 'en',
       audience: 'teacher',
       blocks: [
-        { t: 'slide', n: 1, layout: 'bullets', title: 'Fitting with `lm()`', bullets: ['Run `lm(log(wage) ~ educ, data = wage1)`', 'Read the output'], lesson: 'OLS', notes: 'Show `summary()` output.' },
+        { t: 'slide', n: 1, layout: 'bullets', title: 'Fitting with `lm()`', bullets: ['Run `lm(log(wage) ~ educ, data = wage1)`', 'Read the output', 'se(β̂_educ) and R^2'], lesson: 'OLS', notes: 'Show `summary()` output.' },
       ],
     };
     const zip = unzipText(await renderPptx(doc));
@@ -78,7 +78,9 @@ describe('code in slides', () => {
     expect(xml.match(/typeface="Consolas"/g)?.length).toBeGreaterThanOrEqual(2);
     // Each bullet is still one paragraph, with its bullet on the first run.
     expect(xml).toContain('Read the output');
-    expect(xml.match(/<a:buChar/g)?.length).toBe(2);
+    expect(xml.match(/<a:buChar/g)?.length).toBe(3);
+    expect(xml).toMatch(/baseline="-\d+"[^>]*>.*?<a:t>educ<\/a:t>/s);
+    expect(xml).toMatch(/baseline="\d+"[^>]*>.*?<a:t>2<\/a:t>/s);
     // One set of paragraph properties per paragraph, before its first run.
     for (const para of xml.match(/<a:p>.*?<\/a:p>/gs) ?? []) {
       expect(para.match(/<a:pPr\b/g)?.length ?? 0).toBeLessThanOrEqual(1);

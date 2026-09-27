@@ -1,6 +1,6 @@
 import { unzipSync, zipSync, strFromU8, strToU8, type Zippable } from 'fflate';
 import PptxGenJS from 'pptxgenjs';
-import { plainText, textRuns, type Block, type SemanticDoc } from '@folio/core';
+import { hasMarks, plainText, textRuns, type Block, type SemanticDoc } from '@folio/core';
 import { printFonts, printPalette } from '@folio/ui/tokens';
 import { ExportError } from './errors';
 
@@ -63,7 +63,7 @@ function footer(slide: PptSlide, f: Faces, lesson: string): void {
 
 type RunOptions = PptxGenJS.TextPropsOptions;
 
-/** One line as runs, code marked with backticks in the mono face on a light well. */
+/** One line as runs: code in the mono face on a light well, β̂_educ and R^2 as sub- and superscripts. */
 function lineRuns(text: string, base: RunOptions, first: RunOptions = {}): PptxGenJS.TextProps[] {
   const parts = textRuns(text);
   return parts.map((r, i) => ({
@@ -72,6 +72,7 @@ function lineRuns(text: string, base: RunOptions, first: RunOptions = {}): PptxG
       ...base,
       ...(i === 0 ? first : {}),
       ...(r.code ? { fontFace: printFonts.mono, highlight: printPalette.well } : {}),
+      ...(r.script === 'sub' ? { subscript: true } : r.script === 'sup' ? { superscript: true } : {}),
       ...(i === parts.length - 1 ? { breakLine: true } : {}),
     },
   }));
@@ -79,7 +80,7 @@ function lineRuns(text: string, base: RunOptions, first: RunOptions = {}): PptxG
 
 /** Plain lines stay a string, so a slide without code is written as before. */
 function inline(text: string, base: RunOptions): string | PptxGenJS.TextProps[] {
-  return text.includes('`') ? text.split('\n').flatMap((line) => lineRuns(line, base)) : text;
+  return hasMarks(text) ? text.split('\n').flatMap((line) => lineRuns(line, base)) : text;
 }
 
 function bulletRuns(items: string[], f: Faces, size: number, lettered: boolean): PptxGenJS.TextProps[] {

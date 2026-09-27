@@ -37,7 +37,8 @@ type RunStyle = Omit<IRunOptions, 'text' | 'children' | 'break' | 'font'> & { ro
 
 /**
  * Runs for text that may hold line breaks; every run carries the course fonts,
- * and code marked with backticks takes the mono face on a light well.
+ * code marked with backticks takes the mono face on a light well, and β̂_educ
+ * or R^2 become real sub- and superscripts.
  */
 export function runs(ctx: BlockCtx, text: string, style: RunStyle = {}): TextRun[] {
   const { role = 'body', ...rest } = style;
@@ -49,6 +50,7 @@ export function runs(ctx: BlockCtx, text: string, style: RunStyle = {}): TextRun
           text: r.text,
           font: fontFor(ctx.language, role),
           ...(r.code ? CODE_RUN(role, rest.size) : {}),
+          ...(r.script === 'sub' ? { subScript: true } : r.script === 'sup' ? { superScript: true } : {}),
           ...(i && !j ? { break: 1 } : {}),
         }),
     ),

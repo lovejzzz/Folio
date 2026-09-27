@@ -59,10 +59,11 @@ describe('renderDocx', () => {
   it('sets code marked with backticks in Consolas, without the marks', async () => {
     const c: Course = structuredClone(course);
     const first = c.lessons[c.lessonOrder[0]!]!;
-    first.readings = ['Run `summary(wage1)` before class'];
+    first.readings = ['Run `summary(wage1)` before class', 'Read se(β̂_educ)'];
     const xml = await documentXml(c, ['syllabus'], 'student');
     expect(xml).toMatch(/<w:rFonts w:ascii="Consolas"[^>]*\/>.*?<w:t xml:space="preserve">summary\(wage1\)<\/w:t>/s);
     expect(xml).toContain('>Run </w:t>');
+    expect(xml).toMatch(/<w:vertAlign w:val="subscript"\/>.*?<w:t xml:space="preserve">educ<\/w:t>/s);
     expect(xml).not.toContain('`');
   });
 

@@ -1,4 +1,4 @@
-import { hasCode, storedOffset } from '@folio/core';
+import { hasMarks, storedOffset } from '@folio/core';
 import { Highlight, cx } from '@folio/ui';
 import { createElement, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { drawInlineText } from '../InlineText';
@@ -55,7 +55,7 @@ function shownOffset(el: HTMLElement, node: Node, offset: number): number {
  * so what is typed is what is stored. The caret keeps its letter across the swap.
  */
 function revealMarks(el: HTMLElement, value: string, shown: number | null): void {
-  if (!hasCode(value) || readText(el) === value) return;
+  if (!hasMarks(value) || readText(el) === value) return;
   el.textContent = value;
   const text = el.firstChild;
   const sel = window.getSelection();
@@ -97,7 +97,7 @@ function useEditable(props: EditableTextProps) {
   });
   useLayoutEffect(() => {
     const el = ref.current;
-    if (el && document.activeElement !== el && (hasCode(props.value) || readText(el) !== props.value)) drawInlineText(el, props.value);
+    if (el && document.activeElement !== el && (hasMarks(props.value) || readText(el) !== props.value)) drawInlineText(el, props.value);
   }, [props.value, suggestion]);
   useEffect(() => {
     const el = ref.current;
@@ -147,7 +147,7 @@ export function EditableText(props: EditableTextProps) {
     tabIndex: readOnly ? undefined : 0,
     onMouseDown: (e: React.MouseEvent<HTMLElement>) => {
       const el = e.currentTarget;
-      if (readOnly || e.button !== 0 || document.activeElement === el || !hasCode(value)) return;
+      if (readOnly || e.button !== 0 || document.activeElement === el || !hasMarks(value)) return;
       const at = caretAtPoint(el, e.clientX, e.clientY);
       e.preventDefault();
       // Marks first, so focusing finds them shown; then the caret, which focusing would move.
@@ -168,7 +168,7 @@ export function EditableText(props: EditableTextProps) {
       if (props.required && !next.trim()) drawInlineText(el, value);
       else {
         if (next !== value) onCommit(next);
-        if (hasCode(next)) drawInlineText(el, next);
+        if (hasMarks(next)) drawInlineText(el, next);
       }
     },
     onKeyDown: (e: KeyboardEvent<HTMLElement>) => onKeyDown(e, value, multiline),

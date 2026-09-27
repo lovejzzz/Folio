@@ -142,6 +142,21 @@
     box-decoration-break: clone;
   }
 
+  /* β̂_educ, R^2: small and set close, without opening up the line they sit in. */
+  .folio-script {
+    font-size: 0.64em;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+  /* Set to meet the face's own ₀ and ², so β₀ and β_k read as one family. */
+  sub.folio-script {
+    top: 0.34em;
+  }
+  sup.folio-script {
+    top: -0.62em;
+  }
+
   /* Inline editing: the text is the control. */
   .folio-editable {
     border-radius: 3px;
