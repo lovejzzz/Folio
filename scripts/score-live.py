@@ -63,6 +63,17 @@ for root in sys.argv[1:] or ['apps/web/live-results']:
         print(f'== {name}: outline {d["marks"]["outline"]/1000:.0f}s, build {d["marks"]["build"]/1000:.0f}s, {len(d["calls"])} calls ({quiz_calls - lessons} quiz repairs), toast: {d["toast"]}')
         for k, v in course_stats(d['course']).items():
             print(f'   {k:42s} {v}')
+    path = os.path.join(root, 'course.json')
+    if os.path.exists(path):
+        d = json.load(open(path))
+        c = d['course']
+        print(f'== {os.path.basename(root)}: {len(c["lessonOrder"])} lessons, outline {d["marks"]["outline"]/1000:.0f}s, build {d["marks"]["build"]/1000:.0f}s, {len(d["calls"])} calls')
+        for k, v in course_stats(c).items():
+            print(f'   {k:42s} {v}')
+        lessons = [c['lessons'][i] for i in c['lessonOrder']]
+        print(f"   {'lessons with readings':42s} {sum(1 for l in lessons if l.get('readings'))}/{len(lessons)}")
+        grading = ', '.join(f"{g['item']} {g['weight']}%" for g in c.get('grading') or [])
+        print(f"   {'grading':42s} {grading or '-'}")
     path = os.path.join(root, 'live-assist.json')
     if os.path.exists(path):
         r = json.load(open(path))['results']
