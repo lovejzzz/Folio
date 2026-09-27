@@ -80,7 +80,7 @@ LIVE=en pnpm test:live build                  # build a whole course: en, zh, st
 PROF=econ pnpm test:live professor            # a university course, every material screenshotted: econ, phil or psych
 pnpm test:live assist zh-interface            # selection actions, ⌘K requests, a ripple update; the Chinese interface
 DEEPSEEK_API_KEY=… node scripts/deepseek-bridge.mjs   # the same endpoint, answered by DeepSeek instead (cheap; capped at $3 a run, $15 in all)
-BRIDGE=direct ANTHROPIC_API_KEY=… PROF=econ pnpm test:live professor   # no bridge: the app's own requests go to the Anthropic API (log in live-results/direct.jsonl, $3 cap a run)
+BRIDGE=direct FOLIO_ANTHROPIC_KEY=… PROF=econ pnpm test:live professor   # no bridge: the app's own requests go to the Anthropic API (log in live-results/direct.jsonl, $3 cap a run)
 python3 scripts/token-report.py               # tokens and dollars per job
 python3 scripts/score-live.py                 # answer positions, true/false balance, lengths, flags, timing, cost
 ```

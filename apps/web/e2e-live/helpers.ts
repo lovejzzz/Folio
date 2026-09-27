@@ -4,7 +4,8 @@ import type { Page } from '@playwright/test';
 /**
  * Where the bridge listens (scripts/claude-bridge.mjs) and where results go.
  * BRIDGE=direct sends the app's own requests to the Anthropic API instead,
- * exactly as a teacher's browser would, with ANTHROPIC_API_KEY swapped into
+ * exactly as a teacher's browser would, with FOLIO_ANTHROPIC_KEY (or
+ * ANTHROPIC_API_KEY) swapped into
  * the request here so the key never reaches the page or the logs.
  */
 export const BRIDGE = process.env.BRIDGE ?? 'http://localhost:8787';
@@ -61,8 +62,9 @@ function logDirect(request: string, response: { model?: string; usage?: Usage; c
 
 /** The app's request, sent on to the Anthropic API with the real key. */
 async function forwardDirect(url: string, method: string, headers: Record<string, string>, body: string): Promise<Response> {
-  const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) throw new Error('BRIDGE=direct needs ANTHROPIC_API_KEY.');
+  // Cloud sessions keep ANTHROPIC_API_KEY for Claude Code itself, so the app's key can come under its own name.
+  const key = process.env.FOLIO_ANTHROPIC_KEY ?? process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error('BRIDGE=direct needs FOLIO_ANTHROPIC_KEY (or ANTHROPIC_API_KEY).');
   if (directSpend >= DIRECT_BUDGET) throw new Error(`Stopped: this run has spent $${directSpend.toFixed(2)} of its $${DIRECT_BUDGET} budget.`);
   const keep = Object.fromEntries(Object.entries(headers).filter(([k]) => k.startsWith('anthropic-') || k === 'content-type'));
   return fetch(url, { method, headers: { ...keep, 'x-api-key': key }, body });
