@@ -1,11 +1,11 @@
-import type { Command, Label } from '@folio/core';
+import type { Command, HistoryEntry, Label } from '@folio/core';
 import { currentMessages } from '../i18n';
 import { activeStore } from './session';
 import { toast } from './toasts';
 
-/** Apply a teacher edit to the open course, as one undoable history entry. */
-export function edit(commands: Command[], label: Label): void {
-  activeStore()?.apply(commands, { label, source: 'teacher' });
+/** Apply a teacher edit to the open course, as one undoable history entry (null if nothing changed). */
+export function edit(commands: Command[], label: Label): HistoryEntry | null {
+  return activeStore()?.apply(commands, { label, source: 'teacher' }) ?? null;
 }
 
 export function undo(entryId?: string): void {

@@ -6,6 +6,7 @@ import { usePageTitle } from '../../app/usePageTitle';
 import { useT } from '../../i18n';
 import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
+import { addItem } from '../../materials/newItems';
 import { LessonRow } from './LessonRow';
 import { PlanAside } from './PlanAside';
 import { moveIndexForGap } from './reorder';
@@ -51,11 +52,10 @@ export function PlanScreen() {
   const from = dragging ? course.lessonOrder.indexOf(dragging) : -1;
   usePageTitle(t.plan.title, course.title || t.common.untitled);
 
-  const addLesson = () =>
-    edit(
-      [cmd('lesson.insert', { lesson: { id: newId('l'), title: t.plan.newLesson, summary: '' }, afterId: course.lessonOrder.at(-1) ?? null })],
-      { key: 'addedLesson' },
-    );
+  const addLesson = () => {
+    const id = newId('l');
+    addItem(id, [cmd('lesson.insert', { lesson: { id, title: '', summary: '' }, afterId: course.lessonOrder.at(-1) ?? null })], { key: 'addedLesson' });
+  };
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 pb-24 pt-8 md:px-8 md:pt-12 lg:flex-row lg:items-start">

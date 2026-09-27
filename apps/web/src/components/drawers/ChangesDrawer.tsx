@@ -177,11 +177,17 @@ function HistoryRow({ entry }: { entry: HistoryEntry }) {
           {entry.source === 'ai' ? t.changes.ai : t.changes.you} · {entry.undone ? t.changes.undone : relativeTime(entry.at, language)}
         </span>
       </span>
-      {!entry.undone && canUndo && (
-        <Button size="sm" variant="quiet" onPress={() => undo(entry.id)}>
-          {t.common.undo}
-        </Button>
-      )}
+      {!entry.undone &&
+        (canUndo ? (
+          <Button size="sm" variant="quiet" onPress={() => undo(entry.id)}>
+            {t.common.undo}
+          </Button>
+        ) : (
+          // Say why there's no Undo: undoing it would clobber later work.
+          <span title={t.changes.cantUndo} className="max-w-40 shrink-0 pt-1 text-right text-12 leading-4 text-ink-2">
+            {t.changes.touchedLater}
+          </span>
+        ))}
     </li>
   );
 }

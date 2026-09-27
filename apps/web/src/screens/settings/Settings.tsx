@@ -140,7 +140,7 @@ function DataSection() {
               variant="destructive"
               onPress={async () => {
                 dropSession();
-                await db.courses.clear();
+                await Promise.all([db.courses.clear(), db.history.clear()]);
                 setConfirm(false);
                 toast({ message: t.library.deleted });
               }}

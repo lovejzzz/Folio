@@ -1,4 +1,5 @@
-import { answerText, lessonNumber, orderedLessons } from '../course';
+import { isBlankQuestion, withoutBlankChoices } from '../blank';
+import { answerText, lessonNumber, lessonQuestions, orderedLessons } from '../course';
 import { docLabels, type DocLabels } from '../docLabels';
 import type { MaterialKind } from '../materials';
 import type { Course, Lesson, Question } from '../schema';
@@ -31,7 +32,15 @@ export function field(ctx: Ctx, entityId: string, name: string, value: string): 
 
 export function lessonHeading(ctx: Ctx, lesson: Lesson, level: 1 | 2 = 2): Block {
   const n = lessonNumber(ctx.course, lesson.id);
-  return { t: 'heading', level, text: `${ctx.l.lesson(n)} · ${lesson.title}`, anchor: lesson.id };
+  const text = nonEmpty(lesson.title) ? `${ctx.l.lesson(n)} · ${lesson.title}` : ctx.l.lesson(n);
+  return { t: 'heading', level, text, anchor: lesson.id };
+}
+
+/** A lesson's questions as printed: blank ones left out, and blank choices dropped from the rest. */
+export function shownQuestions(course: Course, lesson: Lesson): Question[] {
+  return lessonQuestions(course, lesson)
+    .filter((q) => !isBlankQuestion(q))
+    .map(withoutBlankChoices);
 }
 
 export function questionBlock(ctx: Ctx, q: Question, n: number): Block {

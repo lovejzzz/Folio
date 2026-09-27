@@ -7,6 +7,8 @@ export { Kbd } from './primitives/Kbd';
 export { Skeleton } from './primitives/Skeleton';
 export { TextField, TextArea, fieldClass } from './primitives/fields';
 export { NumberStepper } from './primitives/NumberStepper';
+export { InlineNumber } from './primitives/InlineNumber';
+export { fitsRange } from './primitives/numberRange';
 export { Checkbox, Switch, SegmentedControl, type SegmentOption } from './primitives/choice';
 export { Menu, MenuItem, MenuSeparator, popoverClass } from './primitives/Menu';
 export { Dialog } from './primitives/Dialog';

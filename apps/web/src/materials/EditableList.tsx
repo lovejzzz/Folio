@@ -1,5 +1,6 @@
 import { IconButton, cx } from '@folio/ui';
 import { Plus, X } from 'lucide-react';
+import { useState } from 'react';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 
@@ -8,7 +9,8 @@ interface EditableListProps {
   onChange: (items: string[]) => void;
   label: string;
   addLabel: string;
-  newItem: string;
+  /** Shown in an empty item, such as the one Add opens. */
+  placeholder: string;
   ordered?: boolean;
   lang?: string;
   context?: string;
@@ -17,8 +19,10 @@ interface EditableListProps {
 }
 
 /** A list of short texts, each edited in place, with add and remove. */
-export function EditableList({ items, onChange, label, addLabel, newItem, ordered, lang, context, className, itemClassName }: EditableListProps) {
+export function EditableList({ items, onChange, label, addLabel, placeholder, ordered, lang, context, className, itemClassName }: EditableListProps) {
   const t = useT();
+  // Add opens an empty item with the caret in it; it joins the list only once something is typed.
+  const [drafting, setDrafting] = useState(false);
   const List = ordered ? 'ol' : 'ul';
   return (
     <div className={className}>
@@ -29,6 +33,7 @@ export function EditableList({ items, onChange, label, addLabel, newItem, ordere
               <EditableText
                 value={item}
                 label={`${label} ${i + 1}`}
+                placeholder={placeholder}
                 lang={lang}
                 context={context}
                 multiline
@@ -47,8 +52,23 @@ export function EditableList({ items, onChange, label, addLabel, newItem, ordere
             </span>
           </li>
         ))}
+        {drafting && (
+          <li className={cx('no-print pl-1', itemClassName)} onBlur={() => setDrafting(false)}>
+            <EditableText
+              autoFocus
+              value=""
+              label={`${label} ${items.length + 1}`}
+              placeholder={placeholder}
+              lang={lang}
+              context={context}
+              multiline
+              className="block"
+              onCommit={(next) => next.trim() && onChange([...items, next])}
+            />
+          </li>
+        )}
       </List>
-      <AddButton label={addLabel} onPress={() => onChange([...items, newItem])} />
+      <AddButton label={addLabel} onPress={() => setDrafting(true)} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { SHAPE_LIMITS, lessonNumber, lessonObjectives, orderedLessons, type Course, type Language, type Lesson } from '@folio/core';
+import { SHAPE_LIMITS, lessonNumber, orderedLessons, statedObjectives, type Course, type Language, type Lesson } from '@folio/core';
 
 /**
  * Prompt templates. Each has a version so evaluation results can be tied to
@@ -84,7 +84,7 @@ export function courseContext(course: Course, lesson: Lesson): string {
   const all = orderedLessons(course)
     .map((l, i) => `${i + 1}. ${l.title}${l.id === lesson.id ? '  ← this lesson' : ''}`)
     .join('\n');
-  const objectives = lessonObjectives(course, lesson)
+  const objectives = statedObjectives(course, lesson)
     .map((o, i) => `${i + 1}. ${o.text}`)
     .join('\n');
   const audience = [course.audience.level, course.audience.subject].filter(Boolean).join(', ');
@@ -164,7 +164,7 @@ export function textActionPrompt(action: TextAction, selection: string, context:
 export function coursePlanPrompt(course: Course, request: string): string {
   const { lessons: lessonLimit, quizSize: quiz, minutesPerLesson: minutes } = SHAPE_LIMITS;
   const lessons = orderedLessons(course)
-    .map((l, i) => `${i + 1}. ${l.title}: ${lessonObjectives(course, l).map((o) => o.text).join('; ')}`)
+    .map((l, i) => `${i + 1}. ${l.title}: ${statedObjectives(course, l).map((o) => o.text).join('; ')}`)
     .join('\n');
   return [
     `Course: ${course.title} (${course.audience.level || 'no level set'}). Quiz size: ${course.shape.quizSize}. Minutes per lesson: ${course.shape.minutesPerLesson}.`,

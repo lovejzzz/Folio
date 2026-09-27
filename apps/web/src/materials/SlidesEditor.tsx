@@ -5,6 +5,7 @@ import { ArrowDown, ArrowUp, EyeOff, Plus, Trash2 } from 'lucide-react';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { edit } from '../state/edit';
+import { focusItem } from './newItems';
 import { SlideCanvas } from './SlideCanvas';
 import { Filmstrip, SlidePager, deckOrder, useArrowKeys, type SlidePos } from './SlideNav';
 
@@ -50,8 +51,11 @@ function StageTools({ lesson, slide, index, save, go }: StageToolsProps) {
     go(to);
   };
   const add = () => {
-    save([...slides.slice(0, index + 1), { id: newId('x'), layout: 'bullets', title: t.lesson.slideTitle, bullets: [], notes: '' }, ...slides.slice(index + 1)]);
+    // A new slide starts empty, with the caret in its title.
+    const id = newId('x');
+    save([...slides.slice(0, index + 1), { id, layout: 'bullets', title: '', bullets: [], notes: '' }, ...slides.slice(index + 1)]);
     go(index + 1);
+    focusItem(id);
   };
   const remove = () => {
     save(slides.filter((s) => s.id !== slide.id));

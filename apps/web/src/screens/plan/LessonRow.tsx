@@ -1,11 +1,13 @@
-import { cmd, lessonObjectives, newId, type Course, type Lesson } from '@folio/core';
+import { cmd, isBlankLesson, lessonObjectives, type Course, type Lesson } from '@folio/core';
 import { IconButton, cx } from '@folio/ui';
 import { ArrowDown, ArrowUp, GripVertical, Plus, Trash2, X } from 'lucide-react';
 import { useState, type DragEvent } from 'react';
 import { EditableText } from '../../components/editing/EditableText';
 import { useT } from '../../i18n';
 import { edit } from '../../state/edit';
+import { leaveBlank } from '../../materials/newItems';
 import { gapAt, moveIndexForGap } from './reorder';
+import { useObjectiveDraft } from './useObjectiveDraft';
 
 interface RowProps {
   course: Course;
@@ -21,6 +23,7 @@ interface RowProps {
 function Objectives({ course, lesson, n }: { course: Course; lesson: Lesson; n: number }) {
   const t = useT();
   const objectives = lessonObjectives(course, lesson);
+  const draft = useObjectiveDraft(lesson.id);
   return (
     <ul className="mt-3 space-y-1.5" aria-label={t.lesson.objectivesOf(n)}>
       {objectives.map((o, i) => (
@@ -29,6 +32,7 @@ function Objectives({ course, lesson, n }: { course: Course; lesson: Lesson; n: 
           <EditableText
             value={o.text}
             label={t.plan.objectiveOf(i + 1, n)}
+            placeholder={t.plan.objectiveHint}
             lang={course.language}
             className="min-w-0 flex-1"
             onCommit={(text) => edit([cmd('objective.update', { objectiveId: o.id, text })], { key: 'editedObjective' })}
@@ -44,12 +48,16 @@ function Objectives({ course, lesson, n }: { course: Course; lesson: Lesson; n: 
           </IconButton>
         </li>
       ))}
+      {draft.open && (
+        <li className="flex items-start gap-2 font-ui text-14 leading-6 text-ink" onBlur={draft.close}>
+          <span aria-hidden className="mt-2.5 h-px w-3 shrink-0 bg-ink-3" />
+          <EditableText autoFocus value="" label={t.plan.objectiveOf(objectives.length + 1, n)} placeholder={t.plan.objectiveHint} lang={course.language} className="min-w-0 flex-1" onCommit={draft.commit} />
+        </li>
+      )}
       <li>
         <button
           type="button"
-          onClick={() =>
-            edit([cmd('objective.add', { objective: { id: newId('o'), text: t.plan.objective }, lessonId: lesson.id })], { key: 'addedObjective' })
-          }
+          onClick={draft.start}
           className="flex items-center gap-1.5 rounded-control py-0.5 pl-5 font-ui text-13 text-ink-2 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent"
         >
           <Plus size={13} strokeWidth={1.75} aria-hidden />
@@ -101,9 +109,33 @@ function Handle({ lesson, n, onDragStart }: { lesson: Lesson; n: number; onDragS
   );
 }
 
+function LessonText({ lesson, n }: { lesson: Lesson; n: number }) {
+  const t = useT();
+  return (
+    <>
+      <EditableText
+        as="h3"
+        value={lesson.title}
+        label={t.plan.lessonTitle(n)}
+        required
+        className="font-reading text-22 font-semibold leading-8 text-ink"
+        onCommit={(title) => edit([cmd('lesson.update', { lessonId: lesson.id, title })], { key: 'renamedLesson', values: { n } })}
+      />
+      <EditableText
+        as="p"
+        multiline
+        value={lesson.summary}
+        label={t.plan.lessonSummary(n)}
+        placeholder={t.plan.lessonSummary(n)}
+        className="mt-1 block font-reading text-16 leading-6 text-ink-2"
+        onCommit={(summary) => edit([cmd('lesson.update', { lessonId: lesson.id, summary })], { key: 'editedLesson', values: { n } })}
+      />
+    </>
+  );
+}
+
 /** One lesson in the outline: drag to reorder, rename in place, edit objectives. */
 export function LessonRow({ course, lesson, index, dragFrom, onDragStart, onDrop }: RowProps) {
-  const t = useT();
   const n = index + 1;
   const [gap, setGap] = useState<number | null>(null);
   const gapFor = (e: DragEvent) => {
@@ -126,6 +158,16 @@ export function LessonRow({ course, lesson, index, dragFrom, onDragStart, onDrop
         setGap(null);
         if (at !== null) onDrop(at);
       }}
+      data-item={lesson.id}
+      onBlur={leaveBlank(
+        lesson.id,
+        (c) => {
+          const now = c.lessons[lesson.id];
+          return Boolean(now && isBlankLesson(c, now));
+        },
+        () => [cmd('lesson.remove', { lessonId: lesson.id })],
+        { key: 'removedLesson', values: { n } },
+      )}
       className={cx(
         'group relative flex gap-3 border-t border-rule py-5 transition-opacity duration-120 first:border-t-0 md:gap-4',
         index === dragFrom && 'opacity-40',
@@ -136,23 +178,7 @@ export function LessonRow({ course, lesson, index, dragFrom, onDragStart, onDrop
     >
       <Handle lesson={lesson} n={n} onDragStart={onDragStart} />
       <div className="min-w-0 flex-1" lang={course.language}>
-        <EditableText
-          as="h3"
-          value={lesson.title}
-          label={t.plan.lessonTitle(n)}
-          required
-          className="font-reading text-22 font-semibold leading-8 text-ink"
-          onCommit={(title) => edit([cmd('lesson.update', { lessonId: lesson.id, title })], { key: 'renamedLesson', values: { n } })}
-        />
-        <EditableText
-          as="p"
-          multiline
-          value={lesson.summary}
-          label={t.plan.lessonSummary(n)}
-          placeholder={t.plan.lessonSummary(n)}
-          className="mt-1 block font-reading text-16 leading-6 text-ink-2"
-          onCommit={(summary) => edit([cmd('lesson.update', { lessonId: lesson.id, summary })], { key: 'editedLesson', values: { n } })}
-        />
+        <LessonText lesson={lesson} n={n} />
         <Objectives course={course} lesson={lesson} n={n} />
       </div>
       <RowActions lesson={lesson} index={index} last={course.lessonOrder.length} />

@@ -1,4 +1,4 @@
-import { cmd, newId, type Course, type Question } from '@folio/core';
+import { cmd, isBlankQuestion, isBlankText, newId, type Course, type Label, type Question } from '@folio/core';
 import { IconButton, cx } from '@folio/ui';
 import { Check, ChevronRight, EyeOff, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
@@ -6,17 +6,42 @@ import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { FlagNote } from './FlagNote';
 import { AddButton } from './EditableList';
+import { addItem, leaveBlank } from './newItems';
 import { SourceChip } from './SourceChip';
-import { useSectionEdit } from './useSectionEdit';
+import { sectionLabel, useSectionEdit } from './useSectionEdit';
 
-function Choices({ q, update }: { q: Question; update: (fields: Partial<Question>) => void }) {
+/** The question as it is now, after any commit made by the blur being handled. */
+const questionIn = (c: Course, id: string): Question | null => {
+  const task = c.tasks[id];
+  return task?.kind === 'question' ? task : null;
+};
+
+/** onBlur for a choice: one added with "Add a choice" and left blank goes again. */
+const leaveBlankChoice = (questionId: string, choiceId: string, label: Label) =>
+  leaveBlank(
+    choiceId,
+    (c) => isBlankText(questionIn(c, questionId)?.choices.find((x) => x.id === choiceId)?.text ?? 'gone'),
+    (c) => {
+      const now = questionIn(c, questionId);
+      if (!now) return [];
+      const choices = now.choices.filter((x) => x.id !== choiceId);
+      return [cmd('task.update', { taskId: questionId, fields: { choices, correct: now.correct === choiceId ? null : now.correct } })];
+    },
+    label,
+  );
+
+function Choices({ q, update, label }: { q: Question; update: (fields: Partial<Question>) => void; label: Label }) {
   const t = useT();
+  const addChoice = () => {
+    const id = newId('x');
+    addItem(id, [cmd('task.update', { taskId: q.id, fields: { choices: [...q.choices, { id, text: '' }] } })], label);
+  };
   return (
     <ol className="mt-3 space-y-1.5">
       {q.choices.map((c, i) => {
         const correct = q.correct === c.id;
         return (
-          <li key={c.id} className="group/choice flex items-start gap-3">
+          <li key={c.id} data-item={c.id} className="group/choice flex items-start gap-3" onBlur={leaveBlankChoice(q.id, c.id, label)}>
             <button
               type="button"
               aria-pressed={correct}
@@ -51,7 +76,7 @@ function Choices({ q, update }: { q: Question; update: (fields: Partial<Question
       })}
       {q.format === 'choice' && q.choices.length < 6 && (
         <li className="pl-9">
-          <AddButton className="mt-0" label={t.quiz.addChoice} onPress={() => update({ choices: [...q.choices, { id: newId('x'), text: t.quiz.newChoice }] })} />
+          <AddButton className="mt-0" label={t.quiz.addChoice} onPress={addChoice} />
         </li>
       )}
     </ol>
@@ -99,9 +124,20 @@ function AnswerFold({ q, update }: { q: Question; update: (fields: Partial<Quest
 export function QuestionCard({ course, q, n }: { course: Course; q: Question; n: number }) {
   const t = useT();
   const save = useSectionEdit(course, q.lessonId, 'quiz');
+  const label = sectionLabel(course, q.lessonId, 'quiz');
   const update = (fields: Partial<Question>) => save([cmd('task.update', { taskId: q.id, fields })]);
+  const blank = (c: Course) => {
+    const now = questionIn(c, q.id);
+    return Boolean(now && isBlankQuestion(now));
+  };
   return (
-    <article className="group/q avoid-break relative border-t border-rule py-6 first:border-t-0" lang={course.language} aria-label={t.quiz.question(n)}>
+    <article
+      data-item={q.id}
+      className="group/q avoid-break relative border-t border-rule py-6 first:border-t-0"
+      lang={course.language}
+      aria-label={t.quiz.question(n)}
+      onBlur={leaveBlank(q.id, blank, () => [cmd('task.remove', { taskId: q.id })], label)}
+    >
       <header className="mb-2 flex items-center gap-2 font-ui text-12 text-ink-2">
         <span className="font-mono text-13 text-ink tabular">{String(n).padStart(2, '0')}</span>
         <span aria-hidden>·</span>
@@ -120,7 +156,7 @@ export function QuestionCard({ course, q, n }: { course: Course; q: Question; n:
       </header>
       {q.flags.length > 0 && <FlagNote flags={q.flags} lessonId={q.lessonId} kind="quiz" itemId={q.id} />}
       <EditableText as="p" multiline value={q.prompt} label={t.quiz.question(n)} context={q.explanation} className="block font-reading text-17 leading-7 text-ink" onCommit={(prompt) => update({ prompt })} />
-      {(q.format === 'choice' || q.format === 'truefalse') && <Choices q={q} update={update} />}
+      {(q.format === 'choice' || q.format === 'truefalse') && <Choices q={q} update={update} label={label} />}
       <AnswerFold q={q} update={update} />
     </article>
   );
