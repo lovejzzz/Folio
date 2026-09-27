@@ -157,7 +157,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
   assignments: () =>
     'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
   discussions: () =>
-    'Write two discussion prompts that make students think and disagree productively, each with at most three follow-up questions for the teacher.',
+    'Write two discussion prompts that make students think and disagree productively, each with two or three follow-up questions for the teacher.',
   faq: () =>
     'Write two or three questions students commonly ask about this lesson, with short, accurate answers.',
 };

@@ -90,6 +90,10 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
   - Round 8, UI pass on the DeepSeek courses: the pages look right. Speaker notes and plans said "the first lesson" and "over the next two hours", because every request opened with "This is lesson N". Requests now name the lesson by title only, and the rule lists the phrasings seen. "The next lesson" persists; ripple already marks such sections out of date when the order or length changes.
   - Round 9, stats: 23 calls, 1 repair, $0.052. The only lesson reference left was "This lesson" (earlier English courses had 5 to 12).
   - Round 10, econ again: 30 calls, 1 repair, $0.084. Lesson number and length mentions fell from 12 to 2 ("next session", and "Week 3" from the notes' file name). UI pass: rubrics were five words wide in a portrait sheet, so the rubric material now uses a landscape sheet (1020px, A4 proportions) and prints landscape.
+  - Round 11, en (photosynthesis): 32 calls, 3 repairs, $0.058. Discussions twice came back without follow-ups: "at most three" read as optional, so the prompt now asks for two or three. UI pass:
+    - The map dropped from six material columns to four once built, because the slide thumbnail's row of boxes set the column width. Thumbnails no longer size their column.
+    - The syllabus cells all said "On the schedule"; they now show the lesson's reading count.
+    - "Add objective" is now "Add an objective", like every other add button.
 
 ## Next
 

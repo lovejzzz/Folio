@@ -69,7 +69,12 @@ export function MapCell({ course, lesson, kind, view, error, compact, focused, o
       >
         {built ? (
           <>
-            {!compact && <Thumb course={course} lesson={lesson} kind={kind} />}
+            {/* Zero intrinsic width: a thumbnail wraps to its column and never widens it, so the map keeps its columns once built. */}
+            {!compact && (
+              <span className="block w-0 min-w-full">
+                <Thumb course={course} lesson={lesson} kind={kind} />
+              </span>
+            )}
             <span className="flex w-full items-center justify-between gap-2 text-12 text-ink-2 tabular">
               <span className="truncate">{cellMetric(course, lesson, kind, t)}</span>
               {view !== 'ready' && <StatusMark kind={view === 'stale' ? 'stale' : 'attention'} label={reason} />}

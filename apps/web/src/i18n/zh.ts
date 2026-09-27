@@ -174,6 +174,7 @@ export const zh: Messages = {
     cellLabel: (lesson, material, detail) => `${lesson}，${material}：${detail}`,
     empty: '这门课还没有课时。',
     scheduled: '已排入课表',
+    readings: (n) => `${n} 篇阅读`,
     phoneHint: '打开一课来查看。在大屏幕上编辑更方便。',
     moreColumns: (n) => `还有 ${n} 项`,
     showMore: (n) => `显示另外 ${n} 种材料`,

@@ -1,6 +1,7 @@
 import {
   cellState,
   countWords,
+  filledTexts,
   lessonAssignments,
   lessonDiscussions,
   lessonFaq,
@@ -28,8 +29,10 @@ export function cellMetric(course: Course, lesson: Lesson, kind: MaterialKind, t
   switch (kind) {
     case 'map':
       return t.common.objectives(lesson.objectiveIds.length);
-    case 'syllabus':
-      return t.map.scheduled;
+    case 'syllabus': {
+      const readings = filledTexts(lesson.readings).length;
+      return readings ? t.map.readings(readings) : t.map.scheduled;
+    }
     case 'plan':
       return t.common.minutes(lesson.segments.reduce((a, s) => a + s.minutes, 0));
     case 'slides':

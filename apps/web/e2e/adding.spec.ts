@@ -14,11 +14,11 @@ async function clickAway(page: Page): Promise<void> {
   await page.getByRole('main').click({ position: { x: 5, y: 5 } });
 }
 
-test('Add objective puts the caret in an empty line; left blank it goes, and nothing goes out of date', async ({ page }) => {
+test('Add an objective puts the caret in an empty line; left blank it goes, and nothing goes out of date', async ({ page }) => {
   await openLesson(page, /Centre and spread/);
   const objectives = page.getByRole('textbox', { name: /^Objective \d of lesson 3$/ });
   const count = await objectives.count();
-  await page.getByRole('button', { name: 'Add objective' }).click();
+  await page.getByRole('button', { name: 'Add an objective' }).click();
   const fresh = page.getByRole('textbox', { name: `Objective ${count + 1} of lesson 3` });
   await expect(fresh).toBeFocused();
   await expect(fresh).toHaveText('');
@@ -28,7 +28,7 @@ test('Add objective puts the caret in an empty line; left blank it goes, and not
   await expect(objectives).toHaveCount(count);
   await expect(page.getByText('Out of date.')).toHaveCount(0);
 
-  await page.getByRole('button', { name: 'Add objective' }).click();
+  await page.getByRole('button', { name: 'Add an objective' }).click();
   await page.keyboard.type('Explain why the median resists outliers');
   await page.keyboard.press('Enter');
   await expect(objectives).toHaveCount(count + 1);
