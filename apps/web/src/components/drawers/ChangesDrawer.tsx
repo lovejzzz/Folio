@@ -2,7 +2,7 @@ import { attentionItems, cmd, isMaterialKind, lessonNumber, staleItems, type Att
 import { BinderTab, Button } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useState, type ReactNode } from 'react';
-import { relativeTime, useT, type Messages } from '../../i18n';
+import { flagText, relativeTime, useT, type Messages } from '../../i18n';
 import { edit, undo } from '../../state/edit';
 import { usePrefs } from '../../state/prefs';
 import { keepMine, updateSection, useProposals } from '../../state/proposals';
@@ -43,7 +43,7 @@ function AttentionRow({ item }: { item: AttentionItem }) {
   return (
     <li className="rounded-control bg-well p-3">
       <ItemHead lessonId={item.lessonId} kind={item.kind} n={lessonNumber(course, item.lessonId)} />
-      <p className="mt-2 font-ui text-13 leading-5 text-ink">{item.flag}</p>
+      <p className="mt-2 font-ui text-13 leading-5 text-ink">{flagText(item.flags, t)}</p>
       <div className="mt-3 flex gap-1.5">
         <Button size="sm" onPress={() => void navigate({ to: '/c/$courseId/lesson/$lessonId', params: { courseId: course.id, lessonId: item.lessonId }, search: { m: item.kind } })}>
           {t.changes.open}
@@ -64,7 +64,7 @@ function StaleRow({ item }: { item: StaleItem }) {
   return (
     <li className="rounded-control bg-well p-3">
       <ItemHead lessonId={item.lessonId} kind={item.kind} n={lessonNumber(course, item.lessonId)} />
-      <p className="mt-2 font-ui text-13 leading-5 text-ink">{t.changes.because(item.reasons.map((r) => t.changes.reasons[r]).join(', '))}</p>
+      <p className="mt-2 font-ui text-13 leading-5 text-ink">{t.changes.because(t.changes.reasonList(item.reasons.map((r) => t.changes.reasons[r])))}</p>
       {item.edited && !pending && <p className="mt-1 font-ui text-12 leading-5 text-ink-2">{t.changes.edited}</p>}
       <div className="mt-3 flex flex-wrap gap-1.5">
         {pending?.status === 'ready' ? (
@@ -90,7 +90,8 @@ export function historyLabel(entry: HistoryEntry, t: Messages): string {
   const values: Record<string, string | number> = { ...entry.label.values };
   const kind = values.kind;
   if (typeof kind === 'string' && isMaterialKind(kind)) {
-    values.material = entry.label.key === 'toggledMaterial' ? t.materials[kind] : t.materialInline[kind];
+    const whole = entry.label.key === 'includedMaterial' || entry.label.key === 'leftOutMaterial';
+    values.material = whole ? t.materialsInline[kind] : t.materialInline[kind];
   }
   const fn = (t.history as Record<string, unknown>)[entry.label.key];
   if (typeof fn === 'function') return (fn as (v: Record<string, string | number>) => string)(values);

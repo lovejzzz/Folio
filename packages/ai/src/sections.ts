@@ -3,6 +3,7 @@ import {
   checkQuestion,
   cmd,
   duplicatePrompts,
+  type Flag,
   newId,
   type Command,
   type Course,
@@ -33,19 +34,14 @@ interface SectionJob<T> {
   toCommands: (value: T, problems: Problem[], course: Course, lesson: Lesson) => Command[];
 }
 
-function sectionFlag(problems: Problem[]): string | null {
-  const messages = problems.filter((p) => p.index === null).map((p) => p.message);
-  return messages.length ? messages.join(' ') : null;
-}
-
-function itemFlag(problems: Problem[], index: number): string | null {
-  const messages = problems.filter((p) => p.index === index).map((p) => p.message);
-  return messages.length ? messages.join(' ') : null;
+/** The flags for one item, or for the whole section when index is null. */
+function flagsAt(problems: Problem[], index: number | null): Flag[] {
+  return problems.filter((p) => p.index === index).map((p) => p.flag);
 }
 
 const base = (lesson: Lesson) => ({ lessonId: lesson.id, sourceRefs: [], origin: 'ai' as const, edited: false });
 
-function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flag: string | null): Question {
+function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flags: Flag[]): Question {
   const graded = draft.format === 'choice' || draft.format === 'truefalse';
   const choices = graded ? draft.choices.map((text) => ({ id: newId('x'), text: text.trim() })) : [];
   const correct = choices.find((c) => c.text.toLowerCase() === draft.answer.trim().toLowerCase())?.id ?? null;
@@ -57,7 +53,7 @@ function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flag: 
     kind: 'question',
     objectiveIds: objectiveId ? [objectiveId] : [],
     sourceRefs: passage ? [{ sourceId: passage.sourceId, passageId: passage.passageId }] : [],
-    flag,
+    flags,
     format: draft.format,
     prompt: draft.prompt,
     choices,
@@ -74,12 +70,12 @@ const plan: SectionJob<PlanDraft> = {
     checkMinutes(
       v.segments.map((s) => s.minutes),
       course.shape.minutesPerLesson,
-    ).map((message) => ({ index: null, message })),
+    ).map((flag) => ({ index: null, flag })),
   toCommands: (v, problems, _course, lesson) => [
     cmd('section.fill', {
       lessonId: lesson.id,
       kind: 'plan',
-      flag: sectionFlag(problems),
+      flags: flagsAt(problems, null),
       content: {
         keyIdeas: v.keyIdeas,
         segments: v.segments.map((s) => ({ ...s, id: newId('x') })),
@@ -95,7 +91,7 @@ const slides: SectionJob<SlidesDraft> = {
     cmd('section.fill', {
       lessonId: lesson.id,
       kind: 'slides',
-      flag: sectionFlag(problems),
+      flags: flagsAt(problems, null),
       content: { slides: v.slides.map((s) => ({ ...s, id: newId('x') })) },
     }),
   ],
@@ -107,7 +103,7 @@ const study: SectionJob<StudyDraft> = {
     cmd('section.fill', {
       lessonId: lesson.id,
       kind: 'study',
-      flag: sectionFlag(problems),
+      flags: flagsAt(problems, null),
       content: { overview: v.overview, points: v.points.map((p) => ({ ...p, id: newId('x') })) },
     }),
   ],
@@ -118,17 +114,17 @@ const quiz: SectionJob<QuizDraft> = {
   check: (v, course, lesson) => {
     const problems: Problem[] = [];
     v.questions.forEach((q, index) => {
-      for (const message of checkQuestion(q)) problems.push({ index, message });
+      for (const flag of checkQuestion(q)) problems.push({ index, flag });
       if (q.objective > Math.max(1, lesson.objectiveIds.length)) {
-        problems.push({ index, message: `It refers to objective ${q.objective}, which does not exist.` });
+        problems.push({ index, flag: { code: 'unknownObjective', values: { objective: q.objective } } });
       }
     });
     const dupes = new Set(duplicatePrompts(v.questions.map((q) => q.prompt)));
     v.questions.forEach((q, index) => {
-      if (dupes.has(q.prompt)) problems.push({ index, message: 'It repeats an earlier question.' });
+      if (dupes.has(q.prompt)) problems.push({ index, flag: { code: 'repeatsQuestion' } });
     });
     if (v.questions.length !== course.shape.quizSize) {
-      problems.push({ index: null, message: `There are ${v.questions.length} questions instead of ${course.shape.quizSize}.` });
+      problems.push({ index: null, flag: { code: 'questionCount', values: { got: v.questions.length, want: course.shape.quizSize } } });
     }
     return problems;
   },
@@ -136,8 +132,8 @@ const quiz: SectionJob<QuizDraft> = {
     cmd('tasks.fill', {
       lessonId: lesson.id,
       kind: 'quiz',
-      flag: sectionFlag(problems),
-      tasks: v.questions.map((q, i) => toQuestion(q, course, lesson, itemFlag(problems, i))),
+      flags: flagsAt(problems, null),
+      tasks: v.questions.map((q, i) => toQuestion(q, course, lesson, flagsAt(problems, i))),
     }),
   ],
 };
@@ -147,7 +143,7 @@ const assignments: SectionJob<AssignmentDraft> = {
   check: (v) =>
     v.rubric.criteria
       .filter((c) => c.descriptors.length !== v.rubric.levels.length)
-      .map((c) => ({ index: null, message: `The rubric criterion "${c.name}" does not describe every level.` })),
+      .map((c) => ({ index: null, flag: { code: 'criterionLevels', values: { criterion: c.name } } })),
   toCommands: (v, problems, _course, lesson) => {
     const levels = v.rubric.levels.map((lv) => ({ id: newId('x'), label: lv.label, points: lv.points }));
     const rubric: Rubric = {
@@ -165,13 +161,13 @@ const assignments: SectionJob<AssignmentDraft> = {
       id: newId('t'),
       kind: 'assignment',
       objectiveIds: [...lesson.objectiveIds],
-      flag: null,
+      flags: [],
       title: v.title,
       prompt: v.prompt,
       steps: v.steps,
       rubricId: rubric.id,
     };
-    return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flag: sectionFlag(problems), tasks: [task], rubrics: [rubric] })];
+    return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: flagsAt(problems, null), tasks: [task], rubrics: [rubric] })];
   },
 };
 
@@ -181,13 +177,13 @@ const discussions: SectionJob<DiscussionsDraft> = {
     cmd('tasks.fill', {
       lessonId: lesson.id,
       kind: 'discussions',
-      flag: sectionFlag(problems),
+      flags: flagsAt(problems, null),
       tasks: v.discussions.map((d) => ({
         ...base(lesson),
         id: newId('t'),
         kind: 'discussion' as const,
         objectiveIds: [...lesson.objectiveIds],
-        flag: null,
+        flags: [],
         prompt: d.prompt,
         followUps: d.followUps,
       })),
@@ -200,7 +196,7 @@ const faq: SectionJob<FaqDraft> = {
   toCommands: (v, problems, _course, lesson) => [
     cmd('faq.fill', {
       lessonId: lesson.id,
-      flag: sectionFlag(problems),
+      flags: flagsAt(problems, null),
       entries: v.entries.map((e) => ({
         id: newId('f'),
         lessonId: lesson.id,
@@ -208,7 +204,7 @@ const faq: SectionJob<FaqDraft> = {
         answer: e.answer,
         origin: 'ai' as const,
         edited: false,
-        flag: null,
+        flags: [],
       })),
     }),
   ],

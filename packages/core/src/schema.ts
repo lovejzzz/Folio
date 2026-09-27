@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { FlagSchema } from './flags';
 import { MATERIAL_KINDS, GENERATED_KINDS } from './materials';
 
 /**
@@ -8,7 +9,7 @@ import { MATERIAL_KINDS, GENERATED_KINDS } from './materials';
  * indexes, which keeps undo and AI proposals safe when order changes.
  */
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 const id = z.string().min(1);
 const text = z.string();
@@ -28,8 +29,8 @@ export const GenMetaSchema = z.object({
   at: z.string(),
   /** True once the teacher has changed anything in this section. */
   edited: z.boolean(),
-  /** A plain sentence when the section needs a look, else null. */
-  flag: z.string().nullable(),
+  /** What needs a look in the section as a whole; empty when nothing does. */
+  flags: z.array(FlagSchema),
 });
 export type GenMeta = z.infer<typeof GenMetaSchema>;
 
@@ -97,7 +98,7 @@ const taskBase = {
   sourceRefs: z.array(SourceRefSchema),
   origin: OriginSchema,
   edited: z.boolean(),
-  flag: z.string().nullable(),
+  flags: z.array(FlagSchema),
 };
 
 export const ChoiceSchema = z.object({ id, text });
@@ -169,7 +170,7 @@ export const FaqEntrySchema = z.object({
   answer: text,
   origin: OriginSchema,
   edited: z.boolean(),
-  flag: z.string().nullable(),
+  flags: z.array(FlagSchema),
 });
 export type FaqEntry = z.infer<typeof FaqEntrySchema>;
 

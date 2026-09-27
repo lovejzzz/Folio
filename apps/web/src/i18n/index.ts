@@ -1,3 +1,4 @@
+import { flagValues, type Flag } from '@folio/core';
 import { usePrefs, type UiLanguage } from '../state/prefs';
 import { en, type Messages } from './en';
 import { zh } from './zh';
@@ -29,4 +30,14 @@ export function relativeTime(iso: string, language: UiLanguage, now = Date.now()
   if (abs < 86400) return rtf.format(Math.round(seconds / 3600), 'hour');
   if (abs < 86400 * 30) return rtf.format(Math.round(seconds / 86400), 'day');
   return new Date(iso).toLocaleDateString(language, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+/** "Needs a look" notes in the interface language, one sentence per flag. */
+export function flagText(flags: readonly Flag[], t: Messages): string {
+  return flags.map((flag) => (t.flags[flag.code] as (v: unknown) => string)(flagValues(flag))).join(t.common.sentenceGap);
+}
+
+/** React Aria's own strings ("Increase", "Dismiss") follow the interface language. */
+export function ariaLocale(language: UiLanguage): string {
+  return language === 'zh-CN' ? 'zh-CN' : 'en-GB';
 }

@@ -17,8 +17,11 @@ function StaleBar({ course, lesson, kind }: { course: Course; lesson: Lesson; ki
     <div role="note" className="no-print mb-5 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-control border border-rule px-3 py-2 font-ui text-13 text-ink-2">
       <StatusMark kind="stale" label={t.map.stale} />
       <p className="min-w-0 flex-1">
-        <span className="font-medium text-ink">{t.map.stale}. </span>
-        {t.changes.because(reasons.map((r) => t.changes.reasons[r]).join(', '))}
+        <span className="font-medium text-ink">
+          {t.map.stale}
+          {t.common.period}
+        </span>
+        {t.changes.because(t.changes.reasonList(reasons.map((r) => t.changes.reasons[r])))}
       </p>
       <span className="flex gap-1">
         <Button size="sm" variant="secondary" isDisabled={Boolean(pending)} onPress={() => void updateSection(lesson.id, section)}>
@@ -76,7 +79,7 @@ export function SectionFrame({
   const t = useT();
   const section = sectionFor(kind);
   const built = !section || Boolean(lesson.gen[section]);
-  const flag = section ? lesson.gen[section]?.flag : null;
+  const flags = section ? (lesson.gen[section]?.flags ?? []) : [];
   return (
     <section id={hideHeading ? undefined : `m-${kind}`} aria-labelledby={hideHeading ? undefined : `h-${kind}`} className={hideHeading ? undefined : 'scroll-mt-24 border-t border-rule pt-8 first:border-t-0 first:pt-0'}>
       {!hideHeading && (
@@ -85,7 +88,7 @@ export function SectionFrame({
         </h2>
       )}
       {built && <StaleBar course={course} lesson={lesson} kind={kind} />}
-      {built && flag && section && <FlagNote flag={flag} lessonId={lesson.id} kind={section} itemId={null} />}
+      {built && flags.length > 0 && section && <FlagNote flags={flags} lessonId={lesson.id} kind={section} itemId={null} />}
       {built ? children : <NotBuilt lesson={lesson} kind={kind} />}
     </section>
   );

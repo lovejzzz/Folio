@@ -44,7 +44,9 @@ export function MapCell({ course, lesson, kind, view, error, compact, focused, o
   const built = view === 'ready' || view === 'attention' || view === 'stale';
   const canBuild = (view === 'empty' || view === 'error') && sectionFor(kind) !== null;
   const reason = cellReason(course, lesson, kind, view, t, error);
-  const label = `${t.common.lesson(course.lessonOrder.indexOf(lesson.id) + 1)}, ${t.materials[kind]}: ${built ? cellMetric(course, lesson, kind, t) + '. ' : ''}${reason}`;
+  const metric = built ? cellMetric(course, lesson, kind, t) : '';
+  const detail = metric ? `${metric}${t.common.period}${reason}` : reason;
+  const label = t.map.cellLabel(t.common.lesson(course.lessonOrder.indexOf(lesson.id) + 1), t.materials[kind], detail);
   return (
     <div role="gridcell" className="relative p-1">
       <button

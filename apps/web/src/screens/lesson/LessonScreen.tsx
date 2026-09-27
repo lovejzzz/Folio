@@ -4,6 +4,7 @@ import { Link } from '@tanstack/react-router';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { lessonRoute } from '../../app/router';
+import { usePageTitle } from '../../app/usePageTitle';
 import { EditableText } from '../../components/editing/EditableText';
 import { useT } from '../../i18n';
 import { AddButton } from '../../materials/EditableList';
@@ -39,9 +40,9 @@ function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
       <div className="mt-6 rounded-control bg-well px-5 py-4">
         <h2 className="mb-2 font-ui text-13 font-semibold text-ink">{t.lesson.objectives}</h2>
         <ul className="list-disc space-y-1 pl-5 marker:text-ink-3">
-          {lessonObjectives(course, lesson).map((o) => (
+          {lessonObjectives(course, lesson).map((o, i) => (
             <li key={o.id}>
-              <EditableText value={o.text} label={t.plan.objective} onCommit={(text) => edit([cmd('objective.update', { objectiveId: o.id, text })], { key: 'editedObjective' })} />
+              <EditableText value={o.text} label={t.plan.objectiveOf(i + 1, n)} onCommit={(text) => edit([cmd('objective.update', { objectiveId: o.id, text })], { key: 'editedObjective' })} />
             </li>
           ))}
         </ul>
@@ -109,8 +110,9 @@ export function LessonScreen() {
   const lesson = course.lessons[lessonId];
   const kinds = TEACHING_ORDER.filter((k) => course.materials[k].enabled && lessonEditors[k]);
   const active = usePosition(kinds, m, lessonId);
+  const index = course.lessonOrder.indexOf(lessonId);
+  usePageTitle(...(lesson ? [lesson.title || t.common.lesson(index + 1), course.title || t.common.untitled] : [t.errors.notFound]));
   if (!lesson) return <CourseNotFound />;
-  const index = course.lessonOrder.indexOf(lesson.id);
   return (
     <div className="flex items-start">
       <LessonRail currentId={lesson.id} />

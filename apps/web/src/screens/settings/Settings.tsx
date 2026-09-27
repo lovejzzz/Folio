@@ -1,6 +1,7 @@
 import type { ProviderId } from '@folio/ai';
 import { Button, Dialog, SegmentedControl } from '@folio/ui';
 import { useEffect, useState, type ReactNode } from 'react';
+import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { probeModel } from '../../components/ConnectDialog';
 import { ProviderChoice, ProviderFields } from '../../components/ProviderFields';
@@ -145,6 +146,7 @@ function DataSection() {
 /** One page, not a modal maze. */
 export function Settings() {
   const t = useT();
+  usePageTitle(t.settings.title);
   return (
     <div className="min-h-dvh">
       <SimpleHeader />

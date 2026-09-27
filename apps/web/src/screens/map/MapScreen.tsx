@@ -1,6 +1,7 @@
 import { cellState, enabledKinds, orderedLessons } from '@folio/core';
 import { MaterialIcon, SegmentedControl, StatusMark, useMediaQuery } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
+import { usePageTitle } from '../../app/usePageTitle';
 import { useT } from '../../i18n';
 import { usePrefs } from '../../state/prefs';
 import { useCourse } from '../../state/session';
@@ -49,6 +50,7 @@ export function MapScreen() {
   const course = useCourse();
   const phone = useMediaQuery('(max-width: 767px)');
   const { density, set } = usePrefs();
+  usePageTitle(t.materials.map, course.title || t.common.untitled);
   const meta = [course.audience.level, t.common.lessons(course.lessonOrder.length), t.common.minutes(course.shape.minutesPerLesson)].filter(Boolean);
   return (
     <div className="px-4 pb-24 pt-8 md:px-8 md:pt-10">

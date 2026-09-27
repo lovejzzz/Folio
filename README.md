@@ -62,7 +62,7 @@ The look is "paper and ink": warm desk, paper sheets, one fountain-pen blue, and
 | --- | --- | --- |
 | Types (strict) | `pnpm typecheck` | clean |
 | Lint (warnings fail; files ≤ 400 lines, functions ≤ 60) | `pnpm lint` | clean |
-| Unit tests (one glob, every file runs) | `pnpm test` | 158 tests |
+| Unit tests (one glob, every file runs) | `pnpm test` | 172 tests |
 | End to end + axe (WCAG 2.2 AA) + CSP guard | `pnpm test:e2e` | 14 tests, light, dark and phone |
 | Budgets | `pnpm build && pnpm budget` | initial JS 140 KB gzip (≤ 150), all JS 2.8 MB (≤ 3), dist 6.7 MB (≤ 8) |
 

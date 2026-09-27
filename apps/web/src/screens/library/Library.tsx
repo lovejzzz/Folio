@@ -1,14 +1,15 @@
-import { newId, type Course } from '@folio/core';
+import { isCourseFormatError, newId, type Course } from '@folio/core';
 import { Button, Dialog, IconButton, Menu, MenuItem, fieldClass, cx } from '@folio/ui';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Copy, FolderOpen, MoreHorizontal, Plus, Save, Search, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { CourseCard } from '../../components/CourseCard';
 import { EmptySheets } from '../../components/Illustrations';
 import { useT } from '../../i18n';
 import { download } from '../../lib/exporter';
-import { deleteCourse, listCourses, loadCourse, saveCourse, type CourseSummary } from '../../state/db';
+import { deleteCourse, isQuotaError, listCourses, loadCourse, saveCourse, type CourseSummary } from '../../state/db';
 import { toast } from '../../state/toasts';
 
 async function saveFolio(course: Course): Promise<void> {
@@ -61,7 +62,8 @@ function Header() {
       toast({ message: t.library.imported(course.title) });
       await navigate({ to: '/c/$courseId/map', params: { courseId: course.id } });
     } catch (error) {
-      toast({ message: error instanceof Error ? error.message : t.errors.generic, tone: 'critical' });
+      const message = isCourseFormatError(error) ? t.library.importErrors[error.code] : isQuotaError(error) ? t.errors.storageFull : t.errors.generic;
+      toast({ message, tone: 'critical' });
     }
   };
   return (
@@ -128,6 +130,7 @@ export function Library() {
   const [courses, refresh] = useCourses();
   const [query, setQuery] = useState('');
   const [deleting, setDeleting] = useState<CourseSummary | null>(null);
+  usePageTitle(t.library.title);
   const shown = (courses ?? []).filter((c) => c.title.toLowerCase().includes(query.trim().toLowerCase()));
   return (
     <div className="min-h-dvh">

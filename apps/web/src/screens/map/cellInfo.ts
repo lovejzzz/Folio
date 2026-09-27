@@ -12,7 +12,7 @@ import {
   type Lesson,
   type MaterialKind,
 } from '@folio/core';
-import type { Messages } from '../../i18n';
+import { flagText, type Messages } from '../../i18n';
 import type { CellRun } from '../../state/build';
 
 export type CellView = 'empty' | 'queued' | 'building' | 'error' | 'ready' | 'attention' | 'stale';
@@ -61,11 +61,12 @@ export function cellReason(course: Course, lesson: Lesson, kind: MaterialKind, v
   const section = sectionFor(kind);
   if (view === 'stale' && section) {
     const reasons = staleReasons(course, lesson, section).map((r) => t.changes.reasons[r]);
-    return `${t.map.stale}. ${t.changes.because(reasons.join(', '))}`;
+    return `${t.map.stale}${t.common.period}${t.changes.because(t.changes.reasonList(reasons))}`;
   }
   if (view === 'attention' && section) {
-    const flags = [lesson.gen[section]?.flag, ...itemFlags(course, lesson, kind).map((f) => f.flag)].filter(Boolean);
-    return `${t.map.attention}. ${flags[0] ?? ''}`.trim();
+    // The first note is enough for a tooltip; the lesson shows them all.
+    const flags = [lesson.gen[section]?.flags ?? [], ...itemFlags(course, lesson, kind).map((f) => f.flags)].find((f) => f.length > 0);
+    return flags ? `${t.map.attention}${t.common.period}${flagText(flags, t)}` : t.map.attention;
   }
   return t.map[view === 'ready' ? 'ready' : view === 'empty' ? 'notBuilt' : view === 'queued' ? 'queued' : 'building'];
 }

@@ -2,6 +2,7 @@ import { cmd, newId, orderedLessons } from '@folio/core';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { EditableText } from '../../components/editing/EditableText';
+import { usePageTitle } from '../../app/usePageTitle';
 import { useT } from '../../i18n';
 import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
@@ -45,6 +46,7 @@ export function PlanScreen() {
   const course = useCourse();
   const lessons = orderedLessons(course);
   const [dragging, setDragging] = useState<string | null>(null);
+  usePageTitle(t.plan.title, course.title || t.common.untitled);
 
   const addLesson = () =>
     edit(

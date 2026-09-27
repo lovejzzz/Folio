@@ -1,4 +1,7 @@
-import type { MaterialKind } from '@folio/core';
+import type { CourseFormatCode, FlagCode, FlagValues, MaterialKind } from '@folio/core';
+
+/** One wording per "needs a look" code, taking that code's values. */
+type FlagWording = { [C in FlagCode]: (v: FlagValues<C>) => string };
 
 /**
  * Interface copy. Plain, warm and short, in teachers' words. Buttons say
@@ -45,6 +48,21 @@ export const en = {
     study: 'Study guide',
     faq: 'FAQ',
   } satisfies Record<MaterialKind, string>,
+  /** Whole materials inside a sentence: "Left out the slide decks". */
+  materialsInline: {
+    map: 'course map',
+    syllabus: 'syllabus',
+    plan: 'lesson plans',
+    slides: 'slide decks',
+    assignments: 'assignments',
+    rubrics: 'rubrics',
+    discussions: 'discussions',
+    quiz: 'quiz & exam bank',
+    study: 'study guides',
+    faq: 'course FAQ',
+  } satisfies Record<MaterialKind, string>,
+  /** Browser tab titles, most specific first: "Light and leaves · How plants make food · Folio". */
+  pageTitle: (parts: string[]) => [...parts, 'Folio'].join(' · '),
   nav: {
     home: 'Home',
     library: 'Library',
@@ -83,6 +101,13 @@ export const en = {
     objectives: (n: number) => (n === 1 ? '1 objective' : `${n} objectives`),
     edited: (when: string) => `Edited ${when}`,
     untitled: 'Untitled course',
+    /** Ends one sentence before another: "Out of date. Because…". */
+    period: '. ',
+    /** Between two whole sentences. */
+    sentenceGap: ' ',
+    colon: ':',
+    /** A name with what it belongs to: "Remove: Key ideas 2". */
+    labelled: (label: string, value: string) => `${label}: ${value}`,
   },
   home: {
     question: 'What do you want to teach?',
@@ -123,8 +148,9 @@ export const en = {
     lessonTitle: (n: number) => `Title of lesson ${n}`,
     lessonSummary: (n: number) => `Summary of lesson ${n}`,
     objective: 'Objective',
+    objectiveOf: (i: number, n: number) => `Objective ${i} of lesson ${n}`,
     addObjective: 'Add objective',
-    removeObjective: 'Remove objective',
+    removeObjective: (i: number, n: number) => `Remove objective ${i} of lesson ${n}`,
     addLesson: 'Add a lesson',
     newLesson: 'New lesson',
     removeLesson: (n: number) => `Remove lesson ${n}`,
@@ -156,6 +182,7 @@ export const en = {
     attention: 'Needs a look',
     ready: 'Ready',
     openMaterial: (name: string) => `Open ${name}`,
+    cellLabel: (lesson: string, material: string, detail: string) => `${lesson}, ${material}: ${detail}`,
     empty: 'This course has no lessons yet.',
     scheduled: 'On the schedule',
     phoneHint: 'Open a lesson to review it. Editing works best on a larger screen.',
@@ -174,11 +201,13 @@ export const en = {
   },
   lesson: {
     objectives: 'Objectives',
+    objectivesOf: (n: number) => `Objectives of lesson ${n}`,
     keyIdeas: 'Key ideas',
     vocabulary: 'Vocabulary',
     segments: 'How the lesson runs',
     teacherNotes: 'Teacher notes',
     addSegment: 'Add a step',
+    segmentTitle: (n: number) => `Title of step ${n}`,
     addIdea: 'Add a key idea',
     addTerm: 'Add a term',
     term: 'Term',
@@ -200,6 +229,8 @@ export const en = {
     },
     overview: 'Overview',
     addPoint: 'Add a point',
+    pointHeading: (n: number) => `Heading of point ${n}`,
+    newPoint: 'New point',
     speakerNotes: 'Speaker notes',
     addSlide: 'Add a slide',
     removeSlide: 'Remove slide',
@@ -239,15 +270,21 @@ export const en = {
     steps: 'Steps',
     addStep: 'Add a step',
     rubric: 'Rubric',
+    assignmentTitle: 'Assignment title',
     criterion: 'Criterion',
+    criterionName: (n: number) => `Criterion ${n}`,
+    levelName: (n: number) => `Name of level ${n}`,
+    descriptor: (criterion: string, level: string) => `${criterion}, ${level}`,
     points: (n: number) => (n === 1 ? '1 pt' : `${n} pts`),
     addCriterion: 'Add a criterion',
     followUps: 'Follow-up questions',
     addFollowUp: 'Add a follow-up',
     addDiscussion: 'Add a discussion prompt',
+    discussionPrompt: (n: number) => `Discussion prompt ${n}`,
     newDiscussion: 'New discussion prompt',
     removeDiscussion: 'Remove discussion prompt',
     addFaq: 'Add a question',
+    faqQuestion: (n: number) => `FAQ question ${n}`,
     newFaq: 'New question',
     newAnswer: 'Answer',
     removeFaq: 'Remove question',
@@ -277,6 +314,7 @@ export const en = {
       sources: 'the sources changed',
     },
     because: (what: string) => `Because ${what}.`,
+    reasonList: (reasons: string[]) => new Intl.ListFormat('en-GB', { type: 'conjunction' }).format(reasons),
     edited: 'You edited this. Updating shows the new version beside yours.',
     updating: 'Updating…',
     proposal: 'Proposed update',
@@ -289,6 +327,29 @@ export const en = {
     you: 'You',
     updateAll: (n: number) => `Update all ${n}`,
   },
+  /** "Needs a look" notes, worded from the codes the checks record. */
+  flags: {
+    noPrompt: () => 'The question has no text.',
+    tooFewChoices: () => 'A multiple-choice question needs at least three choices.',
+    trueFalseChoices: () => 'A true-or-false question needs exactly two choices.',
+    emptyChoice: () => 'One of the choices is empty.',
+    duplicateChoices: () => 'Two of the choices are the same.',
+    answerNotInChoices: () => 'The answer is not one of the choices.',
+    noModelAnswer: () => 'The question has no model answer.',
+    answerNotNumber: () => 'The answer to a numeric question is not a number.',
+    answerMismatch: (v: { stated: string; computed: string }) => `The stated answer (${v.stated}) doesn’t match the working (${v.computed}).`,
+    minutesMismatch: (v: { total: number; target: number }) =>
+      `The steps add up to ${v.total === 1 ? '1 minute' : `${v.total} minutes`}, not ${v.target}.`,
+    unknownObjective: (v: { objective: number }) => `It refers to objective ${v.objective}, which doesn’t exist.`,
+    repeatsQuestion: () => 'It repeats an earlier question.',
+    questionCount: (v: { got: number; want: number }) =>
+      v.got === 1 ? `There is 1 question instead of ${v.want}.` : `There are ${v.got} questions instead of ${v.want}.`,
+    lessonCount: (v: { got: number; want: number }) =>
+      v.got === 1 ? `There is 1 lesson instead of ${v.want}.` : `There are ${v.got} lessons instead of ${v.want}.`,
+    criterionLevels: (v: { criterion: string }) => `The rubric criterion “${v.criterion}” doesn’t describe every level.`,
+    schemaIssue: (v: { path: string; issue: string }) => `Part of the model’s answer (${v.path}) wasn’t in the expected form.`,
+    note: (v: { text: string }) => v.text,
+  } satisfies FlagWording,
   history: {
     edit: 'Edited',
     renamedLesson: (v: { n: number }) => `Renamed lesson ${v.n}`,
@@ -306,7 +367,8 @@ export const en = {
     resolved: () => 'Marked an item as fine',
     editedCourse: () => 'Edited the course details',
     changedShape: () => 'Changed the course shape',
-    toggledMaterial: (v: { material: string }) => `Changed whether ${v.material} are included`,
+    includedMaterial: (v: { material: string }) => `Included the ${v.material}`,
+    leftOutMaterial: (v: { material: string }) => `Left out the ${v.material}`,
     changedMaterials: () => 'Changed which materials are included',
     plan: (v: { summary: string }) => v.summary,
     addedSource: () => 'Added a source',
@@ -433,6 +495,16 @@ export const en = {
     building: 'Partly built',
     actions: (title: string) => `Actions for ${title}`,
     noMatch: 'No courses match.',
+    /** Why a file could not be opened. */
+    importErrors: {
+      notACourse: 'This file doesn’t contain a course.',
+      newerVersion: 'This file was made with a newer version of Folio. Update Folio to open it.',
+      unknownFormat: 'This course uses a format Folio can’t read.',
+      incomplete: 'This course file is damaged or incomplete.',
+      notFolio: 'This isn’t a Folio course file.',
+      damagedFile: 'This Folio file is damaged and can’t be opened.',
+      unreadable: 'Part of this file is damaged and can’t be read.',
+    } satisfies Record<CourseFormatCode, string>,
   },
   settings: {
     title: 'Settings',

@@ -60,7 +60,7 @@ function QuestionBlock({ b }: { b: Extract<Block, { t: 'question' }> }) {
       {!b.answer && b.choices.length === 0 && <div aria-hidden className="mt-3 space-y-5 pl-7">{[0, 1].map((i) => <div key={i} className="border-b border-rule-strong" />)}</div>}
       {b.answer && (
         <p className="mt-2 pl-7 font-ui text-14 leading-6 text-ink-2">
-          <span className="font-semibold text-good">{t.quiz.answer}: </span>
+          <span className="font-semibold text-good">{t.common.labelled(t.quiz.answer, '')}</span>
           {b.answer}
           {b.explanation && <span className="block">{b.explanation}</span>}
         </p>

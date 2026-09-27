@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 import { lazy, Suspense } from 'react';
+import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { useT } from '../../i18n';
 import { setBrief, useDraft } from '../../state/draft';
@@ -45,6 +46,7 @@ function Examples() {
 
 export function Home() {
   const t = useT();
+  usePageTitle();
   return (
     <div className="min-h-dvh">
       <SimpleHeader />

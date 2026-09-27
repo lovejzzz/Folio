@@ -17,7 +17,7 @@ export function SourceChip({ course, refs }: { course: Course; refs: SourceRef[]
       {cited.map((c) => (
         <Tooltip key={c.key} delay={200} content={<span className="block max-w-xs whitespace-pre-line leading-5">{c.text.slice(0, 280)}</span>}>
           <Button
-            aria-label={`${t.quiz.source}: ${c.title}`}
+            aria-label={t.common.labelled(t.quiz.source, c.title)}
             onPress={() => useUi.getState().openDrawer('sources')}
             className="inline-flex h-6 max-w-48 items-center gap-1 rounded-full bg-well px-2 font-ui text-12 text-ink-2 outline-none data-hovered:text-ink data-focus-visible:ring-2 data-focus-visible:ring-accent"
           >

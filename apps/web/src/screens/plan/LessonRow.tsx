@@ -19,20 +19,20 @@ function Objectives({ course, lesson, n }: { course: Course; lesson: Lesson; n: 
   const t = useT();
   const objectives = lessonObjectives(course, lesson);
   return (
-    <ul className="mt-3 space-y-1.5" aria-label={`${t.lesson.objectives} · ${t.common.lesson(n)}`}>
-      {objectives.map((o) => (
+    <ul className="mt-3 space-y-1.5" aria-label={t.lesson.objectivesOf(n)}>
+      {objectives.map((o, i) => (
         <li key={o.id} className="group/obj flex items-start gap-2 font-ui text-14 leading-6 text-ink">
           <span aria-hidden className="mt-2.5 h-px w-3 shrink-0 bg-ink-3" />
           <EditableText
             value={o.text}
-            label={t.plan.objective}
+            label={t.plan.objectiveOf(i + 1, n)}
             lang={course.language}
             className="min-w-0 flex-1"
             onCommit={(text) => edit([cmd('objective.update', { objectiveId: o.id, text })], { key: 'editedObjective' })}
           />
           <IconButton
             size="sm"
-            label={t.plan.removeObjective}
+            label={t.plan.removeObjective(i + 1, n)}
             tooltip={false}
             className="size-6 opacity-0 group-focus-within/obj:opacity-100 group-hover/obj:opacity-100"
             onPress={() => edit([cmd('objective.remove', { objectiveId: o.id })], { key: 'removedObjective' })}

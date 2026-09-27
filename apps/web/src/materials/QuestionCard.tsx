@@ -20,7 +20,7 @@ function Choices({ q, update }: { q: Question; update: (fields: Partial<Question
             <button
               type="button"
               aria-pressed={correct}
-              aria-label={`${t.quiz.markCorrect}: ${String.fromCharCode(65 + i)}`}
+              aria-label={t.common.labelled(t.quiz.markCorrect, String.fromCharCode(65 + i))}
               onClick={() => update({ correct: c.id })}
               className={cx(
                 'mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border font-ui text-12 font-medium outline-none transition-colors duration-120 focus-visible:ring-2 focus-visible:ring-accent',
@@ -118,7 +118,7 @@ export function QuestionCard({ course, q, n }: { course: Course; q: Question; n:
           <Trash2 size={14} strokeWidth={1.5} />
         </IconButton>
       </header>
-      {q.flag && <FlagNote flag={q.flag} lessonId={q.lessonId} kind="quiz" itemId={q.id} />}
+      {q.flags.length > 0 && <FlagNote flags={q.flags} lessonId={q.lessonId} kind="quiz" itemId={q.id} />}
       <EditableText as="p" multiline value={q.prompt} label={t.quiz.question(n)} context={q.explanation} className="block font-reading text-17 leading-7 text-ink" onCommit={(prompt) => update({ prompt })} />
       {(q.format === 'choice' || q.format === 'truefalse') && <Choices q={q} update={update} />}
       <AnswerFold q={q} update={update} />
