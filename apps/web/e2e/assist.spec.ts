@@ -10,7 +10,7 @@ test('⌘K plans a course change, previews it, and applies it', async ({ page })
   await page.keyboard.type('make every quiz three questions');
   await page.getByRole('option', { name: /make every quiz three questions/ }).click();
   await expect(page.getByText('Make every quiz 3 questions')).toBeVisible();
-  await expect(page.getByText('Then update 4 sections that depend on it.')).toBeVisible();
+  await expect(page.getByText('Then update the 4 sections built on what changes.')).toBeVisible();
   await page.getByRole('button', { name: 'Apply' }).click();
   await page.getByRole('link', { name: 'Open Quiz & exam bank' }).click();
   await expect(page.getByRole('article', { name: 'Question 12' })).toBeVisible();
@@ -35,6 +35,13 @@ test('selecting text offers a rewrite that is accepted inline', async ({ page })
   await summary.selectText();
   await page.getByRole('toolbar', { name: 'Ask about the selected text' }).getByRole('button', { name: 'Simplify' }).click();
   await expect(page.locator('mark.folio-highlight')).toHaveText('A clearer version of the sentence.');
+  // The bar sits just under the suggestion it acts on, not where the hidden field was.
+  const mark = (await page.locator('mark.folio-highlight').boundingBox())!;
+  const bar = (await page.getByRole('button', { name: 'Accept' }).locator('xpath=ancestor::*[contains(@class,"fixed")][1]').boundingBox())!;
+  expect(bar.y - (mark.y + mark.height)).toBeGreaterThanOrEqual(0);
+  expect(bar.y - (mark.y + mark.height)).toBeLessThan(40);
+  expect(bar.x).toBeLessThan(mark.x + mark.width);
+  expect(bar.x + bar.width).toBeGreaterThan(mark.x);
   await page.getByRole('button', { name: 'Accept' }).click();
   await expect(summary).toHaveText('A clearer version of the sentence.');
 });

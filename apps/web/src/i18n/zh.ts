@@ -494,7 +494,7 @@ export const zh: Messages = {
       setLevel: (v) => `年级设为${v.level}`,
       setMaterial: (v) => `${v.enabled ? '包含' : '不包含'}${v.material}`,
     },
-    thenUpdate: (n) => `随后更新依赖它的 ${n} 部分内容。`,
+    thenUpdate: (n) => `随后更新受这些改动影响的 ${n} 部分内容。`,
     undo: '撤销',
     toggleTheme: '切换浅色与深色',
     exportItem: '导出…',

@@ -52,11 +52,21 @@ interface Position {
   hidden: boolean;
 }
 
+/** While a suggestion shows, the field is hidden and the proposal sits beside it: the bar follows the highlighted new text. */
+function proposalRect(target: Target): DOMRect | null {
+  if (target.el.getClientRects().length > 0) return null;
+  return target.el.nextElementSibling?.querySelector('mark')?.getBoundingClientRect() ?? null;
+}
+
 function measure(target: Target, below: boolean): Position | null {
   if (!target.el.isConnected) return null;
+  const proposal = proposalRect(target);
   const box = target.el.getBoundingClientRect();
-  const top = below ? box.top + target.offset.bottom + 12 : box.top + target.offset.top - 48;
-  const left = Math.min(window.innerWidth - 16, Math.max(16, box.left + target.offset.centre));
+  const top = proposal
+    ? (below ? proposal.bottom + 12 : proposal.top - 48)
+    : below ? box.top + target.offset.bottom + 12 : box.top + target.offset.top - 48;
+  const centre = proposal ? proposal.left + proposal.width / 2 : box.left + target.offset.centre;
+  const left = Math.min(window.innerWidth - 16, Math.max(16, centre));
   // Out of view (under the header or off screen): hide rather than float over other text.
   return { top, left, hidden: top < 56 || top > window.innerHeight - 24 };
 }

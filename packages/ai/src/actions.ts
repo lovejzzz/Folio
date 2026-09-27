@@ -27,7 +27,10 @@ export async function runTextAction(
 /** A proposal: commands prepared against one revision of the course. */
 export interface Proposal {
   basisRevision: number;
+  /** One sentence on what will change; it labels the history entry. */
   rationale: string;
+  /** Why the plan departs from the literal request, when it does. The preview shows this, not the rationale, which repeats the changes listed. */
+  note: string;
   commands: Command[];
   /** Human-readable lines for the preview, in the order they will happen. */
   preview: PlanOperation[];
@@ -54,6 +57,7 @@ export async function planCourseChange(
   return {
     basisRevision: course.revision,
     rationale: plan.summary,
+    note: plan.note.trim(),
     commands: operationsToCommands(course, operations),
     preview: operations,
     skipped,

@@ -515,7 +515,7 @@ export const en = {
       setLevel: (v: { level: string }) => `Set the level to ${v.level}`,
       setMaterial: (v: { material: string; enabled: boolean }) => `${v.enabled ? 'Include' : 'Leave out'} ${v.material.toLowerCase()}`,
     },
-    thenUpdate: (n: number) => (n === 1 ? 'Then update 1 section that depends on it.' : `Then update ${n} sections that depend on it.`),
+    thenUpdate: (n: number) => (n === 1 ? 'Then update the 1 section built on what changes.' : `Then update the ${n} sections built on what changes.`),
     undo: 'Undo',
     toggleTheme: 'Switch light and dark',
     exportItem: 'Export…',

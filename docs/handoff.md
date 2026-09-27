@@ -95,6 +95,11 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
     - The syllabus cells all said "On the schedule"; they now show the lesson's reading count.
     - "Add objective" is now "Add an objective", like every other add button.
   - Round 12, phil again: 30 calls, 1 repair, $0.086. Confirmed: the map keeps six columns once built, syllabus cells read "1 reading", and every discussion has follow-ups. UI pass: the syllabus and course-map tables headed a one-lesson-per-row column "Lessons"; it now reads "Lesson".
+  - Round 13, assist (English): blank text actions are gone (11 calls, 0 repairs, $0.007). Fixes from this round:
+    - ⌘K rewrote a title the teacher dictated, translating "集中趋势与离散程度" into English in 4 of 8 replays. Dictated wording is now kept exactly: 8 of 8.
+    - The Accept/Reject bar for a rewrite floated in the top-left corner, anchored to the field hidden behind the suggestion. It now sits under the highlighted text, and the e2e test checks its position.
+    - The ⌘K preview said each change twice: the model's summary, then "This will: …". The model now adds a `note` only when the plan departs from the request ("… already covers sampling bias, so no new lesson is added"). The preview shows that note and the list; the summary only labels the history entry.
+    - "Then update 4 sections that depend on it" now reads "Then update the 4 sections built on what changes".
 
 ## Next
 

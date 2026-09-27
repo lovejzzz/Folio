@@ -117,7 +117,7 @@ function PlanPreview({ proposal, before }: { proposal: Proposal; before: Set<str
   const newlyStale = staleItems(preview.getState()).filter((s) => !before.has(staleKey(s)));
   return (
     <div className="rounded-control bg-well px-4 py-3">
-      {proposal.rationale && <p className="mb-3 font-ui text-14 leading-relaxed text-ink">{proposal.rationale}</p>}
+      {proposal.note && <p className="mb-3 font-ui text-14 leading-relaxed text-ink">{proposal.note}</p>}
       <p className="font-ui text-13 font-semibold text-ink">{t.command.preview}</p>
       <ul className="mt-2 space-y-1.5 font-ui text-14 text-ink">
         {proposal.preview.map((op, i) => (

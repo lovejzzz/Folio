@@ -149,6 +149,10 @@ export type PlanOperation = z.infer<typeof PlanOperation>;
 
 export const CoursePlanDraft = z.object({
   summary: line.describe('One sentence, in the teacher\'s words, of what will change'),
+  note: z
+    .string()
+    .default('')
+    .describe('Only if the plan differs from the literal request or might surprise the teacher: one short sentence saying why. Otherwise empty'),
   operations: z.array(PlanOperation).describe('Empty if the request cannot be done with these operations'),
 });
 export type CoursePlanDraft = z.infer<typeof CoursePlanDraft>;
