@@ -1,4 +1,4 @@
-import { flagValues, type Flag } from '@folio/core';
+import type { Flag } from '@folio/core';
 import { usePrefs, type UiLanguage } from '../state/prefs';
 import { en, type Messages } from './en';
 import { zh } from './zh';
@@ -34,7 +34,7 @@ export function relativeTime(iso: string, language: UiLanguage, now = Date.now()
 
 /** "Needs a look" notes in the interface language, one sentence per flag. */
 export function flagText(flags: readonly Flag[], t: Messages): string {
-  return flags.map((flag) => (t.flags[flag.code] as (v: unknown) => string)(flagValues(flag))).join(t.common.sentenceGap);
+  return flags.map((flag) => (t.flags[flag.code] as (v: unknown) => string)('values' in flag ? flag.values : {})).join(t.common.sentenceGap);
 }
 
 /** React Aria's own strings ("Increase", "Dismiss") follow the interface language. */
