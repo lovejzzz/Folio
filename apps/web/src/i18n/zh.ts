@@ -546,6 +546,7 @@ export const zh: Messages = {
       addObjective: (v) => (v.name ? `给“${v.name}”添加目标“${v.text}”` : `给第 ${v.lesson} 课添加目标“${v.text}”`),
       setQuizSize: (v) => `每次测验改为 ${v.size} 道题`,
       setMinutes: (v) => `每课改为 ${v.minutes} 分钟`,
+      setMinutesOneClass: (v) => `把每课改成一节 ${v.minutes} 分钟的课堂，取代原来的几种课型`,
       setLevel: (v) => `年级设为${v.level}`,
       setMaterial: (v) => `${v.enabled ? '包含' : '不包含'}${v.material}`,
     },

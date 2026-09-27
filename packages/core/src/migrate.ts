@@ -30,6 +30,21 @@ const steps: Record<number, (raw: Raw) => Raw> = {
     recordValues(next.faq).forEach(flagsFromSentence);
     return { ...next, schemaVersion: 2 };
   },
+  /**
+   * Version 3 adds each lesson's homework, a course's sessions and the session of
+   * each step. The schema fills them in; the new version also keeps undo history
+   * saved before them from being replayed onto the new shape.
+   */
+  2: (raw) => {
+    const next = structuredClone(raw);
+    for (const lesson of recordValues(next.lessons)) {
+      if (!isRecord(lesson)) continue;
+      lesson.homework ??= { kind: 'assignment', toward: '' };
+      if (Array.isArray(lesson.segments)) for (const seg of lesson.segments) if (isRecord(seg)) seg.session ??= 0;
+    }
+    if (isRecord(next.shape)) next.shape.sessions ??= [];
+    return { ...next, schemaVersion: 3 };
+  },
 };
 
 /** Why a file could not be read, as a code the interface words in its own language. */

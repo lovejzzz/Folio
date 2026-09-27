@@ -1,4 +1,10 @@
 import { GENERATED_KINDS, orderedLessons, setsWork, type Command, type Course, type GeneratedKind } from '@folio/core';
+
+/** The lesson still exists and still asks for this section: the teacher may have changed its homework mid-build. */
+const stillWanted = (course: Course, t: BuildTarget) => {
+  const lesson = course.lessons[t.lessonId];
+  return Boolean(lesson && setsWork(lesson, t.kind));
+};
 import { InferenceError, type Inference } from './inference';
 import { generateSection } from './sections';
 import { BUILT_ON_PLAN } from './prompts';
@@ -93,12 +99,12 @@ function parseKey(key: string): BuildTarget {
 
 async function runOne(host: BuildHost, target: BuildTarget, summary: BuildSummary): Promise<void> {
   const course = host.getCourse();
-  if (!course.lessons[target.lessonId] || summary.fatal) return;
+  if (!stillWanted(course, target) || summary.fatal) return;
   host.onEvent?.({ type: 'start', target });
   try {
     const result = await generateSection(host.inference, course, target.lessonId, target.kind, host.signal);
     if (host.signal.aborted) throw new InferenceError('aborted', 'Stopped.');
-    if (!host.getCourse().lessons[target.lessonId]) return;
+    if (!stillWanted(host.getCourse(), target)) return;
     host.commit(target, result.commands);
     summary.built += 1;
     summary.flagged += result.flagged > 0 ? 1 : 0;

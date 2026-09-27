@@ -27,7 +27,8 @@ function describe(op: PlanOperation, t: Messages, course: Course): string {
     case 'setQuizSize':
       return t.command.ops.setQuizSize(op);
     case 'setMinutes':
-      return t.command.ops.setMinutes(op);
+      // One length for the whole lesson replaces its sessions: say so, not just the number.
+      return course.shape.sessions.length > 1 ? t.command.ops.setMinutesOneClass(op) : t.command.ops.setMinutes(op);
     case 'setLevel':
       return t.command.ops.setLevel(op);
     case 'setMaterial':

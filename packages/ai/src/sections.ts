@@ -300,6 +300,7 @@ export async function generateSection(
     case 'quiz':
       return run(quiz);
     case 'assignments':
+      if (lesson.homework.kind === 'none') return { commands: [], flagged: 0 };
       return lesson.homework.kind === 'step' ? run(step) : run(assignments);
     case 'discussions':
       return run(discussions);

@@ -178,3 +178,18 @@ describe('guessLessons with sessions and rates', () => {
     ['每周一节课', null],
   ])('%s → %s', (brief, n) => expect(guessLessons(brief)).toBe(n));
 });
+
+describe('guessSessions and guessLessons on briefs that misled them', () => {
+  it.each([
+    ['Six 50-minute classes on the Cold War, each ending with a 10-minute discussion.', null],
+    ['Six 90-minute lectures on Kant. Each 90-minute lecture ends with questions.', null],
+    ['五节40分钟的课堂，每节包含10分钟的讨论课', null],
+    ['Two 50-minute lectures and a 50-minute seminar each week.', [{ kind: 'lecture', minutes: 50 }, { kind: 'lecture', minutes: 50 }, { kind: 'seminar', minutes: 50 }]],
+  ])('%s', (brief, sessions) => expect(guessSessions(brief)).toEqual(sessions));
+  it.each([
+    ['Eight lessons over two weeks. Each lesson is a 45-minute class and a 45-minute lab.', 8],
+    ['12 lessons over 3 weeks, each a 50-minute lecture and a 50-minute seminar', 12],
+    ['Four weeks, each a 50-minute lecture and a 50-minute seminar.', 4],
+    ['初二物理：浮力。三周，每周一节40分钟的课堂和一节40分钟的实验课。', 3],
+  ])('%s → %s lessons', (brief, n) => expect(guessLessons(brief)).toBe(n));
+});

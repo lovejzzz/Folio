@@ -24,7 +24,9 @@ function save(grading: GradeItem[]): void {
 /** Adds a component, weighted with whatever is left of 100%, and puts the caret in its name. */
 export function addGradeItem(course: Course): void {
   const id = newId('g');
-  const weight = Math.max(0, Math.min(WEIGHT.max, Math.round((100 - sum(course.grading)) * 10) / 10));
+  // With no weights given yet, a new component has none either, rather than all of it.
+  const given = sum(course.grading);
+  const weight = course.grading.length && given === 0 ? 0 : Math.max(0, Math.min(WEIGHT.max, Math.round((100 - given) * 10) / 10));
   addItem(id, [cmd('course.update', { grading: [...course.grading, { id, item: '', weight }] })], LABEL);
 }
 

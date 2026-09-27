@@ -40,4 +40,16 @@ describe('homework', () => {
     expect(staleItems(now).map((s) => [s.kind, s.reasons])).toEqual([['assignments', ['homework']]]);
     expect(cellState(now, now.lessons[lesson.id]!, 'rubrics')).toBe('none');
   });
+
+  it('marks a section written before homework existed out of date when it becomes a step, and exports no rubric kept for a step', () => {
+    const store = new CourseStore(sampleCourse());
+    const lesson = orderedLessons(store.getState())[0]!;
+    // Written before homework was stamped.
+    delete store.getState().lessons[lesson.id]!.gen.assignments!.basis.homework;
+    store.apply([cmd('lesson.homework', { lessonId: lesson.id, homework: { kind: 'step', toward: '' } })], label);
+    expect(staleItems(store.getState()).map((s) => s.kind)).toContain('assignments');
+    store.apply([cmd('review.keep', { lessonId: lesson.id, kind: 'assignments' })], label);
+    const rubricTitle = store.getState().rubrics[lessonAssignments(store.getState(), store.getState().lessons[lesson.id]!)[0]!.rubricId!]!.title;
+    expect(JSON.stringify(project(store.getState(), 'rubrics', { audience: 'student' }))).not.toContain(rubricTitle);
+  });
 });

@@ -1,5 +1,5 @@
 import { generateSection } from '@folio/ai';
-import { cmd, lessonNumber, type Command, type GeneratedKind } from '@folio/core';
+import { cmd, lessonNumber, staleReasons, type Command, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
 import { canReach, currentInference, errorMessage } from './model';
 import { activeStore } from './session';
@@ -76,9 +76,28 @@ function applyUpdate(lessonId: string, kind: GeneratedKind, commands: Command[])
 export async function updateSections(items: { lessonId: string; kind: GeneratedKind }[]): Promise<void> {
   const course = activeStore()?.getState();
   if (!course) return;
+  // Settle the model once for the batch: asking per item kept only the last request, and a
+  // section marked "Updating…" ahead of its turn stayed marked when the batch never ran.
+  const inference = currentInference();
+  if (!inference) {
+    useUi.getState().requireModel(() => void updateSections(items));
+    return;
+  }
+  if (!canReach(inference)) return;
   const [first, rest] = [items.filter((i) => i.kind === 'plan'), items.filter((i) => i.kind !== 'plan')];
-  if (first.length && rest.length) for (const i of rest) setPending(key(i.lessonId, i.kind), { status: 'working', commands: [], basisRevision: course.revision });
+  const waiting = first.length ? rest : [];
+  for (const i of waiting) setPending(key(i.lessonId, i.kind), { status: 'working', commands: [], basisRevision: course.revision });
   await Promise.all(first.map((i) => updateSection(i.lessonId, i.kind)));
+  // A plan that failed to update is still out of date: the rest would be written on the plan it was meant to replace.
+  const after = activeStore()?.getState();
+  const planFailed = first.some((i) => {
+    const lesson = after?.lessons[i.lessonId];
+    return !after || !lesson || staleReasons(after, lesson, 'plan').length > 0;
+  });
+  if (planFailed) {
+    for (const i of waiting) setPending(key(i.lessonId, i.kind), null);
+    return;
+  }
   await Promise.all(rest.map((i) => updateSection(i.lessonId, i.kind)));
 }
 

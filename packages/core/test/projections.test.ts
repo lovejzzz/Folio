@@ -141,10 +141,26 @@ describe('parseCourse', () => {
     const raw = JSON.parse(JSON.stringify({ ...course, schemaVersion: 1 }).replace(/"flags":\[\]/g, '"flag":null'));
     raw.lessons[lesson.id].gen.quiz.flag = 'There are 1 questions instead of 5.';
     const migrated = parseCourse(raw);
-    expect(migrated.schemaVersion).toBe(2);
+    expect(migrated.schemaVersion).toBe(3);
     expect(migrated.lessons[lesson.id]!.gen.quiz!.flags).toEqual([{ code: 'note', values: { text: 'There are 1 questions instead of 5.' } }]);
     expect(migrated.tasks[lesson.taskIds[0]!]!.flags).toEqual([]);
     expect(migrated).toEqual({ ...course, lessons: migrated.lessons });
+  });
+
+  it('migrates version 2, from before homework and sessions, with an assignment in every lesson and one class', () => {
+    const raw = JSON.parse(JSON.stringify({ ...course, schemaVersion: 2 }));
+    delete raw.shape.sessions;
+    for (const l of Object.values(raw.lessons) as Record<string, unknown>[]) {
+      delete l.homework;
+      for (const seg of l.segments as Record<string, unknown>[]) delete seg.session;
+    }
+    const migrated = parseCourse(raw);
+    expect(migrated.schemaVersion).toBe(3);
+    expect(migrated.shape.sessions).toEqual([]);
+    for (const l of Object.values(migrated.lessons)) {
+      expect(l.homework).toEqual({ kind: 'assignment', toward: '' });
+      expect(l.segments.every((seg) => seg.session === 0)).toBe(true);
+    }
   });
 
   it('rejects newer and damaged files with codes and plain messages', () => {

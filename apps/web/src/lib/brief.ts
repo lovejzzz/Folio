@@ -81,6 +81,14 @@ function lessonsNamed(text: string): number | null {
   ]);
 }
 
+/** "Eight lessons", "12 lessons", "十二节课": a total named as lessons, never a length ("a 50-minute lecture"). */
+function lessonsNamedPlainly(text: string): number | null {
+  return firstCount(text, [
+    [String.raw`${EN_COUNT}[\s-]+(?:lessons|classes|sessions)\b`, (m) => enNumber(m[1]!)],
+    [String.raw`${ZH_NOT_COUNT_BEFORE}(${ZH_NUMBER})\s*(?:节课|次课|课)(?!程|本|文|堂|时)`, (m) => zhNumber(m[1]!)],
+  ]);
+}
+
 /** Only weeks: "over 3 weeks" is a weak hint of one lesson a week. */
 function lessonsFromWeeks(text: string): number | null {
   return firstCount(text, [
@@ -92,8 +100,9 @@ function lessonsFromWeeks(text: string): number | null {
 /** How many lessons the brief asks for. A number named as lessons beats one named as weeks. */
 export function guessLessons(text: string): number | null {
   // "Four weeks, each a lecture and a seminar": a lesson is a week of sessions, so the weeks are the count.
+  // A count named as lessons still wins ("Eight lessons over two weeks, each a class and a lab").
   if (guessSessions(text)) {
-    const weeks = lessonsFromWeeks(text);
+    const weeks = lessonsNamedPlainly(text) ?? lessonsFromWeeks(text);
     if (weeks) return weeks;
   }
   return lessonsFromRate(text) ?? lessonsNamed(text) ?? lessonsFromWeeks(text);
@@ -200,23 +209,32 @@ const SESSION_WORDS: [RegExp, SessionKind][] = [
   [/^(?:problem class(?:es)?|recitations?|workshops?|习题课)$/i, 'problems'],
   [/^(?:class(?:es)?|课堂)$/i, 'class'],
 ];
-const EN_SESSION = /\b(\d{1,3}|an?|one|two|three)[\s-]*(minutes?|mins?|hours?|hrs?)(?:[\s-]+long)?[\s-]+(lectures?|seminars?|tutorials?|discussion sections?|discussions?|labs?|laborator(?:y|ies)|practicals?|problem class(?:es)?|recitations?|workshops?|class(?:es)?)\b/gi;
-const ZH_SESSION = /(\d{1,3}|[一二两三四五六七八九十]{1,3})\s*(分钟|小时)\s*的?\s*(讲座|讲授|理论课|研讨课?|讨论课|实验课?|习题课|课堂)/g;
+// "Two 50-minute lectures": an optional count, the length, the kind. "Discussion" alone is usually a part of a lesson, not a meeting.
+const EN_SESSION = /\b(?:(two|three|2|3)\s+)?(\d{1,3}|an?|one|two|three)[\s-]*(minutes?|mins?|hours?|hrs?)(?:[\s-]+long)?[\s-]+(lectures?|seminars?|tutorials?|discussion sections?|labs?|laborator(?:y|ies)|practicals?|problem class(?:es)?|recitations?|workshops?|class(?:es)?)\b/gi;
+const ZH_SESSION = /(?:([两二三])(?:节|次))?(\d{1,3}|[一二两三四五六七八九十]{1,3})\s*(分钟|小时)\s*的?\s*(讲座|讲授|理论课|研讨课?|讨论课|实验课?|习题课|课堂)/g;
 
 /**
  * The sessions of each lesson when the brief names more than one kind of
  * meeting with its length: "a 50-minute lecture and a 50-minute seminar",
- * "每周50分钟讲授加50分钟研讨". Null when it names fewer than two.
+ * "每周50分钟讲授加50分钟研讨". Null when it names fewer than two kinds.
+ * The same meeting named twice ("90-minute lectures… each 90-minute lecture")
+ * counts once, and a short part of a lesson ("ending with a 10-minute
+ * discussion") isn't a meeting of its own.
  */
 export function guessSessions(text: string): Session[] | null {
   const found: Session[] = [];
-  const add = (count: string, unit: string, word: string) => {
+  const add = (times: string | undefined, count: string, unit: string, word: string) => {
     const kind = SESSION_WORDS.find(([re]) => re.test(word.trim()))?.[1];
     const n = /^\d/.test(count) ? Number(count) : /^an?$/i.test(count) ? 1 : (HOUR_WORDS[count.toLowerCase()] ?? zhOrDigits(count) ?? 0);
     const minutes = /^(?:hours?|hrs?|小时)$/i.test(unit) ? n * 60 : n;
-    if (kind && minutes >= 5 && minutes <= 300) found.push({ kind, minutes });
+    if (!kind || minutes < 5 || minutes > 300) return;
+    const repeat = times ? (enNumber(times) ?? zhOrDigits(times) ?? 1) : 1;
+    if (!times && found.some((s) => s.kind === kind && s.minutes === minutes)) return;
+    for (let i = 0; i < repeat; i++) found.push({ kind, minutes });
   };
-  for (const m of text.matchAll(EN_SESSION)) add(m[1]!, m[2]!, m[3]!);
-  for (const m of text.matchAll(ZH_SESSION)) add(m[1]!, m[2]!, m[3]!);
-  return found.length > 1 ? found.slice(0, 3) : null;
+  const all: [number, RegExpMatchArray][] = [...[...text.matchAll(EN_SESSION)].map((m) => [m.index, m] as [number, RegExpMatchArray]), ...[...text.matchAll(ZH_SESSION)].map((m) => [m.index, m] as [number, RegExpMatchArray])];
+  for (const [, m] of all.sort((a, b) => a[0] - b[0])) add(m[1], m[2]!, m[3]!, m[4]!);
+  const longest = Math.max(0, ...found.map((s) => s.minutes));
+  const meetings = found.filter((s) => s.minutes >= 25 && s.minutes * 2 >= longest).slice(0, 3);
+  return meetings.length > 1 && new Set(meetings.map((s) => s.kind)).size > 1 ? meetings : null;
 }

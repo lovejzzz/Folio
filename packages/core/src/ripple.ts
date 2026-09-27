@@ -56,6 +56,8 @@ function inputHash(course: Course, lesson: Lesson, key: BasisKey): string {
   }
 }
 
+const STAMPED_ASSIGNMENT = hashValue(['assignment', '']);
+
 export function computeBasis(course: Course, lesson: Lesson, kind: GeneratedKind): Basis {
   const basis: Basis = {};
   for (const key of DEPENDENCIES[kind]) basis[key] = inputHash(course, lesson, key);
@@ -67,7 +69,9 @@ export function staleReasons(course: Course, lesson: Lesson, kind: GeneratedKind
   const meta = lesson.gen[kind];
   if (!meta) return [];
   const now = computeBasis(course, lesson, kind);
-  return DEPENDENCIES[kind].filter((key) => meta.basis[key] !== undefined && meta.basis[key] !== now[key]);
+  // Sections written before homework existed were written as an assignment: that is what they were stamped with.
+  const stamped = (key: BasisKey) => meta.basis[key] ?? (key === 'homework' ? STAMPED_ASSIGNMENT : undefined);
+  return DEPENDENCIES[kind].filter((key) => stamped(key) !== undefined && stamped(key) !== now[key]);
 }
 
 /** 'none': the lesson sets no homework, or a step toward a larger piece, which has no rubric of its own. */

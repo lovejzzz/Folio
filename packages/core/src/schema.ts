@@ -9,7 +9,7 @@ import { MATERIAL_KINDS, GENERATED_KINDS } from './materials';
  * indexes, which keeps undo and AI proposals safe when order changes.
  */
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 const id = z.string().min(1);
 const text = z.string();
@@ -263,7 +263,8 @@ export const CourseSchema = z.object({
   audience: z.object({ level: text, subject: text }),
   shape: z.object({
     /** The whole lesson: with sessions, the sum of theirs. */
-    minutesPerLesson: z.number().int().min(5).max(600),
+    // Up to three sessions of up to 300 minutes each.
+    minutesPerLesson: z.number().int().min(5).max(900),
     quizSize: z.number().int().min(1).max(40),
     /** Two or more when each lesson meets more than once (a lecture, then a seminar); empty when it meets once. */
     sessions: z.array(SessionSchema).default([]),

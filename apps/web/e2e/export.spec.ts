@@ -38,6 +38,8 @@ test('exports a Word file, a deck and a Folio backup that opens again', async ({
 test('opened from a lesson, Export starts with that lesson and names the file after it', async ({ page }) => {
   await openSample(page);
   await page.getByRole('link', { name: /Picturing a distribution/ }).first().click();
+  // The drawer starts from the page it opens on: wait for the lesson before opening it.
+  await page.getByRole('textbox', { name: 'Title of lesson 2' }).waitFor();
   await page.getByRole('button', { name: 'Export', exact: true }).click();
   const drawer = page.getByRole('dialog', { name: 'Export' });
   await expect(drawer.getByRole('radio', { name: 'One lesson' })).toBeChecked();

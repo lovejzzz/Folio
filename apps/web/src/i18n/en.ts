@@ -570,6 +570,7 @@ export const en = {
       addObjective: (v: { lesson: number; text: string; name?: string }) => (v.name ? `Add the objective “${v.text}” to “${v.name}”` : `Add the objective “${v.text}” to lesson ${v.lesson}`),
       setQuizSize: (v: { size: number }) => `Make every quiz ${v.size} questions`,
       setMinutes: (v: { minutes: number }) => `Make every lesson ${v.minutes} minutes`,
+      setMinutesOneClass: (v: { minutes: number }) => `Make every lesson one ${v.minutes}-minute class, in place of its sessions`,
       setLevel: (v: { level: string }) => `Set the level to ${v.level}`,
       setMaterial: (v: { material: string; enabled: boolean }) => `${v.enabled ? 'Include' : 'Leave out'} ${v.material.toLowerCase()}`,
     },

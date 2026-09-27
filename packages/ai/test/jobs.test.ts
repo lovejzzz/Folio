@@ -82,6 +82,19 @@ describe('homework', () => {
   });
 });
 
+describe('homework changed mid-build', () => {
+  it('writes no assignment for a lesson set to no homework after the build began', async () => {
+    const store = new CourseStore(smallCourse());
+    const lesson = orderedLessons(store.getState())[0]!;
+    const targets = missingTargets(store.getState()).filter((t) => t.lessonId === lesson.id && t.kind === 'assignments');
+    store.apply([cmd('lesson.homework', { lessonId: lesson.id, homework: { kind: 'none', toward: '' } })], { label: { key: 'b' }, source: 'teacher' });
+    const inf = fakeInference(() => ({ title: 'x', prompt: 'y', steps: ['a', 'b'], rubric: { levels: [], criteria: [] } }));
+    const summary = await runBuild({ inference: inf, getCourse: store.getState, commit: (_t, c) => store.apply(c, { label: { key: 'b' }, source: 'ai' }), signal: new AbortController().signal }, targets);
+    expect(inf.calls).toHaveLength(0);
+    expect(summary.built).toBe(0);
+  });
+});
+
 describe('runBuild', () => {
   const answer = (req: { task: string }) => {
     switch (req.task) {

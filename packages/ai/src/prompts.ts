@@ -364,7 +364,7 @@ export function coursePlanPrompt(course: Course, request: string): string {
     .map((l, i) => `${i + 1}. ${l.title}: ${statedObjectives(course, l).map((o) => o.text).join('; ')}`)
     .join('\n');
   return [
-    `Course: ${course.title} (${course.audience.level || 'no level set'}). Quiz size: ${course.shape.quizSize}. Minutes per lesson: ${course.shape.minutesPerLesson}.`,
+    `Course: ${course.title} (${course.audience.level || 'no level set'}). Quiz size: ${course.shape.quizSize}. Minutes per lesson: ${course.shape.minutesPerLesson}.${course.shape.sessions.length > 1 ? ` Each lesson meets as ${sessionList(course.shape.sessions)}; setting the minutes replaces these sessions with one class, so do it only when asked for one length for the whole lesson.` : ''}`,
     `Lessons:\n${lessons}`,
     `The teacher asks: """${request.trim()}"""`,
     `Limits: ${lessonLimit.min}–${lessonLimit.max} lessons, ${quiz.min}–${quiz.max} questions per quiz, ${minutes.min}–${minutes.max} minutes per lesson.`,

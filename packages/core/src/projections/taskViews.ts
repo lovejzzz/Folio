@@ -1,5 +1,6 @@
 import { filledTexts, isBlankCriterion, isBlankDiscussion, isBlankFaq } from '../blank';
 import { answerText, lessonAssignments, lessonDiscussions, lessonFaq } from '../course';
+import { setsWork } from '../ripple';
 import type { Block } from '../semantic';
 import type { Rubric } from '../schema';
 import { field, lessonHeading, lessonsIn, questionBlock, shownQuestions, type Ctx } from './shared';
@@ -41,6 +42,8 @@ export function projectAssignments(ctx: Ctx): Block[] {
   const { course, l } = ctx;
   const blocks: Block[] = [];
   for (const lesson of lessonsIn(ctx)) {
+    // An assignment the lesson no longer sets (kept from before its homework changed) isn't handed out.
+    if (!setsWork(lesson, 'assignments')) continue;
     for (const a of lessonAssignments(course, lesson)) {
       blocks.push(lessonHeading(ctx, lesson));
       blocks.push({ t: 'heading', level: 3, text: field(ctx, a.id, 'title', a.title) });
@@ -52,7 +55,7 @@ export function projectAssignments(ctx: Ctx): Block[] {
         blocks.push({ t: 'heading', level: 3, text: l.steps });
         blocks.push({ t: 'list', ordered: true, items: steps });
       }
-      const rubric = a.rubricId ? course.rubrics[a.rubricId] : undefined;
+      const rubric = a.rubricId && setsWork(lesson, 'rubrics') ? course.rubrics[a.rubricId] : undefined;
       if (rubric) {
         blocks.push({ t: 'para', text: l.gradedWith(rubric.title), tone: 'muted' });
         blocks.push(...rubricBlocks(ctx, rubric));
@@ -66,6 +69,7 @@ export function projectAssignments(ctx: Ctx): Block[] {
 export function projectRubrics(ctx: Ctx): Block[] {
   const blocks: Block[] = [];
   for (const lesson of lessonsIn(ctx)) {
+    if (!setsWork(lesson, 'rubrics')) continue;
     for (const a of lessonAssignments(ctx.course, lesson)) {
       const rubric = a.rubricId ? ctx.course.rubrics[a.rubricId] : undefined;
       if (!rubric) continue;
