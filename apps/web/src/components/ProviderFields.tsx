@@ -1,16 +1,16 @@
-import { DEFAULT_MODELS, type ProviderId } from '@folio/ai';
+import { DEFAULT_MODELS, PROVIDERS, type ProviderId } from '@folio/ai';
 import { TextField, cx } from '@folio/ui';
 import { ExternalLink } from 'lucide-react';
 import { Radio, RadioGroup } from 'react-aria-components';
 import { useT, type Messages } from '../i18n';
 import { usePrefs } from '../state/prefs';
 
-const PROVIDERS: ProviderId[] = ['anthropic', 'openai', 'google', 'local'];
 
 const KEY_PAGES: Partial<Record<ProviderId, string>> = {
   anthropic: 'https://console.anthropic.com/settings/keys',
   openai: 'https://platform.openai.com/api-keys',
   google: 'https://aistudio.google.com/apikey',
+  deepseek: 'https://platform.deepseek.com/api_keys',
 };
 
 /** Plain choices, each with a one-line cost and privacy note. */
@@ -23,7 +23,7 @@ export function ProviderChoice({ value, onChange, compact }: { value: ProviderId
           key={p}
           value={p}
           className={cx(
-            'group flex cursor-default gap-3 rounded-sheet border border-rule bg-paper p-3 outline-none transition-colors duration-120',
+            'group flex cursor-default gap-3 rounded-sheet border sm:last:odd:col-span-2 border-rule bg-paper p-3 outline-none transition-colors duration-120',
             'data-hovered:border-field data-selected:border-accent data-selected:bg-accent-tint data-focus-visible:ring-2 data-focus-visible:ring-accent',
           )}
         >

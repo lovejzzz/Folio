@@ -48,6 +48,12 @@ It builds the course and screenshots every material into `live-results/prof-<nam
 
 Overall, about 47% of output tokens were thinking. `python3 scripts/token-report.py --grep econometrics` prints the table.
 
+## DeepSeek status (this session)
+
+- **Blocked on the key.** `DEEPSEEK_API_KEY` in the environment is rejected by DeepSeek with 401 "Authentication Fails" (key ending `4cf4`), on `/models`, `/user/balance` and `/chat/completions` alike. Nothing has been spent. The model id for "DeepSeek-V4.1-Flash" is still unconfirmed; `deepseek-chat` is the placeholder default until `/models` answers.
+- **DeepSeek is a provider in the app.** It uses the OpenAI-compatible adapter with JSON mode (`json_object`); the schema goes at the end of the system prompt, after the cacheable course context; `max_tokens` defaults to 8000. `api.deepseek.com` is in the CSP. Browsers can call it directly: the CORS preflight allows any origin.
+- **`scripts/deepseek-bridge.mjs`** is a drop-in for `claude-bridge.mjs`: `node scripts/deepseek-bridge.mjs`, then `PROF=econ pnpm test:live professor` as before. It logs the same rows (`overhead: 0`, so `token-report.py` doesn't subtract the CLI's tokens) and keeps a ledger in `live-results/deepseek-spend.json`. It refuses calls past `RUN_BUDGET_USD` (3) or `BUDGET_USD` (15 in total), and prints the account balance at start and exit. Prices default to V3.2's ($0.28 in, $0.028 cached, $0.42 out per M); set `DS_PRICE_*` once V4.1-Flash's prices are known. Thinking is off unless `DEEPSEEK_THINKING=1`.
+
 ## Next
 
 1. **DeepSeek for cheap testing.** The user set `DEEPSEEK_API_KEY` in the environment and allowed `api.deepseek.com`. They asked for **DeepSeek-V4.1-Flash**; confirm the exact id with `GET https://api.deepseek.com/models`. The budget is $19. Stop at $15 in total and about $3 per run.

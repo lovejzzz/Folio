@@ -1,4 +1,4 @@
-import { DEFAULT_LOCAL_URL, DEFAULT_MODELS, isConfigured, type ModelSettings, type ProviderId } from '@folio/ai';
+import { DEFAULT_LOCAL_URL, DEFAULT_MODELS, PROVIDERS, isConfigured, type ModelSettings, type ProviderId } from '@folio/ai';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -44,7 +44,6 @@ const safeStorage = createJSONStorage(() => ({
   },
 }));
 
-const PROVIDERS: ProviderId[] = ['anthropic', 'openai', 'google', 'local'];
 const oneOf = <T extends string>(allowed: readonly T[], value: unknown, fallback: T): T => (allowed.includes(value as T) ? (value as T) : fallback);
 const record = (value: unknown): Partial<Record<ProviderId, string>> =>
   value && typeof value === 'object'

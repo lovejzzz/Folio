@@ -20,7 +20,7 @@ pnpm dev            # http://localhost:5173
 ```
 
 - **Without a model:** choose *Or open the sample course* on the home page. It is a hand-written four-lesson statistics unit with every material filled in, so you can edit, undo, export and print straight away.
-- **With a model:** type a brief and press *Continue*. Folio asks you to connect a model: your own Claude, OpenAI or Gemini key, or a local OpenAI-compatible server (Ollama, LM Studio) for "on this device". Keys stay in the browser, and requests go straight from the browser to the provider.
+- **With a model:** type a brief and press *Continue*. Folio asks you to connect a model: your own Claude, OpenAI, Gemini or DeepSeek key, or a local OpenAI-compatible server (Ollama, LM Studio) for "on this device". Keys stay in the browser, and requests go straight from the browser to the provider.
 
 ## What it does
 
@@ -38,7 +38,7 @@ The ten materials are the course map, syllabus, lesson plans, slide decks, assig
 ```text
 apps/web/          routes, screens, drawers, command bar, state, i18n (React 19, TanStack Router)
 packages/core/     the Course schema (Zod), commands + undo, ripple, projections, checks, sample course
-packages/ai/       one Inference port, Anthropic/OpenAI/Gemini/local adapters, prompts, jobs, build queue
+packages/ai/       one Inference port, Anthropic/OpenAI/Gemini/DeepSeek/local adapters, prompts, jobs, build queue
 packages/export/   SemanticDoc → .docx, .pptx, .xlsx, .csv, .zip and .folio
 packages/ui/       tokens.ts (→ tokens.css), React Aria primitives, domain components
 ```
@@ -76,6 +76,8 @@ The end-to-end suite uses a stand-in model. To see what a real model does with F
 node scripts/claude-bridge.mjs                # an Anthropic-style endpoint on :8787 that answers via `claude -p` (Opus 5.5 by default)
 LIVE=en pnpm test:live build                  # build a whole course: en, zh, stats, sources or vague
 pnpm test:live assist zh-interface            # selection actions, ⌘K requests, a ripple update; the Chinese interface
+DEEPSEEK_API_KEY=… node scripts/deepseek-bridge.mjs   # the same endpoint, answered by DeepSeek instead (cheap; capped at $3 a run, $15 in all)
+python3 scripts/token-report.py               # tokens and dollars per job
 python3 scripts/score-live.py                 # answer positions, true/false balance, lengths, flags, timing, cost
 ```
 

@@ -89,6 +89,16 @@ describe('openai and local adapters', () => {
     expect((seen[0]!.init.headers as Record<string, string>).authorization).toBeUndefined();
   });
 
+  it('sends DeepSeek the schema in the prompt and asks for JSON mode', async () => {
+    const { fn, seen } = mockFetch(200, { choices: [{ message: { content: '{"title":"Deep"}' }, finish_reason: 'stop' }] });
+    expect(await createInference(settings('deepseek'), fn).complete(req)).toEqual({ title: 'Deep' });
+    expect(seen[0]!.url).toBe('https://api.deepseek.com/chat/completions');
+    const body = JSON.parse(String(seen[0]!.init.body));
+    expect(body.response_format).toEqual({ type: 'json_object' });
+    expect(body.max_tokens).toBe(8000);
+    expect(body.messages[0].content).toMatch(/JSON Schema:\n\{.*"title"/);
+  });
+
   it('maps rate limits', async () => {
     await expect(createInference(settings('openai'), mockFetch(429, {}).fn).complete(req)).rejects.toMatchObject({ kind: 'rate' });
   });

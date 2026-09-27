@@ -11,6 +11,7 @@ export function createInference(settings: ModelSettings, fetchImpl?: typeof fetc
     case 'google':
       return googleInference(settings, fetchImpl);
     case 'openai':
+    case 'deepseek':
     case 'local':
       return openaiInference(settings, fetchImpl);
   }

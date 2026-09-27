@@ -6,7 +6,10 @@ import type { z } from 'zod';
  * repair happen above this line, the same way for every provider.
  */
 
-export type ProviderId = 'anthropic' | 'openai' | 'google' | 'local';
+export type ProviderId = 'anthropic' | 'openai' | 'google' | 'deepseek' | 'local';
+
+/** In the order the settings list them. */
+export const PROVIDERS: readonly ProviderId[] = ['anthropic', 'openai', 'google', 'deepseek', 'local'];
 
 export interface ModelSettings {
   provider: ProviderId;
@@ -20,6 +23,7 @@ export const DEFAULT_MODELS: Record<ProviderId, string> = {
   anthropic: 'claude-opus-5',
   openai: 'gpt-5',
   google: 'gemini-2.5-flash',
+  deepseek: 'deepseek-chat',
   local: 'llama3.1',
 };
 

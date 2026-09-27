@@ -2,8 +2,8 @@
 
   python3 scripts/token-report.py [--since 2026-09-27T06:00] [--grep text] [--model claude-sonnet-5]
 
-The bridge answers through `claude -p`, which adds about CLI_OVERHEAD input
-tokens of its own to every call; the app talking to the API directly does
+The Claude bridge answers through `claude -p`, which adds about CLI_OVERHEAD
+input tokens of its own to every call (the DeepSeek bridge logs overhead 0); the app talking to the API directly does
 not, so that is subtracted from the input column. Output tokens include the
 model's thinking, which is why "out" is compared with the tokens the JSON
 answer itself needs.
@@ -47,13 +47,13 @@ def main():
         repair = 'Your previous answer was' in r['prompt']
         c = agg[kind + (' (repair)' if repair else '')]
         c['n'] += 1
-        c['in'] += max(0, r['usage']['in'] - CLI_OVERHEAD)
+        c['in'] += max(0, r['usage']['in'] - r.get('overhead', CLI_OVERHEAD))
         c['out'] += r['usage']['out']
         c['answer'] += answer_tokens(r.get('text'))
         c['cost'] += r.get('cost') or 0
         c['ms'] += r['ms']
     print(f"{len(rows)} calls · model {', '.join(sorted({r.get('model') or '?' for r in rows}))}")
-    print(f"{'job':22s} {'calls':>5s} {'in/call':>8s} {'out/call':>9s} {'answer':>7s} {'thinking':>9s} {'s/call':>7s} {'$ (CLI)':>8s}")
+    print(f"{'job':22s} {'calls':>5s} {'in/call':>8s} {'out/call':>9s} {'answer':>7s} {'thinking':>9s} {'s/call':>7s} {'$':>8s}")
     total = collections.Counter()
     for kind, c in sorted(agg.items(), key=lambda kv: -kv[1]['cost']):
         n = c['n']
@@ -62,7 +62,7 @@ def main():
         total.update(c)
     if total['n']:
         print(f"{'total':22s} {total['n']:5d} {total['in']:8d} {total['out']:9d} {total['answer']:7d} {max(0,total['out']-total['answer'])/max(1,total['out']):8.0%} {'':7s} {total['cost']:8.2f}")
-        print(f"(in = without the CLI's own ~{CLI_OVERHEAD} tokens; cost is what the CLI billed, overhead included)")
+        print(f"(in = without the CLI's own ~{CLI_OVERHEAD} tokens on Claude bridge calls; cost is what was billed)")
 
 
 main()
