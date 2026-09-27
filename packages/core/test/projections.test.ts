@@ -87,6 +87,12 @@ describe('the syllabus', () => {
     expect(project(course, 'plan', { audience: 'student' }).blocks.some((b) => b.t === 'heading' && b.text === 'Before class')).toBe(false);
   });
 
+  it('lists components named without weights, with no column of zeros or total', () => {
+    const c = { ...sampleCourse(), grading: [{ id: 'g1', item: 'Weekly quiz', weight: 0 }, { id: 'g2', item: 'Unit test', weight: 0 }] };
+    const table = project(c, 'syllabus', { audience: 'teacher' }).blocks.find((b) => b.t === 'table' && b.rows.some((r) => r[0] === 'Weekly quiz'));
+    expect(table).toMatchObject({ head: ['Component'], rows: [['Weekly quiz'], ['Unit test']] });
+  });
+
   it('puts the stated grading scheme first under assessment, with its total', () => {
     const store = new CourseStore(course);
     const grading = [

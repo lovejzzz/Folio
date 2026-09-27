@@ -317,3 +317,9 @@
     break-inside: avoid;
   }
 }
+
+/* Chinese headings set at display size: full-width punctuation at half width, so "初二物理：浮力" doesn't open a gap. */
+:lang(zh) .font-display,
+.font-display:lang(zh) {
+  font-feature-settings: 'halt';
+}

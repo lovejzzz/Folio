@@ -65,12 +65,14 @@ function Row({ course, item, i }: { course: Course; item: GradeItem; i: number }
       <td className="border-b border-rule px-2 py-2.5 text-right text-ink-2">
         <InlineNumber
           label={t.tasks.gradeWeightOf(name)}
-          value={item.weight}
+          // A weight the brief didn't state is 0: a dash to fill in, not a share of nothing.
+          value={item.weight > 0 ? item.weight : Number.NaN}
+          placeholder="—"
           minValue={WEIGHT.min}
           maxValue={WEIGHT.max}
           fractionDigits={1}
           hint={t.tasks.weightHint(WEIGHT.min, WEIGHT.max)}
-          unit={<span className="-ml-1">%</span>}
+          unit={item.weight > 0 ? <span className="-ml-1">%</span> : undefined}
           className="-my-0.5 items-end tabular"
           onChange={(weight) => set({ weight })}
         />
@@ -113,9 +115,9 @@ export function GradingTable({ course }: { course: Course }) {
           <tr className="align-top">
             <th scope="row" className="px-2 py-2.5 text-left font-semibold text-ink">
               {t.tasks.gradeTotal}
-              {off && <span className="ml-3 text-13 font-normal text-attention">{t.tasks.gradeTotalOff}</span>}
+              {total === 0 ? <span className="ml-3 text-13 font-normal text-ink-2">{t.tasks.gradeNoWeights}</span> : off && <span className="ml-3 text-13 font-normal text-attention">{t.tasks.gradeTotalOff}</span>}
             </th>
-            <td className={cx('px-2 py-2.5 text-right font-semibold tabular', off ? 'text-attention' : 'text-ink')}>{`${total}%`}</td>
+            <td className={cx('px-2 py-2.5 text-right font-semibold tabular', off && total > 0 ? 'text-attention' : 'text-ink')}>{total > 0 ? `${total}%` : '—'}</td>
           </tr>
         </tfoot>
       </table>

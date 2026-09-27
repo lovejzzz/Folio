@@ -46,7 +46,8 @@ const ZH_LESSON = String.raw`(?:个)?(?:节课|节|课时|次课|堂课|堂|讲|
 const EN_NOT_COUNT_BEFORE = String.raw`(?<!\b(?:grade|year|years|age|ages|lesson|unit|chapter|week|level|stage|form|no\.?|number)[\s-]*)`;
 const EN_NOT_COUNT_AFTER = String.raw`(?![\s-]*(?:min(?:ute)?s?|hours?|hrs?|h)\b)`;
 const EN_COUNT = String.raw`${EN_NOT_COUNT_BEFORE}\b(${EN_NUMBER})${EN_NOT_COUNT_AFTER}`;
-const ZH_NOT_COUNT_BEFORE = String.raw`(?<![第\d零一二两三四五六七八九十高初大])`;
+// Not an ordinal (第三课), a grade (初二), or a rate: 每周一节 is how often, not how many.
+const ZH_NOT_COUNT_BEFORE = String.raw`(?<![第\d零一二两三四五六七八九十高初大])(?<!每周|每星期|一周|每天)`;
 
 /** The first match of any pattern that reads as a lesson count in range. */
 function firstCount(text: string, patterns: [source: string, read: (m: RegExpMatchArray) => number | null][]): number | null {
@@ -61,11 +62,13 @@ function firstCount(text: string, patterns: [source: string, read: (m: RegExpMat
 
 const times = (a: number | null, b: number | null): number | null => (a && b ? a * b : null);
 
-/** "2 lessons a week for 6 weeks" → 12; "每周两节课，共六周" → 12. */
+/** "2 lessons a week for 6 weeks" → 12; "每周两节课，共六周" → 12; either way round. */
 function lessonsFromRate(text: string): number | null {
   return firstCount(text, [
     [String.raw`${EN_COUNT}[\s-]+${EN_FILLER}${EN_LESSON}[\s-]+(?:a|per|each|every)[\s-]+week\b.*?\b(${EN_NUMBER})[\s-]+weeks?\b`, (m) => times(enNumber(m[1]!), enNumber(m[2]!))],
+    [String.raw`\b(${EN_NUMBER})[\s-]+weeks?\b.*?${EN_COUNT}[\s-]+${EN_FILLER}${EN_LESSON}[\s-]+(?:a|per|each|every)[\s-]+week\b`, (m) => times(enNumber(m[2]!), enNumber(m[1]!))],
     [String.raw`(?:每周|一周|每星期)(${ZH_NUMBER})\s*${ZH_LESSON}.*?(${ZH_NUMBER})\s*(?:周|个星期|星期)`, (m) => times(zhNumber(m[1]!), zhNumber(m[2]!))],
+    [String.raw`${ZH_NOT_COUNT_BEFORE}(${ZH_NUMBER})\s*(?:周|个星期)[^每]{0,12}(?:每周|每星期)(${ZH_NUMBER})\s*${ZH_LESSON}`, (m) => times(zhNumber(m[2]!), zhNumber(m[1]!))],
   ]);
 }
 
@@ -88,6 +91,11 @@ function lessonsFromWeeks(text: string): number | null {
 
 /** How many lessons the brief asks for. A number named as lessons beats one named as weeks. */
 export function guessLessons(text: string): number | null {
+  // "Four weeks, each a lecture and a seminar": a lesson is a week of sessions, so the weeks are the count.
+  if (guessSessions(text)) {
+    const weeks = lessonsFromWeeks(text);
+    if (weeks) return weeks;
+  }
   return lessonsFromRate(text) ?? lessonsNamed(text) ?? lessonsFromWeeks(text);
 }
 

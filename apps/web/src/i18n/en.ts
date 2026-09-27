@@ -364,6 +364,7 @@ export const en = {
     removeGradeItem: (name: string) => `Remove ${name}`,
     gradeTotal: 'Total',
     gradeTotalOff: 'Weights usually add up to 100%.',
+    gradeNoWeights: 'No weights given yet.',
   },
   changes: {
     failed: 'Couldn’t write',

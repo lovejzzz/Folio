@@ -168,3 +168,13 @@ describe('guessSessions', () => {
 
   it.each(['Four 50-minute lessons with practical work in each', 'Weekly 90-minute lectures', 'A 50-minute class'])('none in %s', (brief) => expect(guessSessions(brief)).toBeNull());
 });
+
+describe('guessLessons with sessions and rates', () => {
+  it.each([
+    ['初二物理：浮力。三周，每周一节40分钟的课堂和一节40分钟的实验课。', 3],
+    ['Four weeks, each a 50-minute lecture and a 50-minute seminar.', 4],
+    ['Ten weeks, one lecture a week.', 10],
+    ['六周，每周两节课', 12],
+    ['每周一节课', null],
+  ])('%s → %s', (brief, n) => expect(guessLessons(brief)).toBe(n));
+});

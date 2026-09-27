@@ -344,6 +344,7 @@ export const zh: Messages = {
     addGradeItem: '添加考核项目',
     removeGradeItem: (name) => `移除“${name}”`,
     gradeTotal: '合计',
+    gradeNoWeights: '还没有填写占比。',
     gradeTotalOff: '各项占比通常合计为 100%。',
   },
   changes: {

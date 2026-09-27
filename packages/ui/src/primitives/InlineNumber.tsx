@@ -16,6 +16,8 @@ export interface InlineNumberProps {
   hint: string;
   /** A unit after the number, such as "min". */
   unit?: ReactNode;
+  /** Shown when there is no number yet (a NaN value). */
+  placeholder?: string;
   className?: string;
 }
 
@@ -27,7 +29,7 @@ const HINT_MS = 4000;
  * range on commit (React Aria's NumberField); either way a short hint says
  * what the field takes, so nothing changes silently.
  */
-export function InlineNumber({ label, value, onChange, minValue, maxValue, fractionDigits = 0, hint, unit, className }: InlineNumberProps) {
+export function InlineNumber({ label, value, onChange, minValue, maxValue, fractionDigits = 0, hint, unit, placeholder, className }: InlineNumberProps) {
   const typed = useRef('');
   const [showHint, setShowHint] = useState(false);
   useEffect(() => {
@@ -61,6 +63,7 @@ export function InlineNumber({ label, value, onChange, minValue, maxValue, fract
             else if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && /[^\d.,]/.test(e.key)) setShowHint(true);
           }}
           onBlur={check}
+          placeholder={placeholder}
           className="field-sizing-content -ml-1 h-6 rounded-control bg-transparent px-1 tabular-nums outline-none transition-colors duration-120 hover:bg-well focus:bg-paper focus:ring-2 focus:ring-accent"
         />
         {unit}

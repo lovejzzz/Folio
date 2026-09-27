@@ -104,8 +104,8 @@ function gradingBlocks(ctx: Ctx): Block[] {
   const items = course.grading.filter((g) => nonEmpty(g.item));
   if (!items.length) return [];
   const total = Math.round(items.reduce((sum, g) => sum + g.weight, 0) * 10) / 10;
-  // No weights stated: a list of what is graded, not a column of zeros.
-  if (total === 0) return [{ t: 'list', ordered: false, items: items.map((g) => g.item) }];
+  // No weights stated: what is graded, without a column of zeros.
+  if (total === 0) return [{ t: 'table', head: [l.gradeItem], widths: [100], rows: items.map((g) => [g.item]) }];
   const blocks: Block[] = [
     {
       t: 'table',
