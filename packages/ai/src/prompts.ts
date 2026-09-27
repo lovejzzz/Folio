@@ -1,4 +1,4 @@
-import { SHAPE_LIMITS, filledTexts, orderedLessons, statedObjectives, type Course, type Language, type Lesson } from '@folio/core';
+import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
 import type { Effort } from './inference';
 
 /**
@@ -36,9 +36,33 @@ export interface OutlineInput {
   brief: string;
   lessonCount: number;
   minutesPerLesson: number;
+  sessions?: Session[];
   level: string;
   language: Language;
   sources: { title: string; text: string }[];
+}
+
+const SESSION_NAMES: Record<SessionKind, string> = { class: 'class', lecture: 'lecture', seminar: 'seminar', lab: 'lab session', problems: 'problem class' };
+
+/** What each kind of session is for, so a seminar isn't written as a second lecture. */
+const SESSION_GUIDE: Record<SessionKind, string> = {
+  class: 'a class mixes teaching and practice',
+  lecture: 'a lecture presents and explains, with slides',
+  seminar: 'a seminar runs on discussion of the reading, led by the students, without slides',
+  lab: 'a lab session is hands-on: the method, the equipment, safety and recording results',
+  problems: 'a problem class works through problems, students first, with worked solutions to follow',
+};
+
+/** "a 50-minute lecture, then a 50-minute seminar" */
+export function sessionList(sessions: Session[]): string {
+  return sessions.map((s) => `a ${s.minutes}-minute ${SESSION_NAMES[s.kind]}`).join(', then ');
+}
+
+function sessionsLine(course: Course): string {
+  const sessions = lessonSessions(course);
+  if (sessions.length < 2) return `Each lesson lasts ${course.shape.minutesPerLesson} minutes.`;
+  const kinds = [...new Set(sessions.map((s) => s.kind))];
+  return `Each lesson meets ${sessions.length} times: ${sessionList(sessions)}. What each is for: ${kinds.map((k) => SESSION_GUIDE[k]).join('; ')}.`;
 }
 
 function clip(text: string, budget: number): string {
@@ -48,7 +72,9 @@ function clip(text: string, budget: number): string {
 export function outlinePrompt(input: OutlineInput): string {
   const parts = [
     `The teacher wrote: """${input.brief.trim()}"""`,
-    `Plan exactly ${input.lessonCount} lessons of ${input.minutesPerLesson} minutes each${input.level ? ` for ${input.level}` : ''}.`,
+    input.sessions && input.sessions.length > 1
+      ? `Plan exactly ${input.lessonCount} lessons${input.level ? ` for ${input.level}` : ''}. Each lesson meets ${input.sessions.length} times: ${sessionList(input.sessions)}. Plan each lesson as one topic taught across its sessions.`
+      : `Plan exactly ${input.lessonCount} lessons of ${input.minutesPerLesson} minutes each${input.level ? ` for ${input.level}` : ''}.`,
     'Order the lessons so each builds on the last. Give each lesson a short title that names what is taught, a one-sentence summary of under 25 words, and one to three measurable objectives of under 15 words each.',
     'Do not mention the number of lessons or weeks, the lesson length, the number of quiz questions or which materials a lesson has: Folio keeps those as settings the teacher can change, so they must not be repeated in the text.',
     'Under "readings", list what students read before each lesson, taken from the brief or the attached sources. When the brief names a textbook but not its chapters, name the chapter that matches the lesson, by its topic if you are unsure of the number. Never invent works, authors or page numbers; leave the readings empty when the brief gives nothing to go on.',
@@ -134,7 +160,7 @@ export function courseBackground(course: Course): string {
     `Course: ${course.title}${audience ? ` (${audience})` : ''}`,
     course.summary ? `About the course: ${course.summary}` : '',
     `Lessons:\n${all}`,
-    `Each lesson lasts ${course.shape.minutesPerLesson} minutes.`,
+    sessionsLine(course),
     isHigherEducation(course.audience.level) ? UNIVERSITY_TEACHING : '',
     briefLine(course),
     gradingLine(course),
@@ -220,9 +246,9 @@ export const BUILT_ON_PLAN: ReadonlySet<SectionPromptKind> = new Set(['slides', 
 
 const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string> = {
   plan: (c) =>
-    `Write the lesson plan: two to five key ideas, a sequence of segments (warm-up, teaching, practice, discussion, check, close as fits) whose minutes add up to ${c.shape.minutesPerLesson}, and the vocabulary students need. Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
-  slides: () =>
-    'Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes.',
+    `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need. Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
+  slides: (c) =>
+    ['Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes.', slidesFor(c)].filter(Boolean).join(' '),
   study: () =>
     'Write a study guide for students to read after the lesson: a short overview, then two to four key points, each with a heading and a clear explanation that includes an example.',
   quiz: (c, lesson) =>
@@ -240,11 +266,34 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
       .filter(Boolean)
       .join(' ');
   },
-  discussions: () =>
-    'Write two discussion prompts that make students think and disagree productively, each with two or three follow-up questions for the teacher.',
+  discussions: (c) =>
+    [
+      'Write two discussion prompts that make students think and disagree productively, each with two or three follow-up questions for the teacher.',
+      lessonSessions(c).some((s) => s.kind === 'seminar') ? 'They are for the seminar: rooted in the reading, for students to lead.' : '',
+    ]
+      .filter(Boolean)
+      .join(' '),
   faq: () =>
     'Write two or three questions students commonly ask about this lesson, with short, accurate answers.',
 };
+
+/** The segments to write: one run for a lesson that meets once, a run per session otherwise. */
+function planRun(course: Course): string {
+  const sessions = lessonSessions(course);
+  const kinds = 'warm-up, teaching, practice, discussion, check, close as fits';
+  if (sessions.length < 2) return `a sequence of segments (${kinds}) whose minutes add up to ${course.shape.minutesPerLesson}`;
+  const each = sessions.map((s, i) => `${i + 1} for the ${SESSION_NAMES[s.kind]} (${s.minutes} minutes)`).join(', ');
+  return `a sequence of segments (${kinds}) for each session in turn, with "session" set to ${each}; each session's minutes add up to its length`;
+}
+
+/** Slides for the sessions that use them, when a lesson meets more than once. */
+function slidesFor(course: Course): string {
+  const sessions = lessonSessions(course);
+  if (sessions.length < 2) return '';
+  const shown = sessions.filter((s) => s.kind === 'lecture' || s.kind === 'class');
+  if (!shown.length || shown.length === sessions.length) return '';
+  return `The slides are for the ${SESSION_NAMES[shown[0]!.kind]}; the other sessions run without them.`;
+}
 
 /** The per-call part of a section request; the course itself goes in courseBackground. */
 export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromptKind): string {

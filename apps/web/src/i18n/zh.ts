@@ -164,6 +164,17 @@ export const zh: Messages = {
     noLessons: '至少添加一课才能生成。',
     buildTime: (minutes) => `大约 ${minutes} 分钟。每课写好就能打开。`,
   },
+  sessions: {
+    kinds: { class: '课堂', lecture: '讲授', seminar: '研讨', lab: '实验', problems: '习题课' },
+    heading: (kind, minutes) => `${kind} · ${minutes} 分钟`,
+    part: (kind, minutes) => `${kind} ${minutes} 分钟`,
+    each: '每课',
+    add: '添加一种课型',
+    hint: '比如讲授加研讨，或课堂加实验，各自单独计时。',
+    kindOf: (n) => `第 ${n} 部分的课型`,
+    minutesOf: (n) => `第 ${n} 部分的时长`,
+    remove: (n) => `移除第 ${n} 部分`,
+  },
   homework: {
     label: '作业',
     kinds: { assignment: '计分作业', step: '为大作业做准备', none: '不布置作业' },

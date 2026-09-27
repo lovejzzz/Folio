@@ -93,7 +93,9 @@ export function MapScreen() {
   const course = useCourse();
   const phone = useMediaQuery('(max-width: 767px)');
   usePageTitle(t.nav.map, course.title || t.common.untitled);
-  const meta = [course.audience.level, t.common.lessons(course.lessonOrder.length), t.common.minutes(course.shape.minutesPerLesson)].filter(Boolean);
+  const sessions = course.shape.sessions;
+  const length = sessions.length > 1 ? sessions.map((x) => t.sessions.part(t.sessions.kinds[x.kind], x.minutes)).join(' + ') : t.common.minutes(course.shape.minutesPerLesson);
+  const meta = [course.audience.level, t.common.lessons(course.lessonOrder.length), length].filter(Boolean);
   return (
     <div className="px-4 pb-24 pt-8 md:px-8 md:pt-10">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">

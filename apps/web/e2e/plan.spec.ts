@@ -93,3 +93,17 @@ test('suggested further reading stays apart until the teacher adds it', async ({
   await expect(page.getByRole('textbox', { name: 'Reading 2 for lesson 1' })).toHaveText(suggestion);
   await expect(suggested).toHaveCount(0);
 });
+
+test('a brief with a lecture and a seminar plans both, and the lesson plan is timed per session', async ({ page }) => {
+  await planLessons(page, 'Political philosophy, two weeks, each a 50-minute lecture and a 50-minute seminar.');
+  await expect(page.getByText('Each lesson', { exact: true })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Kind of session 1' })).toHaveValue('lecture');
+  await expect(page.getByRole('combobox', { name: 'Kind of session 2' })).toHaveValue('seminar');
+  await page.getByRole('button', { name: 'Write 2 lessons' }).click();
+  await expect(page.getByText('Lecture 50 min + Seminar 50 min')).toBeVisible();
+  await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 30_000 });
+  await page.locator('a[href*="/lesson/"]').first().click();
+  const plan = page.locator('#m-plan');
+  await expect(plan.getByRole('heading', { name: 'Lecture · 50 min' })).toBeVisible();
+  await expect(plan.getByRole('heading', { name: 'Seminar · 50 min' })).toBeVisible();
+});

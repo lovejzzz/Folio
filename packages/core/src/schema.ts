@@ -43,8 +43,20 @@ export type Objective = z.infer<typeof ObjectiveSchema>;
 export const SegmentKindSchema = z.enum(['warmup', 'teach', 'practice', 'discuss', 'check', 'close']);
 export type SegmentKind = z.infer<typeof SegmentKindSchema>;
 
+/**
+ * A kind of class meeting. Most courses meet once a lesson; a university week
+ * is often a lecture and a seminar, a lab, or a problem class, each with its
+ * own length and its own part of the lesson plan.
+ */
+export const SessionKindSchema = z.enum(['class', 'lecture', 'seminar', 'lab', 'problems']);
+export type SessionKind = z.infer<typeof SessionKindSchema>;
+export const SessionSchema = z.object({ kind: SessionKindSchema, minutes: z.number().int().min(5).max(300) });
+export type Session = z.infer<typeof SessionSchema>;
+
 export const SegmentSchema = z.object({
   id,
+  /** Which of the lesson's sessions it belongs to, counted from 0; always 0 in a lesson that meets once. */
+  session: z.number().int().min(0).default(0),
   kind: SegmentKindSchema,
   title: text,
   minutes: z.number().int().min(0).max(600),
@@ -250,8 +262,11 @@ export const CourseSchema = z.object({
   locale: z.string().default(''),
   audience: z.object({ level: text, subject: text }),
   shape: z.object({
+    /** The whole lesson: with sessions, the sum of theirs. */
     minutesPerLesson: z.number().int().min(5).max(600),
     quizSize: z.number().int().min(1).max(40),
+    /** Two or more when each lesson meets more than once (a lecture, then a seminar); empty when it meets once. */
+    sessions: z.array(SessionSchema).default([]),
   }),
   policies: text,
   /** How the course is graded, as the teacher stated it. Empty when not stated. */

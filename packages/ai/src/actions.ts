@@ -105,7 +105,8 @@ export function operationsToCommands(course: Course, operations: PlanOperation[]
         commands.push(cmd('course.update', { shape: { quizSize: op.size } }));
         break;
       case 'setMinutes':
-        commands.push(cmd('course.update', { shape: { minutesPerLesson: op.minutes } }));
+        // One length for the whole lesson: a lecture-and-seminar pattern gives way to a single class.
+        commands.push(cmd('course.update', { shape: { minutesPerLesson: op.minutes, sessions: [] } }));
         break;
       case 'setLevel':
         commands.push(cmd('course.update', { audience: { level: op.level } }));

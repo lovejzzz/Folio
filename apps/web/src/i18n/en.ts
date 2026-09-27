@@ -181,6 +181,17 @@ export const en = {
     noLessons: 'Add at least one lesson to write.',
     buildTime: (minutes: number) => `About ${minutes} minutes. Each lesson opens as soon as it’s done.`,
   },
+  sessions: {
+    kinds: { class: 'Class', lecture: 'Lecture', seminar: 'Seminar', lab: 'Lab', problems: 'Problem class' },
+    heading: (kind: string, minutes: number) => `${kind} · ${minutes} min`,
+    part: (kind: string, minutes: number) => `${kind} ${minutes} min`,
+    each: 'Each lesson',
+    add: 'Add a session',
+    hint: 'A lecture and a seminar, or a class and a lab, each timed on its own.',
+    kindOf: (n: number) => `Kind of session ${n}`,
+    minutesOf: (n: number) => `Minutes of session ${n}`,
+    remove: (n: number) => `Remove session ${n}`,
+  },
   homework: {
     label: 'Homework',
     kinds: { assignment: 'Graded assignment', step: 'A step toward a bigger piece', none: 'No homework' },

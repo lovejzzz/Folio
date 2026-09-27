@@ -86,6 +86,12 @@ export function duplicatePrompts(prompts: string[]): string[] {
   return dupes;
 }
 
+/** Each session's segments against its length: a lecture and a seminar are timed apart. */
+export function checkSessionMinutes(segments: { session: number; minutes: number }[], sessions: { minutes: number }[]): Flag[] {
+  const last = sessions.length - 1;
+  return sessions.flatMap((s, i) => checkMinutes(segments.filter((seg) => Math.min(seg.session, last) === i).map((seg) => seg.minutes), s.minutes)).slice(0, 1);
+}
+
 export function checkMinutes(segmentMinutes: number[], target: number): Flag[] {
   const total = segmentMinutes.reduce((a, b) => a + b, 0);
   const slack = Math.max(3, Math.round(target * 0.1));

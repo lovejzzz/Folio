@@ -53,7 +53,11 @@ export function projectSyllabus(ctx: Ctx): Block[] {
   const meta = [];
   if (course.audience.level) meta.push({ label: l.audience, value: course.audience.level });
   if (course.audience.subject) meta.push({ label: l.subject, value: course.audience.subject });
-  meta.push({ label: l.length, value: l.lengthValue(course.lessonOrder.length, course.shape.minutesPerLesson) });
+  const sessions = course.shape.sessions;
+  meta.push({
+    label: l.length,
+    value: sessions.length > 1 ? l.lengthSessions(course.lessonOrder.length, sessions.map((s) => l.sessionPart(l.sessionKinds[s.kind], s.minutes))) : l.lengthValue(course.lessonOrder.length, course.shape.minutesPerLesson),
+  });
   blocks.push({ t: 'meta', items: meta });
 
   const objectives = orderedObjectives(course).filter((o) => !isBlankObjective(o) && lessons.some((x) => x.objectiveIds.includes(o.id)));

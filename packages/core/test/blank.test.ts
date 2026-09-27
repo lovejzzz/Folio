@@ -65,7 +65,7 @@ describe('blank items', () => {
       cmd('plan.update', {
         lessonId: lesson.id,
         keyIdeas: [...lesson.keyIdeas, ''],
-        segments: [...lesson.segments, { id: newId('x'), kind: 'practice', title: '', minutes: 5, description: '', teacherNotes: '' }],
+        segments: [...lesson.segments, { id: newId('x'), session: 0, kind: 'practice', title: '', minutes: 5, description: '', teacherNotes: '' }],
       }),
     );
     expect(staleItems(store.getState()).filter((s) => s.kind !== 'plan')).toEqual([]);
@@ -79,7 +79,7 @@ describe('blank items', () => {
       cmd('plan.update', {
         lessonId: lesson.id,
         keyIdeas: [...lesson.keyIdeas, ' '],
-        segments: [...lesson.segments, { id: newId('x'), kind: 'practice', title: '', minutes: 5, description: '', teacherNotes: '' }],
+        segments: [...lesson.segments, { id: newId('x'), session: 0, kind: 'practice', title: '', minutes: 5, description: '', teacherNotes: '' }],
         vocabulary: [...lesson.vocabulary, { id: newId('x'), term: '', definition: '' }],
       }),
       cmd('study.update', { lessonId: lesson.id, points: [...lesson.study.points, { id: newId('x'), heading: '', explanation: '' }] }),

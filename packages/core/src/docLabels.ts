@@ -1,5 +1,5 @@
 import type { MaterialKind } from './materials';
-import type { Language } from './schema';
+import type { Language, SessionKind } from './schema';
 
 /**
  * Words that appear inside materials. They follow the course language, not
@@ -27,6 +27,10 @@ const en = {
   audience: 'Audience',
   length: 'Length',
   lengthValue: (lessons: number, minutes: number) => `${lessons} lessons · ${minutes} minutes each`,
+  lengthSessions: (lessons: number, sessions: string[]) => `${lessons} lessons · each ${sessions.join(' + ')}`,
+  sessionKinds: { class: 'Class', lecture: 'Lecture', seminar: 'Seminar', lab: 'Lab', problems: 'Problem class' } as Record<SessionKind, string>,
+  sessionHeading: (kind: string, minutes: number) => `${kind} · ${minutes} min`,
+  sessionPart: (kind: string, minutes: number) => `${kind} ${minutes} min`,
   subject: 'Subject',
   objectives: 'Objectives',
   /** A table column in which each row is one objective. */
@@ -96,6 +100,10 @@ const zh: DocLabels = {
   audience: '对象',
   length: '课时安排',
   lengthValue: (lessons, minutes) => `共 ${lessons} 课 · 每课 ${minutes} 分钟`,
+  lengthSessions: (lessons, sessions) => `共 ${lessons} 课 · 每课 ${sessions.join(' + ')}`,
+  sessionKinds: { class: '课堂', lecture: '讲授', seminar: '研讨', lab: '实验', problems: '习题课' },
+  sessionHeading: (kind, minutes) => `${kind} · ${minutes} 分钟`,
+  sessionPart: (kind, minutes) => `${kind} ${minutes} 分钟`,
   subject: '学科',
   objectives: '学习目标',
   objectiveColumn: '学习目标',

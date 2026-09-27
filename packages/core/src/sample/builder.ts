@@ -66,6 +66,7 @@ function fillLesson(course: Course, lesson: Lesson, spec: LessonSpec, levels: Co
   lesson.keyIdeas = spec.keyIdeas;
   lesson.segments = spec.segments.map(([kind, title, minutes, description, teacherNotes]) => ({
     id: newId('x'),
+    session: 0,
     kind,
     title,
     minutes,

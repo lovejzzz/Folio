@@ -2,7 +2,9 @@ import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
 import { tidyFaq, tidyFollowUps, tidyPlanSources, tidySlides, tidySteps, tidyTrueFalse, unnumberSteps } from './tidy';
 import {
-  checkMinutes,
+  checkSessionMinutes,
+  lessonSessions,
+  sessionIndex,
   answerStandsOut,
   checkQuestion,
   cmd,
@@ -74,9 +76,9 @@ const plan: SectionJob<PlanDraft> = {
   schema: PlanDraft,
   tidy: tidyPlanSources,
   check: (v, course) =>
-    checkMinutes(
-      v.segments.map((s) => s.minutes),
-      course.shape.minutesPerLesson,
+    checkSessionMinutes(
+      v.segments.map((s) => ({ session: s.session - 1, minutes: s.minutes })),
+      lessonSessions(course),
     ).map((flag) => ({ index: null, flag })),
   toCommands: (v, problems, _course, lesson) => [
     cmd('section.fill', {
@@ -85,7 +87,7 @@ const plan: SectionJob<PlanDraft> = {
       flags: flagsAt(problems, null),
       content: {
         keyIdeas: v.keyIdeas,
-        segments: v.segments.map((s) => ({ ...s, id: newId('x') })),
+        segments: v.segments.map((s) => ({ ...s, session: sessionIndex(_course, s.session - 1), id: newId('x') })),
         vocabulary: v.vocabulary.map((t) => ({ ...t, id: newId('x') })),
       },
     }),

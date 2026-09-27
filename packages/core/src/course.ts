@@ -11,6 +11,7 @@ import {
   type MaterialConfig,
   type Objective,
   type Question,
+  type Session,
   type Task,
 } from './schema';
 
@@ -23,8 +24,19 @@ export interface NewCourseInput {
   level?: string;
   subject?: string;
   minutesPerLesson?: number;
+  sessions?: Session[];
   quizSize?: number;
   materials?: readonly MaterialKind[];
+}
+
+/** The meetings of each lesson: the sessions when there are several, else one class of the lesson's length. */
+export function lessonSessions(course: Course): Session[] {
+  return course.shape.sessions.length > 1 ? course.shape.sessions : [{ kind: 'class', minutes: course.shape.minutesPerLesson }];
+}
+
+/** The session a segment sits in, kept in range when sessions are taken away. */
+export function sessionIndex(course: Course, session: number): number {
+  return Math.min(Math.max(0, session), lessonSessions(course).length - 1);
 }
 
 export function emptyLesson(idValue: string, title: string, summary = ''): Lesson {
@@ -67,7 +79,7 @@ export function createCourse(input: NewCourseInput, now = new Date().toISOString
     language: input.language ?? 'en',
     locale: input.locale ?? '',
     audience: { level: input.level ?? '', subject: input.subject ?? '' },
-    shape: { minutesPerLesson: input.minutesPerLesson ?? 50, quizSize: input.quizSize ?? 5 },
+    shape: { minutesPerLesson: input.minutesPerLesson ?? 50, quizSize: input.quizSize ?? 5, sessions: input.sessions ?? [] },
     policies: '',
     grading: [],
     objectives: {},

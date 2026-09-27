@@ -7,6 +7,7 @@ import { useT } from '../../i18n';
 import { readyToBuild, startBuild } from '../../state/build';
 import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
+import { Sessions } from './Sessions';
 
 function MaterialToggle({ kind, selected }: { kind: MaterialKind; selected: boolean }) {
   const t = useT();
@@ -49,13 +50,13 @@ function Shape() {
       edit(drop.map((lessonId) => cmd('lesson.remove', { lessonId })), { key: 'removedLesson', values: { n: n + 1 } });
     }
   };
-  const { lessons, minutesPerLesson: minutes, quizSize: quiz } = SHAPE_LIMITS;
+  const { lessons, quizSize: quiz } = SHAPE_LIMITS;
   const shape = (patch: Partial<typeof course.shape>) => edit([cmd('course.update', { shape: patch })], { key: 'changedShape' });
   return (
     <div className="space-y-3">
       {/* The range always includes the real count, so the field never shows a number of lessons that isn't there. */}
       <NumberStepper label={t.plan.lessonsCount} minValue={Math.min(lessons.min, count)} maxValue={Math.max(lessons.max, count)} value={count} onChange={setCount} />
-      <NumberStepper label={t.plan.minutes} minValue={minutes.min} maxValue={minutes.max} step={minutes.step} value={course.shape.minutesPerLesson} onChange={(v) => Number.isFinite(v) && shape({ minutesPerLesson: v })} />
+      <Sessions />
       <NumberStepper label={t.plan.quizSize} minValue={quiz.min} maxValue={quiz.max} value={course.shape.quizSize} onChange={(v) => Number.isFinite(v) && shape({ quizSize: v })} />
     </div>
   );

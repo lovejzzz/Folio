@@ -43,7 +43,8 @@ function inputHash(course: Course, lesson: Lesson, key: BasisKey): string {
       // A blank objective is still being written: it changes nothing until it has text.
       return hashValue(statedObjectives(course, lesson).map((o) => o.text));
     case 'minutes':
-      return hashValue(course.shape.minutesPerLesson);
+      // Hashed alone when the lesson meets once, as before sessions existed, so older courses stay up to date.
+      return course.shape.sessions.length > 1 ? hashValue([course.shape.minutesPerLesson, course.shape.sessions]) : hashValue(course.shape.minutesPerLesson);
     case 'quizSize':
       return hashValue(course.shape.quizSize);
     case 'audience':

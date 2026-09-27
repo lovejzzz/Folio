@@ -1,4 +1,4 @@
-import { cmd, isBlankSegment, isBlankTerm, newId, type Course, type Lesson, type Segment } from '@folio/core';
+import { cmd, isBlankSegment, isBlankTerm, lessonSessions, newId, sessionIndex, type Course, type Lesson, type Segment } from '@folio/core';
 import { IconButton, InlineNumber, cx } from '@folio/ui';
 import { X } from 'lucide-react';
 import { EditableText } from '../components/editing/EditableText';
@@ -64,19 +64,70 @@ function SegmentRow({ segment, n, onChange, onRemove, onBlur, lang }: SegmentRow
   );
 }
 
-/** The lesson plan: key ideas, a timed run of the lesson, and vocabulary. */
+interface SegmentsProps {
+  course: Course;
+  lesson: Lesson;
+  session: number;
+  save: (segments: Segment[]) => void;
+}
+
+/**
+ * The timed run of one session: all of the lesson when it meets once, or the
+ * lecture, then the seminar, each under its own name and timed against its
+ * own length.
+ */
+function SessionSegments({ course, lesson, session, save }: SegmentsProps) {
+  const t = useT();
+  const label = sectionLabel(course, lesson.id, 'plan');
+  const sessions = lessonSessions(course);
+  const meeting = sessions[session]!;
+  const mine = lesson.segments.filter((s) => sessionIndex(course, s.session) === session);
+  const total = mine.reduce((a, s) => a + s.minutes, 0);
+  const segmentsNow = (c: Course) => c.lessons[lesson.id]?.segments ?? [];
+  const add = () => {
+    const id = newId('x');
+    // A new step goes at the end of its session, so the run stays in order.
+    const after = lesson.segments.findLastIndex((s) => sessionIndex(course, s.session) <= session);
+    const segment: Segment = { id, session, kind: 'practice', title: '', minutes: 5, description: '', teacherNotes: '' };
+    addItem(id, [cmd('plan.update', { lessonId: lesson.id, segments: lesson.segments.toSpliced(after + 1, 0, segment) })], label);
+  };
+  return (
+    <section>
+      {/* With several sessions, each opens on a band: the lecture and the seminar read as two parts, not one long list. */}
+      <div className={cx('mb-1 flex items-baseline justify-between gap-4', sessions.length > 1 && 'rounded-control bg-well px-3 py-2')}>
+        <h4 className={cx('font-ui font-semibold text-ink', sessions.length > 1 ? 'text-14' : 'text-13')}>
+          {sessions.length > 1 ? t.sessions.heading(t.sessions.kinds[meeting.kind], meeting.minutes) : t.lesson.segments}
+        </h4>
+        <span className={cx('font-ui text-13 tabular', total === meeting.minutes ? 'text-ink-2' : 'text-attention')}>{t.lesson.minutesTotal(total, meeting.minutes)}</span>
+      </div>
+      <ol>
+        {mine.map((s) => (
+          <SegmentRow
+            key={s.id}
+            segment={s}
+            n={lesson.segments.indexOf(s) + 1}
+            lang={course.language}
+            onChange={(next) => save(lesson.segments.map((x) => (x.id === s.id ? next : x)))}
+            onRemove={() => save(lesson.segments.filter((x) => x.id !== s.id))}
+            onBlur={leaveBlank(
+              s.id,
+              (c) => segmentsNow(c).some((x) => x.id === s.id && isBlankSegment(x)),
+              (c) => [cmd('plan.update', { lessonId: lesson.id, segments: segmentsNow(c).filter((x) => x.id !== s.id) })],
+              label,
+            )}
+          />
+        ))}
+      </ol>
+      <AddButton label={t.lesson.addSegment} onPress={add} />
+    </section>
+  );
+}
+
+/** The lesson plan: key ideas, a timed run of each session, and vocabulary. */
 export function PlanEditor({ course, lesson }: { course: Course; lesson: Lesson }) {
   const t = useT();
   const save = useSectionEdit(course, lesson.id, 'plan');
-  const label = sectionLabel(course, lesson.id, 'plan');
-  const total = lesson.segments.reduce((a, s) => a + s.minutes, 0);
   const setSegments = (segments: Segment[]) => save([cmd('plan.update', { lessonId: lesson.id, segments })]);
-  const addSegment = () => {
-    const id = newId('x');
-    const segment: Segment = { id, kind: 'practice', title: '', minutes: 5, description: '', teacherNotes: '' };
-    addItem(id, [cmd('plan.update', { lessonId: lesson.id, segments: [...lesson.segments, segment] })], label);
-  };
-  const segmentsNow = (c: Course) => c.lessons[lesson.id]?.segments ?? [];
   return (
     <div className="space-y-8">
       <section>
@@ -91,33 +142,9 @@ export function PlanEditor({ course, lesson }: { course: Course; lesson: Lesson 
           onChange={(keyIdeas) => save([cmd('plan.update', { lessonId: lesson.id, keyIdeas })])}
         />
       </section>
-      <section>
-        <div className="mb-1 flex items-baseline justify-between gap-4">
-          <h4 className="font-ui text-13 font-semibold text-ink">{t.lesson.segments}</h4>
-          <span className={cx('font-ui text-13 tabular', total === course.shape.minutesPerLesson ? 'text-ink-2' : 'text-attention')}>
-            {t.lesson.minutesTotal(total, course.shape.minutesPerLesson)}
-          </span>
-        </div>
-        <ol>
-          {lesson.segments.map((s, i) => (
-            <SegmentRow
-              key={s.id}
-              segment={s}
-              n={i + 1}
-              lang={course.language}
-              onChange={(next) => setSegments(lesson.segments.map((x) => (x.id === s.id ? next : x)))}
-              onRemove={() => setSegments(lesson.segments.filter((x) => x.id !== s.id))}
-              onBlur={leaveBlank(
-                s.id,
-                (c) => segmentsNow(c).some((x) => x.id === s.id && isBlankSegment(x)),
-                (c) => [cmd('plan.update', { lessonId: lesson.id, segments: segmentsNow(c).filter((x) => x.id !== s.id) })],
-                label,
-              )}
-            />
-          ))}
-        </ol>
-        <AddButton label={t.lesson.addSegment} onPress={addSegment} />
-      </section>
+      {lessonSessions(course).map((_, i) => (
+        <SessionSegments key={i} course={course} lesson={lesson} session={i} save={setSegments} />
+      ))}
       <Vocabulary course={course} lesson={lesson} />
     </div>
   );

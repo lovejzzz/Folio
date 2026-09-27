@@ -1,4 +1,4 @@
-import { createCourse, createSource, emptyLesson, newId, type Course, type Language, type MaterialKind } from '@folio/core';
+import { createCourse, createSource, emptyLesson, newId, type Course, type Language, type MaterialKind, type Session } from '@folio/core';
 import type { Inference } from './inference';
 import { runJob, type Problem } from './jobs';
 import { outlinePrompt, systemPrompt, type OutlineInput } from './prompts';
@@ -9,6 +9,8 @@ export interface NewCourseRequest {
   brief: string;
   lessonCount: number;
   minutesPerLesson: number;
+  /** Two or more when each lesson meets more than once, as the brief says (a lecture and a seminar). */
+  sessions?: Session[];
   quizSize: number;
   level: string;
   language: Language;
@@ -46,7 +48,8 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
     locale: req.locale ?? '',
     level: req.level || outline.level,
     subject: outline.subject,
-    minutesPerLesson: req.minutesPerLesson,
+    minutesPerLesson: req.sessions && req.sessions.length > 1 ? req.sessions.reduce((a, s) => a + s.minutes, 0) : req.minutesPerLesson,
+    sessions: req.sessions && req.sessions.length > 1 ? req.sessions : [],
     quizSize: req.quizSize,
     materials: req.materials,
   });

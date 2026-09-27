@@ -1,4 +1,5 @@
 import { filledTexts, isBlankPoint, isBlankSegment, isBlankTerm, statedObjectives } from '../blank';
+import { lessonSessions, sessionIndex } from '../course';
 import type { Lesson } from '../schema';
 import type { Block } from '../semantic';
 import { field, lessonHeading, lessonsIn, nonEmpty, questionBlock, shownQuestions, type Ctx } from './shared';
@@ -28,12 +29,17 @@ export function projectPlan(ctx: Ctx): Block[] {
       blocks.push({ t: 'list', ordered: false, items: keyIdeas });
     }
     const segments = lesson.segments.filter((s) => !isBlankSegment(s));
-    if (segments.length) {
+    const sessions = lessonSessions(course);
+    // A lesson that meets more than once gets a table per session, under its name and length.
+    for (const [i, session] of sessions.entries()) {
+      const mine = segments.filter((s) => sessionIndex(course, s.session) === i);
+      if (!mine.length) continue;
+      if (sessions.length > 1) blocks.push({ t: 'heading', level: 3, text: l.sessionHeading(l.sessionKinds[session.kind], session.minutes) });
       blocks.push({
         t: 'table',
         head: [l.time, l.activity, l.details],
         widths: [12, 28, 60],
-        rows: segments.map((s) => [
+        rows: mine.map((s) => [
           l.minutes(s.minutes),
           field(ctx, s.id, 'title', s.title),
           teacher && s.teacherNotes ? `${s.description}\n${l.teacherNote}: ${s.teacherNotes}` : s.description,

@@ -1,4 +1,4 @@
-import type { Language } from '@folio/core';
+import type { Language, Session, SessionKind } from '@folio/core';
 
 /**
  * Pre-fill the three chips under the brief as the teacher types. These read
@@ -183,4 +183,32 @@ export function guessQuizSize(text: string): number | null {
   const zh = text.match(new RegExp(String.raw`(${ZH_NUMBER})\s*(?:道|个)(?:测验|选择|练习)?题`));
   if (zh) return within(zhNumber(zh[1]!), 1, 30);
   return null;
+}
+
+const SESSION_WORDS: [RegExp, SessionKind][] = [
+  [/^(?:lectures?|讲座|讲授|理论课)$/i, 'lecture'],
+  [/^(?:seminars?|tutorials?|discussion(?: sections?)?|研讨课?|讨论课)$/i, 'seminar'],
+  [/^(?:labs?|laborator(?:y|ies)|practicals?|实验课?)$/i, 'lab'],
+  [/^(?:problem class(?:es)?|recitations?|workshops?|习题课)$/i, 'problems'],
+  [/^(?:class(?:es)?|课堂)$/i, 'class'],
+];
+const EN_SESSION = /\b(\d{1,3}|an?|one|two|three)[\s-]*(minutes?|mins?|hours?|hrs?)(?:[\s-]+long)?[\s-]+(lectures?|seminars?|tutorials?|discussion sections?|discussions?|labs?|laborator(?:y|ies)|practicals?|problem class(?:es)?|recitations?|workshops?|class(?:es)?)\b/gi;
+const ZH_SESSION = /(\d{1,3}|[一二两三四五六七八九十]{1,3})\s*(分钟|小时)\s*的?\s*(讲座|讲授|理论课|研讨课?|讨论课|实验课?|习题课|课堂)/g;
+
+/**
+ * The sessions of each lesson when the brief names more than one kind of
+ * meeting with its length: "a 50-minute lecture and a 50-minute seminar",
+ * "每周50分钟讲授加50分钟研讨". Null when it names fewer than two.
+ */
+export function guessSessions(text: string): Session[] | null {
+  const found: Session[] = [];
+  const add = (count: string, unit: string, word: string) => {
+    const kind = SESSION_WORDS.find(([re]) => re.test(word.trim()))?.[1];
+    const n = /^\d/.test(count) ? Number(count) : /^an?$/i.test(count) ? 1 : (HOUR_WORDS[count.toLowerCase()] ?? zhOrDigits(count) ?? 0);
+    const minutes = /^(?:hours?|hrs?|小时)$/i.test(unit) ? n * 60 : n;
+    if (kind && minutes >= 5 && minutes <= 300) found.push({ kind, minutes });
+  };
+  for (const m of text.matchAll(EN_SESSION)) add(m[1]!, m[2]!, m[3]!);
+  for (const m of text.matchAll(ZH_SESSION)) add(m[1]!, m[2]!, m[3]!);
+  return found.length > 1 ? found.slice(0, 3) : null;
 }

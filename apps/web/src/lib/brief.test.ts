@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { SHAPE_LIMITS } from '@folio/core';
 import { en } from '../i18n/en';
-import { MAX_GUESSED_LESSONS, guessLanguage, guessLessons, guessLevel, guessMinutes, guessQuizSize } from './brief';
+import { MAX_GUESSED_LESSONS, guessLanguage, guessLessons, guessLevel, guessMinutes, guessQuizSize, guessSessions } from './brief';
 
 describe('reading the brief for the chips', () => {
   it.each([
@@ -155,4 +155,16 @@ describe('lesson length and quiz size from the brief', () => {
     ['每节课做十道选择题', 10],
     ['Four lessons for grade 9', null],
   ])('%s → %s questions', (brief, size) => expect(guessQuizSize(brief)).toBe(size));
+});
+
+describe('guessSessions', () => {
+  it.each([
+    ['Four weeks, each a 50-minute lecture and a 50-minute seminar.', [{ kind: 'lecture', minutes: 50 }, { kind: 'seminar', minutes: 50 }]],
+    ['A one-hour lecture and a two-hour lab every week', [{ kind: 'lecture', minutes: 60 }, { kind: 'lab', minutes: 120 }]],
+    ['Weekly: 90 min lectures plus a 45-minute tutorial', [{ kind: 'lecture', minutes: 90 }, { kind: 'seminar', minutes: 45 }]],
+    ['每周50分钟讲授加50分钟研讨', [{ kind: 'lecture', minutes: 50 }, { kind: 'seminar', minutes: 50 }]],
+    ['每周一次90分钟的理论课和一次两小时的实验课', [{ kind: 'lecture', minutes: 90 }, { kind: 'lab', minutes: 120 }]],
+  ])('%s', (brief, sessions) => expect(guessSessions(brief)).toEqual(sessions));
+
+  it.each(['Four 50-minute lessons with practical work in each', 'Weekly 90-minute lectures', 'A 50-minute class'])('none in %s', (brief) => expect(guessSessions(brief)).toBeNull());
 });
