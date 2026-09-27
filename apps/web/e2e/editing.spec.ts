@@ -96,12 +96,12 @@ test('a lesson can set no homework: the assignment and rubric go, the overview s
   await openSample(page);
   await page.getByRole('link', { name: /Centre and spread/ }).first().click();
   const assignment = page.locator('#m-assignments');
-  await assignment.getByRole('combobox', { name: 'Homework' }).selectOption('none');
+  await assignment.getByRole('combobox', { name: 'This lesson' }).selectOption('none');
   await expect(assignment.getByText('No homework in this lesson.')).toBeVisible();
   await expect(page.locator('#m-rubrics').getByText('No homework in this lesson.')).toBeVisible();
   await page.getByRole('link', { name: 'Overview', exact: true }).click();
   await expect(page.getByRole('button', { name: /^Lesson 3, Assignments: No homework/ })).toBeVisible();
   await page.getByRole('link', { name: /Centre and spread/ }).first().click();
-  await assignment.getByRole('combobox', { name: 'Homework' }).selectOption('assignment');
+  await assignment.getByRole('combobox', { name: 'This lesson' }).selectOption('assignment');
   await expect(assignment.getByRole('button', { name: 'Write it now' })).toBeVisible();
 });

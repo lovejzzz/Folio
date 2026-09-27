@@ -62,7 +62,7 @@ function StageTools({ lesson, slide, index, save, go }: StageToolsProps) {
     go(Math.min(index, slides.length - 2));
   };
   return (
-    <div className="no-print mb-3 flex flex-wrap items-center justify-between gap-2">
+    <div className="no-print mb-3 flex flex-wrap items-center justify-between gap-2 max-md:hidden">
       {/* Named: four words in a row read as a menu of slides, not as this slide's layout. */}
       <div className="flex items-center gap-2">
         <span aria-hidden className="font-ui text-12 text-ink-2">

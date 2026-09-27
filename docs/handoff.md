@@ -192,6 +192,20 @@ A screenshot audit of every screen with a real DeepSeek course (desktop light an
 
 **Sign-off runs** (final build, DeepSeek): a Year 7 photosynthesis course and the graduate seminar each took the minimum 29 calls with 0 repairs ($0.06 and $0.09). Answers were spread over A–D, true/false alternated strictly, each course had one rubric scale, and there were no passage numbers or lesson counts in the text. The exported Word, PowerPoint and spreadsheet open in python-docx, python-pptx and openpyxl. Word carries 54 code runs, 484 subscripts and 254 superscripts, with no stray backticks. LibreOffice here can't import Office files, so they weren't rendered.
 
+## UX rounds as a teacher, and research into what schools need
+
+Three walkthroughs as a teacher (first course; revising the week after; a lecturer with notes, printing and a phone), then research into how real schools handle what they turned up. The bar the user set: a 15-year-old understands every screen at a glance.
+
+- **Overview (was Map).** Cells show the opening words of what they hold (plan stages, slide titles, the first question) instead of grey bars. Columns are the per-lesson materials in teaching order; the syllabus and the objectives table sit by the title. Out of date and Please check are said in words, with a turning-arrow mark.
+- **To do & history (was Changes).** The header says "6 to do". Sections out of date for one cause are one card with one Update; the lesson plan updates first, so the rest are written from the new plan. A summary edit no longer ripples (only the title does).
+- **Plain words** (research: what teachers call things). Overview / Objectives & assessment (目标与考核) instead of Map / Course map; AI, not "the model"; Sample answer; Write, not Build; Needs updating; Please check (请检查); Backup file (备份文件); 评分标准; Sources "used", not "cited"; Show why; named edge tabs and Sources button.
+- **Export defaults to Students.** Research found every quiz tool keeps answers off unless asked, and real incidents of answer keys handed out. A copy with answers reads "You (answers)" with a warning, and says "Teacher copy, with answers" in its file name, on every Word page and every printed page.
+- **Homework follows the assessment plan** (backward design). Each lesson's homework is a graded assignment, a step toward a larger graded piece (no rubric), or none; the outline sets it from the brief, the plan shows "How the course is marked", and teachers change it per lesson. The lecturer's brief (weekly quiz, final essay) now gives three essay steps and one essay, not four essays. Grading components named without a weight are kept, shown without a share.
+- **Sessions.** A lesson can meet more than once (class, lecture, seminar, lab, problem class). The brief is read for it ("a 50-minute lecture and a 50-minute seminar", "50分钟讲授加50分钟研讨"); the AI plans each session for what it is; steps are timed per session; the overview and syllabus show "Lecture 50 min + Seminar 50 min". One session looks exactly as before.
+- **Phone.** Reading first: the "Add …" lines and the slide toolbar are hidden; lesson summaries show in the list.
+
+Not built, on purpose (research said to leave them): timetables and dates, per-student homework tracking, a gradebook, custom session types, a rubric per essay step.
+
 ## Next
 
 1. **Sonnet 5 through the API: done.** The econ course through the real API (direct mode, key as `FOLIO_ANTHROPIC_KEY`; the cloud environment doesn't pass `ANTHROPIC_API_KEY` through) cost **$0.63**. It took 31 calls with 2 repairs (plan minutes 100 not 90; one stand-out right answer) and built in 2 min 41 s. Cache reads outweighed writes 2.7 : 1. Answers were spread over A–D, true/false followed the order, rubrics were First–Third, and there were no passage numbers or LaTeX. There were 47 code marks, and suggested readings came with correct chapters. "The next lesson" appeared twice, a Sonnet habit. The pricing note now says about $0.60. Record: `docs/sonnet-api-run.md` and `docs/sonnet-api-run/`.

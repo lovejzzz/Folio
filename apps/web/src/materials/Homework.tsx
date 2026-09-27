@@ -10,7 +10,7 @@ const KINDS: HomeworkKind[] = ['assignment', 'step', 'none'];
  * outline sets it from how the brief says the course is marked; the teacher
  * changes it here, and the assignment follows.
  */
-export function HomeworkPicker({ course, lesson, className = 'mb-5' }: { course: Course; lesson: Lesson; className?: string }) {
+export function HomeworkPicker({ course, lesson, className = 'mb-5', underHeading = true }: { course: Course; lesson: Lesson; className?: string; underHeading?: boolean }) {
   const t = useT();
   const n = lessonNumber(course, lesson.id);
   const { kind, toward } = lesson.homework;
@@ -18,7 +18,7 @@ export function HomeworkPicker({ course, lesson, className = 'mb-5' }: { course:
   return (
     <div className={cx('no-print flex flex-wrap items-center gap-x-3 gap-y-1 font-ui text-13 text-ink-2', className)}>
       <label className="flex items-center gap-2">
-        <span className="font-medium text-ink">{t.homework.label}</span>
+        <span className="font-medium text-ink">{underHeading ? t.homework.thisLesson : t.homework.label}</span>
         <select
           value={kind}
           onChange={(e) => set(e.target.value as HomeworkKind)}

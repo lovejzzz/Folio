@@ -194,6 +194,8 @@ export const en = {
   },
   homework: {
     label: 'Homework',
+    /** Beside the Assignment heading, which already says what it is. */
+    thisLesson: 'This lesson',
     kinds: { assignment: 'Graded assignment', step: 'A step toward a bigger piece', none: 'No homework' },
     stepToward: (what: string) => `Builds toward: ${what}`,
     countsToward: (what: string) => `Counts toward: ${what}`,
@@ -501,9 +503,9 @@ export const en = {
     formatHints: {
       docx: 'One document with every chosen material.',
       pdf: 'Opens the print view. Choose “Save as PDF”.',
-      pptx: 'The slide decks, with speaker notes in the teacher copy.',
+      pptx: 'The slide decks. Your copy adds the speaker notes.',
       xlsx: 'The quiz bank, one question per row.',
-      zip: 'A Word file per material, the deck and the quiz sheet. A whole-course teacher copy adds a Folio backup.',
+      zip: 'A Word file per material, the deck and the quiz sheet. Your copy of the whole course adds a backup file.',
       folio: 'The whole course, to open again in Folio later or on another computer.',
       google: 'Uploads a Word file to your Google Drive as a Google Doc.',
     },

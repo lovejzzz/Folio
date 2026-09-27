@@ -177,6 +177,7 @@ export const zh: Messages = {
   },
   homework: {
     label: '作业',
+    thisLesson: '本课',
     kinds: { assignment: '计分作业', step: '为大作业做准备', none: '不布置作业' },
     stepToward: (what) => `最终作业：${what}`,
     countsToward: (what) => `计入：${what}`,
@@ -289,7 +290,7 @@ export const zh: Messages = {
   quiz: {
     question: (n) => `第 ${n} 题`,
     formats: { choice: '选择题', truefalse: '判断题', short: '简答题', numeric: '计算题' },
-    difficulty: ['易', '中', '难'],
+    difficulty: ['容易', '中等', '较难'],
     showAnswer: '显示答案',
     hideAnswer: '隐藏答案',
     showWhy: '显示解析',
@@ -441,7 +442,7 @@ export const zh: Messages = {
   },
   sources: {
     title: '参考资料',
-    lede: 'Folio 可以参考的讲义、阅读材料或大纲。引用了某段内容的题目会注明出处。',
+    lede: 'Folio 会参考这里的讲义、阅读材料或大纲来写。用到它们的题目会标明出处。',
     add: '添加参考资料',
     paste: '粘贴文字',
     pasteLabel: '资料内容',
@@ -479,9 +480,9 @@ export const zh: Messages = {
     formatHints: {
       docx: '一份文档，包含所选的全部材料。',
       pdf: '打开打印视图，选择“存储为 PDF”。',
-      pptx: '课件，教师版附讲稿备注。',
+      pptx: '课件。给自己的版本附讲稿备注。',
       xlsx: '题库，每行一道题。',
-      zip: '每种材料一份 Word 文件，外加课件和题目表格。整门课程的教师用版本还会附上备份文件。',
+      zip: '每种材料一份 Word 文件，外加课件和题目表格。给自己的整门课程版本还会附上备份文件。',
       folio: '整门课程，之后可以在 Folio 或另一台电脑上打开。',
       google: '把 Word 文件上传到你的 Google 云端硬盘，并转为 Google 文档。',
     },
