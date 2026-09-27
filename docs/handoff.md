@@ -113,17 +113,24 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
 
 ## Next
 
-1. **DeepSeek for cheap testing.** The user set `DEEPSEEK_API_KEY` in the environment and allowed `api.deepseek.com`. They asked for **DeepSeek-V4.1-Flash**; confirm the exact id with `GET https://api.deepseek.com/models`. The budget is $19. Stop at $15 in total and about $3 per run.
-   - Keep the key safe:
-     - Read it only from `process.env.DEEPSEEK_API_KEY`, inside the test harness (a Playwright route handler or a small local proxy adds the `Authorization` header).
-     - Never write it to files, logs, localStorage, screenshots or commits.
-     - Never echo it, and never print `env`.
-   - Add DeepSeek as a real provider in `packages/ai` (the OpenAI-compatible adapter in `adapters/openai.ts`, plus `DEFAULT_MODELS`, `ProviderFields`, i18n). It helps Chinese teachers.
-   - Check whether the API accepts `response_format: json_schema`. If it only takes `json_object`, put the JSON Schema in the system prompt and rely on the existing validate, check and repair pipeline.
-   - Also check whether browsers can call it directly (CORS). If they can't, say so in the provider note.
-   - Log usage per call like the bridge does: `prompt_tokens`, `completion_tokens`, cache hits. Extend `token-report.py` or write a similar report, and keep a running spend total that stops the run at the cap.
-2. **Run the professor scenarios on the cheap model.** Score them with `scripts/score-live.py` and `token-report.py`, and compare with the Opus baseline. The goal from the user: *good results without the most expensive model.* Tune the prompts where the cheap model falls short. Then consider making Sonnet 5 (`claude-sonnet-5`) the Anthropic default instead of `claude-opus-5` (`DEFAULT_MODELS` in `packages/ai/src/inference.ts`), and update the pricing note in en.ts and zh.ts.
-3. Keep assessing classroom readiness from a lecturer's view: readings, grading, seminar presentations, code and maths display, and exports opened in Word and PowerPoint.
+1. **Verify the university work on DeepSeek** (commit "University courses: seminar teaching…"). It was built and unit/e2e tested, but not yet run against a real model, because the key was revoked mid-session.
+   - Run `PROF=phil` and `PROF=econ`. Read them as a lecturer:
+     - The seminar has no school routines, and it gives the 20% presentation a place in the plans.
+     - Rubric levels read First / Upper second / Lower second / Third (en-GB), and the points are 70/60/50/40.
+     - Suggested further reading appears only for university lessons, apart from the assigned readings.
+     - The quiz uses the plan's figures (one standard error for educ).
+     - There are no invented quotations, and maths is set as β₀ and x², not LaTeX.
+   - Quiz and assignments now wait for the plan, so check the build time too (it was 75–110 s).
+2. **Code in monospace** is a separate suggested task: fields are plain text, so it needs a small inline-code layer.
+3. **Consider Sonnet 5 as the Anthropic default** (`DEFAULT_MODELS` in `packages/ai/src/inference.ts`) and update the pricing note in en.ts and zh.ts.
+
+**DeepSeek key.**
+- The key the user first gave was revoked on 2026-09-27, after a *different* key of theirs (named "Test") leaked and was drained of $19.20. Folio's own key had spent $0.80 by then. A code audit found no path in Folio that could run up cost unattended:
+  - Every model call goes through `runJob`: one call plus at most one repair.
+  - The Anthropic SDK retries at most twice; the DeepSeek adapter doesn't retry.
+  - Builds and outlines start only from a click.
+- The user has made a new key and put it in the environment, and it reaches new sessions only. Use it as `DEEPSEEK_API_KEY` and never print or write it anywhere.
+- The bridge's spend ledger lives in the gitignored `live-results/`, so a fresh container starts it at $0. Keep to about $3 per run.
 
 ## Keep costs down (the user asked for this explicitly)
 
