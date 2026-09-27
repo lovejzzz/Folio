@@ -23,6 +23,8 @@ export function systemPrompt(language: Language, locale = ''): string {
     'Write material a teacher could use tomorrow: specific to the subject, with real examples, real terms, real numbers and correct facts. Never write placeholders such as "Topic 1", "key concept" or "Session 1 topic"; name the actual content.',
     'Match the level of the students. Keep sentences short and concrete. Do not use emoji.',
     'If something in the brief is ambiguous, choose the most sensible specific interpretation and stay consistent with it.',
+    'Quote word for word only from the teacher\'s sources shown to you. Anything else, paraphrase and point to the chapter or section: never invent a quotation or a page number.',
+    'Write maths in Unicode with real subscripts and superscripts (β₀, x², σ̂², ≤, √), never LaTeX, ^ or _.',
     'Folio shows lesson numbers, the number of lessons, lesson lengths and quiz sizes itself, and teachers change them. Never write them anywhere, speaker notes included: no "lesson 1 of 4", "the first lesson", "over the next two hours" or "a 5-question quiz". Refer to another lesson by its title.',
     languageLine(language, locale),
     'Reply with JSON that matches the provided schema and nothing else.',
@@ -49,6 +51,7 @@ export function outlinePrompt(input: OutlineInput): string {
     'Order the lessons so each builds on the last. Give each lesson a short title that names what is taught, a one-sentence summary of under 25 words, and one to three measurable objectives of under 15 words each.',
     'Do not mention the lesson length, the number of quiz questions or which materials a lesson has: Folio keeps those as settings the teacher can change, so they must not be repeated in the text.',
     'Under "readings", list what students read before each lesson, taken from the brief or the attached sources. When the brief names a textbook but not its chapters, name the chapter that matches the lesson, by its topic if you are unsure of the number. Never invent works, authors or page numbers; leave the readings empty when the brief gives nothing to go on.',
+    'Under "suggestedReadings", for a university course only, suggest up to three well-known further readings per lesson that the brief does not already list: established works a lecturer would recognise, with author and title, and a chapter only when you are sure of it. The teacher checks them before anything is assigned, so leave the list empty rather than guess.',
     'Under "grading", give only the graded components and weights the brief states, with the weights summing to 100. Leave it empty if the brief does not say how the course is graded.',
   ];
   if (input.sources.length) {
@@ -85,6 +88,21 @@ function sourcesBlock(course: Course): string {
   return `Teacher's sources (numbered passages):\n${lines.join('\n')}`;
 }
 
+/** University and graduate courses are taught differently from school ones, and assessed on other scales. */
+export function isHigherEducation(level: string): boolean {
+  return /universit|college|undergrad|graduate|postgrad|master|doctoral|ph\.?d|\b[bm]\.?sc\b|\bmba\b|degree|本科|研究生|大学|硕士|博士/i.test(level);
+}
+
+const UNIVERSITY_TEACHING =
+  'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. Leave out school routines such as warm-up games, slips collected at the door or reading aloud in turn.';
+
+/** The graded components, so in-class ones get a place in the plans and assignments can say what they prepare for. */
+function gradingLine(course: Course): string {
+  if (!course.grading.length) return '';
+  const items = course.grading.map((g) => `${g.item} (${g.weight}%)`).join(', ');
+  return `The course is graded by: ${items}. A component that happens in class, such as a presentation, a debate or a test, needs a place in the lesson plans; work that prepares for a component says which one.`;
+}
+
 /**
  * What every section of every lesson shares: the course, its lessons and the
  * teacher's sources. It is sent as one block after the system prompt, the
@@ -101,6 +119,8 @@ export function courseBackground(course: Course): string {
     course.summary ? `About the course: ${course.summary}` : '',
     `Lessons:\n${all}`,
     `Each lesson lasts ${course.shape.minutesPerLesson} minutes.`,
+    isHigherEducation(course.audience.level) ? UNIVERSITY_TEACHING : '',
+    gradingLine(course),
     sourcesBlock(course),
   ]
     .filter(Boolean)
@@ -145,7 +165,23 @@ function trueFalseOrder(course: Course, lesson: Lesson): string {
   return `If you include true/false questions, make the first statement ${first}, the second ${second}, and keep alternating.`;
 }
 
+/**
+ * Lecturers mark on their institution's scale, not "Excellent … Beginning, 4 … 1".
+ * The levels take the local grade bands, each worth the lowest mark of its band.
+ */
+function universityRubric(locale: string): string {
+  const bands = /^en-(GB|IE)$/i.test(locale)
+    ? 'the UK degree classes: First (70+), Upper second (60–69), Lower second (50–59), Third (40–49), with 70, 60, 50 and 40 as the points'
+    : /^en-(US|CA)$/i.test(locale)
+      ? 'letter grades: A (90+), B (80–89), C (70–79), D (60–69), with 90, 80, 70 and 60 as the points'
+      : 'the grade bands used where the course is taught, each level worth the lowest mark of its band';
+  return `Name the rubric levels after ${bands}. Write each descriptor as a marker would, for work at that band.`;
+}
+
 export type SectionPromptKind = 'plan' | 'slides' | 'study' | 'quiz' | 'assignments' | 'discussions' | 'faq';
+
+/** Sections written from the lesson plan: they wait for it, and go out of date when it changes. */
+export const BUILT_ON_PLAN: ReadonlySet<SectionPromptKind> = new Set(['slides', 'study', 'quiz', 'assignments']);
 
 const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string> = {
   plan: (c) =>
@@ -156,8 +192,13 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
     'Write a study guide for students to read after the lesson: a short overview, then two to four key points, each with a heading and a clear explanation that includes an example.',
   quiz: (c, lesson) =>
     `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer and true/false questions where they fit, and numeric ones only when the lesson itself involves calculation. For choice and true/false questions, "answer" must repeat the correct choice exactly. Use plausible wrong choices that reflect real misconceptions. Write all the choices to the same length and level of detail: first draft the right answer, then write each wrong choice with about as many words and the same kind of qualifying detail. If the right answer needs a clause of explanation, so does every wrong choice. Each wrong choice must be clearly wrong to an expert; if a teacher could argue for it, rewrite it. Never refer to a choice by its letter or position. Write a true/false question as a plain statement, without "True or false:" in front. ${trueFalseOrder(c, lesson)} Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression". Where a calculation has competing conventions (quartiles, percentiles, rounding), say in the question which method to use, so only one answer is right.`,
-  assignments: () =>
-    'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
+  assignments: (c) =>
+    [
+      'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
+      isHigherEducation(c.audience.level) ? universityRubric(c.locale) : '',
+    ]
+      .filter(Boolean)
+      .join(' '),
   discussions: () =>
     'Write two discussion prompts that make students think and disagree productively, each with two or three follow-up questions for the teacher.',
   faq: () =>
@@ -167,9 +208,10 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
 /** The per-call part of a section request; the course itself goes in courseBackground. */
 export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromptKind): string {
   const parts = [lessonContext(course, lesson)];
-  if (kind === 'slides' || kind === 'study') {
+  if (BUILT_ON_PLAN.has(kind)) {
     const plan = planSummary(lesson);
-    if (plan) parts.push(plan);
+    // Each job invents what the sources don't give; without the plan, a quiz and a plan gave one coefficient two standard errors.
+    if (plan) parts.push(`${plan}\n\nUse the same examples, data and figures as the plan.`);
   }
   if ((kind === 'plan' || kind === 'quiz') && course.sourceOrder.length) {
     parts.push('Base this on the teacher\'s sources where they apply. Where a question draws on a passage, give its number in "sourcePassage".');

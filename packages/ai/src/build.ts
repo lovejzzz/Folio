@@ -1,6 +1,7 @@
 import { GENERATED_KINDS, orderedLessons, type Command, type Course, type GeneratedKind } from '@folio/core';
 import { InferenceError, type Inference } from './inference';
 import { generateSection } from './sections';
+import { BUILT_ON_PLAN } from './prompts';
 
 export interface BuildTarget {
   lessonId: string;
@@ -50,7 +51,7 @@ const FATAL = new Set(['auth', 'config', 'aborted']);
 
 /**
  * Run section jobs with a small concurrency limit, in lesson order, so the
- * map fills from the top. Slides and study guides wait for their lesson plan.
+ * map fills from the top. Sections written from the lesson plan wait for it.
  */
 export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise<BuildSummary> {
   const summary: BuildSummary = { built: 0, failed: 0, flagged: 0, stopped: false, fatal: null };
@@ -61,7 +62,7 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
   const limit = host.concurrency ?? 4;
 
   const blocked = (t: BuildTarget): boolean =>
-    (t.kind === 'slides' || t.kind === 'study') &&
+    BUILT_ON_PLAN.has(t.kind) &&
     [...pending, ...[...running.keys()].map(parseKey)].some((o) => o.lessonId === t.lessonId && o.kind === 'plan');
 
   const start = (t: BuildTarget): void => {

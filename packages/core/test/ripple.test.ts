@@ -28,7 +28,7 @@ describe('ripple', () => {
     );
   });
 
-  it('ripples a plan edit into slides and the study guide only', () => {
+  it('ripples a plan edit into the sections written from it: slides, study guide, quiz and assignment', () => {
     const store = new CourseStore(sampleCourse());
     const lesson = orderedLessons(store.getState())[0]!;
     store.apply([cmd('plan.update', { lessonId: lesson.id, keyIdeas: ['Only one idea now'] })], {
@@ -37,7 +37,7 @@ describe('ripple', () => {
     });
     const state = store.getState();
     const kinds = staleItems(state).map((s) => s.kind).sort();
-    expect(kinds).toEqual(['slides', 'study']);
+    expect(kinds).toEqual(['assignments', 'quiz', 'slides', 'study']);
     expect(state.lessons[lesson.id]!.gen.plan!.edited).toBe(true);
   });
 

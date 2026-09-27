@@ -82,3 +82,14 @@ test('a course with only course-level materials finishes building and opens like
   await page.goto('/library');
   await expect(page.getByText('Outline', { exact: true })).toHaveCount(0);
 });
+
+test('suggested further reading stays apart until the teacher adds it', async ({ page }) => {
+  await planLessons(page, 'A graduate seminar on the social contract, three sessions');
+  const suggestion = 'Okin, Justice, Gender, and the Family, ch. 5';
+  const suggested = page.getByRole('region', { name: 'Suggested further reading' });
+  await expect(suggested.getByText(suggestion)).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Reading 2 for lesson 1' })).toHaveCount(0);
+  await suggested.getByRole('button', { name: `Add “${suggestion}” to the reading for lesson 1` }).click();
+  await expect(page.getByRole('textbox', { name: 'Reading 2 for lesson 1' })).toHaveText(suggestion);
+  await expect(suggested).toHaveCount(0);
+});

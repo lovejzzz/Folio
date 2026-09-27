@@ -149,3 +149,22 @@ describe('parseCourse', () => {
     expect(() => parseCourse('nope')).toThrow('does not contain');
   });
 });
+
+describe('suggested further reading', () => {
+  it('reaches no material or export until the teacher adds it', () => {
+    const store = new CourseStore(sampleCourse());
+    const lesson = orderedLessons(store.getState())[0]!;
+    store.apply([cmd('lesson.update', { lessonId: lesson.id, suggestedReadings: ['Unchecked suggestion, ch. 9'] })], { label: { key: 't' }, source: 'ai' });
+    const text = (c = store.getState()) => MATERIAL_KINDS.map((k) => JSON.stringify(project(c, k, { audience: 'teacher' }))).join('');
+    expect(text()).not.toContain('Unchecked suggestion');
+    store.apply([cmd('lesson.update', { lessonId: lesson.id, readings: [...lesson.readings, 'Unchecked suggestion, ch. 9'], suggestedReadings: [] })], { label: { key: 't' }, source: 'teacher' });
+    expect(text()).toContain('Unchecked suggestion');
+  });
+
+  it('is read as empty in a course saved before it existed', () => {
+    const old = JSON.parse(JSON.stringify(sampleCourse()));
+    for (const l of Object.values(old.lessons) as Record<string, unknown>[]) delete l.suggestedReadings;
+    const parsed = parseCourse(old);
+    expect(Object.values(parsed.lessons).every((l) => Array.isArray(l.suggestedReadings) && l.suggestedReadings.length === 0)).toBe(true);
+  });
+});

@@ -17,8 +17,8 @@ const DEPENDENCIES: Record<GeneratedKind, readonly BasisKey[]> = {
   plan: ['lesson', 'readings', 'objectives', 'minutes', 'audience', 'sources'],
   slides: ['lesson', 'objectives', 'audience', 'plan'],
   study: ['lesson', 'objectives', 'audience', 'plan'],
-  quiz: ['lesson', 'objectives', 'quizSize', 'audience', 'sources'],
-  assignments: ['lesson', 'objectives', 'audience'],
+  quiz: ['lesson', 'objectives', 'quizSize', 'audience', 'sources', 'plan'],
+  assignments: ['lesson', 'objectives', 'audience', 'plan'],
   discussions: ['lesson', 'readings', 'objectives', 'audience'],
   faq: ['lesson', 'audience'],
 };

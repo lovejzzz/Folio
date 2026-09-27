@@ -23,6 +23,11 @@ export const OutlineDraft = z.object({
           .max(6)
           .default([])
           .describe('What students read before this lesson, one reading each, e.g. "Hobbes, Leviathan, ch. 13–17"; empty if the brief gives nothing to go on'),
+        suggestedReadings: z
+          .array(line)
+          .max(3)
+          .default([])
+          .describe('University courses only: up to three well-known further readings the teacher might add, e.g. "Okin, Justice, Gender, and the Family, ch. 5"; empty for school courses or when unsure'),
       }),
     )
     .min(1),

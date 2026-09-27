@@ -16,7 +16,7 @@ import { EdgeTabs } from './EdgeTabs';
 import { LessonRail } from './LessonRail';
 import { LessonNotFound } from '../../app/errors';
 import { useObjectiveDraft } from '../plan/useObjectiveDraft';
-import { WellReadings, useReadings } from '../plan/Readings';
+import { SuggestedReadings, WellReadings, useReadings } from '../plan/Readings';
 import { Sep } from '../../components/Sep';
 
 function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
@@ -63,6 +63,7 @@ function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
           {!readings.shown && <AddButton label={t.plan.addReading} onPress={readings.start} />}
         </div>
         <WellReadings course={course} lesson={lesson} n={n} readings={readings} />
+        <SuggestedReadings course={course} lesson={lesson} n={n} readings={readings} />
       </div>
     </header>
   );

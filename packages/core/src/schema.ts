@@ -78,6 +78,11 @@ export const LessonSchema = z.object({
   objectiveIds: z.array(id),
   /** What students read before this lesson, one reading per line. */
   readings: z.array(text).default([]),
+  /**
+   * Further reading the model proposed, unchecked. Kept apart from readings:
+   * never exported, and it joins the readings only when the teacher adds it.
+   */
+  suggestedReadings: z.array(text).default([]),
   segments: z.array(SegmentSchema),
   keyIdeas: z.array(text),
   vocabulary: z.array(TermSchema),

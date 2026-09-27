@@ -34,6 +34,7 @@ export function emptyLesson(idValue: string, title: string, summary = ''): Lesso
     summary,
     objectiveIds: [],
     readings: [],
+    suggestedReadings: [],
     segments: [],
     keyIdeas: [],
     vocabulary: [],

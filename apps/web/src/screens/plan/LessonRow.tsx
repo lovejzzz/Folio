@@ -6,7 +6,7 @@ import { EditableText } from '../../components/editing/EditableText';
 import { useT } from '../../i18n';
 import { edit } from '../../state/edit';
 import { leaveBlank } from '../../materials/newItems';
-import { PlanReadings, useReadings } from './Readings';
+import { PlanReadings, SuggestedReadings, useReadings } from './Readings';
 import { gapAt, moveIndexForGap } from './reorder';
 import { useObjectiveDraft, type ObjectiveDraft } from './useObjectiveDraft';
 
@@ -147,6 +147,7 @@ function LessonDetails({ course, lesson, n }: { course: Course; lesson: Lesson; 
     <>
       <Objectives course={course} lesson={lesson} n={n} draft={draft} />
       <PlanReadings course={course} lesson={lesson} n={n} readings={readings} />
+      <SuggestedReadings course={course} lesson={lesson} n={n} readings={readings} compact />
       <div className="mt-1.5 flex flex-wrap gap-x-3">
         <AddLine label={t.plan.addObjective} onPress={draft.start} />
         <AddLine label={t.plan.addReading} onPress={readings.start} />

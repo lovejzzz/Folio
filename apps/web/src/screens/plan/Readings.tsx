@@ -26,6 +26,14 @@ export function useReadings(lesson: Lesson, n: number) {
     add: (text: string) => {
       if (text.trim()) save([...lesson.readings, text]);
     },
+    /** A suggestion the teacher has checked joins the readings; either way it leaves the suggestions. */
+    accept: (i: number) =>
+      edit(
+        [cmd('lesson.update', { lessonId: lesson.id, readings: [...lesson.readings, lesson.suggestedReadings[i]!], suggestedReadings: lesson.suggestedReadings.filter((_, j) => j !== i) })],
+        { key: 'editedReadings', values: { n } },
+      ),
+    dismiss: (i: number) =>
+      edit([cmd('lesson.update', { lessonId: lesson.id, suggestedReadings: lesson.suggestedReadings.filter((_, j) => j !== i) })], { key: 'editedReadings', values: { n } }),
   };
 }
 
@@ -103,6 +111,51 @@ export function WellReadings({ course, lesson, n, readings }: ReadingsProps) {
         )}
       </ul>
       <AddButton label={t.plan.addReading} onPress={readings.start} />
+    </section>
+  );
+}
+
+/**
+ * Further reading the model proposed, set apart from what is assigned: a
+ * dashed rule, a note to check it, and nothing printed or exported. "Add"
+ * moves one into the readings once the teacher has checked it.
+ */
+export function SuggestedReadings({ course, lesson, n, readings, compact = false }: ReadingsProps & { compact?: boolean }) {
+  const t = useT();
+  if (!lesson.suggestedReadings.length) return null;
+  return (
+    <section className={cx('no-print', compact ? 'mt-3' : 'mt-5')} aria-label={t.plan.suggested}>
+      <h4 className={cx('font-ui text-12 text-ink-2', compact && 'pl-5')}>
+        {t.plan.suggested}
+        <span className="text-ink-3"> · {t.plan.suggestedHint}</span>
+      </h4>
+      <ul className="mt-1 space-y-1">
+        {lesson.suggestedReadings.map((s, i) => (
+          <li key={s} className="group/sg flex items-start gap-2 font-ui text-13 leading-5 text-ink-2">
+            <span aria-hidden className="mt-2.5 w-3 shrink-0 border-t border-dashed border-rule-strong" />
+            <span lang={course.language} className="min-w-0 flex-1">
+              {s}
+            </span>
+            <button
+              type="button"
+              aria-label={t.plan.addSuggestedLabel(s, n)}
+              onClick={() => readings.accept(i)}
+              className="shrink-0 rounded-control px-1 font-ui text-12 font-medium text-accent outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              {t.plan.addSuggested}
+            </button>
+            <IconButton
+              size="sm"
+              label={t.plan.dismissSuggested(s)}
+              tooltip={false}
+              className="-my-0.5 size-6 opacity-0 group-focus-within/sg:opacity-100 group-hover/sg:opacity-100"
+              onPress={() => readings.dismiss(i)}
+            >
+              <X size={13} strokeWidth={1.5} />
+            </IconButton>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

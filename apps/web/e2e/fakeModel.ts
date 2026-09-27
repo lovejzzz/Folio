@@ -34,6 +34,8 @@ function outline(prompt: string) {
       summary: `What students learn about ${titles[i % titles.length]!.toLowerCase()}.`,
       objectives: [`Explain ${titles[i % titles.length]!.toLowerCase()}`, 'Use the word equation for photosynthesis'],
       readings: READINGS[i] ?? [],
+      // A seminar brief gets one suggestion, as a university outline would.
+      suggestedReadings: i === 0 && /seminar/i.test(prompt) ? ['Okin, Justice, Gender, and the Family, ch. 5'] : [],
     })),
     grading: [
       { item: 'Lab notebook', weight: 30 },

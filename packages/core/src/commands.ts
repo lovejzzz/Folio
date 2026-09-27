@@ -29,7 +29,7 @@ import type {
 
 type Fields<T, K extends keyof T> = Partial<Pick<T, K>>;
 
-export type LessonFields = Fields<Lesson, 'title' | 'summary' | 'objectiveIds' | 'readings'>;
+export type LessonFields = Fields<Lesson, 'title' | 'summary' | 'objectiveIds' | 'readings' | 'suggestedReadings'>;
 export type PlanFields = Fields<Lesson, 'segments' | 'keyIdeas' | 'vocabulary'>;
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 export type TaskFields = Partial<DistributiveOmit<Task, 'id' | 'kind' | 'lessonId'>>;
@@ -173,6 +173,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     if (p.summary !== undefined) lesson.summary = p.summary;
     if (p.objectiveIds !== undefined) lesson.objectiveIds = [...p.objectiveIds];
     if (p.readings !== undefined) lesson.readings = [...p.readings];
+    if (p.suggestedReadings !== undefined) lesson.suggestedReadings = [...p.suggestedReadings];
   },
   'lesson.remove': (draft, p) => {
     const lesson = lessonOf(draft, p.lessonId);

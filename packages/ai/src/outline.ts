@@ -53,6 +53,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   for (const draft of outline.lessons) {
     const lesson = emptyLesson(newId('l'), draft.title, draft.summary);
     lesson.readings = draft.readings.map((r) => r.trim()).filter(Boolean);
+    lesson.suggestedReadings = draft.suggestedReadings.map((r) => r.trim()).filter((r) => r && !lesson.readings.includes(r));
     for (const text of draft.objectives) {
       const id = newId('o');
       course.objectives[id] = { id, text };
