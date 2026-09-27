@@ -1,22 +1,37 @@
 import { textRuns, type TextRun } from '@folio/core';
+import { cx } from '@folio/ui';
 import type { ReactNode } from 'react';
 
-const TAG = { code: 'code', sub: 'sub', sup: 'sup' } as const;
-const tagOf = (r: TextRun) => (r.code ? TAG.code : r.script ? TAG[r.script] : null);
-const CLASS = { code: 'folio-code', sub: 'folio-script', sup: 'folio-script' } as const;
+/** Combining marks and the spacing forms drawn over a Greek letter. */
+const SPACING: Record<string, string> = { '\u0302': 'ˆ', '\u0303': '˜', '\u0304': '¯', '\u0307': '˙', '\u0308': '¨' };
 
-/** Course text as it reads: runs marked `like this` set as code, β̂_educ and R^2 as sub- and superscripts. */
+interface Shape {
+  tag: 'code' | 'sub' | 'sup' | 'span';
+  className: string;
+  accent?: string;
+}
+
+/** The element a run is drawn in, and its class; a plain run is bare text. */
+function shapeOf(r: TextRun): Shape | null {
+  if (r.code) return { tag: 'code', className: 'folio-code' };
+  if (r.script) return { tag: r.script, className: cx('folio-script', r.math && 'folio-math') };
+  if (r.accent) return { tag: 'span', className: cx('folio-math folio-accent', r.tall && 'folio-accent-tall'), accent: SPACING[r.accent] ?? '' };
+  if (r.math) return { tag: 'span', className: 'folio-math' };
+  return null;
+}
+
+/** Course text as it reads: code as code, β̂_educ and R² as sub- and superscripts, maths words in the reading face. */
 export function InlineText({ text }: { text: string }): ReactNode {
   const runs = textRuns(text);
-  if (runs.length === 1 && !tagOf(runs[0]!)) return text;
+  if (runs.length === 1 && !shapeOf(runs[0]!)) return text;
   return runs.map((r, i) => {
-    const Tag = tagOf(r);
-    return Tag ? (
-      <Tag key={i} className={CLASS[Tag]}>
+    const shape = shapeOf(r);
+    if (!shape) return r.text;
+    const Tag = shape.tag;
+    return (
+      <Tag key={i} className={shape.className} data-accent={shape.accent}>
         {r.text}
       </Tag>
-    ) : (
-      r.text
     );
   });
 }
@@ -24,16 +39,17 @@ export function InlineText({ text }: { text: string }): ReactNode {
 /** The same, drawn into a DOM node that React doesn't manage (an editable field at rest). */
 export function drawInlineText(el: HTMLElement, text: string): void {
   const runs = textRuns(text);
-  if (runs.length === 1 && !tagOf(runs[0]!)) {
+  if (runs.length === 1 && !shapeOf(runs[0]!)) {
     el.textContent = text;
     return;
   }
   el.replaceChildren(
     ...runs.map((r) => {
-      const tag = tagOf(r);
-      if (!tag) return document.createTextNode(r.text);
-      const node = document.createElement(tag);
-      node.className = CLASS[tag];
+      const shape = shapeOf(r);
+      if (!shape) return document.createTextNode(r.text);
+      const node = document.createElement(shape.tag);
+      node.className = shape.className;
+      if (shape.accent) node.dataset.accent = shape.accent;
       node.textContent = r.text;
       return node;
     }),

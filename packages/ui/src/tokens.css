@@ -182,8 +182,8 @@
   --color-tab-study: var(--folio-tab-study);
   --color-tab-faq: var(--folio-tab-faq);
   --font-*: initial;
-  --font-display: 'Instrument Serif', 'Noto Serif SC', 'Songti SC', serif;
-  --font-reading: 'Source Serif 4 Variable', 'Source Serif 4', 'Source Han Serif SC', 'Noto Serif SC', 'Songti SC', Georgia, serif;
+  --font-display: 'Instrument Serif', 'Folio Math', 'Noto Serif SC', 'Songti SC', serif;
+  --font-reading: 'Source Serif 4 Variable', 'Source Serif 4', 'Folio Math', 'Source Han Serif SC', 'Noto Serif SC', 'Songti SC', Georgia, serif;
   --font-ui: 'Instrument Sans Variable', 'Instrument Sans', 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --text-*: initial;

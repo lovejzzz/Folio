@@ -53,8 +53,10 @@ export const tab: Record<MaterialKind, Pair> = {
 };
 
 export const font = {
-  display: "'Instrument Serif', 'Noto Serif SC', 'Songti SC', serif",
-  reading: "'Source Serif 4 Variable', 'Source Serif 4', 'Source Han Serif SC', 'Noto Serif SC', 'Songti SC', Georgia, serif",
+  // 'Folio Math' is Source Serif 4 cut to letters and combining marks: the web subsets lack U+0302,
+  // so a hat (β̂, û) came from another font and sat off its letter. It loads only for such a cluster.
+  display: "'Instrument Serif', 'Folio Math', 'Noto Serif SC', 'Songti SC', serif",
+  reading: "'Source Serif 4 Variable', 'Source Serif 4', 'Folio Math', 'Source Han Serif SC', 'Noto Serif SC', 'Songti SC', Georgia, serif",
   ui: "'Instrument Sans Variable', 'Instrument Sans', 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif",
   mono: "'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace",
 };

@@ -47,7 +47,7 @@ export function runs(ctx: BlockCtx, text: string, style: RunStyle = {}): TextRun
       (r, j) =>
         new TextRun({
           ...rest,
-          text: r.text,
+          text: r.text + (r.accent ?? ''),
           font: fontFor(ctx.language, role),
           ...(r.code ? CODE_RUN(role, rest.size) : {}),
           ...(r.script === 'sub' ? { subScript: true } : r.script === 'sup' ? { superScript: true } : {}),

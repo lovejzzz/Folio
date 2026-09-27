@@ -3,6 +3,15 @@
 
 @source '../../../packages/ui/src';
 
+/* Source Serif 4 cut to letters, Greek and combining marks (see font.reading in tokens.ts). */
+@font-face {
+  font-family: 'Folio Math';
+  src: url('./assets/fonts/folio-math.woff2') format('woff2');
+  font-weight: 200 900;
+  font-display: swap;
+  unicode-range: U+0041-005A, U+0061-007A, U+0131, U+0300-036F, U+0391-03C9, U+03D1, U+03D5, U+03F5;
+}
+
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 /* The current place in navigation (TanStack Router marks active links with data-status). */
 @custom-variant current (&[data-status='active'], &[aria-current='page']);
@@ -155,6 +164,30 @@
   }
   sup.folio-script {
     top: -0.62em;
+  }
+
+  /* β̂, x̄, Σ inside interface text: the sans has no Greek and no mark positioning. */
+  .folio-math {
+    font-family: var(--font-reading);
+  }
+
+  /* β̂, σ̂: no face we ship anchors a mark on Greek, so the mark is drawn centred over the letter. */
+  .folio-accent {
+    position: relative;
+  }
+  .folio-accent::after {
+    content: attr(data-accent);
+    position: absolute;
+    left: 0;
+    right: 0;
+    /* The spacing ˆ already sits at a lowercase hat's height in its own box. */
+    top: -0.04em;
+    line-height: inherit;
+    text-align: center;
+    pointer-events: none;
+  }
+  .folio-accent-tall::after {
+    top: -0.3em;
   }
 
   /* Inline editing: the text is the control. */

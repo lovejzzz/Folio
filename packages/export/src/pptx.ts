@@ -67,7 +67,7 @@ type RunOptions = PptxGenJS.TextPropsOptions;
 function lineRuns(text: string, base: RunOptions, first: RunOptions = {}): PptxGenJS.TextProps[] {
   const parts = textRuns(text);
   return parts.map((r, i) => ({
-    text: r.text,
+    text: r.text + (r.accent ?? ''),
     options: {
       ...base,
       ...(i === 0 ? first : {}),
