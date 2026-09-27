@@ -102,6 +102,8 @@ describe('course length in summaries', () => {
     expect(withoutSpan('A 90-minute introductory lecture.')).toBe('An introductory lecture.');
     expect(withoutSpan('Students meet for six 2-hour seminars.')).toBe('Students meet for six seminars.');
     expect(withoutSpan('A unit on the ten-week plan')).toBe('A unit on the plan');
+    expect(withoutSpan('A four-topic course in regression analysis.')).toBe('A course in regression analysis.');
     expect(withoutSpan('Regression for economists.')).toBe('Regression for economists.');
+    expect(withoutSpan('It covers the five topic areas.')).toBe('It covers the five topic areas.');
   });
 });

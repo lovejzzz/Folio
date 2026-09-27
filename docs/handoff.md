@@ -139,7 +139,7 @@ The econ brief (with the week 3 notes), run twice on each model: once before the
 - Overlong lists (5 FAQ entries, 7 steps) each cost a repair. The extras are dropped, or up to 8 steps are accepted.
 - The course summary ignored the rule against naming the length ("A four-week module", Sonnet in 2 of 2 runs). The outline prompt now names counts too, and `withoutSpan` removes the phrase locally.
 
-**Pipeline, open (a decision for the user):** both models write word subscripts as `β_educ` (DeepSeek 50–154 times, Sonnet 16–54). The prompt forbids `_` but gives no other way to write a named subscript. Either allow it and render `_word` as a subscript, or ask for "β̂ on educ".
+**Word subscripts, done:** both models wrote `β_educ`, because the prompt forbade `_` and gave no other way to write a named subscript. `_word`, `_{…}` and `^…` after a single letter are now marks like code: set small on the page, sized to meet the face's own ₀ and ², and written as real subscripts and superscripts in Word and PowerPoint. The prompt asks for this form where Unicode has none. snake_case words and code are left alone.
 
 **Harness, not the app:**
 - The Claude bridge's `--json-schema` made the CLI answer three times per call (text, then a tool call), doubling output and time. It now puts the schema in the system prompt and answers in one turn.
@@ -150,11 +150,34 @@ The econ brief (with the week 3 notes), run twice on each model: once before the
 - Sonnet 5: "last week / this week" framing, from the weekly brief. Right answers longer than the distractors: two items still stood out after the one repair allowed.
 - Sonnet 5 isn't much cheaper per course than Opus 5.5 was (~$1.30), because it writes more. It is the default for its lower per-token price and good quality, but DeepSeek is 10× cheaper for similar accuracy.
 
+### Round 2: GCSE history, grade 11 statistics, the philosophy seminar
+
+| | DeepSeek | Sonnet 5 |
+|---|---|---|
+| history (4 × 60 min) | 29 calls, 66 s, $0.06 | 33 calls, 205 s, $0.76 |
+| stats (3 × 50 min) | 22 calls, 66 s, $0.06 | 23 calls, 145 s, $0.57 |
+| phil (4 × 120 min) | 32 calls, 150 s, $0.10 | 32 calls, $0.8 |
+
+**Accuracy.** Every numeric answer in both statistics quizzes checks out by hand. The history courses invent no quotations: Sonnet's one quote, "We want eight and we won't wait", is real, and DeepSeek names real extracts for the teacher to hand out (Fischer 1961, Clark 2012). Seminars on both models give the weekly presentation 20–35 minutes and have no school routines.
+
+**Pipeline, fixed:**
+- Rubric scales changed from lesson to lesson (four in one history course), because each assignment is written alone. School courses now get one scale ("Excellent / Good / Developing / Beginning", 4–1; 优秀 / 良好 / 发展中 / 起步 in Chinese). A course that has a rubric passes its levels on, so a teacher's renaming carries.
+- DeepSeek counts its thinking against the output cap. Two-hour seminar plans were cut off at 8K twice in one course, so the cap is now 16K (app and bridge).
+- A raw line break inside a JSON string is now read as meant (for models without constrained decoding).
+- "The next lesson" and "last week" were written by both models; they are now named in the rule.
+
+**Verified after the fixes** (DeepSeek history, seminar, stats and econ, and Sonnet history): one rubric scale per course; no cut-offs on the seminar (29 calls, 0 repairs); the econ course at the minimum 29 calls with 0 repairs, strict true/false alternation and answers spread over A–D. One more pipeline fix came out of it: the quiz prompt still said true/false "answer" repeats "the correct choice", and DeepSeek echoed the statement too. It now says "True" or "False". "A four-topic course" now loses its span as well. Sonnet still writes "the next lesson" (4 in a course, against DeepSeek's 0–1), so that is its habit now.
+
+**Model:**
+- Sonnet 5 writes the right answer longer than the distractors in 2–3 quizzes per course (0 on DeepSeek). The check is fair (68 characters against 43–45), so it stays.
+- Sonnet 5 follows the true/false order loosely (T, T in one lesson). Over a course it stays balanced.
+- DeepSeek follows instructions more literally; Sonnet writes tighter.
+
 ## Next
 
-1. **Word subscripts** (`β_educ`): decide between allowing them and rendering them as subscripts in the inline layer, or asking for "β̂ on educ". See above.
-2. **Sonnet 5 through the API.** The per-course cost above comes from the CLI bridge. A real run with an API key would settle the pricing note (en.ts and zh.ts say "about $1").
-3. **Quiz length stand-outs on Sonnet.** Two items survived the one repair. Possible fixes: a stricter quiz prompt for Claude, or trimming the right answer locally.
+1. **Sonnet 5 through the API.** The costs above come from the CLI bridge. A run with a real API key would settle the pricing note ("about $1").
+2. **Sonnet's long right answers.** They cost 2–3 repairs a course. Worth trying: a line in the quiz prompt that shows a bad example, measured on replays.
+3. **Source analysis without sources.** A GCSE brief asked for source work but attached nothing, so the models could only name extracts. The brief screen could suggest attaching sources when the brief mentions them.
 
 **DeepSeek key.**
 - The key the user first gave was revoked on 2026-09-27, after a *different* key of theirs (named "Test") leaked and was drained of $19.20. Folio's own key had spent $0.80 by then. A code audit found no path in Folio that could run up cost unattended:

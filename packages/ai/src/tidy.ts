@@ -69,7 +69,8 @@ export function unquote(title: string): string {
 }
 
 const COUNT = String.raw`(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|fifteen|\d+)`;
-const SPAN = new RegExp(String.raw`\b(an?\s+)?${COUNT}[- ](?:week|session|lesson|lecture|day|hour|minute)(?:-long)?\s+(?=\w)`, 'gi');
+// A time span with a space or a hyphen ("90 minute", "four-week"); a count of parts only hyphenated, so "five topic areas" stays.
+const SPAN = new RegExp(String.raw`\b(an?\s+)?${COUNT}(?:[- ](?:week|day|hour|minute)|-(?:session|lesson|lecture|topic|part|unit))(?:-long)?\s+(?=\w)`, 'gi');
 
 /**
  * "A four-week module on regression": the teacher changes the number of
