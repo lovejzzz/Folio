@@ -558,7 +558,7 @@ export const zh: Messages = {
     ai: 'AI 模型',
     aiLede: 'Folio 用你选择的模型来写作。你的密钥只保存在这个浏览器里，请求直接发送给模型提供方。',
     providers: {
-      anthropic: { name: '使用我的 Claude 密钥', short: '你的 Claude 密钥', note: 'Anthropic。按用量付费，用 Claude Opus 生成一门四节课的课程大约 1–2 美元。' },
+      anthropic: { name: '使用我的 Claude 密钥', short: '你的 Claude 密钥', note: 'Anthropic。按用量付费，用 Claude Sonnet 5 生成一门四节课的课程大约 1 美元。' },
       openai: { name: '使用我的 OpenAI 密钥', short: '你的 OpenAI 密钥', note: 'OpenAI。按用量付费。' },
       google: { name: '使用我的 Gemini 密钥', short: '你的 Gemini 密钥', note: 'Google。有带限额的免费额度。' },
       deepseek: { name: '使用我的 DeepSeek 密钥', short: '你的 DeepSeek 密钥', note: 'DeepSeek。按用量付费，价格远低于顶级大模型，中文表现出色。' },

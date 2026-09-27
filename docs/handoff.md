@@ -118,13 +118,43 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
   - UI: on the plan screen, the suggestion's Add button sat 2px above its line (smaller line height); it now takes the line's leading.
   - Build times ran 92–125 s with the quiz and assignment waiting for the plan (was 75–110 s).
 
+## Model or pipeline? DeepSeek against Sonnet 5, same brief
+
+The econ brief (with the week 3 notes), run twice on each model: once before the fixes below and once after. Logs: `apps/web/live-results/cmp*-{ds,sonnet}.jsonl`. `scripts/token-report.py --log <file>` prints each run's costs.
+
+| | deepseek-flash | claude-sonnet-5 (CLI bridge) |
+|---|---|---|
+| Build | 102–114 s | 277–284 s |
+| Calls (29 is the minimum) | 30–31 | 30–33 |
+| Cost | $0.09–0.10 | $1.02 billed; the app talking to the API should be ~$0.7–1 |
+| Accuracy | every figure checks out | every figure checks out |
+| Character | richer R labs (`cbind`, `qr(X)$rank`, `solve(t(X) %*% X)`) and chapter numbers (correct this time) | tighter theory, cleaner maths (β̂ⱼ, never LaTeX), suggests a chapter only by topic when unsure |
+
+**Pipeline (both models showed it), fixed:**
+- The right answer was never D. `balanceChoices` started every quiz at A, and a quiz here has two or three multiple-choice questions. Each quiz now starts at a random letter.
+- Plan notes ended "Passage [2]." The plan request asked for passage numbers in a field that plans don't have. Plans now name sources by title, and leftover numbers are removed locally.
+- Rubric levels came back as both "First (70+)" and "First", because the prompt's example carried the ranges. The prompt now names the levels exactly, and ranges are removed locally.
+- The true/false `choices` field was described as "options", and Sonnet put the statement in it. It now says `["True", "False"]`.
+- "The fourth option" in an explanation didn't stop the choices being reordered. The guard now knows ordinals.
+- Overlong lists (5 FAQ entries, 7 steps) each cost a repair. The extras are dropped, or up to 8 steps are accepted.
+- The course summary ignored the rule against naming the length ("A four-week module", Sonnet in 2 of 2 runs). The outline prompt now names counts too, and `withoutSpan` removes the phrase locally.
+
+**Pipeline, open (a decision for the user):** both models write word subscripts as `β_educ` (DeepSeek 50–154 times, Sonnet 16–54). The prompt forbids `_` but gives no other way to write a named subscript. Either allow it and render `_word` as a subscript, or ask for "β̂ on educ".
+
+**Harness, not the app:**
+- The Claude bridge's `--json-schema` made the CLI answer three times per call (text, then a tool call), doubling output and time. It now puts the schema in the system prompt and answers in one turn.
+- Without constrained decoding, Sonnet's quiz sometimes gave `"sourcePassage": "3"` as a string, or broken JSON (3 of its 4 repairs in the second run). The API's structured outputs rule both out.
+
+**Model:**
+- DeepSeek: "This is a 90-minute lecture" in speaker notes (both runs); `t_{n−k−1}` and `e^0.092` once; a quiz whose thinking ran out the token budget (one repair).
+- Sonnet 5: "last week / this week" framing, from the weekly brief. Right answers longer than the distractors: two items still stood out after the one repair allowed.
+- Sonnet 5 isn't much cheaper per course than Opus 5.5 was (~$1.30), because it writes more. It is the default for its lower per-token price and good quality, but DeepSeek is 10× cheaper for similar accuracy.
+
 ## Next
 
-1. **Code in monospace** is a separate suggested task: fields are plain text, so it needs a small inline-code layer. The econ course has R calls (`lm(log(wage) ~ educ, data = wage1)`, `summary()`) in plans and slides.
-2. **Consider Sonnet 5 as the Anthropic default** (`DEFAULT_MODELS` in `packages/ai/src/inference.ts`) and update the pricing note in en.ts and zh.ts.
-3. **Small things seen in the university runs, not yet fixed:**
-   - Plans still end some seminars with a school-style "written exit response"; the university line could name it among the routines to leave out.
-   - A seminar plan said the essay "carries the whole mark", which the brief doesn't say.
+1. **Word subscripts** (`β_educ`): decide between allowing them and rendering them as subscripts in the inline layer, or asking for "β̂ on educ". See above.
+2. **Sonnet 5 through the API.** The per-course cost above comes from the CLI bridge. A real run with an API key would settle the pricing note (en.ts and zh.ts say "about $1").
+3. **Quiz length stand-outs on Sonnet.** Two items survived the one repair. Possible fixes: a stricter quiz prompt for Claude, or trimming the right answer locally.
 
 **DeepSeek key.**
 - The key the user first gave was revoked on 2026-09-27, after a *different* key of theirs (named "Test") leaked and was drained of $19.20. Folio's own key had spent $0.80 by then. A code audit found no path in Folio that could run up cost unattended:

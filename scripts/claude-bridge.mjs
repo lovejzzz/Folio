@@ -3,6 +3,10 @@
 // without an API key in the browser. Every call is logged for scoring.
 //   node scripts/claude-bridge.mjs [port] [logfile]
 // BRIDGE_MODEL picks the model (default claude-opus-5-5).
+// The schema goes into the system prompt and the answer is one turn: the CLI's
+// --json-schema writes the answer as text and then again as a tool call, three
+// turns in all, which doubled output tokens and time against the app talking to
+// the API. BRIDGE_JSON_SCHEMA=1 brings the old way back.
 import { spawn } from 'node:child_process';
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -14,11 +18,14 @@ mkdirSync(dirname(LOG), { recursive: true });
 const MODEL = process.env.BRIDGE_MODEL ?? 'claude-opus-5-5';
 let seq = 0;
 
+const CLI_SCHEMA = process.env.BRIDGE_JSON_SCHEMA === '1';
+
 function runClaude({ system, prompt, schema, effort }) {
   return new Promise((resolve, reject) => {
-    const args = ['-p', '--model', MODEL, '--output-format', 'json', '--tools', '', '--no-session-persistence', '--max-turns', '4'];
-    if (system) args.push('--system-prompt', system);
-    if (schema) args.push('--json-schema', JSON.stringify(schema));
+    const args = ['-p', '--model', MODEL, '--output-format', 'json', '--tools', '', '--no-session-persistence', '--max-turns', CLI_SCHEMA ? '4' : '1'];
+    const inPrompt = schema && !CLI_SCHEMA ? `\n\nAnswer with one JSON object that matches this JSON Schema, and nothing else:\n${JSON.stringify(schema)}` : '';
+    if (system || inPrompt) args.push('--system-prompt', `${system}${inPrompt}`);
+    if (schema && CLI_SCHEMA) args.push('--json-schema', JSON.stringify(schema));
     if (effort) args.push('--effort', effort);
     const child = spawn('claude', args, { cwd: '/tmp', stdio: ['pipe', 'pipe', 'pipe'] });
     let out = '';
@@ -58,7 +65,8 @@ createServer(async (req, res) => {
   try {
     const out = await runClaude({ system, prompt, schema, effort });
     const structured = out.structured_output;
-    const text = structured !== undefined ? JSON.stringify(structured) : (out.result ?? '');
+    // One turn answers in text; a fence around the JSON is the only wrapping models add.
+    const text = structured !== undefined ? JSON.stringify(structured) : String(out.result ?? '').replace(/^\s*```(?:json)?\s*|\s*```\s*$/g, '');
     const ms = Date.now() - started;
     appendFileSync(LOG, JSON.stringify({ id, at: new Date().toISOString(), ms, model: MODEL, effort: effort ?? null, requestedModel: request.model, system, prompt, schemaKeys: schema ? Object.keys(schema.properties ?? {}) : null, isError: out.is_error, subtype: out.subtype, text, cost: out.total_cost_usd, usage: out.usage && { in: out.usage.input_tokens + (out.usage.cache_read_input_tokens ?? 0) + (out.usage.cache_creation_input_tokens ?? 0), cacheRead: out.usage.cache_read_input_tokens ?? 0, out: out.usage.output_tokens } }) + '\n');
     if (out.is_error) {

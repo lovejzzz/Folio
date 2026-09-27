@@ -1,6 +1,6 @@
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
-import { tidyFollowUps, tidySlides, tidySteps, tidyTrueFalse } from './tidy';
+import { tidyFaq, tidyFollowUps, tidyPlanSources, tidySlides, tidySteps, tidyTrueFalse } from './tidy';
 import {
   checkMinutes,
   answerStandsOut,
@@ -71,6 +71,7 @@ function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flags:
 
 const plan: SectionJob<PlanDraft> = {
   schema: PlanDraft,
+  tidy: tidyPlanSources,
   check: (v, course) =>
     checkMinutes(
       v.segments.map((s) => s.minutes),
@@ -219,6 +220,7 @@ const discussions: SectionJob<DiscussionsDraft> = {
 
 const faq: SectionJob<FaqDraft> = {
   schema: FaqDraft,
+  tidy: tidyFaq,
   toCommands: (v, problems, _course, lesson) => [
     cmd('faq.fill', {
       lessonId: lesson.id,

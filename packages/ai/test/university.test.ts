@@ -35,8 +35,8 @@ describe('university courses', () => {
     const lesson = (c: Course) => orderedLessons(c)[0]!;
     const uk = university('en-GB');
     const us = university('en-US');
-    expect(sectionPrompt(uk, lesson(uk), 'assignments')).toMatch(/First \(70\+\)/);
-    expect(sectionPrompt(us, lesson(us), 'assignments')).toMatch(/A \(90\+\)/);
+    expect(sectionPrompt(uk, lesson(uk), 'assignments')).toMatch(/"First", "Upper second"/);
+    expect(sectionPrompt(us, lesson(us), 'assignments')).toMatch(/"A", "B"/);
     const school = smallCourse();
     expect(sectionPrompt(school, lesson(school), 'assignments')).not.toMatch(/grade bands|degree classes|letter grades/);
   });

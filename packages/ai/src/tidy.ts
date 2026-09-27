@@ -21,8 +21,32 @@ export function tidyTrueFalse(q: QuestionDraft, language: Language): QuestionDra
 }
 
 /** The page numbers the steps, so a number the model wrote in would show twice. */
+/** The points already show a band's floor, so "First (70+)" reads as "First", as other runs wrote it. */
+const BAND_RANGE = /\s*[(（]\s*\d+\s*(?:\+|[–—-]\s*\d+)\s*%?\s*[)）]\s*$/;
+
 export function tidySteps(v: AssignmentDraft): AssignmentDraft {
-  return { ...v, steps: v.steps.map((s) => s.replace(/^\s*(?:step\s*\d{1,2}\s*[.:)：]|\d{1,2}(?:[.)]\s|、))\s*/i, '').replace(/^\s*第[一二三四五六七八九十\d]+步\s*[:：、]?\s*/, '')) };
+  return {
+    ...v,
+    rubric: { ...v.rubric, levels: v.rubric.levels.map((lv) => ({ ...lv, label: lv.label.replace(BAND_RANGE, '') || lv.label })) },
+    steps: v.steps.map((s) => s.replace(/^\s*(?:step\s*\d{1,2}\s*[.:)：]|\d{1,2}(?:[.)]\s|、))\s*/i, '').replace(/^\s*第[一二三四五六七八九十\d]+步\s*[:：、]?\s*/, '')),
+  };
+}
+
+/** "Passage [2].", "(source [1])": pointers into the numbered passages, which the teacher never sees numbered. */
+const REFS = String.raw`(?:passages?|sources?)\s*\[\d+\](?:\s*(?:,|and|&|–|-)\s*\[?\d+\]?)*`;
+const REF_IN_BRACKETS = new RegExp(String.raw`\s*\((?:see\s+)?${REFS}\)`, 'gi');
+const REF_SENTENCE = new RegExp(String.raw`(^|[.!?])[ \t]*(?:see\s+)?${REFS}\.?(?=\s|$)`, 'gim');
+
+export function tidyPlanSources<T extends { segments: { description: string; teacherNotes: string }[] }>(v: T): T {
+  const strip = (text: string) => text.replace(REF_IN_BRACKETS, '').replace(REF_SENTENCE, '$1').trim();
+  return { ...v, segments: v.segments.map((seg) => ({ ...seg, description: strip(seg.description), teacherNotes: strip(seg.teacherNotes) })) };
+}
+
+export const FAQ_ENTRIES = 4;
+
+/** Past four questions, the extras are dropped rather than sent back for a repair. */
+export function tidyFaq<T extends { entries: unknown[] }>(v: T): T {
+  return { ...v, entries: v.entries.slice(0, FAQ_ENTRIES) };
 }
 
 export const FOLLOW_UPS = 3;
@@ -44,8 +68,32 @@ export function unquote(title: string): string {
   return t;
 }
 
+const COUNT = String.raw`(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|fifteen|\d+)`;
+const SPAN = new RegExp(String.raw`\b(an?\s+)?${COUNT}[- ](?:week|session|lesson|lecture|day|hour|minute)(?:-long)?\s+(?=\w)`, 'gi');
+
+/**
+ * "A four-week module on regression": the teacher changes the number of
+ * lessons and their length on the plan, so the summary would go stale. The
+ * span goes and the article follows the next word. Sonnet wrote it twice,
+ * against the rule.
+ */
+export function withoutSpan(text: string): string {
+  return text.replace(SPAN, (_, article: string | undefined, at: number, whole: string) => {
+    if (!article) return '';
+    const next = whole.slice(at + _.length);
+    const an = /^[aeiou]/i.test(next) && !/^(?:uni|use|one)/i.test(next);
+    const word = an ? 'an' : 'a';
+    return `${article[0] === 'A' ? word[0]!.toUpperCase() + word.slice(1) : word} `;
+  });
+}
+
 export function tidyOutline(v: OutlineDraft): OutlineDraft {
-  return { ...v, title: unquote(v.title), lessons: v.lessons.map((l) => ({ ...l, title: unquote(l.title) })) };
+  return {
+    ...v,
+    title: unquote(v.title),
+    summary: withoutSpan(v.summary),
+    lessons: v.lessons.map((l) => ({ ...l, title: unquote(l.title), summary: withoutSpan(l.summary) })),
+  };
 }
 
 export const BULLETS_PER_SLIDE = 5;

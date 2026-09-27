@@ -86,8 +86,8 @@ export type StudyDraft = z.infer<typeof StudyDraft>;
 export const QuestionDraft = z.object({
   format: z.enum(['choice', 'truefalse', 'short', 'numeric']),
   prompt: line,
-  choices: z.array(z.string()).default([]).describe('Options for choice and truefalse questions; empty for others'),
-  answer: line.describe('For choice and truefalse: the exact text of the correct choice. Otherwise the model answer'),
+  choices: z.array(z.string()).default([]).describe('For choice: the options. For truefalse: ["True", "False"], never the statement. Empty for others'),
+  answer: line.describe('For choice: the exact text of the correct option. For truefalse: "True" or "False". Otherwise the model answer'),
   explanation: line,
   difficulty: z.number().int().min(1).max(3),
   expression: z.string().nullable().default(null).describe('For arithmetic answers, the calculation, e.g. "(4+5+9)/3"; else null'),
@@ -102,7 +102,8 @@ export type QuizDraft = z.infer<typeof QuizDraft>;
 export const AssignmentDraft = z.object({
   title: line,
   prompt: line,
-  steps: z.array(line).min(2).max(6),
+  // The prompt asks for two to six; a seventh step is no reason for a repair call.
+  steps: z.array(line).min(2).max(8),
   rubric: z.object({
     levels: z.array(z.object({ label: line, points: z.number().min(0) })).min(3).max(5),
     criteria: z
@@ -119,7 +120,7 @@ export const DiscussionsDraft = z.object({
 export type DiscussionsDraft = z.infer<typeof DiscussionsDraft>;
 
 export const FaqDraft = z.object({
-  entries: z.array(z.object({ question: line, answer: line })).min(1).max(4),
+  entries: z.array(z.object({ question: line, answer: line })).min(1).max(8).describe('Up to four'),
 });
 export type FaqDraft = z.infer<typeof FaqDraft>;
 

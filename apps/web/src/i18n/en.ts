@@ -581,7 +581,7 @@ export const en = {
     ai: 'AI model',
     aiLede: 'Folio writes with a model you choose. Your key stays in this browser and requests go straight to the provider.',
     providers: {
-      anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use; a four-lesson course costs about $1–2 with Claude Opus.' },
+      anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use; a four-lesson course costs about $1 with Claude Sonnet 5.' },
       openai: { name: 'Use my OpenAI key', short: 'your OpenAI key', note: 'OpenAI. You pay per use.' },
       google: { name: 'Use my Gemini key', short: 'your Gemini key', note: 'Google. Has a free tier with limits.' },
       deepseek: { name: 'Use my DeepSeek key', short: 'your DeepSeek key', note: 'DeepSeek. You pay per use, far less than the largest models. Strong in Chinese.' },

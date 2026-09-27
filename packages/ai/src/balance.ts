@@ -8,8 +8,8 @@ import type { Question } from '@folio/core';
  */
 
 const LAST = /^(all|none|both|neither) of (the )?(above|these)$|^以上(都|均|皆)?(是|不是|正确|错误|都对|都不对)?$/i;
-/** "option B", "(C)", "选项A": text that points at a choice by its place, so the order must stay. */
-const BY_LETTER = /\b(option|choice|answer)\s+[A-F]\b|\([A-F]\)|选项\s*[A-F]|[A-F]\s*项/i;
+/** "option B", "(C)", "the fourth option", "选项A": text that points at a choice by its place, so the order must stay. */
+const BY_LETTER = /\b(option|choice|answer)\s+[A-F]\b|\([A-F]\)|选项\s*[A-F]|[A-F]\s*项|\b(first|second|third|fourth|fifth|last)\s+(option|choice|answer)\b|第[一二三四五]个?(选项|答案)/i;
 const NUMBER = /^[-−]?\d+(?:[.,]\d+)?\s*[%a-z°]*$/i;
 
 function shuffled<T>(items: T[], random: () => number): T[] {
@@ -45,9 +45,11 @@ function sortNumbers(q: Question): Question | null {
 export function balanceChoices(questions: Question[], random: () => number = Math.random): Question[] {
   const fixed = (q: Question) => BY_LETTER.test(`${q.prompt} ${q.explanation}`);
   const movable = questions.filter((q) => q.format === 'choice' && q.correct && q.choices.length >= 2 && !sortNumbers(q) && !fixed(q));
-  // Positions 0..3 in turn, shuffled, so a five-question quiz doesn't lean on one letter.
+  // Positions in turn, shuffled, so a five-question quiz doesn't lean on one letter. The turn
+  // starts at a random letter: a quiz with two or three of these, started at A each time, never answered D.
+  const start = Math.floor(random() * 4);
   const slots = shuffled(
-    movable.map((_, i) => i % 4),
+    movable.map((_, i) => (start + i) % 4),
     random,
   );
   let next = 0;

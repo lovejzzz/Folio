@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { tidyFollowUps, tidySlides, tidySteps, tidyTrueFalse, unquote, unfence, unfenceAll } from '../src/tidy';
+import { withoutSpan, tidyFollowUps, tidyPlanSources, tidySlides, tidySteps, tidyTrueFalse, unquote, unfence, unfenceAll } from '../src/tidy';
 import { QuestionDraft } from '../src/schemas';
 
 const tf = (answer: string, choices: string[] = []): QuestionDraft =>
@@ -78,5 +78,30 @@ describe('fenced code', () => {
 
   it('reaches every string in an answer', () => {
     expect(unfenceAll({ a: ['```\nx\n```'], b: { c: 'plain', n: 3 } })).toEqual({ a: ['`x`'], b: { c: 'plain', n: 3 } });
+  });
+});
+
+describe('plan sources and rubric bands', () => {
+  it('drops passage numbers a teacher cannot follow from plan text', () => {
+    const seg = (teacherNotes: string) => ({ kind: 'teach' as const, title: 'T', minutes: 10, description: 'Derive it (passage [2]).', teacherNotes });
+    const out = tidyPlanSources({ segments: [seg('Common slip: X as n×k. Source [1].'), seg('See passages [2] and [3].'), seg('Uses the week 3 notes.')] });
+    expect(out.segments.map((s) => s.teacherNotes)).toEqual(['Common slip: X as n×k.', '', 'Uses the week 3 notes.']);
+    expect(out.segments[0]!.description).toBe('Derive it.');
+  });
+
+  it('names a rubric level by its band, the points showing its floor', () => {
+    const v = { title: 'T', prompt: 'P', steps: ['Do it'], rubric: { levels: [{ label: 'First (70+)', points: 70 }, { label: 'Upper second (60–69)', points: 60 }, { label: 'B', points: 80 }], criteria: [] } };
+    expect(tidySteps(v as never).rubric.levels.map((l) => l.label)).toEqual(['First', 'Upper second', 'B']);
+  });
+});
+
+describe('course length in summaries', () => {
+  it('leaves the span out and mends the article', () => {
+    expect(withoutSpan('A four-week module on simple and multiple regression.')).toBe('A module on simple and multiple regression.');
+    expect(withoutSpan('An eight-week introduction to OLS.')).toBe('An introduction to OLS.');
+    expect(withoutSpan('A 90-minute introductory lecture.')).toBe('An introductory lecture.');
+    expect(withoutSpan('Students meet for six 2-hour seminars.')).toBe('Students meet for six seminars.');
+    expect(withoutSpan('A unit on the ten-week plan')).toBe('A unit on the plan');
+    expect(withoutSpan('Regression for economists.')).toBe('Regression for economists.');
   });
 });

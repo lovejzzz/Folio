@@ -50,7 +50,7 @@ export function outlinePrompt(input: OutlineInput): string {
     `The teacher wrote: """${input.brief.trim()}"""`,
     `Plan exactly ${input.lessonCount} lessons of ${input.minutesPerLesson} minutes each${input.level ? ` for ${input.level}` : ''}.`,
     'Order the lessons so each builds on the last. Give each lesson a short title that names what is taught, a one-sentence summary of under 25 words, and one to three measurable objectives of under 15 words each.',
-    'Do not mention the lesson length, the number of quiz questions or which materials a lesson has: Folio keeps those as settings the teacher can change, so they must not be repeated in the text.',
+    'Do not mention the number of lessons or weeks, the lesson length, the number of quiz questions or which materials a lesson has: Folio keeps those as settings the teacher can change, so they must not be repeated in the text.',
     'Under "readings", list what students read before each lesson, taken from the brief or the attached sources. When the brief names a textbook but not its chapters, name the chapter that matches the lesson, by its topic if you are unsure of the number. Never invent works, authors or page numbers; leave the readings empty when the brief gives nothing to go on.',
     'Under "suggestedReadings", for a university course only, suggest up to three well-known further readings per lesson that the brief does not already list: established works a lecturer would recognise on that lesson\'s topic, with author and title, and a chapter only when you are sure of it. Suggest each work once in the course, for the lesson it fits best. The teacher checks them before anything is assigned, so leave the list empty rather than guess.',
     'Under "grading", give only the graded components and weights the brief states, with the weights summing to 100. Leave it empty if the brief does not say how the course is graded.',
@@ -187,9 +187,9 @@ function trueFalseOrder(course: Course, lesson: Lesson): string {
  */
 function universityRubric(locale: string): string {
   const bands = /^en-(GB|IE)$/i.test(locale)
-    ? 'the UK degree classes: First (70+), Upper second (60–69), Lower second (50–59), Third (40–49), with 70, 60, 50 and 40 as the points'
+    ? 'the UK degree classes, exactly "First", "Upper second", "Lower second" and "Third", with 70, 60, 50 and 40 as the points'
     : /^en-(US|CA)$/i.test(locale)
-      ? 'letter grades: A (90+), B (80–89), C (70–79), D (60–69), with 90, 80, 70 and 60 as the points'
+      ? 'letter grades, exactly "A", "B", "C" and "D", with 90, 80, 70 and 60 as the points'
       : 'the grade bands used where the course is taught, each level worth the lowest mark of its band';
   return `Name the rubric levels after ${bands}. Write each descriptor as a marker would, for work at that band.`;
 }
@@ -230,7 +230,12 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     if (plan) parts.push(`${plan}\n\nUse the same examples, data and figures as the plan.`);
   }
   if ((kind === 'plan' || kind === 'quiz') && course.sourceOrder.length) {
-    parts.push('Base this on the teacher\'s sources where they apply. Where a question draws on a passage, give its number in "sourcePassage".');
+    parts.push(
+      kind === 'quiz'
+        ? 'Base this on the teacher\'s sources where they apply. Where a question draws on a passage, give its number in "sourcePassage".'
+        : // A plan has no field for it, and "Passage [2]" in a note means nothing to the teacher.
+          'Base this on the teacher\'s sources where they apply, and refer to a source by its title, never by a passage number.',
+    );
   }
   parts.push(asks[kind](course, lesson));
   return parts.join('\n\n');

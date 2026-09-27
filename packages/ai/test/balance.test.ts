@@ -27,6 +27,17 @@ describe('balancing answer positions', () => {
     }
   });
 
+  it('reaches every letter over a course of short quizzes', () => {
+    // Four lessons with two or three choice questions each: started at A every time, D never came up.
+    const random = seeded(11);
+    const seen = new Set<number>();
+    for (let round = 0; round < 4; round++) {
+      const quiz = Array.from({ length: 2 + (round % 2) }, () => q(['Right', 'Wrong one', 'Wrong two', 'Wrong three']));
+      for (const x of balanceChoices(quiz, random)) seen.add(position(x));
+    }
+    expect([...seen].sort()).toEqual([0, 1, 2, 3]);
+  });
+
   it('keeps number choices in numeric order', () => {
     const out = balanceChoices([q(['7', '5', '9', '6.5'], 0)], seeded(3));
     expect(out[0]!.choices.map((c) => c.text)).toEqual(['5', '6.5', '7', '9']);
