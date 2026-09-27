@@ -123,7 +123,7 @@ export function MaterialScreen() {
     <div className="flex items-start gap-8 px-3 pb-24 pt-8 md:px-8 md:pt-10">
       {kind !== 'map' && kind !== 'syllabus' && <Outline course={course} />}
       <div className="min-w-0 flex-1">
-        <Sheet lang={course.language} className="folio-doc" running={<><span className="truncate">{course.title}</span><BinderTab kind={kind} size="sm" label={t.materials[kind]} /></>}>
+        <Sheet lang={course.language} className="folio-doc" orientation={kind === 'rubrics' ? 'landscape' : 'portrait'} running={<><span className="truncate">{course.title}</span><BinderTab kind={kind} size="sm" label={t.materials[kind]} /></>}>
           <h1 className="mb-8 font-display text-48 leading-none text-ink">{docLabels(course.language).materials[kind]}</h1>
           {kind === 'map' || kind === 'syllabus' ? <CourseWide course={course} kind={kind} /> : <PerLesson course={course} kind={kind} />}
         </Sheet>

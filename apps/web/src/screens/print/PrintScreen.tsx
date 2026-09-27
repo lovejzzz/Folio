@@ -1,5 +1,5 @@
 import { docLabels, project } from '@folio/core';
-import { Button } from '@folio/ui';
+import { Button, cx } from '@folio/ui';
 import { Printer } from 'lucide-react';
 import { useEffect } from 'react';
 import { printRoute } from '../../app/router';
@@ -44,7 +44,7 @@ export function PrintScreen() {
           <h1 className="mt-2 font-display text-64 leading-none text-ink">{course.title}</h1>
         </header>
         {kinds.map((kind, i) => (
-          <section key={kind} className={i > 0 ? 'print-break mt-16' : ''}>
+          <section key={kind} className={cx(i > 0 && 'print-break mt-16', kind === 'rubrics' && 'print-landscape')}>
             <DocView doc={project(course, kind, { audience, ...(lessons ? { lessonIds: lessons } : {}) })} />
           </section>
         ))}

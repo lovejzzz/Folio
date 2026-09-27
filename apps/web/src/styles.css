@@ -226,6 +226,14 @@
   @page {
     margin: 18mm 20mm;
   }
+  /* Rubrics print on their side, as they are handed out. */
+  @page landscape {
+    size: A4 landscape;
+    margin: 15mm 18mm;
+  }
+  .print-landscape {
+    page: landscape;
+  }
   :root {
     color-scheme: light;
   }

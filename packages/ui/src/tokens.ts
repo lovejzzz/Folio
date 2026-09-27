@@ -77,7 +77,8 @@ export const shadow = {
 };
 
 /** Fixed widths: the printed sheet, the lesson rail, the drawer. */
-export const layout = { sheet: 720, slide: 960, rail: 208, drawer: 400 };
+/** `landscape` is the sheet turned on its side (A4: 720 × 297/210), for wide tables such as rubrics. */
+export const layout = { sheet: 720, landscape: 1020, slide: 960, rail: 208, drawer: 400 };
 
 export const motion = {
   quick: 120,

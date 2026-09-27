@@ -218,6 +218,7 @@
   --shadow-overlay: var(--folio-shadow-overlay);
   --ease-ink: cubic-bezier(0.2, 0.7, 0.2, 1);
   --container-sheet: 720px;
+  --container-landscape: 1020px;
   --container-slide: 960px;
   --container-rail: 208px;
   --container-drawer: 400px;

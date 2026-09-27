@@ -10,14 +10,24 @@ export function Sheet({
   running,
   className,
   lang,
+  orientation = 'portrait',
 }: {
   children: ReactNode;
   running?: ReactNode;
   className?: string;
   lang?: string;
+  /** Landscape for wide tables, as a rubric is printed. */
+  orientation?: 'portrait' | 'landscape';
 }) {
   return (
-    <article lang={lang} className={cx('folio-sheet mx-auto w-full max-w-sheet rounded-sheet bg-paper shadow-sheet', className)}>
+    <article
+      lang={lang}
+      className={cx(
+        'folio-sheet mx-auto w-full rounded-sheet bg-paper shadow-sheet',
+        orientation === 'landscape' ? 'print-landscape max-w-landscape' : 'max-w-sheet',
+        className,
+      )}
+    >
       {running && (
         <div className="flex items-center justify-between gap-4 px-5 pt-5 font-ui text-12 text-ink-2 md:px-16 md:pt-8 print:px-0">
           {running}
