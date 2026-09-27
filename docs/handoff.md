@@ -82,6 +82,10 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
   - The econ plan and the quiz used different standard errors for educ (0.007 and 0.0074). Each job invents what the sources don't give.
   - One psych spacing-effect question had a defensible second answer ("5 h weekly for 5 weeks"). The checks can't catch this; the quiz prompt could ask that exactly one choice is defensible.
 
+- **Focus: English courses.** The user doesn't need Chinese courses; test English scenarios only (the zh interface strings stay).
+- **Loop log** (one line per round):
+  - Round 5, assist and zh interface: 33 calls, $0.044. Text actions came back blank on 4 of 8 calls, because "Return only the replacement text" fought DeepSeek's JSON mode. Reworded to 'Put only the replacement text in "text"': 0 blank in 12 tries. Missing question fields (choices, expression, source passage) now default instead of costing a repair.
+
 ## Next
 
 1. **DeepSeek for cheap testing.** The user set `DEEPSEEK_API_KEY` in the environment and allowed `api.deepseek.com`. They asked for **DeepSeek-V4.1-Flash**; confirm the exact id with `GET https://api.deepseek.com/models`. The budget is $19. Stop at $15 in total and about $3 per run.

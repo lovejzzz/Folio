@@ -212,7 +212,8 @@ export function textActionPrompt(action: TextAction, selection: string, context:
     action === 'explain' || action === 'translate'
       ? ''
       : 'Keep the form of the selection: a title stays a title, a one-line summary stays about one line, a list item stays one item. Keep its spelling conventions (British or American) and its tone.',
-    action === 'explain' ? 'Return the explanation.' : 'Return only the replacement text, with no quotation marks.',
+    // Worded for the JSON answer: "return only the text" made DeepSeek's JSON mode answer with blank space.
+    action === 'explain' ? 'Put the explanation in "text".' : 'Put only the replacement text in "text", with no quotation marks around it.',
   ]
     .filter(Boolean)
     .join('\n\n');
