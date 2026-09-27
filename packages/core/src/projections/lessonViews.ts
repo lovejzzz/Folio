@@ -17,6 +17,11 @@ export function projectPlan(ctx: Ctx): Block[] {
       blocks.push({ t: 'heading', level: 3, text: l.objectives });
       blocks.push({ t: 'list', ordered: false, items: objectives.map((o) => o.text) });
     }
+    const readings = filledTexts(lesson.readings);
+    if (readings.length) {
+      blocks.push({ t: 'heading', level: 3, text: l.beforeClass });
+      blocks.push({ t: 'list', ordered: false, items: readings });
+    }
     const keyIdeas = filledTexts(lesson.keyIdeas);
     if (keyIdeas.length) {
       blocks.push({ t: 'heading', level: 3, text: l.keyIdeas });

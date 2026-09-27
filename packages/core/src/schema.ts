@@ -76,6 +76,8 @@ export const LessonSchema = z.object({
   title: text,
   summary: text,
   objectiveIds: z.array(id),
+  /** What students read before this lesson, one reading per line. */
+  readings: z.array(text).default([]),
   segments: z.array(SegmentSchema),
   keyIdeas: z.array(text),
   vocabulary: z.array(TermSchema),
@@ -202,6 +204,10 @@ export const OverrideSchema = z.object({
 });
 export type Override = z.infer<typeof OverrideSchema>;
 
+/** One component of the course grade, e.g. "Midterm exam" at 30%. */
+export const GradeItemSchema = z.object({ id, item: text, weight: z.number().min(0).max(100) });
+export type GradeItem = z.infer<typeof GradeItemSchema>;
+
 export const CourseStatusSchema = z.enum(['planning', 'building', 'ready']);
 export type CourseStatus = z.infer<typeof CourseStatusSchema>;
 
@@ -225,6 +231,8 @@ export const CourseSchema = z.object({
     quizSize: z.number().int().min(1).max(40),
   }),
   policies: text,
+  /** How the course is graded, as the teacher stated it. Empty when not stated. */
+  grading: z.array(GradeItemSchema).default([]),
   objectives: z.record(z.string(), ObjectiveSchema),
   lessons: z.record(z.string(), LessonSchema),
   lessonOrder: z.array(id),

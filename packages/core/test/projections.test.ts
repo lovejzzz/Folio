@@ -69,6 +69,61 @@ describe('project', () => {
   });
 });
 
+describe('the syllabus', () => {
+  const meta = { label: { key: 't' }, source: 'teacher' } as const;
+  const tables = (c: typeof course) => project(c, 'syllabus', { audience: 'teacher' }).blocks.filter((b) => b.t === 'table');
+
+  it('adds a reading column, and the lesson plan a reading list, only once a lesson has readings', () => {
+    expect(tables(course)[0]).toMatchObject({ head: ['#', 'Lessons', 'Focus'] });
+    const store = new CourseStore(course);
+    const lesson = orderedLessons(course)[1]!;
+    store.apply([cmd('lesson.update', { lessonId: lesson.id, readings: ['Freedman, Statistics, ch. 3', 'Handout: reading a histogram'] })], meta);
+    const schedule = tables(store.getState())[0]!;
+    expect(schedule).toMatchObject({ head: ['#', 'Lessons', 'Focus', 'Reading'] });
+    expect(schedule.t === 'table' && schedule.rows.map((r) => r[3])).toEqual(['', 'Freedman, Statistics, ch. 3\nHandout: reading a histogram', '', '']);
+    const plan = project(store.getState(), 'plan', { audience: 'student', lessonIds: [lesson.id] }).blocks;
+    const at = plan.findIndex((b) => b.t === 'heading' && b.text === 'Before class');
+    expect(plan[at + 1]).toEqual({ t: 'list', ordered: false, items: ['Freedman, Statistics, ch. 3', 'Handout: reading a histogram'] });
+    expect(project(course, 'plan', { audience: 'student' }).blocks.some((b) => b.t === 'heading' && b.text === 'Before class')).toBe(false);
+  });
+
+  it('puts the stated grading scheme first under assessment, with its total', () => {
+    const store = new CourseStore(course);
+    const grading = [
+      { id: 'g1', item: 'Problem sets', weight: 30 },
+      { id: 'g2', item: 'Midterm', weight: 30 },
+      { id: 'g3', item: 'Final exam', weight: 40 },
+      { id: 'g4', item: '', weight: 0 },
+    ];
+    store.apply([cmd('course.update', { grading })], meta);
+    const doc = project(store.getState(), 'syllabus', { audience: 'teacher' });
+    const at = doc.blocks.findIndex((b) => b.t === 'heading' && b.text === 'How learning is assessed');
+    expect(doc.blocks[at + 1]).toEqual({
+      t: 'table',
+      head: ['Component', 'Weight'],
+      widths: [76, 24],
+      rows: [
+        ['Problem sets', '30%'],
+        ['Midterm', '30%'],
+        ['Final exam', '40%'],
+        ['Total', '100%'],
+      ],
+    });
+    expect(doc.blocks[at + 2]).toMatchObject({ t: 'list' });
+    store.undo();
+    expect(store.getState().grading).toEqual([]);
+  });
+
+  it('flags weights that do not add up in the teacher copy only', () => {
+    const c = { ...course, grading: [{ id: 'g1', item: 'Essay', weight: 33.3 }, { id: 'g2', item: 'Exam', weight: 56.7 }] };
+    const teacher = project(c, 'syllabus', { audience: 'teacher' });
+    expect(teacher.blocks).toContainEqual({ t: 'para', tone: 'muted', text: 'These weights add up to 90%, not 100%.' });
+    const student = project(c, 'syllabus', { audience: 'student' });
+    expect(JSON.stringify(student)).not.toContain('not 100%');
+    expect(JSON.stringify(student)).toContain('["Total","90%"]');
+  });
+});
+
 describe('parseCourse', () => {
   it('round-trips through JSON', () => {
     expect(parseCourse(JSON.parse(JSON.stringify(course)))).toEqual(course);

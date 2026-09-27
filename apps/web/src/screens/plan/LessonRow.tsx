@@ -6,8 +6,9 @@ import { EditableText } from '../../components/editing/EditableText';
 import { useT } from '../../i18n';
 import { edit } from '../../state/edit';
 import { leaveBlank } from '../../materials/newItems';
+import { PlanReadings, useReadings } from './Readings';
 import { gapAt, moveIndexForGap } from './reorder';
-import { useObjectiveDraft } from './useObjectiveDraft';
+import { useObjectiveDraft, type ObjectiveDraft } from './useObjectiveDraft';
 
 interface RowProps {
   course: Course;
@@ -20,10 +21,23 @@ interface RowProps {
   onDrop: (gap: number) => void;
 }
 
-function Objectives({ course, lesson, n }: { course: Course; lesson: Lesson; n: number }) {
+/** A quiet "+ Add …" under a lesson's objectives and readings. */
+function AddLine({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onPress}
+      className="flex items-center gap-1.5 rounded-control py-0.5 pl-5 font-ui text-13 text-ink-2 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent"
+    >
+      <Plus size={13} strokeWidth={1.75} aria-hidden />
+      {label}
+    </button>
+  );
+}
+
+function Objectives({ course, lesson, n, draft }: { course: Course; lesson: Lesson; n: number; draft: ObjectiveDraft }) {
   const t = useT();
   const objectives = lessonObjectives(course, lesson);
-  const draft = useObjectiveDraft(lesson.id);
   return (
     <ul className="mt-3 space-y-1.5" aria-label={t.lesson.objectivesOf(n)}>
       {objectives.map((o, i) => (
@@ -54,16 +68,6 @@ function Objectives({ course, lesson, n }: { course: Course; lesson: Lesson; n: 
           <EditableText autoFocus value="" label={t.plan.objectiveOf(objectives.length + 1, n)} placeholder={t.plan.objectiveHint} lang={course.language} className="min-w-0 flex-1" onCommit={draft.commit} />
         </li>
       )}
-      <li>
-        <button
-          type="button"
-          onClick={draft.start}
-          className="flex items-center gap-1.5 rounded-control py-0.5 pl-5 font-ui text-13 text-ink-2 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent"
-        >
-          <Plus size={13} strokeWidth={1.75} aria-hidden />
-          {t.plan.addObjective}
-        </button>
-      </li>
     </ul>
   );
 }
@@ -134,7 +138,24 @@ function LessonText({ lesson, n }: { lesson: Lesson; n: number }) {
   );
 }
 
-/** One lesson in the outline: drag to reorder, rename in place, edit objectives. */
+/** Objectives, then what students read before the lesson (only once there is some), then one line of adds. */
+function LessonDetails({ course, lesson, n }: { course: Course; lesson: Lesson; n: number }) {
+  const t = useT();
+  const draft = useObjectiveDraft(lesson.id);
+  const readings = useReadings(lesson, n);
+  return (
+    <>
+      <Objectives course={course} lesson={lesson} n={n} draft={draft} />
+      <PlanReadings course={course} lesson={lesson} n={n} readings={readings} />
+      <div className="mt-1.5 flex flex-wrap gap-x-3">
+        <AddLine label={t.plan.addObjective} onPress={draft.start} />
+        <AddLine label={t.plan.addReading} onPress={readings.start} />
+      </div>
+    </>
+  );
+}
+
+/** One lesson in the outline: drag to reorder, rename in place, edit objectives and readings. */
 export function LessonRow({ course, lesson, index, dragFrom, onDragStart, onDrop }: RowProps) {
   const n = index + 1;
   const [gap, setGap] = useState<number | null>(null);
@@ -179,7 +200,7 @@ export function LessonRow({ course, lesson, index, dragFrom, onDragStart, onDrop
       <Handle lesson={lesson} n={n} onDragStart={onDragStart} />
       <div className="min-w-0 flex-1" lang={course.language}>
         <LessonText lesson={lesson} n={n} />
-        <Objectives course={course} lesson={lesson} n={n} />
+        <LessonDetails course={course} lesson={lesson} n={n} />
       </div>
       <RowActions lesson={lesson} index={index} last={course.lessonOrder.length} />
     </li>

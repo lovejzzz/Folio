@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CourseStore, attentionItems, cellState, cmd, orderedLessons, staleItems, staleReasons } from '../src';
+import { CourseStore, attentionItems, cellState, cmd, computeBasis, hashValue, orderedLessons, parseCourse, staleItems, staleReasons } from '../src';
 import { sampleCourse } from '../src/sample';
 
 describe('ripple', () => {
@@ -50,6 +50,43 @@ describe('ripple', () => {
     expect(staleItems(store.getState()).length).toBe(3);
     store.undo();
     store.undo();
+    expect(staleItems(store.getState())).toEqual([]);
+  });
+
+  it('keeps a course saved before readings existed up to date', () => {
+    const course = sampleCourse();
+    const lesson = orderedLessons(course)[0]!;
+    // The basis a section was stamped with before lessons had readings.
+    expect(lesson.gen.plan!.basis.lesson).toBe(hashValue([lesson.title, lesson.summary]));
+    const saved = JSON.parse(JSON.stringify(course)) as Record<string, unknown>;
+    delete saved.grading;
+    for (const l of Object.values(saved.lessons as Record<string, Record<string, unknown>>)) delete l.readings;
+    const loaded = parseCourse(saved);
+    expect(loaded.lessons[lesson.id]!.readings).toEqual([]);
+    expect(loaded.grading).toEqual([]);
+    expect(staleItems(loaded)).toEqual([]);
+  });
+
+  it('marks only the plan and discussions out of date when readings change, and undo restores them', () => {
+    const course = sampleCourse();
+    const lesson = orderedLessons(course)[0]!;
+    // Sections built now record the readings they were built with.
+    for (const kind of ['plan', 'discussions', 'slides'] as const) lesson.gen[kind]!.basis = computeBasis(course, lesson, kind);
+    const store = new CourseStore(course);
+    const meta = { label: { key: 't' }, source: 'teacher' } as const;
+    store.apply([cmd('lesson.update', { lessonId: lesson.id, readings: [''] })], meta);
+    expect(staleItems(store.getState())).toEqual([]);
+    store.apply([cmd('lesson.update', { lessonId: lesson.id, readings: ['Freedman, Statistics, ch. 4'] })], meta);
+    const state = store.getState();
+    const fresh = state.lessons[lesson.id]!;
+    expect(fresh.readings).toEqual(['Freedman, Statistics, ch. 4']);
+    expect(staleReasons(state, fresh, 'plan')).toEqual(['readings']);
+    expect(staleReasons(state, fresh, 'discussions')).toEqual(['readings']);
+    expect(staleReasons(state, fresh, 'slides')).toEqual([]);
+    expect(staleReasons(state, fresh, 'quiz')).toEqual([]);
+    store.undo();
+    store.undo();
+    expect(store.getState().lessons[lesson.id]!.readings).toEqual([]);
     expect(staleItems(store.getState())).toEqual([]);
   });
 });

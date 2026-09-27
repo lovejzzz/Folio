@@ -16,6 +16,7 @@ import { EdgeTabs } from './EdgeTabs';
 import { LessonRail } from './LessonRail';
 import { LessonNotFound } from '../../app/errors';
 import { useObjectiveDraft } from '../plan/useObjectiveDraft';
+import { WellReadings, useReadings } from '../plan/Readings';
 import { Sep } from '../../components/Sep';
 
 function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
@@ -23,6 +24,7 @@ function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
   const n = lessonNumber(course, lesson.id);
   const objectives = lessonObjectives(course, lesson);
   const draft = useObjectiveDraft(lesson.id);
+  const readings = useReadings(lesson, n);
   return (
     <header className="mb-10" lang={course.language}>
       <EditableText
@@ -56,7 +58,11 @@ function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
             </li>
           )}
         </ul>
-        <AddButton label={t.plan.addObjective} onPress={draft.start} />
+        <div className="flex flex-wrap gap-x-4">
+          <AddButton label={t.plan.addObjective} onPress={draft.start} />
+          {!readings.shown && <AddButton label={t.plan.addReading} onPress={readings.start} />}
+        </div>
+        <WellReadings course={course} lesson={lesson} n={n} readings={readings} />
       </div>
     </header>
   );

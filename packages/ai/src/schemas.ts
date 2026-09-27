@@ -18,9 +18,23 @@ export const OutlineDraft = z.object({
         title: line.describe('Lesson title naming the actual content, never "Lesson 1" or "Session 1 topic"'),
         summary: line.describe('One sentence on what this lesson covers'),
         objectives: z.array(line).min(1).max(3).describe('Measurable objectives starting with a verb'),
+        readings: z
+          .array(line)
+          .max(6)
+          .default([])
+          .describe('What students read before this lesson, one reading each, e.g. "Hobbes, Leviathan, ch. 13–17"; empty if the brief gives nothing to go on'),
       }),
     )
     .min(1),
+  grading: z
+    .array(
+      z.object({
+        item: line.describe('A graded component, e.g. "Problem sets" or "Final exam"'),
+        weight: z.number().min(0).max(100).describe('Its share of the final grade, in percent'),
+      }),
+    )
+    .default([])
+    .describe('Only the components and weights the brief states; empty if it does not say'),
 });
 export type OutlineDraft = z.infer<typeof OutlineDraft>;
 
