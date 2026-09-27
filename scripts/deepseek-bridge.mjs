@@ -3,7 +3,8 @@
 // while prompts, schemas and checks are being tuned. Same log format as
 // claude-bridge.mjs, so score-live.py and token-report.py read it unchanged.
 //   DEEPSEEK_API_KEY=… node scripts/deepseek-bridge.mjs [port] [logfile]
-// DEEPSEEK_MODEL picks the model; DEEPSEEK_THINKING=1 turns thinking on.
+// DEEPSEEK_MODEL picks the model. Folio's effort per job maps to DeepSeek's
+// thinking: DS_THINK_LOW and DS_THINK_MEDIUM are off, low, high or max.
 // Spend is capped twice: BUDGET_USD (default 15) across all runs, kept in a
 // ledger beside the log, and RUN_BUDGET_USD (default 3) for this process.
 // Prices are per million tokens (DS_PRICE_IN / _HIT / _OUT) and the
@@ -18,15 +19,16 @@ const LEDGER = join(dirname(LOG), 'deepseek-spend.json');
 mkdirSync(dirname(LOG), { recursive: true });
 const KEY = process.env.DEEPSEEK_API_KEY;
 const BASE = (process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com').replace(/\/+$/, '');
-const MODEL = process.env.DEEPSEEK_MODEL ?? 'deepseek-chat';
-const THINKING = process.env.DEEPSEEK_THINKING === '1';
+const MODEL = process.env.DEEPSEEK_MODEL ?? 'deepseek-flash';
+const THINK = { low: process.env.DS_THINK_LOW ?? 'off', medium: process.env.DS_THINK_MEDIUM ?? 'low' };
 const BUDGET = Number(process.env.BUDGET_USD ?? 15);
 const RUN_BUDGET = Number(process.env.RUN_BUDGET_USD ?? 3);
 let runUsd = 0;
 const PRICE = {
-  in: Number(process.env.DS_PRICE_IN ?? 0.28),
-  hit: Number(process.env.DS_PRICE_HIT ?? 0.028),
-  out: Number(process.env.DS_PRICE_OUT ?? 0.42),
+  // deepseek-flash at peak rates (off-peak is half), so the cap trips early, never late.
+  in: Number(process.env.DS_PRICE_IN ?? 0.3),
+  hit: Number(process.env.DS_PRICE_HIT ?? 0.006),
+  out: Number(process.env.DS_PRICE_OUT ?? 1.2),
 };
 if (!KEY) throw new Error('Set DEEPSEEK_API_KEY.');
 
@@ -57,8 +59,12 @@ function toChat(request) {
     messages,
     max_tokens: Math.min(request.max_tokens ?? 8000, Number(process.env.DS_MAX_TOKENS ?? 8000)),
     ...(schema ? { response_format: { type: 'json_object' } } : {}),
-    ...(THINKING ? {} : { thinking: { type: 'disabled' } }),
+    ...thinking(THINK[request.output_config?.effort] ?? THINK.low),
   };
+}
+
+function thinking(level) {
+  return level === 'off' ? { thinking: { type: 'disabled' } } : { reasoning_effort: level };
 }
 
 function costOf(usage) {
@@ -82,7 +88,7 @@ createServer(async (req, res) => {
     res.writeHead(400, cors).end();
   }
 }).listen(PORT, async () => {
-  console.log(`bridge on ${PORT} → ${BASE} ${MODEL}${THINKING ? ' (thinking)' : ''}, log ${LOG}`);
+  console.log(`bridge on ${PORT} → ${BASE} ${MODEL} (thinking: low jobs ${THINK.low}, medium jobs ${THINK.medium}), log ${LOG}`);
   console.log(`budget $${RUN_BUDGET} this run, $${BUDGET} in total; spent so far $${ledger.usd.toFixed(4)} in ${ledger.calls} calls · balance ${await balance()}`);
 });
 
