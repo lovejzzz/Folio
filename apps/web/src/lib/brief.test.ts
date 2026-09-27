@@ -93,6 +93,8 @@ describe('reading the brief for the chips', () => {
     ['grade-8 science', 'Grade 8'],
     ['undergraduates in their first term', 'University'],
     ['college freshmen', 'University'],
+    ['Graduate seminar in political philosophy', 'University'],
+    ["a master's course in finance", 'University'],
     ['new staff at a hospital', 'Adult learners'],
     ['adult learners of Spanish', 'Adult learners'],
     ['elementary school art', 'Primary'],
@@ -136,6 +138,14 @@ describe('lesson length and quiz size from the brief', () => {
     ['古诗词鉴赏入门，两节课，每节四十分钟', 40],
     ['每节课一小时', 60],
     ['Twelve lessons for grade 11', null],
+    ['Graduate seminar. Six two-hour seminars.', 120],
+    ['weekly 2-hour lectures', 120],
+    ['lectures of 1.5 hours', 90],
+    ['an hour and a half each week', 90],
+    ['three hours of reading a week, one-hour tutorials', 60],
+    ['研究生讨论课，每次两小时', 120],
+    ['每次课2学时，共16周', 90],
+    ['每节课一个半小时', 90],
   ])('%s → %s minutes', (brief, minutes) => expect(guessMinutes(brief)).toBe(minutes));
 
   it.each([

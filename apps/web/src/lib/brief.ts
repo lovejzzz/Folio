@@ -118,7 +118,7 @@ function englishLevel(text: string): string | null {
   if (ordinal) return gradeBand(ordinal);
   if (/\b(?:high[\s-]school|secondary[\s-]school)\s+(?:juniors?|seniors?)\b|\b(?:juniors?|seniors?)\s+in\s+high[\s-]school\b/i.test(text)) return 'Grade 11–12';
   if (/\b(?:high[\s-]school)\s+(?:freshm[ae]n|sophomores?)\b|\b(?:freshm[ae]n|sophomores?)\s+in\s+high[\s-]school\b/i.test(text)) return 'Grade 9–10';
-  if (/\b(?:university|undergrad(?:uate)?s?|college|first-year|freshm[ae]n)\b/i.test(text)) return 'University';
+  if (/\b(?:university|undergrad(?:uate)?s?|(?:post)?graduate|master'?s|ph\.?d|doctoral|college|first-year|freshm[ae]n)\b/i.test(text)) return 'University';
   if (/\b(?:adults?|professionals?|staff|employees)\b/i.test(text)) return 'Adult learners';
   if (/\b(?:primary|elementary)\b/i.test(text)) return 'Primary';
   if (/\b(?:middle[\s-]school)\b/i.test(text)) return 'Middle school';
@@ -151,15 +151,28 @@ export function guessLanguage(text: string): Language | null {
 const zhOrDigits = (raw: string): number | null => zhNumber(raw) ?? (/^\d+$/.test(raw) ? Number(raw) : null);
 const within = (n: number | null, min: number, max: number): number | null => (n !== null && n >= min && n <= max ? n : null);
 
-/** How long each lesson is: "45-minute lessons", "50 minutes", "an hour", "每节课45分钟", "一小时". */
+const HOUR_WORDS: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, 'one and a half': 1.5, 'an hour and a half': 1.5 };
+
+/** How long each lesson is: "45-minute lessons", "50 minutes", "two-hour seminars", "1.5 hours", "每节课45分钟", "两小时", "每次2学时". */
 export function guessMinutes(text: string): number | null {
   const en = text.match(/\b(\d{1,3})[\s-]*(?:min(?:ute)?s?|mins?)\b/i);
   if (en) return within(Number(en[1]), 5, 600);
   const zh = text.match(/(\d{1,3}|[一二两三四五六七八九十]{1,3})\s*分钟/);
   if (zh) return within(zhOrDigits(zh[1]!), 5, 600);
-  if (/\b(?:an?|one)[\s-]+hour\b|\bhour[\s-]long\b|\b60[\s-]*min/i.test(text) || /(?:一|1)\s*(?:个)?小时/.test(text)) return 60;
+  if (/\b(?:an?|one)\s+hour\s+and\s+a\s+half\b|\bone\s+and\s+a\s+half[\s-]+hours?\b|一个半(?:小时|钟头)/i.test(text)) return 90;
+  // "2-hour", "2 hours" ("three hour-long workshops" are three workshops of an hour), "1.5 hours", "two-hour", "three hours". Not "hours of homework a week".
+  const hours = text.match(/\b(\d(?:\.\d)?|one|two|three|four)[\s-]*(?:hours?|hrs?|h)\b(?![\s-]*long\b)(?![\s-]+(?:of|a|per|each)\s+(?:homework|reading|week|study))/i);
+  if (hours) {
+    const n = /^\d/.test(hours[1]!) ? Number(hours[1]) : HOUR_WORDS[hours[1]!.toLowerCase()]!;
+    return within(Math.round(n * 60), 5, 600);
+  }
+  const zhHours = text.match(/(\d(?:\.\d)?|[一两二三四])\s*(?:个)?(?:小时|钟头)/);
+  if (zhHours) return within(Math.round((zhOrDigits(zhHours[1]!) ?? Number(zhHours[1])) * 60), 5, 600);
+  // A Chinese class hour (学时) is 45 minutes: "每次课2学时" is a 90-minute class.
+  const classHours = text.match(/(?:每(?:次|节|周|讲)(?:课)?|一次)\s*(\d|[一两二三四])\s*(?:个)?学时/);
+  if (classHours) return within(zhOrDigits(classHours[1]!)! * 45, 5, 600);
+  if (/\b(?:an?|one)[\s-]+hour\b|\bhour[\s-]long\b/i.test(text)) return 60;
   if (/\bhalf[\s-]an[\s-]hour\b|半小时/.test(text)) return 30;
-  if (/\b(?:an?|one)\s+hour\s+and\s+a\s+half\b|一个半小时/.test(text)) return 90;
   return null;
 }
 
