@@ -204,6 +204,8 @@ Three walkthroughs as a teacher (first course; revising the week after; a lectur
 - **Sessions.** A lesson can meet more than once (class, lecture, seminar, lab, problem class). The brief is read for it ("a 50-minute lecture and a 50-minute seminar", "50分钟讲授加50分钟研讨"); the AI plans each session for what it is; steps are timed per session; the overview and syllabus show "Lecture 50 min + Seminar 50 min". One session looks exactly as before.
 - **Phone.** Reading first: the "Add …" lines and the slide toolbar are hidden; lesson summaries show in the list.
 
+**Demo video.** `pnpm test:live demo` (with the DeepSeek bridge on 8787) records a scripted teacher's walk as Chromium screencast frames with a log of clicks, keys and speed marks; `python3 scripts/demo/edit.py` cuts it (waits sped up), lays synthesised sound effects on the logged events, adds a synthesised underscore (`scripts/demo/music.py`, D major, 92 bpm) and encodes a 1920×1200 H.264/AAC file at −16 LUFS into `apps/web/live-results/demo/`. The first cut ran 1:51. Re-record only when the interface has changed.
+
 Not built, on purpose (research said to leave them): timetables and dates, per-student homework tracking, a gradebook, custom session types, a rubric per essay step.
 
 ## Next
