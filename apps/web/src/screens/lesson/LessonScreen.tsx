@@ -1,4 +1,4 @@
-import { TEACHING_ORDER, cmd, lessonNumber, lessonObjectives, newId, type Course, type Lesson, type MaterialKind } from '@folio/core';
+import { TEACHING_ORDER, cmd, lessonNumber, lessonObjectives, type Course, type Lesson, type MaterialKind } from '@folio/core';
 import { Sheet } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -15,10 +15,13 @@ import { useCourse } from '../../state/session';
 import { EdgeTabs } from './EdgeTabs';
 import { LessonRail } from './LessonRail';
 import { CourseNotFound } from '../../app/errors';
+import { useObjectiveDraft } from '../plan/useObjectiveDraft';
 
 function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
   const t = useT();
   const n = lessonNumber(course, lesson.id);
+  const objectives = lessonObjectives(course, lesson);
+  const draft = useObjectiveDraft(lesson.id);
   return (
     <header className="mb-10" lang={course.language}>
       <EditableText
@@ -41,13 +44,18 @@ function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
       <div className="mt-6 rounded-control bg-well px-5 py-4">
         <h2 className="mb-2 font-ui text-13 font-semibold text-ink">{t.lesson.objectives}</h2>
         <ul className="list-disc space-y-1 pl-5 marker:text-ink-3">
-          {lessonObjectives(course, lesson).map((o, i) => (
+          {objectives.map((o, i) => (
             <li key={o.id}>
-              <EditableText value={o.text} label={t.plan.objectiveOf(i + 1, n)} onCommit={(text) => edit([cmd('objective.update', { objectiveId: o.id, text })], { key: 'editedObjective' })} />
+              <EditableText value={o.text} label={t.plan.objectiveOf(i + 1, n)} placeholder={t.plan.objectiveHint} onCommit={(text) => edit([cmd('objective.update', { objectiveId: o.id, text })], { key: 'editedObjective' })} />
             </li>
           ))}
+          {draft.open && (
+            <li className="no-print" onBlur={draft.close}>
+              <EditableText autoFocus value="" label={t.plan.objectiveOf(objectives.length + 1, n)} placeholder={t.plan.objectiveHint} onCommit={draft.commit} />
+            </li>
+          )}
         </ul>
-        <AddButton label={t.plan.addObjective} onPress={() => edit([cmd('objective.add', { objective: { id: newId('o'), text: t.plan.objective }, lessonId: lesson.id })], { key: 'addedObjective' })} />
+        <AddButton label={t.plan.addObjective} onPress={draft.start} />
       </div>
     </header>
   );

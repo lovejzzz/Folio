@@ -1,11 +1,7 @@
 import { useEffect } from 'react';
 import { redo, undo } from '../../state/edit';
 import { useUi } from '../../state/ui';
-
-function isTyping(target: EventTarget | null): boolean {
-  const el = target as HTMLElement | null;
-  return Boolean(el && (el.isContentEditable || el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT'));
-}
+import { isTyping } from './isTyping';
 
 /** ⌘K opens the command bar; ⌘Z and ⇧⌘Z undo and redo when not typing in a field. */
 export function useCourseKeys(): void {

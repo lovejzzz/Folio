@@ -1,10 +1,12 @@
-import { cmd, lessonObjectives, newId, type Course, type Lesson } from '@folio/core';
+import { cmd, isBlankLesson, lessonObjectives, type Course, type Lesson } from '@folio/core';
 import { IconButton, cx } from '@folio/ui';
 import { ArrowDown, ArrowUp, GripVertical, Plus, Trash2, X } from 'lucide-react';
 import { useState, type DragEvent } from 'react';
 import { EditableText } from '../../components/editing/EditableText';
 import { useT } from '../../i18n';
 import { edit } from '../../state/edit';
+import { leaveBlank } from '../../materials/newItems';
+import { useObjectiveDraft } from './useObjectiveDraft';
 
 interface RowProps {
   course: Course;
@@ -18,6 +20,7 @@ interface RowProps {
 function Objectives({ course, lesson, n }: { course: Course; lesson: Lesson; n: number }) {
   const t = useT();
   const objectives = lessonObjectives(course, lesson);
+  const draft = useObjectiveDraft(lesson.id);
   return (
     <ul className="mt-3 space-y-1.5" aria-label={t.lesson.objectivesOf(n)}>
       {objectives.map((o, i) => (
@@ -26,6 +29,7 @@ function Objectives({ course, lesson, n }: { course: Course; lesson: Lesson; n: 
           <EditableText
             value={o.text}
             label={t.plan.objectiveOf(i + 1, n)}
+            placeholder={t.plan.objectiveHint}
             lang={course.language}
             className="min-w-0 flex-1"
             onCommit={(text) => edit([cmd('objective.update', { objectiveId: o.id, text })], { key: 'editedObjective' })}
@@ -41,12 +45,16 @@ function Objectives({ course, lesson, n }: { course: Course; lesson: Lesson; n: 
           </IconButton>
         </li>
       ))}
+      {draft.open && (
+        <li className="flex items-start gap-2 font-ui text-14 leading-6 text-ink" onBlur={draft.close}>
+          <span aria-hidden className="mt-2.5 h-px w-3 shrink-0 bg-ink-3" />
+          <EditableText autoFocus value="" label={t.plan.objectiveOf(objectives.length + 1, n)} placeholder={t.plan.objectiveHint} lang={course.language} className="min-w-0 flex-1" onCommit={draft.commit} />
+        </li>
+      )}
       <li>
         <button
           type="button"
-          onClick={() =>
-            edit([cmd('objective.add', { objective: { id: newId('o'), text: t.plan.objective }, lessonId: lesson.id })], { key: 'addedObjective' })
-          }
+          onClick={draft.start}
           className="flex items-center gap-1.5 rounded-control py-0.5 pl-5 font-ui text-13 text-ink-2 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent"
         >
           <Plus size={13} strokeWidth={1.75} aria-hidden />
@@ -116,6 +124,16 @@ export function LessonRow({ course, lesson, index, dragging, onDragStart, onDrop
         setOver(false);
         onDrop(index);
       }}
+      data-item={lesson.id}
+      onBlur={leaveBlank(
+        lesson.id,
+        (c) => {
+          const now = c.lessons[lesson.id];
+          return Boolean(now && isBlankLesson(c, now));
+        },
+        () => [cmd('lesson.remove', { lessonId: lesson.id })],
+        { key: 'removedLesson', values: { n } },
+      )}
       className={cx(
         'group relative flex gap-3 border-t border-rule py-5 transition-opacity duration-120 first:border-t-0 md:gap-4',
         dragging === lesson.id && 'opacity-40',

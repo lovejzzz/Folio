@@ -28,7 +28,7 @@ export interface HistoryEntry {
   undone: boolean;
 }
 
-interface PathRef {
+export interface PathRef {
   path: (string | number)[];
   value: unknown;
 }
@@ -44,7 +44,8 @@ export interface ApplyOptions {
 
 export type UndoResult = { ok: true } | { ok: false; reason: 'conflict' | 'nothing' };
 
-const HISTORY_LIMIT = 200;
+/** How many entries history keeps, in memory and on disk. */
+export const HISTORY_LIMIT = 200;
 
 function getIn(root: unknown, path: (string | number)[]): unknown {
   let node: unknown = root;
@@ -76,15 +77,41 @@ function refsFor(patches: Patch[], root: unknown): PathRef[] {
   return out;
 }
 
-/** Structural equality for JSON-like values. Undo rebuilds arrays, so identity alone would see conflicts that aren't there. */
+/** Keys that hold a value: a key set to `undefined` is the same as no key once saved and loaded. */
+function definedKeys(o: object): string[] {
+  return Object.keys(o).filter((k) => (o as Record<string, unknown>)[k] !== undefined);
+}
+
+/**
+ * Structural equality for JSON-like values. Undo rebuilds arrays, and history
+ * restored from storage holds copies, so identity alone would see conflicts that aren't there.
+ */
 export function sameValue(a: unknown, b: unknown): boolean {
   if (Object.is(a, b)) return true;
   if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false;
   if (Array.isArray(a) !== Array.isArray(b)) return false;
-  const ka = Object.keys(a);
-  const kb = Object.keys(b);
+  const ka = definedKeys(a);
+  const kb = definedKeys(b);
   if (ka.length !== kb.length) return false;
   return ka.every((k) => Object.hasOwn(b, k) && sameValue((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k]));
+}
+
+/** A loose check that a stored value has the shape of a history entry. */
+function isEntry(value: unknown): value is HistoryEntry {
+  if (!value || typeof value !== 'object') return false;
+  const e = value as Partial<HistoryEntry>;
+  return (
+    typeof e.id === 'string' &&
+    typeof e.at === 'string' &&
+    typeof e.label?.key === 'string' &&
+    (e.source === 'teacher' || e.source === 'ai') &&
+    Array.isArray(e.commands) &&
+    Array.isArray(e.patches) &&
+    Array.isArray(e.inverse) &&
+    Array.isArray(e.refs) &&
+    typeof e.undoable === 'boolean' &&
+    typeof e.undone === 'boolean'
+  );
 }
 
 function unchanged(refs: PathRef[], root: unknown): boolean {
@@ -103,8 +130,14 @@ export class CourseStore {
   private redoStack: { entry: HistoryEntry; refs: PathRef[] }[] = [];
   private listeners = new Set<Listener>();
 
-  constructor(course: Course) {
+  /** `history` restores entries saved earlier for this course (see `exportHistory`). */
+  constructor(course: Course, history: readonly unknown[] = []) {
     this.state = course;
+    this.entries = CourseStore.restore(history);
+  }
+
+  private static restore(history: readonly unknown[]): HistoryEntry[] {
+    return history.filter(isEntry).slice(-HISTORY_LIMIT).map((e) => ({ ...e }));
   }
 
   getState = (): Course => this.state;
@@ -115,12 +148,27 @@ export class CourseStore {
     return () => this.listeners.delete(listener);
   };
 
-  /** Replace the whole course (loading a file). Clears history. */
-  reset(course: Course): void {
+  /** Replace the whole course (loading a file, or another tab's copy). Clears history, or restores the history saved with it. */
+  reset(course: Course, history: readonly unknown[] = []): void {
     this.state = course;
-    this.entries = [];
+    this.entries = CourseStore.restore(history);
     this.redoStack = [];
     this.emit();
+  }
+
+  /**
+   * History as plain data, oldest first, for saving beside the course. Entries
+   * are copied, so a later undo doesn't change what was exported. The redo
+   * stack is not included: it lasts only as long as this session.
+   */
+  exportHistory(): HistoryEntry[] {
+    return this.entries.map((e) => ({ ...e }));
+  }
+
+  /** Put back history saved with this course (the course itself is unchanged). Anything malformed is dropped. */
+  importHistory(history: readonly unknown[]): void {
+    this.entries = CourseStore.restore(history);
+    this.redoStack = [];
   }
 
   apply(commands: Command[], options: ApplyOptions): HistoryEntry | null {
@@ -171,6 +219,21 @@ export class CourseStore {
     this.redoStack.push({ entry, refs: refsFor(entry.inverse, next) });
     this.emit();
     return { ok: true };
+  }
+
+  /**
+   * Take back the latest entry as though it never happened, leaving no trace
+   * in history: an item that was added and then left blank. Refuses (false)
+   * if it is no longer the latest entry or later changes touched it.
+   */
+  discard(entryId: string): boolean {
+    const entry = this.entries.at(-1);
+    if (!entry || entry.id !== entryId || entry.undone || !unchanged(entry.refs, this.state)) return false;
+    this.entries.pop();
+    this.redoStack = [];
+    this.commit(applyPatches(this.state, entry.inverse));
+    this.emit();
+    return true;
   }
 
   redo(): UndoResult {

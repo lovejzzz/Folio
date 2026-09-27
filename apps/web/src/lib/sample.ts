@@ -1,6 +1,5 @@
 import type { useNavigate } from '@tanstack/react-router';
-import { loadCourse } from '../state/db';
-import { createSession, openSession } from '../state/session';
+import { createSession, loadSession } from '../state/session';
 
 const KEY = 'folio.sampleId';
 
@@ -15,11 +14,11 @@ function remembered(): string | null {
 /** Open the bundled sample course, reusing the copy on this device if there is one. */
 export async function openSample(navigate: ReturnType<typeof useNavigate>): Promise<void> {
   const id = remembered();
-  const existing = id ? await loadCourse(id) : null;
+  // The copy on this device opens with its undo history.
+  const existing = id ? await loadSession(id) : null;
   let courseId: string;
   if (existing) {
-    openSession(existing);
-    courseId = existing.id;
+    courseId = existing.getState().id;
   } else {
     const { sampleCourse } = await import('@folio/core/sample');
     const course = sampleCourse();

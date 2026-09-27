@@ -1,4 +1,5 @@
-import { lessonObjectives, orderedLessons } from './course';
+import { filledTexts, isBlankSegment, statedObjectives } from './blank';
+import { orderedLessons } from './course';
 import type { Flag } from './flags';
 import { hashValue } from './ids';
 import { sectionFor, type GeneratedKind, type MaterialKind } from './materials';
@@ -31,7 +32,8 @@ function inputHash(course: Course, lesson: Lesson, key: BasisKey): string {
     case 'lesson':
       return hashValue([lesson.title, lesson.summary]);
     case 'objectives':
-      return hashValue(lessonObjectives(course, lesson).map((o) => o.text));
+      // A blank objective is still being written: it changes nothing until it has text.
+      return hashValue(statedObjectives(course, lesson).map((o) => o.text));
     case 'minutes':
       return hashValue(course.shape.minutesPerLesson);
     case 'quizSize':
@@ -39,7 +41,7 @@ function inputHash(course: Course, lesson: Lesson, key: BasisKey): string {
     case 'audience':
       return hashValue([course.audience.level, course.audience.subject, course.language]);
     case 'plan':
-      return hashValue([lesson.keyIdeas, lesson.segments.map((s) => [s.title, s.description])]);
+      return hashValue([filledTexts(lesson.keyIdeas), lesson.segments.filter((s) => !isBlankSegment(s)).map((s) => [s.title, s.description])]);
     case 'sources':
       return hashValue(course.sourceOrder.map((id) => [id, course.sources[id]?.text.length ?? 0]));
   }

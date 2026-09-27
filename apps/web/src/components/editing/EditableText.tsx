@@ -1,5 +1,6 @@
 import { Highlight, cx } from '@folio/ui';
 import { createElement, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { normalisePaste } from './pasteText';
 import { registerEditable, type Suggestion } from './registry';
 
 type Tag = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span' | 'div' | 'li' | 'td';
@@ -19,10 +20,24 @@ export interface EditableTextProps {
   readOnly?: boolean;
   /** Titles and the like can't be emptied: clearing one puts the old text back. */
   required?: boolean;
+  /** Put the caret here when the field appears: the first field of something just added. */
+  autoFocus?: boolean;
 }
 
 function readText(el: HTMLElement): string {
   return (el.innerText ?? el.textContent ?? '').replace(/\u00a0/g, ' ').replace(/\n$/, '');
+}
+
+/**
+ * Type pasted text in as the browser's own edits, so ⌘Z inside the field still
+ * works. Line breaks go in as line breaks: inserting "\n" as text makes
+ * Chrome wrap lines in blocks, and reading those back adds a newline.
+ */
+function insertPlainText(text: string): void {
+  text.split('\n').forEach((line, i) => {
+    if (i > 0) document.execCommand('insertLineBreak');
+    if (line) document.execCommand('insertText', false, line);
+  });
 }
 
 const isHeading = (tag: Tag): boolean => tag === 'h1' || tag === 'h2' || tag === 'h3' || tag === 'h4';
@@ -55,6 +70,10 @@ function useEditable(props: EditableTextProps) {
     const el = ref.current;
     if (!el) return;
     return registerEditable(el, { get: () => latest.current, commit: (next) => latest.current.onCommit(next), suggest: setSuggestion });
+  }, []);
+  const autoFocus = useRef(props.autoFocus);
+  useEffect(() => {
+    if (autoFocus.current) ref.current?.focus();
   }, []);
   return { ref, suggestion };
 }
@@ -102,7 +121,7 @@ export function EditableText(props: EditableTextProps) {
     onKeyDown: (e: KeyboardEvent<HTMLElement>) => onKeyDown(e, value, multiline),
     onPaste: (e: React.ClipboardEvent) => {
       e.preventDefault();
-      document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
+      insertPlainText(normalisePaste(e.clipboardData.getData('text/plain'), multiline));
     },
   });
   const proposal = suggestion ? <SuggestionView value={value} suggestion={suggestion} /> : null;

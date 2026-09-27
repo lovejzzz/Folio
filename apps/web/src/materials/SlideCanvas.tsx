@@ -60,7 +60,7 @@ export function SlideCanvas({ slide, lang, footer, onChange, className }: SlideC
     <h3>{slide.title}</h3>
   );
   return (
-    <div className={cx('folio-slide group/slide relative aspect-video w-full overflow-hidden bg-paper text-ink', className)} lang={lang}>
+    <div data-item={slide.id} className={cx('folio-slide group/slide relative aspect-video w-full overflow-hidden bg-paper text-ink', className)} lang={lang}>
       <span aria-hidden className="folio-slide-tab" />
       <div
         className={cx(

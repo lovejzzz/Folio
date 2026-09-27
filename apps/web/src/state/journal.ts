@@ -1,4 +1,4 @@
-import { parseCourse, type Course } from '@folio/core';
+import { parseCourse, type Course, type HistoryEntry } from '@folio/core';
 
 /**
  * A last-moment copy of unsaved work. IndexedDB writes are asynchronous and
@@ -12,11 +12,18 @@ interface Entry {
   /** The saved version this work was built on. */
   base: string;
   course: Course;
+  /** History entries not saved yet: new ones, and ones undone or redone since. */
+  history?: HistoryEntry[];
 }
 
-export function writeJournal(course: Course, base: string): void {
+export interface Unsaved {
+  course: Course;
+  history: HistoryEntry[];
+}
+
+export function writeJournal(course: Course, base: string, history: HistoryEntry[] = []): void {
   try {
-    localStorage.setItem(key(course.id), JSON.stringify({ base, course } satisfies Entry));
+    localStorage.setItem(key(course.id), JSON.stringify({ base, course, history } satisfies Entry));
   } catch {
     /* storage full or blocked: the IndexedDB save is still on its way */
   }
@@ -31,7 +38,7 @@ export function clearJournal(id: string): void {
 }
 
 /** Unsaved work for this course, if it was built on exactly the saved version. */
-export function takeJournal(id: string, savedVersion: string): Course | null {
+export function takeJournal(id: string, savedVersion: string): Unsaved | null {
   let raw: string | null;
   try {
     raw = localStorage.getItem(key(id));
@@ -42,7 +49,8 @@ export function takeJournal(id: string, savedVersion: string): Course | null {
   clearJournal(id);
   try {
     const entry = JSON.parse(raw) as Entry;
-    return entry.base === savedVersion ? parseCourse(entry.course) : null;
+    if (entry.base !== savedVersion) return null;
+    return { course: parseCourse(entry.course), history: Array.isArray(entry.history) ? entry.history : [] };
   } catch {
     return null;
   }

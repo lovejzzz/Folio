@@ -1,4 +1,5 @@
-import { lessonAssignments, lessonDiscussions, lessonNumber, lessonObjectives, lessonQuestions, orderedObjectives } from '../course';
+import { isBlankObjective, isBlankQuestion, statedObjectives } from '../blank';
+import { lessonAssignments, lessonDiscussions, lessonNumber, lessonQuestions, orderedObjectives } from '../course';
 import type { Block } from '../semantic';
 import { lessonsIn, nonEmpty, type Ctx } from './shared';
 
@@ -14,19 +15,19 @@ export function projectMap(ctx: Ctx): Block[] {
       rows: lessons.map((lesson) => {
         const n = lessonNumber(course, lesson.id);
         const assessed: string[] = [];
-        const qs = lessonQuestions(course, lesson).length;
+        const qs = lessonQuestions(course, lesson).filter((q) => !isBlankQuestion(q)).length;
         if (qs) assessed.push(l.questionsCount(qs));
         for (const a of lessonAssignments(course, lesson)) assessed.push(a.title);
         if (lessonDiscussions(course, lesson).length) assessed.push(l.materials.discussions);
         return [
           `${l.lesson(n)} · ${lesson.title}`,
-          lessonObjectives(course, lesson).map((o) => o.text).join('\n') || l.none,
+          statedObjectives(course, lesson).map((o) => o.text).join('\n') || l.none,
           assessed.join('\n') || l.none,
         ];
       }),
     },
   ];
-  const objectives = orderedObjectives(course);
+  const objectives = orderedObjectives(course).filter((o) => !isBlankObjective(o));
   if (objectives.length) {
     blocks.push({ t: 'heading', level: 2, text: l.objectives });
     blocks.push({
@@ -55,7 +56,7 @@ export function projectSyllabus(ctx: Ctx): Block[] {
   meta.push({ label: l.length, value: l.lengthValue(course.lessonOrder.length, course.shape.minutesPerLesson) });
   blocks.push({ t: 'meta', items: meta });
 
-  const objectives = orderedObjectives(course).filter((o) => lessons.some((x) => x.objectiveIds.includes(o.id)));
+  const objectives = orderedObjectives(course).filter((o) => !isBlankObjective(o) && lessons.some((x) => x.objectiveIds.includes(o.id)));
   if (objectives.length) {
     blocks.push({ t: 'heading', level: 2, text: l.whatYouLearn });
     blocks.push({ t: 'list', ordered: false, items: objectives.map((o) => o.text) });
@@ -69,7 +70,7 @@ export function projectSyllabus(ctx: Ctx): Block[] {
     rows: lessons.map((lesson) => [
       String(lessonNumber(course, lesson.id)),
       lesson.title,
-      lesson.summary || lessonObjectives(course, lesson)[0]?.text || '',
+      lesson.summary || statedObjectives(course, lesson)[0]?.text || '',
     ]),
   });
 
@@ -89,7 +90,7 @@ function assessmentLines(ctx: Ctx): string[] {
   const { course, l } = ctx;
   const lessons = lessonsIn(ctx);
   const lines: string[] = [];
-  const quizzes = lessons.filter((lesson) => lessonQuestions(course, lesson).length > 0).length;
+  const quizzes = lessons.filter((lesson) => lessonQuestions(course, lesson).some((q) => !isBlankQuestion(q))).length;
   if (course.materials.quiz.enabled && quizzes) lines.push(l.quizzesLine(quizzes, course.shape.quizSize));
   if (course.materials.assignments.enabled) {
     for (const lesson of lessons) {

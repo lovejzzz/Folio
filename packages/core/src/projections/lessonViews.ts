@@ -1,6 +1,9 @@
-import { lessonObjectives, lessonQuestions } from '../course';
+import { filledTexts, isBlankPoint, isBlankSegment, isBlankTerm, statedObjectives } from '../blank';
+import type { Lesson } from '../schema';
 import type { Block } from '../semantic';
-import { field, lessonHeading, lessonsIn, nonEmpty, questionBlock, type Ctx } from './shared';
+import { field, lessonHeading, lessonsIn, nonEmpty, questionBlock, shownQuestions, type Ctx } from './shared';
+
+const terms = (lesson: Lesson) => lesson.vocabulary.filter((v) => !isBlankTerm(v)).map(({ term, definition }) => ({ term, definition }));
 
 /** Lesson plans. The student copy is a lesson outline without teacher notes. */
 export function projectPlan(ctx: Ctx): Block[] {
@@ -9,30 +12,33 @@ export function projectPlan(ctx: Ctx): Block[] {
   for (const lesson of lessonsIn(ctx)) {
     blocks.push(lessonHeading(ctx, lesson));
     if (nonEmpty(lesson.summary)) blocks.push({ t: 'para', text: lesson.summary, tone: 'lead' });
-    const objectives = lessonObjectives(course, lesson);
+    const objectives = statedObjectives(course, lesson);
     if (objectives.length) {
       blocks.push({ t: 'heading', level: 3, text: l.objectives });
       blocks.push({ t: 'list', ordered: false, items: objectives.map((o) => o.text) });
     }
-    if (lesson.keyIdeas.length) {
+    const keyIdeas = filledTexts(lesson.keyIdeas);
+    if (keyIdeas.length) {
       blocks.push({ t: 'heading', level: 3, text: l.keyIdeas });
-      blocks.push({ t: 'list', ordered: false, items: lesson.keyIdeas });
+      blocks.push({ t: 'list', ordered: false, items: keyIdeas });
     }
-    if (lesson.segments.length) {
+    const segments = lesson.segments.filter((s) => !isBlankSegment(s));
+    if (segments.length) {
       blocks.push({
         t: 'table',
         head: [l.time, l.activity, l.details],
         widths: [12, 28, 60],
-        rows: lesson.segments.map((s) => [
+        rows: segments.map((s) => [
           l.minutes(s.minutes),
           field(ctx, s.id, 'title', s.title),
           teacher && s.teacherNotes ? `${s.description}\n${l.teacherNote}: ${s.teacherNotes}` : s.description,
         ]),
       });
     }
-    if (lesson.vocabulary.length) {
+    const vocabulary = terms(lesson);
+    if (vocabulary.length) {
       blocks.push({ t: 'heading', level: 3, text: l.vocabulary });
-      blocks.push({ t: 'terms', items: lesson.vocabulary.map(({ term, definition }) => ({ term, definition })) });
+      blocks.push({ t: 'terms', items: vocabulary });
     }
     blocks.push({ t: 'break' });
   }
@@ -51,7 +57,7 @@ export function projectSlides(ctx: Ctx): Block[] {
         n,
         layout: slide.layout,
         title: field(ctx, slide.id, 'title', slide.title),
-        bullets: slide.bullets,
+        bullets: filledTexts(slide.bullets),
         lesson: `${lessonLabel} · ${lesson.title}`,
         ...(ctx.teacher && slide.notes ? { notes: slide.notes } : {}),
       });
@@ -67,15 +73,16 @@ export function projectStudy(ctx: Ctx): Block[] {
   for (const lesson of lessonsIn(ctx)) {
     blocks.push(lessonHeading(ctx, lesson));
     if (nonEmpty(lesson.study.overview)) blocks.push({ t: 'para', text: lesson.study.overview, tone: 'lead' });
-    for (const point of lesson.study.points) {
+    for (const point of lesson.study.points.filter((x) => !isBlankPoint(x))) {
       blocks.push({ t: 'heading', level: 3, text: point.heading });
       blocks.push({ t: 'para', text: point.explanation });
     }
-    if (lesson.vocabulary.length) {
+    const vocabulary = terms(lesson);
+    if (vocabulary.length) {
       blocks.push({ t: 'heading', level: 3, text: l.vocabulary });
-      blocks.push({ t: 'terms', items: lesson.vocabulary.map(({ term, definition }) => ({ term, definition })) });
+      blocks.push({ t: 'terms', items: vocabulary });
     }
-    const check = lessonQuestions(course, lesson).slice(0, 3);
+    const check = shownQuestions(course, lesson).slice(0, 3);
     if (check.length) {
       blocks.push({ t: 'heading', level: 3, text: l.checkYourself });
       check.forEach((q, i) => blocks.push(questionBlock(ctx, q, i + 1)));

@@ -66,3 +66,25 @@ test('on a phone a rubric stacks its levels instead of scrolling sideways', asyn
   await expect(page.getByRole('table')).toHaveCount(0);
   await expect(page.getByRole('textbox', { name: 'Statistical question, Beginning' }).first()).toBeVisible();
 });
+
+test('on a phone a stacked rubric can lose a criterion and change what a level is worth', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
+  await page.getByRole('link', { name: /Centre and spread/ }).click();
+  const rubric = page.locator('#m-rubrics');
+  await rubric.scrollIntoViewIfNeeded();
+  const names = rubric.getByRole('textbox', { name: /^Criterion \d$/ });
+  await expect(names).toHaveText(['Calculations', 'Choice of summary', 'Comparison']);
+  // Tapping into a criterion reveals its remove button.
+  await rubric.getByRole('textbox', { name: 'Criterion 2', exact: true }).tap();
+  await rubric.getByRole('button', { name: 'Remove: Choice of summary' }).tap();
+  await expect(names).toHaveText(['Calculations', 'Comparison']);
+
+  const points = rubric.getByRole('textbox', { name: 'Points for Good' }).first();
+  await points.fill('2.5');
+  await points.press('Enter');
+  // Each criterion lists the levels; they all show the new worth.
+  await expect(rubric.getByRole('textbox', { name: 'Points for Good' }).first()).toHaveValue('2.5');
+  await expect(rubric.getByRole('textbox', { name: 'Points for Good' }).last()).toHaveValue('2.5');
+});
