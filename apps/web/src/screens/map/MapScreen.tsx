@@ -1,11 +1,10 @@
 import { Fragment } from 'react';
 import { Sep } from '../../components/Sep';
 import { cellState, courseKinds, lessonKinds, orderedLessons, type Lesson } from '@folio/core';
-import { MaterialIcon, SegmentedControl, StatusMark, cx, tabBg, useMediaQuery } from '@folio/ui';
+import { MaterialIcon, StatusMark, cx, tabBg, useMediaQuery } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
 import { usePageTitle } from '../../app/usePageTitle';
 import { useT } from '../../i18n';
-import { usePrefs } from '../../state/prefs';
 import { useCourse } from '../../state/session';
 import { MapGrid } from './MapGrid';
 
@@ -93,8 +92,7 @@ export function MapScreen() {
   const t = useT();
   const course = useCourse();
   const phone = useMediaQuery('(max-width: 767px)');
-  const { density, set } = usePrefs();
-  usePageTitle(t.materials.map, course.title || t.common.untitled);
+  usePageTitle(t.nav.map, course.title || t.common.untitled);
   const meta = [course.audience.level, t.common.lessons(course.lessonOrder.length), t.common.minutes(course.shape.minutesPerLesson)].filter(Boolean);
   return (
     <div className="px-4 pb-24 pt-8 md:px-8 md:pt-10">
@@ -110,20 +108,7 @@ export function MapScreen() {
             ))}
           </p>
         </div>
-        {!phone && (
-          <div className="flex flex-wrap items-center gap-4">
-            <CourseDocs />
-            <SegmentedControl
-              label={t.map.density}
-              value={density}
-              onChange={(d) => set({ density: d })}
-              options={[
-                { id: 'comfortable', label: t.map.comfortable },
-                { id: 'compact', label: t.map.compact },
-              ]}
-            />
-          </div>
-        )}
+        {!phone && <CourseDocs />}
       </div>
       {course.lessonOrder.length === 0 ? (
         <p className="font-ui text-14 text-ink-2">{t.map.empty}</p>

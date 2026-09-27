@@ -26,12 +26,12 @@ async function tour(page: Page, theme: string) {
   await shot(page, `${theme}-03-drafting`);
   await page.getByRole('textbox', { name: 'Title of lesson 1' }).waitFor();
   await shot(page, `${theme}-04-plan`);
-  await page.getByRole('button', { name: /Build 4 lessons/ }).click();
+  await page.getByRole('button', { name: /Write 4 lessons/ }).click();
   await page.waitForTimeout(1500);
   await shot(page, `${theme}-05-map-building`);
   await page.getByText(/Course ready/).waitFor({ timeout: 40_000 });
   await shot(page, `${theme}-06-map-ready`);
-  await page.getByRole('button', { name: /^Changes\b/ }).click();
+  await page.getByRole('button', { name: /^To do & history\b/ }).click();
   await shot(page, `${theme}-07-changes`);
   await page.getByRole('button', { name: 'Export', exact: true }).click();
   await shot(page, `${theme}-08-export`);
@@ -67,11 +67,12 @@ test('tour, sample course', async ({ page }) => {
     await page.goto(`${base}/m/${kind}`);
     await shot(page, `sample-m-${kind}`);
   }
-  await page.goto(`${base}/map`);
-  await page.getByRole('radio', { name: 'Compact' }).click();
-  await shot(page, 'sample-map-compact');
-  await page.getByRole('radio', { name: 'Comfortable' }).click();
   await page.goto('/settings');
+  await page.getByRole('radio', { name: 'Counts only' }).click();
+  await page.goto(`${base}/map`);
+  await shot(page, 'sample-map-compact');
+  await page.goto('/settings');
+  await page.getByRole('radio', { name: 'With a preview' }).click();
   await page.getByRole('radio', { name: '简体中文' }).click();
   await page.goto('/');
   await shot(page, 'zh-home');
@@ -90,7 +91,7 @@ test('tour, phone', async ({ browser }) => {
   await shot(page, 'phone-map');
   await page.getByRole('link', { name: /Picturing a distribution/ }).click();
   await shot(page, 'phone-lesson');
-  await page.getByRole('button', { name: /^Changes\b/ }).click();
+  await page.getByRole('button', { name: /^To do & history\b/ }).click();
   await shot(page, 'phone-changes');
   await page.close();
 });

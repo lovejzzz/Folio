@@ -31,12 +31,12 @@ test('notes attached on the home page (.md and a real .docx) reach the model and
   expect(outlinePrompt).toContain('Stomata close at night');
   expect(outlinePrompt).toContain('Reading the world with data');
 
-  await page.getByRole('button', { name: 'Build 2 lessons' }).click();
+  await page.getByRole('button', { name: 'Write 2 lessons' }).click();
   await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 30_000 });
   await page.getByRole('button', { name: 'Sources', exact: true }).click();
   const drawer = page.getByRole('dialog', { name: 'Sources' });
   // The heading joins its paragraph: one passage, not two.
-  await expect(drawer.getByText(/^1 passage.Cited/)).toBeVisible();
+  await expect(drawer.getByText(/^1 part.Used/)).toBeVisible();
   await expect(drawer.getByText('statistics', { exact: true })).toBeVisible();
 });
 

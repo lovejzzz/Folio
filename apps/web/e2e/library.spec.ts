@@ -7,9 +7,9 @@ test('opening a backup of a course that is already here adds a copy and changes 
   await openSample(page);
   await page.getByRole('button', { name: 'Export', exact: true }).click();
   const drawer = page.getByRole('dialog', { name: 'Export' });
-  await drawer.getByText('Folio file', { exact: true }).click();
+  await drawer.getByText('Backup file', { exact: true }).click();
   const download = page.waitForEvent('download');
-  await drawer.getByRole('button', { name: 'Download Folio file' }).click();
+  await drawer.getByRole('button', { name: 'Download the backup file' }).click();
   const bytes = await readFile((await (await download).path())!);
   await page.keyboard.press('Escape');
 
@@ -17,7 +17,7 @@ test('opening a backup of a course that is already here adds a copy and changes 
   await retype(page, 'Title of lesson 3', 'Renamed after the backup');
   await page.goto('/library');
   const chooser = page.waitForEvent('filechooser');
-  await page.getByRole('button', { name: 'Open a Folio file' }).click();
+  await page.getByRole('button', { name: 'Open a backup file' }).click();
   await (await chooser).setFiles({ name: 'backup.folio', mimeType: 'application/zip', buffer: bytes });
   await expect(page.getByRole('grid', { name: 'Lessons and materials' })).toBeVisible();
   await page.goto('/library');
@@ -52,13 +52,13 @@ test('opening another course during a build stops it, and says so', async ({ pag
   await page.goto('/');
   await page.getByLabel('Describe your course').fill('Photosynthesis for year 7, three lessons');
   await page.getByRole('button', { name: 'Continue' }).click();
-  await page.getByRole('button', { name: 'Build 3 lessons' }).click();
-  await expect(page.getByText(/Building lesson/)).toBeVisible();
+  await page.getByRole('button', { name: 'Write 3 lessons' }).click();
+  await expect(page.getByText(/Writing lesson/)).toBeVisible();
   await page.getByRole('link', { name: 'Home' }).first().click();
   await page.getByRole('button', { name: 'Or open the sample course' }).click();
-  await expect(page.getByText(/Building “How plants make food” stopped when another course was opened/)).toBeVisible();
+  await expect(page.getByText(/Writing “How plants make food” stopped when another course was opened/)).toBeVisible();
   const calls = model.calls.length;
   await page.waitForTimeout(2000);
   expect(model.calls.length).toBe(calls);
-  await expect(page.getByText(/Building lesson/)).toHaveCount(0);
+  await expect(page.getByText(/Writing lesson/)).toHaveCount(0);
 });

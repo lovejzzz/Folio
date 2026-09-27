@@ -19,13 +19,16 @@ function trimBreaks(blocks: Block[]): Block[] {
   return blocks.slice(start, end);
 }
 
+/** Every page of a teacher copy says so at its foot: a page that strays onto a student's desk shows what it is. */
 function footer(doc: SemanticDoc, courseTitle: string): Footer {
   const style = { size: SIZE.small, color: printPalette.ink2, font: fontFor(doc.language, 'body') };
+  const teacher = doc.audience === 'teacher' ? [new TextRun({ ...style, bold: true, color: printPalette.ink, text: `${docLabels(doc.language).teacherCopy} · ` })] : [];
   return new Footer({
     children: [
       new Paragraph({
         alignment: AlignmentType.RIGHT,
         children: [
+          ...teacher,
           new TextRun({ ...style, text: `${courseTitle} · ${doc.title} · ` }),
           new TextRun({ ...style, children: [PageNumber.CURRENT] }),
         ],

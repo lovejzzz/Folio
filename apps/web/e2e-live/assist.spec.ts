@@ -58,7 +58,7 @@ test('live assist', async ({ page }) => {
   await retype(page, 'Objective 1 of lesson 1', 'Tell a statistical question from a non-statistical one and explain why');
   const quiz = page.locator('#m-quiz');
   await quiz.getByRole('button', { name: 'Update' }).click();
-  await expect(quiz.getByText('Out of date.')).toHaveCount(0, { timeout: 5 * 60_000 });
+  await expect(quiz.getByText('Needs updating.')).toHaveCount(0, { timeout: 5 * 60_000 });
   await page.waitForTimeout(1000);
   await quiz.screenshot({ path: `${OUT}/assist-quiz-updated.png` });
   const courses = await readCourses(page);

@@ -73,13 +73,18 @@ export function EditableList({ items, onChange, label, addLabel, placeholder, or
   );
 }
 
+/**
+ * On a phone a teacher reads the lesson before class and fixes a word or two;
+ * a dozen "Add …" lines between the paragraphs only got in the way. Adding is
+ * for a larger screen, as the map says.
+ */
 export function AddButton({ label, onPress, className }: { label: string; onPress: () => void; className?: string }) {
   return (
     <button
       type="button"
       onClick={onPress}
       className={cx(
-        'no-print mt-2 inline-flex items-center gap-1.5 rounded-control px-1 py-0.5 font-ui text-13 text-ink-2 outline-none transition-colors duration-120 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent',
+        'no-print mt-2 inline-flex max-md:hidden items-center gap-1.5 rounded-control px-1 py-0.5 font-ui text-13 text-ink-2 outline-none transition-colors duration-120 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent',
         className,
       )}
     >

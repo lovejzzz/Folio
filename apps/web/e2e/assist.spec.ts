@@ -10,7 +10,7 @@ test('⌘K plans a course change, previews it, and applies it', async ({ page })
   await page.keyboard.type('make every quiz three questions');
   await page.getByRole('option', { name: /make every quiz three questions/ }).click();
   await expect(page.getByText('Make every quiz 3 questions')).toBeVisible();
-  await expect(page.getByText('Then update the 4 sections built on what changes.')).toBeVisible();
+  await expect(page.getByText('Then update the 4 parts written from what changes.')).toBeVisible();
   await page.getByRole('button', { name: 'Apply' }).click();
   await page.getByRole('link', { name: 'Open Quiz & exam bank' }).click();
   await expect(page.getByRole('article', { name: 'Question 12' })).toBeVisible();

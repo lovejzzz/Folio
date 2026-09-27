@@ -23,7 +23,7 @@ describe('message catalogues', () => {
 
   it('word plural forms correctly', () => {
     expect(en.common.questions(1)).toBe('1 question');
-    expect(en.build.readyLook(2)).toBe('Course ready. 2 items need a look.');
+    expect(en.build.readyLook(2)).toBe('Course ready. Please check 2 things.');
     expect(zh.build.progress(3, 6)).toBe('正在生成第 3 课，共 6 课');
   });
 

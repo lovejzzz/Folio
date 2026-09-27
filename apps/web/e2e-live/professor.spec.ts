@@ -62,10 +62,10 @@ test(`professor: ${name}`, async ({ page }) => {
   marks.outline = Date.now() - t0;
   await page.waitForTimeout(800);
   await page.screenshot({ path: `${dir}/02-plan.png`, fullPage: true });
-  await page.getByRole('button', { name: /Build \d+ lessons?|生成/ }).click();
+  await page.getByRole('button', { name: /Write \d+ lessons?|生成/ }).click();
   await page.waitForTimeout(20_000);
   await page.screenshot({ path: `${dir}/03-building.png` });
-  await page.getByText(/Course ready|could not be built|课程已就绪|没能生成|didn’t accept|stopped/).first().waitFor({ timeout: 50 * 60_000 });
+  await page.getByText(/Course ready|couldn’t be written|课程已就绪|没能生成|didn’t accept|stopped/).first().waitFor({ timeout: 50 * 60_000 });
   marks.build = Date.now() - t0;
   await page.waitForTimeout(1500);
   await page.screenshot({ path: `${dir}/04-map.png`, fullPage: true });

@@ -134,9 +134,11 @@ function Actions() {
             </IconButton>
           )}
           <span className="hidden sm:contents">
-            <IconButton label={t.sources.title} active={drawer === 'sources'} onPress={() => toggleDrawer('sources')}>
-              <BookMarked size={18} strokeWidth={1.5} />
-            </IconButton>
+            {/* Named: a bookmark icon alone didn't say that the teacher's own notes live here. */}
+            <Button variant="quiet" onPress={() => toggleDrawer('sources')} className={cx('gap-1.5 px-2.5', drawer === 'sources' && 'bg-well text-ink')}>
+              <BookMarked size={16} strokeWidth={1.75} aria-hidden />
+              {t.sources.title}
+            </Button>
             <Button variant={drawer === 'export' ? 'primary' : 'secondary'} onPress={() => toggleDrawer('export')} className="ml-1">
               <Download size={16} strokeWidth={1.75} aria-hidden />
               {t.export.title}

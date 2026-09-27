@@ -15,7 +15,7 @@ test('an unknown material says so inside the course, with the way back to the ma
   // The course header is there once: no second header from a standalone page.
   await expect(page.getByRole('banner')).toHaveCount(1);
   await expect(page.getByRole('banner').getByRole('link', { name: 'Reading the world with data' })).toBeVisible();
-  await page.getByRole('link', { name: 'Open the course map' }).click();
+  await page.getByRole('link', { name: 'Open the overview' }).click();
   await expect(page.getByRole('grid', { name: 'Lessons and materials' })).toBeVisible();
 });
 
@@ -27,7 +27,7 @@ test('an unknown lesson says so inside the course, without a second header', asy
   await expect(page.getByRole('banner')).toHaveCount(1);
   await expect(page.getByRole('main')).toHaveCount(1);
   await expect(page).toHaveTitle('This lesson isn’t in this course · Folio');
-  await page.getByRole('link', { name: 'Open the course map' }).click();
+  await page.getByRole('link', { name: 'Open the overview' }).click();
   await expect(page.getByRole('grid', { name: 'Lessons and materials' })).toBeVisible();
 });
 
@@ -46,7 +46,7 @@ test('an unknown address inside a course keeps the course header; a missing cour
   await page.goto(`/c/${id}/nowhere`);
   await expect(page.getByRole('heading', { level: 1, name: 'There’s no page here' })).toBeVisible();
   await expect(page.getByRole('banner')).toHaveCount(1);
-  await expect(page.getByRole('link', { name: 'Open the course map' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open the overview' })).toBeVisible();
 
   await page.goto('/c/c_missing/map');
   await expect(page.getByRole('heading', { level: 1, name: 'This course isn’t on this device.' })).toBeVisible();

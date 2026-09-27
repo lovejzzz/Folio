@@ -8,7 +8,7 @@ import type { Language } from './schema';
 
 const en = {
   materials: {
-    map: 'Course map',
+    map: 'Objectives & assessment',
     syllabus: 'Syllabus',
     plan: 'Lesson plans',
     slides: 'Slide decks',
@@ -65,7 +65,7 @@ const en = {
   questionsCount: (n: number) => `${n} questions`,
   none: '—',
   studentCopy: 'Student copy',
-  teacherCopy: 'Teacher copy',
+  teacherCopy: 'Teacher copy, with answers',
   trueWord: 'True',
   falseWord: 'False',
   continued: (title: string) => `${title} (continued)`,
@@ -77,12 +77,12 @@ export type DocLabels = typeof en;
 
 const zh: DocLabels = {
   materials: {
-    map: '课程地图',
+    map: '目标与考核',
     syllabus: '教学大纲',
     plan: '教案',
     slides: '课件',
     assignments: '作业',
-    rubrics: '评分量表',
+    rubrics: '评分标准',
     discussions: '课堂讨论',
     quiz: '测验与题库',
     study: '学习指南',
@@ -120,7 +120,7 @@ const zh: DocLabels = {
   teacherNote: '教师提示',
   steps: '步骤',
   gradedWith: (title) => `评分依据：${title}`,
-  criterion: '评价维度',
+  criterion: '评分项',
   followUps: '追问',
   answerKey: '参考答案',
   answer: '答案',
@@ -132,7 +132,7 @@ const zh: DocLabels = {
   questionsCount: (n) => `${n} 道题`,
   none: '—',
   studentCopy: '学生版',
-  teacherCopy: '教师版',
+  teacherCopy: '教师版（含答案）',
   trueWord: '正确',
   falseWord: '错误',
   continued: (title: string) => `${title}（续）`,

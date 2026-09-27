@@ -26,7 +26,7 @@ test('Add an objective puts the caret in an empty line; left blank it goes, and 
 
   await clickAway(page);
   await expect(objectives).toHaveCount(count);
-  await expect(page.getByText('Out of date.')).toHaveCount(0);
+  await expect(page.getByText('Needs updating.')).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Add an objective' }).click();
   await page.keyboard.type('Explain why the median resists outliers');
@@ -35,8 +35,8 @@ test('Add an objective puts the caret in an empty line; left blank it goes, and 
   await expect(page.getByRole('textbox', { name: `Objective ${count + 1} of lesson 3` })).toHaveText('Explain why the median resists outliers');
   await expect(page.locator('#m-quiz').getByText('Because its objectives changed.')).toBeVisible();
 
-  await page.getByRole('button', { name: /^Changes\b/ }).click();
-  const drawer = page.getByRole('dialog', { name: 'Changes' });
+  await page.getByRole('button', { name: /^To do & history\b/ }).click();
+  const drawer = page.getByRole('dialog', { name: 'To do & history' });
   await expect(drawer.getByText('Added an objective')).toHaveCount(1);
 });
 
@@ -109,8 +109,8 @@ test('Add a term, a step, a point: each opens empty and focused, and blank ones 
   await expect(headings).toHaveCount(pointCount);
 
   // Leaving blank items took them out without a trace: history shows only the step.
-  await page.getByRole('button', { name: /^Changes\b/ }).click();
-  const history = page.getByRole('dialog', { name: 'Changes' }).getByRole('listitem').filter({ hasText: /^Edited the/ });
+  await page.getByRole('button', { name: /^To do & history\b/ }).click();
+  const history = page.getByRole('dialog', { name: 'To do & history' }).getByRole('listitem').filter({ hasText: /^Edited the/ });
   await expect(history).toHaveText([/Edited the lesson plan for lesson 3/, /Edited the lesson plan for lesson 3/]);
 });
 

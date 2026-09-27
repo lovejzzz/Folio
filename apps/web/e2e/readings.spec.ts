@@ -22,7 +22,7 @@ test('readings and the grading scheme carry from the brief to the plan and the s
   await page.getByRole('button', { name: 'Remove reading 2 for lesson 2' }).click();
   await expect(second.getByRole('textbox')).toHaveCount(1);
 
-  await page.getByRole('button', { name: 'Build 3 lessons' }).click();
+  await page.getByRole('button', { name: 'Write 3 lessons' }).click();
   await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 30_000 });
 
   // The syllabus schedules the reading and puts the stated grading first under assessment.

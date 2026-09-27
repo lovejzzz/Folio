@@ -158,7 +158,7 @@ export function ExportDrawer() {
       .finally(() => setBusy(false));
   };
   const noSlides = choice.format === 'pptx' && !lessons.some((l) => (choice.scope !== 'lesson' || l.id === choice.lessonId) && l.slides.length);
-  const cta = choice.format === 'pdf' ? t.export.print : choice.format === 'google' ? t.export.uploadGoogle : t.export.download(t.export.formats[choice.format as keyof typeof t.export.formats]);
+  const cta = choice.format === 'pdf' ? t.export.print : choice.format === 'google' ? t.export.uploadGoogle : choice.format === 'folio' ? t.export.downloadBackup : t.export.download(t.export.formats[choice.format as keyof typeof t.export.formats]);
   return (
     <>
       <div className="space-y-6 p-5">
@@ -172,7 +172,10 @@ export function ExportDrawer() {
             <WhatField choice={choice} set={set} />
             <Field label={t.export.who}>
               <SegmentedControl label={t.export.who} value={choice.audience} onChange={(audience) => set({ audience })} className="w-full" options={[{ id: 'student', label: t.export.student }, { id: 'teacher', label: t.export.teacher }]} />
-              {choice.audience === 'teacher' && <p className="font-ui text-12 text-ink-2">{t.export.teacherHint}</p>}
+              {/* Says what's in the copy, and warns plainly when it holds the answers. */}
+              <p className={cx('font-ui text-12', choice.audience === 'teacher' ? 'font-medium text-attention' : 'text-ink-2')}>
+                {choice.audience === 'teacher' ? t.export.teacherHint : t.export.studentHint}
+              </p>
             </Field>
           </>
         )}

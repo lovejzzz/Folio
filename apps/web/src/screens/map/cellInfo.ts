@@ -52,7 +52,7 @@ export function cellMetric(course: Course, lesson: Lesson, kind: MaterialKind, t
     case 'quiz':
       return t.common.questions(lessonQuestions(course, lesson).length);
     case 'study':
-      return t.map.sections(lesson.study.points.length);
+      return t.map.points(lesson.study.points.length);
     case 'faq':
       return t.common.questions(lessonFaq(course, lesson).length);
   }

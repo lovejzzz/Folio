@@ -42,8 +42,10 @@ export function PrintScreen() {
         </Button>
       </div>
       <main id="main" className="mx-auto max-w-sheet px-6 py-12 print:max-w-none print:p-0" lang={course.language}>
+        {/* Fixed, so the browser prints it on every page: a sheet with answers says so wherever it ends up. */}
+        {audience === 'teacher' && <p className="hidden font-ui text-12 font-semibold text-ink print:fixed print:bottom-0 print:right-0 print:block">{l.teacherCopy}</p>}
         <header className="mb-12">
-          <p className="font-ui text-12 text-ink-2">{audience === 'teacher' ? l.teacherCopy : l.studentCopy}</p>
+          <p className={cx('font-ui text-12', audience === 'teacher' ? 'font-semibold text-attention' : 'text-ink-2')}>{audience === 'teacher' ? l.teacherCopy : l.studentCopy}</p>
           <h1 className="mt-2 font-display text-64 leading-none text-ink">{course.title}</h1>
         </header>
         {kinds.map((kind, i) => (

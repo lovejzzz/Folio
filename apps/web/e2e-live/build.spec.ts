@@ -50,8 +50,8 @@ test(`live build: ${name}`, async ({ page }) => {
   await page.getByRole('textbox', { name: /Title of lesson 1|第 1 课/ }).waitFor({ timeout: 5 * 60_000 });
   marks.outline = Date.now() - t0;
   await page.screenshot({ path: `${OUT}/${name}-02-plan.png`, fullPage: true });
-  await page.getByRole('button', { name: /Build \d+ lessons?|生成/ }).click();
-  const done = page.getByText(/Course ready|could not be built|课程已就绪|没能生成|didn’t accept|stopped/).first();
+  await page.getByRole('button', { name: /Write \d+ lessons?|生成/ }).click();
+  const done = page.getByText(/Course ready|couldn’t be written|课程已就绪|没能生成|didn’t accept|stopped/).first();
   await done.waitFor({ timeout: 35 * 60_000 });
   marks.build = Date.now() - t0;
   await page.waitForTimeout(1500);

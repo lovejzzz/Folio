@@ -21,17 +21,17 @@ test('a key that stops working mid-build is fixed from the toast, and the build 
   );
   await planTwoLessons(page);
   bad = true;
-  await page.getByRole('button', { name: 'Build 2 lessons' }).click();
-  await expect(page.getByText('The model provider didn’t accept the key. Check that it was copied in full.')).toBeVisible();
-  await expect(page.getByText(/^Paused · \d+ sections left$/)).toBeVisible();
+  await page.getByRole('button', { name: 'Write 2 lessons' }).click();
+  await expect(page.getByText('The AI service didn’t accept the key. Check that it was copied in full.')).toBeVisible();
+  await expect(page.getByText(/^Paused · \d+ parts left$/)).toBeVisible();
 
   await page.getByRole('button', { name: 'Fix the key' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Connect a model' });
+  const dialog = page.getByRole('dialog', { name: 'Connect an AI' });
   await dialog.getByLabel('API key').fill('sk-ant-new');
   bad = false;
   await dialog.getByRole('button', { name: 'Connect and continue' }).click();
   await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByText('Couldn’t build')).toHaveCount(0);
+  await expect(page.getByText('Couldn’t write')).toHaveCount(0);
 });
 
 test('sections that failed on a server error are rebuilt by Resume', async ({ page }) => {
@@ -44,20 +44,20 @@ test('sections that failed on a server error are rebuilt by Resume', async ({ pa
       : route.fallback(),
   );
   await planTwoLessons(page);
-  await page.getByRole('button', { name: 'Build 2 lessons' }).click();
-  await expect(page.getByText('2 sections could not be built.')).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByText('Couldn’t build')).toHaveCount(2);
+  await page.getByRole('button', { name: 'Write 2 lessons' }).click();
+  await expect(page.getByText('2 parts couldn’t be written.')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText('Couldn’t write')).toHaveCount(2);
   // Review lists what failed and why.
   await page.getByRole('button', { name: 'Review', exact: true }).click();
-  const changes = page.getByRole('dialog', { name: 'Changes' });
-  await expect(changes.getByRole('heading', { name: /Couldn’t build\W*2/ })).toBeVisible();
+  const changes = page.getByRole('dialog', { name: 'To do & history' });
+  await expect(changes.getByRole('heading', { name: /Couldn’t write\W*2/ })).toBeVisible();
   await page.keyboard.press('Escape');
   fail = false;
   await page.getByRole('button', { name: 'Resume' }).click();
   await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByText('Couldn’t build')).toHaveCount(0);
+  await expect(page.getByText('Couldn’t write')).toHaveCount(0);
   // The newer result replaced the failure toast rather than stacking under it.
-  await expect(page.getByText('2 sections could not be built.')).toHaveCount(0);
+  await expect(page.getByText('2 parts couldn’t be written.')).toHaveCount(0);
 });
 
 test('an outline that could not be drafted offline is drafted on Try again', async ({ page }) => {
@@ -81,20 +81,20 @@ test('offline, the banner says what waits, and Update says you’re offline inst
   await page.getByRole('link', { name: /Picturing a distribution/ }).first().click();
   await retype(page, 'Objective 1 of lesson 2', 'Read a histogram and describe its shape');
   const quiz = page.locator('#m-quiz');
-  await expect(quiz.getByText('Out of date.')).toBeVisible();
+  await expect(quiz.getByText('Needs updating.')).toBeVisible();
 
   await context.setOffline(true);
-  await expect(page.getByText('You’re offline. Reading and editing still work; building and updates need a connection.')).toBeVisible();
+  await expect(page.getByText('You’re offline. Reading and editing still work; writing and updates need a connection.')).toBeVisible();
   const calls = model.calls.length;
   await quiz.getByRole('button', { name: 'Update' }).click();
   await expect(page.getByText('You’re offline. Connect to the internet, then try again.')).toBeVisible();
   await expect(page.getByText(/couldn’t reach the model provider/)).toHaveCount(0);
-  await expect(quiz.getByText('Out of date.')).toBeVisible();
+  await expect(quiz.getByText('Needs updating.')).toBeVisible();
   expect(model.calls.length).toBe(calls);
 
   await context.setOffline(false);
   await quiz.getByRole('button', { name: 'Update' }).click();
-  await expect(quiz.getByText('Out of date.')).toHaveCount(0);
+  await expect(quiz.getByText('Needs updating.')).toHaveCount(0);
 });
 
 test('offline, Build keeps the plan open and says why; back online it builds', async ({ page, context }) => {
@@ -102,12 +102,12 @@ test('offline, Build keeps the plan open and says why; back online it builds', a
   await fakeAnthropic(page);
   await planTwoLessons(page);
   await context.setOffline(true);
-  await page.getByRole('button', { name: 'Build 2 lessons' }).click();
+  await page.getByRole('button', { name: 'Write 2 lessons' }).click();
   await expect(page.getByText('You’re offline. Connect to the internet, then try again.')).toBeVisible();
   await expect(page).toHaveURL(/\/plan$/);
   await expect(page.getByRole('textbox', { name: 'Title of lesson 1' })).toBeVisible();
 
   await context.setOffline(false);
-  await page.getByRole('button', { name: 'Build 2 lessons' }).click();
+  await page.getByRole('button', { name: 'Write 2 lessons' }).click();
   await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 30_000 });
 });

@@ -12,7 +12,7 @@ test('the Chinese interface is Chinese throughout, React Aria’s own labels inc
   await page.goto('/');
   await page.getByRole('button', { name: '或者打开示例课程' }).click();
   await expect(page.getByRole('grid', { name: '课时与材料' })).toBeVisible();
-  await expect(page).toHaveTitle('课程地图 · Reading the world with data · Folio 墨页');
+  await expect(page).toHaveTitle('总览 · Reading the world with data · Folio 墨页');
   await expect(page.getByRole('button', { name: /^第 1 课，测验与题库：/ })).toBeVisible();
 
   await page.goto(page.url().replace(/\/map$/, '/plan'));
@@ -26,7 +26,7 @@ test('a file that is not a course is refused in the interface language', async (
   await page.goto('/library');
   await expect(page).toHaveTitle('课程库 · Folio 墨页');
   const chooser = page.waitForEvent('filechooser');
-  await page.getByRole('button', { name: '打开 Folio 文件' }).click();
+  await page.getByRole('button', { name: '打开备份文件' }).click();
   await (await chooser).setFiles({ name: 'notes.folio', mimeType: 'application/zip', buffer: Buffer.from('not a course') });
   await expect(page.getByText('这不是 Folio 课程文件。')).toBeVisible();
 });

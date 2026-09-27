@@ -8,11 +8,11 @@ const base: Omit<ExportRequest, 'format'> = { course, kinds: ['quiz'], audience:
 
 describe('exportCourse', () => {
   const expected: Record<ExportFormat, [string, string]> = {
-    docx: ['Reading the world with data — Quiz & exam bank (Teacher copy).docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-    pptx: ['Reading the world with data — Slide decks (Teacher copy).pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
-    xlsx: ['Reading the world with data — Quiz & exam bank (Teacher copy).xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-    csv: ['Reading the world with data — Quiz & exam bank (Teacher copy).csv', 'text/csv;charset=utf-8'],
-    zip: ['Reading the world with data — Quiz & exam bank (Teacher copy).zip', 'application/zip'],
+    docx: ['Reading the world with data — Quiz & exam bank (Teacher copy, with answers).docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+    pptx: ['Reading the world with data — Slide decks (Teacher copy, with answers).pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+    xlsx: ['Reading the world with data — Quiz & exam bank (Teacher copy, with answers).xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+    csv: ['Reading the world with data — Quiz & exam bank (Teacher copy, with answers).csv', 'text/csv;charset=utf-8'],
+    zip: ['Reading the world with data — Quiz & exam bank (Teacher copy, with answers).zip', 'application/zip'],
     folio: ['Reading the world with data.folio', 'application/zip'],
   };
 
@@ -75,7 +75,7 @@ describe('exportCourse', () => {
 
   it('writes several materials into one Word file in the order given', async () => {
     const file = await exportCourse({ ...base, kinds: ['quiz', 'syllabus'], format: 'docx' });
-    expect(file.name).toBe('Reading the world with data — Quiz & exam bank, Syllabus (Teacher copy).docx');
+    expect(file.name).toBe('Reading the world with data — Quiz & exam bank, Syllabus (Teacher copy, with answers).docx');
     const xml = strFromU8(unzipSync(file.bytes)['word/document.xml'] ?? new Uint8Array());
     expect(xml.indexOf('Quiz &amp; exam bank')).toBeLessThan(xml.indexOf('Syllabus'));
   });
