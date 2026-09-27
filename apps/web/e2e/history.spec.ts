@@ -24,7 +24,7 @@ test('undo history survives a reload and a switch to another course', async ({ p
   await retype(page, 'Summary of lesson 3', 'Mean, median and how spread out the data are.');
   await page.reload();
 
-  await page.getByRole('button', { name: /^To do & history\b/ }).click();
+  await page.getByRole('button', { name: /To do & history/ }).click();
   const drawer = page.getByRole('dialog', { name: 'To do & history' });
   const renamed = drawer.getByRole('listitem').filter({ hasText: 'Renamed lesson 3' });
   await expect(renamed).toBeVisible();
@@ -40,7 +40,7 @@ test('undo history survives a reload and a switch to another course', async ({ p
   await page.goto('/library');
   await page.getByRole('link', { name: /Reading the world with data/ }).first().click();
   await page.getByRole('link', { name: /Measures of centre/ }).first().click();
-  await page.getByRole('button', { name: /^To do & history\b/ }).click();
+  await page.getByRole('button', { name: /To do & history/ }).click();
   await expect(renamed).toBeVisible();
   await renamed.getByRole('button', { name: 'Undo' }).click();
   await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Centre and spread');
@@ -51,7 +51,7 @@ test('an entry that can no longer be undone says why', async ({ page }) => {
   await page.getByRole('link', { name: /Centre and spread/ }).first().click();
   await retype(page, 'Title of lesson 3', 'First try');
   await retype(page, 'Title of lesson 3', 'Second try');
-  await page.getByRole('button', { name: /^To do & history\b/ }).click();
+  await page.getByRole('button', { name: /To do & history/ }).click();
   const rows = page.getByRole('dialog', { name: 'To do & history' }).getByRole('listitem').filter({ hasText: 'Renamed lesson 3' });
   await expect(rows).toHaveCount(2);
   await expect(rows.nth(0).getByRole('button', { name: 'Undo' })).toBeVisible();

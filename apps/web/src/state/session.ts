@@ -54,7 +54,8 @@ async function save(session: Session): Promise<void> {
     ui.setSaveState('error');
     if (error instanceof SaveConflictError) return ui.setConflict(error.reason);
     const t = currentMessages();
-    toast({ message: isQuotaError(error) ? t.errors.storageFull : t.errors.generic, tone: 'critical', duration: 0 });
+    // One toast however many saves fail while the teacher keeps typing.
+    toast({ key: 'save-error', message: isQuotaError(error) ? t.errors.storageFull : t.errors.saveFailed, tone: 'critical', duration: 0 });
   }
 }
 
@@ -209,7 +210,12 @@ function onLeave(commitFocused: boolean): void {
 
 if (typeof window !== 'undefined') {
   window.addEventListener('pagehide', () => onLeave(true));
-  window.addEventListener('beforeunload', () => onLeave(true));
+  window.addEventListener('beforeunload', (e) => {
+    onLeave(true);
+    // Work that couldn't be saved (storage full, or another tab changed the course) is lost on close: ask first.
+    const { saveState, conflict } = useUi.getState();
+    if (active && dirty(active) && (saveState === 'error' || conflict)) e.preventDefault();
+  });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') onLeave(false);
   });

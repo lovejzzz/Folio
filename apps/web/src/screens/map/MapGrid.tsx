@@ -84,7 +84,9 @@ function useGridFocus(rows: number, cols: number, grid: React.RefObject<HTMLDivE
     } else if (e.key === 'Home') move(focus.row, 0);
     else if (e.key === 'End') move(focus.row, cols - 1);
   };
-  return { focus, setFocus, onKeyDown };
+  // Kept inside the grid as rows and columns come and go (a lesson removed, a column hidden), so one cell is always tabbable.
+  const inGrid = { row: Math.max(0, Math.min(rows - 1, focus.row)), col: Math.max(0, Math.min(cols - 1, focus.col)) };
+  return { focus: inGrid, setFocus, onKeyDown };
 }
 
 /** The course as a grid: rows are lessons, columns are materials. Arrow keys move, Enter opens. */

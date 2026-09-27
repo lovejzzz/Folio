@@ -48,7 +48,7 @@ const steps: Record<number, (raw: Raw) => Raw> = {
 };
 
 /** Why a file could not be read, as a code the interface words in its own language. */
-export type CourseFormatCode = 'notACourse' | 'newerVersion' | 'unknownFormat' | 'incomplete' | 'notFolio' | 'damagedFile' | 'unreadable';
+export type CourseFormatCode = 'notACourse' | 'newerVersion' | 'unknownFormat' | 'incomplete' | 'notFolio' | 'damagedFile' | 'unreadable' | 'tooLarge';
 
 export class CourseFormatError extends Error {
   readonly code: CourseFormatCode;

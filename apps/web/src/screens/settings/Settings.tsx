@@ -7,7 +7,7 @@ import { probeModel } from '../../components/ConnectDialog';
 import { ProviderChoice, ProviderFields, hasKey, missingSetup } from '../../components/ProviderFields';
 import { loadCatalog, useT } from '../../i18n';
 import { download } from '../../lib/exporter';
-import { allCourses, db } from '../../state/db';
+import { allCourses, db, storageKept } from '../../state/db';
 import { errorMessage } from '../../state/model';
 import { modelSettings, usePrefs } from '../../state/prefs';
 import { dropSession } from '../../state/session';
@@ -111,19 +111,22 @@ function AppearanceSection() {
 function DataSection() {
   const t = useT();
   const [used, setUsed] = useState<string | null>(null);
+  const [kept, setKept] = useState<boolean | null>(null);
   const [confirm, setConfirm] = useState(false);
   useEffect(() => {
     void navigator.storage?.estimate?.().then((e) => setUsed(e.usage ? size(e.usage) : null));
+    void storageKept().then(setKept);
   }, []);
   const saveAll = async () => {
     const { writeFolio, zipFiles, slugFilename } = await import('@folio/export');
     const courses = await allCourses();
     const files = courses.map((c) => ({ name: slugFilename(c.title, '', '', 'folio'), bytes: writeFolio(c) }));
-    download({ name: 'Folio courses.zip', mime: 'application/zip', bytes: zipFiles(files) });
+    download({ name: t.settings.backupAllName, mime: 'application/zip', bytes: zipFiles(files) });
   };
   return (
     <Section title={t.settings.data} lede={t.settings.dataLede}>
       {used && <p className="mb-4 font-ui text-13 text-ink-2">{t.settings.storage(used)}</p>}
+      {kept === false && <p className="mb-4 font-ui text-13 text-attention">{t.settings.notKept}</p>}
       <div className="flex flex-wrap gap-2">
         <Button onPress={() => void saveAll()}>{t.settings.exportAll}</Button>
         <Button variant="quiet" className="text-critical" onPress={() => setConfirm(true)}>

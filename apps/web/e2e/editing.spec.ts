@@ -15,7 +15,7 @@ test('edit in place, undo, and see the change in history', async ({ page }) => {
   await expect(page.getByText('Undone.')).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Centre and spread');
 
-  await page.getByRole('button', { name: /^To do & history\b/ }).click();
+  await page.getByRole('button', { name: /To do & history/ }).click();
   await expect(page.getByRole('dialog', { name: 'To do & history' }).getByText('Renamed lesson 3')).toBeVisible();
 });
 
@@ -82,7 +82,7 @@ test('rewording a summary leaves the lesson up to date; an objective puts its se
   await expect(page.getByRole('button', { name: /to do/ })).toHaveCount(0);
 
   await retype(page, 'Objective 1 of lesson 2', 'Read a histogram and describe its shape, centre and spread');
-  await page.getByRole('button', { name: 'To do & history, 6 to do' }).click();
+  await page.getByRole('button', { name: '6 to do, To do & history' }).click();
   const changes = page.getByRole('dialog', { name: 'To do & history' });
   await expect(changes.getByText('Because its objectives changed. These 6 were written from it:')).toHaveCount(1);
   await expect(changes.getByRole('button', { name: 'Update 6' })).toBeVisible();

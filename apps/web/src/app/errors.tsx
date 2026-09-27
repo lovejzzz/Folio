@@ -1,6 +1,6 @@
 import { Link, useParams, type ErrorComponentProps, type NotFoundRouteProps } from '@tanstack/react-router';
 import { Button } from '@folio/ui';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useT } from '../i18n';
 import { SimpleHeader } from '../components/AppHeader';
 import { usePageTitle } from './usePageTitle';
@@ -111,15 +111,20 @@ export function LessonNotFound() {
   return <InCourse title={t.errors.lessonNotFound} body={t.errors.lessonNotFoundHint} />;
 }
 
-export function RouteError({ reset }: ErrorComponentProps) {
+export function RouteError({ error, reset }: ErrorComponentProps) {
   const t = useT();
+  // The only log Folio writes: what went wrong, for whoever is helping the teacher.
+  useEffect(() => console.error(error), [error]);
   return (
     <Message
       title={t.errors.generic}
       action={
-        <Button variant="primary" onPress={reset}>
-          {t.common.retry}
-        </Button>
+        <span className="flex flex-wrap justify-center gap-2">
+          <Button variant="primary" onPress={reset}>
+            {t.common.retry}
+          </Button>
+          <Button onPress={() => window.location.assign('/library')}>{t.nav.library}</Button>
+        </span>
       }
     />
   );

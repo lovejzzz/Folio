@@ -22,7 +22,7 @@ function MaterialStates({ lesson }: { lesson: Lesson }) {
   return (
     <span className="mt-3 flex flex-wrap gap-1.5">
       {pending.map(({ kind, state }) => (
-        <span key={kind} className={cx('flex h-6 items-center gap-1 rounded-full bg-well px-2 font-ui text-12 text-ink-2', state === 'empty' && 'opacity-70')}>
+        <span key={kind} className={cx('flex h-6 items-center gap-1 rounded-full bg-well px-2 font-ui text-12 text-ink-2', state === 'empty' && 'border border-dashed border-rule-strong bg-transparent')}>
           <MaterialIcon kind={kind} size={14} />
           {t.materialOne[kind]}
           {state === 'attention' && <StatusMark kind="attention" label={t.map.attention} />}
@@ -99,8 +99,8 @@ export function MapScreen() {
   return (
     <div className="px-4 pb-24 pt-8 md:px-8 md:pt-10">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div className="min-w-0 max-w-3xl" lang={course.language}>
-          <h1 className="font-display text-36 leading-tight text-ink md:text-48 md:leading-none">{course.title}</h1>
+        <div className="min-w-0 max-w-3xl">
+          <h1 lang={course.language} className="font-display text-36 leading-tight text-ink md:text-48 md:leading-none">{course.title}</h1>
           <p className="mt-3 font-ui text-14 text-ink-2">
             {meta.map((part, i) => (
               <Fragment key={part}>

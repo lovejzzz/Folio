@@ -64,7 +64,7 @@ export function InlineNumber({ label, value, onChange, minValue, maxValue, fract
           }}
           onBlur={check}
           placeholder={placeholder}
-          className="field-sizing-content -ml-1 h-6 rounded-control bg-transparent px-1 tabular-nums outline-none transition-colors duration-120 hover:bg-well focus:bg-paper focus:ring-2 focus:ring-accent"
+          className="field-sizing-content -ml-1 h-6 min-w-6 rounded-control bg-transparent px-1 tabular-nums outline-none transition-colors duration-120 hover:bg-well focus:bg-paper focus:ring-2 focus:ring-accent"
         />
         {unit}
       </Group>

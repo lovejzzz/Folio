@@ -31,7 +31,7 @@ export function HomeworkPicker({ course, lesson, className = 'mb-5', underHeadin
           ))}
         </select>
       </label>
-      {kind !== 'none' && toward && <span lang={course.language}>{kind === 'step' ? t.homework.stepToward(toward) : t.homework.countsToward(toward)}</span>}
+      {kind !== 'none' && toward && <span>{kind === 'step' ? t.homework.stepToward('') : t.homework.countsToward('')}<span lang={course.language}>{toward}</span></span>}
     </div>
   );
 }

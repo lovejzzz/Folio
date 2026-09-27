@@ -1,6 +1,7 @@
 import { strFromU8, unzipSync } from 'fflate';
 
 const MAX_BYTES = 2 * 1024 * 1024;
+const MAX_UNPACKED = 20 * 1024 * 1024;
 
 export class FileReadError extends Error {
   constructor(readonly reason: 'size' | 'type') {
@@ -10,7 +11,8 @@ export class FileReadError extends Error {
 
 /** Plain text from a Word file: paragraphs from word/document.xml. */
 function docxText(bytes: Uint8Array): string {
-  const files = unzipSync(bytes, { filter: (f) => f.name === 'word/document.xml' });
+  // A 2 MB Word file can unpack to gigabytes if it was made to: read the text only when it's a sane size.
+  const files = unzipSync(bytes, { filter: (f) => f.name === 'word/document.xml' && f.originalSize < MAX_UNPACKED });
   const xml = files['word/document.xml'];
   if (!xml) throw new FileReadError('type');
   const doc = new DOMParser().parseFromString(strFromU8(xml), 'application/xml');

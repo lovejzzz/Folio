@@ -121,7 +121,8 @@ function Actions() {
             // A dot on a clock icon went unnoticed; the count in words says there is work waiting, and how much.
             <Button
               variant="quiet"
-              aria-label={`${t.changes.title}, ${t.changes.toReview(changes)}`}
+              aria-label={`${t.changes.toReview(changes)}, ${t.changes.title}`}
+              aria-expanded={drawer === 'changes'}
               onPress={() => toggleDrawer('changes')}
               className={cx('gap-1.5 bg-attention-tint px-2.5 text-ink data-hovered:bg-attention-tint data-hovered:text-ink', drawer === 'changes' && 'ring-1 ring-inset ring-attention/40')}
             >
@@ -129,17 +130,17 @@ function Actions() {
               <span className="tabular">{t.changes.toReview(changes)}</span>
             </Button>
           ) : (
-            <IconButton label={t.changes.title} active={drawer === 'changes'} onPress={() => toggleDrawer('changes')}>
+            <IconButton label={t.changes.title} active={drawer === 'changes'} aria-expanded={drawer === 'changes'} onPress={() => toggleDrawer('changes')}>
               <History size={18} strokeWidth={1.5} />
             </IconButton>
           )}
           <span className="hidden sm:contents">
             {/* Named: a bookmark icon alone didn't say that the teacher's own notes live here. */}
-            <Button variant="quiet" onPress={() => toggleDrawer('sources')} className={cx('gap-1.5 px-2.5', drawer === 'sources' && 'bg-well text-ink')}>
+            <Button variant="quiet" aria-expanded={drawer === 'sources'} onPress={() => toggleDrawer('sources')} className={cx('gap-1.5 px-2.5', drawer === 'sources' && 'bg-well text-ink')}>
               <BookMarked size={16} strokeWidth={1.75} aria-hidden />
               {t.sources.title}
             </Button>
-            <Button variant={drawer === 'export' ? 'primary' : 'secondary'} onPress={() => toggleDrawer('export')} className="ml-1">
+            <Button variant={drawer === 'export' ? 'primary' : 'secondary'} aria-expanded={drawer === 'export'} onPress={() => toggleDrawer('export')} className="ml-1">
               <Download size={16} strokeWidth={1.75} aria-hidden />
               {t.export.title}
             </Button>

@@ -12,7 +12,7 @@ test('on a phone the map is a list of lessons and the sheet fits the screen', as
   await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toBeVisible();
   await page.locator('#m-rubrics').scrollIntoViewIfNeeded();
   expect(await pageWidth()).toBeLessThanOrEqual(width);
-  await page.getByRole('button', { name: /^To do & history\b/ }).click();
+  await page.getByRole('button', { name: /To do & history/ }).click();
   await expect(page.getByRole('dialog', { name: 'To do & history' }).getByRole('button', { name: 'Close' })).toBeInViewport();
 });
 

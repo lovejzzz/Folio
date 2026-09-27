@@ -31,7 +31,7 @@ async function tour(page: Page, theme: string) {
   await shot(page, `${theme}-05-map-building`);
   await page.getByText(/Course ready/).waitFor({ timeout: 40_000 });
   await shot(page, `${theme}-06-map-ready`);
-  await page.getByRole('button', { name: /^To do & history\b/ }).click();
+  await page.getByRole('button', { name: /To do & history/ }).click();
   await shot(page, `${theme}-07-changes`);
   await page.getByRole('button', { name: 'Export', exact: true }).click();
   await shot(page, `${theme}-08-export`);
@@ -91,7 +91,7 @@ test('tour, phone', async ({ browser }) => {
   await shot(page, 'phone-map');
   await page.getByRole('link', { name: /Picturing a distribution/ }).click();
   await shot(page, 'phone-lesson');
-  await page.getByRole('button', { name: /^To do & history\b/ }).click();
+  await page.getByRole('button', { name: /To do & history/ }).click();
   await shot(page, 'phone-changes');
   await page.close();
 });

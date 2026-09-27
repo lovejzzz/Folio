@@ -51,7 +51,30 @@ async function writeHistory(write: HistoryWrite | undefined): Promise<void> {
   if (write.put.length) await db.history.bulkPut(write.put);
 }
 
+let askedToKeep = false;
+
+/**
+ * Ask the browser to keep Folio's storage. Without it storage is "best
+ * effort": Safari clears a site not visited for a week, and any browser may
+ * clear it when the disk is low, and the browser holds the only copy.
+ */
+export function keepStorage(): void {
+  if (askedToKeep || typeof navigator === 'undefined') return;
+  askedToKeep = true;
+  void navigator.storage?.persist?.().catch(() => false);
+}
+
+/** Whether the browser has promised to keep Folio's storage; null when it can't say. */
+export async function storageKept(): Promise<boolean | null> {
+  try {
+    return (await navigator.storage?.persisted?.()) ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function saveCourse(course: Course, history?: HistoryWrite): Promise<void> {
+  keepStorage();
   await db.transaction('rw', db.courses, db.history, async () => {
     await db.courses.put(rowOf(course));
     await writeHistory(history);

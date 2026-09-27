@@ -1,5 +1,5 @@
 import { strFromU8, strToU8, unzipSync, zipSync, type Unzipped, type Zippable } from 'fflate';
-import { CourseFormatError, parseCourse, type Course } from '@folio/core';
+import { CourseFormatError, isCourseFormatError, parseCourse, type Course } from '@folio/core';
 
 /**
  * A .folio file is a zip: course.json is the course itself, manifest.json
@@ -59,12 +59,30 @@ function looksLikeJson(bytes: Uint8Array): boolean {
   return false;
 }
 
+/**
+ * The largest backup Folio opens, and the largest a course inside it may
+ * unpack to. A real course with long sources is a few megabytes; a file that
+ * unpacks to gigabytes (a zip bomb) would freeze the tab.
+ */
+export const MAX_FOLIO_BYTES = 50 * 1024 * 1024;
+const MAX_UNPACKED_BYTES = 100 * 1024 * 1024;
+
 function unzip(bytes: Uint8Array): Unzipped {
   const isZip = bytes.length > 4 && bytes[0] === 0x50 && bytes[1] === 0x4b;
   if (!isZip) throw new CourseFormatError('notFolio', 'This is not a Folio course file.');
   try {
-    return unzipSync(bytes);
-  } catch {
+    let unpacked = 0;
+    // Only the two files a course is read from, and only while their sizes add up to something sane.
+    return unzipSync(bytes, {
+      filter: (f) => {
+        if (f.name !== 'manifest.json' && f.name !== 'course.json') return false;
+        unpacked += f.originalSize;
+        if (unpacked > MAX_UNPACKED_BYTES) throw new CourseFormatError('tooLarge', 'This Folio file is too large to open.');
+        return true;
+      },
+    });
+  } catch (error) {
+    if (isCourseFormatError(error)) throw error;
     throw new CourseFormatError('damagedFile', 'This Folio file is damaged and cannot be opened.');
   }
 }
@@ -81,6 +99,7 @@ function checkManifest(value: unknown): void {
  * Throws CourseFormatError with a code the interface words for the teacher.
  */
 export function readFolio(bytes: Uint8Array): Course {
+  if (bytes.length > MAX_FOLIO_BYTES) throw new CourseFormatError('tooLarge', 'This Folio file is too large to open.');
   if (looksLikeJson(bytes)) return parseCourse(parseJson(bytes, 'course'));
   const files = unzip(bytes);
   const manifest = files['manifest.json'];

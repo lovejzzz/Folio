@@ -36,7 +36,7 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   expect(model.calls.some((c) => c.messages[0]!.content.includes('Write one assignment'))).toBe(false);
 
   // Flagged items are listed in Changes and can be cleared.
-  await page.getByRole('button', { name: /^To do & history\b/ }).click();
+  await page.getByRole('button', { name: /To do & history/ }).click();
   const drawer = page.getByRole('dialog', { name: 'To do & history' });
   await expect(drawer.getByText('The answer is not one of the choices.').first()).toBeVisible();
   await drawer.getByRole('button', { name: 'It’s fine' }).first().click();

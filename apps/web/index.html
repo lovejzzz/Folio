@@ -14,6 +14,33 @@
         if (t && t.theme && t.theme !== 'system') document.documentElement.dataset.theme = t.theme;
         if (t && t.uiLanguage) document.documentElement.lang = t.uiLanguage;
       } catch (e) {}
+      // Folio needs Safari 16.4, Chrome 111 or Firefox 128 or newer. Older browsers can't parse its code and
+      // would show a blank page, so say so instead.
+      (function () {
+        var ok = true;
+        try {
+          new RegExp('(?<=a)b');
+          ok = !!(window.CSS && CSS.supports('color', 'color-mix(in srgb, red, blue)'));
+        } catch (e) {
+          ok = false;
+        }
+        if (ok) return;
+        document.addEventListener('DOMContentLoaded', function () {
+          var zh = (navigator.language || '').indexOf('zh') === 0;
+          var box = document.createElement('div');
+          box.style.cssText = 'max-width:34rem;margin:20vh auto;padding:0 1.5rem;font:17px/1.6 system-ui,sans-serif;color:#1E1C17';
+          var h = document.createElement('h1');
+          h.style.cssText = 'font-size:1.6rem;margin:0 0 .6rem';
+          h.textContent = zh ? '请更新你的浏览器' : 'Please update your browser';
+          var p = document.createElement('p');
+          p.textContent = zh
+            ? 'Folio 需要较新的浏览器：Safari 16.4、Chrome 111、Edge 111 或 Firefox 128 及以上版本。'
+            : 'Folio needs a recent browser: Safari 16.4, Chrome 111, Edge 111 or Firefox 128, or newer.';
+          box.appendChild(h);
+          box.appendChild(p);
+          document.body.replaceChildren(box);
+        });
+      })();
     </script>
   </head>
   <body>

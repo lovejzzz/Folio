@@ -21,7 +21,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByRole('link', { name: /Picturing a distribution/ }).first().click();
     await page.locator('#m-quiz').waitFor();
     await audit(page, 'lesson');
-    await page.getByRole('button', { name: /^To do & history\b/ }).click();
+    await page.getByRole('button', { name: /To do & history/ }).click();
     await audit(page, 'changes');
     await page.getByRole('button', { name: 'Export', exact: true }).click();
     await audit(page, 'export');
