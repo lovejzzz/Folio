@@ -85,6 +85,7 @@ Overall, about 47% of output tokens were thinking. `python3 scripts/token-report
 - **Focus: English courses.** The user doesn't need Chinese courses; test English scenarios only (the zh interface strings stay).
 - **Loop log** (one line per round):
   - Round 5, assist and zh interface: 33 calls, $0.044. Text actions came back blank on 4 of 8 calls, because "Return only the replacement text" fought DeepSeek's JSON mode. Reworded to 'Put only the replacement text in "text"': 0 blank in 12 tries. Missing question fields (choices, expression, source passage) now default instead of costing a repair.
+  - Round 6, vague brief ("teach my kids about money"): 33 calls, $0.069. Sensible KS2 course. Lesson 1's slides failed outright: a slide had six bullets, and the repair sent back the same slide. Slides with more than five bullets are now split into two ("… (continued)") locally.
 
 ## Next
 

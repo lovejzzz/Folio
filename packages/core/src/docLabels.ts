@@ -64,6 +64,7 @@ const en = {
   teacherCopy: 'Teacher copy',
   trueWord: 'True',
   falseWord: 'False',
+  continued: (title: string) => `${title} (continued)`,
   points: (n: number) => `${n} pts`,
   general: 'General',
 };
@@ -128,6 +129,7 @@ const zh: DocLabels = {
   teacherCopy: '教师版',
   trueWord: '正确',
   falseWord: '错误',
+  continued: (title: string) => `${title}（续）`,
   points: (n) => `${n} 分`,
   general: '通用',
 };

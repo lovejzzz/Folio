@@ -62,7 +62,8 @@ export const SlidesDraft = z.object({
       z.object({
         layout: z.enum(['title', 'bullets', 'question', 'quote']),
         title: line,
-        bullets: z.array(line).max(5),
+        // Five fit a slide; a few more are split over two slides rather than sent back.
+        bullets: z.array(line).max(10).describe('At most five'),
         notes: z.string().describe('Speaker notes for the teacher'),
       }),
     )

@@ -1,5 +1,5 @@
 import { docLabels, type Language } from '@folio/core';
-import type { AssignmentDraft, DiscussionsDraft, OutlineDraft, QuestionDraft } from './schemas';
+import type { AssignmentDraft, DiscussionsDraft, OutlineDraft, QuestionDraft, SlidesDraft } from './schemas';
 
 /**
  * Small, certain fixes made locally instead of by a repair call, which would
@@ -46,4 +46,25 @@ export function unquote(title: string): string {
 
 export function tidyOutline(v: OutlineDraft): OutlineDraft {
   return { ...v, title: unquote(v.title), lessons: v.lessons.map((l) => ({ ...l, title: unquote(l.title) })) };
+}
+
+export const BULLETS_PER_SLIDE = 5;
+
+/**
+ * A slide with more than five bullets becomes two, the second titled
+ * "(continued)", so nothing is lost and no slide is crowded. Asked again,
+ * a cheap model tends to send the same slide back.
+ */
+export function tidySlides(v: SlidesDraft, language: Language): SlidesDraft {
+  const { continued } = docLabels(language);
+  return {
+    slides: v.slides.flatMap((s) => {
+      if (s.bullets.length <= BULLETS_PER_SLIDE) return [s];
+      const half = Math.ceil(s.bullets.length / 2);
+      return [
+        { ...s, bullets: s.bullets.slice(0, half) },
+        { ...s, title: continued(s.title), bullets: s.bullets.slice(half), notes: '' },
+      ];
+    }),
+  };
 }

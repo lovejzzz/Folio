@@ -1,6 +1,6 @@
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
-import { tidyFollowUps, tidySteps, tidyTrueFalse } from './tidy';
+import { tidyFollowUps, tidySlides, tidySteps, tidyTrueFalse } from './tidy';
 import {
   checkMinutes,
   answerStandsOut,
@@ -92,6 +92,7 @@ const plan: SectionJob<PlanDraft> = {
 
 const slides: SectionJob<SlidesDraft> = {
   schema: SlidesDraft,
+  tidy: (v, course) => tidySlides(v, course.language),
   toCommands: (v, problems, _course, lesson) => [
     cmd('section.fill', {
       lessonId: lesson.id,

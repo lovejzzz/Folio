@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { tidyFollowUps, tidySteps, tidyTrueFalse, unquote } from '../src/tidy';
+import { tidyFollowUps, tidySlides, tidySteps, tidyTrueFalse, unquote } from '../src/tidy';
 import { QuestionDraft } from '../src/schemas';
 
 const tf = (answer: string, choices: string[] = []): QuestionDraft =>
@@ -55,5 +55,14 @@ describe('QuestionDraft', () => {
   it('reads a missing choices, expression or source passage as empty, not as an error', () => {
     const q = QuestionDraft.parse({ format: 'short', prompt: 'Why?', answer: 'Because.', explanation: 'It follows.', difficulty: 2, objective: 1 });
     expect(q).toMatchObject({ choices: [], expression: null, sourcePassage: null });
+  });
+});
+
+describe('tidySlides', () => {
+  it('splits a crowded slide in two and keeps every bullet', () => {
+    const crowded = { layout: 'bullets' as const, title: 'Needs and wants', bullets: ['a', 'b', 'c', 'd', 'e', 'f'], notes: 'Talk it through.' };
+    const v = tidySlides({ slides: [crowded] }, 'en');
+    expect(v.slides.map((s) => [s.title, s.bullets.join('')])).toEqual([['Needs and wants', 'abc'], ['Needs and wants (continued)', 'def']]);
+    expect(v.slides[1]!.notes).toBe('');
   });
 });
