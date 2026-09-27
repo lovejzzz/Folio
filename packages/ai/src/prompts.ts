@@ -5,7 +5,7 @@ import { SHAPE_LIMITS, lessonNumber, orderedLessons, statedObjectives, type Cour
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@3';
+export const PROMPT_VERSION = 'folio-prompts@4';
 
 const SOURCE_BUDGET = 12000;
 
@@ -21,6 +21,7 @@ export function systemPrompt(language: Language): string {
     'Write material a teacher could use tomorrow: specific to the subject, with real examples, real terms, real numbers and correct facts. Never write placeholders such as "Topic 1", "key concept" or "Session 1 topic"; name the actual content.',
     'Match the level of the students. Keep sentences short and concrete. Do not use emoji.',
     'If something in the brief is ambiguous, choose the most sensible specific interpretation and stay consistent with it.',
+    'Folio shows lesson numbers, the number of lessons, lesson lengths and quiz sizes itself, and teachers change them. Never write them into titles, bullets, speaker notes or summaries ("lesson 1 of 4", "6 minutes", "a 5-question quiz"); refer to another lesson by its title.',
     languageLine(language),
     'Reply with JSON that matches the provided schema and nothing else.',
   ].join('\n\n');

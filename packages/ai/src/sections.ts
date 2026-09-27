@@ -1,3 +1,4 @@
+import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
 import {
   checkMinutes,
@@ -236,7 +237,7 @@ export async function generateSection(
       check: job.check ? (v) => job.check!(v, course, lesson) : undefined,
       signal,
     });
-    return { commands: job.toCommands(result.value, result.problems, course, lesson), flagged: result.problems.length };
+    return { commands: job.toCommands(typesetDraft(result.value, course.language), result.problems, course, lesson), flagged: result.problems.length };
   };
   switch (kind) {
     case 'plan':
