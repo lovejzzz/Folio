@@ -18,3 +18,5 @@ export function useObjectiveDraft(lessonId: string) {
     },
   };
 }
+
+export type ObjectiveDraft = ReturnType<typeof useObjectiveDraft>;

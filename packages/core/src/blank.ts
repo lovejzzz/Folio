@@ -49,6 +49,7 @@ export function isBlankLesson(course: Course, lesson: Lesson): boolean {
     blank(lesson.title) &&
     blank(lesson.summary) &&
     lessonObjectives(course, lesson).every(isBlankObjective) &&
+    filledTexts(lesson.readings).length === 0 &&
     lesson.taskIds.length === 0 &&
     lesson.faqIds.length === 0 &&
     lesson.segments.length === 0 &&

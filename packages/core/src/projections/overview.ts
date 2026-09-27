@@ -1,4 +1,4 @@
-import { isBlankObjective, isBlankQuestion, statedObjectives } from '../blank';
+import { filledTexts, isBlankObjective, isBlankQuestion, statedObjectives } from '../blank';
 import { lessonAssignments, lessonDiscussions, lessonNumber, lessonQuestions, orderedObjectives } from '../course';
 import type { Block } from '../semantic';
 import { lessonsIn, nonEmpty, type Ctx } from './shared';
@@ -63,26 +63,53 @@ export function projectSyllabus(ctx: Ctx): Block[] {
   }
 
   blocks.push({ t: 'heading', level: 2, text: l.schedule });
+  const withReadings = lessons.some((lesson) => filledTexts(lesson.readings).length > 0);
   blocks.push({
     t: 'table',
-    head: ['#', l.lessons, l.focus],
-    widths: [8, 36, 56],
-    rows: lessons.map((lesson) => [
-      String(lessonNumber(course, lesson.id)),
-      lesson.title,
-      lesson.summary || statedObjectives(course, lesson)[0]?.text || '',
-    ]),
+    head: withReadings ? ['#', l.lessons, l.focus, l.reading] : ['#', l.lessons, l.focus],
+    widths: withReadings ? [6, 28, 38, 28] : [8, 36, 56],
+    rows: lessons.map((lesson) => {
+      const row = [String(lessonNumber(course, lesson.id)), lesson.title, lesson.summary || statedObjectives(course, lesson)[0]?.text || ''];
+      if (withReadings) row.push(filledTexts(lesson.readings).join('\n'));
+      return row;
+    }),
   });
 
+  const grading = gradingBlocks(ctx);
   const assessment = assessmentLines(ctx);
-  if (assessment.length) {
+  if (grading.length || assessment.length) {
     blocks.push({ t: 'heading', level: 2, text: l.assessment });
-    blocks.push({ t: 'list', ordered: false, items: assessment });
+    blocks.push(...grading);
+    if (assessment.length) blocks.push({ t: 'list', ordered: false, items: assessment });
   }
   if (nonEmpty(course.policies)) {
     blocks.push({ t: 'heading', level: 2, text: l.policies });
     for (const para of course.policies.split(/\n{2,}/)) blocks.push({ t: 'para', text: para.trim() });
   }
+  return blocks;
+}
+
+/** Grade weights may be fractional; show them without floating-point noise. */
+function percent(value: number): string {
+  return `${Math.round(value * 10) / 10}%`;
+}
+
+/** The grading scheme the teacher stated: one row per component, then the total. */
+function gradingBlocks(ctx: Ctx): Block[] {
+  const { course, l } = ctx;
+  const items = course.grading.filter((g) => nonEmpty(g.item));
+  if (!items.length) return [];
+  const total = Math.round(items.reduce((sum, g) => sum + g.weight, 0) * 10) / 10;
+  const blocks: Block[] = [
+    {
+      t: 'table',
+      head: [l.gradeItem, l.weight],
+      widths: [76, 24],
+      rows: [...items.map((g) => [g.item, percent(g.weight)]), [l.total, percent(total)]],
+    },
+  ];
+  // A gentle note in the teacher's copy only; students just see the total.
+  if (total !== 100 && ctx.teacher) blocks.push({ t: 'para', tone: 'muted', text: l.weightsOff(percent(total)) });
   return blocks;
 }
 

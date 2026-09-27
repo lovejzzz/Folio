@@ -50,6 +50,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   });
   for (const draft of outline.lessons) {
     const lesson = emptyLesson(newId('l'), draft.title, draft.summary);
+    lesson.readings = draft.readings.map((r) => r.trim()).filter(Boolean);
     for (const text of draft.objectives) {
       const id = newId('o');
       course.objectives[id] = { id, text };
@@ -58,6 +59,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
     course.lessons[lesson.id] = lesson;
     course.lessonOrder.push(lesson.id);
   }
+  course.grading = outline.grading.filter((g) => g.item.trim()).map((g) => ({ id: newId('g'), item: g.item.trim(), weight: g.weight }));
   for (const s of req.sources) {
     const source = createSource(s.title, s.text, 'file');
     course.sources[source.id] = source;

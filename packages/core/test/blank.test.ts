@@ -133,6 +133,8 @@ describe('blank items', () => {
     expect(isBlankCriterion({ id: 'x', name: '', descriptors: { a: '' } })).toBe(true);
     expect(isBlankCriterion({ id: 'x', name: '', descriptors: { a: 'Clear' } })).toBe(false);
     expect(isBlankLesson(store.getState(), lesson)).toBe(false);
-    expect(isBlankLesson(store.getState(), { ...lesson, title: '', summary: '', objectiveIds: [], segments: [], keyIdeas: [], vocabulary: [], slides: [], study: { overview: '', points: [] }, taskIds: [], faqIds: [], gen: {} })).toBe(true);
+    const empty = { ...lesson, title: '', summary: '', objectiveIds: [], readings: [''], segments: [], keyIdeas: [], vocabulary: [], slides: [], study: { overview: '', points: [] }, taskIds: [], faqIds: [], gen: {} };
+    expect(isBlankLesson(store.getState(), empty)).toBe(true);
+    expect(isBlankLesson(store.getState(), { ...empty, readings: ['Freedman, Statistics, ch. 1'] })).toBe(false);
   });
 });

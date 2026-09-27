@@ -7,6 +7,7 @@ import type {
   Course,
   CourseStatus,
   FaqEntry,
+  GradeItem,
   Language,
   Lesson,
   Objective,
@@ -28,7 +29,7 @@ import type {
 
 type Fields<T, K extends keyof T> = Partial<Pick<T, K>>;
 
-export type LessonFields = Fields<Lesson, 'title' | 'summary' | 'objectiveIds'>;
+export type LessonFields = Fields<Lesson, 'title' | 'summary' | 'objectiveIds' | 'readings'>;
 export type PlanFields = Fields<Lesson, 'segments' | 'keyIdeas' | 'vocabulary'>;
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 export type TaskFields = Partial<DistributiveOmit<Task, 'id' | 'kind' | 'lessonId'>>;
@@ -44,6 +45,7 @@ export type CommandMap = {
     title?: string;
     summary?: string;
     policies?: string;
+    grading?: GradeItem[];
     language?: Language;
     status?: CourseStatus;
     audience?: Partial<Course['audience']>;
@@ -128,6 +130,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     if (p.title !== undefined) draft.title = p.title;
     if (p.summary !== undefined) draft.summary = p.summary;
     if (p.policies !== undefined) draft.policies = p.policies;
+    if (p.grading !== undefined) draft.grading = p.grading.map((g) => ({ ...g }));
     if (p.language !== undefined) draft.language = p.language;
     if (p.status !== undefined) draft.status = p.status;
     if (p.audience) Object.assign(draft.audience, p.audience);
@@ -169,6 +172,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     if (p.title !== undefined) lesson.title = p.title;
     if (p.summary !== undefined) lesson.summary = p.summary;
     if (p.objectiveIds !== undefined) lesson.objectiveIds = [...p.objectiveIds];
+    if (p.readings !== undefined) lesson.readings = [...p.readings];
   },
   'lesson.remove': (draft, p) => {
     const lesson = lessonOf(draft, p.lessonId);

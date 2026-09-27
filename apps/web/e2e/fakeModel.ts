@@ -18,6 +18,9 @@ function quizSize(prompt: string): number {
   return Number(prompt.match(/Write exactly (\d+) quiz questions/)?.[1] ?? 3);
 }
 
+/** Readings for the first two lessons only, as a brief that names a textbook for part of a unit would give. */
+const READINGS = [['Campbell Biology, ch. 10.1: Photosynthesis in nature'], ['Campbell Biology, ch. 10.2–10.3', 'Handout: a chloroplast under the microscope']];
+
 function outline(prompt: string) {
   const n = Number(prompt.match(/Plan exactly (\d+) lessons/)?.[1] ?? 3);
   const titles = ['Light and leaves', 'Inside the chloroplast', 'The Calvin cycle', 'Limiting factors', 'Plants and people', 'Review and project'];
@@ -30,7 +33,13 @@ function outline(prompt: string) {
       title: titles[i % titles.length],
       summary: `What students learn about ${titles[i % titles.length]!.toLowerCase()}.`,
       objectives: [`Explain ${titles[i % titles.length]!.toLowerCase()}`, 'Use the word equation for photosynthesis'],
+      readings: READINGS[i] ?? [],
     })),
+    grading: [
+      { item: 'Lab notebook', weight: 30 },
+      { item: 'Weekly quizzes', weight: 20 },
+      { item: 'End-of-unit test', weight: 50 },
+    ],
   };
 }
 

@@ -11,6 +11,7 @@ import { SlidesEditor } from '../../materials/SlidesEditor';
 import { lessonEditors } from '../../materials/editors';
 import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
+import { AddGradeItem, GradingTable } from './GradingTable';
 
 function Outline({ course }: { course: Course }) {
   const t = useT();
@@ -57,23 +58,42 @@ function PerLesson({ course, kind }: { course: Course; kind: MaterialKind }) {
   );
 }
 
-function CourseWide({ course, kind }: { course: Course; kind: 'map' | 'syllabus' }) {
+/**
+ * The syllabus as a document, with the parts the teacher writes edited in
+ * place: the description, the grading scheme and the class policies. The
+ * rest is projected, exactly as it prints.
+ */
+function Syllabus({ course }: { course: Course }) {
   const t = useT();
-  const doc = project(course, kind, { audience: 'teacher' });
+  const l = docLabels(course.language);
+  const doc = project(course, 'syllabus', { audience: 'teacher' });
+  const blocks = doc.blocks.filter((b, i) => !(i === 0 && b.t === 'para'));
+  // Assessment and policies are drawn here instead, so they can be edited.
+  const cut = blocks.findIndex((b) => b.t === 'heading' && (b.text === l.assessment || b.text === l.policies));
+  const lines = cut < 0 ? undefined : blocks.slice(cut).find((b) => b.t === 'list');
+  const assessed = lines ? <DocView doc={{ ...doc, blocks: [lines] }} showTitle={false} /> : null;
   return (
     <>
-      {kind === 'syllabus' && (
-        <EditableText as="p" multiline value={course.summary} label={t.plan.summary} className="mb-2 block text-18 leading-8 text-ink-2" onCommit={(summary) => edit([cmd('course.update', { summary })], { key: 'editedCourse' })} />
-      )}
-      <DocView doc={{ ...doc, blocks: kind === 'syllabus' ? doc.blocks.filter((b, i) => !(i === 0 && b.t === 'para')) : doc.blocks }} showTitle={false} />
-      {kind === 'syllabus' && (
-        <section className="mt-10">
-          <h3 className="mb-3 text-22 font-semibold">{t.tasks.policies}</h3>
-          <EditableText as="div" multiline value={course.policies} label={t.tasks.policies} placeholder={t.tasks.policiesPlaceholder} className="block min-h-12" onCommit={(policies) => edit([cmd('course.update', { policies })], { key: 'editedCourse' })} />
-        </section>
-      )}
+      <EditableText as="p" multiline value={course.summary} label={t.plan.summary} className="mb-2 block text-18 leading-8 text-ink-2" onCommit={(summary) => edit([cmd('course.update', { summary })], { key: 'editedCourse' })} />
+      <DocView doc={{ ...doc, blocks: cut < 0 ? blocks : blocks.slice(0, cut) }} showTitle={false} />
+      <section className="mt-10">
+        <h3 className="mb-3 text-22 font-semibold leading-8">{l.assessment}</h3>
+        {course.grading.length > 0 && <GradingTable course={course} />}
+        {course.grading.length > 0 && <AddGradeItem course={course} />}
+        {assessed}
+        {course.grading.length === 0 && <AddGradeItem course={course} />}
+      </section>
+      <section className="mt-10">
+        <h3 className="mb-3 text-22 font-semibold">{t.tasks.policies}</h3>
+        <EditableText as="div" multiline value={course.policies} label={t.tasks.policies} placeholder={t.tasks.policiesPlaceholder} className="block min-h-12" onCommit={(policies) => edit([cmd('course.update', { policies })], { key: 'editedCourse' })} />
+      </section>
     </>
   );
+}
+
+function CourseWide({ course, kind }: { course: Course; kind: 'map' | 'syllabus' }) {
+  if (kind === 'syllabus') return <Syllabus course={course} />;
+  return <DocView doc={project(course, kind, { audience: 'teacher' })} showTitle={false} />;
 }
 
 /** One material across every lesson, as a continuous document ready to print. */

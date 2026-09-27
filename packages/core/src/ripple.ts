@@ -11,15 +11,15 @@ import type { Basis, Course, Lesson } from './schema';
  * updates it or chooses to keep it. Nothing is ever rewritten silently.
  */
 
-export type BasisKey = 'lesson' | 'objectives' | 'minutes' | 'quizSize' | 'audience' | 'plan' | 'sources';
+export type BasisKey = 'lesson' | 'readings' | 'objectives' | 'minutes' | 'quizSize' | 'audience' | 'plan' | 'sources';
 
 const DEPENDENCIES: Record<GeneratedKind, readonly BasisKey[]> = {
-  plan: ['lesson', 'objectives', 'minutes', 'audience', 'sources'],
+  plan: ['lesson', 'readings', 'objectives', 'minutes', 'audience', 'sources'],
   slides: ['lesson', 'objectives', 'audience', 'plan'],
   study: ['lesson', 'objectives', 'audience', 'plan'],
   quiz: ['lesson', 'objectives', 'quizSize', 'audience', 'sources'],
   assignments: ['lesson', 'objectives', 'audience'],
-  discussions: ['lesson', 'objectives', 'audience'],
+  discussions: ['lesson', 'readings', 'objectives', 'audience'],
   faq: ['lesson', 'audience'],
 };
 
@@ -31,6 +31,10 @@ function inputHash(course: Course, lesson: Lesson, key: BasisKey): string {
   switch (key) {
     case 'lesson':
       return hashValue([lesson.title, lesson.summary]);
+    case 'readings':
+      // Only the plan and discussions build on the reading. A section stamped before readings existed has no
+      // 'readings' in its basis, so it stays up to date until it is next built.
+      return hashValue(filledTexts(lesson.readings));
     case 'objectives':
       // A blank objective is still being written: it changes nothing until it has text.
       return hashValue(statedObjectives(course, lesson).map((o) => o.text));

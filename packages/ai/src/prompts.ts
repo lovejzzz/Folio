@@ -1,4 +1,4 @@
-import { SHAPE_LIMITS, lessonNumber, orderedLessons, statedObjectives, type Course, type Language, type Lesson } from '@folio/core';
+import { SHAPE_LIMITS, filledTexts, lessonNumber, orderedLessons, statedObjectives, type Course, type Language, type Lesson } from '@folio/core';
 import type { Effort } from './inference';
 
 /**
@@ -6,7 +6,7 @@ import type { Effort } from './inference';
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@8';
+export const PROMPT_VERSION = 'folio-prompts@9';
 
 const SOURCE_BUDGET = 12000;
 
@@ -48,6 +48,8 @@ export function outlinePrompt(input: OutlineInput): string {
     `Plan exactly ${input.lessonCount} lessons of ${input.minutesPerLesson} minutes each${input.level ? ` for ${input.level}` : ''}.`,
     'Order the lessons so each builds on the last. Give each lesson a short title that names what is taught, a one-sentence summary of under 25 words, and one to three measurable objectives of under 15 words each.',
     'Do not mention the lesson length, the number of quiz questions or which materials a lesson has: Folio keeps those as settings the teacher can change, so they must not be repeated in the text.',
+    'Under "readings", list what students read before each lesson, taken from the brief or the attached sources. When the brief names a textbook but not its chapters, name the chapter that matches the lesson, by its topic if you are unsure of the number. Never invent works, authors or page numbers; leave the readings empty when the brief gives nothing to go on.',
+    'Under "grading", give only the graded components and weights the brief states, with the weights summing to 100. Leave it empty if the brief does not say how the course is graded.',
   ];
   if (input.sources.length) {
     const each = Math.floor(SOURCE_BUDGET / input.sources.length);
@@ -111,7 +113,16 @@ export function lessonContext(course: Course, lesson: Lesson): string {
   const objectives = statedObjectives(course, lesson)
     .map((o, i) => `${i + 1}. ${o.text}`)
     .join('\n');
-  return [`This is lesson ${n}: "${lesson.title}". ${lesson.summary}`, objectives ? `Its objectives:\n${objectives}` : ''].filter(Boolean).join('\n\n');
+  const readings = filledTexts(lesson.readings)
+    .map((r) => `- ${r}`)
+    .join('\n');
+  return [
+    `This is lesson ${n}: "${lesson.title}". ${lesson.summary}`,
+    objectives ? `Its objectives:\n${objectives}` : '',
+    readings ? `Students read before this lesson:\n${readings}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n\n');
 }
 
 function planSummary(lesson: Lesson): string {

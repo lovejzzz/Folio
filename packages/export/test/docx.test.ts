@@ -39,6 +39,23 @@ describe('renderDocx', () => {
     expect(xml).toMatch(/Slide 1 · /);
   });
 
+  it('sets out the syllabus reading column and the grading table', async () => {
+    const c: Course = structuredClone(course);
+    const first = c.lessons[c.lessonOrder[0]!]!;
+    first.readings = ['Freedman, Statistics, ch. 1', 'A news article of your choice'];
+    c.grading = [
+      { id: 'g1', item: 'Problem sets', weight: 30 },
+      { id: 'g2', item: 'Final exam', weight: 70 },
+    ];
+    const xml = await documentXml(c, ['syllabus'], 'student');
+    for (const text of ['Reading', 'Freedman, Statistics, ch. 1', 'A news article of your choice', 'Component', 'Weight', 'Problem sets', '30%', 'Total', '100%']) {
+      expect(xml).toContain(`>${text}</w:t>`);
+    }
+    // The grading table is two columns, the component about three times as wide as its weight.
+    const pairs = [...xml.matchAll(/<w:tblGrid><w:gridCol w:w="(\d+)"\/><w:gridCol w:w="(\d+)"\/><\/w:tblGrid>/g)].map((m) => Number(m[1]) / Number(m[2]));
+    expect(pairs.some((ratio) => Math.abs(ratio - 76 / 24) < 0.01)).toBe(true);
+  });
+
   it('writes the course title into the document properties', async () => {
     const bytes = await renderDocx([project(course, 'map', { audience: 'student' })], { courseTitle: course.title });
     expect(unzipText(bytes).text('docProps/core.xml')).toContain(course.title);
