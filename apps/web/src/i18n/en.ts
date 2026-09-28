@@ -123,9 +123,9 @@ export const en = {
     continue: 'Continue',
     tryLabel: 'Try',
     examples: [
-      'Photosynthesis for year 7, three lessons',
+      'Photosynthesis for grade 7, three lessons',
       'The French Revolution, six lessons for grade 10',
-      '唐诗入门，四节课，初中二年级',
+      'Solving linear equations for grade 9, four lessons',
     ],
     sample: 'Or open the sample course',
     recent: 'Recent courses',

@@ -109,7 +109,7 @@ export const zh: Messages = {
     dropHere: '把大纲或讲义拖到这里',
     continue: '继续',
     tryLabel: '试试',
-    examples: ['唐诗入门，四节课，初中二年级', '七年级光合作用，三节课', 'The French Revolution, six lessons for grade 10'],
+    examples: ['Photosynthesis for grade 7, three lessons', 'The French Revolution, six lessons for grade 10', 'Solving linear equations for grade 9, four lessons'],
     sample: '或者打开示例课程',
     recent: '最近的课程',
     seeAll: '全部',
