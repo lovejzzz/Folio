@@ -38,6 +38,12 @@ const settingsRoute = createRoute({
   component: lazyRouteComponent(() => import('../screens/settings/Settings'), 'Settings'),
 });
 
+const privacyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/privacy',
+  component: lazyRouteComponent(() => import('../screens/privacy/Privacy'), 'Privacy'),
+});
+
 export const courseRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/c/$courseId',
@@ -136,6 +142,7 @@ const routeTree = rootRoute.addChildren([
   newRoute,
   libraryRoute,
   settingsRoute,
+  privacyRoute,
   printRoute,
   courseRoute.addChildren([courseIndexRoute, planRoute, mapRoute, lessonRoute, materialRoute]),
 ]);

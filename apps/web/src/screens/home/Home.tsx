@@ -1,4 +1,4 @@
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { lazy, Suspense } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
@@ -60,7 +60,12 @@ export function Home() {
           <RecentCourses />
         </Suspense>
       </main>
-      <footer className="no-print pb-10 text-center font-display text-18 italic text-ink-2">{t.tagline}</footer>
+      <footer className="no-print flex flex-col items-center gap-3 pb-10 text-center">
+        <p className="font-display text-18 italic text-ink-2">{t.tagline}</p>
+        <Link to="/privacy" className="rounded-control px-1 font-ui text-13 text-ink-3 underline-offset-4 outline-none hover:text-ink-2 hover:underline focus-visible:ring-2 focus-visible:ring-accent">
+          {t.privacy.link}
+        </Link>
+      </footer>
     </div>
   );
 }

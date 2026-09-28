@@ -717,6 +717,38 @@ export const en = {
     offline: 'You’re offline. Reading and editing still work; writing and updates need a connection.',
     offlineAction: 'You’re offline. Connect to the internet, then try again.',
   },
+  privacy: {
+    title: 'Privacy',
+    link: 'Privacy',
+    updated: 'Last updated 27 September 2026',
+    lede: 'Folio has no accounts and no server of its own. Your courses stay in your browser.',
+    sections: [
+      {
+        heading: 'What stays on your device',
+        body: 'Your courses, drafts, attached files and settings are stored in this browser. We can’t see them. Clearing your browser data removes them, so save a backup file from the Library if you want a copy.',
+      },
+      {
+        heading: 'Your AI key',
+        body: 'The key you enter is kept only in this browser. When Folio writes, your browser sends your course description, the files you attach and the key straight to the AI company you chose (Anthropic, OpenAI, Google or DeepSeek), or to a model on your own computer. That company’s privacy policy covers the request. Folio never receives it.',
+      },
+      {
+        heading: 'Google Drive',
+        body: 'If you export to Google Docs, Google asks you to let Folio create files in your Drive. Folio asks only for the drive.file permission, so it can see and change only the files it creates for you, never the rest of your Drive. Your browser uses that permission to upload the document; Folio keeps no copy and doesn’t store your sign-in. You can remove access at any time in your Google Account.',
+      },
+      {
+        heading: 'Google API data',
+        body: 'Folio’s use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements.',
+      },
+      {
+        heading: 'What we don’t do',
+        body: 'No ads, no tracking, no analytics cookies. Nothing is sold or shared. The site is served by Cloudflare, which handles requests the way any web host does.',
+      },
+      {
+        heading: 'Questions',
+        body: 'Write to xingpicture@gmail.com.',
+      },
+    ],
+  },
   toast: {
     undone: 'Undone.',
     redone: 'Redone.',

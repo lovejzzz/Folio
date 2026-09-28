@@ -691,6 +691,38 @@ export const zh: Messages = {
     offline: '你已离线。阅读和编辑仍然可用；生成和更新内容需要联网。',
     offlineAction: '你已离线。请联网后再试。',
   },
+  privacy: {
+    title: '隐私政策',
+    link: '隐私政策',
+    updated: '最后更新：2026 年 9 月 27 日',
+    lede: 'Folio 没有账户，也没有自己的服务器。你的课程只保存在你的浏览器里。',
+    sections: [
+      {
+        heading: '保存在你设备上的内容',
+        body: '你的课程、草稿、添加的文件和设置都保存在这个浏览器里，我们看不到。清除浏览器数据会把它们一并删除，如需留存，请在课程库里保存备份文件。',
+      },
+      {
+        heading: '你的 AI 密钥',
+        body: '你填写的密钥只保存在这个浏览器里。Folio 生成内容时，由你的浏览器把课程描述、添加的文件和密钥直接发给你选择的 AI 公司（Anthropic、OpenAI、Google 或 DeepSeek），或发给你电脑上运行的模型。这些请求适用该公司的隐私政策，Folio 不会收到它们。',
+      },
+      {
+        heading: 'Google 云端硬盘',
+        body: '导出到 Google 文档时，Google 会请你允许 Folio 在你的云端硬盘里创建文件。Folio 只申请 drive.file 权限，只能查看和修改它为你创建的文件，看不到云端硬盘里的其他内容。你的浏览器用这项权限上传文档；Folio 不保留副本，也不保存你的登录状态。你可以随时在 Google 账号设置里撤销授权。',
+      },
+      {
+        heading: 'Google API 数据',
+        body: 'Folio 对通过 Google API 获得的信息的使用和传输，遵守 Google API 服务用户数据政策，包括其中的“有限使用”要求。',
+      },
+      {
+        heading: '我们不做的事',
+        body: '没有广告，没有跟踪，没有统计类 Cookie，不出售也不分享任何信息。网站由 Cloudflare 托管，它像其他网站托管服务一样处理访问请求。',
+      },
+      {
+        heading: '联系我们',
+        body: '请写信到 xingpicture@gmail.com。',
+      },
+    ],
+  },
   toast: {
     undone: '已撤销。',
     redone: '已重做。',
