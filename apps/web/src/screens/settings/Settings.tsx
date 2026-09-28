@@ -1,6 +1,6 @@
 import { isConfigured, type ProviderId } from '@folio/ai';
 import { Button, Dialog, SegmentedControl } from '@folio/ui';
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
@@ -138,7 +138,10 @@ function DataSection() {
         </Button>
       </div>
       <p className="mt-6 font-ui text-13 text-ink-2">{t.settings.accountNote}</p>
-      <p className="mt-2 font-ui text-13">
+      <p className="mt-2 flex flex-wrap gap-x-5 font-ui text-13">
+        <Link to="/privacy" className="text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">
+          {t.privacy.title}
+        </Link>
         <a href="/fonts-licence.txt" className="text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">
           {t.settings.fontsLicence}
         </a>

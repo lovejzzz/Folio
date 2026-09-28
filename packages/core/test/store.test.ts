@@ -24,6 +24,17 @@ describe('CourseStore', () => {
     expect(store.getState().lessons[ids[0]!]!.title).toBe('Renamed');
   });
 
+  it('marks every change uniquely, so two copies changed at the same moment still differ', () => {
+    const { store, ids } = courseWithLessons(1);
+    const first = new CourseStore(store.getState());
+    const second = new CourseStore(store.getState());
+    first.apply([cmd('lesson.update', { lessonId: ids[0]!, title: 'From one' })], { label: { key: 't' }, source: 'teacher' });
+    second.apply([cmd('lesson.update', { lessonId: ids[0]!, title: 'From two' })], { label: { key: 't' }, source: 'teacher' });
+    expect(first.getState().revision).toBe(second.getState().revision);
+    expect(first.getState().stamp).toBeTruthy();
+    expect(first.getState().stamp).not.toBe(second.getState().stamp);
+  });
+
   it('undoes and redoes', () => {
     const { store, ids } = courseWithLessons(1);
     store.apply([cmd('lesson.update', { lessonId: ids[0]!, title: 'New' })], { label: { key: 't' }, source: 'teacher' });

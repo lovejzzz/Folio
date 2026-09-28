@@ -323,3 +323,14 @@
 .font-display:lang(zh) {
   font-feature-settings: 'halt';
 }
+
+/*
+ * On a phone or tablet, iOS zooms the page into any field whose text is smaller than 16px, and leaves it zoomed.
+ * Fields keep their size everywhere else; ones already set at 16px or larger are left alone.
+ */
+@media (pointer: coarse) {
+  :is(input:not([type='checkbox'], [type='radio'], [type='range']), select, textarea):not(.text-16, .text-17, .text-18, .text-22, .text-28, .text-36, .text-48, .text-64),
+  [contenteditable='true']:is(.text-12, .text-13, .text-14) {
+    font-size: 16px;
+  }
+}

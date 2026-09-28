@@ -39,15 +39,16 @@ test('a second tab follows edits, and edits made at once in two tabs are never s
   await title.blur();
   await expect(other.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Spread');
 
-  // Both tabs edit before either save lands: one of them pauses and asks.
-  const edit = async (p: typeof page, name: string, text: string) => {
-    const field = p.getByRole('textbox', { name });
-    await field.click();
+  // Both tabs are mid-edit when the first save lands: one of them pauses and asks. Both edits are typed before
+  // either is committed, so the overlap doesn't depend on how fast a busy machine runs each tab.
+  const start = async (p: typeof page, name: string, text: string) => {
+    await p.getByRole('textbox', { name }).click();
     await p.keyboard.press('ControlOrMeta+A');
     await p.keyboard.type(text);
-    await field.blur();
   };
-  await Promise.all([edit(page, 'Title of lesson 3', 'From tab one'), edit(other, 'Summary of lesson 3', 'From tab two')]);
+  await start(page, 'Title of lesson 3', 'From tab one');
+  await start(other, 'Summary of lesson 3', 'From tab two');
+  await Promise.all([page.getByRole('textbox', { name: 'Title of lesson 3' }).blur(), other.getByRole('textbox', { name: 'Summary of lesson 3' }).blur()]);
   const banners = [page, other].map((p) => p.getByRole('alert').filter({ hasText: 'changed in another tab' }));
   await expect.poll(async () => (await banners[0]!.count()) + (await banners[1]!.count())).toBe(1);
   const paused = (await banners[0]!.count()) ? page : other;

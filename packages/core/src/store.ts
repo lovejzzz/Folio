@@ -259,7 +259,7 @@ export class CourseStore {
 
   /** Revision and timestamp change outside the recorded patches so they never cause conflicts. */
   private commit(next: Course): void {
-    this.state = { ...next, revision: next.revision + 1, updatedAt: new Date().toISOString() };
+    this.state = { ...next, revision: next.revision + 1, updatedAt: new Date().toISOString(), stamp: newId('x') };
   }
 
   private emit(): void {

@@ -250,6 +250,11 @@ export const CourseSchema = z.object({
   id,
   schemaVersion: z.literal(SCHEMA_VERSION),
   revision: z.number().int().min(0),
+  /**
+   * A fresh random mark on every change. Two tabs can each make their first change in the same millisecond,
+   * which gives them the same revision and timestamp; the mark still tells their copies apart.
+   */
+  stamp: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   status: CourseStatusSchema,

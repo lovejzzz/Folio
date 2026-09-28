@@ -7,6 +7,13 @@ import { usePrefs } from '../state/prefs';
 
 type Listing = { state: 'waiting' } | { state: 'loading' } | { state: 'ready'; models: ModelOption[] } | { state: 'failed' };
 
+/** A provider that hasn't answered by now isn't going to: offer the typed field instead of loading forever. */
+const LIST_TIMEOUT = 10_000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([promise, new Promise<T>((_, reject) => setTimeout(() => reject(new Error('Listing models timed out.')), ms))]);
+}
+
 /** One listing per provider and key, so switching back and forth doesn't ask again. */
 const cache = new Map<string, Promise<ModelOption[]>>();
 
@@ -25,7 +32,7 @@ function useModelList(provider: ProviderId): Listing {
     const timer = setTimeout(() => {
       let request = cache.get(key);
       if (!request) {
-        request = listModels({ provider, apiKey, baseUrl });
+        request = withTimeout(listModels({ provider, apiKey, baseUrl }), LIST_TIMEOUT);
         cache.set(key, request);
         request.catch(() => cache.delete(key));
       }

@@ -89,7 +89,7 @@ export class SaveConflictError extends Error {
 }
 
 /** Identifies one saved state of a course. Revisions alone repeat when two tabs edit from the same start. */
-export const versionOf = (course: Pick<Course, 'revision' | 'updatedAt'>): string => `${course.revision}@${course.updatedAt}`;
+export const versionOf = (course: Pick<Course, 'revision' | 'updatedAt' | 'stamp'>): string => `${course.revision}@${course.updatedAt}${course.stamp ? `#${course.stamp}` : ''}`;
 
 /** Save only if the stored copy is still the one this tab last saved or loaded. */
 export async function saveCourseIfUnchanged(course: Course, expected: string, history?: HistoryWrite): Promise<void> {
