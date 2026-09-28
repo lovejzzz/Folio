@@ -717,6 +717,7 @@ export const en = {
     openMap: 'Open the overview',
     goHome: 'Go to the home page',
     generic: 'Something went wrong. Reload the page; your work is saved.',
+    storageBlocked: 'This browser isn’t letting Folio save anything, so courses can’t be kept. This usually happens in a private window, or when a setting blocks site data. Open Folio in a regular window, or allow site data for folio.university.',
     saveFailed: 'Changes couldn’t be saved. Save a backup file from the Library, then reload the page.',
     offline: 'You’re offline. Reading and editing still work; writing and updates need a connection.',
     offlineAction: 'You’re offline. Connect to the internet, then try again.',

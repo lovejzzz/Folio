@@ -1,6 +1,7 @@
 import { Outlet } from '@tanstack/react-router';
 import { lazy, Suspense, useEffect } from 'react';
 import { I18nProvider } from 'react-aria-components';
+import { StorageBlocked } from '../components/StorageBlocked';
 import { Toaster } from '../components/Toaster';
 import { useT } from '../i18n';
 import { applyTheme, usePrefs } from '../state/prefs';
@@ -42,6 +43,7 @@ export function RootLayout() {
       >
         {t.nav.skip}
       </a>
+      <StorageBlocked />
       <Outlet />
       <Toaster />
       {connecting && (

@@ -30,6 +30,16 @@ class FolioDb extends Dexie {
 
 export const db = new FolioDb();
 
+/** Whether this browser lets Folio store anything. Private windows and some settings block it outright. */
+export async function storageWorks(): Promise<boolean> {
+  try {
+    await db.open();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function rowOf(course: Course): CourseRow {
   return {
     id: course.id,

@@ -58,3 +58,24 @@ test('a second tab follows edits, and edits made at once in two tabs are never s
   const kept = paused === page ? ['Title of lesson 3', 'From tab one'] : ['Summary of lesson 3', 'From tab two'];
   await expect(paused.getByRole('textbox', { name: kept[0]! })).toHaveText(kept[1]!);
 });
+
+test('a browser that blocks storage is told why nothing can be saved', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'indexedDB', {
+      get() {
+        throw new DOMException('The user denied permission to access the database.', 'SecurityError');
+      },
+    });
+  });
+  await page.goto('/');
+  await expect(page.getByRole('alert').filter({ hasText: 'isn’t letting Folio save anything' })).toBeVisible();
+  await page.goto('/settings');
+  await expect(page.getByRole('alert').filter({ hasText: 'isn’t letting Folio save anything' })).toBeVisible();
+});
+
+test('a browser that keeps storage shows no such warning', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'What do you want to teach?' })).toBeVisible();
+  await page.waitForTimeout(500);
+  await expect(page.getByRole('alert').filter({ hasText: 'isn’t letting Folio save anything' })).toHaveCount(0);
+});
