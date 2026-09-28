@@ -19,8 +19,8 @@ test('⌘Z undoes a material ticked off with its checkbox', async ({ page }) => 
 
 test('undo history survives a reload and a switch to another course', async ({ page }) => {
   await openSample(page);
-  await page.getByRole('link', { name: /Centre and spread/ }).first().click();
-  await retype(page, 'Title of lesson 3', 'Measures of centre');
+  await page.getByRole('link', { name: /Center and spread/ }).first().click();
+  await retype(page, 'Title of lesson 3', 'Measures of center');
   await retype(page, 'Summary of lesson 3', 'Mean, median and how spread out the data are.');
   await page.reload();
 
@@ -39,16 +39,16 @@ test('undo history survives a reload and a switch to another course', async ({ p
   // Away to the library and back into the course: still there.
   await page.goto('/library');
   await page.getByRole('link', { name: /Reading the world with data/ }).first().click();
-  await page.getByRole('link', { name: /Measures of centre/ }).first().click();
+  await page.getByRole('link', { name: /Measures of center/ }).first().click();
   await page.getByRole('button', { name: /To do & history/ }).click();
   await expect(renamed).toBeVisible();
   await renamed.getByRole('button', { name: 'Undo' }).click();
-  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Centre and spread');
+  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Center and spread');
 });
 
 test('an entry that can no longer be undone says why', async ({ page }) => {
   await openSample(page);
-  await page.getByRole('link', { name: /Centre and spread/ }).first().click();
+  await page.getByRole('link', { name: /Center and spread/ }).first().click();
   await retype(page, 'Title of lesson 3', 'First try');
   await retype(page, 'Title of lesson 3', 'Second try');
   await page.getByRole('button', { name: /To do & history/ }).click();

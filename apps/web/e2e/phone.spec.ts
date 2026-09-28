@@ -8,7 +8,7 @@ test('on a phone the map is a list of lessons and the sheet fits the screen', as
   expect(await pageWidth()).toBeLessThanOrEqual(width);
   await page.getByRole('button', { name: 'Or open the sample course' }).click();
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
-  await page.getByRole('link', { name: /Centre and spread/ }).click();
+  await page.getByRole('link', { name: /Center and spread/ }).click();
   await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toBeVisible();
   await page.locator('#m-rubrics').scrollIntoViewIfNeeded();
   expect(await pageWidth()).toBeLessThanOrEqual(width);
@@ -71,7 +71,7 @@ test('on a phone a stacked rubric can lose a criterion and change what a level i
   await page.goto('/');
   await page.getByRole('button', { name: 'Or open the sample course' }).click();
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
-  await page.getByRole('link', { name: /Centre and spread/ }).click();
+  await page.getByRole('link', { name: /Center and spread/ }).click();
   const rubric = page.locator('#m-rubrics');
   await rubric.scrollIntoViewIfNeeded();
   const names = rubric.getByRole('textbox', { name: /^Criterion \d$/ });

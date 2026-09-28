@@ -28,7 +28,7 @@ describe('export error messages', () => {
     for (const code of codes) {
       expect(exportErrorMessage(new GoogleUploadError(code, 'popup_closed_by_user'), en)).toBe(en.export.errors[code]);
     }
-    expect(exportErrorMessage(new GoogleUploadError('googleCancelled', 'popup_closed_by_user'), en)).toBe('Google sign-in was cancelled, so nothing was uploaded.');
+    expect(exportErrorMessage(new GoogleUploadError('googleCancelled', 'popup_closed_by_user'), en)).toBe('Google sign-in was canceled, so nothing was uploaded.');
   });
 
   it('fall back to one plain sentence for anything unexpected', () => {

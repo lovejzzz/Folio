@@ -10,7 +10,7 @@ export function sampleCourse(): Course {
   return buildCourse({
     title: 'Reading the world with data',
     summary:
-      'A four-lesson introduction to statistics. Students learn to ask questions that data can answer, picture distributions, summarise them with centre and spread, and judge whether a sample can be trusted.',
+      'A four-lesson introduction to statistics. Students learn to ask questions that data can answer, picture distributions, summarize them with center and spread, and judge whether a sample can be trusted.',
     brief: 'A 4-lesson introductory statistics unit for grade 11, 50 minutes per lesson.',
     language: 'en',
     level: 'Grade 11',

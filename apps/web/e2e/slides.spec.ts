@@ -14,8 +14,8 @@ test('a slide in the lesson view opens that slide, and ← → step through the 
   await page.keyboard.press('ArrowRight');
   await expect(title).toHaveText('Describe with SOCS');
   await page.keyboard.press('ArrowRight');
-  await expect(title).toHaveText('Centre and spread');
-  await expect(filmstrip.getByRole('button', { name: 'Slide 1 of 5: Centre and spread' })).toBeInViewport();
+  await expect(title).toHaveText('Center and spread');
+  await expect(filmstrip.getByRole('button', { name: 'Slide 1 of 5: Center and spread' })).toBeInViewport();
   await page.keyboard.press('ArrowLeft');
   await expect(title).toHaveText('Describe with SOCS');
 

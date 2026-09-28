@@ -17,7 +17,7 @@ export const statisticsLessonsA: LessonSpec[] = [
     segments: [
       ['warmup', 'Two questions on the board', 5, 'Students vote: "How tall is our teacher?" or "How tall are students in our school?" Which one needs data from many people?', 'Keep the vote quick. The second question is the one that expects variation; name that feeling before defining it.'],
       ['teach', 'What makes a question statistical', 12, 'Define a statistical question as one that anticipates variability. Work through four examples together and sort them.', 'Common slip: "How many pets do I have?" is not statistical, but "How many pets do students in this class have?" is.'],
-      ['practice', 'Cases and variables', 15, 'Pairs look at a small table of 8 students (grade, commute mode, minutes to school, favourite subject) and label each column.', 'Push pairs to say why "grade" can be treated as categorical here even though it is written as a number.'],
+      ['practice', 'Cases and variables', 15, 'Pairs look at a small table of 8 students (grade, commute mode, minutes to school, favorite subject) and label each column.', 'Push pairs to say why "grade" can be treated as categorical here even though it is written as a number.'],
       ['discuss', 'Write your own', 10, 'Each pair writes one statistical question they could answer about the class, and names the variable it needs.', 'Collect three questions to use as running examples in lesson 2.'],
       ['check', 'Exit ticket', 8, 'Three quick items: one question to classify, two variables to label.', ''],
     ],
@@ -45,10 +45,10 @@ export const statisticsLessonsA: LessonSpec[] = [
     },
     quiz: [
       { f: 'choice', p: 'Which of these is a statistical question?', c: ['How many days are in March?', 'How many hours of sleep did students in our class get last night?', 'What is the capital of Kenya?', 'How tall is the school flagpole?'], a: 'How many hours of sleep did students in our class get last night?', e: 'Only the sleep question expects different answers from different students, so it needs data that varies.', d: 1 },
-      { f: 'choice', p: 'A survey records each student\'s favourite sport. What type of variable is "favourite sport"?', c: ['Quantitative', 'Categorical', 'Neither: it is a case', 'Both, depending on the student'], a: 'Categorical', e: 'Each answer places the student in a group such as football or swimming; there is no measured number.', d: 1 },
+      { f: 'choice', p: 'A survey records each student\'s favorite sport. What type of variable is "favorite sport"?', c: ['Quantitative', 'Categorical', 'Neither: it is a case', 'Both, depending on the student'], a: 'Categorical', e: 'Each answer places the student in a group such as football or swimming; there is no measured number.', d: 1 },
       { f: 'truefalse', p: 'True or false: a phone number is a quantitative variable because it is made of digits.', c: ['True', 'False'], a: 'False', e: 'Phone numbers are labels. Averaging two phone numbers means nothing, so the variable is categorical.', d: 2 },
-      { f: 'short', p: 'In a table where each row describes one city, name the case and give one quantitative variable you might record.', a: 'The case is a city. A quantitative variable could be population, area in square kilometres, or average July temperature.', e: 'Any measured number about a city works; labels such as country or climate zone would be categorical.', d: 2 },
-      { f: 'choice', p: 'Which variable is quantitative?', c: ['Eye colour', 'Minutes spent travelling to school', 'Type of phone', 'Month of birth'], a: 'Minutes spent travelling to school', e: 'Travel time is a measured number with units, so arithmetic such as an average makes sense.', d: 1 },
+      { f: 'short', p: 'In a table where each row describes one city, name the case and give one quantitative variable you might record.', a: 'The case is a city. A quantitative variable could be population, area in square kilometers, or average July temperature.', e: 'Any measured number about a city works; labels such as country or climate zone would be categorical.', d: 2 },
+      { f: 'choice', p: 'Which variable is quantitative?', c: ['Eye color', 'Minutes spent traveling to school', 'Type of phone', 'Month of birth'], a: 'Minutes spent traveling to school', e: 'Travel time is a measured number with units, so arithmetic such as an average makes sense.', d: 1 },
     ],
     assignment: {
       title: 'Design a class survey',
@@ -76,20 +76,20 @@ export const statisticsLessonsA: LessonSpec[] = [
   },
   {
     title: 'Picturing a distribution',
-    summary: 'Using dot plots and histograms to see the shape, centre and spread of quantitative data.',
+    summary: 'Using dot plots and histograms to see the shape, center and spread of quantitative data.',
     objectives: [
       'Draw a dot plot and a histogram from a small data set',
-      'Describe a distribution by its shape, centre, spread and unusual values',
+      'Describe a distribution by its shape, center, spread and unusual values',
     ],
     keyIdeas: [
       'A distribution shows which values a variable takes and how often.',
-      'Describe every distribution with shape, centre, spread and outliers.',
+      'Describe every distribution with shape, center, spread and outliers.',
       'Histograms group values into equal-width bins; the choice of bin width changes the picture.',
     ],
     segments: [
       ['warmup', 'Guess the class', 5, 'Show a dot plot of commute times without a title. Students guess what it shows and who the cases are.', 'Reveal the answer only after two or three guesses; the point is reading the picture.'],
       ['teach', 'Dot plots and histograms', 12, 'Build a dot plot of the class commute data live, then regroup it into a histogram with 10-minute bins.', 'Keep the same axis for both so students see the histogram as a summary of the dots.'],
-      ['practice', 'Shape, centre, spread', 15, 'Groups get four histograms (symmetric, skewed right, skewed left, two peaks) and write a two-sentence description of each.', 'Model one description first: "Skewed right, centred around 15 minutes, most values between 5 and 30, one outlier near 60."'],
+      ['practice', 'Shape, center, spread', 15, 'Groups get four histograms (symmetric, skewed right, skewed left, two peaks) and write a two-sentence description of each.', 'Model one description first: "Skewed right, centered around 15 minutes, most values between 5 and 30, one outlier near 60."'],
       ['discuss', 'Bin width matters', 10, 'Show the same data with bins of 2, 10 and 30 minutes. Which picture is honest? Which hides the story?', ''],
       ['close', 'One-sentence summary', 8, 'Each student writes one sentence describing the class commute distribution.', ''],
     ],
@@ -105,10 +105,10 @@ export const statisticsLessonsA: LessonSpec[] = [
       ['question', 'What could this graph be showing?', ['Look at the axis values', 'Who might the cases be?'], 'Show the untitled dot plot of commute times beside this slide.'],
       ['bullets', 'Dot plots', ['One dot per case', 'Stack dots with the same value', 'Best for small data sets'], ''],
       ['bullets', 'Histograms', ['Group values into equal-width bins', 'Bar height is the count in each bin', 'Bars touch: the scale is continuous'], 'Contrast with bar charts for categorical data, where bars are separated.'],
-      ['bullets', 'Describe with SOCS', ['Shape: symmetric, skewed, peaks', 'Outliers: anything unusual?', 'Centre: a typical value', 'Spread: how far values range'], 'SOCS is a memory aid; the order matters less than covering all four.'],
+      ['bullets', 'Describe with SOCS', ['Shape: symmetric, skewed, peaks', 'Outliers: anything unusual?', 'Center: a typical value', 'Spread: how far values range'], 'SOCS is a memory aid; the order matters less than covering all four.'],
     ],
     study: {
-      overview: 'A graph of one variable is a picture of its distribution. Learning to read that picture in four words (shape, outliers, centre, spread) is the core skill of this lesson.',
+      overview: 'A graph of one variable is a picture of its distribution. Learning to read that picture in four words (shape, outliers, center, spread) is the core skill of this lesson.',
       points: [
         ['From dots to bars', 'A dot plot keeps every value visible. A histogram counts how many values fall into each bin. With lots of data, histograms are easier to read; with a handful of values, dot plots lose less information.'],
         ['Reading shape', 'If the left and right sides look roughly like mirror images, the distribution is symmetric. A long tail to the right is right-skewed, common for things like income or commute time that cannot go below zero but can be very large.'],
@@ -120,19 +120,19 @@ export const statisticsLessonsA: LessonSpec[] = [
       { f: 'choice', p: 'Why do the bars of a histogram touch?', c: ['To save space on the page', 'Because the variable is measured on a continuous scale', 'Because every bin has the same count', 'Because the data is categorical'], a: 'Because the variable is measured on a continuous scale', e: 'Bins cover neighbouring intervals of a number line with no gaps between them.', d: 2 },
       { f: 'numeric', p: 'A dot plot shows these quiz scores: 6, 7, 7, 8, 8, 8, 9, 10. How many students scored 8 or more?', a: '5', e: 'Three students scored 8, one scored 9 and one scored 10: 3 + 1 + 1 = 5.', d: 1 },
       { f: 'truefalse', p: 'True or false: changing the bin width of a histogram can hide a second peak in the data.', c: ['True', 'False'], a: 'True', e: 'Wide bins merge neighbouring values, so two separate clusters can blend into one bar.', d: 2 },
-      { f: 'short', p: 'Describe the shape, centre and spread of this data in one sentence: 2, 3, 3, 4, 4, 4, 5, 5, 6, 19.', a: 'Roughly symmetric from 2 to 6 with a centre near 4, plus one high outlier at 19.', e: 'A good answer names the shape, a typical value, the range of most values and the outlier.', d: 3 },
+      { f: 'short', p: 'Describe the shape, center and spread of this data in one sentence: 2, 3, 3, 4, 4, 4, 5, 5, 6, 19.', a: 'Roughly symmetric from 2 to 6 with a center near 4, plus one high outlier at 19.', e: 'A good answer names the shape, a typical value, the range of most values and the outlier.', d: 3 },
     ],
     assignment: {
       title: 'Graph and describe our class data',
       prompt: 'Using the class commute data, make a dot plot and a histogram and write a paragraph describing the distribution.',
       steps: [
-        'Draw a dot plot of the commute times with a labelled axis.',
+        'Draw a dot plot of the commute times with a labeled axis.',
         'Draw a histogram with a bin width you choose, and explain your choice.',
-        'Write a paragraph describing shape, outliers, centre and spread.',
+        'Write a paragraph describing shape, outliers, center and spread.',
       ],
       criteria: [
-        ['Graphs', ['Both graphs accurate, labelled, with sensible scales', 'Both graphs present with minor labelling errors', 'One graph missing or inaccurate', 'No usable graph']],
-        ['Description', ['Covers shape, outliers, centre and spread using the data', 'Covers three of the four features', 'Covers one or two features', 'No description']],
+        ['Graphs', ['Both graphs accurate, labeled, with sensible scales', 'Both graphs present with minor labeling errors', 'One graph missing or inaccurate', 'No usable graph']],
+        ['Description', ['Covers shape, outliers, center and spread using the data', 'Covers three of the four features', 'Covers one or two features', 'No description']],
         ['Bin width reasoning', ['Explains the choice and what another width would hide', 'Explains the choice briefly', 'States a width without reasoning', 'Missing']],
       ],
     },

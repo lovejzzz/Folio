@@ -1,5 +1,6 @@
 import { isConfigured, type ProviderId } from '@folio/ai';
 import { Button, Dialog, SegmentedControl } from '@folio/ui';
+import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
@@ -43,6 +44,7 @@ function ActiveNote({ provider }: { provider: ProviderId }) {
 
 function ModelSection() {
   const t = useT();
+  const navigate = useNavigate();
   const prefs = usePrefs();
   const [provider, setProvider] = useState<ProviderId>(prefs.provider ?? 'anthropic');
   const [status, setStatus] = useState<{ busy: boolean; message: string | null; ok: boolean }>({ busy: false, message: null, ok: false });
@@ -70,7 +72,12 @@ function ModelSection() {
       <div className="mt-6 max-w-md">
         <ProviderFields provider={provider} onKey={(key) => key && prefs.set({ provider })} />
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <Button variant="primary" isDisabled={status.busy} onPress={() => void test()}>
+          {status.ok && (
+            <Button variant="primary" onPress={() => void navigate({ to: '/' })}>
+              {t.settings.done}
+            </Button>
+          )}
+          <Button variant={status.ok ? 'secondary' : 'primary'} isDisabled={status.busy} onPress={() => void test()}>
             {status.busy ? t.settings.testing : t.settings.test}
           </Button>
           {provider !== 'local' && prefs.keys[provider] && (

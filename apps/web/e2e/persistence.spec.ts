@@ -3,33 +3,33 @@ import { openSample } from './helpers';
 
 test('an edit survives a reload straight after it, even one still being typed', async ({ page }) => {
   await openSample(page);
-  await page.getByRole('link', { name: /Centre and spread/ }).first().click();
+  await page.getByRole('link', { name: /Center and spread/ }).first().click();
   const title = page.getByRole('textbox', { name: 'Title of lesson 3' });
   await title.click();
   await page.keyboard.press('ControlOrMeta+A');
-  await page.keyboard.type('Measures of centre');
+  await page.keyboard.type('Measures of center');
   await title.blur();
   await page.reload();
-  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Measures of centre');
+  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Measures of center');
 
   // Still focused, never blurred: the page going away commits it.
   const again = page.getByRole('textbox', { name: 'Title of lesson 3' });
   await again.click();
   await page.keyboard.press('ControlOrMeta+A');
-  await page.keyboard.type('Measures of centre and spread');
+  await page.keyboard.type('Measures of center and spread');
   await page.reload();
-  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Measures of centre and spread');
+  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Measures of center and spread');
 });
 
 test('a second tab follows edits, and edits made at once in two tabs are never silently lost', async ({ page, context }) => {
   await openSample(page);
   const lessonUrl = await (async () => {
-    await page.getByRole('link', { name: /Centre and spread/ }).first().click();
+    await page.getByRole('link', { name: /Center and spread/ }).first().click();
     return page.url();
   })();
   const other = await context.newPage();
   await other.goto(lessonUrl);
-  await expect(other.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Centre and spread');
+  await expect(other.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Center and spread');
 
   // An idle tab quietly takes the other's saved change.
   const title = page.getByRole('textbox', { name: 'Title of lesson 3' });

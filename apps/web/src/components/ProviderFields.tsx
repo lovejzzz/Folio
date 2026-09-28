@@ -1,9 +1,10 @@
-import { DEFAULT_MODELS, PROVIDERS, type ProviderId } from '@folio/ai';
+import { PROVIDERS, type ProviderId } from '@folio/ai';
 import { TextField, cx } from '@folio/ui';
 import { ExternalLink } from 'lucide-react';
 import { Radio, RadioGroup } from 'react-aria-components';
 import { useT, type Messages } from '../i18n';
 import { usePrefs } from '../state/prefs';
+import { ModelPicker } from './ModelPicker';
 
 
 const KEY_PAGES: Partial<Record<ProviderId, string>> = {
@@ -54,7 +55,7 @@ export function missingSetup(provider: ProviderId, t: Messages): string | null {
 /** The key (or server address) and model for one provider, saved as you type. */
 export function ProviderFields({ provider, showModel = true, onKey }: { provider: ProviderId; showModel?: boolean; onKey?: (key: string) => void }) {
   const t = useT();
-  const { keys, models, localUrl, set } = usePrefs();
+  const { keys, localUrl, set } = usePrefs();
   const keyPage = KEY_PAGES[provider];
   return (
     <div className="space-y-3">
@@ -86,15 +87,7 @@ export function ProviderFields({ provider, showModel = true, onKey }: { provider
           )}
         </div>
       )}
-      {(showModel || provider === 'local') && (
-        <TextField
-          label={t.settings.model}
-          description={t.settings.modelHint(DEFAULT_MODELS[provider])}
-          placeholder={DEFAULT_MODELS[provider]}
-          value={models[provider] ?? ''}
-          onChange={(v) => set({ models: { ...usePrefs.getState().models, [provider]: v.trim() } })}
-        />
-      )}
+      {(showModel || provider === 'local') && <ModelPicker provider={provider} />}
     </div>
   );
 }

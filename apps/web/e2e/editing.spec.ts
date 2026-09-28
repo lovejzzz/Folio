@@ -4,16 +4,16 @@ import { openSample, retype, withKey } from './helpers';
 
 test('edit in place, undo, and see the change in history', async ({ page }) => {
   await openSample(page);
-  await page.getByRole('link', { name: /Centre and spread/ }).first().click();
-  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Centre and spread');
-  await expect(page).toHaveTitle('Centre and spread · Reading the world with data · Folio');
-  await retype(page, 'Title of lesson 3', 'Measures of centre and spread');
-  await expect(page.getByRole('link', { name: /Measures of centre and spread/ })).toBeVisible();
+  await page.getByRole('link', { name: /Center and spread/ }).first().click();
+  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Center and spread');
+  await expect(page).toHaveTitle('Center and spread · Reading the world with data · Folio');
+  await retype(page, 'Title of lesson 3', 'Measures of center and spread');
+  await expect(page.getByRole('link', { name: /Measures of center and spread/ })).toBeVisible();
 
   await page.getByRole('main').click({ position: { x: 5, y: 5 } });
   await page.keyboard.press('ControlOrMeta+z');
   await expect(page.getByText('Undone.')).toBeVisible();
-  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Centre and spread');
+  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toHaveText('Center and spread');
 
   await page.getByRole('button', { name: /To do & history/ }).click();
   await expect(page.getByRole('dialog', { name: 'To do & history' }).getByText('Renamed lesson 3')).toBeVisible();
@@ -81,7 +81,7 @@ test('rewording a summary leaves the lesson up to date; an objective puts its se
   await expect(page.getByText('Needs updating.')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /to do/ })).toHaveCount(0);
 
-  await retype(page, 'Objective 1 of lesson 2', 'Read a histogram and describe its shape, centre and spread');
+  await retype(page, 'Objective 1 of lesson 2', 'Read a histogram and describe its shape, center and spread');
   await page.getByRole('button', { name: '6 to do, To do & history' }).click();
   const changes = page.getByRole('dialog', { name: 'To do & history' });
   await expect(changes.getByText('Because its objectives changed. These 6 were written from it:')).toHaveCount(1);
@@ -94,14 +94,14 @@ test('rewording a summary leaves the lesson up to date; an objective puts its se
 
 test('a lesson can set no homework: the assignment and rubric go, the overview says so, and it can be set again', async ({ page }) => {
   await openSample(page);
-  await page.getByRole('link', { name: /Centre and spread/ }).first().click();
+  await page.getByRole('link', { name: /Center and spread/ }).first().click();
   const assignment = page.locator('#m-assignments');
   await assignment.getByRole('combobox', { name: 'This lesson' }).selectOption('none');
   await expect(assignment.getByText('No homework in this lesson.')).toBeVisible();
   await expect(page.locator('#m-rubrics').getByText('No homework in this lesson.')).toBeVisible();
   await page.getByRole('link', { name: 'Overview', exact: true }).click();
   await expect(page.getByRole('button', { name: /^Lesson 3, Assignments: No homework/ })).toBeVisible();
-  await page.getByRole('link', { name: /Centre and spread/ }).first().click();
+  await page.getByRole('link', { name: /Center and spread/ }).first().click();
   await assignment.getByRole('combobox', { name: 'This lesson' }).selectOption('assignment');
   await expect(assignment.getByRole('button', { name: 'Write it now' })).toBeVisible();
 });

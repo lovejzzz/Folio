@@ -3,7 +3,7 @@ import { openSample } from './helpers';
 
 test('code marked with backticks reads as code, and edits with its marks', async ({ page }) => {
   await openSample(page);
-  await page.getByRole('link', { name: /Centre and spread/ }).first().click();
+  await page.getByRole('link', { name: /Center and spread/ }).first().click();
   const field = page.getByRole('textbox', { name: 'Objective 1 of lesson 3' });
   await field.click();
   await page.keyboard.press('ControlOrMeta+A');
@@ -32,7 +32,7 @@ test('code marked with backticks reads as code, and edits with its marks', async
 
 test('a named subscript reads as a subscript, and edits as typed', async ({ page }) => {
   await openSample(page);
-  await page.getByRole('link', { name: /Centre and spread/ }).first().click();
+  await page.getByRole('link', { name: /Center and spread/ }).first().click();
   const field = page.getByRole('textbox', { name: 'Objective 1 of lesson 3' });
   await field.click();
   await page.keyboard.press('ControlOrMeta+A');

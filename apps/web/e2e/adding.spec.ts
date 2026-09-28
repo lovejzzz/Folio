@@ -15,7 +15,7 @@ async function clickAway(page: Page): Promise<void> {
 }
 
 test('Add an objective puts the caret in an empty line; left blank it goes, and nothing goes out of date', async ({ page }) => {
-  await openLesson(page, /Centre and spread/);
+  await openLesson(page, /Center and spread/);
   const objectives = page.getByRole('textbox', { name: /^Objective \d of lesson 3$/ });
   const count = await objectives.count();
   await page.getByRole('button', { name: 'Add an objective' }).click();
@@ -41,7 +41,7 @@ test('Add an objective puts the caret in an empty line; left blank it goes, and 
 });
 
 test('Add a question starts an empty question with the caret in it, and a blank one is taken out again', async ({ page }) => {
-  await openLesson(page, /Centre and spread/);
+  await openLesson(page, /Center and spread/);
   const quiz = page.locator('#m-quiz');
   const questions = quiz.getByRole('article');
   const count = await questions.count();
@@ -69,7 +69,7 @@ test('Add a question starts an empty question with the caret in it, and a blank 
 });
 
 test('Add a term, a step, a point: each opens empty and focused, and blank ones never stay', async ({ page }) => {
-  await openLesson(page, /Centre and spread/);
+  await openLesson(page, /Center and spread/);
   const plan = page.locator('#m-plan');
 
   const terms = plan.getByRole('textbox', { name: 'Term', exact: true });
@@ -115,7 +115,7 @@ test('Add a term, a step, a point: each opens empty and focused, and blank ones 
 });
 
 test('segment minutes take whole numbers from 1 to 600 and say so', async ({ page }) => {
-  await openLesson(page, /Centre and spread/);
+  await openLesson(page, /Center and spread/);
   const plan = page.locator('#m-plan');
   const minutes = plan.getByRole('textbox', { name: 'Minutes for step 1' });
   await expect(minutes).toHaveValue('6');
@@ -147,7 +147,7 @@ test('segment minutes take whole numbers from 1 to 600 and say so', async ({ pag
 });
 
 test('rubric criteria can be removed and level points edited', async ({ page }) => {
-  await openLesson(page, /Centre and spread/);
+  await openLesson(page, /Center and spread/);
   const rubric = page.locator('#m-rubrics');
   await expect(rubric.getByRole('textbox', { name: /^Criterion \d$/ })).toHaveCount(3);
   await rubric.getByRole('button', { name: 'Remove: Choice of summary' }).click();
@@ -171,7 +171,7 @@ test('rubric criteria can be removed and level points edited', async ({ page }) 
 });
 
 test('pasted text keeps its paragraphs without gaining line breaks', async ({ page }) => {
-  await openLesson(page, /Centre and spread/);
+  await openLesson(page, /Center and spread/);
   const paste = async (name: string, text: string) => {
     const field = page.getByRole('textbox', { name });
     await field.click();
@@ -184,11 +184,11 @@ test('pasted text keeps its paragraphs without gaining line breaks', async ({ pa
     await field.blur();
   };
   await paste('Summary of lesson 3', 'First line\r\n\r\nSecond line\r\n');
-  await paste('Title of lesson 3', 'Centre\nand spread\n');
+  await paste('Title of lesson 3', 'Center\nand spread\n');
   await page.reload();
   const text = (name: string) => page.getByRole('textbox', { name }).evaluate((el) => el.textContent);
   await expect.poll(() => text('Summary of lesson 3')).toBe('First line\n\nSecond line');
-  await expect.poll(() => text('Title of lesson 3')).toBe('Centre and spread');
+  await expect.poll(() => text('Title of lesson 3')).toBe('Center and spread');
 });
 
 test('a new slide starts empty with the caret in its title', async ({ page }) => {

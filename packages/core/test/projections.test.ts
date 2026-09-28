@@ -39,7 +39,7 @@ describe('project', () => {
     const lesson = orderedLessons(course)[2]!;
     const doc = project(course, 'quiz', { audience: 'student', lessonIds: [lesson.id] });
     expect(doc.blocks.filter((b) => b.t === 'question')).toHaveLength(5);
-    expect(doc.blocks[0]).toMatchObject({ t: 'heading', text: 'Lesson 3 · Centre and spread' });
+    expect(doc.blocks[0]).toMatchObject({ t: 'heading', text: 'Lesson 3 · Center and spread' });
   });
 
   it('shows the same edited question in the quiz and the study guide', () => {

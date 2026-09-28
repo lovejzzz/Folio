@@ -13,7 +13,7 @@ test('opening a backup of a course that is already here adds a copy and changes 
   const bytes = await readFile((await (await download).path())!);
   await page.keyboard.press('Escape');
 
-  await page.getByRole('link', { name: /Centre and spread/ }).first().click();
+  await page.getByRole('link', { name: /Center and spread/ }).first().click();
   await retype(page, 'Title of lesson 3', 'Renamed after the backup');
   await page.goto('/library');
   const chooser = page.waitForEvent('filechooser');

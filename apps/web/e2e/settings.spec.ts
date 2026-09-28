@@ -31,16 +31,36 @@ test('a provider becomes the one Folio uses only once it has a key', async ({ pa
   await expect(page.getByRole('radio', { name: /Use my OpenAI key/ })).toBeChecked();
 });
 
-test('an empty model field shows the default it will use', async ({ page }) => {
+test('the model list comes from the provider, with Folio’s default picked', async ({ page }) => {
   await withKey(page);
+  await page.route('https://api.anthropic.com/v1/models**', (route) =>
+    route.request().method() === 'OPTIONS'
+      ? route.fulfill({ status: 204, headers: { ...cors, 'access-control-allow-methods': 'GET, OPTIONS' } })
+      : route.fulfill({
+          status: 200,
+          headers: cors,
+          json: { data: [{ id: 'claude-fable-5-1', display_name: 'Claude Fable 5.1' }, { id: 'claude-sonnet-5', display_name: 'Claude Sonnet 5' }] },
+        }),
+  );
+  await page.goto('/settings');
+  const model = page.getByRole('combobox', { name: 'Model' });
+  await expect(model).toBeEnabled();
+  await expect(model).toHaveValue('claude-sonnet-5');
+  await expect(model.getByRole('option')).toHaveText(['Claude Fable 5.1', 'Claude Sonnet 5 (recommended)']);
+  await model.selectOption('claude-fable-5-1');
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('folio.prefs')!).state.models.anthropic)).toBe('claude-fable-5-1');
+  // Choosing the default again stores nothing, so Folio's default can move on later.
+  await model.selectOption('claude-sonnet-5');
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('folio.prefs')!).state.models.anthropic)).toBe('');
+});
+
+test('when the model list can’t be loaded, the model can still be typed', async ({ page }) => {
+  await withKey(page);
+  await page.route('https://api.anthropic.com/v1/models**', (route) => route.fulfill({ status: 401, headers: cors, body: '{}' }));
   await page.goto('/settings');
   const model = page.getByRole('textbox', { name: 'Model' });
-  await expect(model).toHaveValue('');
   await expect(model).toHaveAttribute('placeholder', 'claude-sonnet-5');
-  await expect(page.getByText('Leave empty to use the default, claude-sonnet-5.')).toBeVisible();
-  await model.fill('claude-fable-5-1');
-  await model.fill('');
-  await expect(model).toHaveAttribute('placeholder', 'claude-sonnet-5');
+  await expect(page.getByText('Couldn’t load the model list. Type a model name, or leave it empty for claude-sonnet-5.')).toBeVisible();
 });
 
 test('a local server that refuses the request is described as a local server', async ({ page }) => {
@@ -70,4 +90,6 @@ test('a local server that answers becomes the one Folio uses', async ({ page }) 
   await page.getByRole('button', { name: 'Test connection' }).click();
   await expect(page.getByText('Connected. Folio is ready to write.')).toBeVisible();
   await expect(page.getByText(/Folio is still using/)).toHaveCount(0);
+  await page.getByRole('button', { name: 'Done' }).click();
+  await expect(page).toHaveURL(/\/$/);
 });

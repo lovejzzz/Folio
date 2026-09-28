@@ -3,16 +3,16 @@ import type { LessonSpec } from './builder';
 /** Lessons 3–4 of the sample course "Reading the world with data". */
 export const statisticsLessonsB: LessonSpec[] = [
   {
-    title: 'Centre and spread',
-    summary: 'Mean and median as measures of centre, range and interquartile range as measures of spread, and why outliers matter.',
+    title: 'Center and spread',
+    summary: 'Mean and median as measures of center, range and interquartile range as measures of spread, and why outliers matter.',
     objectives: [
       'Calculate the mean, median, range and interquartile range of a small data set',
-      'Choose a resistant measure of centre when a distribution is skewed or has outliers',
+      'Choose a resistant measure of center when a distribution is skewed or has outliers',
     ],
     keyIdeas: [
       'The mean balances the data; the median splits it in half.',
       'The median and IQR are resistant: one extreme value barely moves them.',
-      'Report a centre together with a spread; neither means much alone.',
+      'Report a center together with a spread; neither means much alone.',
     ],
     segments: [
       ['warmup', 'The billionaire walks in', 6, 'Ten people in a café earn a typical salary. A billionaire walks in. What happens to the "average" income?', 'Let students argue before any calculation; the intuition is the lesson.'],
@@ -29,14 +29,14 @@ export const statisticsLessonsB: LessonSpec[] = [
       ['Resistant', 'Describes a statistic that is not strongly affected by extreme values.'],
     ],
     slides: [
-      ['title', 'Centre and spread', ['Lesson 3'], ''],
+      ['title', 'Center and spread', ['Lesson 3'], ''],
       ['quote', 'When a billionaire walks into a café, the average customer becomes a millionaire.', [], 'Use this to launch the warm-up discussion.'],
-      ['bullets', 'Two ways to find the centre', ['Mean: add them up, divide by the count', 'Median: the middle value in order', 'Outliers pull the mean, not the median'], ''],
+      ['bullets', 'Two ways to find the center', ['Mean: add them up, divide by the count', 'Median: the middle value in order', 'Outliers pull the mean, not the median'], ''],
       ['bullets', 'Measuring spread', ['Range = max − min', 'IQR = Q3 − Q1', 'IQR ignores the extremes'], 'Draw the ordered data on the board and bracket the middle half.'],
-      ['question', 'House prices in a town are strongly skewed. Which centre should the news report?', [], 'Expected answer: the median, with a reason about skew.'],
+      ['question', 'House prices in a town are strongly skewed. Which center should the news report?', [], 'Expected answer: the median, with a reason about skew.'],
     ],
     study: {
-      overview: 'Two numbers summarise most distributions: a centre and a spread. The skill is choosing the pair that describes the data honestly.',
+      overview: 'Two numbers summarize most distributions: a center and a spread. The skill is choosing the pair that describes the data honestly.',
       points: [
         ['Mean versus median', 'The mean uses every value, so a single extreme value can drag it far from where most data sits. The median only cares about order, so it stays put. In a symmetric distribution they are close; in a skewed one the mean is pulled toward the tail.'],
         ['Finding the IQR', 'Put the data in order and find the median. The first quartile (Q1) is the median of the lower half and the third quartile (Q3) is the median of the upper half. The IQR is Q3 − Q1, the width of the middle 50% of the data.'],
@@ -48,21 +48,21 @@ export const statisticsLessonsB: LessonSpec[] = [
       { f: 'numeric', p: 'Find the median of 4, 5, 5, 6, 7, 8, 9, 40.', a: '6.5', e: 'There are 8 values, so the median is the average of the 4th and 5th values: (6 + 7) ÷ 2 = 6.5.', d: 2 },
       { f: 'choice', p: 'Adding one very large value to a data set will usually…', c: ['Raise the mean much more than the median', 'Raise the median much more than the mean', 'Leave both unchanged', 'Lower the mean'], a: 'Raise the mean much more than the median', e: 'The mean uses the size of every value; the median only shifts by at most one position.', d: 2 },
       { f: 'choice', p: 'Which measure of spread is resistant to outliers?', c: ['Range', 'Interquartile range', 'Maximum', 'Mean'], a: 'Interquartile range', e: 'The IQR only uses the middle half of the data, so extreme values do not affect it.', d: 1 },
-      { f: 'short', p: 'Salaries at a small company are 30, 32, 35, 36, 38 and 250 thousand dollars. Which centre would you report and why?', a: 'The median (35.5 thousand), because the 250 thousand salary is an outlier that pulls the mean up to about 70 thousand.', e: 'Look for the median plus a reason that mentions the outlier or skew.', d: 3 },
+      { f: 'short', p: 'Salaries at a small company are 30, 32, 35, 36, 38 and 250 thousand dollars. Which center would you report and why?', a: 'The median (35.5 thousand), because the 250 thousand salary is an outlier that pulls the mean up to about 70 thousand.', e: 'Look for the median plus a reason that mentions the outlier or skew.', d: 3 },
     ],
     assignment: {
-      title: 'Summarise two data sets',
-      prompt: 'Compare the reaction times of two groups using a measure of centre and a measure of spread, and explain which summaries you chose.',
+      title: 'Summarize two data sets',
+      prompt: 'Compare the reaction times of two groups using a measure of center and a measure of spread, and explain which summaries you chose.',
       steps: [
         'Order each data set and compute the mean, median, range and IQR.',
         'Decide whether each distribution is roughly symmetric or skewed, and whether it has outliers.',
-        'Choose the centre and spread you would report for each group and justify the choice.',
+        'Choose the center and spread you would report for each group and justify the choice.',
         'Write two sentences comparing the groups using your chosen summaries.',
       ],
       criteria: [
         ['Calculations', ['All summaries correct with working shown', 'One small calculation error', 'Several errors or missing working', 'Calculations missing']],
         ['Choice of summary', ['Choices match the shape and outliers, with clear reasons', 'Choices sensible but reasons thin', 'Choices do not match the data', 'No choice made']],
-        ['Comparison', ['Compares centre and spread in context with units', 'Compares centre only, in context', 'Comparison is vague or lacks context', 'No comparison']],
+        ['Comparison', ['Compares center and spread in context with units', 'Compares center only, in context', 'Comparison is vague or lacks context', 'No comparison']],
       ],
     },
     discussions: [
@@ -126,7 +126,7 @@ export const statisticsLessonsB: LessonSpec[] = [
       title: 'Critique a real poll',
       prompt: 'Find a poll or survey reported in the news and write a short critique of how its sample was chosen.',
       steps: [
-        'Summarise the poll: the question, the population and the headline result.',
+        'Summarize the poll: the question, the population and the headline result.',
         'Describe how the sample was chosen, using the article or the pollster\'s website.',
         'Identify any possible bias and the direction it would push the result.',
         'Suggest one change to the method that would make you trust it more.',
