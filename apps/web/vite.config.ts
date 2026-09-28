@@ -3,10 +3,10 @@ import tailwindcss from '@tailwindcss/vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { cspHashes, previewHeaders } from './headers.plugin.ts';
-import { trimFonts } from './fonts.plugin.ts';
+import { preloadFonts, trimFonts } from './fonts.plugin.ts';
 
 export default defineConfig({
-  plugins: [trimFonts(), react(), babel({ presets: [reactCompilerPreset()] }), tailwindcss(), cspHashes(), previewHeaders()],
+  plugins: [trimFonts(), preloadFonts(), react(), babel({ presets: [reactCompilerPreset()] }), tailwindcss(), cspHashes(), previewHeaders()],
   worker: { format: 'es' },
   build: {
     target: 'es2022',
