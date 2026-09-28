@@ -1,4 +1,4 @@
-import { courseFromOutline, generateOutline, type NewCourseRequest } from '@folio/ai';
+import { courseFromOutline, generateOutline, type NewCourseRequest, type Usage } from '@folio/ai';
 import { guessMinutes, guessQuizSize, guessSessions } from '../../lib/brief';
 import { MATERIAL_KINDS } from '@folio/core';
 import { Button, Skeleton } from '@folio/ui';
@@ -10,6 +10,7 @@ import { useT } from '../../i18n';
 import { useDraft } from '../../state/draft';
 import { currentInference, errorMessage } from '../../state/model';
 import { createSession } from '../../state/session';
+import { recordUsage } from '../../state/spend';
 
 function OutlineSkeleton({ lessons }: { lessons: number }) {
   return (
@@ -58,7 +59,8 @@ function useOutline(attempt: number): string | null {
   }, []);
   useEffect(() => {
     const req = requestFromDraft();
-    const inference = currentInference();
+    const usages: Usage[] = [];
+    const inference = currentInference((u) => usages.push(u));
     if (started.current === attempt || !req || !inference) return;
     started.current = attempt;
     setError(null);
@@ -66,6 +68,8 @@ function useOutline(attempt: number): string | null {
       .then(async (outline) => {
         if (!mounted.current) return;
         const course = courseFromOutline(req, outline);
+        // Counted in with the course when it is written.
+        recordUsage(course.id, usages);
         await createSession(course);
         await navigate({ to: '/c/$courseId/plan', params: { courseId: course.id }, replace: true });
         useDraft.getState().reset();

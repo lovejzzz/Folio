@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
-import { InferenceError, isAbort, parseJsonText, truncatedOutput, type CompletionRequest, type Inference, type ModelSettings } from '../inference';
+import { InferenceError, isAbort, parseJsonText, truncatedOutput, type CompletionRequest, type Inference, type ModelSettings, type OnUsage } from '../inference';
 
 /** Models that accept the server-side refusal fallback chain. */
 const FALLBACK_MODELS = new Set(['claude-opus-5', 'claude-fable-5-1']);
@@ -24,7 +24,7 @@ function mapError(error: unknown): InferenceError {
 }
 
 /** Bring-your-own-key Claude. The request goes straight from this browser to Anthropic. */
-export function anthropicInference(settings: ModelSettings, fetchImpl?: typeof fetch): Inference {
+export function anthropicInference(settings: ModelSettings, fetchImpl?: typeof fetch, onUsage?: OnUsage): Inference {
   const client = new Anthropic({
     apiKey: settings.apiKey,
     dangerouslyAllowBrowser: true,
@@ -58,6 +58,18 @@ export function anthropicInference(settings: ModelSettings, fetchImpl?: typeof f
           },
           { signal: request.signal },
         );
+        // Counting is a courtesy: a response without usage is still an answer.
+        const u = response.usage as typeof response.usage | undefined;
+        if (u) {
+          onUsage?.({
+            provider: 'anthropic',
+            model: response.model || model,
+            input: u.input_tokens ?? 0,
+            output: u.output_tokens ?? 0,
+            cacheRead: u.cache_read_input_tokens ?? 0,
+            cacheWrite: u.cache_creation_input_tokens ?? 0,
+          });
+        }
         if (response.stop_reason === 'refusal') {
           throw new InferenceError('refused', response.stop_details?.explanation ?? 'The model declined this request.');
         }

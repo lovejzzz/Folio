@@ -29,6 +29,8 @@ export interface BuildSummary {
 
 export interface BuildHost {
   inference: Inference;
+  /** Reviews each lesson plan before the materials written from it; none for providers it hasn't been tried with. */
+  reviewer?: Inference;
   /** Read the latest course before each job so edits made mid-build are respected. */
   getCourse(): Course;
   commit(target: BuildTarget, commands: Command[]): void;
@@ -102,7 +104,7 @@ async function runOne(host: BuildHost, target: BuildTarget, summary: BuildSummar
   if (!stillWanted(course, target) || summary.fatal) return;
   host.onEvent?.({ type: 'start', target });
   try {
-    const result = await generateSection(host.inference, course, target.lessonId, target.kind, host.signal);
+    const result = await generateSection(host.inference, course, target.lessonId, target.kind, host.signal, { reviewer: host.reviewer });
     if (host.signal.aborted) throw new InferenceError('aborted', 'Stopped.');
     if (!stillWanted(host.getCourse(), target)) return;
     host.commit(target, result.commands);

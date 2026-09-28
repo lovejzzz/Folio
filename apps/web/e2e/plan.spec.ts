@@ -69,7 +69,7 @@ test('a course with only course-level materials finishes building and opens like
   const calls = model.calls.length;
   await page.getByRole('button', { name: 'Write 2 lessons' }).click();
 
-  await expect(page.getByText('Course ready.')).toBeVisible();
+  await expect(page.getByText(/^Course ready\./)).toBeVisible();
   const nav = page.getByRole('navigation', { name: 'More' });
   await expect(nav.getByRole('link', { name: 'Overview' })).toBeVisible();
   await expect(nav.getByRole('link', { name: 'Lessons' })).toBeVisible();

@@ -1,5 +1,7 @@
 export * from './inference';
 export * from './models';
+export * from './review';
+export * from './pricing';
 export * from './adapters';
 export * from './schemas';
 export * from './prompts';

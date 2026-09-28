@@ -19,7 +19,8 @@ import {
   type Rubric,
   type Task,
 } from '@folio/core';
-import type { Inference } from './inference';
+import { InferenceError, type Inference } from './inference';
+import { reviewPlan } from './review';
 import { runJob, type JobSpec, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
 import {
@@ -266,6 +267,24 @@ export interface SectionResult {
   flagged: number;
 }
 
+export interface SectionOptions {
+  /** Reads a freshly written lesson plan and corrects it before anything is built on it. */
+  reviewer?: Inference;
+}
+
+/**
+ * The plan after its review, or as written if the review can't be had: a failed
+ * second read must never cost the teacher the first. Stopping still stops.
+ */
+async function reviewed(reviewer: Inference, course: Course, lesson: Lesson, draft: PlanDraft, signal?: AbortSignal): Promise<PlanDraft> {
+  try {
+    return (await reviewPlan(reviewer, course, lesson, draft, { signal })).plan;
+  } catch (error) {
+    if (error instanceof InferenceError && error.kind === 'aborted') throw error;
+    return draft;
+  }
+}
+
 /** Generate one lesson's section. Pure with respect to the course: returns commands, commits nothing. */
 export async function generateSection(
   inference: Inference,
@@ -273,10 +292,11 @@ export async function generateSection(
   lessonId: string,
   kind: GeneratedKind,
   signal?: AbortSignal,
+  options: SectionOptions = {},
 ): Promise<SectionResult> {
   const lesson = course.lessons[lessonId];
   if (!lesson) throw new Error(`No lesson ${lessonId}`);
-  const run = async <T>(job: SectionJob<T>): Promise<SectionResult> => {
+  const run = async <T>(job: SectionJob<T>, revise?: (value: T) => Promise<T>): Promise<SectionResult> => {
     const result = await runJob(inference, {
       task: `folio_${kind}`,
       system: systemPrompt(course.language, course.locale),
@@ -288,11 +308,13 @@ export async function generateSection(
       check: job.check ? (v) => job.check!(v, course, lesson) : undefined,
       signal,
     });
-    return { commands: job.toCommands(typesetDraft(result.value, course.language), result.problems, course, lesson), flagged: result.problems.length };
+    const value = revise ? await revise(result.value) : result.value;
+    return { commands: job.toCommands(typesetDraft(value, course.language), result.problems, course, lesson), flagged: result.problems.length };
   };
+  const { reviewer } = options;
   switch (kind) {
     case 'plan':
-      return run(plan);
+      return run(plan, reviewer ? (draft) => reviewed(reviewer, course, lesson, draft, signal) : undefined);
     case 'slides':
       return run(slides);
     case 'study':

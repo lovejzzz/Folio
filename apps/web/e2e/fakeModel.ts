@@ -6,6 +6,7 @@ import type { Page, Route } from '@playwright/test';
  */
 
 interface Body {
+  model?: string;
   system?: string | { text: string }[];
   messages: { content: string }[];
 }
@@ -70,6 +71,8 @@ function answerFor(body: Body): unknown {
   const prompt = [system, ...body.messages.map((m) => m.content)].join('\n');
   const title = lessonTitle(prompt);
   if (prompt.includes('Return {"ok": true}')) return { ok: true };
+  // The plan review: a plan written by the fake has nothing wrong with it.
+  if (prompt.includes('Check this plan the way')) return { edits: [] };
   if (prompt.includes('Plan exactly')) return outline(prompt);
   if (prompt.includes('Write the lesson plan'))
     return {

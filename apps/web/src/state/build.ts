@@ -1,10 +1,11 @@
-import { missingTargets, runBuild, targetKey, type BuildEvent, type BuildTarget, type InferenceError } from '@folio/ai';
+import { missingTargets, runBuild, targetKey, type BuildEvent, type BuildTarget, type InferenceError, type Usage } from '@folio/ai';
 import { attentionItems, cmd, lessonNumber, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
 import { router } from '../app/router';
 import { currentMessages } from '../i18n';
-import { canReach, currentInference, errorMessage } from './model';
+import { canReach, currentInference, currentReviewer, errorMessage } from './model';
 import { activeStore, onSessionChange } from './session';
+import { costSentence, takeUsage } from './spend';
 import { toast } from './toasts';
 import { useUi } from './ui';
 
@@ -50,8 +51,10 @@ export function cellRun(lessonId: string, kind: GeneratedKind): CellRun | undefi
   return useBuild.getState().cells[`${lessonId}:${kind}`];
 }
 
-function finishToast(summary: Awaited<ReturnType<typeof runBuild>>): void {
+/** `cost` is a sentence on what the run cost, or ''. */
+function finishToast(summary: Awaited<ReturnType<typeof runBuild>>, cost: string): void {
   const t = currentMessages();
+  const withCost = (message: string) => (cost ? `${message}${t.common.sentenceGap}${cost}` : message);
   const store = activeStore();
   const openChanges = { label: t.build.review, run: () => useUi.getState().openDrawer('changes') };
   if (summary.fatal && summary.fatal.kind !== 'aborted') {
@@ -60,9 +63,9 @@ function finishToast(summary: Awaited<ReturnType<typeof runBuild>>): void {
     const fixKey = { label: t.build.fixKey, run: () => useUi.getState().requireModel(() => void startBuild()) };
     toast({ key: 'build', message: errorMessage(summary.fatal), tone: 'critical', duration: 0, action: fixable ? fixKey : undefined });
   } else if (summary.stopped && switchedFrom) {
-    toast({ key: 'build', message: t.build.stoppedBySwitch(switchedFrom) });
+    toast({ key: 'build', message: withCost(t.build.stoppedBySwitch(switchedFrom)) });
   } else if (summary.stopped) {
-    toast({ key: 'build', message: t.build.stopped });
+    toast({ key: 'build', message: withCost(t.build.stopped) });
   } else if (summary.failed) {
     const looks = store ? attentionItems(store.getState()).length : 0;
     // When every failure had one cause (a rate limit, the network), the toast says what it was.
@@ -70,14 +73,14 @@ function finishToast(summary: Awaited<ReturnType<typeof runBuild>>): void {
     const cause = causes.size === 1 ? [...causes][0]! : '';
     const failed = cause ? `${t.build.failedSome(summary.failed)}${t.common.sentenceGap}${cause}` : t.build.failedSome(summary.failed);
     const message = looks ? `${failed}${t.common.sentenceGap}${t.build.looksToo(looks)}` : failed;
-    toast({ key: 'build', message, tone: 'attention', action: openChanges, duration: 0 });
+    toast({ key: 'build', message: withCost(message), tone: 'attention', action: openChanges, duration: 0 });
   } else {
     const looks = store ? attentionItems(store.getState()).length : 0;
     // Ready is where the teacher's work starts: the toast offers the first lesson to read through.
     const course = store?.getState();
     const lessonId = course?.lessonOrder[0];
     const openFirst = course && lessonId ? { label: t.build.openFirst, run: () => void router.navigate({ to: '/c/$courseId/lesson/$lessonId', params: { courseId: course.id, lessonId } }) } : undefined;
-    toast({ key: 'build', message: looks ? t.build.readyLook(looks) : t.build.ready, action: looks ? openChanges : openFirst, duration: 12_000 });
+    toast({ key: 'build', message: withCost(looks ? t.build.readyLook(looks) : t.build.ready), action: looks ? openChanges : openFirst, duration: 12_000 });
   }
 }
 
@@ -144,12 +147,15 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
     }
     return;
   }
-  const inference = currentInference();
+  // Every call's tokens, the outline's included, so the run can say what it cost.
+  const usages: Usage[] = [];
+  const inference = currentInference((u) => usages.push(u));
   if (!inference) {
     useUi.getState().requireModel(() => void startBuild(targets));
     return;
   }
   if (!canReach(inference)) return;
+  usages.push(...takeUsage(course.id));
   const controller = new AbortController();
   const { cells, errors } = queuedCells(course.id, list);
   switchedFrom = null;
@@ -161,6 +167,7 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   const summary = await runBuild(
     {
       inference,
+      reviewer: currentReviewer((u) => usages.push(u)) ?? undefined,
       getCourse: store.getState,
       signal: controller.signal,
       commit: (target, commands) => {
@@ -179,7 +186,9 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   const { cells: after } = useBuild.getState();
   const errorsOnly = Object.fromEntries(Object.entries(after).filter(([, v]) => v === 'error'));
   useBuild.setState({ running: false, stopping: false, controller: null, cells: errorsOnly });
-  finishToast(summary);
+  // A key problem says only what to fix; otherwise the teacher hears what the run cost.
+  const cost = summary.fatal && summary.fatal.kind !== 'aborted' ? '' : await costSentence(usages).catch(() => '');
+  finishToast(summary, cost);
   switchedFrom = null;
 }
 

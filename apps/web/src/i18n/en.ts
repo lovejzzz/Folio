@@ -241,6 +241,9 @@ export const en = {
     paused: (n: number) => (n === 1 ? 'Paused · 1 part left' : `Paused · ${n} parts left`),
     resume: 'Resume',
     ready: 'Course ready.',
+    /** What the run cost, priced when it ends: prices change, so none is quoted beforehand. */
+    cost: (usd: number, live: boolean) =>
+      usd < 0.005 ? 'That cost less than a cent.' : `That cost about $${usd.toFixed(2)}${live ? ' at today’s prices' : ''}.`,
     readyLook: (n: number) => (n === 1 ? 'Course ready. Please check 1 thing.' : `Course ready. Please check ${n} things.`),
     stopped: 'Writing stopped. What was finished is saved.',
     stoppedBySwitch: (title: string) => `Writing “${title}” stopped when another course was opened. What was finished is saved; resume it from that course.`,
@@ -631,12 +634,12 @@ export const en = {
   settings: {
     title: 'Settings',
     ai: 'AI',
-    aiLede: 'Folio writes with an AI you choose. Your key stays in this browser and goes straight to the AI company.',
+    aiLede: 'Folio writes with an AI you choose, and tells you what each course cost when it’s done. Your key stays in this browser and goes straight to the AI company.',
     providers: {
-      anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use; a four-lesson course costs about $0.60 with Claude Sonnet 5.' },
-      openai: { name: 'Use my OpenAI key', short: 'your OpenAI key', note: 'OpenAI. You pay per use, at about the same rate as Claude with GPT-6 Sol.' },
+      anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use, and Claude Opus 5.5 checks each lesson plan before the rest is written.' },
+      openai: { name: 'Use my OpenAI key', short: 'your OpenAI key', note: 'OpenAI. You pay per use.' },
       google: { name: 'Use my Gemini key', short: 'your Gemini key', note: 'Google. You pay per use. The free tier allows too few requests to write a whole course.' },
-      deepseek: { name: 'Use my DeepSeek key', short: 'your DeepSeek key', note: 'DeepSeek. You pay per use; a four-lesson course costs about $0.10.' },
+      deepseek: { name: 'Use my DeepSeek key', short: 'your DeepSeek key', note: 'DeepSeek. You pay per use.' },
       local: { name: 'On this device', short: 'the AI on this device', note: 'Runs through Ollama or LM Studio on your computer. Private and free, but slower and less accurate.' },
     },
     key: 'API key',
@@ -725,7 +728,7 @@ export const en = {
   privacy: {
     title: 'Privacy',
     link: 'Privacy',
-    updated: 'Last updated 27 September 2026',
+    updated: 'Last updated 28 September 2026',
     lede: 'Folio has no accounts and no server of its own. Your courses stay in your browser.',
     sections: [
       {
@@ -743,6 +746,10 @@ export const en = {
       {
         heading: 'Google API data',
         body: 'Folio’s use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements.',
+      },
+      {
+        heading: 'What a course cost',
+        body: 'To tell you what a course cost, Folio counts the tokens the AI company reports for each request and prices them with the public list at openrouter.ai, read when the course is finished. That request carries nothing about you or your course.',
       },
       {
         heading: 'What we don’t do',

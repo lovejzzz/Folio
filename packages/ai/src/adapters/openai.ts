@@ -8,6 +8,7 @@ import {
   type CompletionRequest,
   type Inference,
   type ModelSettings,
+  type OnUsage,
 } from '../inference';
 
 const BASES: Partial<Record<ModelSettings['provider'], string>> = {
@@ -23,7 +24,24 @@ const NAMES: Partial<Record<ModelSettings['provider'], string>> = { openai: 'Ope
  * don't think at all, which in live runs cost no quality.
  */
 function deepseekThinking(effort: CompletionRequest['effort']) {
+  if (effort === 'high') return { reasoning_effort: 'medium' };
   return effort === 'medium' ? { reasoning_effort: 'low' } : { thinking: { type: 'disabled' } };
+}
+
+interface OpenAiUsage {
+  prompt_tokens?: number;
+  completion_tokens?: number;
+  prompt_tokens_details?: { cached_tokens?: number };
+  /** DeepSeek reports its cache this way. */
+  prompt_cache_hit_tokens?: number;
+  prompt_cache_miss_tokens?: number;
+}
+
+/** OpenAI counts cached input inside the prompt; DeepSeek splits hits from misses. */
+function fromOpenAi(u: OpenAiUsage): { input: number; output: number; cacheRead: number; cacheWrite: number } {
+  const cached = u.prompt_cache_hit_tokens ?? u.prompt_tokens_details?.cached_tokens ?? 0;
+  const input = u.prompt_cache_miss_tokens ?? Math.max(0, (u.prompt_tokens ?? 0) - cached);
+  return { input, output: u.completion_tokens ?? 0, cacheRead: cached, cacheWrite: 0 };
 }
 
 /**
@@ -33,7 +51,7 @@ function deepseekThinking(effort: CompletionRequest['effort']) {
  * download. DeepSeek takes only JSON mode, so the schema goes into the system
  * prompt, last, after the shared course context it can cache.
  */
-export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch = fetch): Inference {
+export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch = fetch, onUsage?: OnUsage): Inference {
   const local = settings.provider === 'local';
   const base = (local ? settings.baseUrl : (BASES[settings.provider] ?? '')).replace(/\/+$/, '');
   const jsonMode = settings.provider === 'deepseek';
@@ -73,7 +91,11 @@ export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch
       if (!response.ok) throw errorFromStatus(response.status, await response.text());
       const data = (await response.json()) as {
         choices?: { message?: { content?: string | null; refusal?: string | null }; finish_reason?: string }[];
+        model?: string;
+        usage?: OpenAiUsage;
       };
+      // A model on this computer costs nothing, so there is nothing to count.
+      if (data.usage && !local) onUsage?.({ provider: settings.provider, model: data.model || settings.model, ...fromOpenAi(data.usage) });
       const choice = data.choices?.[0];
       if (choice?.message?.refusal) throw new InferenceError('refused', choice.message.refusal);
       const text = choice?.message?.content ?? '';

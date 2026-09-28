@@ -1,12 +1,19 @@
-import { createInference, isConfigured, type Inference, type InferenceError, type ProviderId } from '@folio/ai';
+import { createInference, isConfigured, reviewerSettings, type Inference, type InferenceError, type OnUsage, type ProviderId } from '@folio/ai';
 import { currentMessages } from '../i18n';
 import { modelSettings, usePrefs } from './prefs';
 import { toast } from './toasts';
 
-/** The configured model, or null if none is set up yet. */
-export function currentInference(): Inference | null {
+/** The configured model, or null if none is set up yet. `onUsage` hears the tokens of every call. */
+export function currentInference(onUsage?: OnUsage): Inference | null {
   const settings = modelSettings(usePrefs.getState());
-  return isConfigured(settings) ? createInference(settings) : null;
+  return isConfigured(settings) ? createInference(settings, undefined, onUsage) : null;
+}
+
+/** The model that reviews lesson plans with the teacher's key, or null where plans go out as written. */
+export function currentReviewer(onUsage?: OnUsage): Inference | null {
+  const settings = modelSettings(usePrefs.getState());
+  const review = settings && isConfigured(settings) ? reviewerSettings(settings) : null;
+  return review ? createInference(review, undefined, onUsage) : null;
 }
 
 export function useModelReady(): boolean {

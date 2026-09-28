@@ -8,10 +8,11 @@ import {
   type CompletionRequest,
   type Inference,
   type ModelSettings,
+  type OnUsage,
 } from '../inference';
 
 /** Gemini with a JSON response schema. */
-export function googleInference(settings: ModelSettings, fetchImpl: typeof fetch = fetch): Inference {
+export function googleInference(settings: ModelSettings, fetchImpl: typeof fetch = fetch, onUsage?: OnUsage): Inference {
   return {
     provider: 'google',
     model: settings.model,
@@ -41,7 +42,22 @@ export function googleInference(settings: ModelSettings, fetchImpl: typeof fetch
       const data = (await response.json()) as {
         candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[];
         promptFeedback?: { blockReason?: string };
+        modelVersion?: string;
+        usageMetadata?: { promptTokenCount?: number; cachedContentTokenCount?: number; candidatesTokenCount?: number; thoughtsTokenCount?: number };
       };
+      const u = data.usageMetadata;
+      if (u) {
+        // Gemini counts cached input inside the prompt, and bills thinking as output.
+        const cached = u.cachedContentTokenCount ?? 0;
+        onUsage?.({
+          provider: 'google',
+          model: data.modelVersion || settings.model,
+          input: Math.max(0, (u.promptTokenCount ?? 0) - cached),
+          output: (u.candidatesTokenCount ?? 0) + (u.thoughtsTokenCount ?? 0),
+          cacheRead: cached,
+          cacheWrite: 0,
+        });
+      }
       if (data.promptFeedback?.blockReason) throw new InferenceError('refused', data.promptFeedback.blockReason);
       const candidate = data.candidates?.[0];
       if (candidate?.finishReason === 'SAFETY') throw new InferenceError('refused', 'Blocked by safety settings.');

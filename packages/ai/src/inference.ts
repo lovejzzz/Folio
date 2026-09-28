@@ -37,7 +37,7 @@ export function isConfigured(settings: ModelSettings | null | undefined): settin
 export const DEFAULT_LOCAL_URL = 'http://localhost:11434/v1';
 
 /** How hard the model thinks before answering. Thinking is billed as output. */
-export type Effort = 'low' | 'medium';
+export type Effort = 'low' | 'medium' | 'high';
 
 export interface CompletionRequest {
   /** Short name of the job, used as the schema name. */
@@ -55,6 +55,22 @@ export interface CompletionRequest {
   signal?: AbortSignal;
   maxTokens?: number;
 }
+
+/**
+ * The tokens one call used, as the provider reported them. `input` leaves out cached input, which is billed
+ * apart: `cacheRead` for input served from the cache, `cacheWrite` for input written to it.
+ */
+export interface Usage {
+  provider: ProviderId;
+  model: string;
+  input: number;
+  output: number;
+  cacheRead: number;
+  cacheWrite: number;
+}
+
+/** Told the tokens of every call that returns, so what a course cost can be worked out afterwards. */
+export type OnUsage = (usage: Usage) => void;
 
 export interface Inference {
   readonly provider: ProviderId;

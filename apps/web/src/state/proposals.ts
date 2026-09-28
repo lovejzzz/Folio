@@ -1,7 +1,7 @@
 import { generateSection } from '@folio/ai';
 import { cmd, lessonNumber, staleReasons, type Command, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
-import { canReach, currentInference, errorMessage } from './model';
+import { canReach, currentInference, currentReviewer, errorMessage } from './model';
 import { activeStore } from './session';
 import { toast } from './toasts';
 import { useUi } from './ui';
@@ -47,7 +47,8 @@ export async function updateSection(lessonId: string, kind: GeneratedKind): Prom
   const edited = course.lessons[lessonId]?.gen[kind]?.edited ?? false;
   setPending(k, { status: 'working', commands: [], basisRevision: course.revision });
   try {
-    const result = await generateSection(inference, course, lessonId, kind);
+    const reviewer = kind === 'plan' ? (currentReviewer() ?? undefined) : undefined;
+    const result = await generateSection(inference, course, lessonId, kind, undefined, { reviewer });
     if (edited) {
       setPending(k, { status: 'ready', commands: result.commands, basisRevision: course.revision });
       useUi.getState().openDrawer('changes');

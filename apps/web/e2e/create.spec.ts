@@ -1,5 +1,6 @@
 import { expect, test } from './fixtures';
 import { fakeAnthropic } from './fakeModel';
+import { withKey } from './helpers';
 
 test('describe, plan, build and land on a finished map', async ({ page }) => {
   const model = await fakeAnthropic(page, { delayMs: 50 });
@@ -32,6 +33,11 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   await expect(page.getByText(/Course ready\. Please check 3 things\./)).toBeVisible({ timeout: 30_000 });
   const plan = model.calls.filter((c) => c.messages[0]!.content.includes('Write the lesson plan'));
   expect(plan).toHaveLength(3);
+  // Each plan is checked by Opus before the rest is written, and the run says what it cost.
+  const reviews = model.calls.filter((c) => c.messages[0]!.content.includes('Check this plan the way'));
+  expect(reviews).toHaveLength(3);
+  expect(reviews.every((c) => c.model === 'claude-opus-5-5')).toBe(true);
+  await expect(page.getByText(/That cost less than a cent\./)).toBeVisible();
   expect(model.calls.some((c) => c.messages[0]!.content.includes('"Chloroplasts up close"'))).toBe(true);
   expect(model.calls.some((c) => c.messages[0]!.content.includes('Write one assignment'))).toBe(false);
 
@@ -41,4 +47,23 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   await expect(drawer.getByText('The answer is not one of the choices.').first()).toBeVisible();
   await drawer.getByRole('button', { name: 'It’s fine' }).first().click();
   await expect(drawer.getByText('The answer is not one of the choices.')).toHaveCount(2);
+});
+
+test('a plan review that fails leaves the plan as written, and the course still gets built', async ({ page }) => {
+  const model = await fakeAnthropic(page);
+  // Registered last, so it sees each request first: the reviewer's calls fail, the rest go on to the fake.
+  await page.route('https://api.anthropic.com/**', (route) => {
+    const body = route.request().method() === 'POST' ? (route.request().postDataJSON() as { model?: string }) : null;
+    if (body?.model !== 'claude-opus-5-5') return route.fallback();
+    return route.fulfill({ status: 500, headers: { 'access-control-allow-origin': '*' }, json: { type: 'error', error: { type: 'api_error', message: 'Overloaded' } } });
+  });
+  await withKey(page);
+  await page.goto('/');
+  await page.getByLabel('Describe your course').fill('Photosynthesis for year 7, two lessons');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByRole('radio', { name: 'Essentials' }).click();
+  await page.getByRole('button', { name: 'Write 2 lessons' }).click();
+  await expect(page.getByText(/^Course ready/)).toBeVisible({ timeout: 30_000 });
+  expect(model.calls.filter((c) => c.messages[0]!.content.includes('Write the lesson plan'))).toHaveLength(2);
+  await expect(page.getByRole('button', { name: /^Lesson 1, Lesson plans: 50 min/ })).toContainText('Leaf in the dark');
 });
