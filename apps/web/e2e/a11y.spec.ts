@@ -4,8 +4,10 @@ import { expect, test } from './fixtures';
 import { openSample } from './helpers';
 
 async function audit(page: Page, label: string) {
-  // Let the 120 ms reduced-motion fades finish so contrast is measured on settled text.
-  await page.waitForTimeout(400);
+  // Measure contrast on settled text: a fixed wait let a busy machine measure cards still fading in.
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getComputedTiming().iterations === Infinity));
+  await page.waitForTimeout(100);
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
   const summary = results.violations.map((v) => `${label}: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target.join(' ')}`);
   expect(summary).toEqual([]);
@@ -13,6 +15,8 @@ async function audit(page: Page, label: string) {
 
 for (const scheme of ['light', 'dark'] as const) {
   test(`every main screen passes axe (${scheme})`, async ({ page }) => {
+    // Nine screens, each audited in full.
+    test.setTimeout(150_000);
     await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
     await page.goto('/');
     await audit(page, 'home');

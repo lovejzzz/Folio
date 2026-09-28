@@ -1,5 +1,6 @@
 import type { Command, Course, Label } from '@folio/core';
 import type { FocusEvent } from 'react';
+import { flushSync } from 'react-dom';
 import { edit } from '../state/edit';
 import { activeStore } from '../state/session';
 
@@ -18,19 +19,27 @@ export function latestCourse(): Course | null {
   return activeStore()?.getState() ?? null;
 }
 
-/** Add an item, then put the caret in the first field of the element marked `data-item={itemId}`. */
+/**
+ * Add an item, then put the caret in the first field of the element marked `data-item={itemId}`. The item is
+ * rendered before this returns, so the caret is in it before the next key press: waiting a frame for it lost the
+ * first letters a quick typist entered straight after pressing Add.
+ */
 export function addItem(itemId: string, commands: Command[], label: Label): void {
-  const entry = edit(commands, label);
+  const entry = flushSync(() => edit(commands, label));
   fresh.set(itemId, entry?.id ?? null);
-  focusItem(itemId);
+  if (!focusField(itemId)) focusItem(itemId);
+}
+
+function focusField(itemId: string): boolean {
+  const field = document.querySelector<HTMLElement>(`[data-item="${CSS.escape(itemId)}"] [contenteditable]`);
+  field?.focus();
+  return Boolean(field);
 }
 
 /** Put the caret in an item's first field once it is on the page. */
 export function focusItem(itemId: string, tries = 20): void {
   requestAnimationFrame(() => {
-    const field = document.querySelector<HTMLElement>(`[data-item="${CSS.escape(itemId)}"] [contenteditable]`);
-    if (field) field.focus();
-    else if (tries > 0) focusItem(itemId, tries - 1);
+    if (!focusField(itemId) && tries > 0) focusItem(itemId, tries - 1);
   });
 }
 
