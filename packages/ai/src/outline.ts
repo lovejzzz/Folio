@@ -53,6 +53,19 @@ export function groundedIn(req: Pick<NewCourseRequest, 'brief' | 'sources'>): (n
   };
 }
 
+/**
+ * Homework counts toward one of the course's graded components or toward nothing. A model asked to name the
+ * component "as under grading" still made one up ("Water cycle diagram quiz" for a course graded by lesson quizzes).
+ */
+function towardGraded(outline: OutlineDraft): (toward: string) => string {
+  const items = outline.grading.map((g) => plain(g.item)).filter(Boolean);
+  return (toward) => {
+    const t = plain(toward);
+    const hit = t && items.find((item) => item === t || ` ${item} `.includes(` ${t} `) || ` ${t} `.includes(` ${item} `));
+    return hit ? toward.trim() : '';
+  };
+}
+
 /** Turn an agreed outline into a course in the planning state. */
 export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft): Course {
   const course = createCourse({
@@ -73,12 +86,13 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   const clean = (r: string) => r.trim().replace(/(?<!\b(?:al|ed|eds|ch|vol|pp|p|no|n\.d))\.$/i, '');
   const key = (r: string) => r.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
   const named = groundedIn(req);
+  const counts = towardGraded(outline);
   const readings = outline.lessons.map((d) => d.readings.filter((r) => named(r.namedIn)).map((r) => clean(r.work)).filter(Boolean));
   const seen = new Set(readings.flat().map(key));
   for (const [i, draft] of outline.lessons.entries()) {
     const lesson = emptyLesson(newId('l'), draft.title, draft.summary);
     lesson.readings = readings[i] ?? [];
-    lesson.homework = { kind: draft.homework, toward: draft.homework === 'none' ? '' : draft.homeworkToward.trim() };
+    lesson.homework = { kind: draft.homework, toward: draft.homework === 'none' ? '' : counts(draft.homeworkToward) };
     lesson.suggestedReadings = draft.suggestedReadings
       .map(clean)
       .filter((r) => r && !seen.has(key(r)) && seen.add(key(r)));

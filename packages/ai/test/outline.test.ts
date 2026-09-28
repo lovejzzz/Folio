@@ -52,6 +52,7 @@ describe('the outline', () => {
     const draft = OutlineDraft.parse({
       title: 'E', summary: 'S.', subject: 'Philosophy', level: 'University',
       lessons: [{ ...lessons[0], homework: 'step', homeworkToward: ' Final essay ' }, { ...lessons[1], homework: 'none', homeworkToward: 'Final essay' }],
+      grading: [{ item: 'Final essay', weight: 100 }],
     });
     expect(orderedLessons(courseFromOutline(req, draft)).map((l) => l.homework)).toEqual([
       { kind: 'step', toward: 'Final essay' },
@@ -115,5 +116,14 @@ describe('the outline', () => {
     expect(courseFromOutline(req, one).grading.map((g) => g.weight)).toEqual([100]);
     const two = OutlineDraft.parse({ title: 'W', summary: 'S.', subject: 'Science', level: 'Grade 5', lessons, grading: [{ item: 'Quizzes', weight: null }, { item: 'Project', weight: null }] });
     expect(courseFromOutline(req, two).grading.map((g) => g.weight)).toEqual([0, 0]);
+  });
+
+  it('lets homework count only toward a graded component the course has', () => {
+    const draft = OutlineDraft.parse({
+      title: 'W', summary: 'S.', subject: 'Science', level: 'Grade 5',
+      lessons: [{ ...lessons[0], homeworkToward: 'Water cycle diagram quiz' }, { ...lessons[1], homeworkToward: 'quizzes' }],
+      grading: [{ item: 'Lesson quizzes', weight: null }],
+    });
+    expect(orderedLessons(courseFromOutline(req, draft)).map((l) => l.homework.toward)).toEqual(['', 'quizzes']);
   });
 });
