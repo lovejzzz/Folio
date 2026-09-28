@@ -73,13 +73,6 @@ test('tour, sample course', async ({ page }) => {
   await shot(page, 'sample-map-compact');
   await page.goto('/settings');
   await page.getByRole('radio', { name: 'With a preview' }).click();
-  await page.getByRole('radio', { name: '简体中文' }).click();
-  await page.goto('/');
-  await shot(page, 'zh-home');
-  await page.goto(`${base}/map`);
-  await shot(page, 'zh-map');
-  await page.goto('/library');
-  await shot(page, 'zh-library');
 });
 
 test('tour, phone', async ({ browser }) => {

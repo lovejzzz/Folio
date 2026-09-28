@@ -21,11 +21,10 @@ function Examples() {
             <button
               type="button"
               onClick={() => {
-                set({ pinned: { level: false, lessons: false, language: false } });
+                set({ pinned: { level: false, lessons: false } });
                 setBrief(example);
                 document.getElementById('brief')?.focus();
               }}
-              lang={/[\u3400-\u9fff]/.test(example) ? 'zh-CN' : undefined}
               className="h-8 rounded-full border border-rule px-3.5 font-ui text-13 text-ink-2 outline-none transition-colors duration-120 hover:border-field hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
             >
               {example}

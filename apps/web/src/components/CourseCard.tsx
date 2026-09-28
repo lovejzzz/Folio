@@ -4,12 +4,10 @@ import { Link } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 import { relativeTime, useT } from '../i18n';
 import type { CourseSummary } from '../state/db';
-import { usePrefs } from '../state/prefs';
 
 /** A course as a paper card, its materials peeking out as binder tabs along the top. */
 export function CourseCard({ course, menu }: { course: CourseSummary; menu?: ReactNode }) {
   const t = useT();
-  const language = usePrefs((s) => s.uiLanguage);
   const status = course.status === 'planning' ? t.library.planning : course.status === 'building' ? t.library.building : null;
   const to = course.status === 'planning' ? '/c/$courseId/plan' : '/c/$courseId/map';
   return (
@@ -30,7 +28,7 @@ export function CourseCard({ course, menu }: { course: CourseSummary; menu?: Rea
         <span className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-4 font-ui text-13 text-ink-2">
           <span>{t.common.lessons(course.lessonCount)}</span>
           <span aria-hidden>·</span>
-          <span>{t.common.edited(relativeTime(course.updatedAt, language))}</span>
+          <span>{t.common.edited(relativeTime(course.updatedAt))}</span>
           {status && (
             <span className="rounded-full bg-well px-2 py-0.5 text-12 text-ink-2">{status}</span>
           )}

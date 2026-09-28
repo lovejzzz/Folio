@@ -5,7 +5,7 @@ type FlagWording = { [C in FlagCode]: (v: FlagValues<C>) => string };
 
 /**
  * Interface copy. Plain, warm and short, in teachers' words. Buttons say
- * what happens. The Chinese catalogue must match this shape exactly.
+ * what happens.
  */
 export const en = {
   appName: 'Folio',
@@ -116,7 +116,6 @@ export const en = {
     level: 'Level',
     levelAny: 'Any level',
     lessonsChip: (n: number) => (n === 1 ? '1 lesson' : `${n} lessons`),
-    language: 'Language',
     attach: 'Attach files',
     attached: (n: number) => (n === 1 ? '1 file attached' : `${n} files attached`),
     dropHere: 'Drop syllabus or notes here',
@@ -137,8 +136,7 @@ export const en = {
     fileUnsupported: (name: string) => `${name} can’t be read. Attach .txt, .md or .docx files, or paste the text.`,
     filesRefused: (names: string[]) => `${new Intl.ListFormat('en-GB', { type: 'conjunction' }).format(names)} can’t be attached. Attach .txt, .md or .docx files up to 2 MB.`,
   },
-  levels: ['Primary', 'Middle school', 'Grade 9–10', 'Grade 11–12', 'University', 'Adult learners'],
-  languages: { en: 'English', 'zh-CN': '简体中文' },
+  levels: ['Elementary school', 'Middle school', 'Grade 9–10', 'Grade 11–12', 'College', 'Adult learners'],
   plan: {
     title: 'Plan the course',
     lede: 'Check the outline before anything else is written. Rename, reorder or add lessons; everything below becomes the course.',
@@ -657,7 +655,6 @@ export const en = {
     appearance: 'Appearance',
     theme: 'Theme',
     density: 'Overview cells',
-    interfaceLanguage: 'Interface language',
     data: 'Your data',
     dataLede: 'Courses are saved in this browser. Save a backup file to keep a copy anywhere else.',
     storage: (used: string) => `About ${used} used on this device.`,

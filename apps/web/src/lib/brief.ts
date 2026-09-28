@@ -1,4 +1,4 @@
-import type { Language, Session, SessionKind } from '@folio/core';
+import type { Session, SessionKind } from '@folio/core';
 
 /**
  * Pre-fill the three chips under the brief as the teacher types. These read
@@ -110,7 +110,7 @@ export function guessLessons(text: string): number | null {
 
 /** US-style grade bands, as the level chip offers them. */
 function gradeBand(grade: number): string | null {
-  if (grade >= 1 && grade <= 5) return 'Primary';
+  if (grade >= 1 && grade <= 5) return 'Elementary school';
   if (grade >= 6 && grade <= 8) return 'Middle school';
   if (grade === 9 || grade === 10) return 'Grade 9–10';
   if (grade === 11 || grade === 12) return 'Grade 11–12';
@@ -135,9 +135,9 @@ function englishLevel(text: string): string | null {
   if (ordinal) return gradeBand(ordinal);
   if (/\b(?:high[\s-]school|secondary[\s-]school)\s+(?:juniors?|seniors?)\b|\b(?:juniors?|seniors?)\s+in\s+high[\s-]school\b/i.test(text)) return 'Grade 11–12';
   if (/\b(?:high[\s-]school)\s+(?:freshm[ae]n|sophomores?)\b|\b(?:freshm[ae]n|sophomores?)\s+in\s+high[\s-]school\b/i.test(text)) return 'Grade 9–10';
-  if (/\b(?:university|undergrad(?:uate)?s?|(?:post)?graduate|master'?s|ph\.?d|doctoral|college|first-year|freshm[ae]n)\b/i.test(text)) return 'University';
+  if (/\b(?:university|undergrad(?:uate)?s?|(?:post)?graduate|master'?s|ph\.?d|doctoral|college|first-year|freshm[ae]n)\b/i.test(text)) return 'College';
   if (/\b(?:adults?|professionals?|staff|employees)\b/i.test(text)) return 'Adult learners';
-  if (/\b(?:primary|elementary)\b/i.test(text)) return 'Primary';
+  if (/\b(?:primary|elementary)\b/i.test(text)) return 'Elementary school';
   if (/\b(?:middle[\s-]school)\b/i.test(text)) return 'Middle school';
   if (/\bhigh[\s-]school\b/i.test(text)) return 'Grade 9–10';
   return null;
@@ -157,12 +157,6 @@ function chineseLevel(text: string): string | null {
 
 export function guessLevel(text: string): string | null {
   return englishLevel(text) ?? chineseLevel(text);
-}
-
-export function guessLanguage(text: string): Language | null {
-  const cjk = text.match(/[㐀-鿿]/g)?.length ?? 0;
-  if (text.trim().length < 4) return null;
-  return cjk / text.replace(/\s/g, '').length > 0.3 ? 'zh-CN' : 'en';
 }
 
 const zhOrDigits = (raw: string): number | null => zhNumber(raw) ?? (/^\d+$/.test(raw) ? Number(raw) : null);

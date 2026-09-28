@@ -5,7 +5,7 @@ import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { probeModel } from '../../components/ConnectDialog';
 import { ProviderChoice, ProviderFields, hasKey, missingSetup } from '../../components/ProviderFields';
-import { loadCatalog, useT } from '../../i18n';
+import { useT } from '../../i18n';
 import { download } from '../../lib/exporter';
 import { allCourses, db, storageKept } from '../../state/db';
 import { errorMessage } from '../../state/model';
@@ -92,7 +92,7 @@ function ModelSection() {
 
 function AppearanceSection() {
   const t = useT();
-  const { theme, density, uiLanguage, set } = usePrefs();
+  const { theme, density, set } = usePrefs();
   return (
     <Section title={t.settings.appearance}>
       <Row label={t.settings.theme}>
@@ -100,9 +100,6 @@ function AppearanceSection() {
       </Row>
       <Row label={t.settings.density}>
         <SegmentedControl label={t.settings.density} value={density} onChange={(v) => set({ density: v })} options={[{ id: 'comfortable', label: t.map.comfortable }, { id: 'compact', label: t.map.compact }]} />
-      </Row>
-      <Row label={t.settings.interfaceLanguage}>
-        <SegmentedControl label={t.settings.interfaceLanguage} value={uiLanguage} onChange={(v) => void loadCatalog(v).then(() => set({ uiLanguage: v }))} options={[{ id: 'en', label: 'English' }, { id: 'zh-CN', label: '简体中文' }]} />
       </Row>
     </Section>
   );

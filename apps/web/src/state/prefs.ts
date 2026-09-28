@@ -3,12 +3,10 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type Theme = 'system' | 'light' | 'dark';
-export type UiLanguage = 'en' | 'zh-CN';
 export type Density = 'comfortable' | 'compact';
 
 interface Prefs {
   theme: Theme;
-  uiLanguage: UiLanguage;
   density: Density;
   railCollapsed: boolean;
   /** Keys for every provider are kept so switching back doesn't lose one. */
@@ -56,7 +54,6 @@ export function sanitizePrefs(stored: unknown, current: Prefs): Prefs {
   return {
     ...current,
     theme: oneOf(['system', 'light', 'dark'], p.theme, current.theme),
-    uiLanguage: oneOf(['en', 'zh-CN'], p.uiLanguage, current.uiLanguage),
     density: oneOf(['comfortable', 'compact'], p.density, current.density),
     railCollapsed: typeof p.railCollapsed === 'boolean' ? p.railCollapsed : current.railCollapsed,
     keys: record(p.keys),
@@ -66,15 +63,10 @@ export function sanitizePrefs(stored: unknown, current: Prefs): Prefs {
   };
 }
 
-function defaultLanguage(): UiLanguage {
-  return typeof navigator !== 'undefined' && navigator.language?.toLowerCase().startsWith('zh') ? 'zh-CN' : 'en';
-}
-
 export const usePrefs = create<Prefs>()(
   persist(
     (set) => ({
       theme: 'system',
-      uiLanguage: defaultLanguage(),
       density: 'comfortable',
       railCollapsed: false,
       keys: {},

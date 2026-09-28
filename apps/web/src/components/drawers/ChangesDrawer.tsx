@@ -5,7 +5,6 @@ import { useState, type ReactNode } from 'react';
 import { flagText, relativeTime, useT, type Messages } from '../../i18n';
 import { retryCell, startBuild, useBuild } from '../../state/build';
 import { edit, undo } from '../../state/edit';
-import { usePrefs } from '../../state/prefs';
 import { keepAll, keepMine, updateSection, updateSections, useProposals } from '../../state/proposals';
 import { useCourse, useStore } from '../../state/session';
 import { CompareDialog } from './CompareDialog';
@@ -259,7 +258,6 @@ export function historyLabel(entry: HistoryEntry, t: Messages): string {
 function HistoryRow({ entry }: { entry: HistoryEntry }) {
   const t = useT();
   const store = useStore();
-  const language = usePrefs((s) => s.uiLanguage);
   const canUndo = store.canUndoEntry(entry.id);
   return (
     <li className="flex items-start justify-between gap-3 font-ui text-13 leading-5">
@@ -268,7 +266,7 @@ function HistoryRow({ entry }: { entry: HistoryEntry }) {
         <span className="block text-12 text-ink-2">
           {entry.source === 'ai' ? t.changes.ai : t.changes.you}
           <Sep />
-          {entry.undone ? t.changes.undone : relativeTime(entry.at, language)}
+          {entry.undone ? t.changes.undone : relativeTime(entry.at)}
         </span>
       </span>
       {!entry.undone &&

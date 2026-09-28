@@ -10,7 +10,6 @@ import { RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { router } from './app/router';
-import { loadCatalog } from './i18n';
 
 // After a new version is deployed, an open tab asks for code chunks that no longer exist. Reload once to
 // pick up the new version; work is saved as it's made, and the flag stops a reload loop.
@@ -21,15 +20,9 @@ window.addEventListener('vite:preloadError', (event) => {
   window.location.reload();
 });
 window.addEventListener('load', () => setTimeout(() => sessionStorage.removeItem('folio.reloaded'), 10_000));
-import { usePrefs } from './state/prefs';
 
-// Chinese copy is its own chunk: fetch it before the first paint so the page never flashes English.
-void loadCatalog(usePrefs.getState().uiLanguage)
-  .catch(() => {})
-  .then(() =>
-    createRoot(document.getElementById('root')!).render(
-      <StrictMode>
-        <RouterProvider router={router} />
-      </StrictMode>,
-    ),
-  );
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>,
+);

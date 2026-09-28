@@ -52,12 +52,3 @@ test('an unknown address inside a course keeps the course header; a missing cour
   await expect(page.getByRole('heading', { level: 1, name: 'This course isn’t on this device.' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Library' }).first()).toBeVisible();
 });
-
-test('the not-found pages are in Chinese when the interface is', async ({ page }) => {
-  await page.addInitScript(() => {
-    localStorage.setItem('folio.prefs', JSON.stringify({ state: { uiLanguage: 'zh-CN' }, version: 1 }));
-  });
-  await page.goto('/nowhere');
-  await expect(page.getByRole('heading', { level: 1, name: '这里没有页面' })).toBeVisible();
-  await expect(page.getByRole('link', { name: '回到首页' })).toBeVisible();
-});

@@ -1,6 +1,6 @@
 import { CORE_SET, MATERIAL_KINDS, type Language, type MaterialKind } from '@folio/core';
 import { create } from 'zustand';
-import { guessLanguage, guessLessons, guessLevel } from '../lib/brief';
+import { guessLessons, guessLevel } from '../lib/brief';
 
 /** The new-course brief, kept while the outline is drafted. */
 interface Draft {
@@ -9,7 +9,7 @@ interface Draft {
   lessons: number;
   language: Language;
   /** Chips the teacher set by hand stop following the text. */
-  pinned: { level: boolean; lessons: boolean; language: boolean };
+  pinned: { level: boolean; lessons: boolean };
   files: { title: string; text: string }[];
   materials: MaterialKind[];
   set: (patch: Partial<Omit<Draft, 'set'>>) => void;
@@ -21,7 +21,7 @@ const initial = {
   level: '',
   lessons: 4,
   language: 'en' as Language,
-  pinned: { level: false, lessons: false, language: false },
+  pinned: { level: false, lessons: false },
   files: [],
   materials: [...MATERIAL_KINDS],
 };
@@ -43,9 +43,5 @@ export function setBrief(brief: string): void {
     if (n) patch.lessons = n;
   }
   if (!pinned.level) patch.level = guessLevel(brief) ?? '';
-  if (!pinned.language) {
-    const lang = guessLanguage(brief);
-    if (lang) patch.language = lang;
-  }
   set(patch);
 }

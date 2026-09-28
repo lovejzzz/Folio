@@ -1,11 +1,10 @@
-import type { Language } from '@folio/core';
 import { ChevronDown } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useT } from '../../i18n';
 import { useDraft } from '../../state/draft';
 
 /**
- * The three quiet chips under the brief. They are native selects styled as
+ * The quiet chips under the brief. They are native selects styled as
  * chips: tiny to load, and phones open their own picker.
  */
 function Chip({ label, value, onChange, children }: { label: string; value: string; onChange: (v: string) => void; children: ReactNode }) {
@@ -51,20 +50,6 @@ export function LessonsChip() {
       {options.map((n) => (
         <option key={n} value={n}>
           {t.home.lessonsChip(n)}
-        </option>
-      ))}
-    </Chip>
-  );
-}
-
-export function LanguageChip() {
-  const t = useT();
-  const { language, set, pinned } = useDraft();
-  return (
-    <Chip label={t.home.language} value={language} onChange={(v) => set({ language: v as Language, pinned: { ...pinned, language: true } })}>
-      {(['en', 'zh-CN'] as const).map((l) => (
-        <option key={l} value={l} lang={l}>
-          {t.languages[l]}
         </option>
       ))}
     </Chip>

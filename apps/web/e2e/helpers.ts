@@ -10,7 +10,7 @@ export async function openSample(page: Page): Promise<void> {
 /** Pretend a Claude key has been saved, without going through the dialog. */
 export async function withKey(page: Page): Promise<void> {
   await page.addInitScript(() => {
-    localStorage.setItem('folio.prefs', JSON.stringify({ state: { provider: 'anthropic', keys: { anthropic: 'sk-ant-test' }, models: {}, theme: 'system', uiLanguage: 'en', density: 'comfortable', railCollapsed: false, localUrl: 'http://localhost:11434/v1' }, version: 1 }));
+    localStorage.setItem('folio.prefs', JSON.stringify({ state: { provider: 'anthropic', keys: { anthropic: 'sk-ant-test' }, models: {}, theme: 'system', density: 'comfortable', railCollapsed: false, localUrl: 'http://localhost:11434/v1' }, version: 1 }));
   });
 }
 

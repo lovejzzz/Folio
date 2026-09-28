@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { SHAPE_LIMITS } from '@folio/core';
 import { en } from '../i18n/en';
-import { MAX_GUESSED_LESSONS, guessLanguage, guessLessons, guessLevel, guessMinutes, guessQuizSize, guessSessions } from './brief';
+import { MAX_GUESSED_LESSONS, guessLessons, guessLevel, guessMinutes, guessQuizSize, guessSessions } from './brief';
 
 describe('reading the brief for the chips', () => {
   it.each([
@@ -72,7 +72,7 @@ describe('reading the brief for the chips', () => {
   it.each([
     ['intro statistics for grade 11', 'Grade 11'],
     ['Photosynthesis for year 7', 'Year 7'],
-    ['a first-year university course', 'University'],
+    ['a first-year university course', 'College'],
     ['唐诗入门，初中二年级', '初中二年级'],
     ['a course on bees', null],
   ])('%s → level %s', (text, level) => expect(guessLevel(text)).toBe(level));
@@ -84,22 +84,22 @@ describe('reading the brief for the chips', () => {
     ['9th grade biology', 'Grade 9–10'],
     ['tenth graders', 'Grade 9–10'],
     ['7th grade maths', 'Middle school'],
-    ['for 3rd graders', 'Primary'],
+    ['for 3rd graders', 'Elementary school'],
     ['high school juniors', 'Grade 11–12'],
     ['seniors in high school', 'Grade 11–12'],
     ['high school sophomores', 'Grade 9–10'],
     ['high school physics', 'Grade 9–10'],
     ['Year 11s revising for exams', 'Year 11'],
     ['grade-8 science', 'Grade 8'],
-    ['undergraduates in their first term', 'University'],
-    ['college freshmen', 'University'],
-    ['Graduate seminar in political philosophy', 'University'],
-    ["a master's course in finance", 'University'],
+    ['undergraduates in their first term', 'College'],
+    ['college freshmen', 'College'],
+    ['Graduate seminar in political philosophy', 'College'],
+    ["a master's course in finance", 'College'],
     ['new staff at a hospital', 'Adult learners'],
     ['adult learners of Spanish', 'Adult learners'],
-    ['elementary school art', 'Primary'],
+    ['elementary school art', 'Elementary school'],
     ['middle school maths', 'Middle school'],
-    ['first-year chemistry', 'University'],
+    ['first-year chemistry', 'College'],
   ])('%s → level %s', (text, level) => expect(guessLevel(text)).toBe(level));
 
   it.each([
@@ -119,12 +119,6 @@ describe('reading the brief for the chips', () => {
     for (const text of ['11th graders', '9th grade', '7th grade', '2nd grade']) {
       expect(en.levels).toContain(guessLevel(text));
     }
-  });
-
-  it('detects Chinese briefs', () => {
-    expect(guessLanguage('唐诗入门，四节课')).toBe('zh-CN');
-    expect(guessLanguage('The French Revolution')).toBe('en');
-    expect(guessLanguage('ab')).toBeNull();
   });
 });
 
