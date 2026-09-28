@@ -634,8 +634,8 @@ export const en = {
     aiLede: 'Folio writes with an AI you choose. Your key stays in this browser and goes straight to the AI company.',
     providers: {
       anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use; a four-lesson course costs about $0.60 with Claude Sonnet 5.' },
-      openai: { name: 'Use my OpenAI key', short: 'your OpenAI key', note: 'OpenAI. You pay per use.' },
-      google: { name: 'Use my Gemini key', short: 'your Gemini key', note: 'Google. Has a free tier with limits.' },
+      openai: { name: 'Use my OpenAI key', short: 'your OpenAI key', note: 'OpenAI. You pay per use, at about the same rate as Claude with GPT-6 Sol.' },
+      google: { name: 'Use my Gemini key', short: 'your Gemini key', note: 'Google. You pay per use. The free tier allows too few requests to write a whole course.' },
       deepseek: { name: 'Use my DeepSeek key', short: 'your DeepSeek key', note: 'DeepSeek. You pay per use; a four-lesson course costs about $0.10. Strong in Chinese.' },
       local: { name: 'On this device', short: 'the AI on this device', note: 'Runs through Ollama or LM Studio on your computer. Private and free, but slower and less accurate.' },
     },

@@ -21,8 +21,8 @@ export interface ModelSettings {
 
 export const DEFAULT_MODELS: Record<ProviderId, string> = {
   anthropic: 'claude-sonnet-5',
-  openai: 'gpt-5',
-  google: 'gemini-2.5-flash',
+  openai: 'gpt-6-sol',
+  google: 'gemini-3.8-flash',
   deepseek: 'deepseek-flash',
   local: 'llama3.1',
 };
