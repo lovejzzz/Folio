@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { orderedLessons } from '@folio/core';
-import { OutlineDraft, courseFromOutline, lessonContext, outlinePrompt, type NewCourseRequest } from '../src';
+import { OutlineDraft, courseFromOutline, groundedIn, lessonContext, outlinePrompt, type NewCourseRequest } from '../src';
 
 const req: NewCourseRequest = {
   brief: 'Political philosophy for second-year undergraduates. Readings from Hobbes and Locke. Problem sets 30%, midterm 30%, final exam 40%.',
@@ -31,7 +31,7 @@ describe('the outline', () => {
       summary: 'S.',
       subject: 'Philosophy',
       level: 'Undergraduate',
-      lessons: [{ ...lessons[0], readings: ['Hobbes, Leviathan, ch. 13–17 ', ' '] }, lessons[1]],
+      lessons: [{ ...lessons[0], readings: [{ work: 'Hobbes, Leviathan, ch. 13–17 ', namedIn: 'Hobbes' }, { work: ' ', namedIn: 'Hobbes' }] }, lessons[1]],
       grading: [
         { item: 'Problem sets', weight: 30 },
         { item: 'Midterm', weight: 30 },
@@ -66,11 +66,11 @@ describe('the outline', () => {
     const draft = OutlineDraft.parse({
       title: 'E', summary: 'S.', subject: 'Economics', level: 'University',
       lessons: [
-        { ...lessons[0], readings: ['Wooldridge, ch. 2'], suggestedReadings: ['Stock and Watson, Introduction to Econometrics', 'Wooldridge, ch. 3'] },
-        { ...lessons[1], readings: ['Wooldridge, ch. 3'], suggestedReadings: ['Stock and Watson, Introduction to Econometrics.', 'Greene, Econometric Analysis.', 'Wooldridge et al.'] },
+        { ...lessons[0], readings: [{ work: 'Wooldridge, ch. 2', namedIn: 'Wooldridge' }], suggestedReadings: ['Stock and Watson, Introduction to Econometrics', 'Wooldridge, ch. 3'] },
+        { ...lessons[1], readings: [{ work: 'Wooldridge, ch. 3', namedIn: 'Wooldridge' }], suggestedReadings: ['Stock and Watson, Introduction to Econometrics.', 'Greene, Econometric Analysis.', 'Wooldridge et al.'] },
       ],
     });
-    const course = courseFromOutline(req, draft);
+    const course = courseFromOutline({ ...req, brief: 'Introductory econometrics from Wooldridge.' }, draft);
     expect(orderedLessons(course).map((l) => l.suggestedReadings)).toEqual([['Stock and Watson, Introduction to Econometrics'], ['Greene, Econometric Analysis', 'Wooldridge et al.']]);
   });
 
@@ -82,10 +82,38 @@ describe('the outline', () => {
   });
 
   it('tells each section what students read before the lesson', () => {
-    const draft = OutlineDraft.parse({ title: 'P', summary: 'S.', subject: 'Philosophy', level: 'U', lessons: [{ ...lessons[0], readings: ['Hobbes, Leviathan, ch. 13'] }, lessons[1]] });
+    const draft = OutlineDraft.parse({ title: 'P', summary: 'S.', subject: 'Philosophy', level: 'U', lessons: [{ ...lessons[0], readings: [{ work: 'Hobbes, Leviathan, ch. 13', namedIn: 'Hobbes' }] }, lessons[1]] });
     const course = courseFromOutline(req, draft);
     const [first, second] = orderedLessons(course);
     expect(lessonContext(course, first!)).toContain('Students read before this lesson:\n- Hobbes, Leviathan, ch. 13');
     expect(lessonContext(course, second!)).not.toContain('Students read');
+  });
+
+  it('keeps only readings named in the brief or an attached source', () => {
+    const draft = OutlineDraft.parse({
+      title: 'W', summary: 'S.', subject: 'Science', level: 'Grade 5',
+      lessons: [
+        { ...lessons[0], readings: [{ work: 'Textbook chapter on states of matter', namedIn: 'textbook' }, { work: 'Locke, Second Treatise, ch. 5', namedIn: 'Locke' }] },
+        { ...lessons[1], readings: [{ work: 'Field notes, week 2', namedIn: 'Field notes' }, { work: 'A made-up article', namedIn: '' }] },
+      ],
+    });
+    const sources = [{ title: 'Field notes', text: 'What we saw at the pond.' }];
+    const course = courseFromOutline({ ...req, sources }, draft);
+    expect(orderedLessons(course).map((l) => l.readings)).toEqual([['Locke, Second Treatise, ch. 5'], ['Field notes, week 2']]);
+  });
+
+  it('matches whole words, not fragments of them', () => {
+    const named = groundedIn({ brief: 'Readings from Hobbes and Locke.', sources: [] });
+    expect(named('hobbes')).toBe(true);
+    expect(named('Hobbes and Locke')).toBe(true);
+    expect(named('Hob')).toBe(false);
+    expect(named('  ')).toBe(false);
+  });
+
+  it('gives the only graded component the whole grade when the brief gives no weight', () => {
+    const one = OutlineDraft.parse({ title: 'W', summary: 'S.', subject: 'Science', level: 'Grade 5', lessons, grading: [{ item: 'Lesson quizzes', weight: null }] });
+    expect(courseFromOutline(req, one).grading.map((g) => g.weight)).toEqual([100]);
+    const two = OutlineDraft.parse({ title: 'W', summary: 'S.', subject: 'Science', level: 'Grade 5', lessons, grading: [{ item: 'Quizzes', weight: null }, { item: 'Project', weight: null }] });
+    expect(courseFromOutline(req, two).grading.map((g) => g.weight)).toEqual([0, 0]);
   });
 });

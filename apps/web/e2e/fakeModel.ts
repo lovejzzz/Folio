@@ -18,8 +18,17 @@ function quizSize(prompt: string): number {
   return Number(prompt.match(/Write exactly (\d+) quiz questions/)?.[1] ?? 3);
 }
 
-/** Readings for the first two lessons only, as a brief that names a textbook for part of a unit would give. */
-const READINGS = [['Campbell Biology, ch. 10.1: Photosynthesis in nature'], ['Campbell Biology, ch. 10.2–10.3', 'Handout: a chloroplast under the microscope']];
+/**
+ * Readings for the first two lessons only, as a brief that names a textbook for part of a unit would give. The
+ * handout is one the brief never names, as a model sometimes adds: Folio should leave it out.
+ */
+const READINGS = [
+  [{ work: 'Campbell Biology, ch. 10.1: Photosynthesis in nature', namedIn: 'Campbell Biology' }],
+  [
+    { work: 'Campbell Biology, ch. 10.2–10.3', namedIn: 'Campbell Biology' },
+    { work: 'Handout: a chloroplast under the microscope', namedIn: 'a handout on chloroplasts' },
+  ],
+];
 
 function outline(prompt: string) {
   const n = Number(prompt.match(/Plan exactly (\d+) lessons/)?.[1] ?? 3);

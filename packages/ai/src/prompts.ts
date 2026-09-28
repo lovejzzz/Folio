@@ -6,7 +6,7 @@ import type { Effort } from './inference';
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@10';
+export const PROMPT_VERSION = 'folio-prompts@11';
 
 const SOURCE_BUDGET = 12000;
 
@@ -77,7 +77,7 @@ export function outlinePrompt(input: OutlineInput): string {
       : `Plan exactly ${input.lessonCount} lessons of ${input.minutesPerLesson} minutes each${input.level ? ` for ${input.level}` : ''}.`,
     'Order the lessons so each builds on the last. Give each lesson a short title that names what is taught, a one-sentence summary of under 25 words, and one to three measurable objectives of under 15 words each.',
     'Do not mention the number of lessons or weeks, the lesson length, the number of quiz questions or which materials a lesson has: Folio keeps those as settings the teacher can change, so they must not be repeated in the text.',
-    'Under "readings", list what students read before each lesson, taken from the brief or the attached sources. When the brief names a textbook but not its chapters, name the chapter that matches the lesson, by its topic if you are unsure of the number. Never invent works, authors or page numbers; leave the readings empty when the brief gives nothing to go on.',
+    'Under "readings", list what students read before each lesson, taken from the brief or the attached sources. When the brief names a textbook but not its chapters, name the chapter that matches the lesson, by its topic if you are unsure of the number. For each reading, copy into "namedIn" the exact words of the brief, or the title of the attached source, that name the work: Folio keeps only readings it can find there. Never invent works, authors or page numbers, and never describe a reading in general terms; leave the readings empty when the brief and sources name nothing to read.',
     'Under "suggestedReadings", for a university course only, suggest up to three well-known further readings per lesson that the brief does not already list: established works a lecturer would recognise on that lesson\'s topic, with author and title, and a chapter only when you are sure of it. Suggest each work once in the course, for the lesson it fits best. The teacher checks them before anything is assigned, so leave the list empty rather than guess.',
     'Under "grading", list every graded component the brief names, such as weekly quizzes and a final essay, with the weight the brief gives each; when it gives no weight, set it to null rather than guess. Leave the list empty if the brief does not say how the course is graded.',
     'Under "homework", decide what students hand in after each lesson, from how the brief says the course is assessed. "assignment" is a graded piece set in that lesson: every lesson when the brief sets weekly problem sets or homework; only the lesson where it is set when there is one final essay, project or portfolio. "step" is a short ungraded step toward a larger graded piece, such as choosing a question, an outline or a draft section; use it in the lessons leading up to that piece. "none" is for a lesson where nothing is handed in, for example when the course is assessed by quizzes and exams alone. When the brief does not say how the course is assessed, use "assignment" for every lesson. Under "homeworkToward", name the graded component the homework counts toward, as you named it under "grading".',
@@ -189,12 +189,22 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     .join('\n\n');
 }
 
+/**
+ * The plan as the materials built on it see it. The teacher notes go too: they hold the expected answers and the
+ * misconceptions to watch for, and a study guide written without them stated one of those misconceptions as fact.
+ */
 function planSummary(lesson: Lesson): string {
   if (!lesson.segments.length) return '';
   const ideas = lesson.keyIdeas.map((k) => `- ${k}`).join('\n');
-  const flow = lesson.segments.map((s) => `- ${s.title} (${s.minutes} min): ${s.description}`).join('\n');
+  const flow = lesson.segments
+    .map((s) => `- ${s.title} (${s.minutes} min): ${s.description}${s.teacherNotes.trim() ? `\n  Teacher notes: ${s.teacherNotes.trim()}` : ''}`)
+    .join('\n');
   return `The lesson plan's key ideas:\n${ideas}\n\nThe lesson runs like this:\n${flow}`;
 }
+
+/** What a material built on the plan owes it: the plan is what the teacher has read and agreed to. */
+const FOLLOW_PLAN =
+  'Use the same examples, data and figures as the plan. Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception.';
 
 /**
  * Asked to "make about half true", models swing to all false or all true. So
@@ -247,13 +257,17 @@ export const BUILT_ON_PLAN: ReadonlySet<SectionPromptKind> = new Set(['slides', 
 
 const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string> = {
   plan: (c) =>
-    `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need. Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
+    [
+      `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need. Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
+      'Plan only what can really happen in the time, place and with the materials the lesson has. Whatever students are to see, make or finish in a segment has to be possible within that segment\'s minutes; when something takes longer, such as a process that needs hours or days to show a result, plan around it (start it earlier, use results prepared in advance, or come back to it later) and say how in the teacher notes. The slides, quiz and study guide are written from this plan and take everything in it as having happened.',
+      'When a segment uses another of the lesson\'s materials, such as the quiz, the slides or the assignment, say what students do with it, not what its questions or items will be: those are written separately, from this plan.',
+    ].join(' '),
   slides: (c) =>
     ['Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes.', slidesFor(c)].filter(Boolean).join(' '),
   study: () =>
     'Write a study guide for students to read after the lesson: a short overview, then two to four key points, each with a heading and a clear explanation that includes an example.',
   quiz: (c, lesson) =>
-    `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer and true/false questions where they fit, and numeric ones only when the lesson itself involves calculation. For a choice question, "answer" repeats the correct choice exactly. For a true/false question, "choices" is ["True", "False"] and "answer" is "True" or "False", never the statement. Use plausible wrong choices that reflect real misconceptions. Write all the choices to the same length and level of detail: first draft the right answer, then write each wrong choice with about as many words and the same kind of qualifying detail. If the right answer needs a clause of explanation, so does every wrong choice. Each wrong choice must be clearly wrong to an expert; if a teacher could argue for it, rewrite it. Never refer to a choice by its letter or position. Write a true/false question as a plain statement, without "True or false:" in front. ${trueFalseOrder(c, lesson)} Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression". Where a calculation has competing conventions (quartiles, percentiles, rounding), say in the question which method to use, so only one answer is right.`,
+    `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer and true/false questions where they fit, and numeric ones only when the lesson itself involves calculation. For a choice question, "answer" repeats the correct choice exactly. For a true/false question, "choices" is ["True", "False"] and "answer" is "True" or "False", never the statement. Make every wrong choice an answer a student at this level might really give: a common misconception about this content, a half-right idea, or a mix-up with a nearby idea from the course. A wrong choice students would dismiss at a glance tests nothing. Each must still be clearly wrong to an expert; if a teacher could argue for it, rewrite it. Then keep the choices even: about the same length and the same kind of detail, so the right one can't be spotted by its length. Get there by writing the right answer plainly and briefly, never by padding wrong choices with causes, mechanisms or facts invented to fill them out. Never refer to a choice by its letter or position. Write a true/false question as a plain statement, without "True or false:" in front. ${trueFalseOrder(c, lesson)} Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression". Where a calculation has competing conventions (quartiles, percentiles, rounding), say in the question which method to use, so only one answer is right.`,
   assignments: (c, lesson) => {
     const toward = lesson.homework.toward.trim();
     if (lesson.homework.kind === 'step')
@@ -302,7 +316,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
   if (BUILT_ON_PLAN.has(kind)) {
     const plan = planSummary(lesson);
     // Each job invents what the sources don't give; without the plan, a quiz and a plan gave one coefficient two standard errors.
-    if (plan) parts.push(`${plan}\n\nUse the same examples, data and figures as the plan.`);
+    if (plan) parts.push(`${plan}\n\n${FOLLOW_PLAN}`);
   }
   if ((kind === 'plan' || kind === 'quiz') && course.sourceOrder.length) {
     parts.push(

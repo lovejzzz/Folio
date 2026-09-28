@@ -10,17 +10,21 @@ test('readings and the grading scheme carry from the brief to the plan and the s
   await page.getByRole('button', { name: 'Continue' }).click();
 
   // The plan shows each lesson's reading under its objectives; a lesson without one just offers to add it.
+  // A reading the brief never names (the model's handout) is left out.
   const second = page.getByRole('region', { name: 'Reading for lesson 2' });
   await expect(second.getByRole('textbox', { name: 'Reading 1 for lesson 2' })).toHaveText('Campbell Biology, ch. 10.2–10.3');
-  await expect(second.getByRole('textbox')).toHaveCount(2);
+  await expect(second.getByRole('textbox')).toHaveCount(1);
   await expect(page.getByRole('region', { name: 'Reading for lesson 3' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Add a reading' }).nth(2).click();
   await page.keyboard.type('Leaf anatomy worksheet');
   await page.keyboard.press('Enter');
   await expect(page.getByRole('textbox', { name: 'Reading 1 for lesson 3' })).toHaveText('Leaf anatomy worksheet');
-  await page.getByRole('textbox', { name: 'Reading 2 for lesson 2' }).hover();
-  await page.getByRole('button', { name: 'Remove reading 2 for lesson 2' }).click();
-  await expect(second.getByRole('textbox')).toHaveCount(1);
+  await page.getByRole('textbox', { name: 'Reading 1 for lesson 3' }).hover();
+  await page.getByRole('button', { name: 'Remove reading 1 for lesson 3' }).click();
+  await expect(page.getByRole('region', { name: 'Reading for lesson 3' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Add a reading' }).nth(2).click();
+  await page.keyboard.type('Leaf anatomy worksheet');
+  await page.keyboard.press('Enter');
 
   await page.getByRole('button', { name: 'Write 3 lessons' }).click();
   await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 30_000 });

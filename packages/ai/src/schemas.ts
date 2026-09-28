@@ -19,10 +19,15 @@ export const OutlineDraft = z.object({
         summary: line.describe('One sentence on what this lesson covers'),
         objectives: z.array(line).min(1).max(3).describe('Measurable objectives starting with a verb'),
         readings: z
-          .array(line)
+          .array(
+            z.object({
+              work: line.describe('One reading, e.g. "Hobbes, Leviathan, ch. 13–17"'),
+              namedIn: z.string().describe('The words in the brief, or the title of an attached source, that name this work, copied exactly'),
+            }),
+          )
           .max(6)
           .default([])
-          .describe('What students read before this lesson, one reading each, e.g. "Hobbes, Leviathan, ch. 13–17"; empty if the brief gives nothing to go on'),
+          .describe('What students read before this lesson; empty if the brief and sources name nothing to read'),
         homework: z
           .enum(['assignment', 'step', 'none'])
           .default('assignment')

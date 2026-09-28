@@ -2,6 +2,7 @@ import { CORE_SET, MATERIAL_KINDS, SHAPE_LIMITS, cmd, newId, type MaterialKind }
 import { Button, MaterialIcon, NumberStepper, SegmentedControl, cx, tabBg } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { Check } from 'lucide-react';
+import { useId } from 'react';
 import { Checkbox } from 'react-aria-components';
 import { useT } from '../../i18n';
 import { readyToBuild, startBuild } from '../../state/build';
@@ -9,24 +10,48 @@ import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
 import { Sessions } from './Sessions';
 
+/**
+ * Assignments and rubrics are written only for lessons that set homework. When none does, say so here, before the
+ * build, rather than leave the teacher to find two empty materials afterwards.
+ */
+function useNothingToWrite(kind: MaterialKind, selected: boolean): string | null {
+  const t = useT();
+  const course = useCourse();
+  if (!selected) return null;
+  const set = course.lessonOrder.map((id) => course.lessons[id]?.homework.kind ?? 'none');
+  if (kind === 'assignments' && set.every((k) => k === 'none')) return t.plan.noHomework;
+  if (kind === 'rubrics' && !set.includes('assignment')) return t.plan.noGradedHomework;
+  return null;
+}
+
 function MaterialToggle({ kind, selected }: { kind: MaterialKind; selected: boolean }) {
   const t = useT();
+  const noteId = useId();
+  const note = useNothingToWrite(kind, selected);
   return (
-    <Checkbox
-      isSelected={selected}
-      onChange={(enabled) => edit([cmd('material.set', { kind, enabled })], { key: enabled ? 'includedMaterial' : 'leftOutMaterial', values: { kind } })}
-      className="group flex h-9 cursor-default items-center gap-2.5 rounded-control px-2 font-ui text-14 text-ink outline-none data-hovered:bg-well data-focus-visible:ring-2 data-focus-visible:ring-accent"
-    >
-      <span aria-hidden className={cx('h-4 w-1 rounded-full transition-opacity', tabBg[kind], !selected && 'opacity-30')} />
-      <MaterialIcon kind={kind} size={17} className={selected ? 'text-ink-2' : 'text-ink-3'} />
-      <span className={cx('flex-1', !selected && 'text-ink-2')}>{t.materials[kind]}</span>
-      <span
-        aria-hidden
-        className="flex size-4.5 items-center justify-center rounded-control border border-field text-accent-ink group-data-selected:border-accent group-data-selected:bg-accent"
+    <div>
+      <Checkbox
+        aria-describedby={note ? noteId : undefined}
+        isSelected={selected}
+        onChange={(enabled) => edit([cmd('material.set', { kind, enabled })], { key: enabled ? 'includedMaterial' : 'leftOutMaterial', values: { kind } })}
+        className="group flex h-9 cursor-default items-center gap-2.5 rounded-control px-2 font-ui text-14 text-ink outline-none data-hovered:bg-well data-focus-visible:ring-2 data-focus-visible:ring-accent"
       >
-        <Check size={12} strokeWidth={2.5} className="opacity-0 group-data-selected:opacity-100" />
-      </span>
-    </Checkbox>
+        <span aria-hidden className={cx('h-4 w-1 rounded-full transition-opacity', tabBg[kind], !selected && 'opacity-30')} />
+        <MaterialIcon kind={kind} size={17} className={selected ? 'text-ink-2' : 'text-ink-3'} />
+        <span className={cx('flex-1', !selected && 'text-ink-2')}>{t.materials[kind]}</span>
+        <span
+          aria-hidden
+          className="flex size-4.5 items-center justify-center rounded-control border border-field text-accent-ink group-data-selected:border-accent group-data-selected:bg-accent"
+        >
+          <Check size={12} strokeWidth={2.5} className="opacity-0 group-data-selected:opacity-100" />
+        </span>
+      </Checkbox>
+      {note && (
+        <p id={noteId} className="-mt-1 mb-1 pl-11 pr-2 font-ui text-12 leading-4 text-ink-2">
+          {note}
+        </p>
+      )}
+    </div>
   );
 }
 

@@ -72,7 +72,7 @@ export function describeFlag(flag: Flag): string {
     case 'repeatsQuestion':
       return 'It repeats an earlier question.';
     case 'answerStandsOut':
-      return 'The right answer is noticeably longer and more detailed than every wrong choice, so it can be picked by its length. Rewrite the wrong choices to be as long, specific and plausible as the right one (or trim the right one), keeping the right answer correct.';
+      return 'The right answer is noticeably longer and more detailed than every wrong choice, so it can be picked by its length. First trim the right answer to what makes it right. If the choices are still uneven, make each wrong choice as specific as the right one, still as a mistake a student might really make; never pad a wrong choice with causes, mechanisms or facts invented to lengthen it.';
     case 'questionCount':
       return `There ${flag.values.got === 1 ? 'is 1 question' : `are ${flag.values.got} questions`} instead of ${flag.values.want}.`;
     case 'lessonCount':

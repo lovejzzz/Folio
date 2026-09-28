@@ -38,6 +38,21 @@ export async function generateOutline(inference: Inference, req: NewCourseReques
   return result.value;
 }
 
+const plain = (text: string) => text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+
+/**
+ * A reading is kept only when the words said to name it are in the brief or an attached source. Asked to leave the
+ * readings empty when the brief names none, models still wrote "Textbook chapter on …"; a claim that can be checked
+ * against the teacher's own words doesn't depend on the model keeping to the instruction.
+ */
+export function groundedIn(req: Pick<NewCourseRequest, 'brief' | 'sources'>): (namedIn: string) => boolean {
+  const haystacks = [req.brief, ...req.sources.flatMap((s) => [s.title, s.text])].map(plain);
+  return (namedIn) => {
+    const needle = plain(namedIn);
+    return needle.length >= 3 && haystacks.some((h) => ` ${h} `.includes(` ${needle} `));
+  };
+}
+
 /** Turn an agreed outline into a course in the planning state. */
 export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft): Course {
   const course = createCourse({
@@ -57,10 +72,12 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   // A reading is a list item, not a sentence: "Goldberger, A course in econometrics." loses its full stop.
   const clean = (r: string) => r.trim().replace(/(?<!\b(?:al|ed|eds|ch|vol|pp|p|no|n\.d))\.$/i, '');
   const key = (r: string) => r.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
-  const seen = new Set(outline.lessons.flatMap((d) => d.readings.map(key)));
-  for (const draft of outline.lessons) {
+  const named = groundedIn(req);
+  const readings = outline.lessons.map((d) => d.readings.filter((r) => named(r.namedIn)).map((r) => clean(r.work)).filter(Boolean));
+  const seen = new Set(readings.flat().map(key));
+  for (const [i, draft] of outline.lessons.entries()) {
     const lesson = emptyLesson(newId('l'), draft.title, draft.summary);
-    lesson.readings = draft.readings.map(clean).filter(Boolean);
+    lesson.readings = readings[i] ?? [];
     lesson.homework = { kind: draft.homework, toward: draft.homework === 'none' ? '' : draft.homeworkToward.trim() };
     lesson.suggestedReadings = draft.suggestedReadings
       .map(clean)
@@ -73,7 +90,10 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
     course.lessons[lesson.id] = lesson;
     course.lessonOrder.push(lesson.id);
   }
-  course.grading = outline.grading.filter((g) => g.item.trim()).map((g) => ({ id: newId('g'), item: g.item.trim(), weight: g.weight ?? 0 }));
+  const graded = outline.grading.filter((g) => g.item.trim());
+  // A course graded one way only is graded 100% that way; with several, a missing weight stays for the teacher to give.
+  const whole = graded.length === 1 && graded[0]!.weight === null;
+  course.grading = graded.map((g) => ({ id: newId('g'), item: g.item.trim(), weight: whole ? 100 : (g.weight ?? 0) }));
   for (const s of req.sources) {
     const source = createSource(s.title, s.text, 'file');
     course.sources[source.id] = source;

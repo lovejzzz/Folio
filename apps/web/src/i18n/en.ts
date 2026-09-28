@@ -173,6 +173,8 @@ export const en = {
     minutes: 'Minutes each',
     quizSize: 'Questions per quiz',
     materialsHeading: 'Materials',
+    noHomework: 'No lesson sets homework, so there’s nothing to write yet. Choose homework under a lesson.',
+    noGradedHomework: 'No lesson sets a graded assignment, so there’s nothing to mark yet.',
     allMaterials: 'All',
     coreSet: 'Essentials',
     build: (n: number) => (n === 1 ? 'Write 1 lesson' : `Write ${n} lessons`),
