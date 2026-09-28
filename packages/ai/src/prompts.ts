@@ -6,7 +6,7 @@ import type { Effort } from './inference';
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@11';
+export const PROMPT_VERSION = 'folio-prompts@12';
 
 const SOURCE_BUDGET = 12000;
 
@@ -24,6 +24,7 @@ export function systemPrompt(language: Language, locale = ''): string {
     'Match the level of the students. Keep sentences short and concrete. Do not use emoji.',
     'If something in the brief is ambiguous, choose the most sensible specific interpretation and stay consistent with it.',
     'Quote word for word only from the teacher\'s sources shown to you. Anything else, paraphrase and point to the chapter or section: never invent a quotation or a page number.',
+    'Never present an invented statistic, study, event or case as real, even as an example of evidence. When an example needs evidence that the brief and sources don\'t give, use well-established facts you are sure of, or make the example plainly hypothetical ("Suppose a survey of our school found…").',
     'Write maths in Unicode with real subscripts and superscripts (β₀, xᵢ, x², σ̂², ≤, √), never LaTeX. Where Unicode has none, write _ or ^ and the rest as one word or in braces (β̂_educ, t_{n−k−1}, e^{0.092}): Folio sets them as sub- and superscripts.',
     'Put code, commands and function names in backticks, e.g. `lm(wage ~ educ, data = wage1)`, one line of code per pair. Use backticks for nothing else, and never fenced code blocks.',
     'Folio shows lesson numbers, the number of lessons, lesson lengths and quiz sizes itself, and teachers change them. Never write them anywhere, speaker notes included: no "lesson 1 of 4", "the first lesson", "the next lesson", "last week", "over the next two hours" or "a 5-question quiz". Refer to another lesson by its title, since teachers reorder them.',

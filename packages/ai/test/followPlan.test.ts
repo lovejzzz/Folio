@@ -1,6 +1,6 @@
 import { orderedLessons, type Course } from '@folio/core';
 import { describe, expect, it } from 'vitest';
-import { sectionPrompt } from '../src';
+import { sectionPrompt, systemPrompt } from '../src';
 import { smallCourse } from './fake';
 
 /** A course whose first lesson has a plan, with a teacher note on its one segment. */
@@ -37,5 +37,9 @@ describe('materials written from the lesson plan', () => {
     const prompt = sectionPrompt(course, orderedLessons(course)[0]!, 'quiz');
     expect(prompt).toContain('an answer a student at this level might really give');
     expect(prompt).toContain('never by padding wrong choices');
+  });
+
+  it('never pass off an invented fact as real evidence', () => {
+    expect(systemPrompt('en', 'en-US')).toContain('Never present an invented statistic, study, event or case as real');
   });
 });
