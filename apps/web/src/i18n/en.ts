@@ -203,8 +203,8 @@ export const en = {
     noRubric: 'A step toward a bigger piece has no rubric of its own.',
     noRubricShort: 'No rubric',
     set: 'Set homework',
-    marked: 'How the course is marked',
-    notStated: 'The brief doesn’t say how the course is marked. Add it to the syllabus if you like.',
+    marked: 'How the course is graded',
+    notStated: 'The brief doesn’t say how the course is graded. Add it to the syllabus if you like.',
   },
   map: {
     lessonColumn: 'Lesson',
