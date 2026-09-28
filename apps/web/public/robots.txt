@@ -1,0 +1,7 @@
+# Courses live in each teacher's own browser, so these pages are empty to anyone else.
+User-agent: *
+Disallow: /c/
+Disallow: /print/
+Disallow: /new
+Disallow: /library
+Disallow: /settings
