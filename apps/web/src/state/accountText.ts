@@ -43,7 +43,7 @@ export const accountText = {
   signedOutLede: 'You’re not signed in. Your courses are only in this browser.',
   deleteAccount: 'Delete my account and courses',
   deleteTitle: 'Delete your account?',
-  deleteBody: 'This deletes your account and every course in it, from Folio’s servers and from this browser. It can’t be undone. Courses only on this device stay.',
+  deleteBody: 'This deletes your account and every course in it, from Folio’s servers and from this browser, and ends any Folio credits left in it. It can’t be undone. Courses only on this device stay.',
   deleteConfirm: 'Delete my account',
   deleted: 'Your account and its courses were deleted.',
 };

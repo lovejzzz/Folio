@@ -1,10 +1,25 @@
 import { accountText } from '../../state/accountText';
 import { Button, Dialog } from '@folio/ui';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { creditsText, refreshCredits, useCredits } from '../../state/credits';
 import { SignOutDialog, syncLine } from '../../components/AccountMenu';
 import { googleClientId } from '../../lib/googlePath';
 import { deleteAccount, signIn, useAccount } from '../../state/account';
 import { toast } from '../../state/toasts';
+
+/** Credits left in the account, said before it is deleted: they end with it. */
+function CreditsLost({ open }: { open: boolean }) {
+  const balance = useCredits((s) => s.balance);
+  useEffect(() => {
+    if (open) void refreshCredits();
+  }, [open]);
+  if (!balance) return null;
+  return (
+    <p role="alert" className="mx-6 mt-3 rounded-control bg-critical-tint px-3 py-2 font-ui text-13 leading-relaxed text-critical">
+      {creditsText.lostOnDelete(balance)}
+    </p>
+  );
+}
 
 function DeleteAccountDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [busy, setBusy] = useState(false);
@@ -23,6 +38,7 @@ function DeleteAccountDialog({ open, onClose }: { open: boolean; onClose: () => 
   return (
     <Dialog isOpen={open} onOpenChange={(o) => !o && onClose()} title={accountText.deleteTitle} size="sm">
       <p className="px-6 pt-3 font-ui text-14 leading-relaxed text-ink-2">{accountText.deleteBody}</p>
+      <CreditsLost open={open} />
       <div className="flex justify-end gap-2 px-6 pb-5 pt-6">
         <Button variant="quiet" onPress={onClose}>
           {accountText.cancel}

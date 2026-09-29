@@ -90,3 +90,21 @@ test('in Settings, a signed-in teacher switches from their own key to Folio cred
   await expect(page.getByRole('button', { name: 'Test connection' })).toHaveCount(0);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('folio.prefs')!).state.provider)).toBe('folio');
 });
+
+test('the terms say credits aren’t refunded, and deleting an account warns that its credits end', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Terms' }).click();
+  await expect(page.getByRole('heading', { name: 'Terms of Service' })).toBeVisible();
+  await expect(page.getByText(/Folio credits are not refundable, including credits you haven’t used/)).toBeVisible();
+  await expect(page.getByText(/Any credits left in the account end with it/)).toBeVisible();
+
+  await fakeFolio(page, { value: 640 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.getByRole('button', { name: 'Account: ada@example.edu' }).waitFor();
+  await page.goto('/settings');
+  await page.getByRole('button', { name: 'Delete my account and courses' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Delete your account?' });
+  await expect(dialog.getByText('This account still has 640 Folio credits. Deleting it ends them: they can’t be restored or refunded.')).toBeVisible();
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+});

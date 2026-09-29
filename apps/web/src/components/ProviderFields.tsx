@@ -110,7 +110,12 @@ function BuyCredits() {
           </Button>
         ))}
       </div>
-      <p className="mt-2 font-ui text-12 text-ink-2">{creditsText.packHint}</p>
+      <p className="mt-2 font-ui text-12 text-ink-2">
+        {creditsText.packHint}{' '}
+        <a href="/terms" target="_blank" rel="noreferrer" className="text-accent underline-offset-4 hover:underline">
+          {creditsText.terms}
+        </a>
+      </p>
     </div>
   );
 }

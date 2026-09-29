@@ -147,6 +147,9 @@ function DataSection() {
         <Link to="/privacy" className="text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">
           {t.privacy.title}
         </Link>
+        <Link to="/terms" className="text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">
+          {t.privacy.terms}
+        </Link>
         <a href="/fonts-licence.txt" className="text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">
           {t.settings.fontsLicence}
         </a>

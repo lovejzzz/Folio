@@ -803,6 +803,7 @@ export const en = {
   privacy: {
     title: 'Privacy',
     link: 'Privacy',
+    terms: 'Terms',
   },
   toast: {
     undone: 'Undone.',

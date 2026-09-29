@@ -18,19 +18,24 @@ function WithMail({ text }: { text: string }) {
   );
 }
 
-/** What Folio keeps, where it goes, and what Google access it asks for. Linked from the home page. */
-export function Privacy() {
-  const t = useT();
-  usePageTitle(t.privacy.title);
+interface LegalText {
+  updated: string;
+  lede: string;
+  sections: readonly { heading: string; body: string }[];
+}
+
+/** A page of plain legal text: the privacy policy, the terms. */
+export function LegalPage({ title, text }: { title: string; text: LegalText }) {
+  usePageTitle(title);
   return (
     <div className="min-h-dvh">
       <SimpleHeader />
       <main id="main" className="mx-auto max-w-2xl px-5 pb-24 pt-8 md:pt-12">
-        <h1 className="font-display text-48 leading-none text-ink">{t.privacy.title}</h1>
-        <p className="mt-3 font-ui text-13 text-ink-3">{policy.updated}</p>
-        <p className="mt-8 font-reading text-18 text-ink">{policy.lede}</p>
+        <h1 className="font-display text-48 leading-none text-ink">{title}</h1>
+        <p className="mt-3 font-ui text-13 text-ink-3">{text.updated}</p>
+        <p className="mt-8 font-reading text-18 text-ink">{text.lede}</p>
         <div className="mt-10 space-y-8">
-          {policy.sections.map((section) => (
+          {text.sections.map((section) => (
             <section key={section.heading}>
               <h2 className="font-display text-22 text-ink">{section.heading}</h2>
               <p className="mt-2 font-reading text-16 leading-7 text-ink-2">
@@ -42,4 +47,10 @@ export function Privacy() {
       </main>
     </div>
   );
+}
+
+/** What Folio keeps, where it goes, and what Google access it asks for. Linked from the home page. */
+export function Privacy() {
+  const t = useT();
+  return <LegalPage title={t.privacy.title} text={policy} />;
 }

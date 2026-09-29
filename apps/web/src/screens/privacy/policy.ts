@@ -9,7 +9,7 @@ export const policy = {
     },
     {
       heading: 'If you sign in',
-      body: 'Signing in is optional and uses your Google account. Folio receives your name, your email address and Google’s ID for your account, and nothing else from Google. It keeps the courses you choose to put in your account (their content, sources and edit history) on Folio’s servers, run by Cloudflare, so they are on any device you sign in on. If you write with your own AI key, it is never sent to Folio: it stays in each browser. A session cookie keeps you signed in; it is used for nothing else. Signing out removes your account’s courses from that browser; they stay in your account. Deleting your account in Settings deletes it and every course in it from Folio’s servers.',
+      body: 'Signing in is optional and uses your Google account. Folio receives your name, your email address and Google’s ID for your account, and nothing else from Google. It keeps the courses you choose to put in your account (their content, sources and edit history) on Folio’s servers, run by Cloudflare, so they are on any device you sign in on. If you write with your own AI key, it is never sent to Folio: it stays in each browser. A session cookie keeps you signed in; it is used for nothing else. Signing out removes your account’s courses from that browser; they stay in your account. Deleting your account in Settings deletes it and every course in it from Folio’s servers, and ends any Folio credits left in it (see the Terms).',
     },
     {
       heading: 'Your AI key',
