@@ -17,7 +17,7 @@ describe('materials written from the lesson plan', () => {
   it('see the plan’s teacher notes and are told to keep to the plan', () => {
     const course = planned();
     const lesson = orderedLessons(course)[0]!;
-    for (const kind of ['quiz', 'slides', 'study', 'assignments'] as const) {
+    for (const kind of ['quiz', 'slides', 'study', 'assignments', 'discussions', 'faq'] as const) {
       const prompt = sectionPrompt(course, lesson, kind);
       expect(prompt).toContain('Teacher notes: Students often think plants eat soil.');
       expect(prompt).toContain('it must hold or ask exactly that');

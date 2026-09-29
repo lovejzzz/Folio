@@ -6,7 +6,7 @@ import type { Effort } from './inference';
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@12';
+export const PROMPT_VERSION = 'folio-prompts@13';
 
 const SOURCE_BUDGET = 12000;
 
@@ -253,8 +253,12 @@ function rubricLevels(course: Course): string {
 
 export type SectionPromptKind = 'plan' | 'slides' | 'study' | 'quiz' | 'assignments' | 'discussions' | 'faq';
 
-/** Sections written from the lesson plan: they wait for it, and go out of date when it changes. */
-export const BUILT_ON_PLAN: ReadonlySet<SectionPromptKind> = new Set(['slides', 'study', 'quiz', 'assignments']);
+/**
+ * Sections written from the lesson plan: they wait for it, and go out of date when it changes. Discussions
+ * and answers to students' questions refer to what happened in class as much as the rest: written without
+ * the plan, a follow-up question asked about a demonstration the lesson never had.
+ */
+export const BUILT_ON_PLAN: ReadonlySet<SectionPromptKind> = new Set(['slides', 'study', 'quiz', 'assignments', 'discussions', 'faq']);
 
 const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string> = {
   plan: (c) =>
