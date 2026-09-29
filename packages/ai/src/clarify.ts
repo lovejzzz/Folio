@@ -89,20 +89,48 @@ export async function clarifyCourse(inference: Inference, req: ClarifyRequest, s
   return { ...result.value, lessonCount: req.lessonCount ?? result.value.lessonCount, level: req.level || result.value.level };
 }
 
+/** The teacher's answers to questions on these topics, in order. */
+const answersAbout = (read: ClarifyDraft | null, answers: Clarification[], topics: string[]): string[] =>
+  (read?.questions ?? []).map((q, i) => (topics.includes(q.topic) ? (answers[i]?.answer.trim() ?? '') : '')).filter(Boolean);
+
+/** "4 lessons of 45 minutes" is 4 lessons: a number that names lessons, or else one that isn't a length. */
+const WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
+const digits = (text: string): string => text.replace(new RegExp(`\\b(${WORDS.join('|')})\\b`, 'gi'), (w) => String(WORDS.indexOf(w.toLowerCase()) + 1));
+
+export function lessonsIn(text: string): number | null {
+  const answer = digits(text);
+  const named = answer.match(/\b(\d{1,2})\s*(?:lessons?|class(?:es)?|sessions?|meetings?|periods?)\b/i)?.[1];
+  const bare = answer.match(/\b(\d{1,2})\b(?!\s*-?\s*(?:min|minutes?|hours?|hrs?|h)\b)/i)?.[1];
+  const n = Number(named ?? bare);
+  return n >= 1 && n <= 60 ? n : null;
+}
+
+/** "4 lessons of 45 minutes" is 45 minutes; "2-hour evenings" is 120. */
+export function minutesIn(text: string): number | null {
+  const answer = digits(text);
+  const hours = answer.match(/\b(\d+(?:\.\d+)?)\s*-?\s*(?:hours?|hrs?)\b/i)?.[1];
+  const minutes = answer.match(/\b(\d{1,3})\s*-?\s*(?:minutes?|mins?)\b/i)?.[1];
+  const n = minutes ? Number(minutes) : hours ? Math.round(Number(hours) * 60) : NaN;
+  return n >= 10 && n <= 300 ? n : null;
+}
+
 /**
  * How many lessons to plan: the teacher's number; else their answer to a question about it (its number, or the
- * outline reads it);
- * else what Folio read from the brief or files; else, from a syllabus, as many as it schedules; else the default.
+ * outline reads it); else what Folio read from the brief or files; else, from a syllabus, as many as it schedules;
+ * else the default.
  */
 export function lessonsToPlan(req: Pick<ClarifyRequest, 'lessonCount' | 'defaultLessons' | 'sources'>, read: ClarifyDraft | null, answers: Clarification[]): number | null {
   if (req.lessonCount) return req.lessonCount;
-  const answer = read?.questions.map((q, i) => (q.topic === 'lessons' ? answers[i]?.answer.trim() : '')).find(Boolean);
-  if (answer) {
-    // "3 lessons", or "5 lessons, one for each demo": the number is the answer. Without one, the outline reads it.
-    const n = Number(answer.match(/\b(\d{1,2})\b/)?.[1]);
-    return n >= 1 && n <= 60 ? n : null;
-  }
+  const [answer] = answersAbout(read, answers, ['lessons']);
+  if (answer) return lessonsIn(answer);
   return read?.lessonCount ?? (req.sources.length ? null : req.defaultLessons);
+}
+
+/** How long each lesson is: what the brief says; else the teacher's answer; else what Folio read; else 50. */
+export function minutesToPlan(stated: number, read: ClarifyDraft | null, answers: Clarification[]): number {
+  if (stated) return stated;
+  const answered = answersAbout(read, answers, ['lessons', 'length']).map(minutesIn).find((n) => n !== null);
+  return answered ?? read?.minutesPerLesson ?? 50;
 }
 
 /** The answers, in the teacher's brief, so the outline and every part written later can follow them. */

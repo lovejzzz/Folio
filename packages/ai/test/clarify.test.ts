@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { briefWithAnswers, clarifyCourse, clarifyPrompt, lessonsToPlan, outlinePrompt } from '../src';
+import { briefWithAnswers, clarifyCourse, clarifyPrompt, lessonsIn, lessonsToPlan, minutesIn, minutesToPlan, outlinePrompt } from '../src';
 import { fakeInference } from './fake';
 
 const req = { brief: 'Intro to ecology', sources: [{ title: 'BIO 110 syllabus', text: 'Week 1: Ecosystems\nWeek 2: Energy flow' }], language: 'en' as const, level: '', lessonCount: null, defaultLessons: 4 };
@@ -28,6 +28,23 @@ describe('reading the brief before planning', () => {
     expect(lessonsToPlan(req, read, [{ question: 'How many lessons?', answer: '' }])).toBe(14);
     expect(lessonsToPlan(req, { ...read, lessonCount: null }, [])).toBeNull();
     expect(lessonsToPlan({ ...req, sources: [] }, { ...read, lessonCount: null }, [])).toBe(4);
+  });
+
+  it('reads the count and the length from an answer, whichever order they come in', () => {
+    expect(lessonsIn('4 lessons of 45 minutes')).toBe(4);
+    expect(lessonsIn('45-minute classes, 6 of them')).toBe(6);
+    expect(lessonsIn('Six sessions')).toBe(6);
+    expect(lessonsIn('As many as it takes')).toBeNull();
+    expect(minutesIn('4 lessons of 45 minutes')).toBe(45);
+    expect(minutesIn('Six 2-hour evening sessions')).toBe(120);
+    expect(minutesIn('Two hours each')).toBe(120);
+    expect(minutesIn('4 lessons')).toBeNull();
+    const read = { lessonCount: null, minutesPerLesson: 60, level: '', questions: [{ topic: 'lessons' as const, question: 'How many lessons, and how long?', options: ['a', 'b', 'c'] }] };
+    const said = [{ question: 'How many lessons, and how long?', answer: '4 lessons of 45 minutes' }];
+    expect(minutesToPlan(0, read, said)).toBe(45);
+    expect(minutesToPlan(90, read, said)).toBe(90);
+    expect(minutesToPlan(0, read, [])).toBe(60);
+    expect(minutesToPlan(0, null, [])).toBe(50);
   });
 
   it('puts the answers in the brief, leaving out skipped questions', () => {

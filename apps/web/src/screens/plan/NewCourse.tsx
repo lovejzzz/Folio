@@ -1,4 +1,4 @@
-import { briefWithAnswers, clarifyCourse, courseFromOutline, generateOutline, lessonsToPlan, type Clarification, type ClarifyDraft, type NewCourseRequest, type Usage } from '@folio/ai';
+import { briefWithAnswers, clarifyCourse, courseFromOutline, generateOutline, lessonsToPlan, minutesToPlan, type Clarification, type ClarifyDraft, type NewCourseRequest, type Usage } from '@folio/ai';
 import { guessLessons, guessMinutes, guessQuizSize, guessSessions } from '../../lib/brief';
 import { MATERIAL_KINDS } from '@folio/core';
 import { Button, Skeleton } from '@folio/ui';
@@ -59,7 +59,7 @@ function withAnswers(req: NewCourseRequest, read: ClarifyDraft | null, answers: 
     ...req,
     brief: briefWithAnswers(req.brief, answers),
     lessonCount: lessonsToPlan({ ...req, defaultLessons: useDraft.getState().lessons }, read, answers),
-    minutesPerLesson: req.minutesPerLesson || read?.minutesPerLesson || 50,
+    minutesPerLesson: minutesToPlan(req.minutesPerLesson, read, answers),
     level: req.level || read?.level || '',
   };
 }
