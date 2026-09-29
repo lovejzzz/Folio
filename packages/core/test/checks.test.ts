@@ -41,7 +41,8 @@ describe('evaluate', () => {
 describe('other checks', () => {
   it('finds duplicate prompts', () => expect(duplicatePrompts(['A b', 'a  B', 'c'])).toEqual(['a  B']));
   it('checks lesson minutes with some slack', () => {
-    expect(checkMinutes([10, 20, 18], 50)).toEqual([]);
+    expect(checkMinutes([10, 20, 20], 50)).toEqual([]);
+    expect(checkMinutes([5, 10, 10, 10, 4, 10], 45)).toEqual([{ code: 'minutesMismatch', values: { total: 49, target: 45 } }]);
     expect(checkMinutes([10, 10], 50)).toEqual([{ code: 'minutesMismatch', values: { total: 20, target: 50 } }]);
   });
   it('splits sources into citable passages', () => {

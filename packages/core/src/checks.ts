@@ -92,13 +92,14 @@ export function checkSessionMinutes(segments: { session: number; minutes: number
   return sessions.flatMap((s, i) => checkMinutes(segments.filter((seg) => Math.min(seg.session, last) === i).map((seg) => seg.minutes), s.minutes)).slice(0, 1);
 }
 
+/**
+ * A plan's segments must fill the lesson exactly. There was slack of a tenth, but plans hardly ever miss
+ * (none of 69 in a test), and the one that did overran a 45-minute lesson by 4 minutes, which a teacher
+ * would have to find and cut. A miss now gets the one repair call.
+ */
 export function checkMinutes(segmentMinutes: number[], target: number): Flag[] {
   const total = segmentMinutes.reduce((a, b) => a + b, 0);
-  const slack = Math.max(3, Math.round(target * 0.1));
-  if (Math.abs(total - target) > slack) {
-    return [{ code: 'minutesMismatch', values: { total, target } }];
-  }
-  return [];
+  return total === target ? [] : [{ code: 'minutesMismatch', values: { total, target } }];
 }
 
 /**
