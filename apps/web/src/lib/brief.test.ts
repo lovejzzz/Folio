@@ -44,7 +44,7 @@ describe('reading the brief for the chips', () => {
     ['for 11th graders, 5 lessons', 5],
     ['30 students in 4 classes', 4],
     ['a 30-student class, 6 lessons', 6],
-    ['40 lessons', null],
+    ['41 lessons', null],
     ['a unit on fractions', null],
   ])('%s → %s lessons', (text, n) => expect(guessLessons(text)).toBe(n));
 
@@ -65,8 +65,8 @@ describe('reading the brief for the chips', () => {
 
   it('never guesses more lessons than the plan screen allows', () => {
     expect(MAX_GUESSED_LESSONS).toBe(SHAPE_LIMITS.lessons.max);
-    expect(guessLessons('20 lessons')).toBe(20);
-    expect(guessLessons('21 lessons')).toBeNull();
+    expect(guessLessons('40 lessons')).toBe(40);
+    expect(guessLessons('41 lessons')).toBeNull();
   });
 
   it.each([
@@ -179,11 +179,17 @@ describe('guessSessions and guessLessons on briefs that misled them', () => {
     ['Six 90-minute lectures on Kant. Each 90-minute lecture ends with questions.', null],
     ['五节40分钟的课堂，每节包含10分钟的讨论课', null],
     ['Two 50-minute lectures and a 50-minute seminar each week.', [{ kind: 'lecture', minutes: 50 }, { kind: 'lecture', minutes: 50 }, { kind: 'seminar', minutes: 50 }]],
+    // Found in QA: the lecture was dropped as "a short part" of the lab.
+    ['Organic Chemistry I: each week one 75-minute lecture and one 3-hour lab, 14 weeks.', [{ kind: 'lecture', minutes: 75 }, { kind: 'lab', minutes: 180 }]],
   ])('%s', (brief, sessions) => expect(guessSessions(brief)).toEqual(sessions));
   it.each([
     ['Eight lessons over two weeks. Each lesson is a 45-minute class and a 45-minute lab.', 8],
     ['12 lessons over 3 weeks, each a 50-minute lecture and a 50-minute seminar', 12],
     ['Four weeks, each a 50-minute lecture and a 50-minute seminar.', 4],
     ['初二物理：浮力。三周，每周一节40分钟的课堂和一节40分钟的实验课。', 3],
+    ['Organic Chemistry I: each week one 75-minute lecture and one 3-hour lab, 14 weeks.', 14],
+    // Found in QA: a rate is how often, not how many; 36 × 5 is more than a course holds.
+    ['AP US History, full school year, 36 weeks, five 50-minute periods a week.', null],
+    ['Two periods a week for 6 weeks', 12],
   ])('%s → %s lessons', (brief, n) => expect(guessLessons(brief)).toBe(n));
 });

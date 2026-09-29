@@ -1,4 +1,4 @@
-import { createCourse, createSource, emptyLesson, newId, type Course, type Language, type MaterialKind, type Session } from '@folio/core';
+import { SHAPE_LIMITS, createCourse, createSource, emptyLesson, newId, type Course, type Language, type MaterialKind, type Session } from '@folio/core';
 import type { Inference } from './inference';
 import { runJob, type Problem } from './jobs';
 import { clip, sessionList, systemPrompt, type OutlineInput } from './prompts';
@@ -27,7 +27,7 @@ const OUTLINE_SOURCE_BUDGET = 40000;
 function lessonsLine(input: OutlineInput): string {
   const count = input.lessonCount
     ? `Plan exactly ${input.lessonCount} lessons`
-    : 'Plan one lesson for each class meeting the syllabus and the teacher\'s answers set (one a week when only weeks are given), between 1 and 40 lessons,';
+    : `Plan one lesson for each class meeting the syllabus and the teacher's answers set (one a week when only weeks are given), between 1 and ${SHAPE_LIMITS.lessons.max} lessons,`;
   const level = input.level ? ` for ${input.level}` : '';
   return input.sessions && input.sessions.length > 1
     ? `${count}${level}. Each lesson meets ${input.sessions.length} times: ${sessionList(input.sessions)}. Plan each lesson as one topic taught across its sessions.`

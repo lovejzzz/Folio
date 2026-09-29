@@ -5,7 +5,7 @@
  * saved by an older Folio still opens.
  */
 export const SHAPE_LIMITS = {
-  lessons: { min: 1, max: 20 },
+  lessons: { min: 1, max: 40 },
   minutesPerLesson: { min: 10, max: 240, step: 5 },
   quizSize: { min: 1, max: 30 },
 } as const;

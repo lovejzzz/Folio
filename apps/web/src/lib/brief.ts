@@ -9,7 +9,7 @@ import type { Session, SessionKind } from '@folio/core';
  */
 
 /** The most lessons a guess may give: SHAPE_LIMITS.lessons.max in @folio/core (a test keeps them equal). */
-export const MAX_GUESSED_LESSONS = 20;
+export const MAX_GUESSED_LESSONS = 40;
 
 const EN_NUMBERS: Record<string, number> = {
   one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
@@ -40,7 +40,8 @@ const inRange = (n: number | null): number | null => (n !== null && n >= 1 && n 
 
 // What a lesson is called, and words that may sit between the number and it ("six short lessons", "12 45-minute lessons").
 const EN_LESSON = String.raw`(?:lessons?|sessions?|classes|class|periods?|lectures?|seminars?|workshops?)\b`;
-const EN_FILLER = String.raw`(?:(?!(?:weeks?|days?|months?|terms?|years?|of|per|a|an|each|every|and|or|with|in|for|on|to)\b)[a-z0-9]+(?:-[a-z0-9]+)*[\s-]+){0,2}`;
+// Not people: "a 30-student class" is one class.
+const EN_FILLER = String.raw`(?:(?!(?:weeks?|days?|months?|terms?|years?|of|per|a|an|each|every|and|or|with|in|for|on|to|students?|pupils?|learners?|kids|children|people|participants?)\b)[a-z0-9]+(?:-(?!(?:students?|pupils?|learners?|kids|children|people|participants?)\b)[a-z0-9]+)*[\s-]+){0,2}`;
 const ZH_LESSON = String.raw`(?:个)?(?:节课|节|课时|次课|堂课|堂|讲|课(?!程|本|文))`;
 // A number that is a grade, a lesson's own number or a duration is not a count of lessons.
 const EN_NOT_COUNT_BEFORE = String.raw`(?<!\b(?:grade|year|years|age|ages|lesson|unit|chapter|week|level|stage|form|no\.?|number)[\s-]*)`;
@@ -49,11 +50,11 @@ const EN_COUNT = String.raw`${EN_NOT_COUNT_BEFORE}\b(${EN_NUMBER})${EN_NOT_COUNT
 // Not an ordinal (第三课), a grade (初二), or a rate: 每周一节 is how often, not how many.
 const ZH_NOT_COUNT_BEFORE = String.raw`(?<![第\d零一二两三四五六七八九十高初大])(?<!每周|每星期|一周|每天)`;
 
-/** The first match of any pattern that reads as a lesson count in range. */
-function firstCount(text: string, patterns: [source: string, read: (m: RegExpMatchArray) => number | null][]): number | null {
+/** The first match of any pattern that reads as a lesson count in range (or, `anySize`, as a count at all). */
+function firstCount(text: string, patterns: [source: string, read: (m: RegExpMatchArray) => number | null][], anySize = false): number | null {
   for (const [source, read] of patterns) {
     for (const m of text.matchAll(new RegExp(source, 'gi'))) {
-      const n = inRange(read(m));
+      const n = anySize ? read(m) : inRange(read(m));
       if (n !== null) return n;
     }
   }
@@ -63,19 +64,20 @@ function firstCount(text: string, patterns: [source: string, read: (m: RegExpMat
 const times = (a: number | null, b: number | null): number | null => (a && b ? a * b : null);
 
 /** "2 lessons a week for 6 weeks" → 12; "每周两节课，共六周" → 12; either way round. */
-function lessonsFromRate(text: string): number | null {
+function lessonsFromRate(text: string, anySize = false): number | null {
   return firstCount(text, [
     [String.raw`${EN_COUNT}[\s-]+${EN_FILLER}${EN_LESSON}[\s-]+(?:a|per|each|every)[\s-]+week\b.*?\b(${EN_NUMBER})[\s-]+weeks?\b`, (m) => times(enNumber(m[1]!), enNumber(m[2]!))],
     [String.raw`\b(${EN_NUMBER})[\s-]+weeks?\b.*?${EN_COUNT}[\s-]+${EN_FILLER}${EN_LESSON}[\s-]+(?:a|per|each|every)[\s-]+week\b`, (m) => times(enNumber(m[2]!), enNumber(m[1]!))],
     [String.raw`(?:每周|一周|每星期)(${ZH_NUMBER})\s*${ZH_LESSON}.*?(${ZH_NUMBER})\s*(?:周|个星期|星期)`, (m) => times(zhNumber(m[1]!), zhNumber(m[2]!))],
     [String.raw`${ZH_NOT_COUNT_BEFORE}(${ZH_NUMBER})\s*(?:周|个星期)[^每]{0,12}(?:每周|每星期)(${ZH_NUMBER})\s*${ZH_LESSON}`, (m) => times(zhNumber(m[2]!), zhNumber(m[1]!))],
-  ]);
+  ], anySize);
 }
 
 /** A number attached to the word for a lesson: "12 lessons", "lessons: 8", "十二节课". Never "lesson 3" or "第三课". */
 function lessonsNamed(text: string): number | null {
   return firstCount(text, [
-    [String.raw`${EN_COUNT}(?:[\s-]*(?:x|×))?[\s-]+${EN_FILLER}${EN_LESSON}`, (m) => enNumber(m[1]!)],
+    // Not a rate: "five periods a week" says how often, not how many.
+    [String.raw`${EN_COUNT}(?:[\s-]*(?:x|×))?[\s-]+${EN_FILLER}${EN_LESSON}(?![\s-]+(?:a|per|each|every)[\s-]+(?:week|day)\b)`, (m) => enNumber(m[1]!)],
     [String.raw`\b(?:lessons|sessions|classes)\s*[:：=]\s*(\d{1,2})\b`, (m) => enNumber(m[1]!)],
     [String.raw`${ZH_NOT_COUNT_BEFORE}(${ZH_NUMBER})\s*${ZH_LESSON}`, (m) => zhNumber(m[1]!)],
   ]);
@@ -105,7 +107,9 @@ export function guessLessons(text: string): number | null {
     const weeks = lessonsNamedPlainly(text) ?? lessonsFromWeeks(text);
     if (weeks) return weeks;
   }
-  return lessonsFromRate(text) ?? lessonsNamed(text) ?? lessonsFromWeeks(text);
+  // A rate too large for one course ("five periods a week for 36 weeks") is no count at all: Folio asks instead.
+  if (lessonsFromRate(text, true) !== null) return lessonsFromRate(text);
+  return lessonsNamed(text) ?? lessonsFromWeeks(text);
 }
 
 /** US-style grade bands, as the level chip offers them. */
@@ -229,6 +233,7 @@ export function guessSessions(text: string): Session[] | null {
   const all: [number, RegExpMatchArray][] = [...[...text.matchAll(EN_SESSION)].map((m) => [m.index, m] as [number, RegExpMatchArray]), ...[...text.matchAll(ZH_SESSION)].map((m) => [m.index, m] as [number, RegExpMatchArray])];
   for (const [, m] of all.sort((a, b) => a[0] - b[0])) add(m[1], m[2]!, m[3]!, m[4]!);
   const longest = Math.max(0, ...found.map((s) => s.minutes));
-  const meetings = found.filter((s) => s.minutes >= 25 && s.minutes * 2 >= longest).slice(0, 3);
+  // A 75-minute lecture beside a 3-hour lab is a meeting; a 10-minute discussion at the end of one isn't.
+  const meetings = found.filter((s) => s.minutes >= 25 && (s.minutes >= 45 || s.minutes * 2 >= longest)).slice(0, 3);
   return meetings.length > 1 && new Set(meetings.map((s) => s.kind)).size > 1 ? meetings : null;
 }

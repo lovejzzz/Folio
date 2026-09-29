@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Language } from '@folio/core';
+import { SHAPE_LIMITS, type Language } from '@folio/core';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
 import { systemPrompt } from './prompts';
@@ -13,7 +13,7 @@ import { systemPrompt } from './prompts';
 const line = z.string().min(1);
 
 export const ClarifyDraft = z.object({
-  lessonCount: z.number().int().min(1).max(60).nullable().describe('How many lessons the brief or syllabus sets, or null when it does not say'),
+  lessonCount: z.number().int().min(1).max(400).nullable().describe('How many lessons the brief or syllabus sets, or null when it does not say'),
   minutesPerLesson: z.number().int().min(10).max(300).nullable().describe('How long each lesson or class meeting is, in minutes, or null when not stated'),
   level: z.string().default('').describe('Who the students are, e.g. "Grade 5" or "First-year university"; empty when unclear'),
   questions: z
@@ -68,7 +68,8 @@ export function clarifyPrompt(req: ClarifyRequest): string {
     'Report what you can read from the brief and files: "lessonCount", the number of lessons they set (one lesson for each class meeting on the schedule; when the schedule gives weeks, one per week unless it says how many times the class meets each week), or null when they do not say; "minutesPerLesson", or null; "level", or empty.',
     'Then ask the teacher only what would change the course in a way they would care about and that cannot be read from what they gave. Good questions: how many lessons or how long each is, when that is needed and not stated; who the students are; what must be covered or left out; how the course is assessed; a part of a syllabus that is unclear, contradictory or missing, such as a week with no topic, a project with no description or readings with no schedule. Never ask about what is already stated or what the teacher chose above, and never about what Folio decides well itself: activities, wording, slide design, question formats, or which examples, cases, claims or texts to use when the teacher has not said they have particular ones in mind. If a sensible teacher would answer "you decide", do not ask. For a single lesson or a short unit, ask about grading only when the brief or files bring it up.',
     lessonCountLine(req),
-    'Ask nothing when the brief and files already say enough to plan a good course: for a clear brief that is the right answer. Usually ask one to four questions; ask more, up to eight, only when the course is genuinely unclear. Put the question whose answer changes the course most first.',
+    `Folio plans at most ${SHAPE_LIMITS.lessons.max} lessons in one course. When the course meets more often than that, such as daily for a school year, ask how to fit it, with answers such as one lesson a week, one unit or one term; never offer more than ${SHAPE_LIMITS.lessons.max} lessons.`,
+    'Ask nothing when the brief and files already say enough to plan a good course: for a clear brief that is the right answer. When the brief already gives who the students are, how many lessons and how long, and what the course covers, ask at most one question, and only one whose answer would change several lessons. Otherwise usually ask one to four questions; ask more, up to eight, only when the course is genuinely unclear. Put the question whose answer changes the course most first.',
     'Write each question as one short sentence of under 20 words, naming the unit, week or topic it is about. Give three answers written for this course: distinct, concrete, each under 12 words, the most likely first. Do not add "Other" or "Not sure": the teacher can always write their own answer.',
   ]
     .filter(Boolean)
@@ -99,10 +100,12 @@ const digits = (text: string): string => text.replace(new RegExp(`\\b(${WORDS.jo
 
 export function lessonsIn(text: string): number | null {
   const answer = digits(text);
-  const named = answer.match(/\b(\d{1,2})\s*(?:lessons?|class(?:es)?|sessions?|meetings?|periods?)\b/i)?.[1];
-  const bare = answer.match(/\b(\d{1,2})\b(?!\s*-?\s*(?:min|minutes?|hours?|hrs?|h)\b)/i)?.[1];
+  // A count said as a rate ("four per week") is how often, not how many.
+  const named = answer.match(/\b(\d{1,3})\s*(?:lessons?|class(?:es)?|sessions?|meetings?|periods?)\b(?!\s*(?:a|per|each|every)\s+(?:week|day)\b)/i)?.[1];
+  const bare = answer.match(/\b(\d{1,3})\b(?!\s*-?\s*(?:min|minutes?|hours?|hrs?|h)\b)(?!\s*(?:\w+\s+)?(?:a|per|each|every)\s+(?:week|day)\b)/i)?.[1];
   const n = Number(named ?? bare);
-  return n >= 1 && n <= 60 ? n : null;
+  // More than a course can hold: the outline fits the answer into as many as it can.
+  return n >= 1 && n <= SHAPE_LIMITS.lessons.max ? n : null;
 }
 
 /** "4 lessons of 45 minutes" is 45 minutes; "2-hour evenings" is 120. */
@@ -120,17 +123,17 @@ export function minutesIn(text: string): number | null {
  * else the default.
  */
 export function lessonsToPlan(req: Pick<ClarifyRequest, 'lessonCount' | 'defaultLessons' | 'sources'>, read: ClarifyDraft | null, answers: Clarification[]): number | null {
-  if (req.lessonCount) return req.lessonCount;
+  // The teacher's answer is their latest word, and wins even over a count read from the brief.
   const [answer] = answersAbout(read, answers, ['lessons']);
   if (answer) return lessonsIn(answer);
+  if (req.lessonCount) return req.lessonCount;
   return read?.lessonCount ?? (req.sources.length ? null : req.defaultLessons);
 }
 
-/** How long each lesson is: what the brief says; else the teacher's answer; else what Folio read; else 50. */
+/** How long each lesson is: the teacher's answer; else what the brief says; else what Folio read; else 50. */
 export function minutesToPlan(stated: number, read: ClarifyDraft | null, answers: Clarification[]): number {
-  if (stated) return stated;
   const answered = answersAbout(read, answers, ['lessons', 'length']).map(minutesIn).find((n) => n !== null);
-  return answered ?? read?.minutesPerLesson ?? 50;
+  return answered ?? (stated || read?.minutesPerLesson || 50);
 }
 
 /** The answers, in the teacher's brief, so the outline and every part written later can follow them. */
