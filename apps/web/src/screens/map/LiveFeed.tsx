@@ -54,7 +54,7 @@ function FinishedRow({ row, index }: { row: LiveRow; index: number }) {
   const failed = row.stage === 'failed';
   const fix = row.fixes[0];
   return (
-    <li className={cx('animate-pop-in', index >= 1 && 'hidden sm:block', index === FINISHED - 1 && 'opacity-60')}>
+    <li className={cx('animate-pop-in', index >= 1 && 'hidden sm:block', index === FINISHED - 1 && !fix && 'opacity-60')}>
       <span className="flex items-center gap-2.5">
         <RowName row={row} course={course} />
         {failed ? <StatusMark kind="error" label="" className="ml-auto" /> : <Check aria-hidden size={14} strokeWidth={2.5} className="ml-auto shrink-0 text-good" />}

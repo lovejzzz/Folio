@@ -93,10 +93,15 @@ export function workingRows(rows: Record<string, LiveRow>): LiveRow[] {
     .sort((a, b) => a.started - b.started);
 }
 
-/** What was finished last, latest first. */
+/**
+ * What was finished last, latest first; but the last plan the check corrected keeps its place, below, while
+ * the rest go by: what Opus caught is the one thing worth reading, and it would otherwise last seconds.
+ */
 export function finishedRows(rows: Record<string, LiveRow>, limit: number): LiveRow[] {
-  return Object.values(rows)
+  const finished = Object.values(rows)
     .filter((r) => r.stage === 'done' || r.stage === 'failed')
-    .sort((a, b) => b.ended - a.ended)
-    .slice(0, limit);
+    .sort((a, b) => b.ended - a.ended);
+  const caught = finished.find((r) => r.stage === 'done' && r.fixes.length > 0);
+  if (!caught) return finished.slice(0, limit);
+  return [...finished.filter((r) => r !== caught).slice(0, limit - 1), caught];
 }
