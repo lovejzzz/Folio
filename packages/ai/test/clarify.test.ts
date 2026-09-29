@@ -10,6 +10,9 @@ describe('reading the brief before planning', () => {
     expect(clarifyPrompt({ ...req, lessonCount: 6 })).not.toContain('when it cannot be, ask for it');
     expect(clarifyPrompt({ ...req, lessonCount: 6 })).toContain('6 lessons');
     expect(clarifyPrompt({ ...req, sources: [] })).toContain('Folio plans 4 unless told otherwise');
+    const labs = clarifyPrompt({ ...req, lessonCount: 14, sessions: [{ kind: 'lecture', minutes: 75 }, { kind: 'lab', minutes: 180 }] });
+    expect(labs).toContain('each lesson meets 2 times');
+    expect(labs).toContain('Folio plans all of them');
     expect(clarifyPrompt(req)).toContain('Week 2: Energy flow');
   });
 

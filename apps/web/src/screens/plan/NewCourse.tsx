@@ -76,7 +76,7 @@ function useClarify(usages: Usage[]): [Phase, (p: Phase) => void] {
     if (started.current || !req || !inference) return;
     started.current = true;
     const defaultLessons = useDraft.getState().lessons;
-    clarifyCourse(inference, { brief: req.brief, sources: req.sources, language: req.language, locale: req.locale, level: req.level, lessonCount: req.lessonCount, defaultLessons })
+    clarifyCourse(inference, { brief: req.brief, sources: req.sources, language: req.language, locale: req.locale, level: req.level, lessonCount: req.lessonCount, defaultLessons, sessions: req.sessions })
       .then((read) => setPhase(read.questions.length ? { kind: 'asking', read } : { kind: 'drafting', req: withAnswers(req, read, []) }))
       .catch(() => setPhase({ kind: 'drafting', req: withAnswers(req, null, []) }));
   }, [usages]);
