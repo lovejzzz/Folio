@@ -23,7 +23,8 @@ function Chip({ label, value, onChange, children }: { label: string; value: stri
   );
 }
 
-const LESSON_COUNTS = [1, 2, 3, 4, 5, 6, 8, 10, 12];
+/** Up to a full term: a US semester runs 15 weeks, 16 with finals. The plan screen goes on to SHAPE_LIMITS.lessons.max. */
+const LESSON_COUNTS = [1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 15, 16, 20];
 
 export function LevelChip() {
   const t = useT();
