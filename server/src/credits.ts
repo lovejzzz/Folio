@@ -81,16 +81,32 @@ export async function grantFree(db: D1Database, userId: string, addressHash: str
 }
 
 /** Credits bought: added once per payment, however many times the payment is reported. */
-export async function addPurchase(db: D1Database, userId: string, amount: number, ref: string, detail: string, now = Date.now()): Promise<boolean> {
+export function addPurchase(db: D1Database, userId: string, amount: number, ref: string, detail: string, now = Date.now()): Promise<boolean> {
+  return addEntry(db, userId, 'purchase', amount, ref, detail, now);
+}
+
+/** A ledger entry and its change to the balance, made once per ref. False when it was already made. */
+export async function addEntry(db: D1Database, userId: string, kind: string, amount: number, ref: string, detail: string, now = Date.now()): Promise<boolean> {
   const had = await db.prepare('SELECT 1 AS x FROM credit_ledger WHERE ref = ?').bind(ref).first();
   if (had) return false;
   await db.batch([
-    db.prepare("INSERT INTO credit_ledger (id, user_id, kind, amount, ref, detail, created_at) VALUES (?, ?, 'purchase', ?, ?, ?, ?)").bind(id(), userId, amount, ref, detail, now),
+    db.prepare('INSERT INTO credit_ledger (id, user_id, kind, amount, ref, detail, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(id(), userId, kind, amount, ref, detail, now),
     db
       .prepare('INSERT INTO credits (user_id, balance, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET balance = balance + excluded.balance, updated_at = excluded.updated_at')
       .bind(userId, amount, now),
   ]);
   return true;
+}
+
+/** The purchase a payment made: whose it was and what it added. */
+export function purchaseOf(db: D1Database, ref: string): Promise<{ user_id: string; amount: number } | null> {
+  return db.prepare("SELECT user_id, amount FROM credit_ledger WHERE ref = ? AND kind = 'purchase'").bind(ref).first<{ user_id: string; amount: number }>();
+}
+
+/** What the entries whose refs begin with `prefix` came to, in all. */
+export async function totalOf(db: D1Database, prefix: string): Promise<number> {
+  const row = await db.prepare('SELECT COALESCE(SUM(amount), 0) AS total FROM credit_ledger WHERE substr(ref, 1, ?) = ?').bind(prefix.length, prefix).first<{ total: number }>();
+  return row?.total ?? 0;
 }
 
 /**

@@ -17,7 +17,7 @@ export const terms = {
     },
     {
       heading: 'Refunds',
-      body: 'Folio credits are not refundable, including credits you haven’t used, except where the law requires a refund. If you were charged in error, charged twice, or paid and didn’t receive your credits, write to us and we’ll put it right. A request that fails because of an error on Folio’s side or the AI provider’s doesn’t use credits.',
+      body: 'Folio credits are not refundable, including credits you haven’t used, except where the law requires a refund. If you were charged in error, charged twice, or paid and didn’t receive your credits, write to us and we’ll put it right. If a payment is refunded or disputed, the credits it bought are taken back; credits already used can leave your balance below zero until you buy more. A request that fails because of an error on Folio’s side or the AI provider’s doesn’t use credits.',
     },
     {
       heading: 'Deleting your account',

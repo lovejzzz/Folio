@@ -1,4 +1,4 @@
-import { addPurchase, MILLI } from './credits';
+import { addEntry, addPurchase, MILLI, purchaseOf, totalOf } from './credits';
 import type { Env, User } from './types';
 
 /**
@@ -76,22 +76,69 @@ export async function verifySignature(body: string, header: string, secret: stri
 interface CheckoutSession {
   id: string;
   payment_status?: string;
+  payment_intent?: string | null;
   metadata?: Record<string, string>;
   amount_total?: number;
 }
 
-/** Stripe's word that a payment went through: the pack's credits, added once. */
-export async function webhook(request: Request, env: Env): Promise<Response> {
-  if (!env.STRIPE_WEBHOOK_SECRET) return json({ error: 'unavailable' }, 503);
-  const body = await request.text();
-  if (!(await verifySignature(body, request.headers.get('stripe-signature') ?? '', env.STRIPE_WEBHOOK_SECRET))) return json({ error: 'signature' }, 400);
-  const event = JSON.parse(body) as { type: string; data: { object: CheckoutSession } };
-  if (event.type !== 'checkout.session.completed' && event.type !== 'checkout.session.async_payment_succeeded') return json({ received: true });
-  const session = event.data.object;
+interface Charge {
+  id: string;
+  payment_intent?: string | null;
+  amount: number;
+  amount_refunded: number;
+}
+
+interface Dispute {
+  id: string;
+  payment_intent?: string | null;
+  status?: string;
+}
+
+type Event = { type: string; data: { object: unknown } };
+
+/** A purchase is known by its payment, which refunds and disputes name too. */
+const paymentRef = (paymentIntent: string | null | undefined, fallback: string) => `stripe:${paymentIntent ?? fallback}`;
+
+/** The pack's credits, added once, when Stripe says the payment went through. */
+async function purchased(env: Env, session: CheckoutSession): Promise<Response> {
   if (session.payment_status !== 'paid') return json({ received: true });
   const userId = session.metadata?.user_id;
   const credits = Number(session.metadata?.credits);
   if (!userId || !Number.isInteger(credits) || credits <= 0) return json({ error: 'metadata' }, 400);
-  await addPurchase(env.DB, userId, credits * MILLI, `stripe:${session.id}`, `${credits.toLocaleString('en-US')} credits ($${((session.amount_total ?? 0) / 100).toFixed(2)})`);
+  const detail = `${credits.toLocaleString('en-US')} credits ($${((session.amount_total ?? 0) / 100).toFixed(2)})`;
+  await addPurchase(env.DB, userId, credits * MILLI, paymentRef(session.payment_intent, session.id), detail);
+  return json({ received: true });
+}
+
+/**
+ * A refund takes back the credits in proportion to what was refunded, a dispute all of them (given back if Folio
+ * wins it). Credits already spent can leave the balance below zero until more are bought.
+ */
+async function reversed(env: Env, event: Event): Promise<void> {
+  if (event.type === 'charge.refunded') {
+    const charge = event.data.object as Charge;
+    const bought = await purchaseOf(env.DB, paymentRef(charge.payment_intent, charge.id));
+    if (!bought || !charge.amount) return;
+    // Each refund reports the total refunded so far: take back what that total calls for, less what was taken.
+    const due = Math.round((bought.amount * charge.amount_refunded) / charge.amount);
+    const taken = -(await totalOf(env.DB, `refund:${charge.id}:`));
+    if (due > taken) await addEntry(env.DB, bought.user_id, 'reversal', taken - due, `refund:${charge.id}:${charge.amount_refunded}`, 'Payment refunded');
+    return;
+  }
+  const dispute = event.data.object as Dispute;
+  const bought = await purchaseOf(env.DB, paymentRef(dispute.payment_intent, dispute.id));
+  if (!bought) return;
+  if (event.type === 'charge.dispute.created') await addEntry(env.DB, bought.user_id, 'reversal', -bought.amount, `dispute:${dispute.id}`, 'Payment disputed');
+  if (event.type === 'charge.dispute.closed' && dispute.status === 'won') await addEntry(env.DB, bought.user_id, 'reversal', bought.amount, `dispute-won:${dispute.id}`, 'Dispute won');
+}
+
+/** What Stripe reports: a payment that went through, or one refunded or disputed later. */
+export async function webhook(request: Request, env: Env): Promise<Response> {
+  if (!env.STRIPE_WEBHOOK_SECRET) return json({ error: 'unavailable' }, 503);
+  const body = await request.text();
+  if (!(await verifySignature(body, request.headers.get('stripe-signature') ?? '', env.STRIPE_WEBHOOK_SECRET))) return json({ error: 'signature' }, 400);
+  const event = JSON.parse(body) as Event;
+  if (event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded') return purchased(env, event.data.object as CheckoutSession);
+  if (event.type === 'charge.refunded' || event.type === 'charge.dispute.created' || event.type === 'charge.dispute.closed') await reversed(env, event);
   return json({ received: true });
 }

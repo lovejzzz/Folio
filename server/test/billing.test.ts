@@ -47,7 +47,7 @@ async function signed(body: string, t = Math.floor(Date.now() / 1000), secret = 
 }
 
 const paid = (id = 'cs_test_1', status = 'paid') =>
-  JSON.stringify({ type: 'checkout.session.completed', data: { object: { id, payment_status: status, amount_total: 1000, metadata: { user_id: 'g-123', credits: '1000', pack: 'p10' } } } });
+  JSON.stringify({ type: 'checkout.session.completed', data: { object: { id, payment_intent: `pi_${id}`, payment_status: status, amount_total: 1000, metadata: { user_id: 'g-123', credits: '1000', pack: 'p10' } } } });
 
 describe('buying credits', () => {
   it('makes a Checkout page for a pack, for this teacher', async () => {
@@ -82,5 +82,48 @@ describe('buying credits', () => {
     const body = paid();
     expect(await verifySignature(body, await signed(body, Math.floor(Date.now() / 1000) - 3600), SECRET)).toBe(false);
     expect(await verifySignature(body, await signed(body), SECRET)).toBe(true);
+  });
+});
+
+const tell = async (type: string, object: object) => {
+  const body = JSON.stringify({ type, data: { object } });
+  return call('billing/webhook', { method: 'POST', body, headers: { 'stripe-signature': await signed(body) } });
+};
+const refunded = (refundedCents: number) => tell('charge.refunded', { id: 'ch_1', payment_intent: 'pi_cs_test_1', amount: 1000, amount_refunded: refundedCents });
+
+describe('refunds and disputes', () => {
+  beforeEach(async () => {
+    await signIn();
+    const body = paid();
+    await call('billing/webhook', { method: 'POST', body, headers: { 'stripe-signature': await signed(body) } });
+  });
+
+  it('take back the credits in proportion to what was refunded, once however often Stripe tells', async () => {
+    expect((await refunded(400)).status).toBe(200);
+    await refunded(400);
+    expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS + 600) * MILLI);
+    await refunded(1000);
+    await refunded(1000);
+    expect(await balanceOf(env.DB, 'g-123')).toBe(FREE_CREDITS * MILLI);
+  });
+
+  it('leave the balance below zero when the refunded credits were already spent', async () => {
+    await env.DB.prepare('UPDATE credits SET balance = ? WHERE user_id = ?').bind(200 * MILLI, 'g-123').run();
+    await refunded(1000);
+    expect(await balanceOf(env.DB, 'g-123')).toBe(-800 * MILLI);
+  });
+
+  it('take back a disputed payment’s credits, and give them back if the dispute is won', async () => {
+    const dispute = { id: 'dp_1', payment_intent: 'pi_cs_test_1' };
+    await tell('charge.dispute.created', dispute);
+    await tell('charge.dispute.created', dispute);
+    expect(await balanceOf(env.DB, 'g-123')).toBe(FREE_CREDITS * MILLI);
+    await tell('charge.dispute.closed', { ...dispute, status: 'won' });
+    expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS + 1000) * MILLI);
+  });
+
+  it('ignore payments Folio didn’t sell credits for', async () => {
+    await tell('charge.refunded', { id: 'ch_9', payment_intent: 'pi_other', amount: 500, amount_refunded: 500 });
+    expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS + 1000) * MILLI);
   });
 });

@@ -13,7 +13,7 @@ function CreditsLost({ open }: { open: boolean }) {
   useEffect(() => {
     if (open) void refreshCredits();
   }, [open]);
-  if (!balance) return null;
+  if (!balance || balance < 0) return null;
   return (
     <p role="alert" className="mx-6 mt-3 rounded-control bg-critical-tint px-3 py-2 font-ui text-13 leading-relaxed text-critical">
       {creditsText.lostOnDelete(balance)}
