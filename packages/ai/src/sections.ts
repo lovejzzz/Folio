@@ -1,6 +1,6 @@
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
-import { tidyFaq, tidyFollowUps, tidyPlanSources, tidySlides, tidySteps, tidyTrueFalse, unnumberSteps } from './tidy';
+import { tidyFaq, tidyFollowUps, tidyLessonNames, tidyPlanSources, tidySlides, tidySteps, tidyTrueFalse, unnumberSteps } from './tidy';
 import {
   checkSessionMinutes,
   lessonSessions,
@@ -39,7 +39,7 @@ import {
 /** Everything one generated section needs: its schema, its checks and how it becomes commands. */
 interface SectionJob<T> {
   schema: JobSpec<T>['schema'];
-  tidy?: (value: T, course: Course) => T;
+  tidy?: (value: T, course: Course, lesson: Lesson) => T;
   check?: (value: T, course: Course, lesson: Lesson) => Problem[];
   toCommands: (value: T, problems: Problem[], course: Course, lesson: Lesson) => Command[];
 }
@@ -76,7 +76,7 @@ function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flags:
 
 const plan: SectionJob<PlanDraft> = {
   schema: PlanDraft,
-  tidy: tidyPlanSources,
+  tidy: (v, course, lesson) => tidyLessonNames(tidyPlanSources(v), course, lesson),
   check: (v, course) =>
     checkSessionMinutes(
       v.segments.map((s) => ({ session: s.session - 1, minutes: s.minutes })),
@@ -329,7 +329,7 @@ export async function generateSection(
       prompt: sectionPrompt(course, lesson, kind),
       effort: SECTION_EFFORT[kind],
       schema: job.schema,
-      tidy: job.tidy ? (v) => job.tidy!(v, course) : undefined,
+      tidy: job.tidy ? (v) => job.tidy!(v, course, lesson) : undefined,
       check: job.check ? (v) => job.check!(v, course, lesson) : undefined,
       signal,
       onText: partials(options.onProgress),

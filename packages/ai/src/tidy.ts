@@ -1,4 +1,4 @@
-import { docLabels, type Language } from '@folio/core';
+import { docLabels, type Course, type Language, type Lesson } from '@folio/core';
 import type { AssignmentDraft, DiscussionsDraft, OutlineDraft, QuestionDraft, SlidesDraft } from './schemas';
 
 /**
@@ -143,4 +143,35 @@ export function unfenceAll<T>(value: T): T {
   if (Array.isArray(value)) return value.map(unfenceAll) as T;
   if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, unfenceAll(v)])) as T;
   return value;
+}
+
+const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const WHICH = String.raw`(?:first|second|third|fourth|previous|prior|next|following|earlier|later)`;
+const UNIT = String.raw`(?:lesson|class|topic|session)`;
+
+/**
+ * "The next lesson", "the first lesson, Evaporation": lessons are named by title, since teachers reorder them.
+ * Where the words say which lesson plainly, it is named here, as the model meant it; where they don't ("the
+ * last lesson" may be the one before or the final one), they are left for the plan's review.
+ */
+export function nameLessons(text: string, course: Course, lesson: Lesson): string {
+  const order = course.lessonOrder.map((id) => course.lessons[id]?.title ?? '');
+  const here = course.lessonOrder.indexOf(lesson.id);
+  const quoted = (title: string) => `“${title}”`;
+  let out = text;
+  // Named anyway: keep only the name.
+  for (const title of order.filter(Boolean)) {
+    const named = new RegExp(String.raw`\bthe ${WHICH} ${UNIT}(?:,|:| —| –)?\s+(?:“|")?${escape(title)}(?:”|")?`, 'gi');
+    out = out.replace(named, quoted(title));
+  }
+  const byPlace: Record<string, number> = { first: 0, second: 1, third: 2, fourth: 3, previous: here - 1, prior: here - 1, earlier: here - 1, next: here + 1, following: here + 1, later: here + 1 };
+  return out.replace(new RegExp(String.raw`\bthe (${WHICH}) ${UNIT}\b`, 'gi'), (whole, which: string) => {
+    const title = order[byPlace[which.toLowerCase()] ?? -1];
+    return title && title !== lesson.title ? quoted(title) : whole;
+  });
+}
+
+export function tidyLessonNames<T extends { keyIdeas: string[]; segments: { description: string; teacherNotes: string }[] }>(v: T, course: Course, lesson: Lesson): T {
+  const name = (text: string) => nameLessons(text, course, lesson);
+  return { ...v, keyIdeas: v.keyIdeas.map(name), segments: v.segments.map((s) => ({ ...s, description: name(s.description), teacherNotes: name(s.teacherNotes) })) };
 }
