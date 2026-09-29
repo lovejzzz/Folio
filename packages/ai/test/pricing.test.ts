@@ -84,12 +84,16 @@ describe('what a course cost', () => {
     const cost = costOf([sonnet, { provider: 'openai', model: 'gpt-6-sol', input: 10, output: 10, cacheRead: 0, cacheWrite: 0 }], live);
     // Built in for Sonnet 5: $2 in, $10 out, $0.20 cached.
     expect(cost.usd).toBeCloseTo(2 + 1 + 0.2, 6);
+    expect(costOf([{ ...sonnet, model: 'claude-sonnet-5-5' }], null).usd).toBeCloseTo(2 + 1 + 0.2, 6);
     expect(cost.source).toBe('built-in');
     expect(cost.unpriced).toBe(1);
   });
 
-  it('has Opus review Claude plans, with the teacher’s own key, and no reviewer where none was tried', () => {
+  it('has Opus review plans from older Claude models, with the teacher’s own key, and no reviewer where none is needed or was tried', () => {
     expect(reviewerSettings(settings('anthropic', 'claude-sonnet-5'))).toMatchObject({ provider: 'anthropic', model: 'claude-opus-5-5', apiKey: 'sk-test' });
+    expect(reviewerSettings(settings('anthropic', 'claude-haiku-4-5-20251001'))).toMatchObject({ model: 'claude-opus-5-5' });
+    expect(reviewerSettings(settings('anthropic', 'claude-sonnet-5-5'))).toBeNull();
+    expect(reviewerSettings(settings('anthropic', 'claude-opus-5-5'))).toBeNull();
     expect(reviewerSettings(settings('openai', 'gpt-6-sol'))).toBeNull();
   });
 });

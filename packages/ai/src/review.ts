@@ -2,6 +2,7 @@ import type { Course, Lesson } from '@folio/core';
 import { z } from 'zod';
 import type { Inference, ModelSettings, ProviderId } from './inference';
 import { runJob } from './jobs';
+import { modelKey } from './pricing';
 import { courseBackground, lessonContext, systemPrompt } from './prompts';
 import type { PlanDraft } from './schemas';
 
@@ -21,10 +22,17 @@ const line = z.string().min(1);
  */
 export const REVIEW_MODELS: Partial<Record<ProviderId, string>> = { anthropic: 'claude-opus-5-5' };
 
-/** The reviewer's settings: the teacher's own key and provider, with the review model. */
+/**
+ * Writers whose plans need no review. On the same lessons, Sonnet 5.5 made about a third as many factual
+ * errors as Sonnet 5, and Opus's review of its plans fixed little that mattered; the others are the
+ * reviewer itself or stronger. A writer not listed here, older or not yet measured, is reviewed.
+ */
+const UNREVIEWED_WRITERS = new Set(['claude-sonnet-5.5', 'claude-opus-5.5', 'claude-fable-5', 'claude-fable-5.1']);
+
+/** The reviewer's settings: the teacher's own key and provider, with the review model. Null when the plan goes out as written. */
 export function reviewerSettings(settings: ModelSettings): ModelSettings | null {
   const model = REVIEW_MODELS[settings.provider];
-  return model ? { ...settings, model } : null;
+  return model && !UNREVIEWED_WRITERS.has(modelKey(settings.model)) ? { ...settings, model } : null;
 }
 
 export const PlanReviewDraft = z.object({

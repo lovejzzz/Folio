@@ -33,10 +33,9 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   await expect(page.getByText(/Course ready\. Please check 3 things\./)).toBeVisible({ timeout: 30_000 });
   const plan = model.calls.filter((c) => c.messages[0]!.content.includes('Write the lesson plan'));
   expect(plan).toHaveLength(3);
-  // Each plan is checked by Opus before the rest is written, and the run says what it cost.
-  const reviews = model.calls.filter((c) => c.messages[0]!.content.includes('Check this plan the way'));
-  expect(reviews).toHaveLength(3);
-  expect(reviews.every((c) => c.model === 'claude-opus-5-5')).toBe(true);
+  // Sonnet 5.5 writes the plans, which go out without a review, and the run says what it cost.
+  expect(plan.every((c) => c.model === 'claude-sonnet-5-5')).toBe(true);
+  expect(model.calls.filter((c) => c.messages[0]!.content.includes('Check this plan the way'))).toHaveLength(0);
   await expect(page.getByText(/That cost less than a cent\./)).toBeVisible();
   expect(model.calls.some((c) => c.messages[0]!.content.includes('"Chloroplasts up close"'))).toBe(true);
   expect(model.calls.some((c) => c.messages[0]!.content.includes('Write one assignment'))).toBe(false);
@@ -49,15 +48,17 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   await expect(drawer.getByText('The answer is not one of the choices.')).toHaveCount(2);
 });
 
-test('a plan review that fails leaves the plan as written, and the course still gets built', async ({ page }) => {
+test('an older model’s plans are checked by Opus, and a review that fails leaves the plan as written', async ({ page }) => {
   const model = await fakeAnthropic(page);
   // Registered last, so it sees each request first: the reviewer's calls fail, the rest go on to the fake.
+  const reviewed = new Set<string>();
   await page.route('https://api.anthropic.com/**', (route) => {
-    const body = route.request().method() === 'POST' ? (route.request().postDataJSON() as { model?: string }) : null;
+    const body = route.request().method() === 'POST' ? (route.request().postDataJSON() as { model?: string; messages?: { content: string }[] }) : null;
     if (body?.model !== 'claude-opus-5-5') return route.fallback();
+    reviewed.add(body.messages?.[0]?.content ?? '');
     return route.fulfill({ status: 500, headers: { 'access-control-allow-origin': '*' }, json: { type: 'error', error: { type: 'api_error', message: 'Overloaded' } } });
   });
-  await withKey(page);
+  await withKey(page, { anthropic: 'claude-sonnet-5' });
   await page.goto('/');
   await page.getByLabel('Describe your course').fill('Photosynthesis for year 7, two lessons');
   await page.getByRole('button', { name: 'Continue' }).click();
@@ -65,5 +66,7 @@ test('a plan review that fails leaves the plan as written, and the course still 
   await page.getByRole('button', { name: 'Write 2 lessons' }).click();
   await expect(page.getByText(/^Course ready/)).toBeVisible({ timeout: 30_000 });
   expect(model.calls.filter((c) => c.messages[0]!.content.includes('Write the lesson plan'))).toHaveLength(2);
+  // Sonnet 5's two plans each went to Opus, and each review failed.
+  expect([...reviewed].filter((c) => c.includes('Check this plan the way'))).toHaveLength(2);
   await expect(page.getByRole('button', { name: /^Lesson 1, Lesson plans: 50 min/ })).toContainText('Leaf in the dark');
 });

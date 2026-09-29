@@ -20,6 +20,7 @@ export type PriceSource = 'live' | 'built-in';
 /** Per million tokens, as providers publish them: input, output, cache read, cache write. Checked 28 September 2026. */
 const BUILT_IN: Partial<Record<ProviderId, Record<string, [number, number, number, number]>>> = {
   anthropic: {
+    'claude-sonnet-5.5': [2, 10, 0.2, 2.5],
     'claude-sonnet-5': [2, 10, 0.2, 2.5],
     'claude-opus-5.5': [4, 20, 0.2, 5],
     'claude-opus-5': [5, 25, 0.5, 6.25],

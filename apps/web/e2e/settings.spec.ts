@@ -39,18 +39,18 @@ test('the model list comes from the provider, with Folio’s default picked', as
       : route.fulfill({
           status: 200,
           headers: cors,
-          json: { data: [{ id: 'claude-fable-5-1', display_name: 'Claude Fable 5.1' }, { id: 'claude-sonnet-5', display_name: 'Claude Sonnet 5' }] },
+          json: { data: [{ id: 'claude-fable-5-1', display_name: 'Claude Fable 5.1' }, { id: 'claude-sonnet-5-5', display_name: 'Claude Sonnet 5.5' }] },
         }),
   );
   await page.goto('/settings');
   const model = page.getByRole('combobox', { name: 'Model' });
   await expect(model).toBeEnabled();
-  await expect(model).toHaveValue('claude-sonnet-5');
-  await expect(model.getByRole('option')).toHaveText(['Claude Fable 5.1', 'Claude Sonnet 5 (recommended)']);
+  await expect(model).toHaveValue('claude-sonnet-5-5');
+  await expect(model.getByRole('option')).toHaveText(['Claude Fable 5.1', 'Claude Sonnet 5.5 (recommended)']);
   await model.selectOption('claude-fable-5-1');
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('folio.prefs')!).state.models.anthropic)).toBe('claude-fable-5-1');
   // Choosing the default again stores nothing, so Folio's default can move on later.
-  await model.selectOption('claude-sonnet-5');
+  await model.selectOption('claude-sonnet-5-5');
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('folio.prefs')!).state.models.anthropic)).toBe('');
 });
 
@@ -59,8 +59,8 @@ test('when the model list can’t be loaded, the model can still be typed', asyn
   await page.route('https://api.anthropic.com/v1/models**', (route) => route.fulfill({ status: 401, headers: cors, body: '{}' }));
   await page.goto('/settings');
   const model = page.getByRole('textbox', { name: 'Model' });
-  await expect(model).toHaveAttribute('placeholder', 'claude-sonnet-5');
-  await expect(page.getByText('Couldn’t load the model list. Type a model name, or leave it empty for claude-sonnet-5.')).toBeVisible();
+  await expect(model).toHaveAttribute('placeholder', 'claude-sonnet-5-5');
+  await expect(page.getByText('Couldn’t load the model list. Type a model name, or leave it empty for claude-sonnet-5-5.')).toBeVisible();
 });
 
 test('a local server that refuses the request is described as a local server', async ({ page }) => {
