@@ -51,15 +51,21 @@ export async function verifyIdToken(
   const { clientId, nonce, now = Date.now(), fetchImpl = fetch } = options;
   const [h, p, s] = token.split('.');
   if (!h || !p || !s) throw new SignInError('Not an ID token.');
-  const header = json(h);
-  const claims = json(p);
+  let header: Record<string, unknown>, claims: Record<string, unknown>, signature: Uint8Array<ArrayBuffer>;
+  try {
+    header = json(h);
+    claims = json(p);
+    signature = bytes(s);
+  } catch {
+    throw new SignInError('Not an ID token.');
+  }
   if (header.alg !== 'RS256') throw new SignInError('Unexpected signature.');
   let jwk = (await googleKeys(fetchImpl)).find((k) => k.kid === header.kid);
   // Google rotates its keys: an unknown one means ours are old.
   jwk ??= (await googleKeys(fetchImpl, true)).find((k) => k.kid === header.kid);
   if (!jwk) throw new SignInError('Unknown signing key.');
   const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
-  const signed = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, bytes(s), new TextEncoder().encode(`${h}.${p}`));
+  const signed = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, signature, new TextEncoder().encode(`${h}.${p}`));
   if (!signed) throw new SignInError('The signature does not match.');
   if (!ISSUERS.has(String(claims.iss))) throw new SignInError('Not issued by Google.');
   if (claims.aud !== clientId) throw new SignInError('Issued for another app.');

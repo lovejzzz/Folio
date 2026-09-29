@@ -48,6 +48,9 @@ describe('signing in', () => {
       { idToken: await google.token({ iss: 'https://evil.example' }), nonce: 'n-1' },
       { idToken: await google.token(), nonce: 'another-sign-in' },
       { idToken: await google.token({}, 'unknown-key'), nonce: 'n-1' },
+      // Not a token at all, however it is broken.
+      { idToken: 'a.b.c', nonce: 'n-1' },
+      { idToken: `${(await google.token()).split('.').slice(0, 2).join('.')}.!!!`, nonce: 'n-1' },
     ];
     for (const body of tries) expect((await call('session', { method: 'POST', body: JSON.stringify(body) })).status).toBe(401);
   });
