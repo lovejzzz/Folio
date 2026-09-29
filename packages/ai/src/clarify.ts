@@ -90,13 +90,18 @@ export async function clarifyCourse(inference: Inference, req: ClarifyRequest, s
 }
 
 /**
- * How many lessons to plan: the teacher's number; else their answer to a question about it, which the outline reads;
+ * How many lessons to plan: the teacher's number; else their answer to a question about it (its number, or the
+ * outline reads it);
  * else what Folio read from the brief or files; else, from a syllabus, as many as it schedules; else the default.
  */
 export function lessonsToPlan(req: Pick<ClarifyRequest, 'lessonCount' | 'defaultLessons' | 'sources'>, read: ClarifyDraft | null, answers: Clarification[]): number | null {
   if (req.lessonCount) return req.lessonCount;
-  const answered = read?.questions.some((q, i) => q.topic === 'lessons' && answers[i]?.answer.trim());
-  if (answered) return null;
+  const answer = read?.questions.map((q, i) => (q.topic === 'lessons' ? answers[i]?.answer.trim() : '')).find(Boolean);
+  if (answer) {
+    // "3 lessons", or "5 lessons, one for each demo": the number is the answer. Without one, the outline reads it.
+    const n = Number(answer.match(/\b(\d{1,2})\b/)?.[1]);
+    return n >= 1 && n <= 60 ? n : null;
+  }
   return read?.lessonCount ?? (req.sources.length ? null : req.defaultLessons);
 }
 

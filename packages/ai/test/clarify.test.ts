@@ -23,7 +23,8 @@ describe('reading the brief before planning', () => {
   it('plans the teacher’s number, else their answer, else what was read, else the syllabus or the default', () => {
     const read = { lessonCount: 14, minutesPerLesson: null, level: '', questions: [{ topic: 'lessons' as const, question: 'How many lessons?', options: ['a', 'b', 'c'] }] };
     expect(lessonsToPlan({ ...req, lessonCount: 6 }, read, [{ question: 'How many lessons?', answer: '10' }])).toBe(6);
-    expect(lessonsToPlan(req, read, [{ question: 'How many lessons?', answer: '10 lessons' }])).toBeNull();
+    expect(lessonsToPlan(req, read, [{ question: 'How many lessons?', answer: '10 lessons, two a week' }])).toBe(10);
+    expect(lessonsToPlan(req, read, [{ question: 'How many lessons?', answer: 'About a dozen' }])).toBeNull();
     expect(lessonsToPlan(req, read, [{ question: 'How many lessons?', answer: '' }])).toBe(14);
     expect(lessonsToPlan(req, { ...read, lessonCount: null }, [])).toBeNull();
     expect(lessonsToPlan({ ...req, sources: [] }, { ...read, lessonCount: null }, [])).toBe(4);
