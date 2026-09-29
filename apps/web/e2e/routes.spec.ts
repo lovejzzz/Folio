@@ -52,3 +52,14 @@ test('an unknown address inside a course keeps the course header; a missing cour
   await expect(page.getByRole('heading', { level: 1, name: 'This course isn’t on this device.' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Library' }).first()).toBeVisible();
 });
+
+test('the home page keeps to the new course: courses are in the library, and About says who makes Folio', async ({ page }) => {
+  await openSample(page);
+  await page.goto('/');
+  await expect(page.getByText('Reading the world with data')).toHaveCount(0);
+  await page.getByRole('contentinfo').getByRole('link', { name: 'About' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'About Folio' })).toBeVisible();
+  await expect(page.getByText(/made by Tian Xing, its founder/)).toBeVisible();
+  await expect(page.getByRole('link', { name: 'xingpicture@gmail.com' })).toHaveAttribute('href', 'mailto:xingpicture@gmail.com');
+  await expect(page).toHaveTitle('About Folio · Folio');
+});

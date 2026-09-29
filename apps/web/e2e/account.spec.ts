@@ -64,6 +64,7 @@ test('a teacher signs in, adds this browser’s course to their account, and fin
   // Signed out, Folio's server is never called.
   expect(account.calls).toEqual([]);
 
+  await expect(page.getByRole('banner').getByRole('link', { name: 'Settings' })).toBeVisible();
   await signIn(page);
   const offer = page.getByRole('dialog', { name: 'Add these courses to your account?' });
   await expect(offer.getByText('Reading the world with data')).toBeVisible();
@@ -72,6 +73,11 @@ test('a teacher signs in, adds this browser’s course to their account, and fin
   const [stored] = [...account.courses.values()];
   const sent = JSON.parse(gunzipSync(stored!.bytes).toString('utf8')) as { course: { title: string } };
   expect(sent.course.title).toBe('Reading the world with data');
+  // Signed in, Settings lives in the account menu only.
+  await expect(page.getByRole('banner').getByRole('link', { name: 'Settings' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Account: ada@example.edu' }).click();
+  await expect(page.getByRole('link', { name: 'Settings' })).toBeVisible();
+  await page.keyboard.press('Escape');
 
   // Another device: a fresh browser, the same account.
   const other = await browser.newContext();

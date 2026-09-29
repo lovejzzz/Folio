@@ -45,6 +45,12 @@ const privacyRoute = createRoute({
   component: lazyRouteComponent(() => import('../screens/privacy/Privacy'), 'Privacy'),
 });
 
+const aboutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/about',
+  component: lazyRouteComponent(() => import('../screens/about/About'), 'About'),
+});
+
 const termsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/terms',
@@ -170,6 +176,7 @@ const routeTree = rootRoute.addChildren([
   settingsRoute,
   privacyRoute,
   termsRoute,
+  aboutRoute,
   printRoute,
   googleRoute,
   signInRoute,

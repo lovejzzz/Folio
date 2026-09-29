@@ -19,12 +19,12 @@ function WithMail({ text }: { text: string }) {
 }
 
 interface LegalText {
-  updated: string;
+  updated?: string;
   lede: string;
   sections: readonly { heading: string; body: string }[];
 }
 
-/** A page of plain legal text: the privacy policy, the terms. */
+/** A page of plain text in sections: the privacy policy, the terms, about Folio. */
 export function LegalPage({ title, text }: { title: string; text: LegalText }) {
   usePageTitle(title);
   return (
@@ -32,7 +32,7 @@ export function LegalPage({ title, text }: { title: string; text: LegalText }) {
       <SimpleHeader />
       <main id="main" className="mx-auto max-w-2xl px-5 pb-24 pt-8 md:pt-12">
         <h1 className="font-display text-48 leading-none text-ink">{title}</h1>
-        <p className="mt-3 font-ui text-13 text-ink-3">{text.updated}</p>
+        {text.updated && <p className="mt-3 font-ui text-13 text-ink-3">{text.updated}</p>}
         <p className="mt-8 font-reading text-18 text-ink">{text.lede}</p>
         <div className="mt-10 space-y-8">
           {text.sections.map((section) => (

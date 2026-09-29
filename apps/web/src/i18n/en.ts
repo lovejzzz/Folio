@@ -9,7 +9,6 @@ type FlagWording = { [C in FlagCode]: (v: FlagValues<C>) => string };
  */
 export const en = {
   appName: 'Folio',
-  tagline: 'Your course, bound together.',
   materials: {
     map: 'Objectives & assessment',
     syllabus: 'Syllabus',
@@ -181,8 +180,6 @@ export const en = {
       ],
     },
     sample: 'Or open the sample course',
-    recent: 'Recent courses',
-    seeAll: 'See all',
     emptyBrief: 'Write a sentence or two about what you want to teach first.',
     sourcesHint: 'Folio writes best from the sources themselves, and quotes only what you attach.',
     attachSources: 'Attach them',
@@ -804,6 +801,7 @@ export const en = {
     title: 'Privacy',
     link: 'Privacy',
     terms: 'Terms',
+    about: 'About',
   },
   toast: {
     undone: 'Undone.',

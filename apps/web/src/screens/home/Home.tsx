@@ -1,5 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { useT } from '../../i18n';
@@ -20,8 +20,7 @@ function usePreloadGuesses() {
   }, []);
 }
 
-/** Below the fold and read from IndexedDB, so it loads after the first paint. */
-const RecentCourses = lazy(() => import('./RecentCourses').then((m) => ({ default: m.RecentCourses })));
+const footerLink = 'rounded-control px-1 font-ui text-13 text-ink-2 underline-offset-4 outline-none hover:text-ink hover:underline focus-visible:ring-2 focus-visible:ring-accent';
 
 function Examples() {
   const t = useT();
@@ -71,20 +70,17 @@ export function Home() {
         </h1>
         <BriefComposer />
         <Examples />
-        <Suspense fallback={null}>
-          <RecentCourses />
-        </Suspense>
       </main>
-      <footer className="no-print flex flex-col items-center gap-3 pb-10 text-center">
-        <p className="font-display text-18 italic text-ink-2">{t.tagline}</p>
-        <p className="flex gap-4">
-          <Link to="/privacy" className="rounded-control px-1 font-ui text-13 text-ink-2 underline-offset-4 outline-none hover:text-ink hover:underline focus-visible:ring-2 focus-visible:ring-accent">
-            {t.privacy.link}
-          </Link>
-          <Link to="/terms" className="rounded-control px-1 font-ui text-13 text-ink-2 underline-offset-4 outline-none hover:text-ink hover:underline focus-visible:ring-2 focus-visible:ring-accent">
-            {t.privacy.terms}
-          </Link>
-        </p>
+      <footer className="no-print flex justify-center gap-4 pb-10">
+        <Link to="/about" className={footerLink}>
+          {t.privacy.about}
+        </Link>
+        <Link to="/privacy" className={footerLink}>
+          {t.privacy.link}
+        </Link>
+        <Link to="/terms" className={footerLink}>
+          {t.privacy.terms}
+        </Link>
       </footer>
     </div>
   );

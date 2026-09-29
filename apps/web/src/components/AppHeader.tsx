@@ -2,6 +2,8 @@ import { Link } from '@tanstack/react-router';
 import { FolioMark, Wordmark, cx } from '@folio/ui';
 import type { ReactNode } from 'react';
 import { useT } from '../i18n';
+import { googleClientId } from '../lib/googlePath';
+import { useAccount } from '../state/account';
 import { AccountButton } from './AccountButton';
 
 const navLink =
@@ -24,6 +26,8 @@ export function HomeLink({ compact = false }: { compact?: boolean }) {
 /** Header for the places outside a course: home, library, settings. */
 export function SimpleHeader({ children }: { children?: ReactNode }) {
   const t = useT();
+  // Signed in, Settings is in the account menu; otherwise it has its own link.
+  const inMenu = useAccount((s) => Boolean(s.user)) && Boolean(googleClientId());
   return (
     <header className="no-print flex h-16 items-center justify-between gap-4 px-5 md:px-8">
       <HomeLink />
@@ -32,9 +36,11 @@ export function SimpleHeader({ children }: { children?: ReactNode }) {
         <Link to="/library" className={navLink} activeProps={{ className: 'text-ink bg-well' }}>
           {t.nav.library}
         </Link>
-        <Link to="/settings" className={navLink} activeProps={{ className: 'text-ink bg-well' }}>
-          {t.nav.settings}
-        </Link>
+        {!inMenu && (
+          <Link to="/settings" className={navLink} activeProps={{ className: 'text-ink bg-well' }}>
+            {t.nav.settings}
+          </Link>
+        )}
         <span className="ml-2 flex">
           <AccountButton />
         </span>
