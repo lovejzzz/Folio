@@ -1,10 +1,11 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { useT } from '../../i18n';
 import { setBrief, useDraft } from '../../state/draft';
 import { BriefComposer } from './BriefComposer';
+import { examplesForThisVisit } from './examples';
 
 /** Below the fold and read from IndexedDB, so it loads after the first paint. */
 const RecentCourses = lazy(() => import('./RecentCourses').then((m) => ({ default: m.RecentCourses })));
@@ -13,10 +14,11 @@ function Examples() {
   const t = useT();
   const navigate = useNavigate();
   const set = useDraft((s) => s.set);
+  const [examples] = useState(() => examplesForThisVisit(t.home.examples));
   return (
     <div className="mt-12 flex flex-col items-center gap-3 text-center font-ui text-14 text-ink-2">
       <ul className="flex flex-wrap items-center justify-center gap-2" aria-label={t.home.tryLabel}>
-        {t.home.examples.map((example) => (
+        {examples.map((example) => (
           <li key={example}>
             <button
               type="button"
@@ -25,7 +27,7 @@ function Examples() {
                 setBrief(example);
                 document.getElementById('brief')?.focus();
               }}
-              className="h-8 rounded-full border border-rule px-3.5 font-ui text-13 text-ink-2 outline-none transition-colors duration-120 hover:border-field hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+              className="min-h-8 rounded-full border border-rule px-3.5 py-1 font-ui text-13 leading-5 text-ink-2 outline-none transition-colors duration-120 hover:border-field hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
             >
               {example}
             </button>
