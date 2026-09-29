@@ -72,7 +72,7 @@ function answerFor(body: Body): unknown {
   const title = lessonTitle(prompt);
   if (prompt.includes('Return {"ok": true}')) return { ok: true };
   // The plan review: a plan written by the fake has nothing wrong with it.
-  if (prompt.includes('Check this plan the way')) return { edits: [] };
+  if (prompt.includes('Check this plan the way')) return { issues: [] };
   if (prompt.includes('Plan exactly')) return outline(prompt);
   if (prompt.includes('Write the lesson plan'))
     return {

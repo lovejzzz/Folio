@@ -437,6 +437,7 @@ export const en = {
       v.got === 1 ? `There is 1 lesson instead of ${v.want}.` : `There are ${v.got} lessons instead of ${v.want}.`,
     criterionLevels: (v: { criterion: string }) => `The rubric criterion “${v.criterion}” doesn’t describe every level.`,
     schemaIssue: () => 'Part of this came back in the wrong shape. Write it again, or fix it by hand.',
+    reviewNote: (v: { where: string; text: string }) => `${v.where}: ${v.text}`,
     note: (v: { text: string }) => v.text,
   } satisfies FlagWording,
   history: {
@@ -641,7 +642,7 @@ export const en = {
     ai: 'AI',
     aiLede: 'Folio writes with an AI you choose, and tells you what each course cost when it’s done. Your key stays in this browser and goes straight to the AI company.',
     providers: {
-      anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use.' },
+      anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use, and Claude Opus 5.5 checks each lesson plan before the rest is written.' },
       openai: { name: 'Use my OpenAI key', short: 'your OpenAI key', note: 'OpenAI. You pay per use.' },
       google: { name: 'Use my Gemini key', short: 'your Gemini key', note: 'Google. You pay per use. The free tier allows too few requests to write a whole course.' },
       deepseek: { name: 'Use my DeepSeek key', short: 'your DeepSeek key', note: 'DeepSeek. You pay per use.' },

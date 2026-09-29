@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { applyPlanReview, type PlanDraft, type PlanIssue } from '../src';
+import { orderedLessons } from '@folio/core';
+import { applyPlanReview, generateSection, type PlanDraft, type PlanIssue } from '../src';
+import { fakeInference, planDraft, smallCourse } from './fake';
 
 const plan: PlanDraft = {
   keyIdeas: ['Evaporation turns liquid water into vapor.'],
@@ -37,8 +39,8 @@ describe('applying a plan review', () => {
     expect(next.vocabulary[0]!.definition).toBe('The middle value, $43,500 here.');
   });
 
-  it('skips an edit whose words are not in the field it names, appear twice, or that points at nothing', () => {
-    const { plan: next, applied } = applyPlanReview(plan, [
+  it('leaves for the teacher a fix whose words are not in the field it names, appear twice, or that points at nothing', () => {
+    const { plan: next, applied, notes } = applyPlanReview(plan, [
       edit({ find: 'not in the notes', replace: 'x' }),
       edit({ number: 4, find: 'steam', replace: 'x' }),
       edit({ part: 'keyIdea', field: 'description', find: 'vapor', replace: 'x' }),
@@ -46,11 +48,49 @@ describe('applying a plan review', () => {
       edit({ part: 'keyIdea', field: 'text', find: 'vapor', replace: 'x' }),
     ]);
     expect(applied).toHaveLength(0);
+    expect(notes).toHaveLength(4);
+    expect(next).toEqual(plan);
+  });
+
+  it('leaves a problem that came without a fix for the teacher', () => {
+    const { plan: next, notes } = applyPlanReview(plan, [edit({ why: 'The text students read is never given.' })]);
+    expect(notes.map((n) => n.why)).toEqual(['The text students read is never given.']);
     expect(next).toEqual(plan);
   });
 
   it('takes a replacement literally, dollar signs included', () => {
     const { plan: next } = applyPlanReview(plan, [edit({ find: 'steam is water vapor', replace: 'about $1.25 a week ($& is not a pattern)' })]);
     expect(next.segments[0]!.teacherNotes).toBe('Expected answer: about $1.25 a week ($& is not a pattern).');
+  });
+});
+
+describe('a reviewed plan', () => {
+  it('is saved with the fixes made and the rest noted for the teacher, by segment title', async () => {
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const writer = fakeInference(() => planDraft);
+    const reviewer = fakeInference(() => ({
+      issues: [
+        { part: 'segment', number: 2, field: 'teacherNotes', kind: 'fact', why: 'Say what to balance.', find: 'Balance it together.', replace: 'Balance the oxygen atoms together.' },
+        { part: 'segment', number: 3, field: 'description', kind: 'consistency', why: 'The two questions are never given.', find: '', replace: '' },
+      ],
+    }));
+    const { commands, flagged } = await generateSection(writer, course, lesson.id, 'plan', undefined, { reviewer });
+    const fill = commands[0]!.payload as { flags: unknown[]; content: { segments: { teacherNotes: string }[] } };
+    expect(fill.content.segments[1]!.teacherNotes).toBe('Balance the oxygen atoms together.');
+    expect(fill.flags).toEqual([{ code: 'reviewNote', values: { where: 'Segment 3, Exit ticket', text: 'The two questions are never given.' } }]);
+    expect(flagged).toBe(1);
+  });
+
+  it('goes out as written when the review fails', async () => {
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const reviewer = fakeInference(() => {
+      throw new Error('overloaded');
+    });
+    const { commands } = await generateSection(fakeInference(() => planDraft), course, lesson.id, 'plan', undefined, { reviewer });
+    const fill = commands[0]!.payload as { flags: unknown[]; content: { segments: { teacherNotes: string }[] } };
+    expect(fill.content.segments[1]!.teacherNotes).toBe('Balance it together.');
+    expect(fill.flags).toEqual([]);
   });
 });

@@ -89,11 +89,8 @@ describe('what a course cost', () => {
     expect(cost.unpriced).toBe(1);
   });
 
-  it('has Opus review plans from older Claude models, with the teacher’s own key, and no reviewer where none is needed or was tried', () => {
-    expect(reviewerSettings(settings('anthropic', 'claude-sonnet-5'))).toMatchObject({ provider: 'anthropic', model: 'claude-opus-5-5', apiKey: 'sk-test' });
-    expect(reviewerSettings(settings('anthropic', 'claude-haiku-4-5-20251001'))).toMatchObject({ model: 'claude-opus-5-5' });
-    expect(reviewerSettings(settings('anthropic', 'claude-sonnet-5-5'))).toBeNull();
-    expect(reviewerSettings(settings('anthropic', 'claude-opus-5-5'))).toBeNull();
+  it('has Opus review Claude plans, with the teacher’s own key, and no reviewer where none was tried', () => {
+    expect(reviewerSettings(settings('anthropic', 'claude-sonnet-5-5'))).toMatchObject({ provider: 'anthropic', model: 'claude-opus-5-5', apiKey: 'sk-test' });
     expect(reviewerSettings(settings('openai', 'gpt-6-sol'))).toBeNull();
   });
 });

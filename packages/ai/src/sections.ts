@@ -20,7 +20,7 @@ import {
   type Task,
 } from '@folio/core';
 import { InferenceError, type Inference } from './inference';
-import { reviewPlan } from './review';
+import { issuePlace, reviewPlan } from './review';
 import { runJob, type JobSpec, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
 import {
@@ -272,16 +272,21 @@ export interface SectionOptions {
   reviewer?: Inference;
 }
 
+/** A revision of a section before it is saved, with any problems it leaves for the teacher. */
+type Revision<T> = (value: T) => Promise<{ value: T; problems: Problem[] }>;
+
 /**
- * The plan after its review, or as written if the review can't be had: a failed
- * second read must never cost the teacher the first. Stopping still stops.
+ * The plan after its review, with what the review could not fix as notes for the teacher; or the plan as
+ * written if the review can't be had: a failed second read must never cost the teacher the first. Stopping
+ * still stops.
  */
-async function reviewed(reviewer: Inference, course: Course, lesson: Lesson, draft: PlanDraft, signal?: AbortSignal): Promise<PlanDraft> {
+async function reviewed(reviewer: Inference, course: Course, lesson: Lesson, draft: PlanDraft, signal?: AbortSignal): Promise<{ value: PlanDraft; problems: Problem[] }> {
   try {
-    return (await reviewPlan(reviewer, course, lesson, draft, { signal })).plan;
+    const { plan, notes } = await reviewPlan(reviewer, course, lesson, draft, { signal });
+    return { value: plan, problems: notes.map((n) => ({ index: null, flag: { code: 'reviewNote', values: { where: issuePlace(plan, n), text: n.why } } })) };
   } catch (error) {
     if (error instanceof InferenceError && error.kind === 'aborted') throw error;
-    return draft;
+    return { value: draft, problems: [] };
   }
 }
 
@@ -296,7 +301,7 @@ export async function generateSection(
 ): Promise<SectionResult> {
   const lesson = course.lessons[lessonId];
   if (!lesson) throw new Error(`No lesson ${lessonId}`);
-  const run = async <T>(job: SectionJob<T>, revise?: (value: T) => Promise<T>): Promise<SectionResult> => {
+  const run = async <T>(job: SectionJob<T>, revise?: Revision<T>): Promise<SectionResult> => {
     const result = await runJob(inference, {
       task: `folio_${kind}`,
       system: systemPrompt(course.language, course.locale),
@@ -308,8 +313,9 @@ export async function generateSection(
       check: job.check ? (v) => job.check!(v, course, lesson) : undefined,
       signal,
     });
-    const value = revise ? await revise(result.value) : result.value;
-    return { commands: job.toCommands(typesetDraft(value, course.language), result.problems, course, lesson), flagged: result.problems.length };
+    const { value, problems } = revise ? await revise(result.value) : { value: result.value, problems: [] };
+    const all = [...result.problems, ...problems];
+    return { commands: job.toCommands(typesetDraft(value, course.language), all, course, lesson), flagged: all.length };
   };
   const { reviewer } = options;
   switch (kind) {
