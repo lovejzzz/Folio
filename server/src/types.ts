@@ -26,6 +26,11 @@ export interface Env {
   VITE_GOOGLE_CLIENT_ID: string;
   /** Folio's own Anthropic key, a Cloudflare secret: calls paid with Folio credits use it. Unset: credits are off. */
   ANTHROPIC_API_KEY?: string;
+  /** Stripe, as Cloudflare secrets: the key that makes Checkout pages, and the one that signs its webhooks. */
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_WEBHOOK_SECRET?: string;
+  /** "on" once Stripe Tax is set up in the Stripe account: Checkout then adds sales tax where it's due. */
+  STRIPE_TAX?: string;
 }
 
 export interface User {

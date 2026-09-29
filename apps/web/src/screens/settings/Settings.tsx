@@ -178,9 +178,23 @@ function size(bytes: number): string {
   return kb < 1024 ? `${Math.max(1, Math.round(kb))} KB` : `${(kb / 1024).toFixed(1)} MB`;
 }
 
+/** Back from Stripe's page: say thanks, and watch for the credits to arrive. */
+function usePurchaseReturn() {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('purchase') !== 'done') return;
+    window.history.replaceState(null, '', window.location.pathname);
+    void import('../../state/credits').then(({ afterPurchase, creditsText }) => {
+      toast({ message: creditsText.thanks });
+      void afterPurchase();
+    });
+  }, []);
+}
+
 export function Settings() {
   const t = useT();
   usePageTitle(t.settings.title);
+  usePurchaseReturn();
   return (
     <div className="min-h-dvh">
       <SimpleHeader />

@@ -1,4 +1,5 @@
 import { proxyMessages } from './ai';
+import { checkout, PACKS, webhook } from './billing';
 import { grantFree, MILLI, statement } from './credits';
 import { listCourses, MAX_COURSE_BYTES, readCourse, removeAccount, removeCourse, writeCourse, type CourseMeta } from './courses';
 import { SignInError, verifyIdToken } from './google';
@@ -83,6 +84,8 @@ async function credits(request: Request, env: Env, user: User): Promise<Response
   const c = (milli: number) => Math.floor(milli / MILLI);
   return json({
     available: Boolean(env.ANTHROPIC_API_KEY),
+    // What can be bought, once Stripe is set up.
+    packs: env.STRIPE_SECRET_KEY ? PACKS : [],
     balance: c(s.balance),
     spent30: c(s.spent30),
     added: s.added.map((r) => ({ kind: r.kind, credits: c(r.amount), detail: r.detail, at: new Date(r.created_at).toISOString() })),
@@ -96,6 +99,8 @@ async function credits(request: Request, env: Env, user: User): Promise<Response
 export async function handle(request: Request, env: Env, fetchImpl?: typeof fetch, waitUntil: (p: Promise<unknown>) => void = () => {}): Promise<Response> {
   const url = new URL(request.url);
   const path = url.pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean);
+  // Stripe's own call, trusted by its signature, not by a cookie or the page's header.
+  if (path.join('/') === 'billing/webhook' && request.method === 'POST') return webhook(request, env);
   const changing = request.method !== 'GET' && request.method !== 'HEAD';
   if (changing && request.headers.get('x-folio') !== '1') return problem(403, 'forbidden');
   if (path[0] === 'session') {
@@ -111,6 +116,7 @@ export async function handle(request: Request, env: Env, fetchImpl?: typeof fetc
   if (!user) return problem(401, 'signed-out');
   if (path[0] === 'courses' && path.length === 1 && request.method === 'GET') return json({ courses: await listCourses(env.DB, user.id) });
   if (path[0] === 'credits' && path.length === 1 && request.method === 'GET') return credits(request, env, user);
+  if (path.join('/') === 'billing/checkout' && request.method === 'POST') return checkout(request, env, user, fetchImpl);
   // Anthropic's Messages API, as the page's SDK calls it with Folio credits ("…/api/ai/v1/messages?beta=true").
   if (path.join('/') === 'ai/v1/messages' && request.method === 'POST') return proxyMessages(request, env, user, waitUntil, fetchImpl);
   if (path[0] === 'courses' && path.length === 2) return course(request, env, user, path[1]!);

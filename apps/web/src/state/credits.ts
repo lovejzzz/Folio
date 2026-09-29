@@ -8,24 +8,56 @@ import { create } from 'zustand';
 export const MARKUP = 3;
 export const creditsFor = (usd: number): number => Math.max(0, Math.round(usd * MARKUP * 100));
 
+export interface Pack {
+  id: string;
+  usd: number;
+  credits: number;
+}
+
 interface Credits {
   /** Null until asked; the server's answer after that. */
   balance: number | null;
+  /** What can be bought; empty until Folio takes payments. */
+  packs: Pack[];
   /** False where the server has no key of Folio's own yet: credits can't be used there. */
   available: boolean;
 }
 
-export const useCredits = create<Credits>(() => ({ balance: null, available: true }));
+export const useCredits = create<Credits>(() => ({ balance: null, packs: [], available: true }));
 
 /** Ask the server for the balance. Quietly keeps the last answer when it can't be reached. */
 export async function refreshCredits(): Promise<void> {
   try {
     const response = await fetch('/api/credits', { credentials: 'same-origin' });
     if (!response.ok) return;
-    const body = (await response.json()) as { balance: number; available: boolean };
-    useCredits.setState({ balance: body.balance, available: body.available });
+    const body = (await response.json()) as { balance: number; available: boolean; packs?: Pack[] };
+    useCredits.setState({ balance: body.balance, available: body.available, packs: body.packs ?? [] });
   } catch {
     // Offline or signed out elsewhere: the balance shown stays as it was.
+  }
+}
+
+/** Go to Stripe's page to pay for a pack; the credits arrive when Stripe confirms the payment. */
+export async function buy(pack: string): Promise<boolean> {
+  try {
+    const response = await fetch('/api/billing/checkout', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-folio': '1' }, body: JSON.stringify({ pack }) });
+    const body = (await response.json()) as { url?: string };
+    if (!response.ok || !body.url) return false;
+    window.location.assign(body.url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Back from paying: Stripe's confirmation can take a moment, so the balance is asked for a few times. */
+export async function afterPurchase(): Promise<void> {
+  const before = useCredits.getState().balance;
+  for (const wait of [0, 1500, 3000, 6000]) {
+    await new Promise((r) => setTimeout(r, wait));
+    await refreshCredits();
+    const now = useCredits.getState().balance;
+    if (before !== null && now !== null && now > before) return;
   }
 }
 
@@ -38,6 +70,10 @@ export const creditsText = {
   how: 'Claude Sonnet 5.5 writes, and Claude Opus 5.5 checks each lesson plan. A lesson with every material uses about 45 credits.',
   buy: 'Buy credits',
   buySoon: 'Buying more credits opens soon.',
+  pack: (p: Pack) => `$${p.usd} · ${p.credits.toLocaleString('en-US')} credits`,
+  packHint: 'Paid on Stripe’s page. Credits don’t expire.',
+  buyFailed: 'The payment page didn’t open. Try again in a moment.',
+  thanks: 'Thank you. Your credits are added as soon as Stripe confirms the payment.',
   unavailable: 'Folio credits aren’t switched on yet. Use your own key for now.',
   signInFirst: 'Sign in with Google first.',
   estimate: (n: number, have: number | null) => (have === null ? `About ${n.toLocaleString('en-US')} credits.` : `About ${n.toLocaleString('en-US')} credits; you have ${have.toLocaleString('en-US')}.`),

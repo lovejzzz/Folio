@@ -9,6 +9,8 @@ async function fakeFolio(page: Page, balance: { value: number }) {
     return route.fulfill({ status: 302, headers: { location: `${q.get('redirect_uri')}#state=${q.get('state')}&id_token=a.b.c` } });
   });
   let user: { id: string; email: string; name: string } | null = null;
+  await page.context().route('**/api/billing/checkout', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ url: `https://checkout.stripe.com/c/pay/${(route.request().postDataJSON() as { pack: string }).pack}` }) }));
+  await page.context().route('https://checkout.stripe.com/**', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<h1>Stripe Checkout</h1>' }));
   await page.context().route(/\/api\/(session|credits|courses)/, async (route) => {
     const path = new URL(route.request().url()).pathname;
     const send = (body: unknown) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
@@ -16,7 +18,7 @@ async function fakeFolio(page: Page, balance: { value: number }) {
       if (route.request().method() === 'POST') user = { id: 'g-1', email: 'ada@example.edu', name: 'Ada Teacher' };
       return send({ user });
     }
-    if (path.endsWith('/credits')) return send({ available: true, balance: balance.value, spent30: 0, added: [] });
+    if (path.endsWith('/credits')) return send({ available: true, balance: balance.value, spent30: 0, added: [], packs: [{ id: 'p10', usd: 10, credits: 1000 }, { id: 'p25', usd: 25, credits: 2750 }, { id: 'p50', usd: 50, credits: 6000 }] });
     return send({ courses: [] });
   });
 }
@@ -49,4 +51,25 @@ test('a teacher with no key signs in and writes with Folio credits', async ({ pa
   expect(model.calls.length).toBeGreaterThan(3);
   await page.getByRole('button', { name: 'Account: ada@example.edu' }).click();
   await expect(page.getByText('690 credits')).toBeVisible();
+});
+
+test('a teacher buys more credits on Stripe’s page, and sees them when they come back', async ({ page }) => {
+  const balance = { value: 12 };
+  await fakeFolio(page, balance);
+  await page.addInitScript(() => localStorage.setItem('folio.prefs', JSON.stringify({ state: { provider: 'folio', keys: {}, models: {}, theme: 'light', density: 'comfortable', railCollapsed: false, localUrl: '' }, version: 1 })));
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.getByRole('button', { name: 'Account: ada@example.edu' }).waitFor();
+  await page.goto('/settings');
+  await expect(page.getByText('You have 12 credits.')).toBeVisible();
+  await page.getByRole('button', { name: '$25 · 2,750 credits' }).click();
+  await expect(page.getByRole('heading', { name: 'Stripe Checkout' })).toBeVisible();
+  expect(page.url()).toContain('/c/pay/p25');
+
+  // Stripe sends the teacher back, and confirms the payment a moment later.
+  balance.value = 2762;
+  await page.goto('/settings?purchase=done');
+  await expect(page.getByText(/Thank you\. Your credits are added/)).toBeVisible();
+  await expect(page.getByText('You have 2,762 credits.')).toBeVisible();
+  expect(page.url()).not.toContain('purchase=');
 });
