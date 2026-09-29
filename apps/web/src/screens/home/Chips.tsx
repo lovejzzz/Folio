@@ -42,12 +42,23 @@ export function LevelChip() {
   );
 }
 
+/** "From the syllabus" once a file is attached: Folio reads the count from it, and asks if it can't. */
 export function LessonsChip() {
   const t = useT();
-  const { lessons, set, pinned } = useDraft();
+  const { lessons, lessonsFromFiles, files, set, pinned } = useDraft();
   const options = [...new Set([...LESSON_COUNTS, lessons])].sort((a, b) => a - b);
+  const syllabus = files.some((f) => /syllab|course outline|schedule/i.test(f.title));
   return (
-    <Chip label={t.plan.lessonsCount} value={String(lessons)} onChange={(v) => set({ lessons: Number(v), pinned: { ...pinned, lessons: true } })}>
+    <Chip
+      label={t.plan.lessonsCount}
+      value={lessonsFromFiles ? 'files' : String(lessons)}
+      onChange={(v) =>
+        v === 'files'
+          ? set({ lessonsFromFiles: true, pinned: { ...pinned, lessons: true } })
+          : set({ lessons: Number(v), lessonsFromFiles: false, pinned: { ...pinned, lessons: true } })
+      }
+    >
+      {files.length > 0 && <option value="files">{syllabus ? t.home.lessonsFromSyllabus : t.home.lessonsFromFiles}</option>}
       {options.map((n) => (
         <option key={n} value={n}>
           {t.home.lessonsChip(n)}

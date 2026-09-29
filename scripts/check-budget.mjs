@@ -5,7 +5,9 @@ import { gzipSync } from 'node:zlib';
 
 const dist = new URL('../apps/web/dist/', import.meta.url).pathname;
 const KB = 1024;
-const budgets = { initialGzip: 150 * KB, totalJs: 3 * KB * KB, dist: 8 * KB * KB };
+// Total JS and dist include pdf.js (about 0.4 MB, and a 1.3 MB worker) for reading PDF syllabi. It loads only
+// when a PDF is dropped in, so the first load is unchanged; the budgets make room for it and no more.
+const budgets = { initialGzip: 150 * KB, totalJs: 3.5 * KB * KB, dist: 10 * KB * KB };
 
 function walk(dir) {
   return readdirSync(dir).flatMap((name) => {

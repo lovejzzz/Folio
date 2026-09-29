@@ -27,7 +27,7 @@ test('notes attached on the home page (.md and a real .docx) reach the model and
   await page.getByLabel('Describe your course').fill('Photosynthesis for year 7, two lessons');
   await page.getByRole('button', { name: 'Continue' }).click();
   await page.getByRole('textbox', { name: 'Title of lesson 1' }).waitFor();
-  const outlinePrompt = model.calls[0]!.messages.map((m) => m.content).join('\n');
+  const outlinePrompt = model.calls.find((c) => c.messages[0]!.content.includes('Plan exactly'))!.messages.map((m) => m.content).join('\n');
   expect(outlinePrompt).toContain('Stomata close at night');
   expect(outlinePrompt).toContain('Reading the world with data');
 
@@ -46,10 +46,10 @@ test('files that cannot be attached are refused in one message', async ({ page }
   await page.getByRole('button', { name: 'Attach files' }).click();
   await (await chooser).setFiles([
     { name: 'broken.docx', mimeType: DOCX, buffer: Buffer.from('not a zip') },
-    { name: 'huge.txt', mimeType: 'text/plain', buffer: Buffer.alloc(3 * 1024 * 1024, 'a') },
+    { name: 'huge.txt', mimeType: 'text/plain', buffer: Buffer.alloc(11 * 1024 * 1024, 'a') },
     { name: 'photo.png', mimeType: 'image/png', buffer: Buffer.from([137, 80, 78, 71]) },
   ]);
-  await expect(page.getByText('broken.docx, huge.txt and photo.png can’t be attached. Attach .txt, .md or .docx files up to 2 MB.')).toBeVisible();
+  await expect(page.getByText('broken.docx, huge.txt and photo.png can’t be attached. Attach PDF, Word, .txt or .md files up to 10 MB.')).toBeVisible();
   await expect(page.getByRole('status').getByText(/can’t be/)).toHaveCount(1);
 });
 

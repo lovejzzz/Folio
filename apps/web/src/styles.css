@@ -27,6 +27,8 @@
   --animate-pulse-soft: pulse-soft 1.4s ease-in-out infinite;
   --animate-caret: caret 1.05s linear infinite;
   --animate-settle: settle var(--motion-ripple) var(--motion-ease) both;
+  --animate-step-in: step-in var(--motion-settle) var(--motion-ease) both;
+  --animate-step-back: step-back var(--motion-settle) var(--motion-ease) both;
 }
 
 @keyframes fade-in { from { opacity: 0; } }
@@ -39,6 +41,8 @@
 @keyframes pulse-soft { 50% { opacity: 0.35; transform: scale(0.8); } }
 @keyframes caret { 0%, 45% { opacity: 1; } 55%, 100% { opacity: 0; } }
 /* Text written before your eyes darkens into place when it is done. */
+@keyframes step-in { from { opacity: 0; transform: translateX(14px); } }
+@keyframes step-back { from { opacity: 0; transform: translateX(-14px); } }
 @keyframes settle { from { color: var(--color-ink-2); } }
 @keyframes sweep { from { background-size: 0% 100%; } to { background-size: 100% 100%; } }
 

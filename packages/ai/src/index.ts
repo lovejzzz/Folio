@@ -8,6 +8,7 @@ export * from './prompts';
 export * from './jobs';
 export * from './sections';
 export * from './outline';
+export * from './clarify';
 export * from './actions';
 export * from './planCheck';
 export * from './build';

@@ -7,6 +7,8 @@ interface Draft {
   brief: string;
   level: string;
   lessons: number;
+  /** The number of lessons is read from the attached syllabus, not chosen. */
+  lessonsFromFiles: boolean;
   language: Language;
   /** Chips the teacher set by hand stop following the text. */
   pinned: { level: boolean; lessons: boolean };
@@ -20,6 +22,7 @@ const initial = {
   brief: '',
   level: '',
   lessons: 4,
+  lessonsFromFiles: false,
   language: 'en' as Language,
   pinned: { level: false, lessons: false },
   files: [],
@@ -41,7 +44,18 @@ export function setBrief(brief: string): void {
   if (!pinned.lessons) {
     const n = guessLessons(brief);
     if (n) patch.lessons = n;
+    // A count in the brief is the teacher's word; without one, an attached syllabus says how many.
+    patch.lessonsFromFiles = !n && useDraft.getState().files.length > 0;
   }
   if (!pinned.level) patch.level = guessLevel(brief) ?? '';
+  set(patch);
+}
+
+/** Attach or remove files; unless the teacher set the lessons, a syllabus then says how many there are. */
+export function setFiles(files: Draft['files']): void {
+  const { pinned, brief, set } = useDraft.getState();
+  const patch: Partial<Draft> = { files };
+  if (!pinned.lessons && !guessLessons(brief)) patch.lessonsFromFiles = files.length > 0;
+  if (!files.length) patch.lessonsFromFiles = false;
   set(patch);
 }

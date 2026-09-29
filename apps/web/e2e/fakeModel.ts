@@ -32,8 +32,27 @@ const READINGS = [
   ],
 ];
 
+/**
+ * Reading the brief before planning: nothing to ask, unless the brief says "(ask me)"; a syllabus that gives its
+ * weeks is read as that many lessons.
+ */
+function clarify(prompt: string) {
+  const weeks = prompt.match(/Week (\d+)/g)?.length ?? null;
+  if (!prompt.includes('(ask me)')) return { lessonCount: weeks, minutesPerLesson: null, level: '', questions: [] };
+  return {
+    lessonCount: null,
+    minutesPerLesson: null,
+    level: '',
+    questions: [
+      { topic: 'lessons', question: 'How many lessons should the unit have?', options: ['4 lessons, one a week', '6 lessons over three weeks', '2 long lessons'] },
+      { topic: 'assessment', question: 'How is the unit assessed?', options: ['A lab report at the end', 'A short quiz each lesson', 'Not graded'] },
+    ],
+  };
+}
+
 function outline(prompt: string) {
-  const n = Number(prompt.match(/Plan exactly (\d+) lessons/)?.[1] ?? 3);
+  const asked = prompt.match(/teacher answered:\n- How many lessons[^\n]*? (\d+) lessons/)?.[1];
+  const n = Number(prompt.match(/Plan exactly (\d+) lessons/)?.[1] ?? asked ?? 3);
   const titles = ['Light and leaves', 'Inside the chloroplast', 'The Calvin cycle', 'Limiting factors', 'Plants and people', 'Review and project'];
   return {
     title: 'How plants make food',
@@ -74,7 +93,8 @@ function answerFor(body: Body): unknown {
   if (prompt.includes('Return {"ok": true}')) return { ok: true };
   // The plan review: a plan written by the fake has nothing wrong with it.
   if (prompt.includes('Check this plan the way')) return { issues: [] };
-  if (prompt.includes('Plan exactly')) return outline(prompt);
+  if (prompt.includes('Before Folio plans this course')) return clarify(prompt);
+  if (prompt.includes('Plan exactly') || prompt.includes('Plan one lesson for each class meeting')) return outline(prompt);
   if (prompt.includes('Write the lesson plan'))
     return {
       keyIdeas: [`${title} starts with light energy.`, 'Chlorophyll absorbs red and blue light.'],

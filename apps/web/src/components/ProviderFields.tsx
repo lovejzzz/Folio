@@ -1,18 +1,30 @@
 import { PROVIDERS, type ProviderId } from '@folio/ai';
-import { TextField, cx } from '@folio/ui';
-import { ExternalLink } from 'lucide-react';
+import { IconButton, TextField, cx } from '@folio/ui';
+import { CircleHelp } from 'lucide-react';
 import { Radio, RadioGroup } from 'react-aria-components';
 import { useT, type Messages } from '../i18n';
 import { usePrefs } from '../state/prefs';
 import { ModelPicker } from './ModelPicker';
 
-
-const KEY_PAGES: Partial<Record<ProviderId, string>> = {
-  anthropic: 'https://console.anthropic.com/settings/keys',
-  openai: 'https://platform.openai.com/api-keys',
-  google: 'https://aistudio.google.com/apikey',
-  deepseek: 'https://platform.deepseek.com/api_keys',
+/** Where each provider makes and lists API keys: the "?" beside the key field goes straight there. */
+const KEY_PAGES: Partial<Record<ProviderId, { url: string; company: string }>> = {
+  anthropic: { url: 'https://platform.claude.com/settings/keys', company: 'Anthropic' },
+  openai: { url: 'https://platform.openai.com/api-keys', company: 'OpenAI' },
+  google: { url: 'https://aistudio.google.com/apikey', company: 'Google AI Studio' },
+  deepseek: { url: 'https://platform.deepseek.com/api_keys', company: 'DeepSeek' },
 };
+
+/** A small "?" that opens the provider's key page in a new tab, and says so on hover or focus. */
+function KeyHelp({ provider }: { provider: ProviderId }) {
+  const t = useT();
+  const page = KEY_PAGES[provider];
+  if (!page) return null;
+  return (
+    <IconButton size="sm" label={t.settings.keyPage(page.company)} onPress={() => window.open(page.url, '_blank', 'noopener,noreferrer')} className="-my-1 size-6 rounded-full data-hovered:text-accent">
+      <CircleHelp size={15} strokeWidth={1.75} />
+    </IconButton>
+  );
+}
 
 /** Plain choices, each with a one-line cost and privacy note. */
 export function ProviderChoice({ value, onChange, compact }: { value: ProviderId; onChange: (p: ProviderId) => void; compact?: boolean }) {
@@ -56,7 +68,6 @@ export function missingSetup(provider: ProviderId, t: Messages): string | null {
 export function ProviderFields({ provider, showModel = true, onKey }: { provider: ProviderId; showModel?: boolean; onKey?: (key: string) => void }) {
   const t = useT();
   const { keys, localUrl, set } = usePrefs();
-  const keyPage = KEY_PAGES[provider];
   return (
     <div className="space-y-3">
       {provider === 'local' ? (
@@ -64,7 +75,12 @@ export function ProviderFields({ provider, showModel = true, onKey }: { provider
       ) : (
         <div>
           <TextField
-            label={t.settings.key}
+            label={
+              <span className="inline-flex items-center gap-1">
+                {t.settings.key}
+                <KeyHelp provider={provider} />
+              </span>
+            }
             type="password"
             autoComplete="off"
             description={t.settings.keyHint}
@@ -74,17 +90,6 @@ export function ProviderFields({ provider, showModel = true, onKey }: { provider
               onKey?.(v.trim());
             }}
           />
-          {keyPage && (
-            <a
-              href={keyPage}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-1.5 inline-flex items-center gap-1 font-ui text-13 text-accent underline-offset-4 hover:underline"
-            >
-              {t.settings.getKey}
-              <ExternalLink size={12} strokeWidth={1.75} aria-hidden />
-            </a>
-          )}
         </div>
       )}
       {(showModel || provider === 'local') && <ModelPicker provider={provider} />}

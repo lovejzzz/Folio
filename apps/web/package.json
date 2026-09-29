@@ -24,6 +24,7 @@
     "dexie": "^4.4.6",
     "fflate": "^0.8.3",
     "lucide-react": "^1.48.0",
+    "pdfjs-dist": "^6.3.289",
     "react": "^19.3.0",
     "react-aria": "^3.52.1",
     "react-aria-components": "^1.21.1",

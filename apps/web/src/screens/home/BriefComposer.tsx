@@ -3,7 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, FileText, Paperclip, X } from 'lucide-react';
 import { useId, useRef, useState, type DragEvent } from 'react';
 import { useT } from '../../i18n';
-import { setBrief, useDraft } from '../../state/draft';
+import { setBrief, setFiles, useDraft } from '../../state/draft';
 import { hasModel } from '../../state/prefs';
 import { toast } from '../../state/toasts';
 import { useUi } from '../../state/ui';
@@ -11,32 +11,30 @@ import { LessonsChip, LevelChip } from './Chips';
 import { asksForSources } from './sourceHint';
 
 function useAttach() {
-  const t = useT();
   return async (files: FileList | File[]) => {
     // Copy first: an input's FileList is emptied when it is reset, and a drop's
     // DataTransfer once the event ends, both before the import below resolves.
     const list = Array.from(files);
-    const { FileReadError, readSourceFile } = await import('../../lib/readFile');
-    const refused: { name: string; reason: 'size' | 'type' }[] = [];
+    const { FileReadError, readSourceFile, refusalMessage, refusedMessage } = await import('../../lib/readFile');
+    const refused: { name: string; reason: 'size' | 'type' | 'empty' }[] = [];
     for (const file of list) {
       try {
         const source = await readSourceFile(file);
-        const { files: current, set } = useDraft.getState();
-        set({ files: [...current, source] });
+        setFiles([...useDraft.getState().files, source]);
       } catch (error) {
         refused.push({ name: file.name, reason: error instanceof FileReadError ? error.reason : 'type' });
       }
     }
     // One message for the whole drop, however many files were refused.
     const [only] = refused;
-    if (refused.length === 1 && only) toast({ message: only.reason === 'size' ? t.home.fileTooBig(only.name) : t.home.fileUnsupported(only.name), tone: 'attention' });
-    else if (refused.length > 1) toast({ message: t.home.filesRefused(refused.map((r) => r.name)), tone: 'attention' });
+    if (refused.length === 1 && only) toast({ message: refusalMessage(only.name, only.reason), tone: 'attention' });
+    else if (refused.length > 1) toast({ message: refusedMessage(refused.map((r) => r.name)), tone: 'attention' });
   };
 }
 
 function AttachedFiles() {
   const t = useT();
-  const { files, set } = useDraft();
+  const files = useDraft((s) => s.files);
   if (!files.length) return null;
   return (
     <ul className="flex flex-wrap gap-2 px-5 pb-3 md:px-7" aria-label={t.home.attached(files.length)}>
@@ -44,7 +42,7 @@ function AttachedFiles() {
         <li key={`${f.title}-${i}`} className="flex h-7 items-center gap-1.5 rounded-full bg-well pl-2.5 pr-1 font-ui text-13 text-ink">
           <FileText size={14} strokeWidth={1.5} className="text-ink-2" aria-hidden />
           <span className="max-w-48 truncate">{f.title}</span>
-          <IconButton size="sm" tooltip={false} label={`${t.common.remove} ${f.title}`} onPress={() => set({ files: files.filter((_, j) => j !== i) })} className="size-5">
+          <IconButton size="sm" tooltip={false} label={`${t.common.remove} ${f.title}`} onPress={() => setFiles(files.filter((_, j) => j !== i))} className="size-5">
             <X size={12} strokeWidth={1.75} />
           </IconButton>
         </li>
@@ -96,7 +94,7 @@ function useFilePicker(onFiles: (files: FileList) => void) {
       ref={ref}
       type="file"
       multiple
-      accept=".txt,.md,.markdown,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      accept=".pdf,.docx,.txt,.md,.markdown,application/pdf,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
       className="hidden"
       onChange={(e) => {
         if (e.target.files) onFiles(e.target.files);

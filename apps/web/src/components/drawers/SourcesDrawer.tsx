@@ -4,7 +4,7 @@ import { Button, IconButton, TextArea, TextField } from '@folio/ui';
 import { FileText, Paperclip, Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useT } from '../../i18n';
-import { FileReadError, readSourceFile } from '../../lib/readFile';
+import { FileReadError, readSourceFile, refusalMessage } from '../../lib/readFile';
 import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
 import { toast } from '../../state/toasts';
@@ -37,7 +37,7 @@ function AddSource() {
         <input
           ref={file}
           type="file"
-          accept=".txt,.md,.markdown,.docx"
+          accept=".pdf,.docx,.txt,.md,.markdown"
           className="hidden"
           onChange={async (e) => {
             const f = e.target.files?.[0];
@@ -47,8 +47,7 @@ function AddSource() {
               const s = await readSourceFile(f);
               add(s.title, s.text);
             } catch (error) {
-              const size = error instanceof FileReadError && error.reason === 'size';
-              toast({ message: size ? t.home.fileTooBig(f.name) : t.home.fileUnsupported(f.name), tone: 'attention' });
+              toast({ message: refusalMessage(f.name, error instanceof FileReadError ? error.reason : 'type'), tone: 'attention' });
             }
           }}
         />
