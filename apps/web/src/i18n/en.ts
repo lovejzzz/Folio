@@ -307,7 +307,7 @@ export const en = {
       parts: (done: number, total: number) => `${done} of ${total}`,
       row: (lesson: number, material: string) => `Lesson ${lesson} · ${material}`,
       writing: 'Writing…',
-      checking: 'Opus is checking the plan…',
+      checking: 'Opus is checking…',
       checked: 'Checked by Opus',
       fixed: (n: number) => (n === 1 ? 'Opus fixed 1 thing' : `Opus fixed ${n} things`),
       notes: (n: number) => (n === 1 ? '1 note for you' : `${n} notes for you`),

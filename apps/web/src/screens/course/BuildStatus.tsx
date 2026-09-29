@@ -1,5 +1,5 @@
 import { missingTargets } from '@folio/ai';
-import { StatusMark } from '@folio/ui';
+import { StatusMark, cx } from '@folio/ui';
 import { Button as AriaButton } from 'react-aria-components';
 import { useT } from '../../i18n';
 import { startBuild, stopBuild, useBuild } from '../../state/build';
@@ -17,11 +17,12 @@ export function BuildStatus() {
   if (running && mine) {
     return (
       <p className="flex min-w-0 items-center gap-2 font-ui text-13 text-ink-2" aria-live="polite">
-        <StatusMark kind="building" label="" className="hidden sm:inline-flex" />
-        <span className="truncate">{stopping ? t.build.stopping : t.build.progress(Math.max(1, currentLesson), course.lessonOrder.length)}</span>
+        <StatusMark kind="building" label="" />
+        {/* A phone has no room for the words, which came out as a lone "W"; the card below shows the progress there. */}
+        <span className={cx('truncate', !stopping && 'sr-only sm:not-sr-only')}>{stopping ? t.build.stopping : t.build.progress(Math.max(1, currentLesson), course.lessonOrder.length)}</span>
         {!stopping && (
           <>
-            <span aria-hidden>·</span>
+            <span aria-hidden className="hidden sm:inline">·</span>
             <AriaButton onPress={stopBuild} className={linkClass}>
               {t.common.stop}
             </AriaButton>

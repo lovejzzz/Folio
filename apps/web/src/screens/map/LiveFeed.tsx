@@ -16,7 +16,7 @@ function RowName({ row, course }: { row: LiveRow; course: Course }) {
   return (
     <>
       <span aria-hidden className={cx('h-3.5 w-1 shrink-0 rounded-full', tabBg[row.kind])} />
-      <span className="min-w-0 truncate font-ui text-13 text-ink">{t.build.live.row(lessonNumber(course, row.lessonId), t.materialOne[row.kind])}</span>
+      <span className="shrink-0 font-ui text-13 text-ink">{t.build.live.row(lessonNumber(course, row.lessonId), t.materialOne[row.kind])}</span>
     </>
   );
 }
@@ -32,7 +32,7 @@ function WorkingRow({ row, index }: { row: LiveRow; index: number }) {
   return (
     <li className={cx('flex animate-pop-in items-center gap-2.5', index >= 2 && 'hidden sm:flex')}>
       <RowName row={row} course={course} />
-      <span key={checking ? 'checking' : 'writing'} className={cx('ml-auto shrink-0 font-ui text-12 text-ink-2 tabular', checking || !metric ? 'animate-shimmer' : 'animate-fade-in')}>
+      <span key={checking ? 'checking' : 'writing'} className={cx('ml-auto min-w-0 truncate font-ui text-12 text-ink-2 tabular', checking || !metric ? 'animate-shimmer' : 'animate-fade-in')}>
         {detail}
       </span>
     </li>
@@ -61,7 +61,7 @@ function FinishedRow({ row, index }: { row: LiveRow; index: number }) {
       </span>
       <span className={cx('mt-0.5 block truncate pl-3.5 font-ui text-12 tabular', failed ? 'text-critical' : 'text-ink-2')}>{finishedDetail(row, course, t)}</span>
       {fix && (
-        <span lang={course.language} className="mt-1 line-clamp-2 block pl-3.5 font-reading text-12 italic leading-snug text-ink-2">
+        <span lang={course.language} className="mt-1 line-clamp-2 pl-3.5 font-reading text-12 italic leading-snug text-ink-2">
           {fix}
         </span>
       )}
