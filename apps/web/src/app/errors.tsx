@@ -5,7 +5,7 @@ import { useT } from '../i18n';
 import { SimpleHeader } from '../components/AppHeader';
 import { usePageTitle } from './usePageTitle';
 
-const linkClass = 'rounded-control font-ui text-14 font-medium text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent';
+export const linkClass = 'rounded-control font-ui text-14 font-medium text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent';
 
 /** The message itself: a heading, a sentence and one way on. */
 function MessageBody({ title, body, action }: { title: string; body?: string; action: ReactNode }) {
@@ -20,7 +20,7 @@ function MessageBody({ title, body, action }: { title: string; body?: string; ac
 }
 
 /** A whole page, for places outside a course. */
-function Message(props: { title: string; body?: string; action: ReactNode }) {
+export function Message(props: { title: string; body?: string; action: ReactNode }) {
   return (
     <div className="min-h-dvh">
       <SimpleHeader />

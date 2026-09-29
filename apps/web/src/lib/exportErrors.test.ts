@@ -24,7 +24,7 @@ describe('export error messages', () => {
   });
 
   it('word Google upload failures too', () => {
-    const codes: GoogleErrorCode[] = ['googleLoad', 'googleUnavailable', 'googleCancelled', 'googleRefused'];
+    const codes: GoogleErrorCode[] = ['googleUnfinished', 'googleCancelled', 'googleRefused'];
     for (const code of codes) {
       expect(exportErrorMessage(new GoogleUploadError(code, 'popup_closed_by_user'), en)).toBe(en.export.errors[code]);
     }

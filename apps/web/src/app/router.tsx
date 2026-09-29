@@ -7,6 +7,7 @@ import {
   notFound,
   redirect,
 } from '@tanstack/react-router';
+import { GOOGLE_RETURN_PATH } from '../lib/googlePath';
 import { Home } from '../screens/home/Home';
 import { COURSE_MISSING, CourseRouteNotFound, MaterialNotFound, PageNotFound, RouteError } from './errors';
 import { RootLayout } from './RootLayout';
@@ -119,14 +120,17 @@ export interface PrintSearch {
   lessons?: string[];
 }
 
+/** What to put on paper, or in a Google Doc. */
+const exportSearch = (search: Record<string, unknown>): PrintSearch => ({
+  kinds: (Array.isArray(search.kinds) ? search.kinds : []).filter((k): k is MaterialKind => typeof k === 'string' && isMaterialKind(k)),
+  audience: search.audience === 'teacher' ? 'teacher' : 'student',
+  ...(Array.isArray(search.lessons) ? { lessons: search.lessons.filter((l): l is string => typeof l === 'string') } : {}),
+});
+
 export const printRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/print/$courseId',
-  validateSearch: (search: Record<string, unknown>): PrintSearch => ({
-    kinds: (Array.isArray(search.kinds) ? search.kinds : []).filter((k): k is MaterialKind => typeof k === 'string' && isMaterialKind(k)),
-    audience: search.audience === 'teacher' ? 'teacher' : 'student',
-    ...(Array.isArray(search.lessons) ? { lessons: search.lessons.filter((l): l is string => typeof l === 'string') } : {}),
-  }),
+  validateSearch: exportSearch,
   loader: async ({ params }) => {
     const { loadSession } = await import('../state/session');
     const store = await loadSession(params.courseId);
@@ -137,6 +141,15 @@ export const printRoute = createRoute({
   component: lazyRouteComponent(() => import('../screens/print/PrintScreen'), 'PrintScreen'),
 });
 
+/** The tab that makes a Google Doc. Export opens it with what to export; Google sends the teacher back to it with none. */
+export const googleRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: GOOGLE_RETURN_PATH,
+  validateSearch: (search: Record<string, unknown>): Partial<PrintSearch> & { course?: string } =>
+    typeof search.course === 'string' ? { course: search.course, ...exportSearch(search) } : {},
+  component: lazyRouteComponent(() => import('../screens/google/GoogleExportScreen'), 'GoogleExportScreen'),
+});
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   newRoute,
@@ -144,6 +157,7 @@ const routeTree = rootRoute.addChildren([
   settingsRoute,
   privacyRoute,
   printRoute,
+  googleRoute,
   courseRoute.addChildren([courseIndexRoute, planRoute, mapRoute, lessonRoute, materialRoute]),
 ]);
 

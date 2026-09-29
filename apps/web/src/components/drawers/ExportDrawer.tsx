@@ -8,7 +8,7 @@ import { router } from '../../app/router';
 import { useT, type Messages } from '../../i18n';
 import { download, makeExport } from '../../lib/exporter';
 import { exportErrorMessage } from '../../lib/exportErrors';
-import { uploadToGoogleDocs } from '../../lib/google';
+import { GOOGLE_RETURN_PATH } from '../../lib/googlePath';
 import { flushNow, useCourse } from '../../state/session';
 import { toast } from '../../state/toasts';
 import { DocView } from '../DocView';
@@ -78,25 +78,20 @@ function Preview({ choice }: { choice: ExportChoice }) {
 async function runExport(choice: ExportChoice, course: Course, t: Messages): Promise<void> {
   const kinds = kindsFor(course, choice);
   const lessonIds = lessonIdsFor(choice);
-  if (choice.format === 'pdf') {
+  const search = { kinds, audience: choice.audience, ...(lessonIds ? { lessons: lessonIds } : {}) };
+  // Both open a tab of their own, which reads the course from this browser's storage: it must be saved first.
+  if (choice.format === 'pdf' || choice.format === 'google') {
     await flushNow();
-    const { href } = router.buildLocation({
-      to: '/print/$courseId',
-      params: { courseId: course.id },
-      search: { kinds, audience: choice.audience, ...(lessonIds ? { lessons: lessonIds } : {}) },
-    });
+    const { href } =
+      choice.format === 'pdf'
+        ? router.buildLocation({ to: '/print/$courseId', params: { courseId: course.id }, search })
+        : router.buildLocation({ to: GOOGLE_RETURN_PATH, search: { course: course.id, ...search } });
     window.open(href, '_blank', 'noopener');
     return;
   }
-  const format = choice.format === 'google' ? 'docx' : choice.format;
-  const file = await makeExport({ course, kinds, audience: choice.audience, format, ...(lessonIds ? { lessonIds } : {}) });
-  if (choice.format === 'google') {
-    const link = await uploadToGoogleDocs(googleClientId(), file.name, file.bytes);
-    toast({ message: t.export.uploaded, action: { label: t.export.openInDrive, run: () => window.open(link, '_blank', 'noopener') } });
-  } else {
-    download(file);
-    toast({ message: t.export.done(file.name), duration: 4000 });
-  }
+  const file = await makeExport({ course, kinds, audience: choice.audience, format: choice.format, ...(lessonIds ? { lessonIds } : {}) });
+  download(file);
+  toast({ message: t.export.done(file.name), duration: 4000 });
 }
 
 function WhatField({ choice, set }: { choice: ExportChoice; set: (patch: Partial<ExportChoice>) => void }) {
