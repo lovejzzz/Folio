@@ -41,7 +41,9 @@ function docxText(bytes: Uint8Array): string {
 
 /** The text of a PDF, page by page, as its lines run. pdf.js loads only when a PDF is dropped. A scan has none. */
 async function pdfText(bytes: Uint8Array): Promise<string> {
-  const [pdfjs, worker] = await Promise.all([import('pdfjs-dist'), import('pdfjs-dist/build/pdf.worker.min.mjs?url')]);
+  // The legacy build: the standard one needs Safari 17.4 / Chrome 119 (Promise.withResolvers), and Folio supports
+  // Safari 16.4 and Chrome 111.
+  const [pdfjs, worker] = await Promise.all([import('pdfjs-dist/legacy/build/pdf.mjs'), import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')]);
   pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
   const task = pdfjs.getDocument({ data: bytes });
   const doc = await task.promise.catch(() => {
