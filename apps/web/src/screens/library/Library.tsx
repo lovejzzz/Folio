@@ -2,14 +2,15 @@ import { isCourseFormatError, newId, type Course } from '@folio/core';
 import { Button, Dialog, IconButton, Menu, MenuItem, fieldClass, cx } from '@folio/ui';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Copy, FolderOpen, MoreHorizontal, Plus, Save, Search, Trash2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { CourseCard } from '../../components/CourseCard';
 import { EmptySheets } from '../../components/Illustrations';
 import { useT } from '../../i18n';
 import { download } from '../../lib/exporter';
-import { deleteCourse, isQuotaError, listCourses, loadCourse, saveCourse, type CourseSummary } from '../../state/db';
+import { useCourseList } from '../../state/courseList';
+import { deleteCourse, isQuotaError, loadCourse, saveCourse, type CourseSummary } from '../../state/db';
 import { toast } from '../../state/toasts';
 import { dropSession } from '../../state/session';
 
@@ -42,13 +43,9 @@ function CardMenu({ course, onChanged, onDelete }: { course: CourseSummary; onCh
   );
 }
 
+/** The list follows every change by itself; the refresh is kept for callers that ask for one. */
 function useCourses(): [CourseSummary[] | null, () => void] {
-  const [courses, setCourses] = useState<CourseSummary[] | null>(null);
-  const [tick, setTick] = useState(0);
-  useEffect(() => {
-    void listCourses().then(setCourses).catch(() => setCourses([]));
-  }, [tick]);
-  return [courses, () => setTick((n) => n + 1)];
+  return [useCourseList(), () => {}];
 }
 
 function Header() {

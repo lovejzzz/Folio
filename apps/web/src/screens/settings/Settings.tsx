@@ -8,11 +8,12 @@ import { probeModel } from '../../components/ConnectDialog';
 import { ProviderChoice, ProviderFields, hasKey, missingSetup } from '../../components/ProviderFields';
 import { useT } from '../../i18n';
 import { download } from '../../lib/exporter';
-import { allCourses, db, storageKept } from '../../state/db';
+import { allCourses, deleteCourse, listCourses, storageKept } from '../../state/db';
 import { errorMessage } from '../../state/model';
 import { modelSettings, usePrefs } from '../../state/prefs';
 import { dropSession } from '../../state/session';
 import { toast } from '../../state/toasts';
+import { AccountSection } from './AccountSection';
 
 function Section({ title, lede, children }: { title: string; lede?: string; children: ReactNode }) {
   return (
@@ -155,7 +156,8 @@ function DataSection() {
               variant="destructive"
               onPress={async () => {
                 dropSession();
-                await Promise.all([db.courses.clear(), db.history.clear()]);
+                // One by one, so a signed-in account deletes its copies too.
+                for (const c of await listCourses()) await deleteCourse(c.id);
                 setConfirm(false);
                 toast({ message: t.library.deleted });
               }}
@@ -184,6 +186,7 @@ export function Settings() {
       <SimpleHeader />
       <main id="main" className="mx-auto max-w-3xl space-y-6 px-5 pb-24 pt-8 md:pt-12">
         <h1 className="font-display text-48 leading-none text-ink">{t.settings.title}</h1>
+        <AccountSection Section={Section} />
         <ModelSection />
         <AppearanceSection />
         <DataSection />

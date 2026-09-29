@@ -1,21 +1,11 @@
 import { Link } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
 import { CourseCard } from '../../components/CourseCard';
 import { useT } from '../../i18n';
-import { listCourses, type CourseSummary } from '../../state/db';
+import { useCourseList } from '../../state/courseList';
 
 export function RecentCourses() {
   const t = useT();
-  const [courses, setCourses] = useState<CourseSummary[]>([]);
-  useEffect(() => {
-    let live = true;
-    listCourses()
-      .then((all) => live && setCourses(all.slice(0, 3)))
-      .catch(() => live && setCourses([]));
-    return () => {
-      live = false;
-    };
-  }, []);
+  const courses = (useCourseList() ?? []).slice(0, 3);
   if (!courses.length) return null;
   return (
     <section aria-labelledby="recent" className="mt-20 animate-fade-in">

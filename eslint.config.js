@@ -7,7 +7,7 @@ const HEX = String.raw`/#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?([0-9a-fA-F]{2})?\b/`;
 const ARBITRARY = String.raw`/(^|\s)[a-z0-9:-]*-\[[^\]]+\]/`;
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/node_modules/**', '**/test-results/**', '**/playwright-report/**', '.claude/**', 'apps/web/qa/**', 'apps/web/.qa-me/**'] },
+  { ignores: ['**/dist/**', '**/dist-e2e/**', '**/node_modules/**', '**/test-results/**', '**/playwright-report/**', '.claude/**', 'apps/web/qa/**', 'apps/web/.qa-me/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

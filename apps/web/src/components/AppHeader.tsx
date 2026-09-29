@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { FolioMark, Wordmark, cx } from '@folio/ui';
 import type { ReactNode } from 'react';
 import { useT } from '../i18n';
+import { AccountButton } from './AccountButton';
 
 const navLink =
   'rounded-control px-2.5 py-1.5 font-ui text-14 text-ink-2 outline-none transition-colors duration-120 hover:bg-well hover:text-ink focus-visible:ring-2 focus-visible:ring-accent';
@@ -34,6 +35,9 @@ export function SimpleHeader({ children }: { children?: ReactNode }) {
         <Link to="/settings" className={navLink} activeProps={{ className: 'text-ink bg-well' }}>
           {t.nav.settings}
         </Link>
+        <span className="ml-2 flex">
+          <AccountButton />
+        </span>
       </nav>
     </header>
   );

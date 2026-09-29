@@ -1,0 +1,121 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+import { handle } from '../src/api';
+import { CHUNK } from '../src/courses';
+import { forgetGoogleKeys } from '../src/google';
+import type { Env } from '../src/types';
+import { fakeD1, fakeGoogle } from './fake';
+
+const CLIENT = 'client-1.apps.googleusercontent.com';
+let env: Env;
+let google: Awaited<ReturnType<typeof fakeGoogle>>;
+
+beforeEach(async () => {
+  forgetGoogleKeys();
+  env = { DB: fakeD1(), VITE_GOOGLE_CLIENT_ID: CLIENT };
+  google = await fakeGoogle(CLIENT);
+});
+
+const call = (path: string, init: RequestInit & { cookie?: string } = {}) => {
+  const headers = new Headers(init.headers);
+  if (init.method && init.method !== 'GET') headers.set('x-folio', '1');
+  if (init.cookie) headers.set('cookie', init.cookie);
+  return handle(new Request(`https://folio.university/api/${path}`, { ...init, headers }), env, google.fetchImpl);
+};
+
+async function signIn(claims: Record<string, unknown> = {}): Promise<string> {
+  const res = await call('session', { method: 'POST', body: JSON.stringify({ idToken: await google.token(claims), nonce: 'n-1' }) });
+  expect(res.status).toBe(200);
+  return res.headers.get('set-cookie')!.split(';')[0]!;
+}
+
+const put = (cookie: string, id: string, base: number, bytes: Uint8Array<ArrayBuffer>, title = 'The water cycle') =>
+  call(`courses/${id}`, { method: 'PUT', cookie, body: bytes, headers: { 'if-match': String(base), 'x-folio-meta': encodeURIComponent(JSON.stringify({ title, lessonCount: 3, updatedAt: '2026-09-29T10:00:00Z' })) } });
+
+describe('signing in', () => {
+  it('trusts only an ID token Google signed for this app and this sign-in, and starts a session', async () => {
+    const cookie = await signIn();
+    expect(cookie).toMatch(/^folio_session=.{40,}$/);
+    const me = await (await call('session', { cookie })).json();
+    expect(me).toEqual({ user: { id: 'g-123', email: 'teacher@example.edu', name: 'Ada Teacher' } });
+  });
+
+  it('turns away a forged, stale, foreign or replayed token', async () => {
+    const tries = [
+      // A character changed mid-signature (the last one can carry only padding bits, and change nothing).
+      { idToken: await google.token().then((tok) => { const i = tok.length - 20; return tok.slice(0, i) + (tok[i] === 'A' ? 'B' : 'A') + tok.slice(i + 1); }), nonce: 'n-1' },
+      { idToken: await google.token({ aud: 'another-app' }), nonce: 'n-1' },
+      { idToken: await google.token({ exp: Math.floor(Date.now() / 1000) - 60 }), nonce: 'n-1' },
+      { idToken: await google.token({ iss: 'https://evil.example' }), nonce: 'n-1' },
+      { idToken: await google.token(), nonce: 'another-sign-in' },
+      { idToken: await google.token({}, 'unknown-key'), nonce: 'n-1' },
+    ];
+    for (const body of tries) expect((await call('session', { method: 'POST', body: JSON.stringify(body) })).status).toBe(401);
+  });
+
+  it('refuses changes without the header another site can’t send', async () => {
+    const res = await handle(new Request('https://folio.university/api/session', { method: 'POST', body: '{}' }), env, google.fetchImpl);
+    expect(res.status).toBe(403);
+  });
+
+  it('ends with sign-out, after which the cookie opens nothing', async () => {
+    const cookie = await signIn();
+    expect((await call('session', { method: 'DELETE', cookie })).headers.get('set-cookie')).toContain('Max-Age=0');
+    expect(await (await call('session', { cookie })).json()).toEqual({ user: null });
+    expect((await call('courses', { cookie })).status).toBe(401);
+  });
+});
+
+describe('courses in an account', () => {
+  it('are stored and read back as sent, each write naming the version it replaces', async () => {
+    const cookie = await signIn();
+    const bytes = new Uint8Array([31, 139, 8, 1, 2, 3]);
+    expect(await (await put(cookie, 'c_abc', 0, bytes)).json()).toEqual({ version: 1 });
+    const got = await call('courses/c_abc', { cookie });
+    expect(got.headers.get('x-folio-version')).toBe('1');
+    expect(new Uint8Array(await got.arrayBuffer())).toEqual(bytes);
+    expect(await (await put(cookie, 'c_abc', 1, bytes)).json()).toEqual({ version: 2 });
+    const list = await (await call('courses', { cookie })).json();
+    expect(list.courses).toEqual([{ id: 'c_abc', title: 'The water cycle', lessonCount: 3, updatedAt: '2026-09-29T10:00:00Z', version: 2, deleted: false }]);
+  });
+
+  it('turn away a write from a device that missed the latest version', async () => {
+    const cookie = await signIn();
+    await put(cookie, 'c_abc', 0, new Uint8Array([1]));
+    await put(cookie, 'c_abc', 1, new Uint8Array([2]));
+    const stale = await put(cookie, 'c_abc', 1, new Uint8Array([3]));
+    expect(stale.status).toBe(409);
+    expect(await stale.json()).toMatchObject({ error: 'conflict', version: 2, deleted: false });
+    expect((await put(cookie, 'c_abc', 0, new Uint8Array([4]))).status).toBe(409);
+  });
+
+  it('keep a large course whole across D1’s row limit', async () => {
+    const cookie = await signIn();
+    const big = new Uint8Array(CHUNK * 2 + 1234).map((_, i) => i % 251);
+    await put(cookie, 'c_big', 0, big);
+    expect(new Uint8Array(await (await call('courses/c_big', { cookie })).arrayBuffer())).toEqual(big);
+  });
+
+  it('are deleted with a marker the other devices see', async () => {
+    const cookie = await signIn();
+    await put(cookie, 'c_abc', 0, new Uint8Array([1]));
+    await call('courses/c_abc', { method: 'DELETE', cookie });
+    expect((await call('courses/c_abc', { cookie })).status).toBe(404);
+    expect((await (await call('courses', { cookie })).json()).courses[0]).toMatchObject({ id: 'c_abc', deleted: true, version: 2 });
+  });
+
+  it('belong to one account only', async () => {
+    const mine = await signIn();
+    await put(mine, 'c_abc', 0, new Uint8Array([1]));
+    const theirs = await signIn({ sub: 'g-999', email: 'other@example.edu' });
+    expect((await call('courses/c_abc', { cookie: theirs })).status).toBe(404);
+    expect((await (await call('courses', { cookie: theirs })).json()).courses).toEqual([]);
+  });
+
+  it('go with the account when it is deleted', async () => {
+    const cookie = await signIn();
+    await put(cookie, 'c_abc', 0, new Uint8Array([1]));
+    expect((await call('account', { method: 'DELETE', cookie })).status).toBe(200);
+    const again = await signIn();
+    expect((await (await call('courses', { cookie: again })).json()).courses).toEqual([]);
+  });
+});

@@ -63,6 +63,11 @@ export const en = {
   } satisfies Record<MaterialKind, string>,
   /** Browser tab titles, most specific first: "Light and leaves · How plants make food · Folio". */
   pageTitle: (parts: string[]) => [...parts, 'Folio'].join(' · '),
+  /** Signing in keeps the courses in the teacher's account; the rest of its words load with it (state/accountText.ts). */
+  account: {
+    signIn: 'Sign in',
+    menu: 'Account',
+  },
   nav: {
     home: 'Home',
     library: 'Library',
@@ -733,7 +738,7 @@ export const en = {
     theme: 'Theme',
     density: 'Overview cells',
     data: 'Your data',
-    dataLede: 'Courses are saved in this browser. Save a backup file to keep a copy anywhere else.',
+    dataLede: 'Courses are saved in this browser, and in your account if you sign in. Save a backup file to keep a copy anywhere else.',
     storage: (used: string) => `About ${used} used on this device.`,
     backupAllName: 'Folio courses.zip',
     notKept: 'This browser may clear courses from a site you haven’t visited in a while. Save a backup file now and then.',
@@ -742,7 +747,7 @@ export const en = {
     deleteAllConfirm: 'Delete every course on this device? This can’t be undone.',
     account: 'Account',
     fontsLicence: 'Fonts and their license',
-    accountNote: 'You don’t need an account. Your courses stay on this device; only what Folio asks the AI to write is sent to the AI you chose.',
+    accountNote: 'You don’t need an account. Without one, your courses stay on this device; only what Folio asks the AI to write is sent to the AI you chose.',
   },
   connect: {
     title: 'Connect an AI',
@@ -792,41 +797,10 @@ export const en = {
     offline: 'You’re offline. Reading and editing still work; writing and updates need a connection.',
     offlineAction: 'You’re offline. Connect to the internet, then try again.',
   },
+  /** The policy's own text is in screens/privacy/policy.ts, loaded with that page. */
   privacy: {
     title: 'Privacy',
     link: 'Privacy',
-    updated: 'Last updated 28 September 2026',
-    lede: 'Folio has no accounts and no server of its own. Your courses stay in your browser.',
-    sections: [
-      {
-        heading: 'What stays on your device',
-        body: 'Your courses, drafts, attached files and settings are stored in this browser. We can’t see them. Clearing your browser data removes them, so save a backup file from the Library if you want a copy.',
-      },
-      {
-        heading: 'Your AI key',
-        body: 'The key you enter is kept only in this browser. When Folio writes, your browser sends your course description, the files you attach and the key straight to the AI company you chose (Anthropic, OpenAI, Google or DeepSeek), or to a model on your own computer. That company’s privacy policy covers the request. Folio never receives it.',
-      },
-      {
-        heading: 'Google Drive',
-        body: 'If you export to Google Docs, Google asks you to let Folio create files in your Drive. Folio asks only for the drive.file permission, so it can see and change only the files it creates for you, never the rest of your Drive. Your browser uses that permission to upload the document; Folio keeps no copy and doesn’t store your sign-in. You can remove access at any time in your Google Account.',
-      },
-      {
-        heading: 'Google API data',
-        body: 'Folio’s use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements.',
-      },
-      {
-        heading: 'What a course cost',
-        body: 'To tell you what a course cost, Folio counts the tokens the AI company reports for each request and prices them with the public list at openrouter.ai, read when the course is finished. That request carries nothing about you or your course.',
-      },
-      {
-        heading: 'What we don’t do',
-        body: 'No ads, no tracking, no analytics cookies. Nothing is sold or shared. The site is served by Cloudflare, which handles requests the way any web host does.',
-      },
-      {
-        heading: 'Questions',
-        body: 'Write to xingpicture@gmail.com.',
-      },
-    ],
   },
   toast: {
     undone: 'Undone.',

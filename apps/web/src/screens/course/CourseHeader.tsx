@@ -8,6 +8,7 @@ import { useT } from '../../i18n';
 import { redo, undo } from '../../state/edit';
 import { useCourse, useStore } from '../../state/session';
 import { useUi } from '../../state/ui';
+import { AccountButton } from '../../components/AccountButton';
 import { BuildStatus } from './BuildStatus';
 import { useChangeCount } from './useChangeCount';
 
@@ -148,6 +149,7 @@ function Actions() {
         </>
       )}
       <MoreMenu />
+      <AccountButton compact />
     </div>
   );
 }

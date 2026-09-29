@@ -4,12 +4,15 @@ import { I18nProvider } from 'react-aria-components';
 import { StorageBlocked } from '../components/StorageBlocked';
 import { Toaster } from '../components/Toaster';
 import { useT } from '../i18n';
+import { startAccount, useAccount } from '../state/account';
 import { applyTheme, usePrefs } from '../state/prefs';
 import { toast } from '../state/toasts';
 import { useUi } from '../state/ui';
 
 /** Loaded only when a model needs connecting, so the first page stays small. */
 const ConnectDialog = lazy(() => import('../components/ConnectDialog').then((m) => ({ default: m.ConnectDialog })));
+/** Loaded only when someone has just signed in with courses already in this browser. */
+const OfferDialog = lazy(() => import('../components/OfferDialog').then((m) => ({ default: m.OfferDialog })));
 
 function usePrintInLight(theme: string): void {
   useEffect(() => {
@@ -28,7 +31,9 @@ export function RootLayout() {
   const t = useT();
   const theme = usePrefs((s) => s.theme);
   const connecting = useUi((s) => s.connectThen !== null);
+  const offering = useAccount((s) => s.offer.length > 0);
   useEffect(() => applyTheme(theme), [theme]);
+  useEffect(() => startAccount(), []);
   useEffect(() => {
     const offline = () => toast({ message: t.errors.offline, tone: 'attention' });
     window.addEventListener('offline', offline);
@@ -49,6 +54,11 @@ export function RootLayout() {
       {connecting && (
         <Suspense fallback={null}>
           <ConnectDialog />
+        </Suspense>
+      )}
+      {offering && (
+        <Suspense fallback={null}>
+          <OfferDialog />
         </Suspense>
       )}
     </I18nProvider>

@@ -23,7 +23,8 @@ export default defineConfig({
     { name: 'phone', use: { ...devices['Pixel 7'] }, testMatch: /phone\.spec\.ts/ },
   ],
   webServer: {
-    command: `pnpm exec vite preview --port ${port} --strictPort`,
+    // Built apart from the release, with a stand-in Google client, so sign-in and Google Docs can be tested.
+    command: `pnpm exec vite build --mode e2e --outDir dist-e2e --emptyOutDir --logLevel warn && pnpm exec vite preview --outDir dist-e2e --port ${port} --strictPort`,
     port,
     reuseExistingServer: true,
   },

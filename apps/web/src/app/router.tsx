@@ -7,7 +7,7 @@ import {
   notFound,
   redirect,
 } from '@tanstack/react-router';
-import { GOOGLE_RETURN_PATH } from '../lib/googlePath';
+import { GOOGLE_RETURN_PATH, SIGN_IN_PATH } from '../lib/googlePath';
 import { Home } from '../screens/home/Home';
 import { COURSE_MISSING, CourseRouteNotFound, MaterialNotFound, PageNotFound, RouteError } from './errors';
 import { RootLayout } from './RootLayout';
@@ -141,6 +141,13 @@ export const printRoute = createRoute({
   component: lazyRouteComponent(() => import('../screens/print/PrintScreen'), 'PrintScreen'),
 });
 
+/** Signing in with Google: the small window that goes to Google and comes back. */
+const signInRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: SIGN_IN_PATH,
+  component: lazyRouteComponent(() => import('../screens/account/SignInScreen'), 'SignInScreen'),
+});
+
 /** The tab that makes a Google Doc. Export opens it with what to export; Google sends the teacher back to it with none. */
 export const googleRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -158,6 +165,7 @@ const routeTree = rootRoute.addChildren([
   privacyRoute,
   printRoute,
   googleRoute,
+  signInRoute,
   courseRoute.addChildren([courseIndexRoute, planRoute, mapRoute, lessonRoute, materialRoute]),
 ]);
 

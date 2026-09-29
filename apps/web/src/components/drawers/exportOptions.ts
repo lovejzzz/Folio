@@ -43,4 +43,4 @@ export function lessonIdsFor(choice: ExportChoice): string[] | undefined {
   return choice.scope === 'lesson' && choice.lessonId ? [choice.lessonId] : undefined;
 }
 
-export const googleClientId = (): string => (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) ?? '';
+export { googleClientId } from '../../lib/googlePath';

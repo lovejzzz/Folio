@@ -5,7 +5,7 @@ import { googleRoute } from '../../app/router';
 import { Message, linkClass } from '../../app/errors';
 import { SimpleHeader } from '../../components/AppHeader';
 import { usePageTitle } from '../../app/usePageTitle';
-import { googleClientId } from '../../components/drawers/exportOptions';
+import { googleClientId } from '../../lib/googlePath';
 import { useT, type Messages } from '../../i18n';
 import { makeExport } from '../../lib/exporter';
 import { exportErrorMessage } from '../../lib/exportErrors';
