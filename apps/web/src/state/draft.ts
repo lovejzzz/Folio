@@ -1,6 +1,5 @@
 import { CORE_SET, MATERIAL_KINDS, type Language, type MaterialKind } from '@folio/core';
 import { create } from 'zustand';
-import { guessLessons, guessLevel } from '../lib/brief';
 
 /** The new-course brief, kept while the outline is drafted. */
 interface Draft {
@@ -37,25 +36,43 @@ export const useDraft = create<Draft>((set) => ({
 
 export const CORE_MATERIALS = CORE_SET;
 
-/** Update the brief; chips the teacher hasn't set by hand follow the text. */
-export function setBrief(brief: string): void {
-  const { pinned, set } = useDraft.getState();
-  const patch: Partial<Draft> = { brief };
+type Guesses = typeof import('../lib/brief');
+let guesses: Guesses | null = null;
+let loading: Promise<Guesses> | null = null;
+
+/**
+ * The brief's parsers load after the page, not with it: the chips only follow the text once there is text. They
+ * are fetched when the browser is idle, and at the first keystroke at the latest.
+ */
+export function loadGuesses(): Promise<Guesses> {
+  loading ??= import('../lib/brief').then((m) => (guesses = m));
+  return loading;
+}
+
+/** Chips the teacher hasn't set by hand follow the brief (and, for lessons, the attached files). */
+function follow(g: Guesses): void {
+  const { brief, files, pinned, set } = useDraft.getState();
+  const patch: Partial<Draft> = {};
   if (!pinned.lessons) {
-    const n = guessLessons(brief);
+    const n = g.guessLessons(brief);
     if (n) patch.lessons = n;
     // A count in the brief is the teacher's word; without one, an attached syllabus says how many.
-    patch.lessonsFromFiles = !n && useDraft.getState().files.length > 0;
+    patch.lessonsFromFiles = !n && files.length > 0;
   }
-  if (!pinned.level) patch.level = guessLevel(brief) ?? '';
+  if (!pinned.level) patch.level = g.guessLevel(brief) ?? '';
   set(patch);
+}
+
+/** Update the brief; chips the teacher hasn't set by hand follow the text. */
+export function setBrief(brief: string): void {
+  useDraft.getState().set({ brief });
+  if (guesses) follow(guesses);
+  else void loadGuesses().then(follow);
 }
 
 /** Attach or remove files; unless the teacher set the lessons, a syllabus then says how many there are. */
 export function setFiles(files: Draft['files']): void {
-  const { pinned, brief, set } = useDraft.getState();
-  const patch: Partial<Draft> = { files };
-  if (!pinned.lessons && !guessLessons(brief)) patch.lessonsFromFiles = files.length > 0;
-  if (!files.length) patch.lessonsFromFiles = false;
-  set(patch);
+  useDraft.getState().set({ files, ...(files.length ? {} : { lessonsFromFiles: false }) });
+  if (guesses) follow(guesses);
+  else void loadGuesses().then(follow);
 }

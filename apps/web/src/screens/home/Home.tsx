@@ -1,11 +1,24 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { useT } from '../../i18n';
-import { setBrief, useDraft } from '../../state/draft';
+import { loadGuesses, setBrief, useDraft } from '../../state/draft';
 import { BriefComposer } from './BriefComposer';
 import { examplesForThisVisit } from './examples';
+
+/** The chips' guesses from the brief, fetched once the page has painted and the browser is idle. */
+function usePreloadGuesses() {
+  useEffect(() => {
+    const start = () => void loadGuesses();
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(start, { timeout: 2000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = setTimeout(start, 800);
+    return () => clearTimeout(id);
+  }, []);
+}
 
 /** Below the fold and read from IndexedDB, so it loads after the first paint. */
 const RecentCourses = lazy(() => import('./RecentCourses').then((m) => ({ default: m.RecentCourses })));
@@ -47,6 +60,7 @@ function Examples() {
 
 export function Home() {
   const t = useT();
+  usePreloadGuesses();
   usePageTitle();
   return (
     <div className="min-h-dvh">
