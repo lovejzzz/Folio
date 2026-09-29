@@ -73,3 +73,20 @@ test('a teacher buys more credits on Stripe’s page, and sees them when they co
   await expect(page.getByText('You have 2,762 credits.')).toBeVisible();
   expect(page.url()).not.toContain('purchase=');
 });
+
+test('in Settings, a signed-in teacher switches from their own key to Folio credits in one click', async ({ page }) => {
+  await fakeFolio(page, { value: 750 });
+  await page.addInitScript(() => {
+    if (!localStorage.getItem('folio.prefs'))
+      localStorage.setItem('folio.prefs', JSON.stringify({ state: { provider: 'anthropic', keys: { anthropic: 'sk-ant-test' }, models: {}, theme: 'light', density: 'comfortable', railCollapsed: false, localUrl: '' }, version: 1 }));
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.getByRole('button', { name: 'Account: ada@example.edu' }).waitFor();
+  await page.goto('/settings');
+  await page.getByText('Use Folio credits').click();
+  await expect(page.getByText('You have 750 credits.')).toBeVisible();
+  // No key to test, and nothing else to press: credits are what Folio now writes with.
+  await expect(page.getByRole('button', { name: 'Test connection' })).toHaveCount(0);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('folio.prefs')!).state.provider)).toBe('folio');
+});

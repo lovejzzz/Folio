@@ -13,6 +13,7 @@ import { errorMessage } from '../../state/model';
 import { modelSettings, usePrefs } from '../../state/prefs';
 import { dropSession } from '../../state/session';
 import { toast } from '../../state/toasts';
+import { readHint } from '../../state/account';
 import { AccountSection } from './AccountSection';
 
 function Section({ title, lede, children }: { title: string; lede?: string; children: ReactNode }) {
@@ -61,10 +62,11 @@ function ModelSection() {
       setStatus({ busy: false, message: errorMessage(error, provider), ok: false });
     }
   };
-  // Choosing a provider only looks at it; Folio switches once it has a key (or, for a local server, once it connects).
+  // Choosing a provider only looks at it; Folio switches once it has a key (or, for a local server, once it
+  // connects). Folio credits need no key: signed in, choosing them is enough.
   const choose = (p: ProviderId) => {
     setProvider(p);
-    if (hasKey(p)) prefs.set({ provider: p });
+    if (hasKey(p) || (p === 'folio' && readHint())) prefs.set({ provider: p });
     setStatus({ busy: false, message: null, ok: false });
   };
   return (
@@ -78,10 +80,12 @@ function ModelSection() {
               {t.settings.done}
             </Button>
           )}
-          <Button variant={status.ok ? 'secondary' : 'primary'} isDisabled={status.busy} onPress={() => void test()}>
-            {status.busy ? t.settings.testing : t.settings.test}
-          </Button>
-          {provider !== 'local' && prefs.keys[provider] && (
+          {provider !== 'folio' && (
+            <Button variant={status.ok ? 'secondary' : 'primary'} isDisabled={status.busy} onPress={() => void test()}>
+              {status.busy ? t.settings.testing : t.settings.test}
+            </Button>
+          )}
+          {provider !== 'local' && provider !== 'folio' && prefs.keys[provider] && (
             <Button variant="quiet" onPress={() => prefs.set({ keys: { ...prefs.keys, [provider]: '' } })}>
               {t.settings.forget}
             </Button>
