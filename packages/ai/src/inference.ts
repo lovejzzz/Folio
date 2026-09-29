@@ -54,6 +54,11 @@ export interface CompletionRequest {
   schema: z.ZodType;
   signal?: AbortSignal;
   maxTokens?: number;
+  /**
+   * Told the answer's text so far as it streams in, where the provider streams (Claude does); the answer is
+   * still returned whole. Only for showing progress: nothing is decided on a partial answer.
+   */
+  onText?: (soFar: string) => void;
 }
 
 /**

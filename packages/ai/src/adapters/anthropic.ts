@@ -23,6 +23,44 @@ function mapError(error: unknown): InferenceError {
   return new InferenceError('network', error instanceof Error ? error.message : String(error));
 }
 
+/** The request for one completion. */
+function requestBody(model: string, request: CompletionRequest) {
+  const format = zodOutputFormat(request.schema);
+  return {
+    model,
+    max_tokens: request.maxTokens ?? 16000,
+    // The course background is the same for every call in a build: cached, it costs a tenth as much after the first call.
+    system: request.context
+      ? [
+          { type: 'text' as const, text: request.system },
+          { type: 'text' as const, text: request.context, cache_control: { type: 'ephemeral' as const } },
+        ]
+      : request.system,
+    messages: [{ role: 'user' as const, content: request.prompt }],
+    output_config: {
+      ...(acceptsEffort(model) ? { effort: request.effort ?? 'medium' } : {}),
+      format: { type: 'json_schema' as const, schema: format.schema },
+    },
+    ...(FALLBACK_MODELS.has(model) ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' as const } : {}),
+  };
+}
+
+/** Send it, streamed when someone is watching the text arrive: the answer is the same either way. */
+async function send(client: Anthropic, body: ReturnType<typeof requestBody>, request: CompletionRequest) {
+  const { onText } = request;
+  if (!onText) return client.beta.messages.create(body, { signal: request.signal });
+  const stream = client.beta.messages.stream(body, { signal: request.signal });
+  stream.on('text', (_delta, soFar) => {
+    // Showing progress must never cost the answer.
+    try {
+      onText(soFar);
+    } catch {
+      /* ignored */
+    }
+  });
+  return stream.finalMessage();
+}
+
 /** Bring-your-own-key Claude. The request goes straight from this browser to Anthropic. */
 export function anthropicInference(settings: ModelSettings, fetchImpl?: typeof fetch, onUsage?: OnUsage): Inference {
   const client = new Anthropic({
@@ -36,28 +74,8 @@ export function anthropicInference(settings: ModelSettings, fetchImpl?: typeof f
     provider: 'anthropic',
     model,
     async complete(request: CompletionRequest) {
-      const format = zodOutputFormat(request.schema);
       try {
-        const response = await client.beta.messages.create(
-          {
-            model,
-            max_tokens: request.maxTokens ?? 16000,
-            // The course background is the same for every call in a build: cached, it costs a tenth as much after the first call.
-            system: request.context
-              ? [
-                  { type: 'text' as const, text: request.system },
-                  { type: 'text' as const, text: request.context, cache_control: { type: 'ephemeral' as const } },
-                ]
-              : request.system,
-            messages: [{ role: 'user', content: request.prompt }],
-            output_config: {
-              ...(acceptsEffort(model) ? { effort: request.effort ?? 'medium' } : {}),
-              format: { type: 'json_schema', schema: format.schema },
-            },
-            ...(FALLBACK_MODELS.has(model) ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' as const } : {}),
-          },
-          { signal: request.signal },
-        );
+        const response = await send(client, requestBody(model, request), request);
         // Counting is a courtesy: a response without usage is still an answer.
         const u = response.usage as typeof response.usage | undefined;
         if (u) {

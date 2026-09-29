@@ -7,6 +7,7 @@ import type { Page, Route } from '@playwright/test';
 
 interface Body {
   model?: string;
+  stream?: boolean;
   system?: string | { text: string }[];
   messages: { content: string }[];
 }
@@ -127,13 +128,29 @@ export async function fakeAnthropic(page: Page, options: FakeModelOptions = {}):
     if (options.status && options.status !== 200) {
       return route.fulfill({ status: options.status, headers: cors(), json: { type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } } });
     }
+    const text = JSON.stringify(answerFor(body));
+    if (body.stream) return route.fulfill({ status: 200, headers: { ...cors(), 'content-type': 'text/event-stream' }, body: streamed(text) });
     await route.fulfill({
       status: 200,
       headers: cors(),
-      json: { id: `msg_${calls.length}`, type: 'message', role: 'assistant', model: 'claude-opus-5', content: [{ type: 'text', text: JSON.stringify(answerFor(body)) }], stop_reason: 'end_turn', stop_sequence: null, usage: { input_tokens: 10, output_tokens: 10 } },
+      json: { id: `msg_${calls.length}`, type: 'message', role: 'assistant', model: 'claude-opus-5', content: [{ type: 'text', text }], stop_reason: 'end_turn', stop_sequence: null, usage: { input_tokens: 10, output_tokens: 10 } },
     });
   });
   return { calls };
+}
+
+/** The same answer as Claude streams it: server-sent events carrying a few characters each. */
+function streamed(text: string): string {
+  const chunks = text.match(/[\s\S]{1,24}/g) ?? [];
+  const events: [string, unknown][] = [
+    ['message_start', { type: 'message_start', message: { id: 'msg_stream', type: 'message', role: 'assistant', model: 'claude-sonnet-5-5', content: [], stop_reason: null, stop_sequence: null, usage: { input_tokens: 10, output_tokens: 0 } } }],
+    ['content_block_start', { type: 'content_block_start', index: 0, content_block: { type: 'text', text: '' } }],
+    ...chunks.map((chunk): [string, unknown] => ['content_block_delta', { type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text: chunk } }]),
+    ['content_block_stop', { type: 'content_block_stop', index: 0 }],
+    ['message_delta', { type: 'message_delta', delta: { stop_reason: 'end_turn', stop_sequence: null }, usage: { output_tokens: 10 } }],
+    ['message_stop', { type: 'message_stop' }],
+  ];
+  return events.map(([name, data]) => `event: ${name}\ndata: ${JSON.stringify(data)}\n\n`).join('');
 }
 
 function cors(): Record<string, string> {

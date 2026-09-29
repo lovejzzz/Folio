@@ -6,6 +6,7 @@ import { Link } from '@tanstack/react-router';
 import { usePageTitle } from '../../app/usePageTitle';
 import { useT } from '../../i18n';
 import { useCourse } from '../../state/session';
+import { LiveFeed } from './LiveFeed';
 import { MapGrid } from './MapGrid';
 
 /**
@@ -122,6 +123,7 @@ export function MapScreen() {
       ) : (
         <MapGrid />
       )}
+      <LiveFeed />
     </div>
   );
 }

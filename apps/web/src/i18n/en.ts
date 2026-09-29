@@ -262,6 +262,7 @@ export const en = {
     notBuilt: 'Not written yet',
     build: 'Write',
     building: 'Writing',
+    checking: 'Checking',
     queued: 'Waiting',
     failed: 'Couldn’t write',
     stale: 'Needs updating',
@@ -299,6 +300,19 @@ export const en = {
     review: 'Review',
     openFirst: 'Read lesson 1',
     fixKey: 'Fix the key',
+    /** The card that shows the course being written. */
+    live: {
+      label: 'What Folio is writing',
+      title: 'Writing your course',
+      parts: (done: number, total: number) => `${done} of ${total}`,
+      row: (lesson: number, material: string) => `Lesson ${lesson} · ${material}`,
+      writing: 'Writing…',
+      checking: 'Opus is checking the plan…',
+      checked: 'Checked by Opus',
+      fixed: (n: number) => (n === 1 ? 'Opus fixed 1 thing' : `Opus fixed ${n} things`),
+      notes: (n: number) => (n === 1 ? '1 note for you' : `${n} notes for you`),
+      failed: 'Couldn’t be written',
+    },
   },
   lesson: {
     objectives: 'Objectives',

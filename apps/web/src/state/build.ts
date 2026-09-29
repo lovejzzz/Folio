@@ -1,10 +1,11 @@
-import { missingTargets, runBuild, targetKey, type BuildEvent, type BuildTarget, type InferenceError, type Usage } from '@folio/ai';
+import { missingTargets, runBuild, targetKey, type BuildEvent, type BuildTarget, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
 import { attentionItems, cmd, lessonNumber, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
 import { router } from '../app/router';
 import { currentMessages } from '../i18n';
 import { canReach, currentInference, currentReviewer, errorMessage } from './model';
 import { activeStore, onSessionChange } from './session';
+import { checkingRow, endRow, resetLive, reviewedRow, showPartial, startRow } from './live';
 import { costSentence, takeUsage } from './spend';
 import { toast } from './toasts';
 import { useUi } from './ui';
@@ -120,14 +121,25 @@ function trackEvent(store: Store, event: BuildEvent): void {
   const key = targetKey(event.target);
   if (event.type === 'start') {
     setCell(key, 'building');
+    startRow(event.target.lessonId, event.target.kind);
     useBuild.setState({ currentLesson: lessonNumber(store.getState(), event.target.lessonId) });
   } else if (event.type === 'done') {
     setCell(key, null);
+    endRow(key, 'done');
     useBuild.setState({ done: useBuild.getState().done + 1 });
   } else {
     setCell(key, (event.error as InferenceError).kind === 'aborted' ? null : 'error', errorMessage(event.error));
+    endRow(key, 'failed');
     useBuild.setState({ done: useBuild.getState().done + 1 });
   }
+}
+
+/** Show a section taking shape: its answer so far, and its plan being checked. */
+function trackProgress(target: BuildTarget, progress: SectionProgress): void {
+  const key = targetKey(target);
+  if (progress.type === 'partial') showPartial(key, progress.value);
+  else if (progress.type === 'checking') checkingRow(key);
+  else reviewedRow(key, progress.fixes, progress.notes);
 }
 
 /**
@@ -160,6 +172,7 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   const { cells, errors } = queuedCells(course.id, list);
   switchedFrom = null;
   buildingTitle = course.title;
+  resetLive();
   useBuild.setState({ courseId: course.id, running: true, stopping: false, total: list.length, done: 0, cells, errors, controller });
   if (course.status !== 'building') {
     store.apply([cmd('course.update', { status: 'building' })], { label: { key: 'editedCourse' }, source: 'ai', silent: true });
@@ -179,6 +192,7 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
         });
       },
       onEvent: (event) => trackEvent(store, event),
+      onProgress: trackProgress,
     },
     list,
   );

@@ -25,6 +25,8 @@
   --animate-reveal: reveal var(--motion-reveal) var(--motion-ease) both;
   --animate-shimmer: shimmer 1.6s ease-in-out infinite;
   --animate-pulse-soft: pulse-soft 1.4s ease-in-out infinite;
+  --animate-caret: caret 1.05s linear infinite;
+  --animate-settle: settle var(--motion-ripple) var(--motion-ease) both;
 }
 
 @keyframes fade-in { from { opacity: 0; } }
@@ -35,6 +37,9 @@
 @keyframes reveal { from { opacity: 0; transform: translateY(3px); } }
 @keyframes shimmer { 50% { opacity: 0.45; } }
 @keyframes pulse-soft { 50% { opacity: 0.35; transform: scale(0.8); } }
+@keyframes caret { 0%, 45% { opacity: 1; } 55%, 100% { opacity: 0; } }
+/* Text written before your eyes darkens into place when it is done. */
+@keyframes settle { from { color: var(--color-ink-2); } }
 @keyframes sweep { from { background-size: 0% 100%; } to { background-size: 100% 100%; } }
 
 @utility h-below-header {

@@ -2,7 +2,9 @@ import { sectionFor, type Course, type Lesson, type MaterialKind } from '@folio/
 import { StatusMark, cx } from '@folio/ui';
 import { useT } from '../../i18n';
 import { InlineText } from '../../components/InlineText';
-import { cellMetric, cellPreview, cellReason, type CellView } from './cellInfo';
+import { useSmoothText } from '../../lib/useSmoothText';
+import { useLive } from '../../state/live';
+import { cellMetric, cellPreview, cellReason, livePreview, type CellView } from './cellInfo';
 
 interface MapCellProps {
   course: Course;
@@ -38,6 +40,35 @@ function Placeholder({ view, compact }: { view: CellView; compact: boolean }) {
   return <span className="text-12 text-ink-2">{view === 'error' ? t.map.failed : t.map.notBuilt}</span>;
 }
 
+/**
+ * A section being written: its opening words appear as they are written, in the place and type they keep
+ * once it is done, with its count going up beneath. Until the first words arrive, the placeholder.
+ */
+function LiveBody({ liveKey, kind, lang, compact }: { liveKey: string; kind: MaterialKind; lang: string; compact: boolean }) {
+  const t = useT();
+  const partial = useLive((s) => s.partial[liveKey]);
+  const checking = useLive((s) => s.rows[liveKey]?.stage === 'checking');
+  const preview = partial === undefined ? null : livePreview(kind, partial, t);
+  const shown = useSmoothText(preview?.text ?? '');
+  if (!preview || (!preview.text && !preview.metric)) return <Placeholder view="building" compact={compact} />;
+  return (
+    <>
+      {!compact && (
+        <span lang={lang} className="line-clamp-3 w-0 min-w-full font-reading text-13 leading-snug text-ink-2">
+          {shown}
+          {!checking && <span aria-hidden className="ml-0.5 inline-block h-3 w-0.5 translate-y-0.5 animate-caret rounded-full bg-accent" />}
+        </span>
+      )}
+      <span className="flex w-full items-center gap-1.5 text-12 text-ink-2">
+        <StatusMark kind="building" label="" />
+        <span key={checking ? 'checking' : 'writing'} className={cx('truncate tabular', checking ? 'animate-shimmer' : 'animate-fade-in')}>
+          {checking ? t.map.checking : preview.metric || t.map.building}
+        </span>
+      </span>
+    </>
+  );
+}
+
 /** A lesson that sets no homework, or a step with no rubric: nothing is missing, so the cell is quiet, not dashed. */
 function NoWork({ kind }: { kind: MaterialKind }) {
   const t = useT();
@@ -57,10 +88,30 @@ function CellCaption({ view, metric, reason }: { view: CellView; metric: string;
   );
 }
 
+/** A cell's frame: a sheet once written (or while it is written before your eyes), dashed while it waits. */
+function cellClass(view: CellView, built: boolean, live: boolean, settled: boolean, compact: boolean): string {
+  return cx(
+    'group flex w-full justify-between gap-2 rounded-control border p-3 text-left font-ui outline-none transition duration-200 ease-ink',
+    compact ? 'h-12 flex-row items-center' : 'h-28 flex-col items-start',
+    (built || live) && 'border-transparent bg-paper shadow-sheet',
+    built && 'hover:shadow-overlay',
+    view === 'none' && 'border-transparent bg-well/60 hover:bg-well',
+    !built && !live && view !== 'none' && 'border-dashed border-rule-strong hover:border-accent',
+    view === 'error' && 'border-critical/50',
+    'focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-desk',
+    built && !settled && 'animate-reveal',
+  );
+}
+
 /** One lesson × material cell: the opening words of what it holds, a count, and what needs doing. */
 export function MapCell({ course, lesson, kind, view, error, compact, focused, onOpen, onBuild, onFocus }: MapCellProps) {
   const t = useT();
   const built = view === 'ready' || view === 'attention' || view === 'stale';
+  const section = sectionFor(kind);
+  const liveKey = section ? `${lesson.id}:${section}` : '';
+  // Written before your eyes: shown as a sheet already, and settling in place when done rather than fading in.
+  const live = useLive((s) => view === 'building' && liveKey in s.partial);
+  const settled = useLive((s) => Boolean(s.streamed[liveKey]));
   const canBuild = (view === 'empty' || view === 'error') && sectionFor(kind) !== null;
   const reason = cellReason(course, lesson, kind, view, t, error);
   const metric = built ? cellMetric(course, lesson, kind, t) : '';
@@ -76,27 +127,20 @@ export function MapCell({ course, lesson, kind, view, error, compact, focused, o
         title={view === 'ready' ? undefined : reason}
         onFocus={onFocus}
         onClick={canBuild ? onBuild : onOpen}
-        className={cx(
-          'group flex w-full justify-between gap-2 rounded-control p-3 text-left font-ui outline-none transition-shadow duration-120 ease-ink',
-          compact ? 'h-12 flex-row items-center' : 'h-28 flex-col items-start',
-          built && 'bg-paper shadow-sheet hover:shadow-overlay',
-          view === 'none' && 'bg-well/60 hover:bg-well',
-          !built && view !== 'none' && 'border border-dashed border-rule-strong hover:border-accent',
-          view === 'error' && 'border-critical/50',
-          'focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-desk',
-          built && 'animate-reveal',
-        )}
+        className={cellClass(view, built, live, settled, compact)}
       >
         {built ? (
           <>
             {/* Zero intrinsic width: the preview wraps to its column and never widens it, so the map keeps its columns once built. */}
             {!compact && (
-              <span lang={course.language} className={cx('line-clamp-3 w-0 min-w-full font-reading text-13 leading-snug', view === 'stale' ? 'text-ink-2' : 'text-ink')}>
+              <span lang={course.language} className={cx('line-clamp-3 w-0 min-w-full font-reading text-13 leading-snug', view === 'stale' ? 'text-ink-2' : 'text-ink', settled && 'animate-settle')}>
                 <InlineText text={cellPreview(course, lesson, kind)} />
               </span>
             )}
             <CellCaption view={view} metric={cellMetric(course, lesson, kind, t)} reason={reason} />
           </>
+        ) : live ? (
+          <LiveBody liveKey={liveKey} kind={kind} lang={course.language} compact={compact} />
         ) : view === 'none' ? (
           <NoWork kind={kind} />
         ) : (

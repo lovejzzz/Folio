@@ -6,7 +6,7 @@ const stillWanted = (course: Course, t: BuildTarget) => {
   return Boolean(lesson && setsWork(lesson, t.kind));
 };
 import { InferenceError, type Inference } from './inference';
-import { generateSection } from './sections';
+import { generateSection, type SectionProgress } from './sections';
 import { BUILT_ON_PLAN } from './prompts';
 
 export interface BuildTarget {
@@ -35,6 +35,8 @@ export interface BuildHost {
   getCourse(): Course;
   commit(target: BuildTarget, commands: Command[]): void;
   onEvent?(event: BuildEvent): void;
+  /** How each section is coming along while it is written. */
+  onProgress?(target: BuildTarget, progress: SectionProgress): void;
   signal: AbortSignal;
   concurrency?: number;
 }
@@ -104,7 +106,8 @@ async function runOne(host: BuildHost, target: BuildTarget, summary: BuildSummar
   if (!stillWanted(course, target) || summary.fatal) return;
   host.onEvent?.({ type: 'start', target });
   try {
-    const result = await generateSection(host.inference, course, target.lessonId, target.kind, host.signal, { reviewer: host.reviewer });
+    const onProgress = host.onProgress ? (progress: SectionProgress) => host.onProgress!(target, progress) : undefined;
+    const result = await generateSection(host.inference, course, target.lessonId, target.kind, host.signal, { reviewer: host.reviewer, onProgress });
     if (host.signal.aborted) throw new InferenceError('aborted', 'Stopped.');
     if (!stillWanted(host.getCourse(), target)) return;
     host.commit(target, result.commands);

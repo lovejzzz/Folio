@@ -28,6 +28,8 @@ export interface JobSpec<T> {
   tidy?: (value: T) => T;
   check?: (value: T) => Problem[];
   signal?: AbortSignal;
+  /** The answer's text so far, as it streams in: the repair call's too, which starts again from nothing. */
+  onText?: (soFar: string) => void;
 }
 
 export interface JobResult<T> {
@@ -83,7 +85,7 @@ function repairPrompt(prompt: string, raw: unknown, problems: Problem[]): string
 const shown = (problems: Problem[]) => problems.filter((p) => !p.advisory);
 
 export async function runJob<T>(inference: Inference, spec: JobSpec<T>): Promise<JobResult<T>> {
-  const request = { task: spec.task, system: spec.system, context: spec.context, effort: spec.effort, schema: spec.schema, signal: spec.signal };
+  const request = { task: spec.task, system: spec.system, context: spec.context, effort: spec.effort, schema: spec.schema, signal: spec.signal, onText: spec.onText };
   const first = await attempt(inference, request, spec.prompt, spec);
   if (first.value !== undefined && first.problems.length === 0) {
     return { value: first.value, problems: [], repaired: false };

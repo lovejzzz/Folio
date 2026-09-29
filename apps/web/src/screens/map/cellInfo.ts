@@ -109,3 +109,57 @@ export function cellReason(course: Course, lesson: Lesson, kind: MaterialKind, v
   }
   return t.map[view === 'ready' ? 'ready' : view === 'empty' ? 'notBuilt' : view === 'queued' ? 'queued' : 'building'];
 }
+
+type Loose = Record<string, unknown>;
+const list = (v: unknown, key: string): Loose[] => {
+  const items = (v as Loose | null)?.[key];
+  return Array.isArray(items) ? items.filter((x): x is Loose => typeof x === 'object' && x !== null) : [];
+};
+const text = (v: unknown): string => (typeof v === 'string' ? v : '');
+
+/**
+ * What a cell shows while its section is written: the same opening words and count as once it is done,
+ * read from the answer so far, so the text grows in place and never jumps when it settles.
+ */
+export function livePreview(kind: MaterialKind, value: unknown, t: Messages): { text: string; metric: string } {
+  const joined = (texts: string[]) => texts.filter(Boolean).join(' · ');
+  switch (kind) {
+    case 'plan': {
+      const segments = list(value, 'segments');
+      const minutes = segments.reduce((a, s) => a + (typeof s.minutes === 'number' ? s.minutes : 0), 0);
+      return { text: joined(segments.map((s) => text(s.title))), metric: minutes ? t.common.minutes(minutes) : '' };
+    }
+    case 'slides': {
+      const slides = list(value, 'slides');
+      return { text: joined(slides.slice(1).map((s) => text(s.title))), metric: slides.length ? t.common.slides(slides.length) : '' };
+    }
+    case 'study': {
+      const points = list(value, 'points');
+      return { text: text((value as Loose).overview) || joined(points.map((p) => text(p.heading))), metric: points.length ? t.map.points(points.length) : '' };
+    }
+    case 'quiz': {
+      const questions = list(value, 'questions');
+      return { text: text(questions[0]?.prompt), metric: questions.length ? t.common.questions(questions.length) : '' };
+    }
+    case 'assignments': {
+      const steps = (value as Loose).steps;
+      const n = Array.isArray(steps) ? steps.length : 0;
+      return { text: text((value as Loose).title), metric: n ? t.map.steps(n) : '' };
+    }
+    case 'rubrics': {
+      const rubric = (value as Loose).rubric;
+      const criteria = list(rubric, 'criteria');
+      return { text: joined(criteria.map((c) => text(c.name))), metric: criteria.length ? t.map.rubricSize(criteria.length, list(rubric, 'levels').length) : '' };
+    }
+    case 'discussions': {
+      const discussions = list(value, 'discussions');
+      return { text: text(discussions[0]?.prompt), metric: discussions.length ? t.map.prompts(discussions.length) : '' };
+    }
+    case 'faq': {
+      const entries = list(value, 'entries');
+      return { text: text(entries[0]?.question), metric: entries.length ? t.common.questions(entries.length) : '' };
+    }
+    default:
+      return { text: '', metric: '' };
+  }
+}

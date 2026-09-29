@@ -1,0 +1,36 @@
+import { orderedLessons } from '@folio/core';
+import { describe, expect, it } from 'vitest';
+import { generateSection, type CompletionRequest, type SectionProgress } from '../src';
+import { fakeInference, planDraft, smallCourse } from './fake';
+
+/** A model that streams its answer in three pieces before returning it whole. */
+function streaming(answer: unknown) {
+  return fakeInference((req: CompletionRequest) => {
+    const text = JSON.stringify(answer);
+    for (const end of [20, 60, text.length]) req.onText?.(text.slice(0, end));
+    return answer;
+  });
+}
+
+describe('a section taking shape', () => {
+  it('is shown as it streams in, then checked, then what the check changed', async () => {
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const seen: SectionProgress[] = [];
+    const reviewer = fakeInference(() => ({
+      issues: [{ part: 'segment', number: 2, field: 'teacherNotes', kind: 'fact', why: 'Say which atoms to balance.', find: 'Balance it together.', replace: 'Balance the oxygen together.' }],
+    }));
+    await generateSection(streaming(planDraft), course, lesson.id, 'plan', undefined, { reviewer, onProgress: (p) => seen.push(p) });
+    const partials = seen.filter((p) => p.type === 'partial');
+    expect(partials.length).toBeGreaterThanOrEqual(2);
+    expect(partials.at(-1)).toEqual({ type: 'partial', value: planDraft });
+    expect(seen.slice(-2)).toEqual([{ type: 'checking' }, { type: 'reviewed', fixes: ['Say which atoms to balance.'], notes: 0 }]);
+  });
+
+  it('is not asked to stream when nobody is watching', async () => {
+    const course = smallCourse();
+    const writer = streaming({ slides: [{ layout: 'title', title: 'T', bullets: [], notes: '' }] });
+    await generateSection(writer, course, orderedLessons(course)[0]!.id, 'slides').catch(() => undefined);
+    expect(writer.calls[0]!.onText).toBeUndefined();
+  });
+});

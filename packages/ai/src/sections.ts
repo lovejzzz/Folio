@@ -20,6 +20,7 @@ import {
   type Task,
 } from '@folio/core';
 import { InferenceError, type Inference } from './inference';
+import { parsePartialJson } from './partial';
 import { issuePlace, reviewPlan } from './review';
 import { runJob, type JobSpec, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
@@ -267,9 +268,26 @@ export interface SectionResult {
   flagged: number;
 }
 
+/** How a section is coming along, for showing it take shape. */
+export type SectionProgress =
+  | { type: 'partial'; value: unknown }
+  | { type: 'checking' }
+  /** What the plan's review changed, one reason per fix, and how many problems it left for the teacher. */
+  | { type: 'reviewed'; fixes: string[]; notes: number };
+
 export interface SectionOptions {
   /** Reads a freshly written lesson plan and corrects it before anything is built on it. */
   reviewer?: Inference;
+  onProgress?: (progress: SectionProgress) => void;
+}
+
+/** The answer so far, read as JSON each time more of it arrives. */
+function partials(onProgress: ((progress: SectionProgress) => void) | undefined): ((soFar: string) => void) | undefined {
+  if (!onProgress) return undefined;
+  return (soFar) => {
+    const value = parsePartialJson(soFar);
+    if (value && typeof value === 'object') onProgress({ type: 'partial', value });
+  };
 }
 
 /** A revision of a section before it is saved, with any problems it leaves for the teacher. */
@@ -280,9 +298,11 @@ type Revision<T> = (value: T) => Promise<{ value: T; problems: Problem[] }>;
  * written if the review can't be had: a failed second read must never cost the teacher the first. Stopping
  * still stops.
  */
-async function reviewed(reviewer: Inference, course: Course, lesson: Lesson, draft: PlanDraft, signal?: AbortSignal): Promise<{ value: PlanDraft; problems: Problem[] }> {
+async function reviewed(reviewer: Inference, course: Course, lesson: Lesson, draft: PlanDraft, options: SectionOptions, signal?: AbortSignal): Promise<{ value: PlanDraft; problems: Problem[] }> {
   try {
-    const { plan, notes } = await reviewPlan(reviewer, course, lesson, draft, { signal });
+    options.onProgress?.({ type: 'checking' });
+    const { plan, issues, notes } = await reviewPlan(reviewer, course, lesson, draft, { signal });
+    options.onProgress?.({ type: 'reviewed', fixes: issues.map((i) => i.why), notes: notes.length });
     return { value: plan, problems: notes.map((n) => ({ index: null, flag: { code: 'reviewNote', values: { where: issuePlace(plan, n), text: n.why } } })) };
   } catch (error) {
     if (error instanceof InferenceError && error.kind === 'aborted') throw error;
@@ -312,6 +332,7 @@ export async function generateSection(
       tidy: job.tidy ? (v) => job.tidy!(v, course) : undefined,
       check: job.check ? (v) => job.check!(v, course, lesson) : undefined,
       signal,
+      onText: partials(options.onProgress),
     });
     const { value, problems } = revise ? await revise(result.value) : { value: result.value, problems: [] };
     const all = [...result.problems, ...problems];
@@ -320,7 +341,7 @@ export async function generateSection(
   const { reviewer } = options;
   switch (kind) {
     case 'plan':
-      return run(plan, reviewer ? (draft) => reviewed(reviewer, course, lesson, draft, signal) : undefined);
+      return run(plan, reviewer ? (draft) => reviewed(reviewer, course, lesson, draft, options, signal) : undefined);
     case 'slides':
       return run(slides);
     case 'study':
