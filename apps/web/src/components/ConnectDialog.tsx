@@ -36,7 +36,8 @@ function useConnect(provider: ProviderId, then: (() => void) | null, close: () =
     if (missing) return setState({ busy: false, error: missing });
     setState({ busy: true, error: null });
     try {
-      await probeModel(provider);
+      // Folio credits need no test call: the sign-in is the setup, and a test would spend the teacher's credits.
+      if (provider !== 'folio') await probeModel(provider);
       // An empty model field means "the default", so it is left empty rather than filled in here.
       usePrefs.getState().set({ provider });
       const run = then;
@@ -56,7 +57,7 @@ export function ConnectDialog() {
   const navigate = useNavigate();
   const then = useUi((s) => s.connectThen);
   const close = useUi((s) => s.closeConnect);
-  const [provider, setProvider] = useState<ProviderId>(() => usePrefs.getState().provider ?? 'anthropic');
+  const [provider, setProvider] = useState<ProviderId>(() => usePrefs.getState().provider ?? 'folio');
   const { state, connect } = useConnect(provider, then, close);
 
   return (
@@ -69,7 +70,7 @@ export function ConnectDialog() {
             <ProviderChoice value={provider} onChange={setProvider} compact />
           </li>
           <li>
-            <StepLabel n={2}>{provider === 'local' ? t.connect.step2Local : t.connect.step2}</StepLabel>
+            <StepLabel n={2}>{provider === 'local' ? t.connect.step2Local : provider === 'folio' ? t.connect.step2Folio : t.connect.step2}</StepLabel>
             <ProviderFields provider={provider} showModel={false} />
           </li>
           <li>

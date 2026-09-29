@@ -39,6 +39,8 @@ const GEMINI_OTHER = /(embedding|tts|image|live|aqa|veo|imagen)/;
 const newestName = (a: ModelOption, b: ModelOption): number => b.id.localeCompare(a.id, 'en', { numeric: true });
 
 const listers: Record<ModelSettings['provider'], Lister> = {
+  // Folio credits write with the model Folio is tuned for; there's nothing to choose.
+  folio: async () => [{ id: 'claude-sonnet-5-5', label: 'Claude Sonnet 5.5' }],
   // Anthropic lists newest first.
   anthropic: async ({ apiKey }, f) =>
     rows(

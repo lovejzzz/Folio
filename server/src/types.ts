@@ -24,6 +24,8 @@ export interface Env {
   DB: D1Database;
   /** The OAuth client that signs teachers in; public, the same one the page uses. */
   VITE_GOOGLE_CLIENT_ID: string;
+  /** Folio's own Anthropic key, a Cloudflare secret: calls paid with Folio credits use it. Unset: credits are off. */
+  ANTHROPIC_API_KEY?: string;
 }
 
 export interface User {

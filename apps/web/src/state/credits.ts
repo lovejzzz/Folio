@@ -1,0 +1,56 @@
+import { create } from 'zustand';
+
+/**
+ * The signed-in teacher's Folio credits, as the server reports them. Loaded with the screens that show them,
+ * never on the first page. A credit is a cent; a call costs three times its model price, as the server charges.
+ */
+
+export const MARKUP = 3;
+export const creditsFor = (usd: number): number => Math.max(0, Math.round(usd * MARKUP * 100));
+
+interface Credits {
+  /** Null until asked; the server's answer after that. */
+  balance: number | null;
+  /** False where the server has no key of Folio's own yet: credits can't be used there. */
+  available: boolean;
+}
+
+export const useCredits = create<Credits>(() => ({ balance: null, available: true }));
+
+/** Ask the server for the balance. Quietly keeps the last answer when it can't be reached. */
+export async function refreshCredits(): Promise<void> {
+  try {
+    const response = await fetch('/api/credits', { credentials: 'same-origin' });
+    if (!response.ok) return;
+    const body = (await response.json()) as { balance: number; available: boolean };
+    useCredits.setState({ balance: body.balance, available: body.available });
+  } catch {
+    // Offline or signed out elsewhere: the balance shown stays as it was.
+  }
+}
+
+export const creditsText = {
+  used: (n: number) => (n <= 1 ? 'That used about 1 credit.' : `That used about ${n.toLocaleString('en-US')} credits.`),
+  balance: (n: number) => `${n.toLocaleString('en-US')} credits`,
+  youHave: (n: number) => `You have ${n.toLocaleString('en-US')} credits.`,
+  signInToStart: 'Sign in with Google to start. New accounts get 750 free credits, about a 15-lesson course with every material.',
+  signIn: 'Sign in with Google',
+  how: 'Claude Sonnet 5.5 writes, and Claude Opus 5.5 checks each lesson plan. A lesson with every material uses about 45 credits.',
+  buy: 'Buy credits',
+  buySoon: 'Buying more credits opens soon.',
+  unavailable: 'Folio credits aren’t switched on yet. Use your own key for now.',
+  signInFirst: 'Sign in with Google first.',
+  estimate: (n: number, have: number | null) => (have === null ? `About ${n.toLocaleString('en-US')} credits.` : `About ${n.toLocaleString('en-US')} credits; you have ${have.toLocaleString('en-US')}.`),
+};
+
+/**
+ * Credits a lesson's parts use, measured on a 28-lesson course written with Sonnet 5.5 and checked by Opus 5.5
+ * (the plan includes its review and any fixes). Overview and syllabus are built from the rest and cost nothing.
+ */
+const PER_LESSON: Partial<Record<string, number>> = { plan: 23, slides: 6, quiz: 7, study: 5, faq: 3, discussions: 3, assignments: 3, rubrics: 2 };
+
+/** About how many credits writing these lessons with these materials takes, rounded up to ten. */
+export function estimateCredits(lessons: number, kinds: readonly string[]): number {
+  const each = kinds.reduce((sum, k) => sum + (PER_LESSON[k] ?? 0), 0);
+  return Math.ceil((lessons * each) / 10) * 10;
+}

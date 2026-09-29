@@ -7,6 +7,7 @@ export function createInference(settings: ModelSettings, fetchImpl?: typeof fetc
   if (!isConfigured(settings)) throw new InferenceError('config', 'No model is set up yet.');
   switch (settings.provider) {
     case 'anthropic':
+    case 'folio':
       return anthropicInference(settings, fetchImpl, onUsage);
     case 'google':
       return googleInference(settings, fetchImpl, onUsage);

@@ -2,9 +2,10 @@ import { accountText } from '../state/accountText';
 import { Button, Dialog, popoverClass } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
 import { LogOut, Settings as SettingsIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button as AriaButton, Dialog as AriaDialog, DialogTrigger, Popover } from 'react-aria-components';
 import { useT } from '../i18n';
+import { creditsText, refreshCredits, useCredits } from '../state/credits';
 import { signOut, useAccount, type AccountUser, type SyncState } from '../state/account';
 import { AvatarMark, avatarButtonClass } from './AccountButton';
 
@@ -15,6 +16,16 @@ export function syncLine(sync: SyncState, lastSynced: number | null): string {
   if (!lastSynced) return accountText.syncing;
   const minutes = Math.floor((Date.now() - lastSynced) / 60_000);
   return accountText.synced(minutes < 1 ? accountText.justNow : accountText.minutesAgo(minutes));
+}
+
+/** The balance, once the server has said it; nothing where credits aren't in use. */
+function CreditsLine() {
+  const { balance, available } = useCredits();
+  useEffect(() => {
+    void refreshCredits();
+  }, []);
+  if (balance === null || !available) return null;
+  return <p className="mx-1 mt-1 px-3 font-ui text-12 text-ink-2">{creditsText.balance(balance)}</p>;
 }
 
 /** Signing out asks first, and says so plainly when changes here haven't reached the account yet. */
@@ -74,6 +85,7 @@ export function AccountMenu({ user }: { user: AccountUser }) {
                 <p role="status" className="mx-1 rounded-control bg-well px-3 py-2 font-ui text-12 leading-5 text-ink-2">
                   {syncLine(sync, lastSynced)}
                 </p>
+                <CreditsLine />
                 <div className="mt-1 border-t border-rule pt-1">
                   <Link to="/settings" onClick={close} className="flex h-8 items-center gap-2.5 rounded-control px-2.5 font-ui text-14 text-ink outline-none hover:bg-well focus-visible:bg-well">
                     <SettingsIcon size={15} strokeWidth={1.75} className="text-ink-2" aria-hidden />

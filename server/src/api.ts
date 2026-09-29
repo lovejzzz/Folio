@@ -1,3 +1,5 @@
+import { proxyMessages } from './ai';
+import { grantFree, MILLI, statement } from './credits';
 import { listCourses, MAX_COURSE_BYTES, readCourse, removeAccount, removeCourse, writeCourse, type CourseMeta } from './courses';
 import { SignInError, verifyIdToken } from './google';
 import { clearCookie, endSession, setCookie, startSession, userOf } from './sessions';
@@ -25,6 +27,13 @@ function meta(request: Request): CourseMeta | null {
   }
 }
 
+/** The caller's network address, hashed: counted for the free credits, never kept as it is. */
+async function addressHash(request: Request): Promise<string> {
+  const address = request.headers.get('cf-connecting-ip') ?? 'unknown';
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`folio-free:${address}`));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function signIn(request: Request, env: Env, fetchImpl?: typeof fetch): Promise<Response> {
   const body = (await request.json().catch(() => null)) as { idToken?: unknown; nonce?: unknown } | null;
   if (typeof body?.idToken !== 'string' || typeof body.nonce !== 'string') return problem(400, 'bad-request');
@@ -32,6 +41,8 @@ async function signIn(request: Request, env: Env, fetchImpl?: typeof fetch): Pro
     const who = await verifyIdToken(body.idToken, { clientId: env.VITE_GOOGLE_CLIENT_ID, nonce: body.nonce, fetchImpl });
     const user: User = { id: who.sub, email: who.email, name: who.name };
     const token = await startSession(env.DB, user);
+    // The first sign-in brings the free credits, within the limits that keep them from being farmed.
+    await grantFree(env.DB, user.id, await addressHash(request));
     return json({ user }, 200, { 'set-cookie': setCookie(token) });
   } catch (error) {
     if (error instanceof SignInError) return problem(401, 'sign-in-failed', { detail: error.message });
@@ -64,8 +75,25 @@ async function course(request: Request, env: Env, user: User, id: string): Promi
   return problem(405, 'method');
 }
 
-/** Route one request under /api. `fetchImpl` reaches Google's keys (tests pass their own). */
-export async function handle(request: Request, env: Env, fetchImpl?: typeof fetch): Promise<Response> {
+/** The balance, in credits, with what was added lately and what was spent in the last 30 days. */
+async function credits(request: Request, env: Env, user: User): Promise<Response> {
+  // Accounts from before credits began get their free ones the first time they look (once, as at sign-in).
+  if (env.ANTHROPIC_API_KEY) await grantFree(env.DB, user.id, await addressHash(request));
+  const s = await statement(env.DB, user.id);
+  const c = (milli: number) => Math.floor(milli / MILLI);
+  return json({
+    available: Boolean(env.ANTHROPIC_API_KEY),
+    balance: c(s.balance),
+    spent30: c(s.spent30),
+    added: s.added.map((r) => ({ kind: r.kind, credits: c(r.amount), detail: r.detail, at: new Date(r.created_at).toISOString() })),
+  });
+}
+
+/**
+ * Route one request under /api. `fetchImpl` reaches Google's keys and Anthropic (tests pass their own);
+ * `waitUntil` keeps work going after the answer is sent, as settling a streamed call does.
+ */
+export async function handle(request: Request, env: Env, fetchImpl?: typeof fetch, waitUntil: (p: Promise<unknown>) => void = () => {}): Promise<Response> {
   const url = new URL(request.url);
   const path = url.pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean);
   const changing = request.method !== 'GET' && request.method !== 'HEAD';
@@ -82,6 +110,9 @@ export async function handle(request: Request, env: Env, fetchImpl?: typeof fetc
   const user = await userOf(env.DB, request);
   if (!user) return problem(401, 'signed-out');
   if (path[0] === 'courses' && path.length === 1 && request.method === 'GET') return json({ courses: await listCourses(env.DB, user.id) });
+  if (path[0] === 'credits' && path.length === 1 && request.method === 'GET') return credits(request, env, user);
+  // Anthropic's Messages API, as the page's SDK calls it with Folio credits ("…/api/ai/v1/messages?beta=true").
+  if (path.join('/') === 'ai/v1/messages' && request.method === 'POST') return proxyMessages(request, env, user, waitUntil, fetchImpl);
   if (path[0] === 'courses' && path.length === 2) return course(request, env, user, path[1]!);
   if (path[0] === 'account' && path.length === 1 && request.method === 'DELETE') {
     await removeAccount(env.DB, user.id);

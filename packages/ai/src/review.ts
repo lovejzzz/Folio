@@ -21,7 +21,7 @@ const line = z.string().min(1);
  * wrong (about $0.04 a lesson); asked only for what it was sure of, it had found under half. Other providers
  * haven't been tried with a review, so their plans go out as written.
  */
-export const REVIEW_MODELS: Partial<Record<ProviderId, string>> = { anthropic: 'claude-opus-5-5' };
+export const REVIEW_MODELS: Partial<Record<ProviderId, string>> = { anthropic: 'claude-opus-5-5', folio: 'claude-opus-5-5' };
 
 /** The reviewer's settings: the teacher's own key and provider, with the review model. Null when the plan goes out as written. */
 export function reviewerSettings(settings: ModelSettings): ModelSettings | null {

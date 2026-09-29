@@ -16,6 +16,7 @@ function mapError(error: unknown): InferenceError {
   if (error instanceof Anthropic.AuthenticationError || error instanceof Anthropic.PermissionDeniedError) {
     return new InferenceError('auth', error.message);
   }
+  if (error instanceof Anthropic.APIError && error.status === 402) return new InferenceError('credits', error.message);
   if (error instanceof Anthropic.RateLimitError) return new InferenceError('rate', error.message);
   if (error instanceof Anthropic.InternalServerError) return new InferenceError('server', error.message);
   if (error instanceof Anthropic.APIConnectionError) return new InferenceError('network', error.message);
@@ -61,17 +62,23 @@ async function send(client: Anthropic, body: ReturnType<typeof requestBody>, req
   return stream.finalMessage();
 }
 
-/** Bring-your-own-key Claude. The request goes straight from this browser to Anthropic. */
+/**
+ * Claude. With the teacher's own key the request goes straight from this browser to Anthropic; with Folio
+ * credits it goes to Folio's server (settings.baseUrl), which sends it on with Folio's key and charges the
+ * signed-in teacher's balance: the same request either way.
+ */
 export function anthropicInference(settings: ModelSettings, fetchImpl?: typeof fetch, onUsage?: OnUsage): Inference {
+  const viaFolio = settings.provider === 'folio';
   const client = new Anthropic({
-    apiKey: settings.apiKey,
+    apiKey: viaFolio ? 'folio-credits' : settings.apiKey,
     dangerouslyAllowBrowser: true,
     maxRetries: 2,
+    ...(viaFolio ? { baseURL: settings.baseUrl, defaultHeaders: { 'x-folio': '1' } } : {}),
     ...(fetchImpl ? { fetch: fetchImpl } : {}),
   });
   const model = settings.model;
   return {
-    provider: 'anthropic',
+    provider: settings.provider,
     model,
     async complete(request: CompletionRequest) {
       try {
@@ -80,7 +87,7 @@ export function anthropicInference(settings: ModelSettings, fetchImpl?: typeof f
         const u = response.usage as typeof response.usage | undefined;
         if (u) {
           onUsage?.({
-            provider: 'anthropic',
+            provider: settings.provider,
             model: response.model || model,
             input: u.input_tokens ?? 0,
             output: u.output_tokens ?? 0,

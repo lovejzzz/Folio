@@ -704,8 +704,9 @@ export const en = {
   settings: {
     title: 'Settings',
     ai: 'AI',
-    aiLede: 'Folio writes with an AI you choose, and tells you what each course cost when it’s done. Your key stays in this browser and goes straight to the AI company.',
+    aiLede: 'Folio writes with Folio credits, or with an AI key of your own. Your key stays in this browser and goes straight to the AI company; either way, Folio tells you what each course used.',
     providers: {
+      folio: { name: 'Use Folio credits', short: 'Folio credits', note: 'No key needed: sign in with Google. New accounts get 750 free credits, about a 15-lesson course.' },
       anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use, and Claude Opus 5.5 checks each lesson plan before the rest is written.' },
       openai: { name: 'Use my OpenAI key', short: 'your OpenAI key', note: 'OpenAI. You pay per use.' },
       google: { name: 'Use my Gemini key', short: 'your Gemini key', note: 'Google. You pay per use. The free tier allows too few requests to write a whole course.' },
@@ -753,6 +754,7 @@ export const en = {
     step1: 'Choose a provider',
     step2: 'Paste your key',
     step2Local: 'Check the server address',
+    step2Folio: 'Sign in',
     step3: 'Check it works',
     connectAndContinue: 'Connect and continue',
     orSample: 'Just looking? Open the sample course instead.',
@@ -767,6 +769,8 @@ export const en = {
   },
   errors: {
     config: 'No AI is set up yet. Add one in Settings.',
+    credits: 'Your Folio credits have run out. Buy more in Settings, or use your own key.',
+    folioSignedOut: 'Sign in again to use your Folio credits.',
     auth: 'The AI service didn’t accept the key. Check that it was copied in full.',
     rate: 'The AI service is busy or your limit was reached. Wait a moment and try again.',
     network: 'Folio couldn’t reach the AI service. Check your connection.',

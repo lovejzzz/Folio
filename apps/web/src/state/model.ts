@@ -2,10 +2,12 @@ import { createInference, isConfigured, reviewerSettings, type Inference, type I
 import { currentMessages } from '../i18n';
 import { modelSettings, usePrefs } from './prefs';
 import { toast } from './toasts';
+import { useAccount } from './account';
 
 /** The configured model, or null if none is set up yet. `onUsage` hears the tokens of every call. */
 export function currentInference(onUsage?: OnUsage): Inference | null {
   const settings = modelSettings(usePrefs.getState());
+  if (settings?.provider === 'folio' && !useAccount.getState().user) return null;
   return isConfigured(settings) ? createInference(settings, undefined, onUsage) : null;
 }
 
@@ -39,6 +41,8 @@ export function errorMessage(error: unknown, provider: ProviderId | null = usePr
   if (!error || typeof error !== 'object' || !('kind' in error)) return t.errors.generic;
   const kind = (error as InferenceError).kind;
   if (provider === 'local' && (kind === 'auth' || kind === 'network')) return t.errors.local[kind];
+  // With Folio credits there is no key of the teacher's to blame: a refusal means the sign-in has lapsed.
+  if (provider === 'folio' && kind === 'auth') return t.errors.folioSignedOut;
   if (kind === 'network' && isOffline()) return t.errors.offlineAction;
   return t.errors[kind] ?? t.errors.generic;
 }

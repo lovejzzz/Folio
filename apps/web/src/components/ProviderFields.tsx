@@ -1,7 +1,10 @@
 import { PROVIDERS, type ProviderId } from '@folio/ai';
-import { IconButton, TextField, cx } from '@folio/ui';
+import { Button, IconButton, TextField, cx } from '@folio/ui';
 import { CircleHelp } from 'lucide-react';
+import { useEffect } from 'react';
 import { Radio, RadioGroup } from 'react-aria-components';
+import { readHint, signIn, useAccount } from '../state/account';
+import { creditsText, refreshCredits, useCredits } from '../state/credits';
 import { useT, type Messages } from '../i18n';
 import { usePrefs } from '../state/prefs';
 import { ModelPicker } from './ModelPicker';
@@ -55,19 +58,48 @@ export function ProviderChoice({ value, onChange, compact }: { value: ProviderId
 
 /** A cloud provider is ready to use once it has a key; a local server once a connection test passes. */
 export function hasKey(provider: ProviderId): boolean {
-  return provider !== 'local' && Boolean(usePrefs.getState().keys[provider]?.trim());
+  return provider !== 'local' && provider !== 'folio' && Boolean(usePrefs.getState().keys[provider]?.trim());
 }
 
 /** What still has to be filled in before a provider can be tried, or null. */
 export function missingSetup(provider: ProviderId, t: Messages): string | null {
+  if (provider === 'folio') return readHint() ? null : creditsText.signInFirst;
   if (provider === 'local') return usePrefs.getState().localUrl.trim() ? null : t.settings.addressFirst;
   return hasKey(provider) ? null : t.settings.keyFirst;
+}
+
+/** Folio credits: no key, a Google sign-in; then the balance, and how far it goes. */
+function FolioFields() {
+  const user = useAccount((s) => s.user);
+  const { balance, available } = useCredits();
+  useEffect(() => {
+    if (user) void refreshCredits();
+  }, [user]);
+  if (!user) {
+    return (
+      <div className="space-y-3">
+        <p className="font-ui text-13 leading-relaxed text-ink-2">{creditsText.signInToStart}</p>
+        <Button variant="primary" onPress={signIn}>
+          {creditsText.signIn}
+        </Button>
+      </div>
+    );
+  }
+  if (!available) return <p className="font-ui text-13 text-ink-2">{creditsText.unavailable}</p>;
+  return (
+    <div className="space-y-2">
+      <p className="font-ui text-14 font-medium text-ink">{balance === null ? '…' : creditsText.youHave(balance)}</p>
+      <p className="font-ui text-13 leading-relaxed text-ink-2">{creditsText.how}</p>
+      <p className="font-ui text-13 text-ink-2">{creditsText.buySoon}</p>
+    </div>
+  );
 }
 
 /** The key (or server address) and model for one provider, saved as you type. */
 export function ProviderFields({ provider, showModel = true, onKey }: { provider: ProviderId; showModel?: boolean; onKey?: (key: string) => void }) {
   const t = useT();
   const { keys, localUrl, set } = usePrefs();
+  if (provider === 'folio') return <FolioFields />;
   return (
     <div className="space-y-3">
       {provider === 'local' ? (

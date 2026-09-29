@@ -28,7 +28,8 @@ const BUILT_IN: Partial<Record<ProviderId, Record<string, [number, number, numbe
 };
 
 const PRICE_LIST = 'https://openrouter.ai/api/v1/models';
-const VENDOR: Partial<Record<ProviderId, string>> = { anthropic: 'anthropic', openai: 'openai', google: 'google', deepseek: 'deepseek' };
+// Folio credits are Claude, priced as Anthropic prices it (Folio's markup is added on top, as credits).
+const VENDOR: Partial<Record<ProviderId, string>> = { folio: 'anthropic', anthropic: 'anthropic', openai: 'openai', google: 'google', deepseek: 'deepseek' };
 
 /** "claude-opus-5-5" and "anthropic/claude-opus-5.5" name the same model; dated snapshots price as their family. */
 export function modelKey(model: string): string {
@@ -73,7 +74,7 @@ export async function fetchLivePrices(fetchImpl: typeof fetch = fetch, timeoutMs
 }
 
 function builtInPrice(provider: ProviderId, model: string): Price | null {
-  const row = BUILT_IN[provider]?.[modelKey(model)];
+  const row = BUILT_IN[provider === 'folio' ? 'anthropic' : provider]?.[modelKey(model)];
   return row ? { input: row[0] / 1e6, output: row[1] / 1e6, cacheRead: row[2] / 1e6, cacheWrite: row[3] / 1e6 } : null;
 }
 

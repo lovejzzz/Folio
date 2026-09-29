@@ -6,10 +6,11 @@ import type { z } from 'zod';
  * repair happen above this line, the same way for every provider.
  */
 
-export type ProviderId = 'anthropic' | 'openai' | 'google' | 'deepseek' | 'local';
+/** 'folio': Folio credits, Claude through Folio's own server, paid by the teacher's balance, no key of their own. */
+export type ProviderId = 'folio' | 'anthropic' | 'openai' | 'google' | 'deepseek' | 'local';
 
 /** In the order the settings list them. */
-export const PROVIDERS: readonly ProviderId[] = ['anthropic', 'openai', 'google', 'deepseek', 'local'];
+export const PROVIDERS: readonly ProviderId[] = ['folio', 'anthropic', 'openai', 'google', 'deepseek', 'local'];
 
 export interface ModelSettings {
   provider: ProviderId;
@@ -20,6 +21,7 @@ export interface ModelSettings {
 }
 
 export const DEFAULT_MODELS: Record<ProviderId, string> = {
+  folio: 'claude-sonnet-5-5',
   anthropic: 'claude-sonnet-5-5',
   openai: 'gpt-6-sol',
   google: 'gemini-3.8-flash',
@@ -31,6 +33,8 @@ export const DEFAULT_MODELS: Record<ProviderId, string> = {
 export function isConfigured(settings: ModelSettings | null | undefined): settings is ModelSettings {
   if (!settings || !settings.model.trim()) return false;
   if (settings.provider === 'local') return Boolean(settings.baseUrl.trim());
+  // Folio credits need no key: the server holds one, and the page's sign-in says whose balance pays.
+  if (settings.provider === 'folio') return true;
   return Boolean(settings.apiKey.trim());
 }
 
@@ -92,7 +96,9 @@ export type InferenceErrorKind =
   | 'server'
   | 'refused'
   | 'invalid'
-  | 'aborted';
+  | 'aborted'
+  /** Folio credits have run out. */
+  | 'credits';
 
 export class InferenceError extends Error {
   constructor(

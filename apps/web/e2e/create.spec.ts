@@ -12,6 +12,8 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   // No model yet: the guided key setup appears.
   const dialog = page.getByRole('dialog', { name: 'Connect an AI' });
   await expect(dialog).toBeVisible();
+  // Folio credits are offered first; this teacher brings their own key.
+  await dialog.getByText('Use my Claude key').click();
   await dialog.getByLabel('API key').fill('sk-ant-test');
   await dialog.getByRole('button', { name: 'Connect and continue' }).click();
 

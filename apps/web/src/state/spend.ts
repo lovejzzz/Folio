@@ -25,5 +25,10 @@ export async function costSentence(usages: readonly Usage[]): Promise<string> {
   const cost = await priceUsage(usages);
   if (cost.unpriced === usages.length) return '';
   const t = currentMessages();
+  // Folio credits: what the call cost at the model's price, as the credits Folio charges for it.
+  if (usages.every((u) => u.provider === 'folio')) {
+    const { creditsFor, creditsText } = await import('./credits');
+    return creditsText.used(creditsFor(cost.usd));
+  }
   return t.build.cost(cost.usd, cost.source === 'live');
 }

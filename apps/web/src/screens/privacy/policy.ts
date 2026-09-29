@@ -9,11 +9,15 @@ export const policy = {
     },
     {
       heading: 'If you sign in',
-      body: 'Signing in is optional and uses your Google account. Folio receives your name, your email address and Google’s ID for your account, and nothing else from Google. It keeps the courses you choose to put in your account (their content, sources and edit history) on Folio’s servers, run by Cloudflare, so they are on any device you sign in on. Your AI key is never sent to Folio: it stays in each browser. A session cookie keeps you signed in; it is used for nothing else. Signing out removes your account’s courses from that browser; they stay in your account. Deleting your account in Settings deletes it and every course in it from Folio’s servers.',
+      body: 'Signing in is optional and uses your Google account. Folio receives your name, your email address and Google’s ID for your account, and nothing else from Google. It keeps the courses you choose to put in your account (their content, sources and edit history) on Folio’s servers, run by Cloudflare, so they are on any device you sign in on. If you write with your own AI key, it is never sent to Folio: it stays in each browser. A session cookie keeps you signed in; it is used for nothing else. Signing out removes your account’s courses from that browser; they stay in your account. Deleting your account in Settings deletes it and every course in it from Folio’s servers.',
     },
     {
       heading: 'Your AI key',
       body: 'The key you enter is kept only in this browser. When Folio writes, your browser sends your course description, the files you attach and the key straight to the AI company you chose (Anthropic, OpenAI, Google or DeepSeek), or to a model on your own computer. That company’s privacy policy covers the request. Folio never receives it.',
+    },
+    {
+      heading: 'Folio credits',
+      body: 'If you write with Folio credits instead of your own key, your browser sends each request (your course description, the files you attach and the course so far) to Folio’s server, which passes it to Anthropic with Folio’s key and returns the answer. Folio doesn’t keep the requests or answers: it records only how many tokens each one used, to take its cost from your credits. Anthropic’s commercial terms apply to the request, and Anthropic doesn’t train its models on it. Your balance, the free credits you were given and any credits you bought are kept with your account.',
     },
     {
       heading: 'Google Drive',
@@ -25,7 +29,7 @@ export const policy = {
     },
     {
       heading: 'What a course cost',
-      body: 'To tell you what a course cost, Folio counts the tokens the AI company reports for each request and prices them with the public list at openrouter.ai, read when the course is finished. That request carries nothing about you or your course.',
+      body: 'To tell you what a course cost, or how many credits it used, Folio counts the tokens the AI company reports for each request and prices them with the public list at openrouter.ai, read when the course is finished. That request carries nothing about you or your course.',
     },
     {
       heading: 'What we don’t do',

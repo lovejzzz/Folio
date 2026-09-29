@@ -202,6 +202,8 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   useBuild.setState({ running: false, stopping: false, controller: null, cells: errorsOnly });
   // A key problem says only what to fix; otherwise the teacher hears what the run cost.
   const cost = summary.fatal && summary.fatal.kind !== 'aborted' ? '' : await costSentence(usages).catch(() => '');
+  // Paid with Folio credits: the balance shown anywhere catches up with what the build used.
+  if (usages.some((u) => u.provider === 'folio')) void import('./credits').then((m) => m.refreshCredits());
   finishToast(summary, cost);
   switchedFrom = null;
 }

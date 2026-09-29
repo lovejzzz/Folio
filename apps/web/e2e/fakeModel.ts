@@ -136,11 +136,14 @@ function answerFor(body: Body): unknown {
 export interface FakeModelOptions {
   delayMs?: number;
   status?: number;
+  /** Answer at Folio's own server (Folio credits) instead of at Anthropic. */
+  viaFolio?: boolean;
 }
 
 export async function fakeAnthropic(page: Page, options: FakeModelOptions = {}): Promise<{ calls: Body[] }> {
   const calls: Body[] = [];
-  await page.route('https://api.anthropic.com/**', async (route: Route) => {
+  // Folio credits send the same request to Folio's server, which the test plays too.
+  await page.route(options.viaFolio ? '**/api/ai/v1/messages**' : 'https://api.anthropic.com/**', async (route: Route) => {
     if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors() });
     const body = route.request().postDataJSON() as Body;
     calls.push(body);

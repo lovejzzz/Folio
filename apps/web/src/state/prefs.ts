@@ -1,5 +1,6 @@
 import { DEFAULT_LOCAL_URL, DEFAULT_MODELS, PROVIDERS, isConfigured, type ModelSettings, type ProviderId } from '@folio/ai';
 import { create } from 'zustand';
+import { readHint } from './account';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type Theme = 'system' | 'light' | 'dark';
@@ -85,13 +86,15 @@ export function modelSettings(p: Pick<Prefs, 'provider' | 'keys' | 'models' | 'l
     provider,
     apiKey: p.keys[provider] ?? '',
     model: p.models[provider] || DEFAULT_MODELS[provider],
-    baseUrl: p.localUrl,
+    // Folio credits go to Folio's own server, which sends the call on to Anthropic.
+    baseUrl: provider === 'folio' ? `${typeof location === 'undefined' ? '' : location.origin}/api/ai` : p.localUrl,
   };
 }
 
-/** Is a model set up? Answered from preferences alone, without loading any SDK. */
+/** Is a model set up? Answered from preferences alone, without loading any SDK. Folio credits need a sign-in. */
 export function hasModel(): boolean {
-  return isConfigured(modelSettings(usePrefs.getState()));
+  const settings = modelSettings(usePrefs.getState());
+  return isConfigured(settings) && (settings.provider !== 'folio' || readHint() !== null);
 }
 
 /** A screen that must look one way (the print view is paper) pins the theme while it is open. */
