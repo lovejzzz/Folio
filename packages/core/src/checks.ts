@@ -56,7 +56,10 @@ function checkNumeric(q: DraftQuestion): Flag[] {
   const computed = evaluate(q.expression);
   if (computed === null) return [];
   const tolerance = Math.max(1e-6, Math.abs(computed) * 0.005);
-  if (Math.abs(computed - stated) > tolerance) {
+  // "1.7" for 5 ÷ 3 is the answer given to one decimal place, not a wrong one.
+  const places = q.answer.replace(/,/g, '').match(/\.(\d+)/)?.[1]?.length ?? 0;
+  const rounded = places > 0 && Math.abs(Math.round(computed * 10 ** places) / 10 ** places - stated) < 1e-9;
+  if (!rounded && Math.abs(computed - stated) > tolerance) {
     return [{ code: 'answerMismatch', values: { stated: q.answer.trim(), computed: round(computed) } }];
   }
   return [];

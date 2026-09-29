@@ -13,6 +13,13 @@ describe('checkQuestion', () => {
     expect(checkQuestion(q)).toEqual([{ code: 'answerMismatch', values: { stated: '7', computed: '6' } }]);
     expect(checkQuestion({ ...q, answer: '6' })).toEqual([]);
   });
+  it('accepts an answer rounded to the places it is given to, and no further', () => {
+    const q = { format: 'numeric' as const, prompt: 'Ratio, to one decimal place?', choices: [], answer: '1.7', expression: '5/3' };
+    expect(checkQuestion(q)).toEqual([]);
+    expect(checkQuestion({ ...q, answer: '1.67' })).toEqual([]);
+    expect(checkQuestion({ ...q, answer: '1.6' })).toEqual([{ code: 'answerMismatch', values: { stated: '1.6', computed: '1.667' } }]);
+    expect(checkQuestion({ ...q, answer: '2' })).toEqual([{ code: 'answerMismatch', values: { stated: '2', computed: '1.667' } }]);
+  });
 });
 
 describe('describeFlag', () => {

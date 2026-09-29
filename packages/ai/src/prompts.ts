@@ -6,7 +6,7 @@ import type { Effort } from './inference';
  * the exact wording. Prompts are written as plain guidance, not rule lists.
  */
 
-export const PROMPT_VERSION = 'folio-prompts@13';
+export const PROMPT_VERSION = 'folio-prompts@14';
 
 const SOURCE_BUDGET = 12000;
 
@@ -246,6 +246,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
       `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need. Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
       'Plan only what can really happen in the time, place and with the materials the lesson has. Whatever students are to see, make or finish in a segment has to be possible within that segment\'s minutes; when something takes longer, such as a process that needs hours or days to show a result, plan around it (start it earlier, use results prepared in advance, or come back to it later) and say how in the teacher notes. The slides, quiz and study guide are written from this plan and take everything in it as having happened.',
       'When a segment uses another of the lesson\'s materials, such as the quiz, the slides or the assignment, say what students do with it, not what its questions or items will be: those are written separately, from this plan.',
+      'When a segment gives students a set of items to work on that no other material holds, such as statements to sort, scenarios to classify, cases to match or data to read, write every item out in the teacher notes, one per line with its expected answer, however many there are; the word limit is for the rest of the notes. Keep such a set to what fits the minutes, usually four to six items. Never describe items that are left for the teacher to write.',
     ].join(' '),
   slides: (c) =>
     ['Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes.', slidesFor(c)].filter(Boolean).join(' '),
