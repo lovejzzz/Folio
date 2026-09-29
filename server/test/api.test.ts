@@ -95,7 +95,10 @@ describe('courses in an account', () => {
     const cookie = await signIn();
     const big = new Uint8Array(CHUNK * 2 + 1234).map((_, i) => i % 251);
     await put(cookie, 'c_big', 0, big);
-    expect(new Uint8Array(await (await call('courses/c_big', { cookie })).arrayBuffer())).toEqual(big);
+    const got = new Uint8Array(await (await call('courses/c_big', { cookie })).arrayBuffer());
+    // Compared as bytes: an element-by-element toEqual on 1.8 MB took seconds, and timed out on CI.
+    expect(got.length).toBe(big.length);
+    expect(Buffer.compare(Buffer.from(got), Buffer.from(big))).toBe(0);
   });
 
   it('are deleted with a marker the other devices see', async () => {
