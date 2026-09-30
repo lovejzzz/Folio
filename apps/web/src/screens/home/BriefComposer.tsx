@@ -1,7 +1,7 @@
 import { Button, IconButton, cx } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, FileText, Paperclip, X } from 'lucide-react';
-import { useId, useRef, useState, type DragEvent } from 'react';
+import { lazy, Suspense, useId, useRef, useState, type DragEvent } from 'react';
 import { useT } from '../../i18n';
 import { setBrief, setFiles, useDraft } from '../../state/draft';
 import { hasModel } from '../../state/prefs';
@@ -9,6 +9,9 @@ import { toast } from '../../state/toasts';
 import { useUi } from '../../state/ui';
 import { LessonsChip, LevelChip } from './Chips';
 import { asksForSources } from './sourceHint';
+
+/** Only for a teacher writing with Folio credits: loaded apart so the first page stays small. */
+const CreditsLeft = lazy(() => import('./CreditsLeft').then((m) => ({ default: m.CreditsLeft })));
 
 function useAttach() {
   return async (files: FileList | File[]) => {
@@ -60,10 +63,15 @@ function ComposerBar({ onPick, onGo }: { onPick: () => void; onGo: () => void })
       <IconButton label={t.home.attach} onPress={onPick}>
         <Paperclip size={17} strokeWidth={1.5} />
       </IconButton>
-      <Button variant="primary" size="lg" className="ml-auto h-10 pl-5 pr-4" onPress={onGo}>
-        {t.home.continue}
-        <ArrowRight size={17} strokeWidth={1.75} aria-hidden />
-      </Button>
+      <div className="ml-auto flex items-center gap-4">
+        <Suspense fallback={null}>
+          <CreditsLeft />
+        </Suspense>
+        <Button variant="primary" size="lg" className="h-10 pl-5 pr-4" onPress={onGo}>
+          {t.home.continue}
+          <ArrowRight size={17} strokeWidth={1.75} aria-hidden />
+        </Button>
+      </div>
     </div>
   );
 }

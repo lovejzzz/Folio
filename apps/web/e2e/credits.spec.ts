@@ -60,9 +60,18 @@ test('a teacher buys more credits on Stripe’s page, and sees them when they co
   await page.goto('/');
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.getByRole('button', { name: 'Account: ada@example.edu' }).waitFor();
-  await page.goto('/settings');
+  // Beside Continue: 12 credits won't write four lessons, so the home page leads to the packs.
+  await expect(page.getByText('Not enough credits')).toBeVisible();
+  await page.getByRole('link', { name: 'Add credits' }).click();
+  await expect(page).toHaveURL(/\/settings#credits$/);
   await expect(page.getByText('You have 12 credits.')).toBeVisible();
-  await page.getByRole('button', { name: '$25 · 2,750 credits' }).click();
+  // The more you add, the more bonus credits come with it.
+  await expect(page.getByRole('button', { name: '$10 for 1,000 credits' })).toBeVisible();
+  await expect(page.getByText('+250 bonus')).toBeVisible();
+  await expect(page.getByText('+10%')).toBeVisible();
+  await expect(page.getByText('+1,000 bonus')).toBeVisible();
+  await expect(page.getByText('+20%')).toBeVisible();
+  await page.getByRole('button', { name: '$25 for 2,750 credits, including 250 bonus' }).click();
   await expect(page.getByRole('heading', { name: 'Stripe Checkout' })).toBeVisible();
   expect(page.url()).toContain('/c/pay/p25');
 
@@ -72,6 +81,8 @@ test('a teacher buys more credits on Stripe’s page, and sees them when they co
   await expect(page.getByText(/Thank you\. Your credits are added/)).toBeVisible();
   await expect(page.getByText('You have 2,762 credits.')).toBeVisible();
   expect(page.url()).not.toContain('purchase=');
+  await page.goto('/');
+  await expect(page.getByText('2,762 credits left')).toBeVisible();
 });
 
 test('in Settings, a signed-in teacher switches from their own key to Folio credits in one click', async ({ page }) => {

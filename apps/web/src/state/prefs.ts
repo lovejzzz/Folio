@@ -72,7 +72,8 @@ export const usePrefs = create<Prefs>()(
       railCollapsed: false,
       keys: {},
       models: {},
-      provider: null,
+      // New visitors write with Folio credits unless they choose a key of their own.
+      provider: 'folio',
       localUrl: DEFAULT_LOCAL_URL,
       set: (patch) => set(patch),
     }),

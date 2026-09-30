@@ -63,9 +63,16 @@ export async function afterPurchase(): Promise<void> {
   }
 }
 
+/** Credits a dollar buys in the smallest pack; the larger packs add bonus credits on top. */
+const BASE_RATE = 100;
+export const bonusOf = (p: Pack) => Math.max(0, p.credits - p.usd * BASE_RATE);
+
 export const creditsText = {
   used: (n: number) => (n <= 1 ? 'That used about 1 credit.' : `That used about ${n.toLocaleString('en-US')} credits.`),
   balance: (n: number) => `${n.toLocaleString('en-US')} credits`,
+  left: (n: number) => `${n.toLocaleString('en-US')} credits left`,
+  notEnough: 'Not enough credits',
+  addCredits: 'Add credits',
   youHave: (n: number) => `You have ${n.toLocaleString('en-US')} credits.`,
   signInToStart: 'Sign in with Google to start. Sign in with a school email (ending in .edu) and you get 750 free credits, about a 15-lesson course with every material.',
   notSchool: 'Free credits come with school email addresses, ending in .edu. Buy credits below, or use your own AI key.',
@@ -73,8 +80,11 @@ export const creditsText = {
   how: 'Claude Sonnet 5.5 writes, and Claude Opus 5.5 checks each lesson plan. A lesson with every material uses about 45 credits.',
   buy: 'Buy credits',
   buySoon: 'Buying more credits opens soon.',
-  pack: (p: Pack) => `$${p.usd} · ${p.credits.toLocaleString('en-US')} credits`,
-  packHint: 'Paid on Stripe’s page. Credits don’t expire and aren’t refundable.',
+  pack: (p: Pack) => `$${p.usd} for ${p.credits.toLocaleString('en-US')} credits${bonusOf(p) ? `, including ${bonusOf(p).toLocaleString('en-US')} bonus` : ''}`,
+  packCredits: (p: Pack) => `${p.credits.toLocaleString('en-US')} credits`,
+  packBonus: (p: Pack) => (bonusOf(p) ? `+${bonusOf(p).toLocaleString('en-US')} bonus` : 'Standard rate'),
+  packMore: (p: Pack) => `+${Math.round((bonusOf(p) / (p.usd * BASE_RATE)) * 100)}%`,
+  packHint: 'The more you add, the more bonus credits come with it. Paid on Stripe’s page; credits don’t expire and aren’t refundable.',
   terms: 'Terms and refunds',
   lostOnDelete: (n: number) => `This account still has ${n.toLocaleString('en-US')} Folio credits. Deleting it ends them: they can’t be restored or refunded.`,
   buyFailed: 'The payment page didn’t open. Try again in a moment.',

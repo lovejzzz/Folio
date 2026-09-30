@@ -4,10 +4,10 @@ import { CircleHelp } from 'lucide-react';
 import { useEffect } from 'react';
 import { Radio, RadioGroup } from 'react-aria-components';
 import { readHint, signIn, useAccount } from '../state/account';
-import { buy, creditsText, refreshCredits, useCredits } from '../state/credits';
-import { toast } from '../state/toasts';
+import { creditsText, refreshCredits, useCredits } from '../state/credits';
 import { useT, type Messages } from '../i18n';
 import { usePrefs } from '../state/prefs';
+import { BuyCredits } from './BuyCredits';
 import { ModelPicker } from './ModelPicker';
 
 /** Where each provider makes and lists API keys: the "?" beside the key field goes straight there. */
@@ -92,30 +92,6 @@ function FolioFields() {
       <p className="font-ui text-14 font-medium text-ink">{balance === null ? '…' : creditsText.youHave(balance)}</p>
       <p className="font-ui text-13 leading-relaxed text-ink-2">{balance === 0 && !school ? creditsText.notSchool : creditsText.how}</p>
       <BuyCredits />
-    </div>
-  );
-}
-
-/** The packs, each a button to Stripe's payment page. */
-function BuyCredits() {
-  const packs = useCredits((s) => s.packs);
-  if (!packs.length) return <p className="font-ui text-13 text-ink-2">{creditsText.buySoon}</p>;
-  return (
-    <div className="pt-1">
-      <p className="mb-2 font-ui text-13 font-medium text-ink">{creditsText.buy}</p>
-      <div className="flex flex-wrap gap-2">
-        {packs.map((p) => (
-          <Button key={p.id} onPress={() => void buy(p.id).then((ok) => ok || toast({ message: creditsText.buyFailed, tone: 'critical' }))}>
-            {creditsText.pack(p)}
-          </Button>
-        ))}
-      </div>
-      <p className="mt-2 font-ui text-12 text-ink-2">
-        {creditsText.packHint}{' '}
-        <a href="/terms" target="_blank" rel="noreferrer" className="text-accent underline-offset-4 hover:underline">
-          {creditsText.terms}
-        </a>
-      </p>
     </div>
   );
 }

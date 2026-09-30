@@ -6,9 +6,23 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
 
 test('testing a connection with no key asks for the key, not for Settings', async ({ page }) => {
   await page.goto('/settings');
+  await page.getByRole('radio', { name: /Use my Claude key/ }).click({ force: true });
   await page.getByRole('button', { name: 'Test connection' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Paste a key first.' })).toBeVisible();
   await expect(page.getByText(/Add one in Settings/)).toHaveCount(0);
+});
+
+test('a new visitor starts on Folio credits, and a teacher who chooses their own key keeps it', async ({ page }) => {
+  await page.goto('/settings');
+  await expect(page.getByRole('radio', { name: /Use Folio credits/ })).toBeChecked();
+  await page.getByRole('radio', { name: /Use my Claude key/ }).click({ force: true });
+  await page.getByLabel('API key').fill('sk-ant-test');
+  await page.reload();
+  await expect(page.getByRole('radio', { name: /Use my Claude key/ })).toBeChecked();
+  await expect(page.getByLabel('API key')).toHaveValue('sk-ant-test');
+  // Writing with their own key, the home page shows no credits.
+  await page.goto('/');
+  await expect(page.getByText(/credits left|Not enough credits/)).toHaveCount(0);
 });
 
 test('a provider becomes the one Folio uses only once it has a key', async ({ page }) => {
