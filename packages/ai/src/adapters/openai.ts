@@ -16,7 +16,10 @@ const BASES: Partial<Record<ModelSettings['provider'], string>> = {
   deepseek: 'https://api.deepseek.com',
 };
 
-const NAMES: Partial<Record<ModelSettings['provider'], string>> = { openai: 'OpenAI', deepseek: 'DeepSeek' };
+const NAMES: Partial<Record<ModelSettings['provider'], string>> = { openai: 'OpenAI', deepseek: 'DeepSeek', folio: 'Folio' };
+
+/** OpenAI's reasoning models take an effort; older ones reject it. */
+const reasons = (model: string) => /^(gpt-[5-9]|o\d)/.test(model);
 
 /**
  * DeepSeek thinks at length by default. Jobs Folio runs at medium effort
@@ -53,14 +56,17 @@ function fromOpenAi(u: OpenAiUsage): { input: number; output: number; cacheRead:
  */
 export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch = fetch, onUsage?: OnUsage): Inference {
   const local = settings.provider === 'local';
-  const base = (local ? settings.baseUrl : (BASES[settings.provider] ?? '')).replace(/\/+$/, '');
+  // Folio credits: OpenAI's API as Folio's server passes it on, beside Claude's (settings.baseUrl is /api/ai).
+  const viaFolio = settings.provider === 'folio';
+  const base = (local ? settings.baseUrl : viaFolio ? `${settings.baseUrl}/openai/v1` : (BASES[settings.provider] ?? '')).replace(/\/+$/, '');
   const jsonMode = settings.provider === 'deepseek';
   return {
     provider: settings.provider,
     model: settings.model,
     async complete(request: CompletionRequest) {
       const headers: Record<string, string> = { 'content-type': 'application/json' };
-      if (settings.apiKey) headers.authorization = `Bearer ${settings.apiKey}`;
+      if (viaFolio) headers['x-folio'] = '1';
+      else if (settings.apiKey) headers.authorization = `Bearer ${settings.apiKey}`;
       const schema = z.toJSONSchema(request.schema);
       const schemaNote = jsonMode ? `Answer with one JSON object that matches this JSON Schema:\n${JSON.stringify(schema)}` : '';
       const body = {
@@ -72,6 +78,8 @@ export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch
         // DeepSeek stops at 4K output tokens unless asked for more, and its thinking counts against the cap:
         // a two-hour seminar plan thought for 7K tokens and was cut off at 8K. A runaway at 16K costs two cents.
         ...(jsonMode ? { max_tokens: request.maxTokens ?? 16000, ...deepseekThinking(request.effort) } : {}),
+        // Folio's effort per job, as it asks Claude for it: without it OpenAI thinks at its default for every job.
+        ...(!jsonMode && !local && reasons(settings.model) ? { reasoning_effort: request.effort ?? 'medium' } : {}),
         response_format: jsonMode
           ? { type: 'json_object' }
           : { type: 'json_schema', json_schema: { name: request.task, schema, strict: false } },

@@ -16,12 +16,12 @@ import type { PlanDraft } from './schemas';
 const line = z.string().min(1);
 
 /**
- * Who reviews the plans, per provider. For Claude, Opus 5.5 at medium effort, asked to find every problem,
- * found all 13 serious errors a stronger judge confirmed in 33 Sonnet 5.5 plans, and made no fix that was
- * wrong (about $0.04 a lesson); asked only for what it was sure of, it had found under half. Other providers
- * haven't been tried with a review, so their plans go out as written.
+ * Who reviews the plans, per provider. For the teacher's own Claude key, Opus 5.5 at medium effort, asked to
+ * find every problem (about $0.04 a lesson); asked only for what it was sure of, it had found under half. With
+ * Folio credits, GPT-6.1 Sol at low effort, which found more of the real problems for less (see adapters/mix.ts).
+ * Other providers haven't been tried with a review, so their plans go out as written.
  */
-export const REVIEW_MODELS: Partial<Record<ProviderId, string>> = { anthropic: 'claude-opus-5-5', folio: 'claude-opus-5-5' };
+export const REVIEW_MODELS: Partial<Record<ProviderId, string>> = { anthropic: 'claude-opus-5-5', folio: 'gpt-6.1-sol' };
 
 /** The reviewer's settings: the teacher's own key and provider, with the review model. Null when the plan goes out as written. */
 export function reviewerSettings(settings: ModelSettings): ModelSettings | null {
@@ -69,6 +69,8 @@ export function planReviewPrompt(course: Course, lesson: Lesson, plan: PlanDraft
       'and check each segment against the others and against its notes: a step that a later segment or an answer key depends on must be there, an answer key must match its task, and a note must not contradict the description or a rule the plan sets.',
       'Kinds: "fact" (wrong or misleading content), "feasibility" (cannot happen as written), "consistency" (the plan contradicts itself), "level" (clearly wrong for these students).',
       'For each problem, say under "why" what is wrong, briefly, for the teacher. When a small change to a few words fixes it and you are sure of the fix, copy under "find" the exact words that are wrong, character for character and enough of them to appear only once in that field, and give under "replace" what should stand in their place; to add a missing step, find the sentence it belongs after and replace it with that sentence followed by the new one. When the fix needs the teacher\'s judgment or a larger change, leave "find" and "replace" empty: the teacher will see your note.',
+      // Without this line a reviewer lists precision that only matters beyond the students' level: nearly half its findings.
+      'Judge accuracy at the level these students are taught: a simplification that the usual textbooks for this level make, and that is not wrong for these students, is not a problem; do not add precision, qualifications or exceptions that only matter beyond this level.',
       'Do not list style preferences, activities you would add, or timing you would change. Return an empty list if the plan is sound.',
     ].join(' '),
   ].join('\n\n');

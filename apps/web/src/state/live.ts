@@ -95,7 +95,7 @@ export function workingRows(rows: Record<string, LiveRow>): LiveRow[] {
 
 /**
  * What was finished last, latest first; but the last plan the check corrected keeps its place, below, while
- * the rest go by: what Opus caught is the one thing worth reading, and it would otherwise last seconds.
+ * the rest go by: what the check caught is the one thing worth reading, and it would otherwise last seconds.
  */
 export function finishedRows(rows: Record<string, LiveRow>, limit: number): LiveRow[] {
   const finished = Object.values(rows)

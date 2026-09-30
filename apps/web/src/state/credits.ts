@@ -77,7 +77,7 @@ export const creditsText = {
   signInToStart: 'Sign in with Google to start. Sign in with a school email (ending in .edu) and you get 750 free credits, about a 15-lesson course with every material.',
   notSchool: 'Free credits come with school email addresses, ending in .edu. Buy credits below, or use your own AI key.',
   signIn: 'Sign in with Google',
-  how: 'Claude Sonnet 5.5 writes, and Claude Opus 5.5 checks each lesson plan. A lesson with every material uses about 45 credits.',
+  how: 'Claude Sonnet 5.5 writes the plans, slides, study guides, discussions and FAQ; GPT-6 Luna writes the quizzes and assignments; GPT-6.1 Sol checks every lesson plan. Each part uses the model that did it best for the least. A lesson with every material uses about 30 credits.',
   buy: 'Buy credits',
   buySoon: 'Buying more credits opens soon.',
   pack: (p: Pack) => `$${p.usd} for ${p.credits.toLocaleString('en-US')} credits${bonusOf(p) ? `, including ${bonusOf(p).toLocaleString('en-US')} bonus` : ''}`,
@@ -95,10 +95,11 @@ export const creditsText = {
 };
 
 /**
- * Credits a lesson's parts use, measured on a 28-lesson course written with Sonnet 5.5 and checked by Opus 5.5
- * (the plan includes its review and any fixes). Overview and syllabus are built from the rest and cost nothing.
+ * Credits a lesson's parts use with Folio's mix (packages/ai/src/adapters/mix.ts), measured in September 2026:
+ * the plan by Sonnet 5.5 with its check by GPT-6.1 Sol, quizzes and assignments by GPT-6 Luna, the rest by
+ * Sonnet. Rubrics come with the assignments. Overview and syllabus are built from the rest and cost nothing.
  */
-const PER_LESSON: Partial<Record<string, number>> = { plan: 23, slides: 6, quiz: 7, study: 5, faq: 3, discussions: 3, assignments: 3, rubrics: 2 };
+const PER_LESSON: Partial<Record<string, number>> = { plan: 11, slides: 6, quiz: 1, study: 5, faq: 3, discussions: 3, assignments: 1, rubrics: 0 };
 
 /** About how many credits writing these lessons with these materials takes, rounded up to ten. */
 export function estimateCredits(lessons: number, kinds: readonly string[]): number {

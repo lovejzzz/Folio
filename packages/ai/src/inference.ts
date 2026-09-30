@@ -113,6 +113,8 @@ export class InferenceError extends Error {
 
 export function errorFromStatus(status: number, detail: string): InferenceError {
   if (status === 401 || status === 403) return new InferenceError('auth', detail);
+  // Folio's server: the signed-in teacher's credits have run out.
+  if (status === 402) return new InferenceError('credits', detail);
   if (status === 429) return new InferenceError('rate', detail);
   if (status >= 500) return new InferenceError('server', detail);
   return new InferenceError('invalid', detail);

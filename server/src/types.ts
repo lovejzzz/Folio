@@ -26,6 +26,8 @@ export interface Env {
   VITE_GOOGLE_CLIENT_ID: string;
   /** Folio's own Anthropic key, a Cloudflare secret: calls paid with Folio credits use it. Unset: credits are off. */
   ANTHROPIC_API_KEY?: string;
+  /** Folio's own OpenAI key, a Cloudflare secret: the quizzes, assignments and plan reviews paid with credits use it. */
+  OPENAI_API_KEY?: string;
   /** Stripe, as Cloudflare secrets: the key that makes Checkout pages, and the one that signs its webhooks. */
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;

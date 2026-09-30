@@ -159,6 +159,19 @@ export async function fakeAnthropic(page: Page, options: FakeModelOptions = {}):
       json: { id: `msg_${calls.length}`, type: 'message', role: 'assistant', model: 'claude-opus-5', content: [{ type: 'text', text }], stop_reason: 'end_turn', stop_sequence: null, usage: { input_tokens: 10, output_tokens: 10 } },
     });
   });
+  // With Folio credits, the quizzes, assignments and plan checks go to OpenAI's models through the same server.
+  if (options.viaFolio) {
+    await page.route('**/api/ai/openai/v1/chat/completions', async (route: Route) => {
+      const body = route.request().postDataJSON() as Body;
+      calls.push(body);
+      if (options.delayMs) await new Promise((r) => setTimeout(r, options.delayMs));
+      const text = JSON.stringify(answerFor(body));
+      await route.fulfill({
+        status: 200,
+        json: { id: `chatcmpl_${calls.length}`, model: body.model, choices: [{ index: 0, message: { role: 'assistant', content: text }, finish_reason: 'stop' }], usage: { prompt_tokens: 10, completion_tokens: 10 } },
+      });
+    });
+  }
   return { calls };
 }
 

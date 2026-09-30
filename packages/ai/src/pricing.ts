@@ -25,11 +25,17 @@ const BUILT_IN: Partial<Record<ProviderId, Record<string, [number, number, numbe
     'claude-opus-5.5': [4, 20, 0.2, 5],
     'claude-opus-5': [5, 25, 0.5, 6.25],
   },
+  openai: {
+    'gpt-6-luna': [0.1, 0.5, 0.01, 0.1],
+    'gpt-6.1-sol': [2, 10, 0.1, 2],
+  },
 };
 
 const PRICE_LIST = 'https://openrouter.ai/api/v1/models';
-// Folio credits are Claude, priced as Anthropic prices it (Folio's markup is added on top, as credits).
-const VENDOR: Partial<Record<ProviderId, string>> = { folio: 'anthropic', anthropic: 'anthropic', openai: 'openai', google: 'google', deepseek: 'deepseek' };
+const VENDOR: Partial<Record<ProviderId, string>> = { anthropic: 'anthropic', openai: 'openai', google: 'google', deepseek: 'deepseek' };
+
+/** Folio credits mix Claude and OpenAI's models, each priced as its maker prices it (Folio's markup is added on top, as credits). */
+const vendorOf = (u: Usage): ProviderId | undefined => (u.provider === 'folio' ? (u.model.startsWith('gpt-') ? 'openai' : 'anthropic') : u.provider);
 
 /** "claude-opus-5-5" and "anthropic/claude-opus-5.5" name the same model; dated snapshots price as their family. */
 export function modelKey(model: string): string {
@@ -91,9 +97,10 @@ export function costOf(usages: readonly Usage[], live: Map<string, Price> | null
   let unpriced = 0;
   let fellBack = false;
   for (const u of usages) {
-    const vendor = VENDOR[u.provider];
+    const maker = vendorOf(u);
+    const vendor = maker && VENDOR[maker];
     const fromList = vendor ? live?.get(`${vendor}/${modelKey(u.model)}`) : undefined;
-    const price = fromList ?? builtInPrice(u.provider, u.model);
+    const price = fromList ?? (maker ? builtInPrice(maker, u.model) : null);
     if (!price) {
       unpriced += 1;
       continue;

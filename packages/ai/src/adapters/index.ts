@@ -1,14 +1,16 @@
 import { InferenceError, isConfigured, type Inference, type ModelSettings, type OnUsage } from '../inference';
 import { anthropicInference } from './anthropic';
 import { googleInference } from './google';
+import { folioInference } from './mix';
 import { openaiInference } from './openai';
 
 export function createInference(settings: ModelSettings, fetchImpl?: typeof fetch, onUsage?: OnUsage): Inference {
   if (!isConfigured(settings)) throw new InferenceError('config', 'No model is set up yet.');
   switch (settings.provider) {
     case 'anthropic':
-    case 'folio':
       return anthropicInference(settings, fetchImpl, onUsage);
+    case 'folio':
+      return folioInference(settings, fetchImpl, onUsage);
     case 'google':
       return googleInference(settings, fetchImpl, onUsage);
     case 'openai':
@@ -17,3 +19,4 @@ export function createInference(settings: ModelSettings, fetchImpl?: typeof fetc
       return openaiInference(settings, fetchImpl, onUsage);
   }
 }
+export { FOLIO_MIX } from './mix';

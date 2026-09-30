@@ -23,6 +23,9 @@ export const FLOOR = 5 * MILLI;
 export const PRICES: Record<string, [number, number, number, number]> = {
   'claude-sonnet-5-5': [2, 10, 0.2, 2.5],
   'claude-opus-5-5': [4, 20, 0.2, 5],
+  // OpenAI bills reasoning as output and charges nothing to write its cache.
+  'gpt-6-luna': [0.1, 0.5, 0.01, 0],
+  'gpt-6.1-sol': [2, 10, 0.1, 0],
 };
 
 export interface Usage {

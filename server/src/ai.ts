@@ -70,7 +70,7 @@ export async function proxyMessages(request: Request, env: Env, user: User, wait
   }
   const model = typeof body.model === 'string' ? body.model : '';
   const maxTokens = typeof body.max_tokens === 'number' ? body.max_tokens : 0;
-  if (!PRICES[model]) return error(400, 'invalid_request_error', 'That model is not available with Folio credits.');
+  if (!PRICES[model] || !model.startsWith('claude-')) return error(400, 'invalid_request_error', 'That model is not available with Folio credits.');
   if (maxTokens < 1 || maxTokens > MAX_OUTPUT) return error(400, 'invalid_request_error', 'The answer asked for is too long.');
 
   // The most the call can cost: its input, guessed from its size, and the longest answer it may give.

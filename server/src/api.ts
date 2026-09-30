@@ -1,4 +1,5 @@
 import { proxyMessages } from './ai';
+import { proxyChat } from './openai';
 import { checkout, PACKS, webhook } from './billing';
 import { grantFree, MILLI, schoolEmail, statement } from './credits';
 import { listCourses, MAX_COURSE_BYTES, readCourse, removeAccount, removeCourse, writeCourse, type CourseMeta } from './courses';
@@ -119,6 +120,8 @@ export async function handle(request: Request, env: Env, fetchImpl?: typeof fetc
   if (path.join('/') === 'billing/checkout' && request.method === 'POST') return checkout(request, env, user, fetchImpl);
   // Anthropic's Messages API, as the page's SDK calls it with Folio credits ("…/api/ai/v1/messages?beta=true").
   if (path.join('/') === 'ai/v1/messages' && request.method === 'POST') return proxyMessages(request, env, user, waitUntil, fetchImpl);
+  // OpenAI's chat completions, as the page's OpenAI adapter calls them with Folio credits.
+  if (path.join('/') === 'ai/openai/v1/chat/completions' && request.method === 'POST') return proxyChat(request, env, user, fetchImpl);
   if (path[0] === 'courses' && path.length === 2) return course(request, env, user, path[1]!);
   if (path[0] === 'account' && path.length === 1 && request.method === 'DELETE') {
     await removeAccount(env.DB, user.id);

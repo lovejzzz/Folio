@@ -1,6 +1,6 @@
 /** Folio's privacy policy, in the page's own module so its text isn't part of every page's first load. */
 export const policy = {
-  updated: 'Last updated 29 September 2026',
+  updated: 'Last updated 30 September 2026',
   lede: 'You don’t need an account to use Folio: without one, your courses stay in your browser. If you choose to sign in, your courses are also kept in your account, so they’re on every device you use.',
   sections: [
     {
@@ -17,7 +17,7 @@ export const policy = {
     },
     {
       heading: 'Folio credits',
-      body: 'If you write with Folio credits instead of your own key, your browser sends each request (your course description, the files you attach and the course so far) to Folio’s server, which passes it to Anthropic with Folio’s key and returns the answer. Folio doesn’t keep the requests or answers: it records only how many tokens each one used, to take its cost from your credits. Anthropic’s commercial terms apply to the request, and Anthropic doesn’t train its models on it. Your balance, the free credits you were given and any credits you bought are kept with your account.',
+      body: 'If you write with Folio credits instead of your own key, your browser sends each request (your course description, the files you attach and the course so far) to Folio’s server, which passes it with Folio’s key to Anthropic (for Claude, which writes most of the course) or to OpenAI (for GPT, which writes the quizzes and assignments and checks each lesson plan) and returns the answer. Folio doesn’t keep the requests or answers: it records only how many tokens each one used, to take its cost from your credits. Each company’s commercial terms apply to the requests it receives, and neither trains its models on them. Your balance, the free credits you were given and any credits you bought are kept with your account.',
     },
     {
       heading: 'Google Drive',

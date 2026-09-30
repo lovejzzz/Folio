@@ -23,7 +23,7 @@ test('a course is seen being written: a card follows each part, the plan check a
   await expect(card).toBeVisible();
   await expect(card.getByText('Writing your course')).toBeVisible();
   await expect(card.getByText('Lesson 1 · Lesson plan')).toBeVisible();
-  await expect(card.getByText(/Opus fixed 1 thing/).first()).toBeVisible();
+  await expect(card.getByText(/The check fixed 1 thing/).first()).toBeVisible();
   await expect(card.getByText('Say how to keep the leaf dark.').first()).toBeVisible();
   await expect(page.getByText(/^Course ready/)).toBeVisible({ timeout: 30_000 });
   await expect(card).toBeHidden();
