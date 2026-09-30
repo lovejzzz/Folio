@@ -57,6 +57,9 @@ describe('buying credits', () => {
     expect(stripe[0]!.get('line_items[0][price_data][unit_amount]')).toBe('2500');
     expect(stripe[0]!.get('metadata[user_id]')).toBe('g-123');
     expect(stripe[0]!.get('metadata[credits]')).toBe('2750');
+    await call('billing/checkout', { method: 'POST', cookie, body: JSON.stringify({ pack: 'p100' }) });
+    expect(stripe[1]!.get('line_items[0][price_data][unit_amount]')).toBe('10000');
+    expect(stripe[1]!.get('metadata[credits]')).toBe('13000');
     expect((await call('billing/checkout', { method: 'POST', cookie, body: JSON.stringify({ pack: 'p1' }) })).status).toBe(400);
   });
 

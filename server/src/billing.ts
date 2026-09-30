@@ -13,11 +13,12 @@ export interface Pack {
   credits: number;
 }
 
-/** $10 for 1,000 credits; more for the larger packs. A credit is a cent. */
+/** $10 for 1,000 credits; the larger packs include bonus credits (10%, 20%, 30%). A credit is a cent. */
 export const PACKS: readonly Pack[] = [
   { id: 'p10', usd: 10, credits: 1000 },
   { id: 'p25', usd: 25, credits: 2750 },
   { id: 'p50', usd: 50, credits: 6000 },
+  { id: 'p100', usd: 100, credits: 13000 },
 ];
 
 const STRIPE = 'https://api.stripe.com/v1';

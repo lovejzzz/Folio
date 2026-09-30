@@ -18,7 +18,7 @@ async function fakeFolio(page: Page, balance: { value: number }) {
       if (route.request().method() === 'POST') user = { id: 'g-1', email: 'ada@example.edu', name: 'Ada Teacher' };
       return send({ user });
     }
-    if (path.endsWith('/credits')) return send({ available: true, balance: balance.value, spent30: 0, added: [], packs: [{ id: 'p10', usd: 10, credits: 1000 }, { id: 'p25', usd: 25, credits: 2750 }, { id: 'p50', usd: 50, credits: 6000 }] });
+    if (path.endsWith('/credits')) return send({ available: true, balance: balance.value, spent30: 0, added: [], packs: [{ id: 'p10', usd: 10, credits: 1000 }, { id: 'p25', usd: 25, credits: 2750 }, { id: 'p50', usd: 50, credits: 6000 }, { id: 'p100', usd: 100, credits: 13000 }] });
     return send({ courses: [] });
   });
 }
@@ -67,10 +67,12 @@ test('a teacher buys more credits on Stripe’s page, and sees them when they co
   await expect(page.getByText('You have 12 credits.')).toBeVisible();
   // The more you add, the more bonus credits come with it.
   await expect(page.getByRole('button', { name: '$10 for 1,000 credits' })).toBeVisible();
-  await expect(page.getByText('+250 bonus')).toBeVisible();
-  await expect(page.getByText('+10%')).toBeVisible();
-  await expect(page.getByText('+1,000 bonus')).toBeVisible();
-  await expect(page.getByText('+20%')).toBeVisible();
+  // The bonus is part of each pack's credits, not added on top.
+  await expect(page.getByText('Includes 250 bonus')).toBeVisible();
+  await expect(page.getByText('10% bonus')).toBeVisible();
+  await expect(page.getByText('Includes 3,000 bonus')).toBeVisible();
+  await expect(page.getByText('30% bonus')).toBeVisible();
+  await expect(page.getByRole('button', { name: '$100 for 13,000 credits, including 3,000 bonus' })).toBeVisible();
   await page.getByRole('button', { name: '$25 for 2,750 credits, including 250 bonus' }).click();
   await expect(page.getByRole('heading', { name: 'Stripe Checkout' })).toBeVisible();
   expect(page.url()).toContain('/c/pay/p25');
