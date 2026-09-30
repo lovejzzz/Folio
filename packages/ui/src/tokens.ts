@@ -27,6 +27,9 @@ export const color = {
   accent: { light: '#2B46C4', dark: '#8FA3FF' },
   'accent-ink': { light: '#FFFFFF', dark: '#11152E' },
   'accent-tint': { light: '#EDF0FC', dark: '#23284A' },
+  /** The mark's two back pages, fanned behind the accent one: lightest at the back in light, darkest in dark. */
+  'mark-back': { light: '#D3DAF6', dark: '#4A5496' },
+  'mark-mid': { light: '#8C9DE6', dark: '#7486DC' },
   good: { light: '#37704E', dark: '#7CC39A' },
   attention: { light: '#94600E', dark: '#E0B060' },
   'attention-tint': { light: '#FBF1DE', dark: '#3A2F17' },

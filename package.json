@@ -18,7 +18,8 @@
     "tokens": "tsx packages/ui/scripts/build-tokens.ts",
     "budget": "node scripts/check-budget.mjs",
     "check": "pnpm tokens --check && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm budget",
-    "test:live": "pnpm --filter @folio/web exec playwright test -c playwright.live.config.ts"
+    "test:live": "pnpm --filter @folio/web exec playwright test -c playwright.live.config.ts",
+    "brand": "pnpm --filter @folio/web brand"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

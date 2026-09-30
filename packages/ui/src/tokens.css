@@ -13,6 +13,8 @@
   --folio-accent: #2B46C4;
   --folio-accent-ink: #FFFFFF;
   --folio-accent-tint: #EDF0FC;
+  --folio-mark-back: #D3DAF6;
+  --folio-mark-mid: #8C9DE6;
   --folio-good: #37704E;
   --folio-attention: #94600E;
   --folio-attention-tint: #FBF1DE;
@@ -54,6 +56,8 @@
     --folio-accent: #8FA3FF;
     --folio-accent-ink: #11152E;
     --folio-accent-tint: #23284A;
+    --folio-mark-back: #4A5496;
+    --folio-mark-mid: #7486DC;
     --folio-good: #7CC39A;
     --folio-attention: #E0B060;
     --folio-attention-tint: #3A2F17;
@@ -90,6 +94,8 @@
   --folio-accent: #8FA3FF;
   --folio-accent-ink: #11152E;
   --folio-accent-tint: #23284A;
+  --folio-mark-back: #4A5496;
+  --folio-mark-mid: #7486DC;
   --folio-good: #7CC39A;
   --folio-attention: #E0B060;
   --folio-attention-tint: #3A2F17;
@@ -127,6 +133,8 @@
     --folio-accent: #2B46C4;
     --folio-accent-ink: #FFFFFF;
     --folio-accent-tint: #EDF0FC;
+    --folio-mark-back: #D3DAF6;
+    --folio-mark-mid: #8C9DE6;
     --folio-good: #37704E;
     --folio-attention: #94600E;
     --folio-attention-tint: #FBF1DE;
@@ -164,6 +172,8 @@
   --color-accent: var(--folio-accent);
   --color-accent-ink: var(--folio-accent-ink);
   --color-accent-tint: var(--folio-accent-tint);
+  --color-mark-back: var(--folio-mark-back);
+  --color-mark-mid: var(--folio-mark-mid);
   --color-good: var(--folio-good);
   --color-attention: var(--folio-attention);
   --color-attention-tint: var(--folio-attention-tint);

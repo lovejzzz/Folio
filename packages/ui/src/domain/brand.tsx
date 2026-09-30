@@ -1,20 +1,18 @@
 import { cx } from '../cx';
+import { MARK_ANGLES, MARK_PAGE, markTransform } from './mark';
+
+const PAGE_FILLS = ['fill-mark-back', 'fill-mark-mid', 'fill-accent'] as const;
 
 /**
- * The mark: a sheet with a folded corner and one binder tab on its right
- * edge. Drawn to stay legible at 16 px.
+ * The mark: three pages of a course fanned out, the front one in the accent blue. Each page is edged in the
+ * desk colour, so the pages stay apart down to 16 px.
  */
 export function FolioMark({ size = 24, className }: { size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className={className}>
-      <rect x="14.5" y="9.75" width="7" height="6" rx="1.25" className="fill-accent" />
-      <path
-        d="M3.25 2.75h9.25l4.5 4.5v14H3.25z"
-        className="fill-paper stroke-ink"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <path d="M12.5 2.75v4.5H17" className="fill-none stroke-ink" strokeWidth="1.5" strokeLinejoin="round" />
+    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden className={className}>
+      {MARK_ANGLES.map((angle, i) => (
+        <rect key={angle} {...MARK_PAGE} transform={markTransform(angle)} className={cx(PAGE_FILLS[i], 'stroke-desk')} strokeWidth="1.5" strokeLinejoin="round" />
+      ))}
     </svg>
   );
 }
