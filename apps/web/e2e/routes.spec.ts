@@ -57,6 +57,9 @@ test('the home page keeps to the new course: courses are in the library, and Abo
   await openSample(page);
   await page.goto('/');
   await expect(page.getByText('Reading the world with data')).toHaveCount(0);
+  // The footer sits at the bottom of the window, not straight under the examples.
+  const footer = (await page.getByRole('contentinfo').boundingBox())!;
+  expect(footer.y + footer.height).toBeGreaterThan(page.viewportSize()!.height - 8);
   await page.getByRole('contentinfo').getByRole('link', { name: 'About' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'About Folio' })).toBeVisible();
   await expect(page.getByText(/made by Tian Xing, its founder/)).toBeVisible();

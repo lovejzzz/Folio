@@ -21,17 +21,19 @@ interface Credits {
   packs: Pack[];
   /** False where the server has no key of Folio's own yet: credits can't be used there. */
   available: boolean;
+  /** Whether the account's address is a school one (.edu), which the free credits come with. */
+  school: boolean;
 }
 
-export const useCredits = create<Credits>(() => ({ balance: null, packs: [], available: true }));
+export const useCredits = create<Credits>(() => ({ balance: null, packs: [], available: true, school: true }));
 
 /** Ask the server for the balance. Quietly keeps the last answer when it can't be reached. */
 export async function refreshCredits(): Promise<void> {
   try {
     const response = await fetch('/api/credits', { credentials: 'same-origin' });
     if (!response.ok) return;
-    const body = (await response.json()) as { balance: number; available: boolean; packs?: Pack[] };
-    useCredits.setState({ balance: body.balance, available: body.available, packs: body.packs ?? [] });
+    const body = (await response.json()) as { balance: number; available: boolean; packs?: Pack[]; school?: boolean };
+    useCredits.setState({ balance: body.balance, available: body.available, packs: body.packs ?? [], school: body.school ?? true });
   } catch {
     // Offline or signed out elsewhere: the balance shown stays as it was.
   }
@@ -65,7 +67,8 @@ export const creditsText = {
   used: (n: number) => (n <= 1 ? 'That used about 1 credit.' : `That used about ${n.toLocaleString('en-US')} credits.`),
   balance: (n: number) => `${n.toLocaleString('en-US')} credits`,
   youHave: (n: number) => `You have ${n.toLocaleString('en-US')} credits.`,
-  signInToStart: 'Sign in with Google to start. New accounts get 750 free credits, about a 15-lesson course with every material.',
+  signInToStart: 'Sign in with Google to start. Sign in with a school email (ending in .edu) and you get 750 free credits, about a 15-lesson course with every material.',
+  notSchool: 'Free credits come with school email addresses, ending in .edu. Buy credits below, or use your own AI key.',
   signIn: 'Sign in with Google',
   how: 'Claude Sonnet 5.5 writes, and Claude Opus 5.5 checks each lesson plan. A lesson with every material uses about 45 credits.',
   buy: 'Buy credits',

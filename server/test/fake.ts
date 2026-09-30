@@ -41,7 +41,7 @@ export async function fakeGoogle(clientId: string) {
   const fetchImpl = (async () => new Response(JSON.stringify({ keys: [jwk] }), { headers: { 'content-type': 'application/json' } })) as typeof fetch;
   async function token(claims: Record<string, unknown> = {}, kid = 'k1'): Promise<string> {
     const now = Math.floor(Date.now() / 1000);
-    const body = { iss: 'https://accounts.google.com', aud: clientId, sub: 'g-123', email: 'teacher@example.edu', name: 'Ada Teacher', nonce: 'n-1', iat: now, exp: now + 600, ...claims };
+    const body = { iss: 'https://accounts.google.com', aud: clientId, sub: 'g-123', email: 'teacher@example.edu', email_verified: true, name: 'Ada Teacher', nonce: 'n-1', iat: now, exp: now + 600, ...claims };
     const head = b64url(JSON.stringify({ alg: 'RS256', kid, typ: 'JWT' }));
     const payload = b64url(JSON.stringify(body));
     const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', pair.privateKey, new TextEncoder().encode(`${head}.${payload}`));

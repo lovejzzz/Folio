@@ -16,6 +16,8 @@ export class SignInError extends Error {
 export interface GoogleIdentity {
   sub: string;
   email: string;
+  /** Google has confirmed the address belongs to this account. */
+  emailVerified: boolean;
   name: string;
 }
 
@@ -73,7 +75,8 @@ export async function verifyIdToken(
   if (typeof claims.iat === 'number' && claims.iat * 1000 > now + 5 * 60 * 1000) throw new SignInError('Issued in the future.');
   if (!nonce || claims.nonce !== nonce) throw new SignInError('Not this sign-in.');
   if (typeof claims.sub !== 'string' || typeof claims.email !== 'string') throw new SignInError('No account in the token.');
-  return { sub: claims.sub, email: claims.email, name: typeof claims.name === 'string' ? claims.name : '' };
+  const emailVerified = claims.email_verified === true || claims.email_verified === 'true';
+  return { sub: claims.sub, email: claims.email, emailVerified, name: typeof claims.name === 'string' ? claims.name : '' };
 }
 
 /** For tests: forget the cached keys. */

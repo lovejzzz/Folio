@@ -11,7 +11,7 @@ export const MILLI = 1000;
 export const CREDIT_USD = 0.01;
 export const MARKUP = 3;
 
-/** New accounts start with enough for one full course: a 15-week, one-lesson-a-week college course. */
+/** New school accounts start with enough for one full course: a 15-week, one-lesson-a-week college course. */
 export const FREE_CREDITS = 750;
 /** A wave of new accounts can't farm the free credits: so many a day per network address, so many a month in all. */
 export const FREE_PER_ADDRESS_PER_DAY = 3;
@@ -41,6 +41,11 @@ export function charge(model: string, u: Usage): number {
 }
 
 const id = () => crypto.randomUUID();
+
+/** The free credits are for teachers at schools: a Google address, confirmed by Google, ending in .edu. */
+export function schoolEmail(email: string, verified: boolean): boolean {
+  return verified && /\.edu$/i.test(email.trim());
+}
 
 export async function balanceOf(db: D1Database, userId: string): Promise<number> {
   const row = await db.prepare('SELECT balance FROM credits WHERE user_id = ?').bind(userId).first<{ balance: number }>();

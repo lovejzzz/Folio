@@ -13,7 +13,7 @@ export const terms = {
     },
     {
       heading: 'Folio credits',
-      body: 'Folio credits pay for the AI that writes your courses when you don’t use your own key. Each request uses credits according to how much it writes, and Folio shows an estimate before a course is written. Prices are shown before you pay; payments are processed by Stripe. Credits don’t expire while your account exists. Free credits given to new accounts have no cash value. Folio may change the price of credits for future purchases; credits you already hold keep their value.',
+      body: 'Folio credits pay for the AI that writes your courses when you don’t use your own key. Each request uses credits according to how much it writes, and Folio shows an estimate before a course is written. Prices are shown before you pay; payments are processed by Stripe. Credits don’t expire while your account exists. Free credits are given once, to a new account whose Google email address ends in .edu; they have no cash value. Folio may change the price of credits for future purchases; credits you already hold keep their value.',
     },
     {
       heading: 'Refunds',

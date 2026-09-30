@@ -34,7 +34,7 @@ test('a teacher with no key signs in and writes with Folio credits', async ({ pa
   // Folio credits come first, and need only a sign-in.
   const dialog = page.getByRole('dialog', { name: 'Connect an AI' });
   await expect(dialog.getByRole('radio', { name: /Use Folio credits/ })).toBeChecked();
-  await expect(dialog.getByText(/New accounts get 750 free credits/)).toBeVisible();
+  await expect(dialog.getByText(/school email \(ending in \.edu\) and you get 750 free credits/)).toBeVisible();
   await dialog.getByRole('button', { name: 'Sign in with Google' }).click();
   await expect(dialog.getByText('You have 750 credits.')).toBeVisible();
   await dialog.getByRole('button', { name: 'Connect and continue' }).click();

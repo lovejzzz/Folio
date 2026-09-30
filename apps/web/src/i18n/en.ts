@@ -703,7 +703,7 @@ export const en = {
     ai: 'AI',
     aiLede: 'Folio writes with Folio credits, or with an AI key of your own. Your key stays in this browser and goes straight to the AI company; either way, Folio tells you what each course used.',
     providers: {
-      folio: { name: 'Use Folio credits', short: 'Folio credits', note: 'No key needed: sign in with Google. New accounts get 750 free credits, about a 15-lesson course.' },
+      folio: { name: 'Use Folio credits', short: 'Folio credits', note: 'No key needed: sign in with Google. School emails (.edu) get 750 free credits, about a 15-lesson course.' },
       anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use, and Claude Opus 5.5 checks each lesson plan before the rest is written.' },
       openai: { name: 'Use my OpenAI key', short: 'your OpenAI key', note: 'OpenAI. You pay per use.' },
       google: { name: 'Use my Gemini key', short: 'your Gemini key', note: 'Google. You pay per use. The free tier allows too few requests to write a whole course.' },

@@ -1,6 +1,6 @@
 import { proxyMessages } from './ai';
 import { checkout, PACKS, webhook } from './billing';
-import { grantFree, MILLI, statement } from './credits';
+import { grantFree, MILLI, schoolEmail, statement } from './credits';
 import { listCourses, MAX_COURSE_BYTES, readCourse, removeAccount, removeCourse, writeCourse, type CourseMeta } from './courses';
 import { SignInError, verifyIdToken } from './google';
 import { clearCookie, endSession, setCookie, startSession, userOf } from './sessions';
@@ -42,8 +42,8 @@ async function signIn(request: Request, env: Env, fetchImpl?: typeof fetch): Pro
     const who = await verifyIdToken(body.idToken, { clientId: env.VITE_GOOGLE_CLIENT_ID, nonce: body.nonce, fetchImpl });
     const user: User = { id: who.sub, email: who.email, name: who.name };
     const token = await startSession(env.DB, user);
-    // The first sign-in brings the free credits, within the limits that keep them from being farmed.
-    await grantFree(env.DB, user.id, await addressHash(request));
+    // A school account's first sign-in brings the free credits, within the limits that keep them from being farmed.
+    if (schoolEmail(who.email, who.emailVerified)) await grantFree(env.DB, user.id, await addressHash(request));
     return json({ user }, 200, { 'set-cookie': setCookie(token) });
   } catch (error) {
     if (error instanceof SignInError) return problem(401, 'sign-in-failed', { detail: error.message });
@@ -77,9 +77,7 @@ async function course(request: Request, env: Env, user: User, id: string): Promi
 }
 
 /** The balance, in credits, with what was added lately and what was spent in the last 30 days. */
-async function credits(request: Request, env: Env, user: User): Promise<Response> {
-  // Accounts from before credits began get their free ones the first time they look (once, as at sign-in).
-  if (env.ANTHROPIC_API_KEY) await grantFree(env.DB, user.id, await addressHash(request));
+async function credits(env: Env, user: User): Promise<Response> {
   const s = await statement(env.DB, user.id);
   const c = (milli: number) => Math.floor(milli / MILLI);
   return json({
@@ -87,6 +85,8 @@ async function credits(request: Request, env: Env, user: User): Promise<Response
     // What can be bought, once Stripe is set up.
     packs: env.STRIPE_SECRET_KEY ? PACKS : [],
     balance: c(s.balance),
+    // Whether the free credits come with this address (Google confirmed it at sign-in), so the page can say why not.
+    school: schoolEmail(user.email, true),
     spent30: c(s.spent30),
     added: s.added.map((r) => ({ kind: r.kind, credits: c(r.amount), detail: r.detail, at: new Date(r.created_at).toISOString() })),
   });
@@ -115,7 +115,7 @@ export async function handle(request: Request, env: Env, fetchImpl?: typeof fetc
   const user = await userOf(env.DB, request);
   if (!user) return problem(401, 'signed-out');
   if (path[0] === 'courses' && path.length === 1 && request.method === 'GET') return json({ courses: await listCourses(env.DB, user.id) });
-  if (path[0] === 'credits' && path.length === 1 && request.method === 'GET') return credits(request, env, user);
+  if (path[0] === 'credits' && path.length === 1 && request.method === 'GET') return credits(env, user);
   if (path.join('/') === 'billing/checkout' && request.method === 'POST') return checkout(request, env, user, fetchImpl);
   // Anthropic's Messages API, as the page's SDK calls it with Folio credits ("…/api/ai/v1/messages?beta=true").
   if (path.join('/') === 'ai/v1/messages' && request.method === 'POST') return proxyMessages(request, env, user, waitUntil, fetchImpl);

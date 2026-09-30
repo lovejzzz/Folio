@@ -62,9 +62,9 @@ export function Home() {
   usePreloadGuesses();
   usePageTitle();
   return (
-    <div className="min-h-dvh">
+    <div className="flex min-h-dvh flex-col">
       <SimpleHeader />
-      <main id="main" className="mx-auto max-w-3xl px-5 pb-24 pt-10 md:pt-20">
+      <main id="main" className="mx-auto w-full max-w-3xl flex-1 px-5 pb-24 pt-10 md:pt-20">
         <h1 className="mb-8 text-center font-display text-48 leading-none tracking-tight text-ink md:mb-10 md:text-64">
           {t.home.question}
         </h1>

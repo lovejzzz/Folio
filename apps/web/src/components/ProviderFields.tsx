@@ -72,7 +72,7 @@ export function missingSetup(provider: ProviderId, t: Messages): string | null {
 /** Folio credits: no key, a Google sign-in; then the balance, and how far it goes. */
 function FolioFields() {
   const user = useAccount((s) => s.user);
-  const { balance, available } = useCredits();
+  const { balance, available, school } = useCredits();
   useEffect(() => {
     if (user) void refreshCredits();
   }, [user]);
@@ -90,7 +90,7 @@ function FolioFields() {
   return (
     <div className="space-y-2">
       <p className="font-ui text-14 font-medium text-ink">{balance === null ? '…' : creditsText.youHave(balance)}</p>
-      <p className="font-ui text-13 leading-relaxed text-ink-2">{creditsText.how}</p>
+      <p className="font-ui text-13 leading-relaxed text-ink-2">{balance === 0 && !school ? creditsText.notSchool : creditsText.how}</p>
       <BuyCredits />
     </div>
   );

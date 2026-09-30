@@ -141,13 +141,17 @@ describe('calls paid with credits', () => {
   });
 });
 
-describe('accounts from before credits began', () => {
-  it('get the free credits the first time they look, once', async () => {
-    const cookie = await signIn();
-    await env.DB.prepare('DELETE FROM credits').run();
-    await env.DB.prepare('DELETE FROM credit_ledger').run();
-    expect((await balance(cookie)).balance).toBe(FREE_CREDITS);
-    expect((await balance(cookie)).balance).toBe(FREE_CREDITS);
+describe('free credits for school accounts only', () => {
+  it('come with a confirmed .edu address, not with any other', async () => {
+    const edu = await call('session', { method: 'POST', body: JSON.stringify({ idToken: await google.token({ sub: 'g-edu', email: 'Ada@Cs.Example.EDU' }), nonce: 'n-1' }) });
+    expect((await balance(edu.headers.get('set-cookie')!.split(';')[0]!)).balance).toBe(FREE_CREDITS);
+    for (const [sub, claims] of [['g-gmail', { email: 'ada@gmail.com' }], ['g-unconfirmed', { email: 'ada@example.edu', email_verified: false }]] as const) {
+      const res = await call('session', { method: 'POST', body: JSON.stringify({ idToken: await google.token({ sub, ...claims }), nonce: 'n-1' }) });
+      const cookie = res.headers.get('set-cookie')!.split(';')[0]!;
+      const got = (await (await call('credits', { cookie })).json()) as { balance: number; school: boolean };
+      expect(got.balance).toBe(0);
+      expect(got.school).toBe(sub === 'g-unconfirmed');
+    }
   });
 });
 
