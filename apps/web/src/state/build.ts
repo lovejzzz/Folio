@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { router } from '../app/router';
 import { currentMessages } from '../i18n';
 import { canReach, currentInference, currentReviewer, errorMessage } from './model';
-import { activeStore, onSessionChange } from './session';
+import { activeStore, onSessionChange, setBuilding } from './session';
 import { checkingRow, endRow, resetLive, reviewedRow, showPartial, startRow } from './live';
 import { costSentence, takeUsage } from './spend';
 import { toast } from './toasts';
@@ -36,6 +36,9 @@ export const useBuild = create<BuildState>(() => ({
   currentLesson: 0,
   controller: null,
 }));
+
+// Saves are gathered longer while a build runs, however it starts or ends.
+useBuild.subscribe((state) => setBuilding(state.running));
 
 function setCell(key: string, state: CellRun | null, error?: string): void {
   const { cells, errors } = useBuild.getState();

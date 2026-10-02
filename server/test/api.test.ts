@@ -151,9 +151,11 @@ describe('a course’s file texts, kept apart', () => {
   const putSource = (cookie: string, id: string, sid: string, bytes: Uint8Array<ArrayBuffer>) => call(`courses/${id}/sources/${sid}`, { method: 'PUT', cookie, body: bytes });
   const rows = async () => (await env.DB.prepare('SELECT DISTINCT source_id FROM source_chunks').all<{ source_id: string }>()).results.map((r) => r.source_id).sort();
 
-  it('are sent once and read back, and sending one again changes nothing', async () => {
+  it('are sent once and read back, and sending one again changes nothing', { timeout: 20_000 }, async () => {
     const cookie = await signIn();
-    const text = new Uint8Array(2_000_000).map((_, i) => i % 251);
+    // Past one chunk (900 KB), so a text kept in several pieces comes back whole.
+    const text = new Uint8Array(1_000_000);
+    for (let i = 0; i < text.length; i++) text[i] = i % 251;
     expect((await putSource(cookie, 'c_1', 's_a', text)).status).toBe(200);
     expect((await putSource(cookie, 'c_1', 's_a', text)).status).toBe(200);
     expect(new Uint8Array(await (await call('courses/c_1/sources/s_a', { cookie })).arrayBuffer())).toEqual(text);

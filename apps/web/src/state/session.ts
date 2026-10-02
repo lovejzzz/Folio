@@ -16,11 +16,23 @@ import { useUi } from './ui';
  */
 
 const SAVE_DELAY = 300;
+/** While a course is being written, changes come from the model, not a teacher waiting: they're gathered longer. */
+const BUILD_SAVE_DELAY = 1000;
+/** However steadily changes keep coming (typing without a pause), nothing waits longer than this to be saved. */
+const MAX_SAVE_WAIT = 2000;
+
+let building = false;
+/** Told by the build when it starts and ends. */
+export function setBuilding(on: boolean): void {
+  building = on;
+}
 
 interface Session {
   id: string;
   store: CourseStore;
   timer: ReturnType<typeof setTimeout> | null;
+  /** When the first change not yet saved was made. */
+  waitingSince: number | null;
   unsubscribe: () => void;
   /** The version in IndexedDB as far as this tab knows. */
   savedVersion: string;
@@ -65,6 +77,7 @@ async function save(session: Session): Promise<void> {
 function flush(session: Session): Promise<void> {
   if (session.timer) clearTimeout(session.timer);
   session.timer = null;
+  session.waitingSince = null;
   session.saving = session.saving.then(() => save(session));
   return session.saving;
 }
@@ -73,7 +86,10 @@ function schedule(session: Session): void {
   if (session.quiet) return;
   useUi.getState().setSaveState('saving');
   if (session.timer) clearTimeout(session.timer);
-  session.timer = setTimeout(() => void flush(session), SAVE_DELAY);
+  const now = Date.now();
+  session.waitingSince ??= now;
+  const delay = Math.min(building ? BUILD_SAVE_DELAY : SAVE_DELAY, Math.max(0, session.waitingSince + MAX_SAVE_WAIT - now));
+  session.timer = setTimeout(() => void flush(session), delay);
 }
 
 /** Open a course, with the history rows saved beside it. */
@@ -86,6 +102,7 @@ export function openSession(course: Course, rows: readonly HistoryRow[] = []): C
     id: course.id,
     store,
     timer: null,
+    waitingSince: null,
     unsubscribe: () => {},
     savedVersion: versionOf(course),
     savedSources: course.sources,
