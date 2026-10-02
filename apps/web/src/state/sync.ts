@@ -1,8 +1,9 @@
 import { accountText } from './accountText';
-import { newId, parseCourse, type Course } from '@folio/core';
+import { newId, type Course } from '@folio/core';
 import { currentMessages } from '../i18n';
 import { announce, useAccount, writeHint, type AccountUser, type SyncState } from './account';
-import { db, deleteCourse, loadCourse, loadCourseWithHistory, onCourseWrite, saveCourse, versionOf, type SyncRow } from './db';
+import { db, deleteCourse, loadCourse, loadCourseWithHistory, onCourseWrite, saveCourse, textsOf, versionOf, type SyncRow } from './db';
+import { forSending, sendTexts, wholeCopy } from './syncTexts';
 import type { HistoryRow } from './historySync';
 import { activeStore, dropSession, flushNow } from './session';
 import { toast } from './toasts';
@@ -79,7 +80,8 @@ async function check(res: Response): Promise<Response> {
     signedOutElsewhere();
     throw new Error('signed out');
   }
-  if (!res.ok && res.status !== 409 && res.status !== 404) throw new Error(`HTTP ${res.status}`);
+  // 409: changed elsewhere; 404: gone; 422: a text the account lacks. Each is answered where it is asked.
+  if (!res.ok && res.status !== 409 && res.status !== 404 && res.status !== 422) throw new Error(`HTTP ${res.status}`);
   return res;
 }
 
@@ -95,6 +97,8 @@ interface AccountCopy {
   version: number;
   course: Course;
   history: HistoryRow[];
+  /** The file texts the account holds for it. */
+  held: string[];
 }
 
 /** The account's copy of a course, or null when the account no longer has it. */
@@ -102,15 +106,20 @@ async function fetchCopy(id: string): Promise<AccountCopy | null> {
   const res = await check(await api(`courses/${id}`));
   if (res.status === 404) return null;
   const version = Number(res.headers.get('x-folio-version'));
-  const { course, history } = JSON.parse(await gunzip(await res.arrayBuffer())) as { course: Course; history: HistoryRow[] };
-  return { version, course: parseCourse(course), history };
+  const payload = JSON.parse(await gunzip(await res.arrayBuffer())) as { course: Course; history: HistoryRow[] };
+  const whole = await wholeCopy(payload, await textsOf(id), async (sourceId) => {
+    const text = await check(await api(`courses/${id}/sources/${sourceId}`));
+    if (text.status === 404) throw new Error('A file of this course is missing from the account.');
+    return gunzip(await text.arrayBuffer());
+  });
+  return { version, ...whole };
 }
 
 /** The account's copy replaces this device's. An open tab follows, or asks if it has unsaved work. */
 async function adopt(id: string, copy: AccountCopy): Promise<void> {
   if (!user) return;
   // Recorded before the save, so the save is known to match the account and isn't sent back.
-  await db.sync.put({ id, account: user.id, state: 'linked', version: copy.version, synced: versionOf(copy.course) });
+  await db.sync.put({ id, account: user.id, state: 'linked', version: copy.version, synced: versionOf(copy.course), sent: copy.held });
   await saveCourse(copy.course, { courseId: id, replace: true, put: copy.history, remove: [] });
   courses.postMessage({ id, version: versionOf(copy.course) });
 }
@@ -147,17 +156,24 @@ function pushOne(id: string): Promise<void> {
     const loaded = row ? await loadCourseWithHistory(id) : null;
     if (!row || !loaded || versionOf(loaded.course) === row.synced) return;
     const { course, history } = loaded;
+    const sending = forSending(course, history);
+    const sendText = async (sourceId: string, text: string) => void (await check(await api(`courses/${id}/sources/${sourceId}`, { method: 'PUT', body: await gzip(text) })));
+    await sendTexts(sending, row.sent ?? [], sendText);
     const meta = { title: course.title, lessonCount: course.lessonOrder.length, updatedAt: course.updatedAt };
-    const res = await check(
-      await api(`courses/${id}`, {
-        method: 'PUT',
-        body: await gzip(JSON.stringify({ course, history })),
-        headers: { 'if-match': String(row.version), 'x-folio-meta': encodeURIComponent(JSON.stringify(meta)) },
-      }),
-    );
+    const body = await gzip(JSON.stringify(sending.payload));
+    const put = async () =>
+      check(await api(`courses/${id}`, { method: 'PUT', body, headers: { 'if-match': String(row.version), 'x-folio-meta': encodeURIComponent(JSON.stringify(meta)), 'x-folio-sources': sending.needed.join(',') } }));
+    let res = await put();
+    // The account lost a text this device thought it had sent (another device's write, say): send it, and again.
+    if (res.status === 422) {
+      const { missing } = (await res.json()) as { missing: string[] };
+      for (const sourceId of missing) await sendText(sourceId, sending.texts[sourceId]!);
+      res = await put();
+      if (res.status === 422) throw new Error('The account would not take this course’s files.');
+    }
     if (res.status === 409) return keepBoth(id, course);
     const { version } = (await res.json()) as { version: number };
-    await db.sync.put({ ...row, version, synced: versionOf(course) });
+    await db.sync.put({ ...row, version, synced: versionOf(course), sent: sending.needed });
   });
 }
 

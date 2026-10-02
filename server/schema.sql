@@ -82,3 +82,14 @@ CREATE TABLE IF NOT EXISTS daily_counts (
   value INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (day, metric)
 );
+
+-- Each attached file's text, gzipped, once per course: a course's body refers to it and never carries it, so
+-- a small change uploads only the body. Text that no body refers to any more is deleted with the next write.
+CREATE TABLE IF NOT EXISTS source_chunks (
+  user_id TEXT NOT NULL,
+  course_id TEXT NOT NULL,
+  source_id TEXT NOT NULL,
+  n INTEGER NOT NULL,
+  data BLOB NOT NULL,
+  PRIMARY KEY (user_id, course_id, source_id, n)
+);

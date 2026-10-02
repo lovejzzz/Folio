@@ -17,6 +17,8 @@ interface Stored {
  */
 function fakeAccount({ putDelay = 0 } = {}) {
   const courses = new Map<string, Stored>();
+  /** File texts by `courseId/sourceId`, sent once each and fetched by a device that lacks them. */
+  const texts = new Map<string, Buffer>();
   const calls: string[] = [];
   const user = { id: 'g-1', email: 'ada@example.edu', name: 'Ada Teacher' };
   async function attach(context: BrowserContext): Promise<void> {
@@ -32,7 +34,16 @@ function fakeAccount({ putDelay = 0 } = {}) {
       if (path === 'session/nonce') return send({ nonce: 'n-1' });
       if (path === 'session') return send(req.method() === 'DELETE' ? { ok: true } : { user });
       if (path === 'courses') return send({ courses: [...courses].map(([id, c]) => ({ id, version: c.version, deleted: c.deleted, title: c.title, lessonCount: 0, updatedAt: '' })) });
-      const id = path.split('/')[1]!;
+      const [, id = '', , sourceId] = path.split('/');
+      if (sourceId) {
+        const key = `${id}/${sourceId}`;
+        if (req.method() === 'PUT') {
+          texts.set(key, req.postDataBuffer()!);
+          return send({ ok: true });
+        }
+        const text = texts.get(key);
+        return text ? route.fulfill({ status: 200, body: text }) : send({ error: 'not-found' }, 404);
+      }
       const have = courses.get(id);
       if (req.method() === 'GET') return have && !have.deleted ? route.fulfill({ status: 200, body: have.bytes, headers: { 'x-folio-version': String(have.version) } }) : send({ error: 'not-found' }, 404);
       if (req.method() === 'DELETE') {
@@ -41,6 +52,9 @@ function fakeAccount({ putDelay = 0 } = {}) {
       }
       const base = Number(req.headers()['if-match']);
       if ((have?.version ?? 0) !== base) return send({ error: 'conflict', version: have?.version ?? 0 }, 409);
+      const listed = (req.headers()['x-folio-sources'] ?? '').split(',').filter(Boolean);
+      const missing = listed.filter((s) => !texts.has(`${id}/${s}`));
+      if (missing.length) return send({ error: 'sources-missing', missing }, 422);
       const title = JSON.parse(decodeURIComponent(req.headers()['x-folio-meta']!)).title as string;
       courses.set(id, { version: base + 1, deleted: false, bytes: req.postDataBuffer()!, title });
       // The account has the course before the device hears so: the gap a slow connection leaves.
@@ -48,7 +62,7 @@ function fakeAccount({ putDelay = 0 } = {}) {
       return send({ version: base + 1 });
     });
   }
-  return { courses, calls, attach };
+  return { courses, texts, calls, attach };
 }
 
 async function signIn(page: Page): Promise<void> {
@@ -213,4 +227,35 @@ test('a course deleted on one device and changed on another is kept once, as a c
   await expect.poll(() => account.calls.filter((c) => c === 'GET courses').length).toBeGreaterThan(2);
   await page.waitForTimeout(1500);
   await expect(page.getByRole('link', { name: /Reading the world with data/ })).toHaveCount(1);
+});
+
+test('a course’s attached file goes to the account once, and opens whole on another device', async ({ page, context, browser }) => {
+  const account = fakeAccount();
+  await account.attach(context);
+  await openSample(page);
+  await signIn(page);
+  await page.getByRole('dialog', { name: 'Add these courses to your account?' }).getByRole('button', { name: 'Add 1 course' }).click();
+  await expect.poll(() => account.courses.size).toBe(1);
+  await page.goto('/library');
+  await page.getByRole('link', { name: /Reading the world with data/ }).click();
+  await page.getByRole('button', { name: 'Sources', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Title' }).fill('Class survey notes');
+  await page.getByRole('textbox', { name: 'Source text' }).fill('Students surveyed 120 classmates about their commute. '.repeat(400));
+  await page.getByRole('button', { name: 'Add source' }).click();
+  await expect.poll(() => account.texts.size).toBe(1);
+  // The account's copy of the course refers to the file without carrying it.
+  await expect.poll(() => [...account.courses.values()][0]!.version).toBeGreaterThan(1);
+  const [stored] = [...account.courses.values()];
+  expect(gunzipSync(stored!.bytes).toString('utf8')).not.toContain('Students surveyed 120 classmates');
+
+  const other = await browser.newContext();
+  await account.attach(other);
+  const elsewhere = await other.newPage();
+  await elsewhere.goto('/');
+  await signIn(elsewhere);
+  await elsewhere.goto('/library');
+  await elsewhere.getByRole('link', { name: /Reading the world with data/ }).click();
+  await elsewhere.getByRole('button', { name: 'Sources', exact: true }).click();
+  await expect(elsewhere.getByRole('dialog').getByText(/Students surveyed 120 classmates/).first()).toBeVisible();
+  await other.close();
 });

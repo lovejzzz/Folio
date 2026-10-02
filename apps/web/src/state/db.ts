@@ -47,6 +47,8 @@ export interface SyncRow {
   state: 'linked' | 'declined' | 'ask';
   version: number;
   synced: string;
+  /** The file texts the account holds for this course, as of the last send or fetch. */
+  sent?: string[];
 }
 
 class FolioDb extends Dexie {
@@ -143,7 +145,7 @@ async function writeCourse(course: Course, history: HistoryWrite | undefined): P
 }
 
 /** Every text stored for a course, by source ID. */
-async function textsOf(courseId: string): Promise<Texts> {
+export async function textsOf(courseId: string): Promise<Texts> {
   const rows = await db.sources.where('courseId').equals(courseId).toArray();
   return Object.fromEntries(rows.map((r) => [r.key.slice(courseId.length + 1), r.text]));
 }

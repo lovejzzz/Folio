@@ -14,6 +14,7 @@ export const SCHEMA_SHAPE: Record<string, string[]> = {
   daily_counts: ['day', 'metric', 'value'],
   free_grants: ['count', 'day', 'ip_hash'],
   sessions: ['expires_at', 'id_hash', 'user_id'],
+  source_chunks: ['course_id', 'data', 'n', 'source_id', 'user_id'],
   users: ['created_at', 'email', 'id', 'name'],
 };
 

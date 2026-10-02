@@ -3,7 +3,7 @@ import { proxyMessages } from './ai';
 import { proxyChat } from './openai';
 import { checkout, PACKS, webhook } from './billing';
 import { grantFree, MILLI, schoolEmail, statement, forgetPastGrantCounts } from './credits';
-import { listCourses, MAX_COURSE_BYTES, readCourse, removeAccount, removeCourse, writeCourse, type CourseMeta } from './courses';
+import { listCourses, MAX_COURSE_BYTES, MAX_SOURCE_BYTES, readCourse, readSource, removeAccount, removeCourse, writeCourse, writeSource, type CourseMeta } from './courses';
 import { SignInError, verifyIdToken } from './google';
 import { missingSchemaCached } from './schemaShape';
 import { clearCookie, clearNonce, endSession, newNonce, nonceCookie, nonceOf, setCookie, startSession, userOf } from './sessions';
@@ -78,6 +78,30 @@ async function signIn(request: Request, env: Env, fetchImpl?: typeof fetch): Pro
   }
 }
 
+/** The texts a body refers to, as the page lists them; null from an older page that sends no list. */
+function sourcesOf(request: Request): string[] | null {
+  const header = request.headers.get('x-folio-sources');
+  if (header === null) return null;
+  return header.split(',').map((s) => s.trim()).filter((s) => COURSE_ID.test(s));
+}
+
+/** One attached file's text for a course: sent once, fetched by a device that doesn't have it. */
+async function courseSource(request: Request, env: Env, user: User, id: string, sourceId: string): Promise<Response> {
+  if (!COURSE_ID.test(id) || !COURSE_ID.test(sourceId)) return problem(400, 'bad-course-id');
+  if (request.method === 'GET') {
+    const data = await readSource(env.DB, user.id, id, sourceId);
+    if (!data) return problem(404, 'not-found');
+    return new Response(data, { headers: { 'content-type': 'application/octet-stream', 'cache-control': 'no-store' } });
+  }
+  if (request.method === 'PUT') {
+    const data = new Uint8Array(await request.arrayBuffer());
+    if (data.length === 0 || data.length > MAX_SOURCE_BYTES) return problem(413, 'too-large');
+    await writeSource(env.DB, user.id, id, sourceId, data);
+    return json({ ok: true });
+  }
+  return problem(405, 'method');
+}
+
 async function course(request: Request, env: Env, user: User, id: string): Promise<Response> {
   if (!COURSE_ID.test(id)) return problem(400, 'bad-course-id');
   if (request.method === 'GET') {
@@ -91,7 +115,8 @@ async function course(request: Request, env: Env, user: User, id: string): Promi
     if (!Number.isInteger(base) || base < 0 || !m) return problem(400, 'bad-request');
     const data = new Uint8Array(await request.arrayBuffer());
     if (data.length === 0 || data.length > MAX_COURSE_BYTES) return problem(413, 'too-large');
-    const result = await writeCourse(env.DB, user.id, id, base, m, data);
+    const result = await writeCourse(env.DB, user.id, id, base, m, data, sourcesOf(request));
+    if ('missing' in result) return problem(422, 'sources-missing', { missing: result.missing });
     if (result.ok) {
       await count(env.DB, 'course_saved');
       return json({ version: result.version });
@@ -164,6 +189,7 @@ export async function handle(request: Request, env: Env, fetchImpl?: typeof fetc
   // OpenAI's chat completions, as the page's OpenAI adapter calls them with Folio credits.
   if (path.join('/') === 'ai/openai/v1/chat/completions' && request.method === 'POST') return proxyChat(request, env, user, waitUntil, fetchImpl);
   if (path[0] === 'courses' && path.length === 2) return course(request, env, user, path[1]!);
+  if (path[0] === 'courses' && path.length === 4 && path[2] === 'sources') return courseSource(request, env, user, path[1]!, path[3]!);
   if (path[0] === 'account' && path.length === 1 && request.method === 'DELETE') {
     await removeAccount(env.DB, user.id);
     return json({ ok: true }, 200, { 'set-cookie': clearCookie() });

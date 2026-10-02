@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { createCourse, type Course } from '@folio/core';
+import { createCourse, createSource, type Course } from '@folio/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('./session', () => ({ activeStore: () => null, dropSession: vi.fn(), flushNow: async () => {} }));
@@ -18,6 +18,9 @@ type Fault = { status: number } | 'lost' | null;
 /** The account's side: each course's latest copy and version, as the server keeps them. */
 const account = {
   courses: new Map<string, { version: number; course: Course | null }>(),
+  /** File texts, by `courseId/sourceId`, and every one that was sent. */
+  texts: new Map<string, string>(),
+  textsSent: [] as string[],
   fault: (_method: string, _path: string): Fault => null,
 };
 
@@ -27,7 +30,8 @@ const gunzip = async (body: BodyInit) => new Response(new Response(body).body!.p
 async function answer(method: string, path: string, init: RequestInit): Promise<Response> {
   if (path === 'session') return Response.json({ user: teacher });
   if (path === 'courses') return Response.json({ courses: [...account.courses].map(([id, c]) => ({ id, version: c.version, deleted: c.course === null })) });
-  const id = path.replace('courses/', '');
+  const [, id = '', , sourceId] = path.split('/');
+  if (sourceId) return answerText(method, `${id}/${sourceId}`, init);
   const held = account.courses.get(id);
   if (method === 'GET') {
     if (!held?.course) return new Response(null, { status: 404 });
@@ -35,12 +39,27 @@ async function answer(method: string, path: string, init: RequestInit): Promise<
   }
   if (method === 'PUT') {
     if (Number(new Headers(init.headers).get('if-match')) !== (held?.version ?? 0)) return new Response(null, { status: 409 });
+    const listed = new Headers(init.headers).get('x-folio-sources');
+    const needed = listed ? listed.split(',').filter(Boolean) : [];
+    const missing = needed.filter((s) => !account.texts.has(`${id}/${s}`));
+    if (missing.length) return Response.json({ error: 'sources-missing', missing }, { status: 422 });
+    for (const key of [...account.texts.keys()]) if (listed !== null && key.startsWith(`${id}/`) && !needed.includes(key.slice(id.length + 1))) account.texts.delete(key);
     const { course } = JSON.parse(await gunzip(init.body!)) as { course: Course };
     account.courses.set(id, { version: (held?.version ?? 0) + 1, course });
     return Response.json({ version: (held?.version ?? 0) + 1 });
   }
   account.courses.set(id, { version: (held?.version ?? 0) + 1, course: null });
   return new Response(null, { status: 204 });
+}
+
+async function answerText(method: string, key: string, init: RequestInit): Promise<Response> {
+  if (method === 'PUT') {
+    account.texts.set(key, await gunzip(init.body!));
+    account.textsSent.push(key);
+    return Response.json({ ok: true });
+  }
+  const text = account.texts.get(key);
+  return text === undefined ? new Response(null, { status: 404 }) : new Response(await gzip(text));
 }
 
 async function fakeFetch(url: string, init: RequestInit = {}): Promise<Response> {
@@ -77,6 +96,8 @@ beforeEach(async () => {
   vi.stubGlobal('document', { addEventListener: vi.fn(), visibilityState: 'visible' });
   vi.stubGlobal('navigator', { onLine: true, locks: navigator.locks });
   account.courses.clear();
+  account.texts.clear();
+  account.textsSent = [];
   account.fault = () => null;
   vi.mocked(toast).mockClear();
 });
@@ -186,5 +207,58 @@ describe('keeping the account and this device the same', () => {
     expect((await loadCourse(course.id))?.title).toBe('Ecology');
     expect(versionOf((await loadCourse(course.id))!)).toBe(versionOf(course));
     expect(useAccount.getState().sync).toBe('error');
+  });
+});
+
+describe('a course with a file', () => {
+  const book = 'A chapter of the textbook. '.repeat(20_000);
+  const withFile = () => {
+    const course = createCourse({ title: 'Ecology' });
+    const file = createSource('Textbook', book, 'file');
+    return { course: { ...course, sources: { [file.id]: file }, sourceOrder: [file.id] }, file };
+  };
+  /** As another device: the same account, nothing of this course on it yet. */
+  const otherDevice = () => Promise.all([db.courses.clear(), db.summaries.clear(), db.sources.clear(), db.history.clear(), db.sync.clear()]);
+
+  it('sends the file once; a later change sends only the body', async () => {
+    const { course, file } = withFile();
+    await signedInWith(course);
+    expect(account.textsSent).toEqual([`${course.id}/${file.id}`]);
+    expect(JSON.stringify(account.courses.get(course.id)?.course)).not.toContain('A chapter of the textbook');
+    await saveCourse(editedElsewhere(course, 'Ecology II'));
+    await settle();
+    expect(await unsent()).toBe(0);
+    expect(account.textsSent).toHaveLength(1);
+    expect(account.courses.get(course.id)?.course?.title).toBe('Ecology II');
+  });
+
+  it('reaches another device whole, its file fetched once', async () => {
+    const { course, file } = withFile();
+    await signedInWith(course);
+    await otherDevice();
+    vi.mocked(fetch).mockClear();
+    await pull();
+    expect((await loadCourse(course.id))?.sources[file.id]?.text).toBe(file.text);
+    const fetched = vi.mocked(fetch).mock.calls.filter(([url, init]) => String(url).includes('/sources/') && !(init as RequestInit | undefined)?.method);
+    expect(fetched).toHaveLength(1);
+  });
+
+  it('sends a file again when the account turns out not to have it', async () => {
+    const { course } = withFile();
+    await signedInWith(course);
+    account.texts.clear();
+    await saveCourse(editedElsewhere(course, 'Ecology II'));
+    await settle();
+    expect(await unsent()).toBe(0);
+    expect(account.textsSent).toHaveLength(2);
+    expect(account.texts.size).toBe(1);
+  });
+
+  it('opens an account copy saved before files were kept apart', async () => {
+    const { course, file } = withFile();
+    await start(teacher);
+    account.courses.set(course.id, { version: 1, course });
+    await pull();
+    expect((await loadCourse(course.id))?.sources[file.id]?.text).toBe(file.text);
   });
 });

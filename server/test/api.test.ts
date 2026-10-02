@@ -139,3 +139,59 @@ describe('courses in an account', () => {
     expect((await (await call('courses', { cookie: again })).json()).courses).toEqual([]);
   });
 });
+
+describe('a course’s file texts, kept apart', () => {
+  const putWith = (cookie: string, id: string, base: number, sources: string[] | null, bytes: Uint8Array<ArrayBuffer> = new Uint8Array([1, 2, 3])) =>
+    call(`courses/${id}`, {
+      method: 'PUT',
+      cookie,
+      body: bytes,
+      headers: { 'if-match': String(base), 'x-folio-meta': encodeURIComponent(JSON.stringify({ title: 'Biology', lessonCount: 3, updatedAt: '2026-10-02T10:00:00Z' })), ...(sources ? { 'x-folio-sources': sources.join(',') } : {}) },
+    });
+  const putSource = (cookie: string, id: string, sid: string, bytes: Uint8Array<ArrayBuffer>) => call(`courses/${id}/sources/${sid}`, { method: 'PUT', cookie, body: bytes });
+  const rows = async () => (await env.DB.prepare('SELECT DISTINCT source_id FROM source_chunks').all<{ source_id: string }>()).results.map((r) => r.source_id).sort();
+
+  it('are sent once and read back, and sending one again changes nothing', async () => {
+    const cookie = await signIn();
+    const text = new Uint8Array(2_000_000).map((_, i) => i % 251);
+    expect((await putSource(cookie, 'c_1', 's_a', text)).status).toBe(200);
+    expect((await putSource(cookie, 'c_1', 's_a', text)).status).toBe(200);
+    expect(new Uint8Array(await (await call('courses/c_1/sources/s_a', { cookie })).arrayBuffer())).toEqual(text);
+    expect((await call('courses/c_1/sources/s_b', { cookie })).status).toBe(404);
+  });
+
+  it('must all be there before a body that refers to them is taken, and the missing ones are named', async () => {
+    const cookie = await signIn();
+    await putSource(cookie, 'c_1', 's_a', new Uint8Array([9]));
+    const res = await putWith(cookie, 'c_1', 0, ['s_a', 's_b']);
+    expect(res.status).toBe(422);
+    expect(await res.json()).toMatchObject({ missing: ['s_b'] });
+    await putSource(cookie, 'c_1', 's_b', new Uint8Array([8]));
+    expect((await putWith(cookie, 'c_1', 0, ['s_a', 's_b'])).status).toBe(200);
+  });
+
+  it('go when the body no longer refers to them, or the course or account goes', async () => {
+    const cookie = await signIn();
+    await putSource(cookie, 'c_1', 's_a', new Uint8Array([9]));
+    await putSource(cookie, 'c_1', 's_b', new Uint8Array([8]));
+    expect((await putWith(cookie, 'c_1', 0, ['s_a', 's_b'])).status).toBe(200);
+    expect((await putWith(cookie, 'c_1', 1, ['s_a'])).status).toBe(200);
+    expect(await rows()).toEqual(['s_a']);
+    await call('courses/c_1', { method: 'DELETE', cookie });
+    expect(await rows()).toEqual([]);
+    await putSource(cookie, 'c_2', 's_c', new Uint8Array([7]));
+    await call('account', { method: 'DELETE', cookie });
+    expect(await rows()).toEqual([]);
+  });
+
+  it('are the account’s alone, within a size, and an older page that sends none still saves', async () => {
+    const ada = await signIn();
+    await putSource(ada, 'c_1', 's_a', new Uint8Array([9]));
+    const bob = await signIn({ sub: 'g-other', email: 'bob@example.edu' });
+    expect((await call('courses/c_1/sources/s_a', { cookie: bob })).status).toBe(404);
+    expect((await putSource(ada, 'c_1', 's_big', new Uint8Array(4 * 1024 * 1024 + 1))).status).toBe(413);
+    // No list: an older page's body carries its own text, and nothing kept apart is touched.
+    expect((await putWith(ada, 'c_1', 0, null)).status).toBe(200);
+    expect(await rows()).toEqual(['s_a']);
+  });
+});
