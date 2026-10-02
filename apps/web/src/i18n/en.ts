@@ -571,6 +571,7 @@ export const en = {
     copyOf: (title: string) => `${title} (copy)`,
     planning: 'Outline',
     building: 'Partly written',
+    materialCount: (n: number) => (n === 1 ? '1 material' : `${n} materials`),
     actions: (title: string) => `Actions for ${title}`,
     noMatch: 'No courses match.',
     /** Why a file could not be opened. */
