@@ -37,7 +37,15 @@ export const useDraft = create<Draft>((set) => ({
 export const CORE_MATERIALS = CORE_SET;
 
 /** A file named like a syllabus, for when the model could not say which attached file is one. */
-export const looksLikeSyllabus = (title: string) => /syllab|course outline|schedule/i.test(title);
+export const looksLikeSyllabus = (title: string) => /syllab|course (outline|schedule)/i.test(title);
+
+/**
+ * The attached file that is the course's own syllabus: as the model read it, and "none is" stands. Only when
+ * the files could not be read at all (`read` is null) is it told by its name.
+ */
+export function ownSyllabus(read: { syllabus: string } | null, sources: readonly { title: string }[]): string | undefined {
+  return (read ? read.syllabus : sources.find((s) => looksLikeSyllabus(s.title))?.title) || undefined;
+}
 
 type Guesses = typeof import('../lib/brief');
 let guesses: Guesses | null = null;

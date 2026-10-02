@@ -177,3 +177,38 @@ export function truncatedOutput(text: string): MalformedOutputError {
 export function isAbort(error: unknown): boolean {
   return error instanceof DOMException && error.name === 'AbortError';
 }
+
+/** Waits, unless stopped first. */
+const pause = (ms: number, signal?: AbortSignal | null) =>
+  new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener('abort', () => (clearTimeout(timer), reject(new InferenceError('aborted', 'Stopped.'))), { once: true });
+  });
+
+/** How long before asking again: what the provider says, up to 20 s, else a little longer each time. */
+function retryDelay(response: Response | null, tries: number): number {
+  const said = Number(response?.headers.get('retry-after'));
+  return response?.headers.get('retry-after') && Number.isFinite(said) ? Math.min(20_000, Math.max(0, said * 1000)) : 1000 * 2 ** tries;
+}
+
+/**
+ * POST a request and read its JSON answer. A busy or failing provider (429, 5xx) and a dropped connection are
+ * asked again, `retries` times; every failure, reading the answer included, comes out as an InferenceError.
+ */
+export async function postJson<T>(fetchImpl: typeof fetch, url: string, init: { headers: Record<string, string>; body: string; signal?: AbortSignal | null }, unreachable: string, retries = 2): Promise<T> {
+  for (let tries = 0; ; tries++) {
+    let failure: InferenceError;
+    let response: Response | null = null;
+    try {
+      response = await fetchImpl(url, { method: 'POST', ...init, signal: init.signal ?? null });
+      if (response.ok) return (await response.json()) as T;
+      failure = errorFromStatus(response.status, await response.text());
+    } catch (error) {
+      if (isAbort(error) || init.signal?.aborted) throw new InferenceError('aborted', 'Stopped.');
+      // An answer that isn't JSON came from something in between, not the model.
+      failure = error instanceof SyntaxError ? new InferenceError('server', 'The answer could not be read.') : new InferenceError('network', unreachable);
+    }
+    if (tries >= retries || !['rate', 'server', 'network'].includes(failure.kind)) throw failure;
+    await pause(retryDelay(response, tries), init.signal);
+  }
+}

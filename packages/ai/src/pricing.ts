@@ -42,7 +42,7 @@ export function modelKey(model: string): string {
   return model
     .toLowerCase()
     .replace(/^models\//, '')
-    .replace(/-\d{8}$/, '')
+    .replace(/-\d{8}$|-\d{4}-\d{2}-\d{2}$/, '')
     .replace(/(\d)-(?=\d)/g, '$1.');
 }
 

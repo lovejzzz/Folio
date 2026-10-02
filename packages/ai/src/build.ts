@@ -76,13 +76,29 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
     BUILT_ON_PLAN.has(t.kind) &&
     [...pending, ...[...running.keys()].map(parseKey)].some((o) => o.lessonId === t.lessonId && o.kind === 'plan');
 
+  // A plan that failed takes with it what would be written from it: written without, those parts would look
+  // finished and be wrong. They stay missing, for Resume to write once the plan is.
+  const failedPlans = new Map<string, InferenceError>();
+  const dropUnplanned = (): void => {
+    for (let i = pending.length - 1; i >= 0; i--) {
+      const t = pending[i]!;
+      const error = BUILT_ON_PLAN.has(t.kind) ? failedPlans.get(t.lessonId) : undefined;
+      if (!error) continue;
+      pending.splice(i, 1);
+      summary.failed += 1;
+      host.onEvent?.({ type: 'error', target: t, error });
+    }
+  };
+
   const start = (t: BuildTarget): void => {
     const key = targetKey(t);
-    running.set(key, runOne(host, t, summary).finally(() => running.delete(key)));
+    const failed = (error: InferenceError) => void (t.kind === 'plan' && failedPlans.set(t.lessonId, error));
+    running.set(key, runOne(host, t, summary, failed).finally(() => running.delete(key)));
   };
 
   while ((pending.length || running.size) && !summary.fatal) {
     if (host.signal.aborted) break;
+    dropUnplanned();
     let index = pending.findIndex((t) => !blocked(t));
     while (index >= 0 && running.size < limit) {
       start(pending.splice(index, 1)[0]!);
@@ -101,7 +117,7 @@ function parseKey(key: string): BuildTarget {
   return { lessonId, kind };
 }
 
-async function runOne(host: BuildHost, target: BuildTarget, summary: BuildSummary): Promise<void> {
+async function runOne(host: BuildHost, target: BuildTarget, summary: BuildSummary, failed: (error: InferenceError) => void): Promise<void> {
   const course = host.getCourse();
   if (!stillWanted(course, target) || summary.fatal) return;
   host.onEvent?.({ type: 'start', target });
@@ -118,6 +134,7 @@ async function runOne(host: BuildHost, target: BuildTarget, summary: BuildSummar
     const err = error instanceof InferenceError ? error : new InferenceError('invalid', String(error));
     if (FATAL.has(err.kind)) summary.fatal ??= err;
     else summary.failed += 1;
+    failed(err);
     host.onEvent?.({ type: 'error', target, error: err });
   }
 }

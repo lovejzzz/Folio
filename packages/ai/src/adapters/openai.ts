@@ -1,9 +1,8 @@
 import { z } from 'zod';
 import {
   InferenceError,
-  errorFromStatus,
-  isAbort,
   parseJsonText,
+  postJson,
   truncatedOutput,
   type CompletionRequest,
   type Inference,
@@ -84,24 +83,13 @@ export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch
           ? { type: 'json_object' }
           : { type: 'json_schema', json_schema: { name: request.task, schema, strict: false } },
       };
-      let response: Response;
-      try {
-        response = await fetchImpl(`${base}/chat/completions`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(body),
-          signal: request.signal ?? null,
-        });
-      } catch (error) {
-        if (isAbort(error)) throw new InferenceError('aborted', 'Stopped.');
-        throw new InferenceError('network', `Could not reach ${local ? base : NAMES[settings.provider]}.`);
-      }
-      if (!response.ok) throw errorFromStatus(response.status, await response.text());
-      const data = (await response.json()) as {
+      type Answer = {
         choices?: { message?: { content?: string | null; refusal?: string | null }; finish_reason?: string }[];
         model?: string;
         usage?: OpenAiUsage;
       };
+      // A server on this computer that isn't running won't be in a moment: only the cloud is asked again.
+      const data = await postJson<Answer>(fetchImpl, `${base}/chat/completions`, { headers, body: JSON.stringify(body), signal: request.signal }, `Could not reach ${local ? base : NAMES[settings.provider]}.`, local ? 0 : 2);
       // A model on this computer costs nothing, so there is nothing to count.
       if (data.usage && !local) onUsage?.({ provider: settings.provider, model: data.model || settings.model, ...fromOpenAi(data.usage) });
       const choice = data.choices?.[0];

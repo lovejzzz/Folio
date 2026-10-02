@@ -90,7 +90,14 @@ export async function runJob<T>(inference: Inference, spec: JobSpec<T>): Promise
   if (first.value !== undefined && first.problems.length === 0) {
     return { value: first.value, problems: [], repaired: false };
   }
-  const second = await attempt(inference, request, repairPrompt(spec.prompt, first.raw, first.problems), spec);
+  let second: Attempt<T>;
+  try {
+    second = await attempt(inference, request, repairPrompt(spec.prompt, first.raw, first.problems), spec);
+  } catch (error) {
+    // The repair couldn't be asked for (a rate limit, a dropped connection): a usable first answer still stands.
+    if (first.value === undefined || (error instanceof InferenceError && error.kind === 'aborted')) throw error;
+    return { value: first.value, problems: shown(first.problems), repaired: false };
+  }
   // A repair that made things worse is not taken: keep whichever answer has fewer real problems.
   if (second.value !== undefined && (first.value === undefined || shown(second.problems).length <= shown(first.problems).length)) {
     return { value: second.value, problems: shown(second.problems), repaired: true };

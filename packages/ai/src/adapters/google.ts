@@ -1,9 +1,8 @@
 import { z } from 'zod';
 import {
   InferenceError,
-  errorFromStatus,
-  isAbort,
   parseJsonText,
+  postJson,
   truncatedOutput,
   type CompletionRequest,
   type Inference,
@@ -26,25 +25,12 @@ export function googleInference(settings: ModelSettings, fetchImpl: typeof fetch
           responseJsonSchema: z.toJSONSchema(request.schema),
         },
       };
-      let response: Response;
-      try {
-        response = await fetchImpl(url, {
-          method: 'POST',
-          headers: { 'content-type': 'application/json', 'x-goog-api-key': settings.apiKey },
-          body: JSON.stringify(body),
-          signal: request.signal ?? null,
-        });
-      } catch (error) {
-        if (isAbort(error)) throw new InferenceError('aborted', 'Stopped.');
-        throw new InferenceError('network', 'Could not reach Google.');
-      }
-      if (!response.ok) throw errorFromStatus(response.status, await response.text());
-      const data = (await response.json()) as {
+      const data = await postJson<{
         candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[];
         promptFeedback?: { blockReason?: string };
         modelVersion?: string;
         usageMetadata?: { promptTokenCount?: number; cachedContentTokenCount?: number; candidatesTokenCount?: number; thoughtsTokenCount?: number };
-      };
+      }>(fetchImpl, url, { headers: { 'content-type': 'application/json', 'x-goog-api-key': settings.apiKey }, body: JSON.stringify(body), signal: request.signal }, 'Could not reach Google.');
       const u = data.usageMetadata;
       if (u) {
         // Gemini counts cached input inside the prompt, and bills thinking as output.

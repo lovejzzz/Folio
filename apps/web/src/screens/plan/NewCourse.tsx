@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { useT } from '../../i18n';
-import { looksLikeSyllabus, useDraft } from '../../state/draft';
+import { ownSyllabus, useDraft } from '../../state/draft';
 import { currentInference, errorMessage } from '../../state/model';
 import { createSession } from '../../state/session';
 import { recordUsage } from '../../state/spend';
@@ -61,8 +61,7 @@ function withAnswers(req: NewCourseRequest, read: ClarifyDraft | null, answers: 
     lessonCount: lessonsToPlan({ ...req, defaultLessons: useDraft.getState().lessons }, read, answers),
     minutesPerLesson: minutesToPlan(req.minutesPerLesson, read, answers),
     level: req.level || read?.level || '',
-    // The file that is the course's own syllabus: as the model read it, or by its name when it could not say.
-    syllabus: read?.syllabus || req.sources.find((s) => looksLikeSyllabus(s.title))?.title || undefined,
+    syllabus: ownSyllabus(read, req.sources),
   };
 }
 
