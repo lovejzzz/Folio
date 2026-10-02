@@ -27,7 +27,7 @@ test('a key that stops working mid-build is fixed from the toast, and the build 
 
   await page.getByRole('button', { name: 'Fix the key' }).click();
   const dialog = page.getByRole('dialog', { name: 'Connect an AI' });
-  await dialog.getByLabel('API key').fill('sk-ant-new');
+  await dialog.getByLabel('API key', { exact: true }).fill('sk-ant-new');
   bad = false;
   await dialog.getByRole('button', { name: 'Connect and continue' }).click();
   await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 30_000 });

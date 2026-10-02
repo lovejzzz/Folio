@@ -13,8 +13,9 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   const dialog = page.getByRole('dialog', { name: 'Connect an AI' });
   await expect(dialog).toBeVisible();
   // Folio credits are offered first; this teacher brings their own key.
-  await dialog.getByText('Use my Claude key').click();
-  await dialog.getByLabel('API key').fill('sk-ant-test');
+  await dialog.getByRole('radio', { name: /Use my API keys/ }).click({ force: true });
+  await dialog.getByRole('radio', { name: /Use my Claude key/ }).click({ force: true });
+  await dialog.getByLabel('API key', { exact: true }).fill('sk-ant-test');
   await dialog.getByRole('button', { name: 'Connect and continue' }).click();
 
   // The outline is editable before anything else is written.

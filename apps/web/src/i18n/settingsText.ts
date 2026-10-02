@@ -3,6 +3,10 @@ export const settingsText = {
   title: 'Settings',
   ai: 'AI',
   aiLede: 'Folio writes with Folio credits, or with an AI key of your own. Your key stays in this browser and goes straight to the AI company; either way, Folio tells you what each course used.',
+  /** The two ways to write: Folio's credits, or the teacher's own AI, chosen beneath. */
+  own: { name: 'Use my API keys', note: 'Claude, OpenAI, Gemini or DeepSeek with a key of your own, or a model on this device. You pay the AI company directly.' },
+  ownChoice: 'Which AI',
+  brands: { folio: 'Folio credits', anthropic: 'Claude', openai: 'OpenAI', google: 'Gemini', deepseek: 'DeepSeek', local: 'On this device' },
   providers: {
     folio: { name: 'Use Folio credits', short: 'Folio credits', note: 'No key needed: sign in with Google. School emails (.edu) get 750 free credits, enough for about 25 lessons with every material.' },
     anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use, and Claude Opus 5.5 checks each lesson plan before the rest is written.' },

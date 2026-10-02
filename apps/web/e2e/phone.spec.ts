@@ -109,7 +109,8 @@ test('on a phone a tall dialog fits the screen and scrolls inside itself', async
   await page.getByRole('button', { name: 'Continue' }).click();
   const dialog = page.getByRole('dialog', { name: 'Connect an AI' });
   await expect(dialog).toBeVisible();
-  await dialog.getByText('Use my Claude key').click();
+  await dialog.getByRole('radio', { name: /Use my API keys/ }).click({ force: true });
+  await dialog.getByRole('radio', { name: /Use my Claude key/ }).click({ force: true });
   // The sheet around the dialog is what scrolls: it, not the content, has to fit.
   const box = (await dialog.locator('xpath=..').boundingBox())!;
   expect(box.y).toBeGreaterThanOrEqual(0);

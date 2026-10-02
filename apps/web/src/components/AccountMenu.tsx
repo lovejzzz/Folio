@@ -19,13 +19,21 @@ export function syncLine(sync: SyncState, lastSynced: number | null): string {
 }
 
 /** The balance, once the server has said it; nothing where credits aren't in use. */
-function CreditsLine() {
+function CreditsLine({ close }: { close: () => void }) {
   const { balance, available } = useCredits();
   useEffect(() => {
     void refreshCredits();
   }, []);
   if (balance === null || !available) return null;
-  return <p className="mx-1 mt-1 px-3 font-ui text-12 text-ink-2">{creditsText.balance(balance)}</p>;
+  return (
+    <div className="mx-1 mt-1 flex items-center justify-between gap-3 pl-3 pr-1">
+      <p className="font-ui text-12 text-ink-2">{creditsText.balance(balance)}</p>
+      {/* Straight to the packs in Settings. */}
+      <Link to="/settings" hash="credits" onClick={close} className="rounded-control px-2 py-1 font-ui text-12 font-medium text-accent outline-none hover:bg-well focus-visible:ring-2 focus-visible:ring-accent">
+        {creditsText.addCredits}
+      </Link>
+    </div>
+  );
 }
 
 /** Signing out asks first, and says so plainly when changes here haven't reached the account yet. */
@@ -85,7 +93,7 @@ export function AccountMenu({ user }: { user: AccountUser }) {
                 <p role="status" className="mx-1 rounded-control bg-well px-3 py-2 font-ui text-12 leading-5 text-ink-2">
                   {syncLine(sync, lastSynced)}
                 </p>
-                <CreditsLine />
+                <CreditsLine close={close} />
                 <div className="mt-1 border-t border-rule pt-1">
                   <Link to="/settings" onClick={close} className="flex h-8 items-center gap-2.5 rounded-control px-2.5 font-ui text-14 text-ink outline-none hover:bg-well focus-visible:bg-well">
                     <SettingsIcon size={15} strokeWidth={1.75} className="text-ink-2" aria-hidden />

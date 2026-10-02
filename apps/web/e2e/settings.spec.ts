@@ -6,6 +6,7 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
 
 test('testing a connection with no key asks for the key, not for Settings', async ({ page }) => {
   await page.goto('/settings');
+  await page.getByRole('radio', { name: /Use my API keys/ }).click({ force: true });
   await page.getByRole('radio', { name: /Use my Claude key/ }).click({ force: true });
   await page.getByRole('button', { name: 'Test connection' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Paste a key first.' })).toBeVisible();
@@ -15,11 +16,15 @@ test('testing a connection with no key asks for the key, not for Settings', asyn
 test('a new visitor starts on Folio credits, and a teacher who chooses their own key keeps it', async ({ page }) => {
   await page.goto('/settings');
   await expect(page.getByRole('radio', { name: /Use Folio credits/ })).toBeChecked();
+  // Their own AI is one choice; which one is chosen beneath it.
+  await expect(page.getByRole('radio', { name: /Use my Claude key/ })).toHaveCount(0);
+  await page.getByRole('radio', { name: /Use my API keys/ }).click({ force: true });
   await page.getByRole('radio', { name: /Use my Claude key/ }).click({ force: true });
-  await page.getByLabel('API key').fill('sk-ant-test');
+  await page.getByLabel('API key', { exact: true }).fill('sk-ant-test');
   await page.reload();
+  await expect(page.getByRole('radio', { name: /Use my API keys/ })).toBeChecked();
   await expect(page.getByRole('radio', { name: /Use my Claude key/ })).toBeChecked();
-  await expect(page.getByLabel('API key')).toHaveValue('sk-ant-test');
+  await expect(page.getByLabel('API key', { exact: true })).toHaveValue('sk-ant-test');
   // Writing with their own key, the home page shows no credits.
   await page.goto('/');
   await expect(page.getByText(/credits left|Not enough credits/)).toHaveCount(0);
@@ -37,7 +42,7 @@ test('a provider becomes the one Folio uses only once it has a key', async ({ pa
   await expect(page.getByRole('radio', { name: /Use my Claude key/ })).toBeChecked();
 
   await page.getByRole('radio', { name: /Use my OpenAI key/ }).click({ force: true });
-  await page.getByLabel('API key').fill('sk-openai-test');
+  await page.getByLabel('API key', { exact: true }).fill('sk-openai-test');
   await expect(page.getByText(/Folio is still using/)).toHaveCount(0);
   await page.getByRole('link', { name: 'Library' }).click();
   await expect(page).toHaveURL(/\/library$/);

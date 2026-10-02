@@ -1,7 +1,7 @@
 import { PROVIDERS, type ProviderId } from '@folio/ai';
 import { Button, IconButton, TextField, cx } from '@folio/ui';
 import { CircleHelp } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Radio, RadioGroup } from 'react-aria-components';
 import { readHint, signIn, useAccount } from '../state/account';
 import { creditsText, refreshCredits, useCredits } from '../state/credits';
@@ -30,30 +30,72 @@ function KeyHelp({ provider }: { provider: ProviderId }) {
   );
 }
 
-/** Plain choices, each with a one-line cost and privacy note. */
+const cardClass = cx(
+  'group flex cursor-default gap-3 rounded-sheet border border-rule bg-paper p-3 outline-none transition-colors duration-120',
+  'data-hovered:border-field data-selected:border-accent data-selected:bg-accent-tint data-focus-visible:ring-2 data-focus-visible:ring-accent',
+);
+
+function Dot() {
+  return (
+    <span aria-hidden className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border border-field bg-paper group-data-selected:border-accent">
+      <span className="size-2 rounded-full bg-accent opacity-0 group-data-selected:opacity-100" />
+    </span>
+  );
+}
+
+/** The teacher's own AI: which company's key, or a model on this device. */
+const OWN = PROVIDERS.filter((p) => p !== 'folio');
+
+function OwnChoice({ value, onChange, compact }: { value: ProviderId; onChange: (p: ProviderId) => void; compact?: boolean }) {
+  return (
+    <div className="mt-3">
+      <RadioGroup value={value} onChange={(v) => onChange(v as ProviderId)} aria-label={settingsText.ownChoice} orientation="horizontal" className="flex flex-wrap gap-2">
+        {OWN.map((p) => (
+          <Radio
+            key={p}
+            value={p}
+            aria-label={settingsText.providers[p].name}
+            className={cx(
+              'cursor-default rounded-full border border-field bg-paper px-3.5 py-1.5 font-ui text-14 text-ink outline-none transition-colors duration-120',
+              'data-hovered:border-ink-2 data-selected:border-accent data-selected:bg-accent-tint data-selected:font-medium data-focus-visible:ring-2 data-focus-visible:ring-accent',
+            )}
+          >
+            {settingsText.brands[p]}
+          </Radio>
+        ))}
+      </RadioGroup>
+      {!compact && <p className="mt-2 font-ui text-13 leading-snug text-ink-2">{settingsText.providers[value].note}</p>}
+    </div>
+  );
+}
+
+/**
+ * Two ways to write: Folio credits, or the teacher's own AI. Choosing their own opens the second choice, of
+ * which: the one they used last, else the first they have a key for.
+ */
 export function ProviderChoice({ value, onChange, compact }: { value: ProviderId; onChange: (p: ProviderId) => void; compact?: boolean }) {
   const t = useT();
+  const [last, setLast] = useState<ProviderId>(() => (value !== 'folio' ? value : (OWN.find(hasKey) ?? 'anthropic')));
+  const own = value !== 'folio' ? value : last;
+  const pick = (p: ProviderId) => {
+    setLast(p);
+    onChange(p);
+  };
   return (
-    <RadioGroup value={value} onChange={(v) => onChange(v as ProviderId)} aria-label={t.connect.step1} className={cx('grid gap-2', !compact && 'sm:grid-cols-2')}>
-      {PROVIDERS.map((p) => (
-        <Radio
-          key={p}
-          value={p}
-          className={cx(
-            'group flex cursor-default gap-3 rounded-sheet border sm:last:odd:col-span-2 border-rule bg-paper p-3 outline-none transition-colors duration-120',
-            'data-hovered:border-field data-selected:border-accent data-selected:bg-accent-tint data-focus-visible:ring-2 data-focus-visible:ring-accent',
-          )}
-        >
-          <span aria-hidden className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border border-field bg-paper group-data-selected:border-accent">
-            <span className="size-2 rounded-full bg-accent opacity-0 group-data-selected:opacity-100" />
-          </span>
-          <span className="min-w-0">
-            <span className="block font-ui text-14 font-medium text-ink">{settingsText.providers[p].name}</span>
-            {!compact && <span className="mt-0.5 block font-ui text-13 leading-snug text-ink-2">{settingsText.providers[p].note}</span>}
-          </span>
-        </Radio>
-      ))}
-    </RadioGroup>
+    <div>
+      <RadioGroup value={value === 'folio' ? 'folio' : 'own'} onChange={(v) => onChange(v === 'folio' ? 'folio' : own)} aria-label={t.connect.step1} className={cx('grid gap-2', !compact && 'sm:grid-cols-2')}>
+        {(['folio', 'own'] as const).map((way) => (
+          <Radio key={way} value={way} className={cardClass}>
+            <Dot />
+            <span className="min-w-0">
+              <span className="block font-ui text-14 font-medium text-ink">{way === 'folio' ? settingsText.providers.folio.name : settingsText.own.name}</span>
+              {!compact && <span className="mt-0.5 block font-ui text-13 leading-snug text-ink-2">{way === 'folio' ? settingsText.providers.folio.note : settingsText.own.note}</span>}
+            </span>
+          </Radio>
+        ))}
+      </RadioGroup>
+      {value !== 'folio' && <OwnChoice value={own} onChange={pick} compact={compact} />}
+    </div>
   );
 }
 

@@ -104,7 +104,11 @@ test('in Settings, a signed-in teacher switches from their own key to Folio cred
   await page.goto('/');
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.getByRole('button', { name: 'Account: ada@example.edu' }).waitFor();
-  await page.goto('/settings');
+  // The account menu shows the balance, with the way to add to it beside it.
+  await page.getByRole('button', { name: 'Account: ada@example.edu' }).click();
+  await expect(page.getByRole('dialog', { name: 'Account' }).getByText('750 credits')).toBeVisible();
+  await page.getByRole('dialog', { name: 'Account' }).getByRole('link', { name: 'Add credits' }).click();
+  await expect(page).toHaveURL(/\/settings#credits$/);
   await page.getByText('Use Folio credits').click();
   await expect(page.getByText('You have 750 credits.')).toBeVisible();
   // No key to test, and nothing else to press: credits are what Folio now writes with.

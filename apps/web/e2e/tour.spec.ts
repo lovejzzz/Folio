@@ -19,7 +19,7 @@ async function tour(page: Page, theme: string) {
   await shot(page, `${theme}-01-home`);
   await page.getByLabel('Describe your course').fill('Photosynthesis for year 7, four lessons');
   await page.getByRole('button', { name: 'Continue' }).click();
-  await page.getByRole('dialog').getByLabel('API key').fill('sk-ant-test');
+  await page.getByRole('dialog').getByLabel('API key', { exact: true }).fill('sk-ant-test');
   await shot(page, `${theme}-02-connect`);
   await page.getByRole('button', { name: 'Connect and continue' }).click();
   await page.getByText('Drafting an outline').waitFor();
