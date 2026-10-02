@@ -84,10 +84,15 @@ function accents(word: string, from: number, out: Span[]): void {
   if (at < word.length) out.push({ text: word.slice(at), code: false, math: true, at: from + at, inner: from + at, end: from + word.length });
 }
 
+/** An email or web address: its underscores and carets are part of it, never a sub- or superscript. */
+const ADDRESS = /(?:https?:\/\/|www\.)\S+|[\p{L}\p{N}._%+-]+@[\p{L}\p{N}-]+(?:\.[\p{L}\p{N}-]+)+/giu;
+
 function scripts(text: string, from: number, to: number, out: Span[]): void {
   const segment = text.slice(from, to);
+  const addresses = segment.includes('@') || /https?:|www\./i.test(segment) ? [...segment.matchAll(ADDRESS)].map((m) => [m.index, m.index + m[0].length] as const) : [];
   let at = 0;
   for (const m of segment.matchAll(SCRIPT)) {
+    if (addresses.some(([start, end]) => m.index >= start && m.index < end)) continue;
     if (m.index > at) plain(text, from + at, from + m.index, out);
     const [, braced, word, sub, sup] = m;
     const unicode = sub ?? sup;

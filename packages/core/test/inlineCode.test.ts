@@ -111,3 +111,13 @@ describe('Unicode sub- and superscripts and maths words', () => {
     expect(hasMarks('x₁')).toBe(true);
   });
 });
+
+describe('addresses', () => {
+  it('keep their underscores: an email or a link is not maths', () => {
+    for (const text of ['Email j_smith@uni.edu with questions', 'See https://uni.edu/~r/s_2026/x_y.pdf', 'Go to www.uni.edu/a_b^c']) {
+      expect(textRuns(text)).toEqual([{ text, code: false }]);
+    }
+    // Maths beside an address is still set as maths.
+    expect(textRuns('x_i, see j_s@uni.edu').some((r) => r.script === 'sub' && r.text === 'i')).toBe(true);
+  });
+});

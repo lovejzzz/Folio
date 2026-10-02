@@ -144,3 +144,21 @@ function allText(zip: Uint8Array): string {
     .map(([name, bytes]) => (/\.(docx|pptx|xlsx|folio)$/.test(name) ? Object.values(unzipSync(bytes)).map((b) => decode(strFromU8(b))).join('\n') : strFromU8(bytes)))
     .join('\n');
 }
+
+describe('file names that would go wrong', () => {
+  it('always say whose copy it is, however long the rest', () => {
+    const args = ['Reading the world with data', 'Syllabus, Quiz & exam bank, Discussion prompts', 'docx', `Lesson 1 · An exceptionally long lesson title that keeps going on and on ${'and on '.repeat(6)}`] as const;
+    const teacher = slugFilename(args[0], args[1], 'Teacher copy, with answers', args[2], args[3]);
+    const student = slugFilename(args[0], args[1], 'Student copy', args[2], args[3]);
+    expect(teacher.endsWith('(Teacher copy, with answers).docx')).toBe(true);
+    expect(student.endsWith('(Student copy).docx')).toBe(true);
+    expect(Array.from(teacher).length).toBeLessThanOrEqual(125);
+  });
+
+  it('are never hidden, nameless, a device’s name, or too long for the disk', () => {
+    expect(slugFilename('...', '', '', 'folio')).toBe('Folio.folio');
+    expect(slugFilename('.hidden course', '', '', 'folio')).toBe('hidden course.folio');
+    expect(slugFilename('CON', '', '', 'folio')).toBe('CON_.folio');
+    expect(new TextEncoder().encode(slugFilename('統計'.repeat(100), '測驗', '教師版', 'docx')).length).toBeLessThanOrEqual(255);
+  });
+});

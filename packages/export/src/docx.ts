@@ -1,10 +1,11 @@
 import { AlignmentType, Document, Footer, HeadingLevel, Packer, PageNumber, Paragraph, TextRun, type ISectionOptions } from 'docx';
-import { docLabels, type Block, type SemanticDoc } from '@folio/core';
+import { cleanText, docLabels, type Block, type SemanticDoc } from '@folio/core';
 import { printPalette } from '@folio/ui/tokens';
 import { renderBlock, runs, type BlockCtx, type DocxChild } from './docxBlocks';
 import { MARGIN, SIZE, contentWidth, documentStyles, fontFor, numbering, pageSize } from './docxTheme';
 import { exportLabels } from './labels';
 import { ExportError } from './errors';
+import { cleanDoc } from './xml';
 
 export interface DocxOptions {
   courseTitle: string;
@@ -75,15 +76,17 @@ function section(doc: SemanticDoc, courseTitle: string, lists: { count: number }
  * table header rows, so Word's navigation pane and table of contents work.
  */
 export async function renderDocx(docs: SemanticDoc[], opts: DocxOptions): Promise<Uint8Array> {
+  docs = cleanDoc(docs);
+  const courseTitle = cleanText(opts.courseTitle);
   const first = docs[0];
   if (!first) throw new ExportError('noMaterials', 'Choose at least one material to export.');
   const lists = { count: 0 };
   const document = new Document({
-    title: opts.courseTitle,
+    title: courseTitle,
     creator: 'Folio',
     styles: documentStyles(first.language),
     numbering: numbering(),
-    sections: docs.map((doc) => section(doc, opts.courseTitle, lists)),
+    sections: docs.map((doc) => section(doc, courseTitle, lists)),
   });
   return new Uint8Array(await Packer.toArrayBuffer(document));
 }

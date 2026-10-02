@@ -45,6 +45,10 @@ export function projectMap(ctx: Ctx): Block[] {
   return blocks;
 }
 
+/** How a list item or a schedule row opens: a bullet, a number, "Week 3", a date or a weekday. */
+const OWN_LINE =
+  /^(?:[-•*·–▪◦]\s|\(?\d{1,3}[.)]\s|(?:week|unit|session|module|class|lesson|lecture|day|part)\s+\d|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|mon|tue|wed|thu|fri|sat|sun)[a-z]*\.?,?\s+\d|\d{1,2}\/\d{1,2}\b)/i;
+
 /**
  * A syllabus the teacher brought: kept as they wrote it. Lines that are a table row or a list item stay lines;
  * a paragraph a PDF broke across lines is joined again.
@@ -56,7 +60,14 @@ function theirText(text: string): Block[] {
     .filter((lines) => lines.length)
     .flatMap((lines): Block[] => {
       const short = lines.length > 1 && lines.reduce((n, s) => n + s.length, 0) / lines.length < 60;
-      return short ? lines.map((text) => ({ t: 'para', text })) : [{ t: 'para', text: lines.join(' ') }];
+      if (short) return lines.map((text) => ({ t: 'para', text }));
+      // Long lines: a line that opens as a list item or a schedule row starts its own paragraph; the rest join.
+      const paras: string[] = [];
+      for (const line of lines) {
+        if (paras.length && !OWN_LINE.test(line)) paras[paras.length - 1] += ` ${line}`;
+        else paras.push(line);
+      }
+      return paras.map((text) => ({ t: 'para', text }));
     });
 }
 

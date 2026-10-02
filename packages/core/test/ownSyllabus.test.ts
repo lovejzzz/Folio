@@ -50,3 +50,28 @@ describe('a syllabus the teacher brought', () => {
     expect(parseCourse(saved).syllabus).toBeNull();
   });
 });
+
+describe('the lines of a syllabus the teacher brought', () => {
+  const paras = (text: string) => {
+    const store = new CourseStore(sampleCourse());
+    const source = createSource('Syllabus', text, 'file');
+    store.apply([cmd('source.add', { source }), cmd('syllabus.own', { sourceId: source.id })], origin);
+    return project(store.getState(), 'syllabus', { audience: 'student' }).blocks.flatMap((b) => (b.t === 'para' ? [b.text] : []));
+  };
+
+  it('stay apart when they are long schedule rows or list items', () => {
+    const schedule = ['Week 1 (Sep 1): Introduction to environmental science; read chapter 1 before class', 'Week 2 (Sep 8): The climate system and the greenhouse effect; read chapter 2 before class', 'Sep 15: Field trip to the wetland reserve, meet at the north gate at nine in the morning'];
+    expect(paras(schedule.join('\n'))).toEqual(schedule);
+    const policies = ['- Late work loses ten percent a day and is not accepted after one full week has passed', '- Phones stay in bags during lectures and labs unless the instructor says otherwise'];
+    expect(paras(policies.join('\n'))).toEqual(policies);
+  });
+
+  it('are joined again when a PDF broke one paragraph across them', () => {
+    const wrapped = 'This course introduces the science of a changing planet, from the carbon cycle to the\nchoices communities make about energy, water and land, with weekly labs and one field trip.';
+    expect(paras(wrapped)).toEqual([wrapped.replace('\n', ' ')]);
+  });
+
+  it('lose the page breaks and control characters a file can’t carry', () => {
+    expect(paras('Page one text\fPage two\u0001 text')).toEqual(['Page one text', 'Page two text']);
+  });
+});

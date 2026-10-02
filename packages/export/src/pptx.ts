@@ -2,6 +2,7 @@ import { unzipSync, zipSync, strFromU8, strToU8, type Zippable } from 'fflate';
 import PptxGenJS from 'pptxgenjs';
 import { hasMarks, plainText, textRuns, type Block, type SemanticDoc } from '@folio/core';
 import { printFonts, printPalette } from '@folio/ui/tokens';
+import { cleanDoc } from './xml';
 import { ExportError } from './errors';
 
 /**
@@ -181,7 +182,8 @@ export function oneParagraphProps(file: Uint8Array): Uint8Array {
  * block's notes, which only the teacher copy carries. A deck with no slides
  * gets a single title slide so the file still opens.
  */
-export async function renderPptx(doc: SemanticDoc): Promise<Uint8Array> {
+export async function renderPptx(given: SemanticDoc): Promise<Uint8Array> {
+  const doc = cleanDoc(given);
   const pptx = new PptxGenJS();
   const f = faces(doc);
   pptx.layout = 'LAYOUT_WIDE';

@@ -29,8 +29,20 @@ export function splitPassages(text: string): Passage[] {
   return passages;
 }
 
+// eslint-disable-next-line no-control-regex -- control characters are exactly what is being removed.
+const UNPRINTABLE = /[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD\u{10000}-\u{10FFFF}]/gu;
+
+/**
+ * Text as a file can carry it. A page break (from a PDF turned to text) becomes a paragraph break and Word's
+ * soft line break a line break; other control characters and broken halves of a character go: Word and
+ * PowerPoint refuse a file that holds one.
+ */
+export function cleanText(text: string): string {
+  return text.replace(/\f/g, '\n\n').replace(/\v/g, '\n').replace(UNPRINTABLE, '');
+}
+
 export function createSource(title: string, text: string, kind: Source['kind'] = 'text'): Source {
-  const clean = text.replace(/\r\n?/g, '\n').trim();
+  const clean = cleanText(text.replace(/\r\n?/g, '\n')).trim();
   return { id: newId('s'), title, kind, text: clean, passages: splitPassages(clean), addedAt: new Date().toISOString() };
 }
 

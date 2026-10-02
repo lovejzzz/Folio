@@ -19,22 +19,39 @@ function truncate(text: string, max: number): string {
 }
 
 const MAX_SCOPE = 60;
+/** Most file systems hold a name of 255 bytes; CJK letters take three each. */
+const MAX_BYTES = 200;
+const bytes = (text: string) => new TextEncoder().encode(text).length;
+/** Names Windows keeps for devices: a file can't be called one. */
+const RESERVED = /^(?:con|prn|aux|nul|com\d|lpt\d)$/i;
+
+/** Shortened to fit both a count of letters and of bytes. */
+function fit(text: string, max: number, maxBytes: number): string {
+  let out = truncate(text, max);
+  for (let n = Array.from(out).length; bytes(out) > maxBytes && n > 1; n--) out = truncate(text, n - 1);
+  return out;
+}
 
 /**
  * A readable, filesystem-safe file name that keeps CJK and other letters:
  * "Course — Part (Teacher copy).docx", or with a scope such as one lesson,
  * "Course — Lesson 2 · Samples and bias — Part (Teacher copy).docx". Empty
- * parts are left out, and the course title is shortened first when the name
- * runs long.
+ * parts are left out. When the name runs long the course title is shortened
+ * first, then the part; whose copy it is always stays, so a teacher's copy
+ * with the answers is never named like the students'.
  */
 export function slugFilename(courseTitle: string, part: string, audienceLabel: string, ext: string, scope = ''): string {
-  const title = clean(courseTitle) || 'Folio';
-  const cleanScope = truncate(clean(scope), MAX_SCOPE);
-  const cleanPart = clean(part);
+  const title = clean(courseTitle).replace(/^[. ]+/, '') || 'Folio';
   const audience = clean(audienceLabel);
-  const tail = `${cleanScope ? ` — ${cleanScope}` : ''}${cleanPart ? ` — ${cleanPart}` : ''}${audience ? ` (${audience})` : ''}`;
-  const room = Math.max(20, MAX_BASE - Array.from(tail).length);
-  const base = truncate(`${truncate(title, room)}${tail}`, MAX_BASE).replace(/[. ]+$/, '');
+  const suffix = audience ? ` (${audience})` : '';
+  const room = MAX_BASE - Array.from(suffix).length;
+  const cleanScope = truncate(clean(scope), MAX_SCOPE);
+  const scopePart = cleanScope ? ` — ${cleanScope}` : '';
+  const cleanPart = clean(part) ? ` — ${truncate(clean(part), Math.max(12, room - 23 - Array.from(scopePart).length))}` : '';
+  const tail = `${scopePart}${cleanPart}`;
+  const named = `${truncate(title, Math.max(20, room - Array.from(tail).length))}${tail}`;
+  const base = fit(named, room, MAX_BYTES - bytes(suffix)).replace(/[. ]+$/, '') || 'Folio';
   const extension = ext.replace(/^\.+/, '').replace(/[^A-Za-z0-9]/g, '');
-  return extension ? `${base}.${extension}` : base;
+  const whole = `${RESERVED.test(base) && !suffix ? `${base}_` : base}${suffix}`.replace(/[. ]+$/, '');
+  return extension ? `${whole}.${extension}` : whole;
 }

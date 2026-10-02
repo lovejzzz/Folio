@@ -65,3 +65,10 @@ describe('renderCsv', () => {
     expect(strFromU8(bytes.subarray(3))).toBe('plain,"a, ""quoted""\nline"\r\n中文,\r\n');
   });
 });
+
+describe('cells a spreadsheet would run', () => {
+  it('are written as text, and plain numbers left as they are', () => {
+    const csv = new TextDecoder().decode(renderCsv([['=HYPERLINK("http://evil","click")', '@SUM(1)', '+cmd|x', '-2+3', '-5', '+3.2', 'a=b']]));
+    expect(csv).toContain(`"'=HYPERLINK(""http://evil"",""click"")",'@SUM(1),'+cmd|x,'-2+3,-5,+3.2,a=b`);
+  });
+});

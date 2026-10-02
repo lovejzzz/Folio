@@ -1,6 +1,14 @@
 const BOM = '﻿';
 
-function cell(value: string): string {
+/**
+ * A cell a spreadsheet would run as a formula ("=HYPERLINK(…)", "@SUM(…)") is written as text, with the
+ * apostrophe spreadsheets take to mean so. A plain number such as -5 stays a number.
+ */
+const FORMULA = /^[=+\-@\t\r]/;
+const NUMBER = /^[+-]?\d+(?:[.,]\d+)?%?$/;
+
+function cell(raw: string): string {
+  const value = FORMULA.test(raw) && !NUMBER.test(raw.trim()) ? `'${raw}` : raw;
   return /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
 }
 
