@@ -94,6 +94,7 @@ export async function removeAccount(db: D1Database, userId: string): Promise<voi
     // Google sign-in to come back. Its record of free credits stays too, so a new account doesn't start with
     // them again; purchases stay on the books.
     db.prepare('DELETE FROM credits WHERE user_id = ? AND balance >= 0').bind(userId),
+    db.prepare('DELETE FROM credit_holds WHERE user_id = ?').bind(userId),
     db.prepare("DELETE FROM credit_ledger WHERE user_id = ? AND kind = 'spend'").bind(userId),
   ]);
 }

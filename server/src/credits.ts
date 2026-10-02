@@ -127,18 +127,43 @@ export async function totalOf(db: D1Database, prefix: string): Promise<number> {
  * Hold credits for a call before it starts: the estimate if the balance covers it, or else whatever is left
  * above the floor, so a teacher near the end of their credits can still finish a part. Null when too little.
  */
-export async function reserve(db: D1Database, userId: string, estimate: number, now = Date.now()): Promise<number | null> {
+export async function reserve(db: D1Database, userId: string, estimate: number, now = Date.now()): Promise<Hold | null> {
+  await returnLostHolds(db, userId, now);
   const held = await db.prepare('UPDATE credits SET balance = balance - ?, updated_at = ? WHERE user_id = ? AND balance >= ?').bind(estimate, now, userId, estimate).run();
-  if (held.meta.changes === 1) return estimate;
+  if (held.meta.changes === 1) return recordHold(db, userId, estimate, now);
   const balance = await balanceOf(db, userId);
   if (balance < FLOOR) return null;
   const rest = await db.prepare('UPDATE credits SET balance = balance - ?, updated_at = ? WHERE user_id = ? AND balance = ?').bind(balance, now, userId, balance).run();
-  return rest.meta.changes === 1 ? balance : null;
+  return rest.meta.changes === 1 ? recordHold(db, userId, balance, now) : null;
 }
 
-/** Settle a call: give back what was held beyond its cost, and record the cost. */
-export async function settle(db: D1Database, userId: string, held: number, cost: number, detail: string, now = Date.now()): Promise<void> {
-  const statements = [db.prepare('UPDATE credits SET balance = balance + ?, updated_at = ? WHERE user_id = ?').bind(held - cost, now, userId)];
+/** Credits held for a call while it runs, written down so a hold whose settling is lost can be given back. */
+export interface Hold {
+  id: string;
+  amount: number;
+}
+
+/** Longer than any call runs (the page gives up after ten minutes): a hold this old was never settled. */
+export const HOLD_LIFETIME = 15 * 60 * 1000;
+
+async function recordHold(db: D1Database, userId: string, amount: number, now: number): Promise<Hold> {
+  const hold = { id: id(), amount };
+  await db.prepare('INSERT INTO credit_holds (id, user_id, amount, created_at) VALUES (?, ?, ?, ?)').bind(hold.id, userId, amount, now).run();
+  return hold;
+}
+
+/** Give back what calls whose settling was lost (the worker stopped partway) still hold. */
+export async function returnLostHolds(db: D1Database, userId: string, now = Date.now()): Promise<void> {
+  // Deleted and read in one step, so two requests at once can't give the same hold back twice.
+  const lost = await db.prepare('DELETE FROM credit_holds WHERE user_id = ? AND created_at < ? RETURNING amount').bind(userId, now - HOLD_LIFETIME).all<{ amount: number }>();
+  const back = lost.results.reduce((sum, h) => sum + h.amount, 0);
+  if (back > 0) await db.prepare('UPDATE credits SET balance = balance + ?, updated_at = ? WHERE user_id = ?').bind(back, now, userId).run();
+}
+
+/** Settle a call: give back what was held beyond its cost (unless it was already given back as lost), and record the cost. */
+export async function settle(db: D1Database, userId: string, hold: Hold, cost: number, detail: string, now = Date.now()): Promise<void> {
+  const open = await db.prepare('DELETE FROM credit_holds WHERE id = ? RETURNING id').bind(hold.id).first();
+  const statements = [db.prepare('UPDATE credits SET balance = balance + ?, updated_at = ? WHERE user_id = ?').bind((open ? hold.amount : 0) - cost, now, userId)];
   if (cost > 0) {
     statements.push(db.prepare("INSERT INTO credit_ledger (id, user_id, kind, amount, ref, detail, created_at) VALUES (?, ?, 'spend', ?, NULL, ?, ?)").bind(id(), userId, -cost, detail, now));
   }
@@ -154,6 +179,7 @@ export interface LedgerRow {
 
 /** The balance and the latest purchases and grants, for the account page. Spending is summed, not listed. */
 export async function statement(db: D1Database, userId: string): Promise<{ balance: number; added: LedgerRow[]; spent30: number }> {
+  await returnLostHolds(db, userId);
   const [balance, added, spent] = await Promise.all([
     balanceOf(db, userId),
     db.prepare("SELECT kind, amount, detail, created_at FROM credit_ledger WHERE user_id = ? AND kind != 'spend' ORDER BY created_at DESC LIMIT 20").bind(userId).all<LedgerRow>(),

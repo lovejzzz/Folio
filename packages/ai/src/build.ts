@@ -58,7 +58,8 @@ export function missingTargets(course: Course, lessonIds?: readonly string[]): B
   return lessons.flatMap((l) => kinds.filter((kind) => !l.gen[kind] && setsWork(l, kind)).map((kind) => ({ lessonId: l.id, kind })));
 }
 
-const FATAL = new Set(['auth', 'config', 'aborted']);
+// Out of credits stops the build too: every other part would fail the same way, and Resume carries on later.
+const FATAL = new Set(['auth', 'config', 'aborted', 'credits']);
 
 /**
  * Run section jobs with a small concurrency limit, in lesson order, so the

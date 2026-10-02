@@ -62,7 +62,10 @@ function finishToast(summary: Awaited<ReturnType<typeof runBuild>>, cost: string
     const fixable = summary.fatal.kind === 'auth' || summary.fatal.kind === 'config';
     // A key problem is fixed in the connect dialog, and the build picks up where it stopped.
     const fixKey = { label: t.build.fixKey, run: () => useUi.getState().requireModel(() => void startBuild()) };
-    toast({ key: 'build', message: errorMessage(summary.fatal), tone: 'critical', duration: 0, action: fixable ? fixKey : undefined });
+    // Out of credits: the packs, and Resume picks up where the build stopped once there are more.
+    const addCredits = { label: t.build.addCredits, run: () => void router.navigate({ to: '/settings', hash: 'credits' }) };
+    const action = fixable ? fixKey : summary.fatal.kind === 'credits' ? addCredits : undefined;
+    toast({ key: 'build', message: errorMessage(summary.fatal), tone: 'critical', duration: 0, action });
   } else if (summary.stopped && switchedFrom) {
     toast({ key: 'build', message: withCost(t.build.stoppedBySwitch(switchedFrom)) });
   } else if (summary.stopped) {

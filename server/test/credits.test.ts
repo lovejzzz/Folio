@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { allowedBetas } from '../src/ai';
 import { handle } from '../src/api';
-import { addPurchase, balanceOf, charge, FREE_CREDITS, FREE_PER_ADDRESS_PER_DAY, MILLI } from '../src/credits';
+import { addPurchase, balanceOf, charge, FREE_CREDITS, FREE_PER_ADDRESS_PER_DAY, HOLD_LIFETIME, MILLI, reserve, returnLostHolds, settle } from '../src/credits';
 import { forgetGoogleKeys } from '../src/google';
 import type { Env } from '../src/types';
 import { fakeD1, fakeGoogle } from './fake';
@@ -80,6 +81,16 @@ describe('free credits', () => {
 });
 
 describe('calls paid with credits', () => {
+  it('hold no more than their answer can cost, so a small balance still carries a build’s parallel parts', async () => {
+    const cookie = await signIn();
+    await env.DB.prepare('UPDATE credits SET balance = ? WHERE user_id = ?').bind(150 * MILLI, 'g-123').run();
+    // Four parts at once, each capped as Folio caps a lesson plan; each really costs about 2 credits.
+    const results = await Promise.all([1, 2, 3, 4].map(() => ask(cookie, { max_tokens: 12000 })));
+    expect(results.map((r) => r.status)).toEqual([200, 200, 200, 200]);
+    await settled();
+    expect(await balanceOf(env.DB, 'g-123')).toBe(150 * MILLI - 4 * 2100);
+  });
+
   it('go to Anthropic with Folio’s key, and cost their tokens times the markup', async () => {
     const cookie = await signIn();
     const res = await ask(cookie);
@@ -212,5 +223,36 @@ describe('purchases', () => {
     expect(await addPurchase(env.DB, 'g-123', 1000 * MILLI, 'stripe:cs_1', '$10 pack')).toBe(true);
     expect(await addPurchase(env.DB, 'g-123', 1000 * MILLI, 'stripe:cs_1', '$10 pack')).toBe(false);
     expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS + 1000) * MILLI);
+  });
+});
+
+describe('credits held while a call runs', () => {
+  it('come back on their own when the call was never settled', async () => {
+    await signIn();
+    const start = Date.now();
+    const hold = (await reserve(env.DB, 'g-123', 40 * MILLI, start))!;
+    expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS - 40) * MILLI);
+    // Not yet: a call may still be running.
+    await returnLostHolds(env.DB, 'g-123', start + HOLD_LIFETIME - 1000);
+    expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS - 40) * MILLI);
+    await returnLostHolds(env.DB, 'g-123', start + HOLD_LIFETIME + 1000);
+    expect(await balanceOf(env.DB, 'g-123')).toBe(FREE_CREDITS * MILLI);
+    // A settle that arrives after all charges the cost once and gives nothing back twice.
+    await settle(env.DB, 'g-123', hold, 3 * MILLI, 'late');
+    expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS - 3) * MILLI);
+  });
+
+  it('are settled once, leaving no hold behind', async () => {
+    const cookie = await signIn();
+    expect((await ask(cookie)).status).toBe(200);
+    expect(await env.DB.prepare('SELECT COUNT(*) AS n FROM credit_holds').first<{ n: number }>()).toEqual({ n: 0 });
+  });
+});
+
+describe('beta features', () => {
+  it('reach Anthropic only when Folio itself uses them', () => {
+    expect(allowedBetas('structured-outputs-2025-12-15, web-search-2026-01-01,priority-tier-x')).toBe('structured-outputs-2025-12-15');
+    expect(allowedBetas('context-1m-2025-08-07')).toBe('');
+    expect(allowedBetas(null)).toBe('');
   });
 });

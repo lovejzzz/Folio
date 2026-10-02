@@ -19,4 +19,4 @@ export function createInference(settings: ModelSettings, fetchImpl?: typeof fetc
       return openaiInference(settings, fetchImpl, onUsage);
   }
 }
-export { FOLIO_MIX } from './mix';
+export { FOLIO_MIX, FOLIO_OUTPUT_CAPS } from './mix';

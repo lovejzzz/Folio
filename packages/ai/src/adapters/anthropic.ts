@@ -49,12 +49,13 @@ function requestBody(model: string, request: CompletionRequest) {
 /** Send it, streamed when someone is watching the text arrive: the answer is the same either way. */
 async function send(client: Anthropic, body: ReturnType<typeof requestBody>, request: CompletionRequest) {
   const { onText } = request;
-  if (!onText) return client.beta.messages.create(body, { signal: request.signal });
+  // The SDK refuses a long answer unstreamed (it could outlast its ten minutes), so those are streamed too.
+  if (!onText && body.max_tokens <= 16000) return client.beta.messages.create(body, { signal: request.signal });
   const stream = client.beta.messages.stream(body, { signal: request.signal });
   stream.on('text', (_delta, soFar) => {
     // Showing progress must never cost the answer.
     try {
-      onText(soFar);
+      onText?.(soFar);
     } catch {
       /* ignored */
     }

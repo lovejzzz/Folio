@@ -83,6 +83,8 @@ interface CheckoutSession {
 }
 
 interface Charge {
+  /** Copied from the payment: "Folio credits (1000)" on Folio's own. */
+  description?: string | null;
   id: string;
   payment_intent?: string | null;
   amount: number;
@@ -116,10 +118,13 @@ async function purchased(env: Env, session: CheckoutSession): Promise<Response> 
  * A refund takes back the credits in proportion to what was refunded, a dispute all of them (given back if Folio
  * wins it). Credits already spent can leave the balance below zero until more are bought.
  */
-async function reversed(env: Env, event: Event): Promise<void> {
+/** Whether the event must wait: a refund of Folio's own payment that came before the payment itself. */
+async function reversed(env: Env, event: Event): Promise<'later' | void> {
   if (event.type === 'charge.refunded') {
     const charge = event.data.object as Charge;
     const bought = await purchaseOf(env.DB, paymentRef(charge.payment_intent, charge.id));
+    // Stripe can report a refund before the payment it refunds: asked again later, it finds the purchase.
+    if (!bought && charge.description?.startsWith('Folio credits')) return 'later';
     if (!bought || !charge.amount) return;
     // Each refund reports the total refunded so far: take back what that total calls for, less what was taken.
     const due = Math.round((bought.amount * charge.amount_refunded) / charge.amount);
@@ -149,6 +154,8 @@ export async function webhook(request: Request, env: Env): Promise<Response> {
   if (!(await verifySignature(body, request.headers.get('stripe-signature') ?? '', env.STRIPE_WEBHOOK_SECRET))) return json({ error: 'signature' }, 400);
   const event = JSON.parse(body) as Event;
   if (event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded') return purchased(env, event.data.object as CheckoutSession);
-  if (event.type === 'charge.refunded' || event.type === 'charge.dispute.created' || event.type === 'charge.dispute.closed') await reversed(env, event);
+  if (event.type === 'charge.refunded' || event.type === 'charge.dispute.created' || event.type === 'charge.dispute.closed') {
+    if ((await reversed(env, event)) === 'later') return json({ error: 'purchase-not-yet-seen' }, 409);
+  }
   return json({ received: true });
 }

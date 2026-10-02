@@ -283,6 +283,7 @@ export const en = {
     looksToo: (n: number) => (n === 1 ? 'Please check 1 thing.' : `Please check ${n} things.`),
     review: 'Review',
     openFirst: 'Read lesson 1',
+    addCredits: 'Add credits',
     fixKey: 'Fix the key',
     /** The card that shows the course being written. */
     live: {
@@ -757,7 +758,7 @@ export const en = {
   },
   errors: {
     config: 'No AI is set up yet. Add one in Settings.',
-    credits: 'Your Folio credits have run out. Buy more in Settings, or use your own key.',
+    credits: 'Your Folio credits have run out. Add credits and Resume picks up where the course stopped, or use your own key.',
     folioSignedOut: 'Sign in again to use your Folio credits.',
     auth: 'The AI service didn’t accept the key. Check that it was copied in full.',
     rate: 'The AI service is busy or your limit was reached. Wait a moment and try again.',

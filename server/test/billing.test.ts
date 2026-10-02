@@ -149,3 +149,17 @@ describe('refunds and disputes', () => {
     expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS + 1000) * MILLI);
   });
 });
+
+describe('a refund reported before its payment', () => {
+  it('is asked for again, and counted once the purchase is in', async () => {
+    await signIn();
+    const early = () => tell('charge.refunded', { id: 'ch_1', payment_intent: 'pi_cs_test_1', amount: 1000, amount_refunded: 1000, description: 'Folio credits (1000)' });
+    expect((await early()).status).toBe(409);
+    const body = paid();
+    await call('billing/webhook', { method: 'POST', body, headers: { 'stripe-signature': await signed(body) } });
+    expect((await early()).status).toBe(200);
+    expect(await balanceOf(env.DB, 'g-123')).toBe(FREE_CREDITS * MILLI);
+    // A refund of a payment that was never Folio's is let go.
+    expect((await tell('charge.refunded', { id: 'ch_9', payment_intent: 'pi_x', amount: 500, amount_refunded: 500, description: 'Something else' })).status).toBe(200);
+  });
+});

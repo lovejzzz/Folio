@@ -1,4 +1,4 @@
-import { charge, PRICES, reserve, settle, type Usage } from './credits';
+import { charge, PRICES, reserve, settle, type Usage, type Hold as CreditHold } from './credits';
 import type { Env, User } from './types';
 
 /**
@@ -86,10 +86,17 @@ function metered(body: ReadableStream<Uint8Array>, usage: Usage, done: (chars: n
   return { stream: readable, finished };
 }
 
+/** The beta features Folio's own requests use; any other is dropped, as it could change what a call costs. */
+const BETAS = new Set(['structured-outputs-2025-12-15', 'server-side-fallback-2026-07-01']);
+
+export function allowedBetas(header: string | null): string {
+  return (header ?? '').split(',').map((b) => b.trim()).filter((b) => BETAS.has(b)).join(',');
+}
+
 interface Hold {
   db: Env['DB'];
   userId: string;
-  held: number;
+  held: CreditHold;
 }
 
 /** What Anthropic refused, passed on; Folio's own key refused is Folio's problem, never reported as the teacher's. */
@@ -111,7 +118,7 @@ async function forward(request: Request, key: string, req: Checked, hold: Hold, 
     await settle(hold.db, hold.userId, hold.held, answered ? charge(req.model, counted) : 0, answered ? `${req.model} ${counted.input}+${counted.output}` : '');
   };
   try {
-    const beta = request.headers.get('anthropic-beta');
+    const beta = allowedBetas(request.headers.get('anthropic-beta'));
     const upstream = await fetchImpl(ANTHROPIC, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', ...(beta ? { 'anthropic-beta': beta } : {}) },

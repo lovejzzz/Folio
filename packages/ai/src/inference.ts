@@ -130,6 +130,8 @@ export class MalformedOutputError extends InferenceError {
     readonly text: string,
     /** What is wrong, worded for the repair prompt. */
     readonly problem: string,
+    /** The answer stopped at the length it was allowed, rather than going wrong. */
+    readonly truncated = false,
   ) {
     super('invalid', 'The model did not return valid JSON.', text);
     this.name = 'MalformedOutputError';
@@ -171,7 +173,7 @@ function escapeControlsInStrings(text: string): string {
 
 /** An answer that stopped at the token limit: kept so the repair call can ask for a shorter one. */
 export function truncatedOutput(text: string): MalformedOutputError {
-  return new MalformedOutputError(text, 'It was cut off before it finished. Give a complete answer that is more concise.');
+  return new MalformedOutputError(text, 'It was cut off before it finished. Give a complete answer that is more concise.', true);
 }
 
 export function isAbort(error: unknown): boolean {

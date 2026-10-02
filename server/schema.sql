@@ -56,6 +56,16 @@ CREATE TABLE IF NOT EXISTS credit_ledger (
 CREATE INDEX IF NOT EXISTS credit_ledger_user ON credit_ledger (user_id, created_at);
 CREATE UNIQUE INDEX IF NOT EXISTS credit_ledger_ref ON credit_ledger (ref) WHERE ref IS NOT NULL;
 
+-- Credits held for a model call while it runs. Settling deletes the row; a row older than any call runs is a
+-- hold whose settling was lost, and is given back to the balance.
+CREATE TABLE IF NOT EXISTS credit_holds (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  amount INTEGER NOT NULL,        -- millicredits
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS credit_holds_user ON credit_holds (user_id, created_at);
+
 -- How many free grants each network address had in a day, so a wave of new accounts can't farm them.
 CREATE TABLE IF NOT EXISTS free_grants (
   ip_hash TEXT NOT NULL,

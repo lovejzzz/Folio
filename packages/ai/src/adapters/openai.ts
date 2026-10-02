@@ -79,6 +79,8 @@ export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch
         ...(jsonMode ? { max_tokens: request.maxTokens ?? 16000, ...deepseekThinking(request.effort) } : {}),
         // Folio's effort per job, as it asks Claude for it: without it OpenAI thinks at its default for every job.
         ...(!jsonMode && !local && reasons(settings.model) ? { reasoning_effort: request.effort ?? 'medium' } : {}),
+        // A cap Folio set for this job (with credits, the server holds the call's cost at it).
+        ...(!jsonMode && request.maxTokens ? { max_completion_tokens: request.maxTokens } : {}),
         response_format: jsonMode
           ? { type: 'json_object' }
           : { type: 'json_schema', json_schema: { name: request.task, schema, strict: false } },

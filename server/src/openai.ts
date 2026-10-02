@@ -1,4 +1,4 @@
-import { charge, PRICES, reserve, settle, type Usage } from './credits';
+import { charge, PRICES, reserve, settle, type Usage, type Hold } from './credits';
 import type { Env, User } from './types';
 
 /**
@@ -64,7 +64,7 @@ function refused(upstream: Response): Response {
 }
 
 /** Send the call on and settle what was held, however it ends: answered, refused, or broken off partway. */
-async function forward(request: Request, key: string, req: { body: Body; model: string }, db: Env['DB'], userId: string, held: number, fetchImpl: typeof fetch): Promise<Response> {
+async function forward(request: Request, key: string, req: { body: Body; model: string }, db: Env['DB'], userId: string, held: Hold, fetchImpl: typeof fetch): Promise<Response> {
   let settled = false;
   const settleAt = async (cost: number, detail: string) => {
     if (settled) return;
