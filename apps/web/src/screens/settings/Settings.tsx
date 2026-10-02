@@ -7,6 +7,7 @@ import { SimpleHeader } from '../../components/AppHeader';
 import { probeModel } from '../../components/ConnectDialog';
 import { ProviderChoice, ProviderFields, hasKey, missingSetup } from '../../components/ProviderFields';
 import { useT } from '../../i18n';
+import { useAccount } from '../../state/account';
 import { download } from '../../lib/exporter';
 import { allCourses, deleteCourse, listCourses, storageKept } from '../../state/db';
 import { errorMessage } from '../../state/model';
@@ -119,6 +120,7 @@ function AppearanceSection() {
 
 function DataSection() {
   const t = useT();
+  const signedIn = useAccount((s) => Boolean(s.user));
   const [used, setUsed] = useState<string | null>(null);
   const [kept, setKept] = useState<boolean | null>(null);
   const [confirm, setConfirm] = useState(false);
@@ -156,7 +158,7 @@ function DataSection() {
       </p>
       <Dialog isOpen={confirm} onOpenChange={setConfirm} title={t.settings.deleteAll} size="sm">
         <div className="px-6 pb-6">
-          <p className="mt-2 font-ui text-14 text-ink-2">{t.settings.deleteAllConfirm}</p>
+          <p className="mt-2 font-ui text-14 text-ink-2">{signedIn ? t.settings.deleteAllConfirmAccount : t.settings.deleteAllConfirm}</p>
           <div className="mt-6 flex justify-end gap-2">
             <Button variant="quiet" onPress={() => setConfirm(false)}>{t.common.cancel}</Button>
             <Button
@@ -166,7 +168,7 @@ function DataSection() {
                 // One by one, so a signed-in account deletes its copies too.
                 for (const c of await listCourses()) await deleteCourse(c.id);
                 setConfirm(false);
-                toast({ message: t.library.deleted });
+                toast({ message: t.library.deletedAll });
               }}
             >
               {t.common.delete}

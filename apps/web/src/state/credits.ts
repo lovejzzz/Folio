@@ -74,7 +74,7 @@ export const creditsText = {
   notEnough: 'Not enough credits',
   addCredits: 'Add credits',
   youHave: (n: number) => `You have ${n.toLocaleString('en-US')} credits.`,
-  signInToStart: 'Sign in with Google to start. Sign in with a school email (ending in .edu) and you get 750 free credits, about a 15-lesson course with every material.',
+  signInToStart: 'Sign in with Google to start. Sign in with a school email (ending in .edu) and you get 750 free credits, enough for about 25 lessons with every material.',
   notSchool: 'Free credits come with school email addresses, ending in .edu. Buy credits below, or use your own AI key.',
   signIn: 'Sign in with Google',
   how: 'Claude Sonnet 5.5 writes the plans, slides, study guides, discussions and FAQ; GPT-6 Luna writes the quizzes and assignments; GPT-6.1 Sol checks every lesson plan. Each part uses the model that did it best for the least. A lesson with every material uses about 30 credits.',

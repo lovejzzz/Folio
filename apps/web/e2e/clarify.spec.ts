@@ -145,3 +145,21 @@ test('a syllabus the teacher brings is theirs: Folio checks it instead of writin
   // Folio's own schedule table is not drawn.
   await expect(page.getByRole('table')).toHaveCount(0);
 });
+
+test('arrow keys move through the answers without moving on; Enter does', async ({ page }) => {
+  await withKey(page);
+  await fakeAnthropic(page);
+  await page.goto('/');
+  await page.getByLabel('Describe your course').fill('Photosynthesis for year 7 (ask me)');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByRole('heading', { name: 'How many lessons should the unit have?' })).toBeVisible();
+  await page.getByRole('radio').first().focus();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  await expect(page.getByRole('radio').nth(2)).toBeChecked();
+  // Longer than the pause before a chosen answer moves on.
+  await page.waitForTimeout(600);
+  await expect(page.getByRole('heading', { name: 'How many lessons should the unit have?' })).toBeVisible();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading', { name: 'How is the unit assessed?' })).toBeVisible();
+});

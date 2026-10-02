@@ -32,7 +32,8 @@ export const useToasts = create<ToastState>((set, get) => {
     toasts: [],
     push: (t) => {
       const id = next++;
-      const toast: Toast = { tone: 'neutral', duration: 6000, ...t, id };
+      // Something went wrong: it stays until it is read and closed, not for six seconds.
+      const toast: Toast = { tone: 'neutral', duration: t.tone === 'critical' ? 0 : 6000, ...t, id };
       const kept = get().toasts.filter((x) => !toast.key || x.key !== toast.key);
       for (const gone of get().toasts) if (!kept.includes(gone)) clearTimeout(timers.get(gone.id));
       set({ toasts: [...kept.slice(-2), toast] });

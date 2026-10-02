@@ -1,7 +1,7 @@
 import { Dialog, Kbd, cx, useMediaQuery } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { Search, Sparkles } from 'lucide-react';
-import { useId, useState, type KeyboardEvent } from 'react';
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { useT } from '../../i18n';
 import { useCourse } from '../../state/session';
 import { useUi } from '../../state/ui';
@@ -9,8 +9,14 @@ import { AskPanel } from './AskPanel';
 import { commandItems, matches, type CommandItem } from './items';
 
 function Option({ id, item, active, onRun, onHover, hint }: { id: string; item: CommandItem; active: boolean; onRun: () => void; onHover: () => void; hint?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  // Arrowed to past the edge of the list: brought into view.
+  useEffect(() => {
+    if (active) ref.current?.scrollIntoView?.({ block: 'nearest' });
+  }, [active]);
   return (
     <div
+      ref={ref}
       id={id}
       role="option"
       aria-selected={active}

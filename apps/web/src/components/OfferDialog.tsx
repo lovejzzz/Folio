@@ -38,7 +38,7 @@ export function OfferDialog() {
               onChange={(on) => setPicked((p) => (on ? new Set([...p, c.id]) : new Set([...p].filter((id) => id !== c.id))))}
             >
               <span className="min-w-0 flex-1">
-                <span className="block truncate font-reading text-15 text-ink">{c.title || t.common.untitled}</span>
+                <span className="block truncate font-reading text-16 text-ink">{c.title || t.common.untitled}</span>
                 <span className="block font-ui text-12 text-ink-2">{accountText.lessons(c.lessonCount)}</span>
               </span>
             </Checkbox>

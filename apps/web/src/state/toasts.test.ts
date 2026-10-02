@@ -24,4 +24,12 @@ describe('toasts', () => {
     vi.advanceTimersByTime(1000);
     expect(useToasts.getState().toasts).toHaveLength(0);
   });
+
+  it('keeps word of something gone wrong until it is closed', () => {
+    vi.useFakeTimers();
+    toast({ message: 'Saved' });
+    toast({ message: 'Your changes couldn’t be saved.', tone: 'critical' });
+    vi.advanceTimersByTime(60_000);
+    expect(useToasts.getState().toasts.map((t) => t.message)).toEqual(['Your changes couldn’t be saved.']);
+  });
 });

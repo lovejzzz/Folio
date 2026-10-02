@@ -1,6 +1,6 @@
 /** Folio's privacy policy, in the page's own module so its text isn't part of every page's first load. */
 export const policy = {
-  updated: 'Last updated 30 September 2026',
+  updated: 'Last updated October 2, 2026',
   lede: 'You don’t need an account to use Folio: without one, your courses stay in your browser. If you choose to sign in, your courses are also kept in your account, so they’re on every device you use.',
   sections: [
     {
@@ -9,7 +9,7 @@ export const policy = {
     },
     {
       heading: 'If you sign in',
-      body: 'Signing in is optional and uses your Google account. Folio receives your name, your email address and Google’s ID for your account, and nothing else from Google. It keeps the courses you choose to put in your account (their content, sources and edit history) on Folio’s servers, run by Cloudflare, so they are on any device you sign in on. If you write with your own AI key, it is never sent to Folio: it stays in each browser. A session cookie keeps you signed in; it is used for nothing else. Signing out removes your account’s courses from that browser; they stay in your account. Deleting your account in Settings deletes it and every course in it from Folio’s servers, and ends any Folio credits left in it (see the Terms).',
+      body: 'Signing in is optional and uses your Google account. Folio receives your name, your email address and Google’s ID for your account, and nothing else from Google. It keeps the courses you choose to put in your account (their content, sources and edit history) on Folio’s servers, run by Cloudflare, so they are on any device you sign in on. If you write with your own AI key, it is never sent to Folio: it stays in each browser. A session cookie keeps you signed in; it is used for nothing else. When an account with a school address first signs in, Folio keeps a scrambled form of the network address it came from, for that day only as a count, to limit how many accounts can claim the free credits; the address itself is never kept. Signing out removes your account’s courses from that browser; they stay in your account. Deleting your account in Settings deletes it and every course in it from Folio’s servers, and ends any Folio credits left in it (see the Terms). The record that the free credits were given, and of any purchases, is kept with Google’s ID for the account, for our accounts and so the free credits aren’t given twice.',
     },
     {
       heading: 'Your AI key',
@@ -18,6 +18,10 @@ export const policy = {
     {
       heading: 'Folio credits',
       body: 'If you write with Folio credits instead of your own key, your browser sends each request (your course description, the files you attach and the course so far) to Folio’s server, which passes it with Folio’s key to Anthropic (for Claude, which writes most of the course) or to OpenAI (for GPT, which writes the quizzes and assignments and checks each lesson plan) and returns the answer. Folio doesn’t keep the requests or answers: it records only how many tokens each one used, to take its cost from your credits. Each company’s commercial terms apply to the requests it receives, and neither trains its models on them. Your balance, the free credits you were given and any credits you bought are kept with your account.',
+    },
+    {
+      heading: 'Payments',
+      body: 'If you buy credits, you pay on Stripe’s page. Folio sends Stripe your email address and your account’s ID so the payment can be matched to your account, and receives back whether it went through; Folio never sees your card details. Stripe’s privacy policy covers the payment.',
     },
     {
       heading: 'Google Drive',
@@ -33,7 +37,7 @@ export const policy = {
     },
     {
       heading: 'What we don’t do',
-      body: 'No ads, no tracking, no analytics cookies. Nothing is sold or shared, and your courses are never used to train AI. The site is served by Cloudflare, which handles requests the way any web host does.',
+      body: 'No ads, no tracking, no analytics cookies. Nothing is sold, and nothing is shared beyond what this page describes: the AI company that writes your course, Stripe when you pay, Google when you sign in or export. Your courses are never used to train AI. The site is served by Cloudflare, which handles requests the way any web host does.',
     },
     {
       heading: 'Questions',

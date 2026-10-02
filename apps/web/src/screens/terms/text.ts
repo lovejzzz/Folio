@@ -1,6 +1,6 @@
 /** Folio's terms of service, with the refund policy, in the page's own module so they aren't part of every first load. */
 export const terms = {
-  updated: 'Last updated 29 September 2026',
+  updated: 'Last updated October 2, 2026',
   lede: 'These terms apply when you use Folio at folio.university. By using Folio you agree to them. If you buy Folio credits, the terms about credits and refunds below apply to your purchase.',
   sections: [
     {
@@ -13,7 +13,7 @@ export const terms = {
     },
     {
       heading: 'Folio credits',
-      body: 'Folio credits pay for the AI that writes your courses when you don’t use your own key. Each request uses credits according to how much it writes, and Folio shows an estimate before a course is written. Prices are shown before you pay; payments are processed by Stripe. Credits don’t expire while your account exists. Free credits are given once, to a new account whose Google email address ends in .edu; they have no cash value. Folio may change the price of credits for future purchases; credits you already hold keep their value.',
+      body: 'Folio credits pay for the AI that writes your courses when you don’t use your own key. Each request uses credits according to how much it writes, and Folio shows an estimate before a course is written. Prices are shown before you pay; payments are processed by Stripe. Credits don’t expire while your account exists. Free credits are given once, to a new account whose Google email address ends in .edu, while they are available: Folio limits how many are given each day and each month. They have no cash value. Folio may change the price of credits for future purchases; credits you already hold keep their value.',
     },
     {
       heading: 'Refunds',

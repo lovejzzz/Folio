@@ -21,7 +21,7 @@ export function refusalMessage(name: string, reason: Refusal): string {
 }
 
 export function refusedMessage(names: string[]): string {
-  return `${new Intl.ListFormat('en-GB', { type: 'conjunction' }).format(names)} can’t be attached. Attach PDF, Word, .txt or .md files up to 10 MB.`;
+  return `${new Intl.ListFormat('en-US', { type: 'conjunction' }).format(names)} can’t be attached. Attach PDF, Word, .txt or .md files up to 10 MB.`;
 }
 
 /** Plain text from a Word file: paragraphs from word/document.xml. */

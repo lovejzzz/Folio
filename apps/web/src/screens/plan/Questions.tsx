@@ -27,10 +27,13 @@ function Progress({ at, of }: { at: number; of: number }) {
   );
 }
 
-function Options({ question, choice, onPick }: { question: Question; choice: Choice; onPick: (i: number) => void }) {
+function Options({ question, choice, onPick }: { question: Question; choice: Choice; onPick: (i: number, moveOn: boolean) => void }) {
   const value = choice && 'pick' in choice ? String(choice.pick) : null;
+  // Arrow keys move through the answers, choosing each as they pass: only a click or a tap moves on by itself.
+  const byKey = useRef(false);
   return (
-    <RadioGroup aria-label={c.answers} value={value} onChange={(v) => onPick(Number(v))} className="grid gap-2">
+    <div onKeyDownCapture={() => void (byKey.current = true)} onPointerDownCapture={() => void (byKey.current = false)}>
+    <RadioGroup aria-label={c.answers} value={value} onChange={(v) => onPick(Number(v), !byKey.current)} className="grid gap-2">
       {question.options.map((option, i) => (
         <Radio
           key={option}
@@ -50,6 +53,7 @@ function Options({ question, choice, onPick }: { question: Question; choice: Cho
         </Radio>
       ))}
     </RadioGroup>
+    </div>
   );
 }
 
@@ -101,16 +105,17 @@ function Footer({ first, last, answered, onBack, onNext }: { first: boolean; las
   );
 }
 
-/** 1, 2 and 3 pick an answer, and Enter moves on, unless the teacher is typing their own. */
+/** 1, 2 and 3 pick an answer, and Enter moves on (from an answer arrowed to as well), unless the teacher is typing their own. */
 function useKeys(onPick: (i: number) => void, onNext: () => void) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.altKey || (e.target instanceof HTMLElement && e.target.closest('input, textarea, [contenteditable]'))) return;
+      if (e.metaKey || e.ctrlKey || e.altKey || (e.target instanceof HTMLElement && e.target.closest('input:not([type="radio"]), textarea, [contenteditable]'))) return;
       if (/^[1-3]$/.test(e.key)) onPick(Number(e.key) - 1);
       else if (e.key === 'Enter' && !(e.target instanceof HTMLButtonElement)) onNext();
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    // Heard on the way down: a focused answer keeps its key presses from travelling back up.
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
   }, [onPick, onNext]);
 }
 
@@ -134,12 +139,12 @@ export function Questions({ questions, onDone }: { questions: Question[]; onDone
     setAt(at + 1);
   };
   const choose = (choice: Choice) => setChoices((all) => all.map((old, i) => (i === at ? choice : old)));
-  const pick = (i: number) => {
+  const pick = (i: number, moveOn = true) => {
     const list = choices.map((old, j) => (j === at ? { pick: i } : old));
     setChoices(list);
     // A moment to see the choice land, then on; the last question waits for "Plan the course".
     clearTimeout(advance.current);
-    if (!last) advance.current = setTimeout(() => next(list), 260);
+    if (!last && moveOn) advance.current = setTimeout(() => next(list), 260);
   };
   useKeys(pick, () => next());
   return (
@@ -154,7 +159,7 @@ export function Questions({ questions, onDone }: { questions: Question[]; onDone
         <Progress at={at} of={questions.length} />
       </div>
       <div key={at} className={back ? 'animate-step-back' : 'animate-step-in'}>
-        <h1 className="mt-7 font-display text-28 leading-tight text-ink md:text-32">{question.question}</h1>
+        <h1 className="mt-7 font-display text-28 leading-tight text-ink md:text-36">{question.question}</h1>
         <div className="mt-6">
           <Options question={question} choice={choices[at] ?? null} onPick={pick} />
           <OwnAnswer choice={choices[at] ?? null} onChange={(own) => choose(own ? { own } : null)} onEnter={() => next()} />

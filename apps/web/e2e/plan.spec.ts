@@ -70,7 +70,7 @@ test('a course with only course-level materials finishes building and opens like
   await page.getByRole('button', { name: 'Write 2 lessons' }).click();
 
   await expect(page.getByText(/^Course ready\./)).toBeVisible();
-  const nav = page.getByRole('navigation', { name: 'More' });
+  const nav = page.getByRole('navigation', { name: 'Course views' });
   await expect(nav.getByRole('link', { name: 'Overview' })).toBeVisible();
   await expect(nav.getByRole('link', { name: 'Lessons' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Export', exact: true })).toBeVisible();
@@ -78,7 +78,7 @@ test('a course with only course-level materials finishes building and opens like
 
   // It stays ready after a reload, and the library doesn't list it as still planning.
   await page.reload();
-  await expect(page.getByRole('navigation', { name: 'More' }).getByRole('link', { name: 'Overview' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Course views' }).getByRole('link', { name: 'Overview' })).toBeVisible();
   await page.goto('/library');
   await expect(page.getByText('Outline', { exact: true })).toHaveCount(0);
 });

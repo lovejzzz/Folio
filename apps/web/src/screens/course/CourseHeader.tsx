@@ -23,7 +23,7 @@ function ViewNav() {
   const first = course.lessonOrder[0];
   const inMaterial = Boolean(match({ to: '/c/$courseId/m/$kind', fuzzy: true }));
   return (
-    <nav aria-label={t.nav.more} className="hidden items-center gap-1 md:flex">
+    <nav aria-label={t.nav.views} className="hidden items-center gap-1 md:flex">
       <Link to="/c/$courseId/map" params={{ courseId: course.id }} className={tabClass}>
         {t.nav.map}
       </Link>
@@ -39,7 +39,7 @@ function ViewNav() {
         </Link>
       )}
       <Menu
-        label={t.map.grid}
+        label={t.nav.materials}
         trigger={
           <AriaButton className={cx(tabClass, 'data-pressed:bg-well')} data-status={inMaterial ? 'active' : undefined}>
             {t.nav.materials}

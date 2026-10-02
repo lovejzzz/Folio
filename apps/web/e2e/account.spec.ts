@@ -1,4 +1,5 @@
 import { gunzipSync } from 'node:zlib';
+import AxeBuilder from '@axe-core/playwright';
 import type { BrowserContext, Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import { openSample, retype } from './helpers';
@@ -80,6 +81,15 @@ test('a teacher signs in, adds this browser’s course to their account, and fin
   await page.getByRole('button', { name: 'Account: ada@example.edu' }).click();
   await expect(page.getByRole('link', { name: 'Settings' })).toBeVisible();
   await page.keyboard.press('Escape');
+  // The teacher's initial can be read on its round mark.
+  const contrast = await new AxeBuilder({ page }).include('header').withRules(['color-contrast']).analyze();
+  expect(contrast.violations.map((v) => v.nodes[0]?.target.join(' '))).toEqual([]);
+  // Deleting a course says it goes from the account too.
+  await page.goto('/library');
+  await page.getByRole('button', { name: /Actions for Reading the world with data/ }).click();
+  await page.getByRole('menuitem', { name: 'Delete course' }).click();
+  await expect(page.getByRole('dialog').getByText(/it’s deleted there too, on every device/)).toBeVisible();
+  await page.getByRole('dialog').getByRole('button', { name: 'Cancel' }).click();
 
   // Another device: a fresh browser, the same account.
   const other = await browser.newContext();

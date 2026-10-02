@@ -49,7 +49,7 @@ test('files that cannot be attached are refused in one message', async ({ page }
     { name: 'huge.txt', mimeType: 'text/plain', buffer: Buffer.alloc(11 * 1024 * 1024, 'a') },
     { name: 'photo.png', mimeType: 'image/png', buffer: Buffer.from([137, 80, 78, 71]) },
   ]);
-  await expect(page.getByText('broken.docx, huge.txt and photo.png can’t be attached. Attach PDF, Word, .txt or .md files up to 10 MB.')).toBeVisible();
+  await expect(page.getByText('broken.docx, huge.txt, and photo.png can’t be attached. Attach PDF, Word, .txt or .md files up to 10 MB.')).toBeVisible();
   await expect(page.getByRole('status').getByText(/can’t be/)).toHaveCount(1);
 });
 

@@ -44,7 +44,7 @@ export interface OutlineInput {
   sources: { title: string; text: string }[];
 }
 
-const SESSION_NAMES: Record<SessionKind, string> = { class: 'class', lecture: 'lecture', seminar: 'seminar', lab: 'lab session', problems: 'problem class' };
+const SESSION_NAMES: Record<SessionKind, string> = { class: 'class', lecture: 'lecture', seminar: 'seminar', lab: 'lab session', problems: 'problem session' };
 
 /** What each kind of session is for, so a seminar isn't written as a second lecture. */
 const SESSION_GUIDE: Record<SessionKind, string> = {
@@ -52,7 +52,7 @@ const SESSION_GUIDE: Record<SessionKind, string> = {
   lecture: 'a lecture presents and explains, with slides',
   seminar: 'a seminar runs on discussion of the reading, led by the students, without slides',
   lab: 'a lab session is hands-on: the method, the equipment, safety and recording results',
-  problems: 'a problem class works through problems, students first, with worked solutions to follow',
+  problems: 'a problem session works through problems, students first, with worked solutions to follow',
 };
 
 /** "a 50-minute lecture, then a 50-minute seminar" */

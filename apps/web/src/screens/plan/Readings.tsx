@@ -129,7 +129,7 @@ export function SuggestedReadings({ course, lesson, n, readings, compact = false
     <section className={cx('no-print', compact ? 'mt-3' : 'mt-5')} aria-label={t.plan.suggested}>
       <h4 className={cx('font-ui text-12 text-ink-2', compact && 'pl-5')}>
         {t.plan.suggested}
-        {hint && <span className="text-ink-3"> · {t.plan.suggestedHint}</span>}
+        {hint && <span className="text-ink-2"> · {t.plan.suggestedHint}</span>}
       </h4>
       <ul className="mt-1 space-y-1">
         {lesson.suggestedReadings.map((s, i) => (

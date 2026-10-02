@@ -17,7 +17,7 @@ export function OwnSyllabus({ course }: { course: Course }) {
   }, [course.id, unchecked]);
   return (
     <>
-      <p className="mb-6 max-w-prose font-ui text-14 leading-6 text-ink-2">{t.ownSyllabus.intro}</p>
+      <p className="mb-6 max-w-prose font-ui text-14 leading-6 text-ink-2">{unchecked ? t.ownSyllabus.introChecking : t.ownSyllabus.intro}</p>
       <DocView doc={project(course, 'syllabus', { audience: 'teacher' })} showTitle={false} />
     </>
   );

@@ -7,7 +7,8 @@ const dist = new URL('../apps/web/dist/', import.meta.url).pathname;
 const KB = 1024;
 // Total JS and dist include pdf.js (about 0.4 MB, and a 1.3 MB worker) for reading PDF syllabi. It loads only
 // when a PDF is dropped in, so the first load is unchanged; the budgets make room for it and no more.
-const budgets = { initialGzip: 150 * KB, totalJs: 3.5 * KB * KB, dist: 10 * KB * KB };
+// The first load's CSS blocks the first paint: it once carried 31 KB of font rules for a face no page needed.
+const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 3.5 * KB * KB, dist: 10 * KB * KB };
 
 function walk(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -20,11 +21,13 @@ const files = walk(dist);
 const html = readFileSync(join(dist, 'index.html'), 'utf8');
 const initial = [...html.matchAll(/(?:src|href)="\/(assets\/[^"]+\.js)"/g)].map((m) => m[1]);
 const initialGzip = initial.reduce((n, f) => n + gzipSync(readFileSync(join(dist, f))).length, 0);
+const initialCss = [...html.matchAll(/href="\/(assets\/[^"]+\.css)"/g)].reduce((n, m) => n + gzipSync(readFileSync(join(dist, m[1]))).length, 0);
 const totalJs = files.filter((f) => f.endsWith('.js')).reduce((n, f) => n + statSync(f).size, 0);
 const distSize = files.reduce((n, f) => n + statSync(f).size, 0);
 
 const rows = [
   ['Initial JS (gzip)', initialGzip, budgets.initialGzip],
+  ['Initial CSS (gzip)', initialCss, budgets.initialCss],
   ['Total JS', totalJs, budgets.totalJs],
   ['dist', distSize, budgets.dist],
 ];

@@ -12,7 +12,9 @@ import { cx } from '../cx';
 
 export const fieldClass =
   'w-full rounded-control border border-field bg-paper px-3 font-ui text-14 text-ink outline-none placeholder:text-ink-2 ' +
-  'transition-colors duration-120 data-hovered:border-ink-2 data-focused:border-accent data-focused:ring-2 data-focused:ring-accent/25 data-invalid:border-critical';
+  'transition-colors duration-120 data-hovered:border-ink-2 data-focused:border-accent data-focused:ring-2 data-focused:ring-accent/25 data-invalid:border-critical ' +
+  // A plain input or select given this look has no data-focused: it shows its focus the browser's way.
+  'focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/25';
 
 interface FieldProps extends Omit<AriaTextFieldProps, 'className' | 'children'> {
   label: ReactNode;

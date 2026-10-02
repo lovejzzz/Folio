@@ -32,7 +32,7 @@ export function LegalPage({ title, text }: { title: string; text: LegalText }) {
       <SimpleHeader />
       <main id="main" className="mx-auto max-w-2xl px-5 pb-24 pt-8 md:pt-12">
         <h1 className="font-display text-48 leading-none text-ink">{title}</h1>
-        {text.updated && <p className="mt-3 font-ui text-13 text-ink-3">{text.updated}</p>}
+        {text.updated && <p className="mt-3 font-ui text-13 text-ink-2">{text.updated}</p>}
         <p className="mt-8 font-reading text-18 text-ink">{text.lede}</p>
         <div className="mt-10 space-y-8">
           {text.sections.map((section) => (

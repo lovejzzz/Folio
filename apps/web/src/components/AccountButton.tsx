@@ -25,7 +25,7 @@ const initial = (user: AccountUser) => (user.name || user.email).trim().charAt(0
 /** A round mark with the teacher's initial; a small dot says when their courses are on their way to the account. */
 export function AvatarMark({ user, sync = 'idle', large = false }: { user: AccountUser; sync?: SyncState; large?: boolean }) {
   return (
-    <span className={cx('relative flex shrink-0 items-center justify-center rounded-full bg-accent-tint font-ui font-semibold text-accent-ink', large ? 'size-10 text-16' : 'size-8 text-14')}>
+    <span className={cx('relative flex shrink-0 items-center justify-center rounded-full bg-accent-tint font-ui font-semibold text-accent', large ? 'size-10 text-16' : 'size-8 text-14')}>
       {initial(user)}
       {sync !== 'idle' && (
         <span

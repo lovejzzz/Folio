@@ -17,7 +17,7 @@ function PackButton({ pack }: { pack: Pack }) {
         {bonus && <span className="whitespace-nowrap rounded-full bg-accent-tint px-2 py-0.5 font-ui text-12 font-medium text-accent">{creditsText.packMore(pack)}</span>}
       </span>
       <span className="font-ui text-14 text-ink">{creditsText.packCredits(pack)}</span>
-      <span className={cx('font-ui text-12', bonus ? 'font-medium text-good' : 'text-ink-3')}>{creditsText.packBonus(pack)}</span>
+      <span className={cx('font-ui text-12', bonus ? 'font-medium text-good' : 'text-ink-2')}>{creditsText.packBonus(pack)}</span>
     </button>
   );
 }

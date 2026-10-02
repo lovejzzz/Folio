@@ -8,6 +8,7 @@ import { SimpleHeader } from '../../components/AppHeader';
 import { CourseCard } from '../../components/CourseCard';
 import { EmptySheets } from '../../components/Illustrations';
 import { useT } from '../../i18n';
+import { useAccount } from '../../state/account';
 import { download } from '../../lib/exporter';
 import { useCourseList } from '../../state/courseList';
 import { deleteCourse, isQuotaError, loadCourse, saveCourse, type CourseSummary } from '../../state/db';
@@ -99,10 +100,11 @@ function Header() {
 
 function DeleteDialog({ course, onClose, onDeleted }: { course: CourseSummary | null; onClose: () => void; onDeleted: () => void }) {
   const t = useT();
+  const signedIn = useAccount((s) => Boolean(s.user));
   return (
     <Dialog isOpen={course !== null} onOpenChange={(o) => !o && onClose()} title={t.library.deleteCourse} size="sm">
       <div className="px-6 pb-6">
-        <p className="mt-2 font-ui text-14 leading-relaxed text-ink-2">{course && t.library.deleteConfirm(course.title)}</p>
+        <p className="mt-2 font-ui text-14 leading-relaxed text-ink-2">{course && (signedIn ? t.library.deleteConfirmAccount(course.title) : t.library.deleteConfirm(course.title))}</p>
         <div className="mt-6 flex justify-end gap-2">
           <Button variant="quiet" onPress={onClose}>
             {t.common.cancel}
