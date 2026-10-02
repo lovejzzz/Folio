@@ -147,14 +147,15 @@ export const HOLD_LIFETIME = 15 * 60 * 1000;
 
 /**
  * Take `amount` from the balance when `condition` holds, and write the hold down, in one transaction: the
- * credits are never taken without the record that gives them back. The hold is written only if the balance
- * was taken from (changes() is the row the update just changed).
+ * credits are never taken without the record that gives them back. The hold is written first, only if the
+ * balance allows it; the balance is then taken from only if that hold exists. Both are plain conditions, so
+ * nothing rests on how a database reports what a statement changed.
  */
 async function holdIf(db: D1Database, userId: string, amount: number, now: number, condition: string, value: number): Promise<Hold | null> {
   const hold = { id: id(), amount };
-  const [, written] = await db.batch([
-    db.prepare(`UPDATE credits SET balance = balance - ?, updated_at = ? WHERE user_id = ? AND ${condition}`).bind(amount, now, userId, value),
-    db.prepare('INSERT INTO credit_holds (id, user_id, amount, created_at) SELECT ?, ?, ?, ? WHERE changes() = 1').bind(hold.id, userId, amount, now),
+  const [written] = await db.batch([
+    db.prepare(`INSERT INTO credit_holds (id, user_id, amount, created_at) SELECT ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM credits WHERE user_id = ? AND ${condition})`).bind(hold.id, userId, amount, now, userId, value),
+    db.prepare('UPDATE credits SET balance = balance - ?, updated_at = ? WHERE user_id = ? AND EXISTS (SELECT 1 FROM credit_holds WHERE id = ?)').bind(amount, now, userId, hold.id),
   ]);
   return written?.meta.changes === 1 ? hold : null;
 }
