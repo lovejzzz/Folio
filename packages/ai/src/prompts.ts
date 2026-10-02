@@ -352,17 +352,17 @@ export const SECTION_EFFORT: Record<SectionPromptKind, Effort> = {
 
 export type TextAction = 'rewrite' | 'simplify' | 'harder' | 'easier' | 'translate' | 'explain';
 
-const actionAsks: Record<TextAction, (language: Language) => string> = {
+const actionAsks: Record<TextAction, (language: WritingLanguage) => string> = {
   rewrite: () => 'Rewrite the selected text so it reads more clearly. Keep its meaning and length.',
   simplify: () => 'Rewrite the selected text in simpler words for younger or less confident readers. Keep it accurate, and no longer than it is now.',
   harder: () => 'Rewrite the selected text so it is more challenging, for students who need stretch: more precise terms and a sharper demand, not more sentences.',
   easier: () => 'Rewrite the selected text so it is easier, with more support, for students who find this hard.',
   translate: (language) =>
-    language === 'zh-CN' ? 'Translate the selected text into English.' : 'Translate the selected text into Spanish.',
+    language === 'en' ? 'Translate the selected text into Spanish.' : 'Translate the selected text into English.',
   explain: () => 'Explain the selected text for the teacher in two or three sentences, under 70 words in all: what it means and why it matters here.',
 };
 
-export function textActionPrompt(action: TextAction, selection: string, context: string, language: Language): string {
+export function textActionPrompt(action: TextAction, selection: string, context: string, language: WritingLanguage): string {
   return [
     `Context: ${context}`,
     `Selected text: """${selection}"""`,

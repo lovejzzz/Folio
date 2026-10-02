@@ -1,4 +1,4 @@
-import type { Block, SemanticDoc } from '@folio/core';
+import { spokenIn, type Block, type SemanticDoc } from '@folio/core';
 import { cx } from '@folio/ui';
 import { useT } from '../i18n';
 import { InlineText } from './InlineText';
@@ -93,9 +93,15 @@ function Heading({ b, top }: { b: B<'heading'>; top: number }) {
   );
 }
 
-function ListBlock({ b }: { b: B<'list'> }) {
+/** A passage's own language where it differs from the document's: Spanish a translation put into an English course. */
+const ownLang = (text: string, lang: string) => {
+  const spoken = spokenIn(text, lang);
+  return spoken === lang ? undefined : spoken;
+};
+
+function ListBlock({ b, lang }: { b: B<'list'>; lang: string }) {
   const L = b.ordered ? 'ol' : 'ul';
-  return <L className={cx('my-3 space-y-1 pl-6', b.ordered ? 'list-decimal' : 'list-disc marker:text-ink-3')}>{b.items.map((x, i) => <li key={i}><InlineText text={x} /></li>)}</L>;
+  return <L className={cx('my-3 space-y-1 pl-6', b.ordered ? 'list-decimal' : 'list-disc marker:text-ink-3')}>{b.items.map((x, i) => <li key={i} lang={ownLang(x, lang)}><InlineText text={x} /></li>)}</L>;
 }
 
 function Meta({ b }: { b: B<'meta'> }) {
@@ -161,12 +167,12 @@ function BlockView({ b, lang, top }: { b: Block; lang: string; top: number }) {
       return <Heading b={b} top={top} />;
     case 'para':
       return (
-        <p className={cx('my-3 whitespace-pre-line', b.tone === 'lead' && 'text-18 leading-8 text-ink-2', b.tone === 'muted' && 'font-ui text-14 text-ink-2')}>
+        <p lang={ownLang(b.text, lang)} className={cx('my-3 whitespace-pre-line', b.tone === 'lead' && 'text-18 leading-8 text-ink-2', b.tone === 'muted' && 'font-ui text-14 text-ink-2')}>
           <InlineText text={b.text} />
         </p>
       );
     case 'list':
-      return <ListBlock b={b} />;
+      return <ListBlock b={b} lang={lang} />;
     case 'meta':
       return <Meta b={b} />;
     case 'table':

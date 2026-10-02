@@ -1,4 +1,4 @@
-import { cmd, newId, orderedLessons, type Command, type Course, type Language } from '@folio/core';
+import { cmd, newId, orderedLessons, type Command, type Course } from '@folio/core';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
 import { typesetDraft } from './typeset';
@@ -11,11 +11,13 @@ export type { TextAction };
 /** Selection toolbar: rewrite, simplify, harder, easier, translate, explain. */
 export async function runTextAction(
   inference: Inference,
-  args: { action: TextAction; selection: string; context: string; language: Language; signal?: AbortSignal },
+  /** `language`: the selection's, which is Spanish where a translation put Spanish into an English course. */
+  args: { action: TextAction; selection: string; context: string; language: WritingLanguage; signal?: AbortSignal },
 ): Promise<string> {
   const prompt = textActionPrompt(args.action, args.selection, args.context, args.language);
-  // English goes into Spanish, the other language of many North American classrooms; Chinese, from older courses, into English.
-  const out: WritingLanguage = args.action === 'translate' ? (args.language === 'zh-CN' ? 'en' : 'es') : args.language;
+  // English goes into Spanish, the other language of many North American classrooms; Spanish, or Chinese from
+  // older courses, back into English. Any other action keeps the selection's own language.
+  const out: WritingLanguage = args.action === 'translate' ? (args.language === 'en' ? 'es' : 'en') : args.language;
   const system = systemPrompt(out);
   if (args.action === 'explain') {
     const r = await runJob(inference, { task: 'folio_explain', system, prompt, effort: 'low', schema: ExplanationDraft, signal: args.signal });

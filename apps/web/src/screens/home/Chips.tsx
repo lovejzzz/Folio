@@ -6,7 +6,7 @@ import { looksLikeSyllabus, useDraft } from '../../state/draft';
 
 /** The quiet chips under the brief share one look, whether a native select or a menu button. */
 export const chipLook =
-  'h-8 cursor-default rounded-full border border-rule bg-paper font-ui text-13 text-ink outline-none transition-colors duration-120 hover:border-field focus-visible:ring-2 focus-visible:ring-accent';
+  'h-10 cursor-default rounded-full border border-rule bg-paper font-ui text-14 text-ink outline-none transition-colors duration-120 hover:border-field focus-visible:ring-2 focus-visible:ring-accent';
 
 /**
  * The quiet chips under the brief. They are native selects styled as
@@ -19,11 +19,11 @@ function Chip({ label, value, onChange, children }: { label: string; value: stri
         aria-label={label}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={cx(chipLook, 'appearance-none pl-3 pr-7')}
+        className={cx(chipLook, 'appearance-none pl-4 pr-8')}
       >
         {children}
       </select>
-      <ChevronDown size={14} strokeWidth={1.75} className="pointer-events-none absolute right-2.5 top-2 text-ink-2" aria-hidden />
+      <ChevronDown size={14} strokeWidth={1.75} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-2" aria-hidden />
     </span>
   );
 }
@@ -41,7 +41,7 @@ export function LevelChip() {
   return (
     <Suspense
       fallback={
-        <span className={cx(chipLook, 'inline-flex items-center gap-1.5 pl-3 pr-2.5')}>
+        <span className={cx(chipLook, 'inline-flex items-center gap-1.5 pl-4 pr-3')}>
           {label}
           <ChevronDown size={14} strokeWidth={1.75} className="text-ink-2" aria-hidden />
         </span>

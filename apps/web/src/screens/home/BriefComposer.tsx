@@ -61,16 +61,16 @@ function ComposerBar({ onPick, onGo }: { onPick: () => void; onGo: () => void })
     <div className="flex flex-wrap items-center gap-2 border-t border-rule px-3 py-3 md:px-5">
       <LevelChip />
       <LessonsChip />
-      <IconButton label={t.home.attach} onPress={onPick}>
-        <Paperclip size={17} strokeWidth={1.5} />
+      <IconButton label={t.home.attach} onPress={onPick} className="size-10">
+        <Paperclip size={20} strokeWidth={1.5} />
       </IconButton>
       <div className="ml-auto flex items-center gap-4">
         <Suspense fallback={null}>
           <CreditsLeft />
         </Suspense>
-        <Button variant="primary" size="lg" className="h-10 pl-5 pr-4" onPress={onGo}>
+        <Button variant="primary" size="lg" className="h-12 pl-6 pr-5 text-16" onPress={onGo}>
           {t.home.continue}
-          <ArrowRight size={17} strokeWidth={1.75} aria-hidden />
+          <ArrowRight size={18} strokeWidth={1.75} aria-hidden />
         </Button>
       </div>
     </div>
@@ -159,7 +159,7 @@ export function BriefComposer() {
       <textarea
         id="brief"
         value={brief}
-        rows={4}
+        rows={6}
         onChange={(e) => {
           setError(false);
           setBrief(e.target.value);
@@ -168,7 +168,7 @@ export function BriefComposer() {
         placeholder={t.home.placeholder}
         aria-describedby={error ? hintId : undefined}
         aria-invalid={error || undefined}
-        className="block min-h-36 w-full resize-none bg-transparent px-5 pb-3 pt-5 font-reading text-18 leading-relaxed text-ink outline-none placeholder:text-ink-3 md:px-7 md:pt-6 md:text-22 md:leading-9"
+        className="block min-h-52 w-full resize-none bg-transparent px-5 pb-3 pt-5 font-reading text-18 leading-relaxed text-ink outline-none placeholder:text-ink-2 md:min-h-64 md:px-8 md:pt-7 md:text-22 md:leading-9"
         style={{ fieldSizing: 'content' } as React.CSSProperties}
       />
       {dragging && <p className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-sheet bg-accent-tint font-ui text-16 font-medium text-accent">{t.home.dropHere}</p>}

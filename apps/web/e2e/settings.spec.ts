@@ -112,3 +112,16 @@ test('a local server that answers becomes the one Folio uses', async ({ page }) 
   await page.getByRole('button', { name: 'Done' }).click();
   await expect(page).toHaveURL(/\/$/);
 });
+
+test('a larger text size enlarges every screen’s text, and is there from the first paint after a reload', async ({ page }) => {
+  await page.goto('/settings');
+  const body = () => page.evaluate(() => parseFloat(getComputedStyle(document.body).fontSize));
+  expect(await body()).toBe(14);
+  await page.getByRole('radiogroup', { name: 'Text size' }).getByRole('radio', { name: 'Larger' }).click();
+  expect(await body()).toBe(17.5);
+  await page.goto('/');
+  // Set by the page's first script, before the app runs, so nothing jumps as it loads.
+  expect(await page.evaluate(() => document.documentElement.dataset.text)).toBe('larger');
+  await expect(page.getByRole('heading', { name: 'What do you want to teach?' })).toBeVisible();
+  expect(await body()).toBe(17.5);
+});

@@ -5,10 +5,13 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type Theme = 'system' | 'light' | 'dark';
 export type Density = 'comfortable' | 'compact';
+/** How large the interface's text is: standard, or larger for teachers who want to read it more easily. */
+export type TextSize = 'standard' | 'large' | 'larger';
 
 interface Prefs {
   theme: Theme;
   density: Density;
+  textSize: TextSize;
   railCollapsed: boolean;
   /** Keys for every provider are kept so switching back doesn't lose one. */
   keys: Partial<Record<ProviderId, string>>;
@@ -56,6 +59,7 @@ export function sanitizePrefs(stored: unknown, current: Prefs): Prefs {
     ...current,
     theme: oneOf(['system', 'light', 'dark'], p.theme, current.theme),
     density: oneOf(['comfortable', 'compact'], p.density, current.density),
+    textSize: oneOf(['standard', 'large', 'larger'], p.textSize, current.textSize),
     railCollapsed: typeof p.railCollapsed === 'boolean' ? p.railCollapsed : current.railCollapsed,
     keys: record(p.keys),
     models: record(p.models),
@@ -69,6 +73,7 @@ export const usePrefs = create<Prefs>()(
     (set) => ({
       theme: 'system',
       density: 'comfortable',
+      textSize: 'standard',
       railCollapsed: false,
       keys: {},
       models: {},
@@ -104,6 +109,13 @@ let pinned: Theme | null = null;
 export function pinTheme(theme: Theme | null): void {
   pinned = theme;
   applyTheme(usePrefs.getState().theme);
+}
+
+/** The text size, on the page's root element, where the text tokens read it. */
+export function applyTextSize(size: TextSize): void {
+  const root = document.documentElement;
+  if (size === 'standard') delete root.dataset.text;
+  else root.dataset.text = size;
 }
 
 export function applyTheme(theme: Theme): void {

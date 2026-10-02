@@ -545,7 +545,7 @@ export const en = {
     harder: 'Harder',
     easier: 'Easier',
     translate: 'Translate to Spanish',
-    /** On text written in Chinese, from a course made before Folio was English only. */
+    /** On text in another language: Spanish a translation put in, or Chinese from a course made before Folio was English only. */
     toEnglish: 'Translate to English',
     explain: 'Explain',
     working: 'Writing…',

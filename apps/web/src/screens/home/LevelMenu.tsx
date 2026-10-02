@@ -30,7 +30,7 @@ export function LevelFace({ label }: { label: string }) {
   );
 }
 
-export const levelChipClass = cx(chipLook, 'inline-flex items-center gap-1.5 pl-3 pr-2.5');
+export const levelChipClass = cx(chipLook, 'inline-flex items-center gap-1.5 pl-4 pr-3');
 
 /** The level: a stage, or within a school stage one grade (a second menu opens beside it). */
 export function LevelMenu() {

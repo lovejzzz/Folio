@@ -176,6 +176,11 @@ describe('Translate', () => {
     expect(asked[0]!.system).not.toContain('Write in clear English');
     expect(asked[1]!.prompt).toContain('into English');
     expect(asked[1]!.system).toContain('Write in clear English');
+    // Spanish a translation put in goes back into English; any other action on it stays Spanish.
+    await runTextAction(inf, { action: 'translate', selection: 'Hola', context: 'Saludos', language: 'es' });
+    await runTextAction(inf, { action: 'simplify', selection: 'Hola', context: 'Saludos', language: 'es' });
+    expect(asked[2]!.prompt).toContain('into English');
+    expect(asked[3]!.system).toContain('Latin American Spanish');
   });
 });
 

@@ -23,6 +23,7 @@
       try {
         var t = JSON.parse(localStorage.getItem('folio.prefs') || '{}').state;
         if (t && t.theme && t.theme !== 'system') document.documentElement.dataset.theme = t.theme;
+        if (t && (t.textSize === 'large' || t.textSize === 'larger')) document.documentElement.dataset.text = t.textSize;
       } catch (e) {}
       // Folio needs Safari 16.4, Chrome 111 or Firefox 128 or newer. Older browsers can't parse its code and
       // would show a blank page, so say so instead.

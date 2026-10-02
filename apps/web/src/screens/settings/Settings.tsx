@@ -104,11 +104,14 @@ function ModelSection() {
 
 function AppearanceSection() {
   const t = useT();
-  const { theme, density, set } = usePrefs();
+  const { theme, density, textSize, set } = usePrefs();
   return (
     <Section title={settingsText.appearance}>
       <Row label={settingsText.theme}>
         <SegmentedControl label={settingsText.theme} value={theme} onChange={(v) => set({ theme: v })} options={[{ id: 'system', label: t.nav.themeSystem }, { id: 'light', label: t.nav.themeLight }, { id: 'dark', label: t.nav.themeDark }]} />
+      </Row>
+      <Row label={settingsText.textSize}>
+        <SegmentedControl label={settingsText.textSize} value={textSize} onChange={(v) => set({ textSize: v })} options={[{ id: 'standard', label: settingsText.textStandard }, { id: 'large', label: settingsText.textLarge }, { id: 'larger', label: settingsText.textLarger }]} />
       </Row>
       <Row label={settingsText.density}>
         <SegmentedControl label={settingsText.density} value={density} onChange={(v) => set({ density: v })} options={[{ id: 'comfortable', label: t.map.comfortable }, { id: 'compact', label: t.map.compact }]} />

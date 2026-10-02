@@ -13,6 +13,7 @@ export * from './semantic';
 export * from './docLabels';
 export * from './migrate';
 export * from './normalize';
+export * from './spokenIn';
 export * from './sources';
 export * from './inlineCode';
 export { project } from './projections';

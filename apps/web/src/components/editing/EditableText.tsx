@@ -1,4 +1,4 @@
-import { hasMarks, storedOffset } from '@folio/core';
+import { hasMarks, looksSpanish, storedOffset } from '@folio/core';
 import { Highlight, cx } from '@folio/ui';
 import { createElement, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { drawInlineText } from '../InlineText';
@@ -87,13 +87,19 @@ function SuggestionView({ value, suggestion }: { value: string; suggestion: Sugg
   );
 }
 
+/**
+ * The field's language: the one it was given (or its page's, when none was), except text that is clearly Spanish
+ * in an English course, which a translation put there.
+ */
+const fieldLang = (value: string, lang: string | undefined) => ((lang ?? 'en') === 'en' && looksSpanish(value) ? 'es' : lang);
+
 /** Keeps the DOM text in step with the course and registers the field for the selection toolbar. */
 function useEditable(props: EditableTextProps) {
   const ref = useRef<HTMLElement>(null);
   const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
-  const latest = useRef({ value: props.value, onCommit: props.onCommit, context: props.context ?? '', lang: props.lang });
+  const latest = useRef({ value: props.value, onCommit: props.onCommit, context: props.context ?? '', lang: fieldLang(props.value, props.lang) });
   useLayoutEffect(() => {
-    latest.current = { value: props.value, onCommit: props.onCommit, context: props.context ?? '', lang: props.lang };
+    latest.current = { value: props.value, onCommit: props.onCommit, context: props.context ?? '', lang: fieldLang(props.value, props.lang) };
   });
   useLayoutEffect(() => {
     const el = ref.current;
@@ -129,7 +135,8 @@ function onKeyDown(e: KeyboardEvent<HTMLElement>, value: string, multiline: bool
  * editable in place. Changes commit as one command when focus leaves.
  */
 export function EditableText(props: EditableTextProps) {
-  const { value, onCommit, label, as = 'span', multiline = false, placeholder, className, lang, readOnly } = props;
+  const { value, onCommit, label, as = 'span', multiline = false, placeholder, className, readOnly } = props;
+  const lang = fieldLang(value, props.lang);
   const { ref, suggestion } = useEditable(props);
   const heading = isHeading(as);
   const editable = createElement(heading ? 'span' : as, {

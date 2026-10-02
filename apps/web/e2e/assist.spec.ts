@@ -1,6 +1,6 @@
 import { expect, test } from './fixtures';
 import { fakeAnthropic } from './fakeModel';
-import { openSample, withKey } from './helpers';
+import { openSample, retype, withKey } from './helpers';
 
 test('⌘K plans a course change, previews it, and applies it', async ({ page }) => {
   await withKey(page);
@@ -112,4 +112,19 @@ test('⌘K shows there is nothing to do when no step can be done', async ({ page
   await expect(page.getByText('There’s nothing to change.')).toBeVisible();
   await expect(page.getByText('Remove lesson 99: the course has only 4 lessons.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Apply' })).toHaveCount(0);
+});
+
+test('text in Spanish is marked Spanish, and offers to go back into English', async ({ page }) => {
+  await withKey(page);
+  await fakeAnthropic(page);
+  await openSample(page);
+  await page.getByRole('link', { name: /Asking questions with data/ }).first().click();
+  const summary = page.getByRole('textbox', { name: 'Summary of lesson 1' });
+  await expect(summary).not.toHaveAttribute('lang', 'es');
+  await retype(page, 'Summary of lesson 1', 'Qué hace que una pregunta sea estadística, y la diferencia entre variables categóricas y cuantitativas.');
+  await expect(summary).toHaveAttribute('lang', 'es');
+  await summary.selectText();
+  const bar = page.getByRole('toolbar', { name: 'Ask about the selected text' });
+  await expect(bar.getByRole('button', { name: 'Translate to English' })).toBeVisible();
+  await expect(bar.getByRole('button', { name: 'Translate to Spanish' })).toHaveCount(0);
 });

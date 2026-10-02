@@ -92,7 +92,7 @@ function CellCaption({ view, metric, reason }: { view: CellView; metric: string;
 function cellClass(view: CellView, built: boolean, live: boolean, settled: boolean, compact: boolean): string {
   return cx(
     'group flex w-full justify-between gap-2 rounded-control border p-3 text-left font-ui outline-none transition duration-200 ease-ink',
-    compact ? 'h-12 flex-row items-center' : 'h-28 flex-col items-start',
+    compact ? 'h-full min-h-12 flex-row items-center' : 'h-full min-h-28 flex-col items-start',
     (built || live) && 'border-transparent bg-paper shadow-sheet',
     built && 'hover:shadow-overlay',
     view === 'none' && 'border-transparent bg-well/60 hover:bg-well',

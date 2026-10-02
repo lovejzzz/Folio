@@ -84,6 +84,8 @@ export async function grantFree(db: D1Database, userId: string, addressHash: str
     db
       .prepare('INSERT INTO free_grants (ip_hash, day, count) VALUES (?, ?, 1) ON CONFLICT(ip_hash, day) DO UPDATE SET count = count + 1')
       .bind(addressHash, day),
+    // As the privacy page says: a network's count is kept for its day only, then goes.
+    db.prepare('DELETE FROM free_grants WHERE day < ?').bind(day),
   ]);
   return amount;
 }

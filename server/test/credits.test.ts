@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { allowedBetas } from '../src/ai';
 import { handle } from '../src/api';
-import { addPurchase, balanceOf, charge, FREE_CREDITS, FREE_PER_ADDRESS_PER_DAY, HOLD_LIFETIME, MILLI, reserve, returnLostHolds, settle } from '../src/credits';
+import { addPurchase, balanceOf, grantFree, charge, FREE_CREDITS, FREE_PER_ADDRESS_PER_DAY, HOLD_LIFETIME, MILLI, reserve, returnLostHolds, settle } from '../src/credits';
 import { forgetGoogleKeys } from '../src/google';
 import type { Env } from '../src/types';
 import { fakeD1, fakeGoogle } from './fake';
@@ -223,6 +223,16 @@ describe('purchases', () => {
     expect(await addPurchase(env.DB, 'g-123', 1000 * MILLI, 'stripe:cs_1', '$10 pack')).toBe(true);
     expect(await addPurchase(env.DB, 'g-123', 1000 * MILLI, 'stripe:cs_1', '$10 pack')).toBe(false);
     expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS + 1000) * MILLI);
+  });
+});
+
+describe('the count kept against free credits', () => {
+  it('keeps a network’s count for its day only', async () => {
+    const yesterday = Date.UTC(2026, 9, 1, 12);
+    await grantFree(env.DB, 'u-1', 'hash-a', yesterday);
+    await grantFree(env.DB, 'u-2', 'hash-b', yesterday + 86_400_000);
+    const rows = await env.DB.prepare('SELECT ip_hash, day FROM free_grants ORDER BY day').all<{ ip_hash: string; day: string }>();
+    expect(rows.results).toEqual([{ ip_hash: 'hash-b', day: '2026-10-02' }]);
   });
 });
 

@@ -37,7 +37,7 @@ function Examples() {
       <div>
         <ul className="flex flex-wrap items-center justify-center gap-2" aria-label={t.home.tryLabel}>
           {/* "Try" leads the first row of examples; the list is already named so for screen readers. */}
-          <li aria-hidden className="pr-1 font-ui text-13 font-medium text-ink-2">
+          <li aria-hidden className="pr-1 font-ui text-14 font-medium text-ink-2">
             {t.home.tryLabel}
           </li>
           {examples.map((example) => (
@@ -51,7 +51,7 @@ function Examples() {
                     document.getElementById('brief')?.focus();
                   });
                 }}
-                className="min-h-8 rounded-full border border-rule px-3.5 py-1 font-ui text-13 leading-5 text-ink-2 outline-none transition-colors duration-120 hover:border-field hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+                className="min-h-10 rounded-full border border-rule px-4 py-2 font-ui text-14 leading-5 text-ink-2 outline-none transition-colors duration-120 hover:border-field hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
               >
                 {example}
               </button>
@@ -77,7 +77,7 @@ export function Home() {
   return (
     <div className="flex min-h-dvh flex-col">
       <SimpleHeader />
-      <main id="main" className="mx-auto w-full max-w-3xl flex-1 px-5 pb-24 pt-10 md:pt-20">
+      <main id="main" className="mx-auto w-full max-w-4xl flex-1 px-5 pb-24 pt-10 md:pt-20">
         <h1 className="mb-8 text-center font-display text-48 leading-none tracking-tight text-ink md:mb-10 md:text-64">
           {t.home.question}
         </h1>

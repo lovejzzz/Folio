@@ -74,8 +74,8 @@
     background: var(--folio-desk);
     color: var(--folio-ink);
     font-family: var(--font-ui);
-    font-size: 14px;
-    line-height: 20px;
+    font-size: var(--text-14);
+    line-height: var(--text-14--line-height);
   }
 
   ::selection {
@@ -105,13 +105,13 @@
   /* Everything that sits on a sheet uses the reading serif. */
   .folio-doc {
     font-family: var(--font-reading);
-    font-size: 17px;
-    line-height: 28px;
+    font-size: var(--text-17);
+    line-height: var(--text-17--line-height);
     font-optical-sizing: auto;
     color: var(--folio-ink);
   }
   .folio-doc:lang(zh-CN) {
-    font-size: 18px;
+    font-size: var(--text-18);
     line-height: 1.8;
   }
   .folio-doc h1,
@@ -340,7 +340,8 @@
 @media (pointer: coarse) {
   :is(input:not([type='checkbox'], [type='radio'], [type='range']), select, textarea):not(.text-16, .text-17, .text-18, .text-22, .text-28, .text-36, .text-48, .text-64),
   [contenteditable]:not([contenteditable='false']):is(.text-12, .text-13, .text-14) {
-    font-size: 16px;
+    /* Never below 16px; at a larger text size, as large as the field would be. */
+    font-size: max(16px, var(--text-14));
   }
   /* A field with no size of its own takes its container's, often 13 or 14px: brought up to 16px, never down. */
   [contenteditable]:not([contenteditable='false']):not(.text-12, .text-13, .text-14, .text-16, .text-17, .text-18, .text-22, .text-28, .text-36, .text-48, .text-64) {

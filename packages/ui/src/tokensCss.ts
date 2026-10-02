@@ -10,6 +10,13 @@ function vars(mode: keyof Pair): string[] {
   return lines;
 }
 
+/** The text size chosen in Settings: everything written grows together, and the layout makes room. */
+const textScales = [
+  '/* The text size chosen in Settings: everything written grows together, and the layout makes room. */',
+  ...Object.entries({ large: 1.125, larger: 1.25 }).flatMap(([name, scale]) => [`:root[data-text='${name}'] {`, `  --folio-text-scale: ${scale};`, '}']),
+  '',
+];
+
 export function renderTokens(): string {
   const lineHeights: Record<number, number> = { 12: 16, 13: 18, 14: 20, 16: 24, 17: 28, 18: 26, 22: 30, 28: 36, 36: 44, 48: 54, 64: 68 };
   const theme = [
@@ -19,7 +26,8 @@ export function renderTokens(): string {
     '  --font-*: initial;',
     ...Object.entries(font).map(([name, v]) => `  --font-${name}: ${v};`),
     '  --text-*: initial;',
-    ...Object.values(size).flatMap((px) => [`  --text-${px}: ${px}px;`, `  --text-${px}--line-height: ${lineHeights[px]}px;`]),
+    // Every size scales with the teacher's text size setting; at the standard size the scale is 1.
+    ...Object.values(size).flatMap((px) => [`  --text-${px}: calc(${px}px * var(--folio-text-scale));`, `  --text-${px}--line-height: calc(${lineHeights[px]}px * var(--folio-text-scale));`]),
     '  --radius-*: initial;',
     `  --radius-control: ${radius.control}px;`,
     `  --radius-sheet: ${radius.sheet}px;`,
@@ -39,8 +47,10 @@ export function renderTokens(): string {
     ...vars('light'),
     ...motionVars,
     `  --motion-ease: ${motion.ease};`,
+    '  --folio-text-scale: 1;',
     '}',
     '',
+    ...textScales,
     '@media (prefers-color-scheme: dark) {',
     "  :root:not([data-theme='light']) {",
     ...vars('dark').map((l) => `  ${l}`),
@@ -51,10 +61,11 @@ export function renderTokens(): string {
     ...vars('dark'),
     '}',
     '',
-    '/* Paper is white: printing always uses the light palette, whatever the theme. */',
+    '/* Paper is white: printing always uses the light palette, and the standard text size, whatever the settings. */',
     '@media print {',
     '  :root:root:root {',
     ...vars('light').map((l) => `  ${l}`),
+    '    --folio-text-scale: 1;',
     '  }',
     '}',
     '',

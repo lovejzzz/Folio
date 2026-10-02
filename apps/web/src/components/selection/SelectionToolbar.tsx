@@ -131,25 +131,25 @@ function useDismiss(active: boolean, explaining: boolean, bar: RefObject<HTMLDiv
   }, [active, explaining, bar]);
 }
 
-function IdleBar({ onAct, chinese }: { onAct: (a: TextAction) => void; chinese: boolean }) {
+function IdleBar({ onAct, notEnglish }: { onAct: (a: TextAction) => void; notEnglish: boolean }) {
   const t = useT();
   return (
     <div className="flex flex-wrap items-center gap-0.5 rounded-sheet bg-ink p-1 shadow-overlay">
       <Sparkles size={14} strokeWidth={1.75} className="mx-1.5 text-paper/70" aria-hidden />
       {ACTIONS.map((a) => (
         <button key={a} type="button" onClick={() => onAct(a)} className="rounded-control px-2.5 py-1.5 font-ui text-13 text-paper outline-none hover:bg-ink-2 focus-visible:ring-2 focus-visible:ring-paper">
-          {a === 'translate' && chinese ? t.selection.toEnglish : t.selection[a]}
+          {a === 'translate' && notEnglish ? t.selection.toEnglish : t.selection[a]}
         </button>
       ))}
     </div>
   );
 }
 
-function PhaseView({ phase, chinese, onAct, onAccept, onClose }: { phase: Phase; chinese: boolean; onAct: (a: TextAction) => void; onAccept: (next: string) => void; onClose: () => void }) {
+function PhaseView({ phase, notEnglish, onAct, onAccept, onClose }: { phase: Phase; notEnglish: boolean; onAct: (a: TextAction) => void; onAccept: (next: string) => void; onClose: () => void }) {
   const t = useT();
   switch (phase.kind) {
     case 'idle':
-      return <IdleBar onAct={onAct} chinese={chinese} />;
+      return <IdleBar onAct={onAct} notEnglish={notEnglish} />;
     case 'working':
       return <p className="rounded-sheet bg-ink px-4 py-2 font-ui text-13 text-paper shadow-overlay" aria-live="polite">{t.selection.working}</p>;
     case 'suggesting':
@@ -200,7 +200,7 @@ export function SelectionToolbar() {
     setPhase({ kind: 'working' });
     try {
       const { value, context, lang } = target.handle.get();
-      const language = lang === 'zh-CN' ? 'zh-CN' : course.language;
+      const language = lang === 'zh-CN' || lang === 'es' ? lang : course.language;
       const result = await runTextAction(inference, { action, selection: target.text, context: `${course.title}. ${context || value}`, language });
       if (action === 'explain') return setPhase({ kind: 'explaining', text: result });
       target.handle.suggest({ start: target.start, end: target.end, text: result });
@@ -225,7 +225,7 @@ export function SelectionToolbar() {
       style={{ top: pos.top, left: pos.left, maxWidth: window.innerWidth - 2 * EDGE }}
       onMouseDown={(e) => e.preventDefault()}
     >
-      <PhaseView phase={phase} chinese={(target.handle.get().lang === 'zh-CN' ? 'zh-CN' : course.language) === 'zh-CN'} onAct={(a) => void act(a)} onAccept={(next) => phase.kind === 'suggesting' && accept(phase.base, next)} onClose={finish} />
+      <PhaseView phase={phase} notEnglish={['zh-CN', 'es'].includes(target.handle.get().lang ?? course.language)} onAct={(a) => void act(a)} onAccept={(next) => phase.kind === 'suggesting' && accept(phase.base, next)} onClose={finish} />
     </div>
   );
 }

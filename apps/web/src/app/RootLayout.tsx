@@ -5,7 +5,7 @@ import { StorageBlocked } from '../components/StorageBlocked';
 import { Toaster } from '../components/Toaster';
 import { useT } from '../i18n';
 import { startAccount, useAccount } from '../state/account';
-import { applyTheme, usePrefs } from '../state/prefs';
+import { applyTextSize, applyTheme, usePrefs } from '../state/prefs';
 import { toast } from '../state/toasts';
 import { useUi } from '../state/ui';
 
@@ -32,7 +32,9 @@ export function RootLayout() {
   const theme = usePrefs((s) => s.theme);
   const connecting = useUi((s) => s.connectThen !== null);
   const offering = useAccount((s) => s.offer.length > 0);
+  const textSize = usePrefs((s) => s.textSize);
   useEffect(() => applyTheme(theme), [theme]);
+  useEffect(() => applyTextSize(textSize), [textSize]);
   useEffect(() => startAccount(), []);
   useEffect(() => {
     const offline = () => toast({ message: t.errors.offline, tone: 'attention' });
