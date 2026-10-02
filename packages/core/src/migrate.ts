@@ -1,4 +1,5 @@
 import type { Flag } from './flags';
+import { normalizeCourse } from './normalize';
 import { CourseSchema, SCHEMA_VERSION, type Course } from './schema';
 
 /**
@@ -79,5 +80,5 @@ export function parseCourse(input: unknown): Course {
   }
   const result = CourseSchema.safeParse(raw);
   if (!result.success) throw new CourseFormatError('incomplete', 'This course file is damaged or incomplete.');
-  return result.data;
+  return normalizeCourse(result.data);
 }

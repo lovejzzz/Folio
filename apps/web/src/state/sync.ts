@@ -165,14 +165,23 @@ function schedule(id: string): void {
   timer = setTimeout(() => void pushQueued(), 1200);
 }
 
+/** A send that failed (offline, or the account refusing for now) is tried again after this, as well as at the next pull. */
+const RETRY = 60_000;
+
 function pushQueued(): Promise<unknown> {
   if (timer) clearTimeout(timer);
   timer = null;
   const ids = [...queue];
   queue.clear();
-  pushing = pushing.then(() => working(async () => {
-    for (const id of ids) await pushOne(id);
-  }));
+  pushing = pushing.then(async () => {
+    const sent = await working(async () => {
+      for (const id of ids) await pushOne(id);
+      return true;
+    });
+    if (sent || !user) return;
+    for (const id of ids) queue.add(id);
+    timer ??= setTimeout(() => void pushQueued(), RETRY);
+  });
   return pushing;
 }
 
@@ -306,6 +315,10 @@ export async function unsent(): Promise<number> {
 export async function forgetHere(): Promise<void> {
   const account = user?.id;
   user = null;
+  // Nothing more is sent for an account this device has left.
+  queue.clear();
+  if (timer) clearTimeout(timer);
+  timer = null;
   unsubscribe?.();
   unsubscribe = null;
   writeHint(null);
