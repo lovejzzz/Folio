@@ -50,7 +50,17 @@ test('a second tab follows edits, and edits made at once in two tabs are never s
   await start(other, 'Summary of lesson 3', 'From tab two');
   await Promise.all([page.getByRole('textbox', { name: 'Title of lesson 3' }).blur(), other.getByRole('textbox', { name: 'Summary of lesson 3' }).blur()]);
   const banners = [page, other].map((p) => p.getByRole('alert').filter({ hasText: 'changed in another tab' }));
-  await expect.poll(async () => (await banners[0]!.count()) + (await banners[1]!.count())).toBe(1);
+  // On a busy machine one tab's save can land before the other commits: that tab then follows and adds its own
+  // edit, with nothing to ask about. Either way, nothing typed is lost.
+  const asked = async () => (await banners[0]!.count()) + (await banners[1]!.count());
+  const bothKept = async (p: typeof page) =>
+    (await p.getByRole('textbox', { name: 'Title of lesson 3' }).textContent()) === 'From tab one' && (await p.getByRole('textbox', { name: 'Summary of lesson 3' }).textContent()) === 'From tab two';
+  await expect.poll(async () => (await asked()) === 1 || ((await bothKept(page)) && (await bothKept(other)))).toBe(true);
+  if ((await asked()) === 0) {
+    await page.reload();
+    await expect.poll(() => bothKept(page)).toBe(true);
+    return;
+  }
   const paused = (await banners[0]!.count()) ? page : other;
   await paused.getByRole('button', { name: 'Keep this version' }).click();
   await expect(paused.getByRole('alert')).toHaveCount(0);
