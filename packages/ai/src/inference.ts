@@ -197,16 +197,36 @@ function retryDelay(response: Response | null, tries: number): number {
  * POST a request and read its JSON answer. A busy or failing provider (429, 5xx) and a dropped connection are
  * asked again, `retries` times; every failure, reading the answer included, comes out as an InferenceError.
  */
-export async function postJson<T>(fetchImpl: typeof fetch, url: string, init: { headers: Record<string, string>; body: string; signal?: AbortSignal | null }, unreachable: string, retries = 2): Promise<T> {
+/** Longer than any answer takes: a call still open after this is a connection that will never answer. */
+export const CALL_TIMEOUT = 10 * 60 * 1000;
+
+/** The caller's stop, or the time limit, whichever comes first. */
+function withTimeout(signal: AbortSignal | null | undefined, ms: number): AbortSignal {
+  const timeout = AbortSignal.timeout(ms);
+  return signal && typeof AbortSignal.any === 'function' ? AbortSignal.any([signal, timeout]) : (signal ?? timeout);
+}
+
+export async function postJson<T>(
+  fetchImpl: typeof fetch,
+  url: string,
+  init: { headers: Record<string, string>; body: string; signal?: AbortSignal | null },
+  unreachable: string,
+  retries = 2,
+  timeoutMs = CALL_TIMEOUT,
+): Promise<T> {
   for (let tries = 0; ; tries++) {
     let failure: InferenceError;
     let response: Response | null = null;
+    const signal = withTimeout(init.signal, timeoutMs);
     try {
-      response = await fetchImpl(url, { method: 'POST', ...init, signal: init.signal ?? null });
+      response = await fetchImpl(url, { method: 'POST', ...init, signal });
       if (response.ok) return (await response.json()) as T;
       failure = errorFromStatus(response.status, await response.text());
     } catch (error) {
-      if (isAbort(error) || init.signal?.aborted) throw new InferenceError('aborted', 'Stopped.');
+      if (init.signal?.aborted) throw new InferenceError('aborted', 'Stopped.');
+      // Out of time: not tried again, which would only make the teacher wait as long once more.
+      if (signal.aborted) throw new InferenceError('network', 'The model took too long to answer.');
+      if (isAbort(error)) throw new InferenceError('aborted', 'Stopped.');
       // An answer that isn't JSON came from something in between, not the model.
       failure = error instanceof SyntaxError ? new InferenceError('server', 'The answer could not be read.') : new InferenceError('network', unreachable);
     }

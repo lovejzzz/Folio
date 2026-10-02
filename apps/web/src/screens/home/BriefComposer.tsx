@@ -18,12 +18,13 @@ function useAttach() {
     // Copy first: an input's FileList is emptied when it is reset, and a drop's
     // DataTransfer once the event ends, both before the import below resolves.
     const list = Array.from(files);
-    const { FileReadError, readSourceFile, refusalMessage, refusedMessage } = await import('../../lib/readFile');
+    const { FileReadError, cutMessage, readSourceFile, refusalMessage, refusedMessage } = await import('../../lib/readFile');
     const refused: { name: string; reason: 'size' | 'type' | 'empty' }[] = [];
     for (const file of list) {
       try {
-        const source = await readSourceFile(file);
-        setFiles([...useDraft.getState().files, source]);
+        const { title, text, pages } = await readSourceFile(file);
+        setFiles([...useDraft.getState().files, { title, text }]);
+        if (pages) toast({ message: cutMessage(file.name, pages), tone: 'attention' });
       } catch (error) {
         refused.push({ name: file.name, reason: error instanceof FileReadError ? error.reason : 'type' });
       }

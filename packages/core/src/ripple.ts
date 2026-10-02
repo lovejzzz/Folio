@@ -19,8 +19,9 @@ const DEPENDENCIES: Record<GeneratedKind, readonly BasisKey[]> = {
   study: ['title', 'objectives', 'audience', 'plan'],
   quiz: ['title', 'objectives', 'quizSize', 'audience', 'sources', 'plan'],
   assignments: ['title', 'objectives', 'audience', 'plan', 'homework'],
-  discussions: ['title', 'readings', 'objectives', 'audience'],
-  faq: ['title', 'audience'],
+  // Both are written from the plan. One built before this was known has no 'plan' in its basis, and stays up to date.
+  discussions: ['title', 'readings', 'objectives', 'audience', 'plan'],
+  faq: ['title', 'audience', 'plan'],
 };
 
 export function dependenciesOf(kind: GeneratedKind): readonly BasisKey[] {

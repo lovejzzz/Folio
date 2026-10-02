@@ -28,7 +28,7 @@ describe('ripple', () => {
     );
   });
 
-  it('ripples a plan edit into the sections written from it: slides, study guide, quiz and assignment', () => {
+  it('ripples a plan edit into every section written from it', () => {
     const store = new CourseStore(sampleCourse());
     const lesson = orderedLessons(store.getState())[0]!;
     store.apply([cmd('plan.update', { lessonId: lesson.id, keyIdeas: ['Only one idea now'] })], {
@@ -37,8 +37,17 @@ describe('ripple', () => {
     });
     const state = store.getState();
     const kinds = staleItems(state).map((s) => s.kind).sort();
-    expect(kinds).toEqual(['assignments', 'quiz', 'slides', 'study']);
+    expect(kinds).toEqual(['assignments', 'discussions', 'faq', 'quiz', 'slides', 'study']);
     expect(state.lessons[lesson.id]!.gen.plan!.edited).toBe(true);
+  });
+
+  it('keeps discussions and FAQ stamped before they followed the plan up to date through a plan edit', () => {
+    const course = sampleCourse();
+    const lesson = orderedLessons(course)[0]!;
+    for (const kind of ['discussions', 'faq'] as const) delete lesson.gen[kind]!.basis.plan;
+    const store = new CourseStore(course);
+    store.apply([cmd('plan.update', { lessonId: lesson.id, keyIdeas: ['Only one idea now'] })], { label: { key: 't' }, source: 'teacher' });
+    expect(staleItems(store.getState()).map((s) => s.kind).sort()).toEqual(['assignments', 'quiz', 'slides', 'study']);
   });
 
   it('keep-mine clears staleness without changing content, and undo restores it', () => {

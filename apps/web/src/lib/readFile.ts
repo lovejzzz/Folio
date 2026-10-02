@@ -20,6 +20,11 @@ export function refusalMessage(name: string, reason: Refusal): string {
   return `${name} can’t be read. Attach a PDF, Word, .txt or .md file, or paste the text.`;
 }
 
+/** A PDF longer than Folio reads: the teacher hears which pages the course is built from. */
+export function cutMessage(name: string, pages: number): string {
+  return `${name} has ${pages} pages: Folio read the first ${MAX_PDF_PAGES}. To use a later part, attach those pages as their own PDF.`;
+}
+
 export function refusedMessage(names: string[]): string {
   return `${new Intl.ListFormat('en-US', { type: 'conjunction' }).format(names)} can’t be attached. Attach PDF, Word, .txt or .md files up to 10 MB.`;
 }
@@ -40,7 +45,7 @@ function docxText(bytes: Uint8Array): string {
 }
 
 /** The text of a PDF, page by page, as its lines run. pdf.js loads only when a PDF is dropped. A scan has none. */
-async function pdfText(bytes: Uint8Array): Promise<string> {
+async function pdfText(bytes: Uint8Array): Promise<{ text: string; pages?: number }> {
   // The legacy build: the standard one needs Safari 17.4 / Chrome 119 (Promise.withResolvers), and Folio supports
   // Safari 16.4 and Chrome 111.
   const [pdfjs, worker] = await Promise.all([import('pdfjs-dist/legacy/build/pdf.mjs'), import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')]);
@@ -57,18 +62,18 @@ async function pdfText(bytes: Uint8Array): Promise<string> {
     }
     const text = pages.join('\n\n').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
     if (!text) throw new FileReadError('empty');
-    return text;
+    return { text, pages: doc.numPages > MAX_PDF_PAGES ? doc.numPages : undefined };
   } finally {
     void task.destroy();
   }
 }
 
-/** Read a source file the teacher dropped in: a PDF, .docx, .txt or .md. */
-export async function readSourceFile(file: File): Promise<{ title: string; text: string }> {
+/** Read a source file the teacher dropped in: a PDF, .docx, .txt or .md. `pages`: a PDF read only in part, and its length. */
+export async function readSourceFile(file: File): Promise<{ title: string; text: string; pages?: number }> {
   if (file.size > MAX_BYTES) throw new FileReadError('size');
   const title = file.name.replace(/\.[^.]+$/, '');
   if (/\.docx$/i.test(file.name)) return { title, text: docxText(new Uint8Array(await file.arrayBuffer())) };
-  if (/\.pdf$/i.test(file.name) || file.type === 'application/pdf') return { title, text: await pdfText(new Uint8Array(await file.arrayBuffer())) };
+  if (/\.pdf$/i.test(file.name) || file.type === 'application/pdf') return { title, ...(await pdfText(new Uint8Array(await file.arrayBuffer()))) };
   if (/\.(txt|md|markdown|csv)$/i.test(file.name) || file.type.startsWith('text/')) return { title, text: (await file.text()).trim() };
   throw new FileReadError('type');
 }

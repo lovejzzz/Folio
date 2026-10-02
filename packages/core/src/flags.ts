@@ -33,6 +33,8 @@ export const FlagSchema = z.discriminatedUnion('code', [
   withValues('schemaIssue', { path: z.string(), issue: z.string() }),
   /** A problem the plan's review found and could not fix by itself: where it is, and what is wrong. */
   withValues('reviewNote', { where: z.string(), text: z.string() }),
+  /** The plan's review could not be had (the model was busy or unreachable): the plan went out unchecked. */
+  plain('unreviewed'),
   /** A sentence stored by an older version of Folio, shown as it was written. */
   withValues('note', { text: z.string() }),
 ]);
@@ -83,6 +85,8 @@ export function describeFlag(flag: Flag): string {
       return `The rubric criterion "${flag.values.criterion}" does not describe every level.`;
     case 'schemaIssue':
       return `${flag.values.path}: ${flag.values.issue}`;
+    case 'unreviewed':
+      return 'The plan was not checked.';
     case 'reviewNote':
       return `${flag.values.where}: ${flag.values.text}`;
     case 'note':

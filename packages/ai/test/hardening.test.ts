@@ -21,6 +21,7 @@ import {
   type ModelSettings,
   type NewCourseRequest,
 } from '../src';
+import { shareBudget } from '../src/files';
 import { fakeInference, planDraft, smallCourse } from './fake';
 
 const count = (text: string, part: string) => text.split(part).length - 1;
@@ -136,6 +137,27 @@ describe('a teacher’s files in a prompt', () => {
     const clarify = clarifyPrompt({ brief: 'Biology', sources: [{ title: 'Syllabus', text: 'x'.repeat(50_000) }], language: 'en', level: '', lessonCount: null, defaultLessons: 4 });
     expect(clarify).toContain('the rest of this source is not shown');
     expect(syllabusCheckPrompt(course, 'y'.repeat(70_000))).toContain('do not report as missing what may be in the part not shown');
+  });
+});
+
+describe('files sharing a prompt', () => {
+  it('show a short file whole and give its room to the long one', () => {
+    expect(shareBudget([2000, 90_000], 40_000)).toEqual([2000, 38_000]);
+    expect(shareBudget([90_000, 2000], 40_000)).toEqual([38_000, 2000]);
+    expect(shareBudget([90_000, 90_000], 40_000)).toEqual([20_000, 20_000]);
+  });
+
+  it('show the syllabus whole first, while every other file keeps its start', () => {
+    expect(shareBudget([30_000, 90_000, 90_000], 40_000, 0)).toEqual([30_000, 5000, 5000]);
+    expect(shareBudget([60_000, 90_000, 1000], 40_000, 0)).toEqual([36_000, 3000, 1000]);
+  });
+
+  it('put the syllabus ahead in the outline, found by its title however it was named', () => {
+    const syllabus = 'Week 1: Cells. '.repeat(2400);
+    const reading = 'A long chapter. '.repeat(6000);
+    const prompt = outlinePrompt({ brief: 'Biology', lessonCount: 4, minutesPerLesson: 50, level: '', language: 'en', sources: [{ title: 'Textbook', text: reading }, { title: 'BIO101', text: syllabus }], syllabus: 'BIO101.pdf' });
+    expect(prompt).toContain(syllabus);
+    expect(count(prompt, 'the rest of this source is not shown')).toBe(1);
   });
 });
 

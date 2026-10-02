@@ -42,6 +42,8 @@ export interface OutlineInput {
   level: string;
   language: Language;
   sources: { title: string; text: string }[];
+  /** The title of the file that is the course's own syllabus: shown whole first, when it fits. */
+  syllabus?: string;
 }
 
 const SESSION_NAMES: Record<SessionKind, string> = { class: 'class', lecture: 'lecture', seminar: 'seminar', lab: 'lab session', problems: 'problem session' };

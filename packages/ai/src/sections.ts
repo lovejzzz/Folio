@@ -306,7 +306,8 @@ async function reviewed(reviewer: Inference, course: Course, lesson: Lesson, dra
     return { value: plan, problems: notes.map((n) => ({ index: null, flag: { code: 'reviewNote', values: { where: issuePlace(plan, n), text: n.why } } })) };
   } catch (error) {
     if (error instanceof InferenceError && error.kind === 'aborted') throw error;
-    return { value: draft, problems: [] };
+    // Kept as written, and marked: the teacher must know this plan had no second read.
+    return { value: draft, problems: [{ index: null, flag: { code: 'unreviewed' } }] };
   }
 }
 

@@ -4,7 +4,7 @@ import { Button, IconButton, TextArea, TextField } from '@folio/ui';
 import { FileText, Paperclip, Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useT } from '../../i18n';
-import { FileReadError, readSourceFile, refusalMessage } from '../../lib/readFile';
+import { FileReadError, cutMessage, readSourceFile, refusalMessage } from '../../lib/readFile';
 import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
 import { toast } from '../../state/toasts';
@@ -46,6 +46,7 @@ function AddSource() {
             try {
               const s = await readSourceFile(f);
               add(s.title, s.text);
+              if (s.pages) toast({ message: cutMessage(f.name, s.pages), tone: 'attention' });
             } catch (error) {
               toast({ message: refusalMessage(f.name, error instanceof FileReadError ? error.reason : 'type'), tone: 'attention' });
             }

@@ -1,4 +1,4 @@
-import { missingTargets, runBuild, targetKey, type BuildEvent, type BuildTarget, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
+import { missingTargets, runBuild, targetKey, type BuildEvent, type BuildSummary, type BuildTarget, type Inference, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
 import { attentionItems, cmd, lessonNumber, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
 import { router } from '../app/router';
@@ -145,6 +145,31 @@ function trackProgress(target: BuildTarget, progress: SectionProgress): void {
   else reviewedRow(key, progress.fixes, progress.notes);
 }
 
+/** Run the build; anything no part of it expected ends it, and it can be started again. */
+async function guardedRun(store: Store, inference: Inference, usages: Usage[], controller: AbortController, list: BuildTarget[]): Promise<BuildSummary | null> {
+  try {
+    return await runBuild(
+      {
+        inference,
+        reviewer: currentReviewer((u) => usages.push(u)) ?? undefined,
+        getCourse: store.getState,
+        signal: controller.signal,
+        commit: (target, commands) => {
+          const n = lessonNumber(store.getState(), target.lessonId);
+          store.apply(commands, { label: { key: 'built', values: { kind: target.kind, n } }, source: 'ai', undoable: false });
+        },
+        onEvent: (event) => trackEvent(store, event),
+        onProgress: trackProgress,
+      },
+      list,
+    );
+  } catch (error) {
+    useBuild.setState({ running: false, stopping: false, controller: null });
+    toast({ key: 'build', message: errorMessage(error), tone: 'critical', duration: 0 });
+    return null;
+  }
+}
+
 /**
  * Build sections for the open course. With no targets, builds everything
  * missing; a course whose materials are all course-level (the syllabus, the
@@ -180,25 +205,8 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   if (course.status !== 'building') {
     store.apply([cmd('course.update', { status: 'building' })], { label: { key: 'editedCourse' }, source: 'ai', silent: true });
   }
-  const summary = await runBuild(
-    {
-      inference,
-      reviewer: currentReviewer((u) => usages.push(u)) ?? undefined,
-      getCourse: store.getState,
-      signal: controller.signal,
-      commit: (target, commands) => {
-        const n = lessonNumber(store.getState(), target.lessonId);
-        store.apply(commands, {
-          label: { key: 'built', values: { kind: target.kind, n } },
-          source: 'ai',
-          undoable: false,
-        });
-      },
-      onEvent: (event) => trackEvent(store, event),
-      onProgress: trackProgress,
-    },
-    list,
-  );
+  const summary = await guardedRun(store, inference, usages, controller, list);
+  if (!summary) return;
   if (!missingTargets(store.getState()).length) markReady(store);
   const { cells: after } = useBuild.getState();
   const errorsOnly = Object.fromEntries(Object.entries(after).filter(([, v]) => v === 'error'));

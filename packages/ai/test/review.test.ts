@@ -82,7 +82,7 @@ describe('a reviewed plan', () => {
     expect(flagged).toBe(1);
   });
 
-  it('goes out as written when the review fails', async () => {
+  it('goes out as written when the review fails, marked as not checked', async () => {
     const course = smallCourse();
     const lesson = orderedLessons(course)[0]!;
     const reviewer = fakeInference(() => {
@@ -91,6 +91,6 @@ describe('a reviewed plan', () => {
     const { commands } = await generateSection(fakeInference(() => planDraft), course, lesson.id, 'plan', undefined, { reviewer });
     const fill = commands[0]!.payload as { flags: unknown[]; content: { segments: { teacherNotes: string }[] } };
     expect(fill.content.segments[1]!.teacherNotes).toBe('Balance it together.');
-    expect(fill.flags).toEqual([]);
+    expect(fill.flags).toEqual([{ code: 'unreviewed' }]);
   });
 });

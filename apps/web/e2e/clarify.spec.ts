@@ -163,3 +163,35 @@ test('arrow keys move through the answers without moving on; Enter does', async 
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading', { name: 'How is the unit assessed?' })).toBeVisible();
 });
+
+test('a syllabus check that keeps failing stops trying on its own, and runs again when the teacher asks', async ({ page }) => {
+  await withKey(page);
+  await fakeAnthropic(page);
+  let broken = true;
+  let checks = 0;
+  // Registered last, so it sees each request first: the check fails while the model is "down".
+  await page.route('https://api.anthropic.com/**', (route) => {
+    const body = route.request().method() === 'POST' ? JSON.stringify(route.request().postDataJSON()) : '';
+    if (!body.includes('A teacher attached this syllabus')) return route.fallback();
+    checks += 1;
+    if (!broken) return route.fallback();
+    return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*' }, json: { type: 'error', error: { type: 'invalid_request_error', message: 'Bad request' } } });
+  });
+  await page.goto('/');
+  const chooser = page.waitForEvent('filechooser');
+  await page.getByRole('button', { name: 'Attach files' }).click();
+  await (await chooser).setFiles([{ name: 'BIO 110 syllabus.md', mimeType: 'text/markdown', buffer: Buffer.from('# BIO 110\n\nWeek 1: Cells\nWeek 2: Genes') }]);
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByRole('textbox', { name: 'Title of lesson 2' })).toBeVisible();
+  await page.goto(page.url().replace(/\/plan$/, '/m/syllabus'));
+  await expect(page.getByText('Folio couldn’t check your syllabus this time.', { exact: false })).toBeVisible();
+  const tried = checks;
+  expect(tried).toBe(2);
+  // Opening the page again doesn't try again on its own.
+  await page.reload();
+  await expect(page.getByText('Week 2: Genes')).toBeVisible();
+  expect(checks).toBe(tried);
+  broken = false;
+  await page.getByRole('button', { name: 'Check again' }).click();
+  await expect(page.getByText('The weights add up to 90%, not 100%. Give the final exam 30%.')).toBeVisible();
+});

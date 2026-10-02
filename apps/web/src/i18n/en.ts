@@ -378,6 +378,8 @@ export const en = {
   ownSyllabus: {
     intro: 'You brought your own syllabus, so Folio didn’t write one. It checked yours for mistakes and gaps instead: what it found is below, then your syllabus as you wrote it. Nothing in it was changed.',
     introChecking: 'You brought your own syllabus, so Folio didn’t write one. It is checking yours for mistakes and gaps instead: what it finds will be listed here, above your syllabus as you wrote it. Nothing in it is changed.',
+    failed: 'Folio couldn’t check your syllabus this time. Your syllabus is below, as you wrote it.',
+    checkAgain: 'Check again',
   },
   tasks: {
     steps: 'Steps',
@@ -488,6 +490,7 @@ export const en = {
     criterionLevels: (v: { criterion: string }) => `The rubric criterion “${v.criterion}” doesn’t describe every level.`,
     schemaIssue: () => 'Part of this came back in the wrong shape. Write it again, or fix it by hand.',
     reviewNote: (v: { where: string; text: string }) => `${v.where}: ${v.text}`,
+    unreviewed: () => 'Folio couldn’t check this plan for mistakes this time. Read it before you teach it, or write it again to have it checked.',
     note: (v: { text: string }) => v.text,
   } satisfies FlagWording,
   history: {

@@ -73,6 +73,9 @@ test('a plan review that fails leaves the plan as written, and the course still 
   // Both plans went to Opus, and each review failed.
   expect([...reviewed].filter((c) => c.includes('Check this plan the way'))).toHaveLength(2);
   await expect(page.getByRole('button', { name: /^Lesson 1, Lesson plans: 50 min/ })).toContainText('Leaf in the dark');
+  // The teacher is told the plans had no second read.
+  await page.getByRole('button', { name: /^Lesson 1, Lesson plans/ }).click();
+  await expect(page.getByText(/Folio couldn’t check this plan for mistakes this time/).first()).toBeVisible();
 });
 
 test('what the plan review can’t fix itself is left on the plan for the teacher', async ({ page }) => {

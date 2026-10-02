@@ -78,3 +78,17 @@ describe('with Folio credits', () => {
     expect(missingTargets(store.getState()).length).toBe(missingTargets(smallCourse()).length);
   });
 });
+
+describe('a call that never answers', () => {
+  it('gives up after its time limit instead of leaving the course "writing" for ever', async () => {
+    const { postJson } = await import('../src/inference');
+    const hang = ((_url: RequestInfo | URL, init?: RequestInit) =>
+      new Promise((_resolve, reject) => init?.signal?.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError'))))) as typeof fetch;
+    await expect(postJson(hang, 'https://example.test', { headers: {}, body: '{}' }, 'unreachable', 2, 50)).rejects.toMatchObject({ kind: 'network', message: 'The model took too long to answer.' });
+    // Stopped by the teacher is still a stop.
+    const stop = new AbortController();
+    const pending = postJson(hang, 'https://example.test', { headers: {}, body: '{}', signal: stop.signal }, 'unreachable', 2, 60_000);
+    stop.abort();
+    await expect(pending).rejects.toMatchObject({ kind: 'aborted' });
+  });
+});
