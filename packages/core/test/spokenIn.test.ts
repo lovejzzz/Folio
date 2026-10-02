@@ -15,6 +15,14 @@ describe('telling Spanish from English', () => {
     expect(looksSpanish('El Niño')).toBe(false);
   });
 
+  it('doesn’t take an accent, a name or the variable y for Spanish', () => {
+    for (const english of ['Graph y against x, then y against z', 'Find y when y = 2x', 'Résumé writing workshop', 'Café culture essay', 'Gabriel García Márquez', 'Pokémon card statistics', 'Simón Bolívar revolution leader', 'Beyoncé and pop feminism', 'Los Angeles water history']) {
+      expect(looksSpanish(english), english).toBe(false);
+    }
+    expect(looksSpanish('Como agua para chocolate')).toBe(true);
+    expect(looksSpanish('Grafica y contra x, y explica la pendiente de la recta')).toBe(true);
+  });
+
   it('marks a field Spanish only in an English course', () => {
     expect(spokenIn('Los estudiantes comparan las dos muestras.', 'en')).toBe('es');
     expect(spokenIn('Students compare the two samples.', 'en')).toBe('en');
