@@ -16,6 +16,8 @@ export const FOLIO_MIX: Readonly<Record<string, { model: string; effort: Effort 
   folio_quiz: { model: 'gpt-6-luna', effort: 'high' },
   folio_assignments: { model: 'gpt-6-luna', effort: 'high' },
   folio_plan_review: { model: 'gpt-6.1-sol', effort: 'low' },
+  // The check of a syllabus the teacher brought is a review too: Sol, which found the most in plans.
+  folio_syllabus_check: { model: 'gpt-6.1-sol', effort: 'low' },
 };
 
 /** OpenAI's models answer through Folio's server as Claude does: the same credits pay for both. */

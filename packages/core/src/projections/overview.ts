@@ -45,8 +45,38 @@ export function projectMap(ctx: Ctx): Block[] {
   return blocks;
 }
 
+/**
+ * A syllabus the teacher brought: kept as they wrote it. Lines that are a table row or a list item stay lines;
+ * a paragraph a PDF broke across lines is joined again.
+ */
+function theirText(text: string): Block[] {
+  return text
+    .split(/\n{2,}/)
+    .map((chunk) => chunk.split('\n').map((s) => s.trim()).filter(Boolean))
+    .filter((lines) => lines.length)
+    .flatMap((lines): Block[] => {
+      const short = lines.length > 1 && lines.reduce((n, s) => n + s.length, 0) / lines.length < 60;
+      return short ? lines.map((text) => ({ t: 'para', text })) : [{ t: 'para', text: lines.join(' ') }];
+    });
+}
+
+/** The teacher's own syllabus, and in their copy what Folio's check of it found. */
+function ownSyllabus(ctx: Ctx, sourceText: string): Block[] {
+  const { course, l } = ctx;
+  if (!ctx.teacher) return theirText(sourceText);
+  const check = course.syllabus?.check;
+  const found: Block[] = !check
+    ? [{ t: 'para', tone: 'muted', text: l.syllabusChecking }]
+    : check.issues.length
+      ? check.issues.map((i) => ({ t: 'note', label: `${l.issueKinds[i.kind]} · ${i.where}`, text: [i.problem, i.fix].filter(Boolean).join(' ') }))
+      : [{ t: 'para', tone: 'muted', text: l.syllabusCheckClean }];
+  return [{ t: 'heading', level: 2, text: l.syllabusCheck }, ...found, { t: 'heading', level: 2, text: l.yourSyllabus }, ...theirText(sourceText)];
+}
+
 export function projectSyllabus(ctx: Ctx): Block[] {
   const { course, l } = ctx;
+  const own = course.syllabus && course.sources[course.syllabus.sourceId];
+  if (own) return ownSyllabus(ctx, own.text);
   const lessons = lessonsIn(ctx);
   const blocks: Block[] = [];
   if (nonEmpty(course.summary)) blocks.push({ t: 'para', text: course.summary, tone: 'lead' });

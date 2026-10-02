@@ -223,6 +223,25 @@ export const SourceSchema = z.object({
 });
 export type Source = z.infer<typeof SourceSchema>;
 
+/** One problem Folio's check found in a syllabus the teacher brought. */
+export const SyllabusIssueSchema = z.object({
+  kind: z.enum(['error', 'missing', 'unclear']),
+  where: text,
+  problem: text,
+  fix: text,
+});
+export type SyllabusIssue = z.infer<typeof SyllabusIssueSchema>;
+
+/**
+ * The teacher's own syllabus, when they attached one: it is the course's syllabus, and Folio checks it instead
+ * of writing one. `check` is null until the check is done.
+ */
+export const OwnSyllabusSchema = z.object({
+  sourceId: id,
+  check: z.object({ issues: z.array(SyllabusIssueSchema), checkedAt: z.string() }).nullable(),
+});
+export type OwnSyllabus = z.infer<typeof OwnSyllabusSchema>;
+
 export const MaterialConfigSchema = z.object({
   enabled: z.boolean(),
   options: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])),
@@ -285,6 +304,8 @@ export const CourseSchema = z.object({
   faq: z.record(z.string(), FaqEntrySchema),
   sources: z.record(z.string(), SourceSchema),
   sourceOrder: z.array(id),
+  /** A syllabus the teacher brought, in place of the one Folio would build. Null when they brought none. */
+  syllabus: OwnSyllabusSchema.nullable().default(null),
   materials: z.record(MaterialKindSchema, MaterialConfigSchema),
   overrides: z.array(OverrideSchema),
 });

@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { useT } from '../../i18n';
-import { useDraft } from '../../state/draft';
+import { looksLikeSyllabus, useDraft } from '../../state/draft';
 import { currentInference, errorMessage } from '../../state/model';
 import { createSession } from '../../state/session';
 import { recordUsage } from '../../state/spend';
@@ -61,6 +61,8 @@ function withAnswers(req: NewCourseRequest, read: ClarifyDraft | null, answers: 
     lessonCount: lessonsToPlan({ ...req, defaultLessons: useDraft.getState().lessons }, read, answers),
     minutesPerLesson: minutesToPlan(req.minutesPerLesson, read, answers),
     level: req.level || read?.level || '',
+    // The file that is the course's own syllabus: as the model read it, or by its name when it could not say.
+    syllabus: read?.syllabus || req.sources.find((s) => looksLikeSyllabus(s.title))?.title || undefined,
   };
 }
 
@@ -106,7 +108,9 @@ function useOutline(req: NewCourseRequest | null, attempt: number, usages: Usage
         const course = courseFromOutline(req, outline);
         // Counted in with the course when it is written.
         recordUsage(course.id, usages);
-        await createSession(course);
+        const store = await createSession(course);
+        // Loaded only when there is a syllabus to check: shared with the syllabus page, it would otherwise be bundled with the first page.
+        if (course.syllabus) void import('../../state/syllabusCheck').then((m) => m.checkOwnSyllabus(store));
         await navigate({ to: '/c/$courseId/plan', params: { courseId: course.id }, replace: true });
         useDraft.getState().reset();
       })

@@ -122,3 +122,26 @@ test('a PDF syllabus is read, and its schedule sets the lessons', async ({ page 
   expect(prompt).toContain('Plan exactly 4 lessons');
   expect(prompt).toContain('Week 3: Water');
 });
+
+test('a syllabus the teacher brings is theirs: Folio checks it instead of writing one', async ({ page }) => {
+  await withKey(page);
+  const model = await fakeAnthropic(page);
+  await page.goto('/');
+  const chooser = page.waitForEvent('filechooser');
+  await page.getByRole('button', { name: 'Attach files' }).click();
+  const text = ['# BIO 110 Introduction to Biology', '', 'Grading: quizzes 30%, lab reports 40%, final exam 20%.', '', 'Week 1: Cells', 'Week 2: Genes', 'Week 3: Evolution'].join('\n');
+  await (await chooser).setFiles([{ name: 'BIO 110 syllabus.md', mimeType: 'text/markdown', buffer: Buffer.from(text) }]);
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toBeVisible();
+  // The check was asked for, with the syllabus itself.
+  await expect.poll(() => model.calls.some((c) => JSON.stringify(c.messages).includes('A teacher attached this syllabus'))).toBe(true);
+
+  await page.goto(page.url().replace(/\/plan$/, '/m/syllabus'));
+  await expect(page.getByText(/You brought your own syllabus, so Folio didn’t write one/)).toBeVisible();
+  await expect(page.getByText('What Folio’s check found')).toBeVisible();
+  await expect(page.getByText('The weights add up to 90%, not 100%. Give the final exam 30%.')).toBeVisible();
+  await expect(page.getByText('Your syllabus', { exact: true })).toBeVisible();
+  await expect(page.getByText('Week 2: Genes')).toBeVisible();
+  // Folio's own schedule table is not drawn.
+  await expect(page.getByRole('table')).toHaveCount(0);
+});

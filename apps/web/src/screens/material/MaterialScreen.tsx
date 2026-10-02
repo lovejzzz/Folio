@@ -12,6 +12,7 @@ import { lessonEditors } from '../../materials/editors';
 import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
 import { AddGradeItem, GradingTable } from './GradingTable';
+import { OwnSyllabus } from './OwnSyllabus';
 
 function Outline({ course }: { course: Course }) {
   const t = useT();
@@ -92,7 +93,7 @@ function Syllabus({ course }: { course: Course }) {
 }
 
 function CourseWide({ course, kind }: { course: Course; kind: 'map' | 'syllabus' }) {
-  if (kind === 'syllabus') return <Syllabus course={course} />;
+  if (kind === 'syllabus') return course.syllabus ? <OwnSyllabus course={course} /> : <Syllabus course={course} />;
   return <DocView doc={project(course, kind, { audience: 'teacher' })} showTitle={false} />;
 }
 

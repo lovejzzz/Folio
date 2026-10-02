@@ -112,12 +112,14 @@ export function guessLessons(text: string): number | null {
   return lessonsNamed(text) ?? lessonsFromWeeks(text);
 }
 
-/** US-style grade bands, as the level chip offers them. */
-function gradeBand(grade: number): string | null {
-  if (grade >= 1 && grade <= 5) return 'Elementary school';
-  if (grade >= 6 && grade <= 8) return 'Middle school';
-  if (grade === 9 || grade === 10) return 'Grade 9–10';
-  if (grade === 11 || grade === 12) return 'Grade 11–12';
+/** A US grade, named as the level menu names it. */
+const gradeName = (grade: number): string | null => (grade >= 1 && grade <= 12 ? `Grade ${grade}` : null);
+
+/** Stages past school, as the level menu names them; the most advanced a brief mentions wins. */
+function stageAfterSchool(text: string): string | null {
+  if (/\b(?:ph\.?d|doctoral|doctorate)\b/i.test(text)) return 'Doctoral (PhD)';
+  if (/\b(?:graduate|postgraduate|master'?s|master’s)\b/i.test(text)) return 'Graduate (master’s)';
+  if (/\b(?:university|undergrad(?:uate)?s?|college|first-year|freshm[ae]n)\b/i.test(text)) return 'Undergraduate';
   return null;
 }
 
@@ -136,14 +138,16 @@ function englishLevel(text: string): string | null {
   const grade = text.match(/\b(grade|year)[\s-]*(\d{1,2})s?\b/i);
   if (grade) return `${/year/i.test(grade[1]!) ? 'Year' : 'Grade'} ${grade[2]}`;
   const ordinal = ordinalGrade(text);
-  if (ordinal) return gradeBand(ordinal);
-  if (/\b(?:high[\s-]school|secondary[\s-]school)\s+(?:juniors?|seniors?)\b|\b(?:juniors?|seniors?)\s+in\s+high[\s-]school\b/i.test(text)) return 'Grade 11–12';
-  if (/\b(?:high[\s-]school)\s+(?:freshm[ae]n|sophomores?)\b|\b(?:freshm[ae]n|sophomores?)\s+in\s+high[\s-]school\b/i.test(text)) return 'Grade 9–10';
-  if (/\b(?:university|undergrad(?:uate)?s?|(?:post)?graduate|master'?s|ph\.?d|doctoral|college|first-year|freshm[ae]n)\b/i.test(text)) return 'College';
+  if (ordinal) return gradeName(ordinal);
+  if (/\bkindergart[ae]n\b/i.test(text)) return 'Kindergarten';
+  const year = text.match(/\bhigh[\s-]school\s+(freshm[ae]n|sophomores?|juniors?|seniors?)\b|\b(freshm[ae]n|sophomores?|juniors?|seniors?)\s+in\s+high[\s-]school\b/i);
+  if (year) return `Grade ${9 + ['fresh', 'sopho', 'junio', 'senio'].indexOf((year[1] ?? year[2]!).toLowerCase().slice(0, 5))}`;
+  const after = stageAfterSchool(text);
+  if (after) return after;
   if (/\b(?:adults?|professionals?|staff|employees)\b/i.test(text)) return 'Adult learners';
   if (/\b(?:primary|elementary)\b/i.test(text)) return 'Elementary school';
   if (/\b(?:middle[\s-]school)\b/i.test(text)) return 'Middle school';
-  if (/\bhigh[\s-]school\b/i.test(text)) return 'Grade 9–10';
+  if (/\bhigh[\s-]school\b/i.test(text)) return 'High school';
   return null;
 }
 

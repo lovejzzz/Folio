@@ -9,6 +9,7 @@ export * from './jobs';
 export * from './sections';
 export * from './outline';
 export * from './clarify';
+export * from './syllabus';
 export * from './actions';
 export * from './planCheck';
 export * from './build';

@@ -10,7 +10,12 @@ import { examplesForThisVisit } from './examples';
 /** The chips' guesses from the brief, fetched once the page has painted and the browser is idle. */
 function usePreloadGuesses() {
   useEffect(() => {
-    const start = () => void loadGuesses();
+    // The level menu, too: it is a second menu's worth of code the first paint doesn't need.
+    const start = () => {
+      void loadGuesses();
+      void import('./LevelMenu');
+      void import('./exampleBriefs');
+    };
     if ('requestIdleCallback' in window) {
       const id = window.requestIdleCallback(start, { timeout: 2000 });
       return () => window.cancelIdleCallback(id);
@@ -29,23 +34,31 @@ function Examples() {
   const [examples] = useState(() => examplesForThisVisit(t.home.examples));
   return (
     <div className="mt-12 flex flex-col items-center gap-3 text-center font-ui text-14 text-ink-2">
-      <ul className="flex flex-wrap items-center justify-center gap-2" aria-label={t.home.tryLabel}>
-        {examples.map((example) => (
-          <li key={example}>
-            <button
-              type="button"
-              onClick={() => {
-                set({ pinned: { level: false, lessons: false } });
-                setBrief(example);
-                document.getElementById('brief')?.focus();
-              }}
-              className="min-h-8 rounded-full border border-rule px-3.5 py-1 font-ui text-13 leading-5 text-ink-2 outline-none transition-colors duration-120 hover:border-field hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
-            >
-              {example}
-            </button>
+      <div>
+        <ul className="flex flex-wrap items-center justify-center gap-2" aria-label={t.home.tryLabel}>
+          {/* "Try" leads the first row of examples; the list is already named so for screen readers. */}
+          <li aria-hidden className="pr-1 font-ui text-13 font-medium text-ink-2">
+            {t.home.tryLabel}
           </li>
-        ))}
-      </ul>
+          {examples.map((example) => (
+            <li key={example}>
+              <button
+                type="button"
+                onClick={() => {
+                  set({ pinned: { level: false, lessons: false } });
+                  void import('./exampleBriefs').then(({ EXAMPLE_BRIEFS }) => {
+                    setBrief(EXAMPLE_BRIEFS[example] ?? example);
+                    document.getElementById('brief')?.focus();
+                  });
+                }}
+                className="min-h-8 rounded-full border border-rule px-3.5 py-1 font-ui text-13 leading-5 text-ink-2 outline-none transition-colors duration-120 hover:border-field hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+              >
+                {example}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
       <button
         type="button"
         onClick={() => void import('../../lib/sample').then((m) => m.openSample(navigate))}

@@ -24,7 +24,7 @@ describe('reading the brief before planning', () => {
   });
 
   it('plans the teacher’s answer, else their number, else what was read, else the syllabus or the default', () => {
-    const read = { lessonCount: 14, minutesPerLesson: null, level: '', questions: [{ topic: 'lessons' as const, question: 'How many lessons?', options: ['a', 'b', 'c'] }] };
+    const read = { lessonCount: 14, minutesPerLesson: null, level: '', syllabus: '', questions: [{ topic: 'lessons' as const, question: 'How many lessons?', options: ['a', 'b', 'c'] }] };
     expect(lessonsToPlan({ ...req, lessonCount: 6 }, read, [{ question: 'How many lessons?', answer: '10' }])).toBe(10);
     expect(lessonsToPlan({ ...req, lessonCount: 6 }, read, [{ question: 'How many lessons?', answer: '' }])).toBe(6);
     expect(lessonsToPlan(req, read, [{ question: 'How many lessons?', answer: '10 lessons, two a week' }])).toBe(10);
@@ -46,7 +46,7 @@ describe('reading the brief before planning', () => {
     expect(minutesIn('Six 2-hour evening sessions')).toBe(120);
     expect(minutesIn('Two hours each')).toBe(120);
     expect(minutesIn('4 lessons')).toBeNull();
-    const read = { lessonCount: null, minutesPerLesson: 60, level: '', questions: [{ topic: 'lessons' as const, question: 'How many lessons, and how long?', options: ['a', 'b', 'c'] }] };
+    const read = { lessonCount: null, minutesPerLesson: 60, level: '', syllabus: '', questions: [{ topic: 'lessons' as const, question: 'How many lessons, and how long?', options: ['a', 'b', 'c'] }] };
     const said = [{ question: 'How many lessons, and how long?', answer: '4 lessons of 45 minutes' }];
     expect(minutesToPlan(0, read, said)).toBe(45);
     expect(minutesToPlan(90, read, said)).toBe(45);

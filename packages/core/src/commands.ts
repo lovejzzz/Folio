@@ -17,6 +17,7 @@ import type {
   Slide,
   Source,
   StudyPoint,
+  SyllabusIssue,
   Task,
   Term,
 } from './schema';
@@ -84,6 +85,9 @@ export type CommandMap = {
   'material.set': { kind: MaterialKind; enabled: boolean };
   'source.add': { source: Source };
   'source.remove': { sourceId: string };
+  /** The teacher's own syllabus is this source, or none. */
+  'syllabus.own': { sourceId: string | null };
+  'syllabus.checked': { issues: SyllabusIssue[]; checkedAt: string };
   'review.keep': { lessonId: string; kind: GeneratedKind };
   'review.resolve': { lessonId: string; kind: GeneratedKind; itemId: string | null };
   'override.set': { override: Override };
@@ -336,6 +340,13 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     for (const task of Object.values(draft.tasks)) {
       task.sourceRefs = task.sourceRefs.filter((r) => r.sourceId !== p.sourceId);
     }
+    if (draft.syllabus?.sourceId === p.sourceId) draft.syllabus = null;
+  },
+  'syllabus.own': (draft, p) => {
+    draft.syllabus = p.sourceId && draft.sources[p.sourceId] ? { sourceId: p.sourceId, check: null } : null;
+  },
+  'syllabus.checked': (draft, p) => {
+    if (draft.syllabus) draft.syllabus.check = { issues: p.issues.map((i) => ({ ...i })), checkedAt: p.checkedAt };
   },
   'review.keep': (draft, p) => {
     const lesson = lessonOf(draft, p.lessonId);

@@ -1,6 +1,7 @@
 /**
  * The example briefs under the composer: one for elementary school, one for middle or high school and one
- * for college, picked afresh on every visit, and never the ones shown last time.
+ * for college, picked afresh on every visit, and never the ones shown last time. Each writes a model brief
+ * into the box (exampleBriefs.ts).
  */
 
 export const BANDS = ['elementary', 'secondary', 'university'] as const;

@@ -19,6 +19,8 @@ export interface NewCourseRequest {
   locale?: string;
   materials: readonly MaterialKind[];
   sources: { title: string; text: string }[];
+  /** The title of the attached file that is the course's own syllabus, if one is: Folio checks it instead of writing one. */
+  syllabus?: string;
 }
 
 /** The outline sees more of each file: a syllabus is the plan itself, schedule and all. */
@@ -145,6 +147,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
     const source = createSource(s.title, s.text, 'file');
     course.sources[source.id] = source;
     course.sourceOrder.push(source.id);
+    if (req.syllabus && s.title.trim().toLowerCase() === req.syllabus.trim().toLowerCase()) course.syllabus = { sourceId: source.id, check: null };
   }
   return course;
 }

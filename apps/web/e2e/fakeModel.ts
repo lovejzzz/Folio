@@ -38,7 +38,9 @@ const READINGS = [
  */
 function clarify(prompt: string) {
   const weeks = prompt.match(/Week (\d+)/g)?.length ?? null;
-  if (!prompt.includes('(ask me)')) return { lessonCount: weeks, minutesPerLesson: null, level: '', questions: [] };
+  // The attached file that is the course's syllabus, by its title.
+  const syllabus = [...prompt.matchAll(/^## (.+)$/gm)].map((m) => m[1]!).find((t) => /syllab/i.test(t)) ?? '';
+  if (!prompt.includes('(ask me)')) return { lessonCount: weeks, minutesPerLesson: null, level: '', syllabus, questions: [] };
   return {
     lessonCount: null,
     minutesPerLesson: null,
@@ -94,6 +96,8 @@ function answerFor(body: Body): unknown {
   // The plan review: a plan written by the fake has nothing wrong with it.
   if (prompt.includes('Check this plan the way')) return { issues: [] };
   if (prompt.includes('Before Folio plans this course')) return clarify(prompt);
+  if (prompt.includes('A teacher attached this syllabus'))
+    return { issues: [{ kind: 'error', where: 'Grading', problem: 'The weights add up to 90%, not 100%.', fix: 'Give the final exam 30%.' }] };
   if (prompt.includes('Plan exactly') || prompt.includes('Plan one lesson for each class meeting')) return outline(prompt);
   if (prompt.includes('Write the lesson plan'))
     return {

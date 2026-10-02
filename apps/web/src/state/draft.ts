@@ -36,6 +36,9 @@ export const useDraft = create<Draft>((set) => ({
 
 export const CORE_MATERIALS = CORE_SET;
 
+/** A file named like a syllabus, for when the model could not say which attached file is one. */
+export const looksLikeSyllabus = (title: string) => /syllab|course outline|schedule/i.test(title);
+
 type Guesses = typeof import('../lib/brief');
 let guesses: Guesses | null = null;
 let loading: Promise<Guesses> | null = null;

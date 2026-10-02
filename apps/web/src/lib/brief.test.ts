@@ -72,34 +72,38 @@ describe('reading the brief for the chips', () => {
   it.each([
     ['intro statistics for grade 11', 'Grade 11'],
     ['Photosynthesis for year 7', 'Year 7'],
-    ['a first-year university course', 'College'],
+    ['a first-year university course', 'Undergraduate'],
     ['唐诗入门，初中二年级', '初中二年级'],
     ['a course on bees', null],
   ])('%s → level %s', (text, level) => expect(guessLevel(text)).toBe(level));
 
   it.each([
-    ['chemistry for 11th graders', 'Grade 11–12'],
-    ['a unit for 12th-grade students', 'Grade 11–12'],
-    ['eleventh grade English', 'Grade 11–12'],
-    ['9th grade biology', 'Grade 9–10'],
-    ['tenth graders', 'Grade 9–10'],
-    ['7th grade maths', 'Middle school'],
-    ['for 3rd graders', 'Elementary school'],
-    ['high school juniors', 'Grade 11–12'],
-    ['seniors in high school', 'Grade 11–12'],
-    ['high school sophomores', 'Grade 9–10'],
-    ['high school physics', 'Grade 9–10'],
+    ['chemistry for 11th graders', 'Grade 11'],
+    ['a unit for 12th-grade students', 'Grade 12'],
+    ['eleventh grade English', 'Grade 11'],
+    ['9th grade biology', 'Grade 9'],
+    ['tenth graders', 'Grade 10'],
+    ['7th grade maths', 'Grade 7'],
+    ['for 3rd graders', 'Grade 3'],
+    ['high school juniors', 'Grade 11'],
+    ['seniors in high school', 'Grade 12'],
+    ['high school sophomores', 'Grade 10'],
+    ['high school freshmen', 'Grade 9'],
+    ['high school physics', 'High school'],
+    ['kindergarten phonics', 'Kindergarten'],
     ['Year 11s revising for exams', 'Year 11'],
     ['grade-8 science', 'Grade 8'],
-    ['undergraduates in their first term', 'College'],
-    ['college freshmen', 'College'],
-    ['Graduate seminar in political philosophy', 'College'],
-    ["a master's course in finance", 'College'],
+    ['undergraduates in their first term', 'Undergraduate'],
+    ['college freshmen', 'Undergraduate'],
+    ['Graduate seminar in political philosophy', 'Graduate (master’s)'],
+    ["a master's course in finance", 'Graduate (master’s)'],
+    ['a PhD seminar on causal inference', 'Doctoral (PhD)'],
+    ['doctoral students in education', 'Doctoral (PhD)'],
     ['new staff at a hospital', 'Adult learners'],
     ['adult learners of Spanish', 'Adult learners'],
     ['elementary school art', 'Elementary school'],
     ['middle school maths', 'Middle school'],
-    ['first-year chemistry', 'College'],
+    ['first-year chemistry', 'Undergraduate'],
   ])('%s → level %s', (text, level) => expect(guessLevel(text)).toBe(level));
 
   it.each([
@@ -115,9 +119,10 @@ describe('reading the brief for the chips', () => {
     ['唐诗入门', null],
   ])('%s → level %s', (text, level) => expect(guessLevel(text)).toBe(level));
 
-  it('names ordinal grades with the level chip’s own options', () => {
-    for (const text of ['11th graders', '9th grade', '7th grade', '2nd grade']) {
-      expect(en.levels).toContain(guessLevel(text));
+  it('names levels with the level menu’s own options', () => {
+    const menu = en.levelGroups.flatMap((g) => [g.name, ...g.grades]);
+    for (const text of ['11th graders', '9th grade', '7th grade', '2nd grade', 'kindergarten', 'high school chemistry', 'college algebra', 'a master’s seminar', 'PhD students', 'adult learners', 'elementary art', 'middle school band']) {
+      expect(menu).toContain(guessLevel(text));
     }
   });
 });

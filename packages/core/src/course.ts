@@ -90,6 +90,7 @@ export function createCourse(input: NewCourseInput, now = new Date().toISOString
     faq: {},
     sources: {},
     sourceOrder: [],
+    syllabus: null,
     materials: defaultMaterials(input.materials),
     overrides: [],
   };

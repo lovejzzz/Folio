@@ -1,20 +1,24 @@
 import { describe, expect, it } from 'vitest';
 import { en } from '../../i18n/en';
-import { guessLessons, guessLevel } from '../../lib/brief';
+import { guessLessons, guessLevel, guessMinutes } from '../../lib/brief';
+import { EXAMPLE_BRIEFS } from './exampleBriefs';
 import { BANDS, pickExamples, type Band } from './examples';
 
 /** The levels Folio reads from a brief, by band. */
 const LEVELS: Record<Band, RegExp> = {
-  elementary: /^(?:Grade [1-5]|Elementary school)$/,
-  secondary: /^(?:Grade (?:[6-9]|1[0-2])|Middle school|Grade 9–10|Grade 11–12)$/,
-  university: /^College$/,
+  elementary: /^(?:Kindergarten|Grade [1-5]|Elementary school)$/,
+  secondary: /^(?:Grade (?:[6-9]|1[0-2])|Middle school|High school)$/,
+  university: /^(?:Undergraduate|Graduate \(master’s\)|Doctoral \(PhD\))$/,
 };
 
-describe('the example briefs on the home page', () => {
+describe('the example courses on the home page', () => {
   for (const band of BANDS) {
-    it.each(en.home.examples[band])(`${band}: %s reads as its level, with a lesson count`, (example) => {
-      expect(guessLevel(example)).toMatch(LEVELS[band]);
-      expect(guessLessons(example)).not.toBeNull();
+    it.each(en.home.examples[band])(`${band}: %s writes a brief that reads as its level, lesson count and length`, (label) => {
+      const brief = EXAMPLE_BRIEFS[label]!;
+      expect(guessLevel(brief)).toMatch(LEVELS[band]);
+      // The brief's lesson count is the one on the chip.
+      expect(guessLessons(brief)).toBe(Number(label.match(/(\d+) (?:lessons|lectures|seminars|weeks)$/)![1]));
+      expect(guessMinutes(brief)).not.toBeNull();
     });
   }
 
@@ -32,13 +36,15 @@ describe('the example briefs on the home page', () => {
   });
 
   // Measured on a 375-pixel phone: 51 characters could already wrap.
-  it('fit on one line on a phone', () => {
+  it('have labels that fit on one line on a phone', () => {
     for (const band of BANDS) for (const example of en.home.examples[band]) expect(example.length, example).toBeLessThanOrEqual(50);
   });
 
-  it('are plenty and all different', () => {
+  it('are all different, several to a band, and show what a good brief says', () => {
     const all = BANDS.flatMap((band) => en.home.examples[band]);
     expect(new Set(all).size).toBe(all.length);
-    for (const band of BANDS) expect(en.home.examples[band].length).toBeGreaterThanOrEqual(12);
+    for (const band of BANDS) expect(en.home.examples[band].length).toBeGreaterThanOrEqual(5);
+    for (const label of all) expect(EXAMPLE_BRIEFS[label]?.length ?? 0, label).toBeGreaterThan(250);
+    expect(Object.keys(EXAMPLE_BRIEFS).sort()).toEqual([...all].sort());
   });
 });
