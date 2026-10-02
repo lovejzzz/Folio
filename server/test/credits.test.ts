@@ -141,6 +141,57 @@ describe('calls paid with credits', () => {
   });
 });
 
+/** An answer that breaks off as it is read: the connection dropped, or the teacher's page went away. */
+const cut = () =>
+  new Response(
+    new ReadableStream<Uint8Array>({
+      start(c) {
+        c.enqueue(new TextEncoder().encode('{"id":"msg_1","content":[{"type":"te'));
+        c.error(new Error('connection lost'));
+      },
+    }),
+    { headers: { 'content-type': 'application/json' } },
+  );
+
+describe('what a call can ask for', () => {
+  it('is only what Folio’s own requests carry: nothing billed outside the tokens is sent on', async () => {
+    const cookie = await signIn();
+    const res = await ask(cookie, {
+      system: 'You write lesson plans.',
+      output_config: { effort: 'medium' },
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      speed: 'fast',
+      service_tier: 'priority',
+      thinking: { type: 'enabled', budget_tokens: 30000 },
+      mcp_servers: [{ url: 'https://example.com' }],
+    });
+    expect(res.status).toBe(200);
+    expect(Object.keys(sent[0]!.body).sort()).toEqual(['max_tokens', 'messages', 'model', 'output_config', 'system']);
+  });
+
+  it('gives back the whole hold when the answer breaks off before it could be read', async () => {
+    const cookie = await signIn();
+    reply = cut;
+    expect((await ask(cookie)).status).toBe(502);
+    await settled();
+    expect(await balanceOf(env.DB, 'g-123')).toBe(FREE_CREDITS * MILLI);
+  });
+});
+
+describe('free credits, farmed', () => {
+  it('count one IPv6 network as one address, however many addresses it holds', async () => {
+    for (let i = 0; i < FREE_PER_ADDRESS_PER_DAY; i++) expect((await balance(await signIn(`g-v6-${i}`, `2001:db8:12:34::${i + 1}`))).balance).toBe(FREE_CREDITS);
+    expect((await balance(await signIn('g-v6-late', '2001:0db8:0012:0034:aaaa:bbbb:cccc:dddd'))).balance).toBe(0);
+    expect((await balance(await signIn('g-v6-other', '2001:db8:12:35::1'))).balance).toBe(FREE_CREDITS);
+  });
+
+  it('come once when the same account signs in twice at the same moment, and both sign-ins stand', async () => {
+    const [a, b] = await Promise.all([signIn('g-twice'), signIn('g-twice')]);
+    expect((await balance(a)).balance).toBe(FREE_CREDITS);
+    expect((await balance(b)).balance).toBe(FREE_CREDITS);
+  });
+});
+
 describe('free credits for school accounts only', () => {
   it('come with a confirmed .edu address, not with any other', async () => {
     const edu = await call('session', { method: 'POST', body: JSON.stringify({ idToken: await google.token({ sub: 'g-edu', email: 'Ada@Cs.Example.EDU' }), nonce: 'n-1' }) });

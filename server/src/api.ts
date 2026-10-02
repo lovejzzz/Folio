@@ -29,9 +29,22 @@ function meta(request: Request): CourseMeta | null {
   }
 }
 
-/** The caller's network address, hashed: counted for the free credits, never kept as it is. */
+/**
+ * The network a caller is on. An IPv6 customer is handed a whole /64, so its first half stands for all of
+ * it: counted by full address, every new account could come from a new one.
+ */
+export function networkOf(address: string): string {
+  if (!address.includes(':')) return address;
+  const [head = '', tail] = address.toLowerCase().split('::');
+  const left = head ? head.split(':') : [];
+  const right = tail ? tail.split(':') : [];
+  const groups = tail === undefined ? left : [...left, ...Array<string>(Math.max(0, 8 - left.length - right.length)).fill('0'), ...right];
+  return groups.slice(0, 4).map((g) => g.replace(/^0+(?=.)/, '')).join(':');
+}
+
+/** The caller's network, hashed: counted for the free credits, never kept as it is. */
 async function addressHash(request: Request): Promise<string> {
-  const address = request.headers.get('cf-connecting-ip') ?? 'unknown';
+  const address = networkOf(request.headers.get('cf-connecting-ip') ?? 'unknown');
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`folio-free:${address}`));
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
@@ -44,7 +57,8 @@ async function signIn(request: Request, env: Env, fetchImpl?: typeof fetch): Pro
     const user: User = { id: who.sub, email: who.email, name: who.name };
     const token = await startSession(env.DB, user);
     // A school account's first sign-in brings the free credits, within the limits that keep them from being farmed.
-    if (schoolEmail(who.email, who.emailVerified)) await grantFree(env.DB, user.id, await addressHash(request));
+    // A grant that fails (the same account signing in twice at once) never fails the sign-in: the other one made it.
+    if (schoolEmail(who.email, who.emailVerified)) await grantFree(env.DB, user.id, await addressHash(request)).catch(() => 0);
     return json({ user }, 200, { 'set-cookie': setCookie(token) });
   } catch (error) {
     if (error instanceof SignInError) return problem(401, 'sign-in-failed', { detail: error.message });
@@ -121,7 +135,7 @@ export async function handle(request: Request, env: Env, fetchImpl?: typeof fetc
   // Anthropic's Messages API, as the page's SDK calls it with Folio credits ("…/api/ai/v1/messages?beta=true").
   if (path.join('/') === 'ai/v1/messages' && request.method === 'POST') return proxyMessages(request, env, user, waitUntil, fetchImpl);
   // OpenAI's chat completions, as the page's OpenAI adapter calls them with Folio credits.
-  if (path.join('/') === 'ai/openai/v1/chat/completions' && request.method === 'POST') return proxyChat(request, env, user, fetchImpl);
+  if (path.join('/') === 'ai/openai/v1/chat/completions' && request.method === 'POST') return proxyChat(request, env, user, waitUntil, fetchImpl);
   if (path[0] === 'courses' && path.length === 2) return course(request, env, user, path[1]!);
   if (path[0] === 'account' && path.length === 1 && request.method === 'DELETE') {
     await removeAccount(env.DB, user.id);

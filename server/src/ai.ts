@@ -14,10 +14,38 @@ const MAX_OUTPUT = 32_000;
 const error = (status: number, type: string, message: string) =>
   new Response(JSON.stringify({ type: 'error', error: { type, message } }), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 
-interface Body {
-  model?: unknown;
-  max_tokens?: unknown;
-  stream?: unknown;
+/**
+ * What Folio's own requests carry, and all that is sent on. Anything else a request names (tools billed by
+ * use, faster tiers, thinking) isn't in the price a call is charged at, so it never reaches Anthropic.
+ */
+const FIELDS = ['model', 'max_tokens', 'system', 'messages', 'stream', 'output_config'] as const;
+
+type Body = Partial<Record<(typeof FIELDS)[number], unknown>>;
+
+interface Checked {
+  body: Body;
+  model: string;
+  maxTokens: number;
+  /** The request's length as it came, which the hold's guess at its input is made from. */
+  size: number;
+}
+
+function checked(raw: string): Checked | Response {
+  if (raw.length > MAX_BODY) return error(413, 'invalid_request_error', 'The request is too large.');
+  let asked: Record<string, unknown>;
+  try {
+    asked = JSON.parse(raw) as Record<string, unknown>;
+  } catch {
+    return error(400, 'invalid_request_error', 'The request is not JSON.');
+  }
+  if (!asked || typeof asked !== 'object') return error(400, 'invalid_request_error', 'The request is not JSON.');
+  const body: Body = {};
+  for (const field of FIELDS) if (asked[field] !== undefined) body[field] = asked[field];
+  const model = typeof body.model === 'string' ? body.model : '';
+  const maxTokens = typeof body.max_tokens === 'number' ? body.max_tokens : 0;
+  if (!PRICES[model] || !model.startsWith('claude-')) return error(400, 'invalid_request_error', 'That model is not available with Folio credits.');
+  if (maxTokens < 1 || maxTokens > MAX_OUTPUT) return error(400, 'invalid_request_error', 'The answer asked for is too long.');
+  return { body, model, maxTokens, size: raw.length };
 }
 
 /** Tokens, as the answer reports them: once in full (JSON), or growing through a stream. */
@@ -58,66 +86,72 @@ function metered(body: ReadableStream<Uint8Array>, usage: Usage, done: (chars: n
   return { stream: readable, finished };
 }
 
-export async function proxyMessages(request: Request, env: Env, user: User, waitUntil: (p: Promise<unknown>) => void, fetchImpl: typeof fetch = fetch): Promise<Response> {
-  if (!env.ANTHROPIC_API_KEY) return error(503, 'unavailable', 'Folio credits are not available yet.');
-  const raw = await request.text();
-  if (raw.length > MAX_BODY) return error(413, 'invalid_request_error', 'The request is too large.');
-  let body: Body;
-  try {
-    body = JSON.parse(raw) as Body;
-  } catch {
-    return error(400, 'invalid_request_error', 'The request is not JSON.');
-  }
-  const model = typeof body.model === 'string' ? body.model : '';
-  const maxTokens = typeof body.max_tokens === 'number' ? body.max_tokens : 0;
-  if (!PRICES[model] || !model.startsWith('claude-')) return error(400, 'invalid_request_error', 'That model is not available with Folio credits.');
-  if (maxTokens < 1 || maxTokens > MAX_OUTPUT) return error(400, 'invalid_request_error', 'The answer asked for is too long.');
+interface Hold {
+  db: Env['DB'];
+  userId: string;
+  held: number;
+}
 
-  // The most the call can cost: its input, guessed from its size, and the longest answer it may give.
-  const estimate = charge(model, { input: Math.ceil(raw.length / 3), output: maxTokens, cacheRead: 0, cacheWrite: 0 });
-  const held = await reserve(env.DB, user.id, estimate);
-  if (held === null) return error(402, 'credits_exhausted', 'Your Folio credits have run out.');
+/** What Anthropic refused, passed on; Folio's own key refused is Folio's problem, never reported as the teacher's. */
+function refused(upstream: Response): Response {
+  if (upstream.status === 401 || upstream.status === 403) return error(502, 'api_error', 'Folio could not reach the model just now.');
+  const retryAfter = upstream.headers.get('retry-after');
+  return new Response(upstream.body, { status: upstream.status, headers: { 'content-type': upstream.headers.get('content-type') ?? 'application/json', ...(retryAfter ? { 'retry-after': retryAfter } : {}) } });
+}
 
+/** Send the call on and settle what was held, however it ends: answered, refused, or broken off partway. */
+async function forward(request: Request, key: string, req: Checked, hold: Hold, waitUntil: (p: Promise<unknown>) => void, fetchImpl: typeof fetch): Promise<Response> {
   const usage: Usage = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
   let settled = false;
-  const settleWith = async (chars = 0) => {
+  const settleWith = async (chars = 0, answered = true) => {
     if (settled) return;
     settled = true;
     // Stopped before the end: the answer's length so far stands in for the count it never sent.
     const counted = { ...usage, output: Math.max(usage.output, Math.ceil(chars / 4)) };
-    await settle(env.DB, user.id, held, charge(model, counted), `${model} ${counted.input}+${counted.output}`);
+    await settle(hold.db, hold.userId, hold.held, answered ? charge(req.model, counted) : 0, answered ? `${req.model} ${counted.input}+${counted.output}` : '');
   };
-
-  let upstream: Response;
   try {
     const beta = request.headers.get('anthropic-beta');
-    upstream = await fetchImpl(ANTHROPIC, {
+    const upstream = await fetchImpl(ANTHROPIC, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', ...(beta ? { 'anthropic-beta': beta } : {}) },
-      body: raw,
+      headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', ...(beta ? { 'anthropic-beta': beta } : {}) },
+      body: JSON.stringify(req.body),
       signal: request.signal,
     });
+    if (!upstream.ok) {
+      await settleWith(0, false);
+      return refused(upstream);
+    }
+    if (req.body.stream === true && upstream.body) {
+      const { stream, finished } = metered(upstream.body, usage, settleWith);
+      waitUntil(finished);
+      return new Response(stream, { headers: { 'content-type': 'text/event-stream', 'cache-control': 'no-store' } });
+    }
+    const answer = await upstream.text();
+    try {
+      readUsage((JSON.parse(answer) as { usage?: Record<string, unknown> }).usage, usage);
+    } catch {
+      /* no usage to read: the call is settled at nothing */
+    }
+    await settleWith();
+    return new Response(answer, { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
   } catch {
-    await settle(env.DB, user.id, held, 0, '');
+    // Never reached, or the answer broke off before it could be read: nothing was had, so nothing stays held.
+    await settleWith(0, false);
     return error(502, 'api_error', 'The model could not be reached.');
   }
-  if (!upstream.ok) {
-    await settle(env.DB, user.id, held, 0, '');
-    // Folio's own key refused is Folio's problem, not the teacher's key: never report it as theirs.
-    if (upstream.status === 401 || upstream.status === 403) return error(502, 'api_error', 'Folio could not reach the model just now.');
-    return new Response(upstream.body, { status: upstream.status, headers: { 'content-type': upstream.headers.get('content-type') ?? 'application/json', ...(upstream.headers.get('retry-after') ? { 'retry-after': upstream.headers.get('retry-after')! } : {}) } });
-  }
-  if (body.stream === true && upstream.body) {
-    const { stream, finished } = metered(upstream.body, usage, settleWith);
-    waitUntil(finished);
-    return new Response(stream, { headers: { 'content-type': 'text/event-stream', 'cache-control': 'no-store' } });
-  }
-  const answer = await upstream.text();
-  try {
-    readUsage((JSON.parse(answer) as { usage?: Record<string, unknown> }).usage, usage);
-  } catch {
-    /* no usage to read: the call is settled at nothing */
-  }
-  await settleWith();
-  return new Response(answer, { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+}
+
+export async function proxyMessages(request: Request, env: Env, user: User, waitUntil: (p: Promise<unknown>) => void, fetchImpl: typeof fetch = fetch): Promise<Response> {
+  if (!env.ANTHROPIC_API_KEY) return error(503, 'unavailable', 'Folio credits are not available yet.');
+  const req = checked(await request.text());
+  if (req instanceof Response) return req;
+  // The most the call can cost: its input, guessed from its size, and the longest answer it may give.
+  const estimate = charge(req.model, { input: Math.ceil(req.size / 3), output: req.maxTokens, cacheRead: 0, cacheWrite: 0 });
+  const held = await reserve(env.DB, user.id, estimate);
+  if (held === null) return error(402, 'credits_exhausted', 'Your Folio credits have run out.');
+  // Seen through even if the teacher's page goes away first, so what was held is always settled.
+  const answer = forward(request, env.ANTHROPIC_API_KEY, req, { db: env.DB, userId: user.id, held }, waitUntil, fetchImpl);
+  waitUntil(answer.catch(() => undefined));
+  return answer;
 }

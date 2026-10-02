@@ -11,7 +11,7 @@ export const MILLI = 1000;
 export const CREDIT_USD = 0.01;
 export const MARKUP = 3;
 
-/** New school accounts start with enough for one full course: a 15-week, one-lesson-a-week college course. */
+/** New school accounts start with enough for about 25 lessons with every material: a 15-week course and most of a second. */
 export const FREE_CREDITS = 750;
 /** A wave of new accounts can't farm the free credits: so many a day per network address, so many a month in all. */
 export const FREE_PER_ADDRESS_PER_DAY = 3;
@@ -109,6 +109,12 @@ export async function addEntry(db: D1Database, userId: string, kind: string, amo
 /** The purchase a payment made: whose it was and what it added. */
 export function purchaseOf(db: D1Database, ref: string): Promise<{ user_id: string; amount: number } | null> {
   return db.prepare("SELECT user_id, amount FROM credit_ledger WHERE ref = ? AND kind = 'purchase'").bind(ref).first<{ user_id: string; amount: number }>();
+}
+
+/** What the entry with this ref added (or took), or null when there is none. */
+export async function amountOf(db: D1Database, ref: string): Promise<number | null> {
+  const row = await db.prepare('SELECT amount FROM credit_ledger WHERE ref = ?').bind(ref).first<{ amount: number }>();
+  return row?.amount ?? null;
 }
 
 /** What the entries whose refs begin with `prefix` came to, in all. */

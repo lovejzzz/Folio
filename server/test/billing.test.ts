@@ -125,6 +125,25 @@ describe('refunds and disputes', () => {
     expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS + 1000) * MILLI);
   });
 
+  it('take back no more than was bought when a part-refunded payment is then disputed', async () => {
+    await refunded(400);
+    const dispute = { id: 'dp_2', payment_intent: 'pi_cs_test_1', charge: 'ch_1' };
+    await tell('charge.dispute.created', dispute);
+    expect(await balanceOf(env.DB, 'g-123')).toBe(FREE_CREDITS * MILLI);
+    // Won: what the dispute took comes back, not what was refunded.
+    await tell('charge.dispute.closed', { ...dispute, status: 'won' });
+    expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS + 600) * MILLI);
+  });
+
+  it('keep a balance below zero when the account is deleted, so signing in again doesn’t clear it', async () => {
+    await env.DB.prepare('UPDATE credits SET balance = ? WHERE user_id = ?').bind(200 * MILLI, 'g-123').run();
+    await refunded(1000);
+    const cookie = await signIn();
+    expect((await call('account', { method: 'DELETE', cookie })).status).toBe(200);
+    await signIn();
+    expect(await balanceOf(env.DB, 'g-123')).toBe(-800 * MILLI);
+  });
+
   it('ignore payments Folio didn’t sell credits for', async () => {
     await tell('charge.refunded', { id: 'ch_9', payment_intent: 'pi_other', amount: 500, amount_refunded: 500 });
     expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS + 1000) * MILLI);

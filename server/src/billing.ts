@@ -1,4 +1,4 @@
-import { addEntry, addPurchase, MILLI, purchaseOf, totalOf } from './credits';
+import { addEntry, addPurchase, amountOf, MILLI, purchaseOf, totalOf } from './credits';
 import type { Env, User } from './types';
 
 /**
@@ -91,6 +91,7 @@ interface Charge {
 
 interface Dispute {
   id: string;
+  charge?: string | null;
   payment_intent?: string | null;
   status?: string;
 }
@@ -129,8 +130,16 @@ async function reversed(env: Env, event: Event): Promise<void> {
   const dispute = event.data.object as Dispute;
   const bought = await purchaseOf(env.DB, paymentRef(dispute.payment_intent, dispute.id));
   if (!bought) return;
-  if (event.type === 'charge.dispute.created') await addEntry(env.DB, bought.user_id, 'reversal', -bought.amount, `dispute:${dispute.id}`, 'Payment disputed');
-  if (event.type === 'charge.dispute.closed' && dispute.status === 'won') await addEntry(env.DB, bought.user_id, 'reversal', bought.amount, `dispute-won:${dispute.id}`, 'Dispute won');
+  if (event.type === 'charge.dispute.created') {
+    // Less what refunds of the same charge already took: a payment's credits are taken back once.
+    const refunded = dispute.charge ? -(await totalOf(env.DB, `refund:${dispute.charge}:`)) : 0;
+    const left = bought.amount - refunded;
+    if (left > 0) await addEntry(env.DB, bought.user_id, 'reversal', -left, `dispute:${dispute.id}`, 'Payment disputed');
+  }
+  if (event.type === 'charge.dispute.closed' && dispute.status === 'won') {
+    const took = await amountOf(env.DB, `dispute:${dispute.id}`);
+    if (took) await addEntry(env.DB, bought.user_id, 'reversal', -took, `dispute-won:${dispute.id}`, 'Dispute won');
+  }
 }
 
 /** What Stripe reports: a payment that went through, or one refunded or disputed later. */

@@ -92,4 +92,35 @@ describe('OpenAI calls paid with credits', () => {
     const res = await call('ai/v1/messages', { method: 'POST', cookie, body: JSON.stringify({ model: 'gpt-6-luna', max_tokens: 1000, messages: [] }) });
     expect(res.status).toBe(400);
   });
+
+  it('send on only what Folio’s own requests carry', async () => {
+    const cookie = await signIn();
+    const res = await chat(cookie, { response_format: { type: 'json_object' }, n: 8, service_tier: 'priority', tools: [{ type: 'web_search' }], modalities: ['text', 'audio'] });
+    expect(res.status).toBe(200);
+    expect(Object.keys(sent[0]!.body).sort()).toEqual(['max_completion_tokens', 'messages', 'model', 'reasoning_effort', 'response_format']);
+  });
+
+  it('give back the whole hold when the answer breaks off before it could be read', async () => {
+    const cookie = await signIn();
+    reply = () =>
+      new Response(
+        new ReadableStream<Uint8Array>({
+          start(c) {
+            c.enqueue(new TextEncoder().encode('{"id":"chatcmpl-1","choi'));
+            c.error(new Error('connection lost'));
+          },
+        }),
+        { headers: { 'content-type': 'application/json' } },
+      );
+    expect((await chat(cookie)).status).toBe(502);
+    expect(await balanceOf(env.DB, 'g-123')).toBe(FREE_CREDITS * MILLI);
+  });
+
+  it('pass on how long OpenAI says to wait', async () => {
+    const cookie = await signIn();
+    reply = () => new Response('{"error":{"message":"Rate limit"}}', { status: 429, headers: { 'retry-after': '7' } });
+    const res = await chat(cookie);
+    expect(res.status).toBe(429);
+    expect(res.headers.get('retry-after')).toBe('7');
+  });
 });
