@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Button as AriaButton, Dialog as AriaDialog, DialogTrigger, Popover } from 'react-aria-components';
 import { useT } from '../i18n';
 import { creditsText, refreshCredits, useCredits } from '../state/credits';
+import { usePrefs } from '../state/prefs';
 import { signOut, useAccount, type AccountUser, type SyncState } from '../state/account';
 import { AvatarMark, avatarButtonClass } from './AccountButton';
 
@@ -18,13 +19,17 @@ export function syncLine(sync: SyncState, lastSynced: number | null): string {
   return accountText.synced(minutes < 1 ? accountText.justNow : accountText.minutesAgo(minutes));
 }
 
-/** The balance, once the server has said it; nothing where credits aren't in use. */
+/**
+ * The balance, once the server has said it; nothing where credits aren't in use. A teacher writing with their
+ * own key isn't shown credits here: they are in Settings, under Folio credits, if they come back to them.
+ */
 function CreditsLine({ close }: { close: () => void }) {
   const { balance, available } = useCredits();
+  const withCredits = usePrefs((s) => !s.provider || s.provider === 'folio');
   useEffect(() => {
-    void refreshCredits();
-  }, []);
-  if (balance === null || !available) return null;
+    if (withCredits) void refreshCredits();
+  }, [withCredits]);
+  if (!withCredits || balance === null || !available) return null;
   return (
     <div className="mx-1 mt-1 flex items-center justify-between gap-3 pl-3 pr-1">
       <p className="font-ui text-12 text-ink-2">{creditsText.balance(balance)}</p>

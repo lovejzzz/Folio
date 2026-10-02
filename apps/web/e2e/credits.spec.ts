@@ -104,13 +104,19 @@ test('in Settings, a signed-in teacher switches from their own key to Folio cred
   await page.goto('/');
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.getByRole('button', { name: 'Account: ada@example.edu' }).waitFor();
-  // The account menu shows the balance, with the way to add to it beside it.
+  // Writing with their own key, the account menu says nothing of credits.
+  const menu = page.getByRole('dialog', { name: 'Account' });
   await page.getByRole('button', { name: 'Account: ada@example.edu' }).click();
-  await expect(page.getByRole('dialog', { name: 'Account' }).getByText('750 credits')).toBeVisible();
-  await page.getByRole('dialog', { name: 'Account' }).getByRole('link', { name: 'Add credits' }).click();
-  await expect(page).toHaveURL(/\/settings#credits$/);
+  await expect(menu.getByText('Courses saved to your account')).toBeVisible();
+  await expect(menu.getByText(/credits/i)).toHaveCount(0);
+  await menu.getByRole('link', { name: 'Settings' }).click();
   await page.getByText('Use Folio credits').click();
   await expect(page.getByText('You have 750 credits.')).toBeVisible();
+  // With credits it shows the balance, and the way to add to it beside it.
+  await page.getByRole('button', { name: 'Account: ada@example.edu' }).click();
+  await expect(menu.getByText('750 credits')).toBeVisible();
+  await menu.getByRole('link', { name: 'Add credits' }).click();
+  await expect(page).toHaveURL(/\/settings#credits$/);
   // No key to test, and nothing else to press: credits are what Folio now writes with.
   await expect(page.getByRole('button', { name: 'Test connection' })).toHaveCount(0);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('folio.prefs')!).state.provider)).toBe('folio');
