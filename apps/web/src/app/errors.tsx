@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from 'react';
 import { useT } from '../i18n';
 import { SimpleHeader } from '../components/AppHeader';
 import { usePageTitle } from './usePageTitle';
+import { COURSE_MISSING } from './lazyErrors';
 
 export const linkClass = 'rounded-control font-ui text-14 font-medium text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent';
 
@@ -31,8 +32,6 @@ export function Message(props: { title: string; body?: string; action: ReactNode
   );
 }
 
-/** Thrown by a course loader when the course isn't in this browser; anything else under /c/ is an unknown page. */
-export const COURSE_MISSING = { reason: 'course' } as const;
 
 function isCourseMissing(data: unknown): boolean {
   return typeof data === 'object' && data !== null && (data as { reason?: unknown }).reason === COURSE_MISSING.reason;

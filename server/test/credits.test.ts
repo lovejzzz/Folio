@@ -242,6 +242,21 @@ describe('credits held while a call runs', () => {
     expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS - 3) * MILLI);
   });
 
+  it('are never taken without the record that gives them back', async () => {
+    await signIn();
+    // The hold can't be written: the balance must not be taken either.
+    await env.DB.prepare('CREATE TRIGGER no_holds BEFORE INSERT ON credit_holds BEGIN SELECT RAISE(ABORT, \'full\'); END').run();
+    await expect(reserve(env.DB, 'g-123', 40 * MILLI)).rejects.toThrow();
+    expect(await balanceOf(env.DB, 'g-123')).toBe(FREE_CREDITS * MILLI);
+    await env.DB.prepare('DROP TRIGGER no_holds').run();
+    // Nor settled halfway: when the cost can't be recorded, the hold stays open, to be given back later.
+    const hold = (await reserve(env.DB, 'g-123', 40 * MILLI))!;
+    await env.DB.prepare('CREATE TRIGGER no_ledger BEFORE INSERT ON credit_ledger BEGIN SELECT RAISE(ABORT, \'full\'); END').run();
+    await expect(settle(env.DB, 'g-123', hold, 3 * MILLI, 'x')).rejects.toThrow();
+    expect(await balanceOf(env.DB, 'g-123')).toBe((FREE_CREDITS - 40) * MILLI);
+    expect(await env.DB.prepare('SELECT COUNT(*) AS n FROM credit_holds').first<{ n: number }>()).toEqual({ n: 1 });
+  });
+
   it('are settled once, leaving no hold behind', async () => {
     const cookie = await signIn();
     expect((await ask(cookie)).status).toBe(200);

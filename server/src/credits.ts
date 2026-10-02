@@ -129,12 +129,11 @@ export async function totalOf(db: D1Database, prefix: string): Promise<number> {
  */
 export async function reserve(db: D1Database, userId: string, estimate: number, now = Date.now()): Promise<Hold | null> {
   await returnLostHolds(db, userId, now);
-  const held = await db.prepare('UPDATE credits SET balance = balance - ?, updated_at = ? WHERE user_id = ? AND balance >= ?').bind(estimate, now, userId, estimate).run();
-  if (held.meta.changes === 1) return recordHold(db, userId, estimate, now);
+  const held = await holdIf(db, userId, estimate, now, 'balance >= ?', estimate);
+  if (held) return held;
   const balance = await balanceOf(db, userId);
   if (balance < FLOOR) return null;
-  const rest = await db.prepare('UPDATE credits SET balance = balance - ?, updated_at = ? WHERE user_id = ? AND balance = ?').bind(balance, now, userId, balance).run();
-  return rest.meta.changes === 1 ? recordHold(db, userId, balance, now) : null;
+  return holdIf(db, userId, balance, now, 'balance = ?', balance);
 }
 
 /** Credits held for a call while it runs, written down so a hold whose settling is lost can be given back. */
@@ -146,24 +145,38 @@ export interface Hold {
 /** Longer than any call runs (the page gives up after ten minutes): a hold this old was never settled. */
 export const HOLD_LIFETIME = 15 * 60 * 1000;
 
-async function recordHold(db: D1Database, userId: string, amount: number, now: number): Promise<Hold> {
+/**
+ * Take `amount` from the balance when `condition` holds, and write the hold down, in one transaction: the
+ * credits are never taken without the record that gives them back. The hold is written only if the balance
+ * was taken from (changes() is the row the update just changed).
+ */
+async function holdIf(db: D1Database, userId: string, amount: number, now: number, condition: string, value: number): Promise<Hold | null> {
   const hold = { id: id(), amount };
-  await db.prepare('INSERT INTO credit_holds (id, user_id, amount, created_at) VALUES (?, ?, ?, ?)').bind(hold.id, userId, amount, now).run();
-  return hold;
+  const [, written] = await db.batch([
+    db.prepare(`UPDATE credits SET balance = balance - ?, updated_at = ? WHERE user_id = ? AND ${condition}`).bind(amount, now, userId, value),
+    db.prepare('INSERT INTO credit_holds (id, user_id, amount, created_at) SELECT ?, ?, ?, ? WHERE changes() = 1').bind(hold.id, userId, amount, now),
+  ]);
+  return written?.meta.changes === 1 ? hold : null;
 }
 
 /** Give back what calls whose settling was lost (the worker stopped partway) still hold. */
 export async function returnLostHolds(db: D1Database, userId: string, now = Date.now()): Promise<void> {
-  // Deleted and read in one step, so two requests at once can't give the same hold back twice.
-  const lost = await db.prepare('DELETE FROM credit_holds WHERE user_id = ? AND created_at < ? RETURNING amount').bind(userId, now - HOLD_LIFETIME).all<{ amount: number }>();
-  const back = lost.results.reduce((sum, h) => sum + h.amount, 0);
-  if (back > 0) await db.prepare('UPDATE credits SET balance = balance + ?, updated_at = ? WHERE user_id = ?').bind(back, now, userId).run();
+  // Given back and deleted in one transaction: never twice, and never deleted without being given back.
+  const before = now - HOLD_LIFETIME;
+  await db.batch([
+    db.prepare('UPDATE credits SET balance = balance + (SELECT COALESCE(SUM(amount), 0) FROM credit_holds WHERE user_id = ? AND created_at < ?), updated_at = ? WHERE user_id = ? AND EXISTS (SELECT 1 FROM credit_holds WHERE user_id = ? AND created_at < ?)').bind(userId, before, now, userId, userId, before),
+    db.prepare('DELETE FROM credit_holds WHERE user_id = ? AND created_at < ?').bind(userId, before),
+  ]);
 }
 
 /** Settle a call: give back what was held beyond its cost (unless it was already given back as lost), and record the cost. */
 export async function settle(db: D1Database, userId: string, hold: Hold, cost: number, detail: string, now = Date.now()): Promise<void> {
-  const open = await db.prepare('DELETE FROM credit_holds WHERE id = ? RETURNING id').bind(hold.id).first();
-  const statements = [db.prepare('UPDATE credits SET balance = balance + ?, updated_at = ? WHERE user_id = ?').bind((open ? hold.amount : 0) - cost, now, userId)];
+  // One transaction: what was held comes back only while its hold is still open (not already given back as
+  // lost), the hold goes, and the cost is recorded, all or none.
+  const statements = [
+    db.prepare('UPDATE credits SET balance = balance + (CASE WHEN EXISTS (SELECT 1 FROM credit_holds WHERE id = ?) THEN ? ELSE 0 END) - ?, updated_at = ? WHERE user_id = ?').bind(hold.id, hold.amount, cost, now, userId),
+    db.prepare('DELETE FROM credit_holds WHERE id = ?').bind(hold.id),
+  ];
   if (cost > 0) {
     statements.push(db.prepare("INSERT INTO credit_ledger (id, user_id, kind, amount, ref, detail, created_at) VALUES (?, ?, 'spend', ?, NULL, ?, ?)").bind(id(), userId, -cost, detail, now));
   }

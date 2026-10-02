@@ -7,7 +7,8 @@ async function audit(page: Page, label: string) {
   // Measure contrast on settled text: a fixed wait let a busy machine measure cards still fading in.
   await page.evaluate(() => document.fonts.ready);
   await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getComputedTiming().iterations === Infinity));
-  await page.waitForTimeout(100);
+  // And one painted frame after, so what axe measures is what is on screen.
+  await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
   const summary = results.violations.map((v) => `${label}: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target.join(' ')}`);
   expect(summary).toEqual([]);

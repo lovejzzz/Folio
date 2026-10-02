@@ -70,9 +70,10 @@ export function StudyEditor({ course, lesson }: { course: Course; lesson: Lesson
             label,
           )}
         >
-          <EditableText as="h3" value={p.heading} label={t.lesson.pointHeading(i + 1)} className="block text-18 font-semibold text-ink" onCommit={(heading) => setPoints(points.map((x) => (x.id === p.id ? { ...x, heading } : x)))} />
+          <EditableText as="h3" value={p.heading} label={t.lesson.pointHeading(i + 1)} className="block pr-8 text-18 font-semibold text-ink md:pr-0" onCommit={(heading) => setPoints(points.map((x) => (x.id === p.id ? { ...x, heading } : x)))} />
           <EditableText as="p" multiline value={p.explanation} label={p.heading || `${t.lesson.pointExplanation} ${i + 1}`} placeholder={t.lesson.pointExplanation} context={p.heading} className="mt-1 block" onCommit={(explanation) => setPoints(points.map((x) => (x.id === p.id ? { ...x, explanation } : x)))} />
-          <span className="no-print absolute -right-9 top-0 hidden opacity-0 pointer-coarse:opacity-100 group-focus-within/pt:opacity-100 group-hover/pt:opacity-100 md:block">
+          {/* In the margin where there is one; on a phone, inside the corner, beside the heading. */}
+          <span className="no-print absolute right-0 top-0 opacity-0 pointer-coarse:opacity-100 group-focus-within/pt:opacity-100 group-hover/pt:opacity-100 md:-right-9">
             <IconButton size="sm" label={t.common.labelled(t.common.remove, p.heading || t.lesson.pointHeading(i + 1))} onPress={() => setPoints(points.filter((x) => x.id !== p.id))}>
               <Trash2 size={14} strokeWidth={1.5} />
             </IconButton>

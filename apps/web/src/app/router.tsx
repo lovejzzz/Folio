@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-router';
 import { GOOGLE_RETURN_PATH, SIGN_IN_PATH } from '../lib/googlePath';
 import { Home } from '../screens/home/Home';
-import { COURSE_MISSING, CourseRouteNotFound, MaterialNotFound, PageNotFound, RouteError } from './errors';
+import { COURSE_MISSING, CourseRouteNotFound, MaterialNotFound, PageNotFound, RouteError } from './lazyErrors';
 import { RootLayout } from './RootLayout';
 
 /**

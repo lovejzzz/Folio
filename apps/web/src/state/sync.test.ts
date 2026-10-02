@@ -53,8 +53,13 @@ async function fakeFetch(url: string, init: RequestInit = {}): Promise<Response>
   return res;
 }
 
-/** Let the saves' listeners and the sends they start run to the end. */
-const settle = () => new Promise((r) => setTimeout(r, 30));
+/**
+ * Let the saves' listeners and the sends they start run to the end. Counted in turns of the event loop, which
+ * is how fake IndexedDB answers, not in milliseconds: a slow machine takes as many turns as a fast one.
+ */
+async function settle(): Promise<void> {
+  for (let i = 0; i < 50; i++) await new Promise((r) => setTimeout(r, 0));
+}
 
 /** An edit made somewhere: the same course, a revision on, with its own mark as every change has. */
 const editedElsewhere = (course: Course, title: string): Course => ({ ...course, title, revision: course.revision + 1, updatedAt: new Date(Date.parse(course.updatedAt) + 60_000).toISOString(), stamp: title });

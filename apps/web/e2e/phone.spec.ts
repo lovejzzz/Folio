@@ -24,13 +24,13 @@ test('no screen is wider than a phone', async ({ page }) => {
   const base = page.url().replace(/\/map$/, '');
   for (const path of ['/m/syllabus', '/m/map', '/m/plan', '/m/slides', '/m/quiz', '/m/assignments', '/m/rubrics', '/m/study', '/m/faq', '/m/discussions']) {
     await page.goto(base + path);
-    await page.waitForTimeout(300);
+    await expect(page.locator('h1').first()).toBeVisible();
     const w = await page.evaluate(() => document.documentElement.scrollWidth);
     expect(w, path).toBeLessThanOrEqual(width);
   }
   for (const path of ['/library', '/settings']) {
     await page.goto(path);
-    await page.waitForTimeout(300);
+    await expect(page.locator('h1').first()).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(width);
   }
 });
@@ -143,4 +143,16 @@ test('on a touch screen the buttons that appear on hover are always shown', asyn
   await page.goto(page.url().replace(/\/map$/, '/m/faq'));
   const remove = page.getByRole('button', { name: 'Remove question' }).first();
   await expect(remove).toHaveCSS('opacity', '1');
+});
+
+test('on a phone a study guide point can be removed', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
+  await page.goto(page.url().replace(/\/map$/, '/m/study'));
+  const remove = page.getByRole('button', { name: /^Remove: / }).first();
+  await expect(remove).toBeInViewport();
+  const before = await page.getByRole('textbox', { name: /^Heading of point / }).count();
+  await remove.click();
+  await expect(page.getByRole('textbox', { name: /^Heading of point / })).toHaveCount(before - 1);
 });

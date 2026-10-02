@@ -28,3 +28,14 @@ export async function missingSchema(db: D1Database): Promise<string[]> {
   }
   return missing;
 }
+
+/** How long one answer stands: a public endpoint, so a burst of requests costs the database one check a minute. */
+const CHECKED_FOR = 60_000;
+let checked: { at: number; missing: string[] } | null = null;
+
+/** missingSchema, asked at most once a minute by each worker. A gap found is asked again next time. */
+export async function missingSchemaCached(db: D1Database, now = Date.now()): Promise<string[]> {
+  if (checked && !checked.missing.length && now - checked.at < CHECKED_FOR) return checked.missing;
+  checked = { at: now, missing: await missingSchema(db) };
+  return checked.missing;
+}
