@@ -18,8 +18,9 @@ export function googleInference(settings: ModelSettings, fetchImpl: typeof fetch
     async complete(request: CompletionRequest) {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.model)}:generateContent`;
       const body = {
-        systemInstruction: { parts: [{ text: [request.system, request.context].filter(Boolean).join('\n\n') }] },
-        contents: [{ role: 'user', parts: [{ text: request.prompt }] }],
+        systemInstruction: { parts: [{ text: request.system }] },
+        // The course and the teacher's files are material, in the teacher's turn, ahead of the ask.
+        contents: [{ role: 'user', parts: [...(request.context ? [{ text: request.context }] : []), { text: request.prompt }] }],
         generationConfig: {
           responseMimeType: 'application/json',
           responseJsonSchema: z.toJSONSchema(request.schema),

@@ -60,7 +60,7 @@ test('a plan review that fails leaves the plan as written, and the course still 
   await page.route('https://api.anthropic.com/**', (route) => {
     const body = route.request().method() === 'POST' ? (route.request().postDataJSON() as { model?: string; messages?: { content: string }[] }) : null;
     if (body?.model !== 'claude-opus-5-5') return route.fallback();
-    reviewed.add(body.messages?.[0]?.content ?? '');
+    reviewed.add(JSON.stringify(body.messages ?? []));
     return route.fulfill({ status: 500, headers: { 'access-control-allow-origin': '*' }, json: { type: 'error', error: { type: 'api_error', message: 'Overloaded' } } });
   });
   await withKey(page);

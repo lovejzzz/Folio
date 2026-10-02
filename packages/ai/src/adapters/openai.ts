@@ -71,7 +71,10 @@ export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch
       const body = {
         model: settings.model,
         messages: [
-          { role: 'system', content: [request.system, request.context, schemaNote].filter(Boolean).join('\n\n') },
+          { role: 'system', content: [request.system, schemaNote].filter(Boolean).join('\n\n') },
+          // The course and the teacher's files are material, in the teacher's turn, ahead of the ask: the same
+          // prefix on every call of a build, so it is still cached.
+          ...(request.context ? [{ role: 'user', content: request.context }] : []),
           { role: 'user', content: request.prompt },
         ],
         // DeepSeek stops at 4K output tokens unless asked for more, and its thinking counts against the cap:

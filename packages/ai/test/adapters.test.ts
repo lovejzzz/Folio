@@ -45,13 +45,20 @@ describe('anthropic adapter', () => {
     expect(body.system).toBe('sys');
   });
 
-  it('sends the shared course background as a cached block, and the effort asked for', async () => {
+  it('sends the course and the teacher’s files in the teacher’s turn, cached, and the effort asked for', async () => {
     const { fn, seen } = mockFetch(200, anthropicMessage('{"title":"x"}'));
     await createInference(settings('anthropic'), fn).complete({ ...req, context: 'The course', effort: 'low' });
     const body = JSON.parse(String(seen[0]!.init.body));
-    expect(body.system).toEqual([
-      { type: 'text', text: 'sys' },
-      { type: 'text', text: 'The course', cache_control: { type: 'ephemeral' } },
+    // Only Folio's own words carry the system prompt's weight.
+    expect(body.system).toBe('sys');
+    expect(body.messages).toEqual([
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: 'The course', cache_control: { type: 'ephemeral' } },
+          { type: 'text', text: 'hello' },
+        ],
+      },
     ]);
     expect(body.output_config.effort).toBe('low');
   });
@@ -78,6 +85,13 @@ describe('openai and local adapters', () => {
     expect(seen[0]!.url).toBe('https://api.openai.com/v1/chat/completions');
     const body = JSON.parse(String(seen[0]!.init.body));
     expect(body.response_format.json_schema.name).toBe('folio_test');
+    const withCourse = mockFetch(200, { choices: [{ message: { content: '{"title":"Maps"}' }, finish_reason: 'stop' }] });
+    await createInference(settings('openai'), withCourse.fn).complete({ ...req, context: 'The course' });
+    expect(JSON.parse(String(withCourse.seen[0]!.init.body)).messages).toEqual([
+      { role: 'system', content: 'sys' },
+      { role: 'user', content: 'The course' },
+      { role: 'user', content: 'hello' },
+    ]);
   });
 
   it('talks to a local server without a key', async () => {
@@ -113,6 +127,11 @@ describe('google adapter', () => {
     expect(await createInference(settings('google'), fn).complete(req)).toEqual({ title: 'Rivers' });
     const body = JSON.parse(String(seen[0]!.init.body));
     expect(body.generationConfig.responseMimeType).toBe('application/json');
+    const withCourse = mockFetch(200, { candidates: [{ content: { parts: [{ text: '{"title":"Rivers"}' }] }, finishReason: 'STOP' }] });
+    await createInference(settings('google'), withCourse.fn).complete({ ...req, context: 'The course' });
+    const sent = JSON.parse(String(withCourse.seen[0]!.init.body));
+    expect(sent.systemInstruction.parts).toEqual([{ text: 'sys' }]);
+    expect(sent.contents).toEqual([{ role: 'user', parts: [{ text: 'The course' }, { text: 'hello' }] }]);
     expect((seen[0]!.init.headers as Record<string, string>)['x-goog-api-key']).toBe('sk-test');
   });
 });

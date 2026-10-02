@@ -30,14 +30,21 @@ function requestBody(model: string, request: CompletionRequest) {
   return {
     model,
     max_tokens: request.maxTokens ?? 16000,
-    // The course background is the same for every call in a build: cached, it costs a tenth as much after the first call.
-    system: request.context
-      ? [
-          { type: 'text' as const, text: request.system },
-          { type: 'text' as const, text: request.context, cache_control: { type: 'ephemeral' as const } },
-        ]
-      : request.system,
-    messages: [{ role: 'user' as const, content: request.prompt }],
+    // Folio's own instructions are the system prompt; the course and the teacher's files are material, in the
+    // teacher's turn, so nothing in an attached file carries the system prompt's weight. The background is the
+    // same for every call in a build: cached, it costs a tenth as much after the first call.
+    system: request.system,
+    messages: [
+      {
+        role: 'user' as const,
+        content: request.context
+          ? [
+              { type: 'text' as const, text: request.context, cache_control: { type: 'ephemeral' as const } },
+              { type: 'text' as const, text: request.prompt },
+            ]
+          : request.prompt,
+      },
+    ],
     output_config: {
       ...(acceptsEffort(model) ? { effort: request.effort ?? 'medium' } : {}),
       format: { type: 'json_schema' as const, schema: format.schema },

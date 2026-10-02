@@ -12,6 +12,19 @@ interface Body {
   messages: { content: string }[];
 }
 
+type Content = string | { text?: string }[];
+
+/**
+ * A request as the tests read it, whichever API it was sent to: the system prompt apart, and everything in the
+ * teacher's turn (the course, its files, then the ask) as one string in messages[0].
+ */
+function normalized(raw: { model?: string; stream?: boolean; system?: Body['system']; messages: { role?: string; content: Content }[] }): Body {
+  const text = (c: Content) => (typeof c === 'string' ? c : c.map((b) => b.text ?? '').join('\n'));
+  const systemMessage = raw.messages.find((m) => m.role === 'system');
+  const turn = raw.messages.filter((m) => m.role !== 'system').map((m) => text(m.content)).join('\n\n');
+  return { ...raw, system: raw.system ?? (systemMessage ? text(systemMessage.content) : undefined), messages: [{ content: turn }] };
+}
+
 function lessonTitle(prompt: string): string {
   return prompt.match(/This is the lesson "([^"]+)"/)?.[1] ?? 'Photosynthesis';
 }
@@ -149,7 +162,7 @@ export async function fakeAnthropic(page: Page, options: FakeModelOptions = {}):
   // Folio credits send the same request to Folio's server, which the test plays too.
   await page.route(options.viaFolio ? '**/api/ai/v1/messages**' : 'https://api.anthropic.com/**', async (route: Route) => {
     if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors() });
-    const body = route.request().postDataJSON() as Body;
+    const body = normalized(route.request().postDataJSON());
     calls.push(body);
     if (options.delayMs) await new Promise((r) => setTimeout(r, options.delayMs));
     if (options.status && options.status !== 200) {
@@ -166,7 +179,7 @@ export async function fakeAnthropic(page: Page, options: FakeModelOptions = {}):
   // With Folio credits, the quizzes, assignments and plan checks go to OpenAI's models through the same server.
   if (options.viaFolio) {
     await page.route('**/api/ai/openai/v1/chat/completions', async (route: Route) => {
-      const body = route.request().postDataJSON() as Body;
+      const body = normalized(route.request().postDataJSON());
       calls.push(body);
       if (options.delayMs) await new Promise((r) => setTimeout(r, options.delayMs));
       const text = JSON.stringify(answerFor(body));
