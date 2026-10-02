@@ -606,6 +606,7 @@ export const en = {
     leave: 'Close it',
   },
   errors: {
+    dbUpdated: 'Folio was updated in another tab. Reload this page to keep working.',
     config: 'No AI is set up yet. Add one in Settings.',
     credits: 'Your Folio credits have run out. Add credits and Resume picks up where the course stopped, or use your own key.',
     folioSignedOut: 'Sign in again to use your Folio credits.',

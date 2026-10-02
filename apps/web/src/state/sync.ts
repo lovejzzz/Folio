@@ -288,11 +288,11 @@ async function offerLocalCourses(): Promise<void> {
   if (!user) return;
   const account = user.id;
   const ids: string[] = [];
-  for (const course of await db.courses.toArray()) {
-    const row = await db.sync.get(course.id);
+  for (const id of await db.summaries.toCollection().primaryKeys()) {
+    const row = await db.sync.get(id);
     if (row?.account === account && row.state !== 'ask') continue;
-    await db.sync.put({ id: course.id, account, state: 'ask', version: 0, synced: '' });
-    ids.push(course.id);
+    await db.sync.put({ id, account, state: 'ask', version: 0, synced: '' });
+    ids.push(id);
   }
   useAccount.setState({ offer: ids });
 }

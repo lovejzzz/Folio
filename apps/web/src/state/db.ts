@@ -1,9 +1,17 @@
 import { enabledKinds, parseCourse, type Course, type CourseStatus, type Language, type MaterialKind } from '@folio/core';
 import Dexie, { type Table } from 'dexie';
+import { currentMessages } from '../i18n';
+import { upgradeToSeparateTexts } from './dbUpgrade';
 import type { HistoryRow, HistoryWrite } from './historySync';
+import { dryCourse, dryEntry, neededTexts, wetCourse, wetEntry, type Texts } from './sourceTexts';
+import { toast } from './toasts';
 
-/** One store for everything: IndexedDB via Dexie. Nothing is ever pruned. */
-export interface CourseRow {
+/**
+ * One store for everything: IndexedDB via Dexie. Nothing is ever pruned. A course is kept in three parts, so
+ * a small change writes little and the Library reads little: its summary (what a card shows), its body (the
+ * course with its files' text taken out), and each file's text, written once when the file is added.
+ */
+export interface CourseSummary {
   id: string;
   title: string;
   createdAt: string;
@@ -12,10 +20,21 @@ export interface CourseRow {
   language: Language;
   lessonCount: number;
   kinds: MaterialKind[];
+}
+
+export interface CourseRow {
+  id: string;
+  /** The course with every source's text kept apart (see sourceTexts). */
   data: Course;
 }
 
-export type CourseSummary = Omit<CourseRow, 'data'>;
+/** One attached file's text, for one course. Files never change once added, so it is written once. */
+export interface SourceTextRow {
+  /** `${courseId}:${sourceId}` */
+  key: string;
+  courseId: string;
+  text: string;
+}
 
 /**
  * Which courses belong to the signed-in account. A course with no row was made on this device while signed
@@ -31,7 +50,9 @@ export interface SyncRow {
 }
 
 class FolioDb extends Dexie {
+  summaries!: Table<CourseSummary, string>;
   courses!: Table<CourseRow, string>;
+  sources!: Table<SourceTextRow, string>;
   /** Undo history, one row per entry, written in the same transaction as its course. */
   history!: Table<HistoryRow, string>;
   sync!: Table<SyncRow, string>;
@@ -40,10 +61,23 @@ class FolioDb extends Dexie {
     this.version(1).stores({ courses: 'id, updatedAt' });
     this.version(2).stores({ courses: 'id, updatedAt', history: 'key, courseId' });
     this.version(3).stores({ courses: 'id, updatedAt', history: 'key, courseId', sync: 'id, account' });
+    this.version(4)
+      .stores({ summaries: 'id, updatedAt', courses: 'id', sources: 'key, courseId', history: 'key, courseId', sync: 'id, account' })
+      .upgrade(upgradeToSeparateTexts);
   }
 }
 
 export const db = new FolioDb();
+
+/**
+ * A newer Folio opened in another tab and is changing how courses are stored: this tab lets go of the
+ * database so the change can go ahead, and asks to be reloaded rather than fail its next save quietly.
+ */
+db.on('versionchange', () => {
+  db.close();
+  toast({ key: 'db-updated', message: currentMessages().errors.dbUpdated, tone: 'attention', duration: 0 });
+  return false;
+});
 
 /** Whether this browser lets Folio store anything. Private windows and some settings block it outright. */
 export async function storageWorks(): Promise<boolean> {
@@ -55,7 +89,7 @@ export async function storageWorks(): Promise<boolean> {
   }
 }
 
-function rowOf(course: Course): CourseRow {
+export function summaryOf(course: Course): CourseSummary {
   return {
     id: course.id,
     title: course.title,
@@ -65,9 +99,56 @@ function rowOf(course: Course): CourseRow {
     language: course.language,
     lessonCount: course.lessonOrder.length,
     kinds: enabledKinds(course),
-    data: course,
   };
 }
+
+const textKey = (courseId: string, sourceId: string) => `${courseId}:${sourceId}`;
+
+/** Write the texts not yet stored for this course. Only their keys are read to find out, never the texts. */
+async function storeNewTexts(courseId: string, texts: Texts): Promise<void> {
+  const keys = Object.keys(texts).map((id) => textKey(courseId, id));
+  const have = new Set(await db.sources.where('key').anyOf(keys).primaryKeys());
+  const rows = Object.entries(texts)
+    .filter(([id]) => !have.has(textKey(courseId, id)))
+    .map(([id, text]) => ({ key: textKey(courseId, id), courseId, text }));
+  if (rows.length) await db.sources.bulkPut(rows);
+}
+
+/**
+ * A text goes once nothing needs it: not the course, and no step of its history (undo can bring a removed file
+ * back). Only history dropping steps can make that happen, so it is checked only then.
+ */
+async function dropUnneededTexts(courseId: string, body: Course): Promise<void> {
+  const needed = neededTexts(body);
+  await db.history.where('courseId').equals(courseId).each((row) => void neededTexts(row.entry, needed));
+  const keys = await db.sources.where('courseId').equals(courseId).primaryKeys();
+  const gone = keys.filter((k) => !needed.has(k.slice(courseId.length + 1)));
+  if (gone.length) await db.sources.bulkDelete(gone);
+}
+
+/** Write a course in its three parts, and its history's new and changed steps, inside the caller's transaction. */
+async function writeCourse(course: Course, history: HistoryWrite | undefined): Promise<void> {
+  const { body, texts } = dryCourse(course);
+  const rows = (history?.put ?? []).map((row) => {
+    const dried = dryEntry(row.entry);
+    Object.assign(texts, dried.texts);
+    return { ...row, entry: dried.entry };
+  });
+  // IndexedDB requests first and only: a transaction that waits on anything else closes early.
+  await db.summaries.put(summaryOf(course));
+  await db.courses.put({ id: course.id, data: body });
+  if (Object.keys(texts).length) await storeNewTexts(course.id, texts);
+  await writeHistory(history && { ...history, put: rows });
+  if (history && (history.replace || history.remove.length)) await dropUnneededTexts(course.id, body);
+}
+
+/** Every text stored for a course, by source ID. */
+async function textsOf(courseId: string): Promise<Texts> {
+  const rows = await db.sources.where('courseId').equals(courseId).toArray();
+  return Object.fromEntries(rows.map((r) => [r.key.slice(courseId.length + 1), r.text]));
+}
+
+const PARTS = () => [db.summaries, db.courses, db.sources, db.history] as const;
 
 async function writeHistory(write: HistoryWrite | undefined): Promise<void> {
   if (!write) return;
@@ -116,10 +197,7 @@ const told = (write: CourseWrite) => {
 
 export async function saveCourse(course: Course, history?: HistoryWrite): Promise<void> {
   keepStorage();
-  await db.transaction('rw', db.courses, db.history, async () => {
-    await db.courses.put(rowOf(course));
-    await writeHistory(history);
-  });
+  await db.transaction('rw', PARTS(), () => writeCourse(course, history));
   told({ type: 'saved', id: course.id });
 }
 
@@ -135,45 +213,48 @@ export const versionOf = (course: Pick<Course, 'revision' | 'updatedAt' | 'stamp
 
 /** Save only if the stored copy is still the one this tab last saved or loaded. */
 export async function saveCourseIfUnchanged(course: Course, expected: string, history?: HistoryWrite): Promise<void> {
-  await db.transaction('rw', db.courses, db.history, async () => {
+  await db.transaction('rw', PARTS(), async () => {
     const row = await db.courses.get(course.id);
     if (!row) throw new SaveConflictError('deleted');
     if (versionOf(row.data) !== expected) throw new SaveConflictError('changed');
-    await db.courses.put(rowOf(course));
-    await writeHistory(history);
+    await writeCourse(course, history);
   });
   told({ type: 'saved', id: course.id });
 }
 
 export async function loadCourse(id: string): Promise<Course | null> {
-  const row = await db.courses.get(id);
-  return row ? parseCourse(row.data) : null;
+  const [row, texts] = await db.transaction('r', db.courses, db.sources, () => Promise.all([db.courses.get(id), textsOf(id)]));
+  return row ? parseCourse(wetCourse(row.data, texts)) : null;
 }
 
 /** A course with its undo history, read together so the two always match. */
 export async function loadCourseWithHistory(id: string): Promise<{ course: Course; history: HistoryRow[] } | null> {
-  const [row, history] = await db.transaction('r', db.courses, db.history, () =>
-    Promise.all([db.courses.get(id), db.history.where('courseId').equals(id).toArray()]),
+  const [row, history, texts] = await db.transaction('r', db.courses, db.history, db.sources, () =>
+    Promise.all([db.courses.get(id), db.history.where('courseId').equals(id).toArray(), textsOf(id)]),
   );
-  return row ? { course: parseCourse(row.data), history } : null;
+  return row ? { course: parseCourse(wetCourse(row.data, texts)), history: history.map((h) => ({ ...h, entry: wetEntry(h.entry, texts) })) } : null;
 }
 
+/** What the Library shows, newest first: summaries only, never a course's body or its files. */
 export async function listCourses(): Promise<CourseSummary[]> {
-  const rows = await db.courses.orderBy('updatedAt').reverse().toArray();
-  return rows.map(({ data: _data, ...summary }) => summary);
+  return db.summaries.orderBy('updatedAt').reverse().toArray();
 }
 
 /** Delete a course here; `forget` removes only this device's copy (signing out), leaving the account's. */
 export async function deleteCourse(id: string, { forget = false }: { forget?: boolean } = {}): Promise<void> {
-  await db.transaction('rw', db.courses, db.history, async () => {
+  await db.transaction('rw', PARTS(), async () => {
+    await db.summaries.delete(id);
     await db.courses.delete(id);
+    await db.sources.where('courseId').equals(id).delete();
     await db.history.where('courseId').equals(id).delete();
   });
   told({ type: forget ? 'forgotten' : 'deleted', id });
 }
 
 export async function allCourses(): Promise<Course[]> {
-  return (await db.courses.toArray()).map((r) => r.data);
+  const ids = await db.summaries.toCollection().primaryKeys();
+  const courses = await Promise.all(ids.map(loadCourse));
+  return courses.filter((c): c is Course => c !== null);
 }
 
 export function isQuotaError(error: unknown): boolean {
