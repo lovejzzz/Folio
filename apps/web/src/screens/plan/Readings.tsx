@@ -63,7 +63,7 @@ export function PlanReadings({ course, lesson, n, readings }: ReadingsProps) {
               size="sm"
               label={t.plan.removeReading(i + 1, n)}
               tooltip={false}
-              className="-my-0.5 size-6 opacity-0 group-focus-within/rd:opacity-100 group-hover/rd:opacity-100"
+              className="-my-0.5 size-6 opacity-0 pointer-coarse:opacity-100 group-focus-within/rd:opacity-100 group-hover/rd:opacity-100"
               onPress={() => readings.remove(i)}
             >
               <X size={14} strokeWidth={1.5} />
@@ -97,7 +97,7 @@ export function WellReadings({ course, lesson, n, readings }: ReadingsProps) {
               size="sm"
               label={t.plan.removeReading(i + 1, n)}
               tooltip={false}
-              className="no-print absolute right-0 top-0.5 size-6 opacity-0 group-focus-within/rd:opacity-100 group-hover/rd:opacity-100"
+              className="no-print absolute right-0 top-0.5 size-6 opacity-0 pointer-coarse:opacity-100 group-focus-within/rd:opacity-100 group-hover/rd:opacity-100"
               onPress={() => readings.remove(i)}
             >
               <X size={13} strokeWidth={1.5} />
@@ -150,7 +150,7 @@ export function SuggestedReadings({ course, lesson, n, readings, compact = false
               size="sm"
               label={t.plan.dismissSuggested(s)}
               tooltip={false}
-              className="-my-0.5 size-6 opacity-0 group-focus-within/sg:opacity-100 group-hover/sg:opacity-100"
+              className="-my-0.5 size-6 opacity-0 pointer-coarse:opacity-100 group-focus-within/sg:opacity-100 group-hover/sg:opacity-100"
               onPress={() => readings.dismiss(i)}
             >
               <X size={13} strokeWidth={1.5} />

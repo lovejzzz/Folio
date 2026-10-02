@@ -10,13 +10,17 @@ import { toast } from '../../state/toasts';
 /** Credits left in the account, said before it is deleted: they end with it. */
 function CreditsLost({ open }: { open: boolean }) {
   const balance = useCredits((s) => s.balance);
+  const failed = useCredits((s) => s.failed);
   useEffect(() => {
     if (open) void refreshCredits();
   }, [open]);
-  if (!balance || balance < 0) return null;
+  if (balance === null && !failed) return null;
+  // Unknown is not none: when the balance couldn't be had, the warning is given without the number.
+  const known = balance !== null && !failed;
+  if (known && balance <= 0) return null;
   return (
     <p role="alert" className="mx-6 mt-3 rounded-control bg-critical-tint px-3 py-2 font-ui text-13 leading-relaxed text-critical">
-      {creditsText.lostOnDelete(balance)}
+      {known ? creditsText.lostOnDelete(balance) : creditsText.mayBeLost}
     </p>
   );
 }

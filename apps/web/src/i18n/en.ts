@@ -320,6 +320,8 @@ export const en = {
     definition: 'Definition',
     notBuilt: (name: string) => `The ${name} for this lesson hasn’t been written yet.`,
     buildThis: 'Write it now',
+    noSlides: 'No lesson has slides yet.',
+    slidesComing: 'The slides are being written. Each lesson’s deck appears here when it’s done.',
     rail: 'Lessons',
     collapseRail: 'Collapse lesson list',
     expandRail: 'Expand lesson list',

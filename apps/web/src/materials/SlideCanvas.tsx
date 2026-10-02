@@ -55,12 +55,14 @@ function Bullets({ slide, onChange, lang }: { slide: Slide; onChange?: (s: Slide
 export function SlideCanvas({ slide, lang, footer, onChange, className }: SlideCanvasProps) {
   const t = useT();
   const titleSize = { title: 7.2, bullets: 5.2, question: 5.6, quote: 5 }[slide.layout];
+  // The slide being edited heads the page under the deck's title; a thumbnail is a link or button that already has
+  // its name, so its title is not a heading too.
   const title = onChange ? (
-    <EditableText as="h3" value={slide.title} label={t.lesson.slideTitle} required lang={lang} className="block" onCommit={(v) => onChange({ ...slide, title: v })} />
+    <EditableText as="h2" value={slide.title} label={t.lesson.slideTitle} required lang={lang} className="block" onCommit={(v) => onChange({ ...slide, title: v })} />
   ) : (
-    <h3>
+    <p>
       <InlineText text={slide.title} />
-    </h3>
+    </p>
   );
   return (
     <div data-item={slide.id} className={cx('folio-slide group/slide relative aspect-video w-full overflow-hidden bg-paper text-ink', className)} lang={lang}>

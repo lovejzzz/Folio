@@ -88,3 +88,58 @@ test('on a phone a stacked rubric can lose a criterion and change what a level i
   await expect(rubric.getByRole('textbox', { name: 'Points for Good' }).first()).toHaveValue('2.5');
   await expect(rubric.getByRole('textbox', { name: 'Points for Good' }).last()).toHaveValue('2.5');
 });
+
+test('on a phone the overview and every material are reached from More', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
+  await page.getByRole('button', { name: 'More' }).click();
+  await page.getByRole('menuitem', { name: 'Quiz & exam bank' }).click();
+  await expect(page).toHaveURL(/\/m\/quiz$/);
+  await page.getByRole('button', { name: 'More' }).click();
+  await page.getByRole('menuitem', { name: 'Overview' }).click();
+  await expect(page).toHaveURL(/\/map$/);
+});
+
+test('on a phone a tall dialog fits the screen and scrolls inside itself', async ({ page }) => {
+  // A small phone with the keyboard up.
+  await page.setViewportSize({ width: 375, height: 560 });
+  await page.goto('/');
+  await page.getByLabel('Describe your course').fill('Photosynthesis for grade 7, three lessons');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Connect an AI' });
+  await expect(dialog).toBeVisible();
+  await dialog.getByText('Use my Claude key').click();
+  // The sheet around the dialog is what scrolls: it, not the content, has to fit.
+  const box = (await dialog.locator('xpath=..').boundingBox())!;
+  expect(box.y).toBeGreaterThanOrEqual(0);
+  expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+  const go = dialog.getByRole('button', { name: 'Connect and continue' });
+  await go.scrollIntoViewIfNeeded();
+  await expect(go).toBeInViewport();
+});
+
+test('on a phone the selection toolbar stays on screen for a word at the edge', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await page.getByRole('link', { name: /Asking questions with data/ }).first().click();
+  const summary = page.getByRole('textbox', { name: 'Summary of lesson 1' });
+  await summary.click({ position: { x: 4, y: 8 } });
+  await page.keyboard.press('Home');
+  await page.keyboard.press('Shift+ArrowRight', { delay: 20 });
+  for (let i = 0; i < 5; i++) await page.keyboard.press('Shift+ArrowRight');
+  const bar = page.getByRole('toolbar', { name: 'Ask about the selected text' });
+  await expect(bar).toBeVisible();
+  const box = (await bar.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+});
+
+test('on a touch screen the buttons that appear on hover are always shown', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
+  await page.goto(page.url().replace(/\/map$/, '/m/faq'));
+  const remove = page.getByRole('button', { name: 'Remove question' }).first();
+  await expect(remove).toHaveCSS('opacity', '1');
+});

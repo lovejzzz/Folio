@@ -24,10 +24,11 @@ export function Dialog({ isOpen, onOpenChange, title, children, size = 'md', top
       isDismissable={isDismissable}
       className={cx(
         'fixed inset-0 z-50 flex justify-center bg-scrim px-4 backdrop-blur-none data-entering:animate-fade-in data-exiting:animate-fade-out',
-        top ? 'items-start pt-28' : 'items-center',
+        top ? 'items-start pb-4 pt-28' : 'items-center py-4',
       )}
     >
-      <Modal className={cx('w-full rounded-sheet border border-rule bg-paper shadow-overlay outline-none data-entering:animate-pop-in', widths[size], className)}>
+      {/* Never taller than the screen: a long dialog on a phone scrolls inside itself, its buttons still in reach. */}
+      <Modal className={cx('max-h-full w-full overflow-y-auto overscroll-contain rounded-sheet border border-rule bg-paper shadow-overlay outline-none data-entering:animate-pop-in', widths[size], className)}>
         <AriaDialog className="outline-none">
           <Heading slot="title" className={cx(top ? 'sr-only' : 'px-6 pt-5 font-display text-28 text-ink')}>
             {title}

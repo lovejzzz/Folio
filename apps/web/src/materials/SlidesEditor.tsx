@@ -1,9 +1,11 @@
+import { missingTargets } from '@folio/ai';
 import { cmd, newId, orderedLessons, type Course, type Lesson, type Slide, type SlideLayout } from '@folio/core';
-import { IconButton, SegmentedControl } from '@folio/ui';
+import { Button, IconButton, SegmentedControl } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
 import { ArrowDown, ArrowUp, EyeOff, Plus, Trash2 } from 'lucide-react';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
+import { startBuild, useBuild } from '../state/build';
 import { edit } from '../state/edit';
 import { focusItem } from './newItems';
 import { SlideCanvas } from './SlideCanvas';
@@ -100,6 +102,23 @@ function resolve(lessons: Lesson[], lessonId: string | undefined, slide: number 
   return { lessonId: lesson.id, index: Math.min(lesson.slides.length - 1, Math.max(0, (slide ?? 1) - 1)) };
 }
 
+/** No lesson has slides yet: say so and offer to write them, rather than show an empty page. */
+function NoSlides({ course }: { course: Course }) {
+  const t = useT();
+  const running = useBuild((s) => s.running && s.courseId === course.id);
+  const missing = missingTargets(course).filter((x) => x.kind === 'slides');
+  return (
+    <div className="no-print mx-auto max-w-slide rounded-control border border-dashed border-rule-strong px-4 py-5 font-ui text-14 text-ink-2">
+      <p>{running ? t.lesson.slidesComing : t.lesson.noSlides}</p>
+      {!running && missing.length > 0 && (
+        <Button size="sm" variant="secondary" className="mt-3" onPress={() => void startBuild(missing)}>
+          {t.lesson.buildThis}
+        </Button>
+      )}
+    </div>
+  );
+}
+
 interface SlidesEditorProps {
   course: Course;
   /** The lesson to open, and the slide within it counted from 1: both come from the URL. */
@@ -122,7 +141,7 @@ export function SlidesEditor({ course, lessonId, slide: slideNumber, onGo }: Sli
   useArrowKeys(onPrev, onNext);
   const lesson = pos && course.lessons[pos.lessonId];
   const slide = pos && lesson?.slides[pos.index];
-  if (!pos || !lesson || !slide) return null;
+  if (!pos || !lesson || !slide) return <NoSlides course={course} />;
   const n = course.lessonOrder.indexOf(lesson.id) + 1;
   const save = (slides: Slide[]) => edit([cmd('slides.update', { lessonId: lesson.id, slides })], { key: 'editedMaterial', values: { kind: 'slides', n } });
   const update = (s: Slide) => save(lesson.slides.map((x) => (x.id === s.id ? s : x)));

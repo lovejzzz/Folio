@@ -18,6 +18,8 @@ interface RubricProps {
   update: Update;
   /** onBlur for a criterion's row: an added criterion left blank goes again. */
   leave: (criterionId: string) => (e: FocusEvent<HTMLElement>) => void;
+  /** The level of a criterion's heading on a phone: one under the heading the rubric sits beneath. */
+  level?: 4 | 5;
 }
 
 const withoutId = ({ id: _id, ...rest }: Rubric): Omit<Rubric, 'id'> => rest;
@@ -86,7 +88,7 @@ function CriterionName({ rubric, criterionId, update }: { rubric: Rubric; criter
         size="sm"
         tooltip={false}
         label={t.common.labelled(t.common.remove, criterionName(rubric, c.id, t))}
-        className="no-print size-6 opacity-0 group-focus-within/crit:opacity-100 group-hover/crit:opacity-100"
+        className="no-print size-6 opacity-0 pointer-coarse:opacity-100 group-focus-within/crit:opacity-100 group-hover/crit:opacity-100"
         onPress={() => update({ ...base, criteria: rubric.criteria.filter((x) => x.id !== c.id) })}
       >
         <X size={13} strokeWidth={1.5} />
@@ -131,14 +133,15 @@ function Grid({ rubric, update, leave }: RubricProps) {
 }
 
 /** Phones: one criterion at a time, its levels stacked from best to least, so nothing scrolls sideways. */
-function Stacked({ rubric, update, leave }: RubricProps) {
+function Stacked({ rubric, update, leave, level = 4 }: RubricProps) {
+  const Criterion = level === 5 ? 'h5' : 'h4';
   return (
     <ol className="font-ui text-14 leading-5">
       {rubric.criteria.map((c) => (
         <li key={c.id} data-item={c.id} className="group/crit border-b border-rule py-4 first:border-t first:border-rule-strong" onBlur={leave(c.id)}>
-          <h4 className="mb-3 font-semibold text-ink">
+          <Criterion className="mb-3 font-semibold text-ink">
             <CriterionName rubric={rubric} criterionId={c.id} update={update} />
-          </h4>
+          </Criterion>
           <dl className="space-y-3 border-l-2 border-rule pl-3">
             {rubric.levels.map((lv) => (
               <div key={lv.id}>
@@ -158,7 +161,7 @@ function Stacked({ rubric, update, leave }: RubricProps) {
 }
 
 /** Criteria × levels, every cell edited in place. */
-export function RubricTable({ course, lessonId, rubric }: { course: Course; lessonId: string; rubric: Rubric }) {
+export function RubricTable({ course, lessonId, rubric, level }: { course: Course; lessonId: string; rubric: Rubric; level?: 4 | 5 }) {
   const t = useT();
   const phone = useMediaQuery('(max-width: 639px)');
   const save = useSectionEdit(course, lessonId, 'rubrics');
@@ -181,7 +184,7 @@ export function RubricTable({ course, lessonId, rubric }: { course: Course; less
   const Layout = phone ? Stacked : Grid;
   return (
     <div className={phone ? '' : '-mx-1 overflow-x-auto'} lang={course.language}>
-      <Layout rubric={rubric} update={update} leave={leave} />
+      <Layout rubric={rubric} update={update} leave={leave} level={level} />
       <AddButton label={t.tasks.addCriterion} onPress={add} />
     </div>
   );

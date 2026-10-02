@@ -70,9 +70,9 @@ export function StudyEditor({ course, lesson }: { course: Course; lesson: Lesson
             label,
           )}
         >
-          <EditableText as="h4" value={p.heading} label={t.lesson.pointHeading(i + 1)} className="block text-18 font-semibold text-ink" onCommit={(heading) => setPoints(points.map((x) => (x.id === p.id ? { ...x, heading } : x)))} />
+          <EditableText as="h3" value={p.heading} label={t.lesson.pointHeading(i + 1)} className="block text-18 font-semibold text-ink" onCommit={(heading) => setPoints(points.map((x) => (x.id === p.id ? { ...x, heading } : x)))} />
           <EditableText as="p" multiline value={p.explanation} label={p.heading || `${t.lesson.pointExplanation} ${i + 1}`} placeholder={t.lesson.pointExplanation} context={p.heading} className="mt-1 block" onCommit={(explanation) => setPoints(points.map((x) => (x.id === p.id ? { ...x, explanation } : x)))} />
-          <span className="no-print absolute -right-9 top-0 hidden opacity-0 group-focus-within/pt:opacity-100 group-hover/pt:opacity-100 md:block">
+          <span className="no-print absolute -right-9 top-0 hidden opacity-0 pointer-coarse:opacity-100 group-focus-within/pt:opacity-100 group-hover/pt:opacity-100 md:block">
             <IconButton size="sm" label={t.common.labelled(t.common.remove, p.heading || t.lesson.pointHeading(i + 1))} onPress={() => setPoints(points.filter((x) => x.id !== p.id))}>
               <Trash2 size={14} strokeWidth={1.5} />
             </IconButton>
@@ -95,16 +95,16 @@ export function AssignmentEditor({ course, lesson, showRubric = true }: { course
         return (
           <article key={a.id} className="space-y-4">
             {a.flags.length > 0 && <FlagNote flags={a.flags} lessonId={lesson.id} kind="assignments" itemId={a.id} />}
-            <EditableText as="h4" value={a.title} label={t.tasks.assignmentTitle} required className="block text-22 font-semibold leading-8 text-ink" onCommit={(title) => update({ title })} />
+            <EditableText as="h3" value={a.title} label={t.tasks.assignmentTitle} required className="block text-22 font-semibold leading-8 text-ink" onCommit={(title) => update({ title })} />
             <EditableText as="p" multiline value={a.prompt} label={a.title} context={a.title} className="block" onCommit={(prompt) => update({ prompt })} />
             <div>
-              <h5 className="mb-2 font-ui text-13 font-semibold text-ink">{t.tasks.steps}</h5>
+              <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{t.tasks.steps}</h4>
               <EditableList ordered items={a.steps} label={t.tasks.steps} addLabel={t.tasks.addStep} placeholder={t.tasks.step} lang={course.language} context={a.title} onChange={(steps) => update({ steps })} />
             </div>
             {showRubric && rubric && (
               <div>
-                <h5 className="mb-2 font-ui text-13 font-semibold text-ink">{t.tasks.rubric}</h5>
-                <RubricTable course={course} lessonId={lesson.id} rubric={rubric} />
+                <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{t.tasks.rubric}</h4>
+                <RubricTable course={course} lessonId={lesson.id} rubric={rubric} level={5} />
               </div>
             )}
           </article>
@@ -121,7 +121,7 @@ export function RubricsEditor({ course, lesson }: { course: Course; lesson: Less
         const rubric = a.rubricId ? course.rubrics[a.rubricId] : undefined;
         return rubric ? (
           <div key={a.id}>
-            <h4 className="mb-3 text-18 font-semibold text-ink" lang={course.language}>{rubric.title}</h4>
+            <h3 className="mb-3 text-18 font-semibold text-ink" lang={course.language}>{rubric.title}</h3>
             <RubricTable course={course} lessonId={lesson.id} rubric={rubric} />
           </div>
         ) : null;
@@ -164,7 +164,7 @@ export function DiscussionEditor({ course, lesson }: { course: Course; lesson: L
                 <EditableList items={d.followUps} label={t.tasks.followUps} addLabel={t.tasks.addFollowUp} placeholder={t.tasks.followUp} lang={course.language} onChange={(followUps) => save([cmd('task.update', { taskId: d.id, fields: { followUps } })])} />
               </div>
             </div>
-            <IconButton size="sm" label={t.tasks.removeDiscussion} className="no-print opacity-0 group-focus-within/d:opacity-100 group-hover/d:opacity-100" onPress={() => save([cmd('task.remove', { taskId: d.id })])}>
+            <IconButton size="sm" label={t.tasks.removeDiscussion} className="no-print opacity-0 pointer-coarse:opacity-100 group-focus-within/d:opacity-100 group-hover/d:opacity-100" onPress={() => save([cmd('task.remove', { taskId: d.id })])}>
               <Trash2 size={14} strokeWidth={1.5} />
             </IconButton>
           </li>
@@ -197,7 +197,7 @@ export function FaqEditor({ course, lesson }: { course: Course; lesson: Lesson }
             </dt>
             <dd className="mt-1 flex items-start gap-1">
               <EditableText multiline className="min-w-0 flex-1" value={f.answer} label={t.common.labelled(t.tasks.newAnswer, f.question || t.tasks.faqQuestion(i + 1))} placeholder={t.tasks.newAnswer} context={f.question} onCommit={(answer) => save([cmd('faq.update', { faqId: f.id, answer })])} />
-              <IconButton size="sm" label={t.tasks.removeFaq} className="no-print opacity-0 group-focus-within/f:opacity-100 group-hover/f:opacity-100" onPress={() => save([cmd('faq.remove', { faqId: f.id })])}>
+              <IconButton size="sm" label={t.tasks.removeFaq} className="no-print opacity-0 pointer-coarse:opacity-100 group-focus-within/f:opacity-100 group-hover/f:opacity-100" onPress={() => save([cmd('faq.remove', { faqId: f.id })])}>
                 <Trash2 size={14} strokeWidth={1.5} />
               </IconButton>
             </dd>

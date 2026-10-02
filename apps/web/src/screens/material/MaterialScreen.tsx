@@ -78,14 +78,14 @@ function Syllabus({ course }: { course: Course }) {
       <EditableText as="p" multiline value={course.summary} label={t.plan.summary} className="mb-2 block text-18 leading-8 text-ink-2" onCommit={(summary) => edit([cmd('course.update', { summary })], { key: 'editedCourse' })} />
       <DocView doc={{ ...doc, blocks: cut < 0 ? blocks : blocks.slice(0, cut) }} showTitle={false} />
       <section className="mt-10">
-        <h3 className="mb-3 text-22 font-semibold leading-8">{l.assessment}</h3>
+        <h2 className="mb-3 text-22 font-semibold leading-8">{l.assessment}</h2>
         {course.grading.length > 0 && <GradingTable course={course} />}
         {course.grading.length > 0 && <AddGradeItem course={course} />}
         {assessed}
         {course.grading.length === 0 && <AddGradeItem course={course} />}
       </section>
       <section className="mt-10">
-        <h3 className="mb-3 text-22 font-semibold">{t.tasks.policies}</h3>
+        <h2 className="mb-3 text-22 font-semibold">{t.tasks.policies}</h2>
         <EditableText as="div" multiline value={course.policies} label={t.tasks.policies} placeholder={t.tasks.policiesPlaceholder} className="block min-h-12" onCommit={(policies) => edit([cmd('course.update', { policies })], { key: 'editedCourse' })} />
       </section>
     </>

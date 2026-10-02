@@ -4,6 +4,7 @@ import type { useNavigate } from '@tanstack/react-router';
 import { BookMarked, Download, FileText, History, Library, Moon, Plus, Settings, Undo2, LayoutGrid } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { Messages } from '../../i18n';
+import { shortcut } from '../../lib/shortcut';
 import { undo } from '../../state/edit';
 import { usePrefs } from '../../state/prefs';
 import { useUi } from '../../state/ui';
@@ -42,7 +43,7 @@ export function commandItems(course: Course, t: Messages, navigate: ReturnType<t
     { id: 'a:export', group: 'actions', label: t.command.exportItem, icon: icon(<Download size={16} strokeWidth={1.5} />), run: () => ui.openDrawer('export') },
     { id: 'a:changes', group: 'actions', label: t.command.changesItem, icon: icon(<History size={16} strokeWidth={1.5} />), run: () => ui.openDrawer('changes') },
     { id: 'a:sources', group: 'actions', label: t.command.sourcesItem, icon: icon(<BookMarked size={16} strokeWidth={1.5} />), run: () => ui.openDrawer('sources') },
-    { id: 'a:undo', group: 'actions', label: t.command.undo, hint: '⌘Z', icon: icon(<Undo2 size={16} strokeWidth={1.5} />), run: () => undo() },
+    { id: 'a:undo', group: 'actions', label: t.command.undo, hint: shortcut('⌘Z'), icon: icon(<Undo2 size={16} strokeWidth={1.5} />), run: () => undo() },
     { id: 'a:theme', group: 'actions', label: t.command.toggleTheme, icon: icon(<Moon size={16} strokeWidth={1.5} />), run: () => theme.set({ theme: dark ? 'light' : 'dark' }) },
     { id: 'a:new', group: 'actions', label: t.command.newCourse, icon: icon(<Plus size={16} strokeWidth={1.5} />), run: () => void navigate({ to: '/' }) },
     { id: 'a:library', group: 'actions', label: t.command.libraryItem, icon: icon(<Library size={16} strokeWidth={1.5} />), run: () => void navigate({ to: '/library' }) },

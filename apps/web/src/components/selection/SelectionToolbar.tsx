@@ -58,7 +58,10 @@ function proposalRect(target: Target): DOMRect | null {
   return target.el.nextElementSibling?.querySelector('mark')?.getBoundingClientRect() ?? null;
 }
 
-function measure(target: Target, below: boolean): Position | null {
+/** The screen's edge margin: the bar never comes closer to an edge than this. */
+const EDGE = 16;
+
+function measure(target: Target, below: boolean, width: number): Position | null {
   if (!target.el.isConnected) return null;
   const proposal = proposalRect(target);
   const box = target.el.getBoundingClientRect();
@@ -66,17 +69,32 @@ function measure(target: Target, below: boolean): Position | null {
     ? (below ? proposal.bottom + 12 : proposal.top - 48)
     : below ? box.top + target.offset.bottom + 12 : box.top + target.offset.top - 48;
   const centre = proposal ? proposal.left + proposal.width / 2 : box.left + target.offset.centre;
-  const left = Math.min(window.innerWidth - 16, Math.max(16, centre));
-  // Out of view (under the header or off screen): hide rather than float over other text.
-  return { top, left, hidden: top < 56 || top > window.innerHeight - 24 };
+  // Centred on the text, but kept whole on screen: its half-width from each edge, or the middle when it fills the row.
+  const half = Math.min(width, window.innerWidth - 2 * EDGE) / 2;
+  const left = Math.min(window.innerWidth - EDGE - half, Math.max(EDGE + half, centre));
+  // Out of view (under the header or off screen): hide rather than float over other text. Not yet measured: hide
+  // for the moment it takes, rather than show it once in the wrong place.
+  return { top, left, hidden: !width || top < 56 || top > window.innerHeight - 24 };
 }
 
 /** Where the bar goes: re-measured on scroll and resize so it stays with its text. */
-function usePosition(target: Target | null, below: boolean): Position | null {
+function usePosition(target: Target | null, below: boolean, bar: RefObject<HTMLDivElement | null>): Position | null {
   const [pos, setPos] = useState<Position | null>(null);
+  const [width, setWidth] = useState(0);
+  const shown = target !== null && pos !== null;
+  // The bar's width changes with what it shows (buttons, a suggestion, an explanation): it is placed by it. Each
+  // selection mounts a new bar, so the one watched is the one on screen.
+  useLayoutEffect(() => {
+    const el = bar.current;
+    if (!shown || !el) return;
+    // Called once on observe, with the bar's first size.
+    const observer = new ResizeObserver(() => setWidth(el.offsetWidth));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [bar, shown, target]);
   useLayoutEffect(() => {
     if (!target) return;
-    const update = () => setPos(measure(target, below));
+    const update = () => setPos(measure(target, below, width));
     update();
     window.addEventListener('scroll', update, true);
     window.addEventListener('resize', update);
@@ -84,7 +102,7 @@ function usePosition(target: Target | null, below: boolean): Position | null {
       window.removeEventListener('scroll', update, true);
       window.removeEventListener('resize', update);
     };
-  }, [target, below]);
+  }, [target, below, width]);
   return target ? pos : null;
 }
 
@@ -174,7 +192,7 @@ export function SelectionToolbar() {
     setTarget(null);
   };
   useDismiss(target !== null, phase.kind === 'explaining', bar, finish);
-  const pos = usePosition(target, phase.kind === 'suggesting' || phase.kind === 'explaining');
+  const pos = usePosition(target, phase.kind === 'suggesting' || phase.kind === 'explaining', bar);
   if (!target || !pos) return null;
   const act = async (action: TextAction): Promise<void> => {
     const inference = currentInference();
@@ -203,8 +221,8 @@ export function SelectionToolbar() {
       ref={bar}
       role="toolbar"
       aria-label={t.selection.toolbar}
-      className={cx('no-print fixed z-40 -translate-x-1/2 animate-pop-in', pos.hidden && 'invisible')}
-      style={{ top: pos.top, left: pos.left }}
+      className={cx('no-print fixed z-40 w-max -translate-x-1/2 animate-pop-in', pos.hidden && 'invisible')}
+      style={{ top: pos.top, left: pos.left, maxWidth: window.innerWidth - 2 * EDGE }}
       onMouseDown={(e) => e.preventDefault()}
     >
       <PhaseView phase={phase} chinese={(target.handle.get().lang === 'zh-CN' ? 'zh-CN' : course.language) === 'zh-CN'} onAct={(a) => void act(a)} onAccept={(next) => phase.kind === 'suggesting' && accept(phase.base, next)} onClose={finish} />

@@ -1,10 +1,11 @@
 import { enabledKinds } from '@folio/core';
 import { Button, IconButton, Kbd, MaterialIcon, Menu, MenuItem, MenuSeparator, cx, useMediaQuery } from '@folio/ui';
 import { Link, useMatchRoute, useNavigate } from '@tanstack/react-router';
-import { BookMarked, ChevronDown, Download, History, Library, MoreHorizontal, Plus, Redo2, Search, Settings, Undo2 } from 'lucide-react';
+import { BookMarked, ChevronDown, Download, History, LayoutGrid, Library, MoreHorizontal, Plus, Redo2, Search, Settings, Undo2 } from 'lucide-react';
 import { Button as AriaButton } from 'react-aria-components';
 import { HeaderDivider, HomeLink } from '../../components/AppHeader';
 import { useT } from '../../i18n';
+import { shortcut } from '../../lib/shortcut';
 import { redo, undo } from '../../state/edit';
 import { useCourse, useStore } from '../../state/session';
 import { useUi } from '../../state/ui';
@@ -57,11 +58,32 @@ function ViewNav() {
   );
 }
 
+/** Below md the header has no room for the course's views: the overview and each material are reached from More. */
+function useViewItems() {
+  const t = useT();
+  const course = useCourse();
+  const navigate = useNavigate();
+  const phone = useMediaQuery('(max-width: 767px)');
+  if (!phone) return [];
+  return [
+    <MenuItem key="overview" id="overview" icon={<LayoutGrid size={16} />} onAction={() => void navigate({ to: '/c/$courseId/map', params: { courseId: course.id } })}>
+      {t.nav.map}
+    </MenuItem>,
+    ...enabledKinds(course).map((kind) => (
+      <MenuItem key={kind} id={kind} icon={<MaterialIcon kind={kind} size={16} />} onAction={() => void navigate({ to: '/c/$courseId/m/$kind', params: { courseId: course.id, kind } })}>
+        {t.materials[kind]}
+      </MenuItem>
+    )),
+    <MenuSeparator key="views-end" />,
+  ];
+}
+
 function MoreMenu() {
   const t = useT();
   const navigate = useNavigate();
   const store = useStore();
   const { toggleDrawer, setCommandOpen } = useUi();
+  const views = useViewItems();
   // Below sm the header has no room for the search button, so it lives here.
   const narrow = useMediaQuery('(max-width: 639px)');
   return (
@@ -73,15 +95,16 @@ function MoreMenu() {
         </IconButton>
       }
     >
+      {views}
       {narrow && (
         <MenuItem id="search" icon={<Search size={16} />} onAction={() => setCommandOpen(true)}>
           {t.nav.commandBar}
         </MenuItem>
       )}
-      <MenuItem id="undo" icon={<Undo2 size={16} />} hint={<Kbd>⌘Z</Kbd>} isDisabled={!store.canUndo()} onAction={() => undo()}>
+      <MenuItem id="undo" icon={<Undo2 size={16} />} hint={<Kbd>{shortcut('⌘Z')}</Kbd>} isDisabled={!store.canUndo()} onAction={() => undo()}>
         {t.common.undo}
       </MenuItem>
-      <MenuItem id="redo" icon={<Redo2 size={16} />} hint={<Kbd>⇧⌘Z</Kbd>} isDisabled={!store.canRedo()} onAction={() => redo()}>
+      <MenuItem id="redo" icon={<Redo2 size={16} />} hint={<Kbd>{shortcut('⇧⌘Z')}</Kbd>} isDisabled={!store.canRedo()} onAction={() => redo()}>
         {t.common.redo}
       </MenuItem>
       <MenuItem id="export" icon={<Download size={16} />} onAction={() => toggleDrawer('export')}>
@@ -112,7 +135,7 @@ function Actions() {
   return (
     <div className="flex items-center gap-1">
       <span className="hidden sm:contents">
-        <IconButton label={`${t.nav.commandBar} (⌘K)`} onPress={() => setCommandOpen(true)}>
+        <IconButton label={`${t.nav.commandBar} (${shortcut('⌘K')})`} onPress={() => setCommandOpen(true)}>
           <Search size={18} strokeWidth={1.5} />
         </IconButton>
       </span>

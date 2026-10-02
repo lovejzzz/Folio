@@ -111,3 +111,22 @@ test('offline, Build keeps the plan open and says why; back online it builds', a
   await page.getByRole('button', { name: 'Write 2 lessons' }).click();
   await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 30_000 });
 });
+
+test('a slides page with no slides says so, and writes them when asked', async ({ page }) => {
+  await withKey(page);
+  await fakeAnthropic(page);
+  let fail = true;
+  await page.route('https://api.anthropic.com/**', (route) =>
+    fail && (route.request().postData() ?? '').includes('Write a slide deck')
+      ? route.fulfill({ status: 500, headers: cors, json: { type: 'error', error: { type: 'api_error', message: 'Internal' } } })
+      : route.fallback(),
+  );
+  await planTwoLessons(page);
+  await page.getByRole('button', { name: 'Write 2 lessons' }).click();
+  await expect(page.getByText('2 parts couldn’t be written.')).toBeVisible({ timeout: 30_000 });
+  await page.goto(page.url().replace(/\/map$/, '/m/slides'));
+  await expect(page.getByText('No lesson has slides yet.')).toBeVisible();
+  fail = false;
+  await page.getByRole('button', { name: 'Write it now' }).click();
+  await expect(page.getByRole('textbox', { name: 'Slide title' })).toBeVisible({ timeout: 30_000 });
+});

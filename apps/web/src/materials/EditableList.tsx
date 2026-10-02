@@ -44,7 +44,7 @@ export function EditableList({ items, onChange, label, addLabel, placeholder, or
                 size="sm"
                 tooltip={false}
                 label={t.common.labelled(t.common.remove, `${label} ${i + 1}`)}
-                className="no-print mt-0.5 size-6 opacity-0 group-focus-within/item:opacity-100 group-hover/item:opacity-100"
+                className="no-print mt-0.5 size-6 opacity-0 pointer-coarse:opacity-100 group-focus-within/item:opacity-100 group-hover/item:opacity-100"
                 onPress={() => onChange(items.filter((_, j) => j !== i))}
               >
                 <X size={13} strokeWidth={1.5} />

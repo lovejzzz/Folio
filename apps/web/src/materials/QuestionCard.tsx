@@ -65,7 +65,7 @@ function Choices({ q, update, label }: { q: Question; update: (fields: Partial<Q
                 size="sm"
                 tooltip={false}
                 label={t.quiz.removeChoice}
-                className="no-print size-6 opacity-0 group-focus-within/choice:opacity-100 group-hover/choice:opacity-100"
+                className="no-print size-6 opacity-0 pointer-coarse:opacity-100 group-focus-within/choice:opacity-100 group-hover/choice:opacity-100"
                 onPress={() => update({ choices: q.choices.filter((x) => x.id !== c.id), correct: correct ? null : q.correct })}
               >
                 <X size={13} strokeWidth={1.5} />
@@ -148,7 +148,7 @@ export function QuestionCard({ course, q, n }: { course: Course; q: Question; n:
         <IconButton
           size="sm"
           label={t.quiz.removeQuestion}
-          className="no-print ml-auto opacity-0 group-focus-within/q:opacity-100 group-hover/q:opacity-100"
+          className="no-print ml-auto opacity-0 pointer-coarse:opacity-100 group-focus-within/q:opacity-100 group-hover/q:opacity-100"
           onPress={() => save([cmd('task.remove', { taskId: q.id })])}
         >
           <Trash2 size={14} strokeWidth={1.5} />

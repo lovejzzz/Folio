@@ -78,10 +78,19 @@ function QuestionBlock({ b }: { b: Extract<Block, { t: 'question' }> }) {
 
 type B<T extends Block['t']> = Extract<Block, { t: T }>;
 
-function Heading({ b }: { b: B<'heading'> }) {
-  if (b.level === 1) return <h2 className="mb-4 mt-10 text-28 font-semibold leading-9"><InlineText text={b.text} /></h2>;
-  if (b.level === 2) return <h3 className="mb-3 mt-10 text-22 font-semibold leading-8 first:mt-0"><InlineText text={b.text} /></h3>;
-  return <h4 className="mb-2 mt-6 text-18 font-semibold"><InlineText text={b.text} /></h4>;
+const HEADING_LOOK = { 1: 'mb-4 mt-10 text-28 font-semibold leading-9', 2: 'mb-3 mt-10 text-22 font-semibold leading-8 first:mt-0', 3: 'mb-2 mt-6 text-18 font-semibold' } as const;
+
+/**
+ * Looks follow the document's own levels; the tags count down from h2 under the page's h1, so a document whose
+ * first heading is at level 2 (a syllabus) doesn't skip a level for a screen reader.
+ */
+function Heading({ b, top }: { b: B<'heading'>; top: number }) {
+  const Tag = (['h2', 'h3', 'h4'] as const)[Math.min(2, Math.max(0, b.level - top))]!;
+  return (
+    <Tag className={HEADING_LOOK[b.level]}>
+      <InlineText text={b.text} />
+    </Tag>
+  );
 }
 
 function ListBlock({ b }: { b: B<'list'> }) {
@@ -133,7 +142,7 @@ function SlideBlock({ b, lang }: { b: B<'slide'>; lang: string }) {
 function Answers({ b }: { b: B<'answers'> }) {
   return (
     <section className="my-6">
-      <h3 className="mb-3 text-22 font-semibold">{b.title}</h3>
+      <h2 className="mb-3 text-22 font-semibold">{b.title}</h2>
       <ol className="columns-2 gap-8 font-ui text-14 leading-6">
         {b.items.map((x) => (
           <li key={x.n} className="break-inside-avoid">
@@ -146,10 +155,10 @@ function Answers({ b }: { b: B<'answers'> }) {
   );
 }
 
-function BlockView({ b, lang }: { b: Block; lang: string }) {
+function BlockView({ b, lang, top }: { b: Block; lang: string; top: number }) {
   switch (b.t) {
     case 'heading':
-      return <Heading b={b} />;
+      return <Heading b={b} top={top} />;
     case 'para':
       return (
         <p className={cx('my-3 whitespace-pre-line', b.tone === 'lead' && 'text-18 leading-8 text-ink-2', b.tone === 'muted' && 'font-ui text-14 text-ink-2')}>
@@ -185,11 +194,12 @@ function BlockView({ b, lang }: { b: Block; lang: string }) {
 
 /** A projected material, read-only: the same document every exporter receives. */
 export function DocView({ doc, showTitle = true }: { doc: SemanticDoc; showTitle?: boolean }) {
+  const top = Math.min(3, ...doc.blocks.map((b) => (b.t === 'heading' ? b.level : 3)));
   return (
     <div className="folio-doc" lang={doc.language}>
       {showTitle && <h1 className="mb-6 font-display text-48 leading-none text-ink">{doc.title}</h1>}
       {doc.blocks.map((b, i) => (
-        <BlockView key={i} b={b} lang={doc.language} />
+        <BlockView key={i} b={b} lang={doc.language} top={top} />
       ))}
     </div>
   );

@@ -23,19 +23,22 @@ interface Credits {
   available: boolean;
   /** Whether the account's address is a school one (.edu), which the free credits come with. */
   school: boolean;
+  /** The last time the balance was asked for, it couldn't be had: a screen offers to ask again. */
+  failed: boolean;
 }
 
-export const useCredits = create<Credits>(() => ({ balance: null, packs: [], available: true, school: true }));
+export const useCredits = create<Credits>(() => ({ balance: null, packs: [], available: true, school: true, failed: false }));
 
-/** Ask the server for the balance. Quietly keeps the last answer when it can't be reached. */
+/** Ask the server for the balance. Keeps the last answer when it can't be reached, and says it couldn't. */
 export async function refreshCredits(): Promise<void> {
   try {
     const response = await fetch('/api/credits', { credentials: 'same-origin' });
-    if (!response.ok) return;
+    if (!response.ok) throw new Error(String(response.status));
     const body = (await response.json()) as { balance: number; available: boolean; packs?: Pack[]; school?: boolean };
-    useCredits.setState({ balance: body.balance, available: body.available, packs: body.packs ?? [], school: body.school ?? true });
+    useCredits.setState({ balance: body.balance, available: body.available, packs: body.packs ?? [], school: body.school ?? true, failed: false });
   } catch {
-    // Offline or signed out elsewhere: the balance shown stays as it was.
+    // Offline, the server busy, or signed out elsewhere: the balance shown stays as it was.
+    useCredits.setState({ failed: true });
   }
 }
 
@@ -86,6 +89,9 @@ export const creditsText = {
   packMore: (p: Pack) => `${Math.round((bonusOf(p) / (p.usd * BASE_RATE)) * 100)}% bonus`,
   packHint: 'Paid on Stripe’s page. Credits don’t expire and aren’t refundable.',
   terms: 'Terms and refunds',
+  balanceFailed: 'Your balance couldn’t be loaded.',
+  tryAgain: 'Try again',
+  mayBeLost: 'Any Folio credits left in this account end with it: they can’t be restored or refunded.',
   lostOnDelete: (n: number) => `This account still has ${n.toLocaleString('en-US')} Folio credits. Deleting it ends them: they can’t be restored or refunded.`,
   buyFailed: 'The payment page didn’t open. Try again in a moment.',
   thanks: 'Thank you. Your credits are added as soon as Stripe confirms the payment.',

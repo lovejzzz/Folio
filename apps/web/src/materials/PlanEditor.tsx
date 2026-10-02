@@ -57,7 +57,7 @@ function SegmentRow({ segment, n, onChange, onRemove, onBlur, lang }: SegmentRow
           <EditableText multiline value={segment.teacherNotes} label={t.common.labelled(t.lesson.teacherNotes, name)} placeholder="…" onCommit={(teacherNotes) => onChange({ ...segment, teacherNotes })} />
         </div>
       </div>
-      <IconButton size="sm" label={t.common.labelled(t.common.remove, name)} className="no-print absolute right-0 top-3 opacity-0 group-focus-within/seg:opacity-100 group-hover/seg:opacity-100" onPress={onRemove}>
+      <IconButton size="sm" label={t.common.labelled(t.common.remove, name)} className="no-print absolute right-0 top-3 opacity-0 pointer-coarse:opacity-100 group-focus-within/seg:opacity-100 group-hover/seg:opacity-100" onPress={onRemove}>
         <X size={14} strokeWidth={1.5} />
       </IconButton>
     </li>
@@ -95,9 +95,9 @@ function SessionSegments({ course, lesson, session, save }: SegmentsProps) {
     <section>
       {/* With several sessions, each opens on a band: the lecture and the seminar read as two parts, not one long list. */}
       <div className={cx('mb-1 flex items-baseline justify-between gap-4', sessions.length > 1 && 'rounded-control bg-well px-3 py-2')}>
-        <h4 className={cx('font-ui font-semibold text-ink', sessions.length > 1 ? 'text-14' : 'text-13')}>
+        <h3 className={cx('font-ui font-semibold text-ink', sessions.length > 1 ? 'text-14' : 'text-13')}>
           {sessions.length > 1 ? t.sessions.heading(t.sessions.kinds[meeting.kind], meeting.minutes) : t.lesson.segments}
-        </h4>
+        </h3>
         <span className={cx('font-ui text-13 tabular', total === meeting.minutes ? 'text-ink-2' : 'text-attention')}>{t.lesson.minutesTotal(total, meeting.minutes)}</span>
       </div>
       <ol>
@@ -131,7 +131,7 @@ export function PlanEditor({ course, lesson }: { course: Course; lesson: Lesson 
   return (
     <div className="space-y-8">
       <section>
-        <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{t.lesson.keyIdeas}</h4>
+        <h3 className="mb-2 font-ui text-13 font-semibold text-ink">{t.lesson.keyIdeas}</h3>
         <EditableList
           items={lesson.keyIdeas}
           label={t.lesson.keyIdeas}
@@ -162,7 +162,7 @@ function Vocabulary({ course, lesson }: { course: Course; lesson: Lesson }) {
   };
   return (
     <section>
-      <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{t.lesson.vocabulary}</h4>
+      <h3 className="mb-2 font-ui text-13 font-semibold text-ink">{t.lesson.vocabulary}</h3>
       <dl className="divide-y divide-rule">
         {lesson.vocabulary.map((v) => (
           <div
@@ -189,7 +189,7 @@ function Vocabulary({ course, lesson }: { course: Course; lesson: Lesson }) {
                 placeholder={t.lesson.definition}
                 onCommit={(definition) => set(lesson.vocabulary.map((x) => (x.id === v.id ? { ...x, definition } : x)))}
               />
-              <IconButton size="sm" tooltip={false} label={t.common.labelled(t.common.remove, v.term || t.lesson.term)} className="no-print size-6 opacity-0 group-focus-within/term:opacity-100 group-hover/term:opacity-100" onPress={() => set(lesson.vocabulary.filter((x) => x.id !== v.id))}>
+              <IconButton size="sm" tooltip={false} label={t.common.labelled(t.common.remove, v.term || t.lesson.term)} className="no-print size-6 opacity-0 pointer-coarse:opacity-100 group-focus-within/term:opacity-100 group-hover/term:opacity-100" onPress={() => set(lesson.vocabulary.filter((x) => x.id !== v.id))}>
                 <X size={13} strokeWidth={1.5} />
               </IconButton>
             </dd>

@@ -56,7 +56,7 @@ function Objectives({ course, lesson, n, draft }: { course: Course; lesson: Less
             size="sm"
             label={t.plan.removeObjective(i + 1, n)}
             tooltip={false}
-            className="size-6 opacity-0 group-focus-within/obj:opacity-100 group-hover/obj:opacity-100"
+            className="size-6 opacity-0 pointer-coarse:opacity-100 group-focus-within/obj:opacity-100 group-hover/obj:opacity-100"
             onPress={() => edit([cmd('objective.remove', { objectiveId: o.id })], { key: 'removedObjective' })}
           >
             <X size={14} strokeWidth={1.5} />

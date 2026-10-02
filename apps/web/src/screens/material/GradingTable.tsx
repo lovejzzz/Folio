@@ -57,7 +57,7 @@ function Row({ course, item, i }: { course: Course; item: GradeItem; i: number }
             size="sm"
             tooltip={false}
             label={t.tasks.removeGradeItem(name)}
-            className="no-print -my-0.5 size-6 opacity-0 group-focus-within/grade:opacity-100 group-hover/grade:opacity-100"
+            className="no-print -my-0.5 size-6 opacity-0 pointer-coarse:opacity-100 group-focus-within/grade:opacity-100 group-hover/grade:opacity-100"
             onPress={() => save(course.grading.filter((g) => g.id !== item.id))}
           >
             <X size={13} strokeWidth={1.5} />
