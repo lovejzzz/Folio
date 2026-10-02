@@ -12,7 +12,7 @@ const withValues = <C extends string, V extends z.ZodRawShape>(code: C, values: 
 
 const count = { got: z.number(), want: z.number() };
 
-export const FlagSchema = z.discriminatedUnion('code', [
+const KnownFlag = z.discriminatedUnion('code', [
   plain('noPrompt'),
   plain('tooFewChoices'),
   plain('trueFalseChoices'),
@@ -38,7 +38,12 @@ export const FlagSchema = z.discriminatedUnion('code', [
   /** A sentence stored by an older version of Folio, shown as it was written. */
   withValues('note', { text: z.string() }),
 ]);
-export type Flag = z.infer<typeof FlagSchema>;
+/**
+ * A flag with a code this version doesn't know was written by a newer Folio, in another tab or on another device
+ * still to reload. It is read as a plain note, not refused: a refusal made the whole course "damaged".
+ */
+export const FlagSchema = KnownFlag.catch({ code: 'note', values: { text: 'This needs a look. Reload Folio to see why.' } });
+export type Flag = z.infer<typeof KnownFlag>;
 export type FlagCode = Flag['code'];
 
 /** The values a flag carries, by code; an empty object for codes that carry none. */

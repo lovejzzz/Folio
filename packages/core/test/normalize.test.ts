@@ -66,3 +66,10 @@ describe('a course read back', () => {
     expect(course.sourceOrder).not.toContain('gone');
   });
 });
+
+describe('a flag written by a newer Folio', () => {
+  it('is read as a plain note, and the course still opens', () => {
+    const course = readBack((raw) => void Object.values(raw.tasks)[0]!.flags.push({ code: 'aCodeFromTheFuture', values: { n: 1 } } as never));
+    expect(Object.values(course.tasks)[0]!.flags.at(-1)).toEqual({ code: 'note', values: { text: 'This needs a look. Reload Folio to see why.' } });
+  });
+});

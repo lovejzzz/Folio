@@ -19,8 +19,23 @@ interface Pending {
  * Remember this sign-in in this tab, and return where to send the teacher. The nonce is the one Folio's server
  * gave this browser: it takes Google's token back only with it.
  */
+/**
+ * Where to go back to after signing in: a page of this site, or the home page. "/\\evil.com" and a path with a
+ * tab in it start with a slash yet lead a browser elsewhere, so the address is resolved as the browser would
+ * resolve it and only its path on this site is kept.
+ */
+export function safeReturn(asked: string | null | undefined, origin: string): string {
+  if (!asked || !asked.startsWith('/')) return '/';
+  try {
+    const url = new URL(asked, origin);
+    return url.origin === origin ? `${url.pathname}${url.search}${url.hash}` : '/';
+  } catch {
+    return '/';
+  }
+}
+
 export function startSignIn(clientId: string, origin: string, returnTo: string, popup: boolean, nonce: string): string {
-  const pending: Pending = { state: crypto.randomUUID(), nonce, returnTo: returnTo.startsWith('/') ? returnTo : '/', popup };
+  const pending: Pending = { state: crypto.randomUUID(), nonce, returnTo: safeReturn(returnTo, origin), popup };
   sessionStorage.setItem(PENDING, JSON.stringify(pending));
   const query = new URLSearchParams({
     client_id: clientId,

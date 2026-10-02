@@ -18,7 +18,8 @@ export function OwnSyllabus({ course }: { course: Course }) {
   useEffect(() => {
     const store = activeStore();
     if (unchecked && store) checkOwnSyllabus(store);
-  }, [course.id, unchecked]);
+    // Again after a first failure; after the second, checkOwnSyllabus waits for the teacher to ask.
+  }, [course.id, unchecked, state.failures]);
   const again = () => {
     const store = activeStore();
     if (store) checkOwnSyllabus(store, true);

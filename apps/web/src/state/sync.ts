@@ -38,6 +38,8 @@ async function gunzip(bytes: ArrayBuffer): Promise<string> {
 }
 
 let busy = 0;
+/** Whether any task failed since the last time nothing was under way: a send that failed inside a pull that didn't. */
+let faltered = false;
 const set = (sync: SyncState) => useAccount.setState({ sync, ...(sync === 'idle' ? { lastSynced: Date.now() } : {}) });
 async function working<T>(task: () => Promise<T>): Promise<T | undefined> {
   busy += 1;
@@ -51,7 +53,11 @@ async function working<T>(task: () => Promise<T>): Promise<T | undefined> {
     return undefined;
   } finally {
     busy -= 1;
-    if (!busy) set(ok ? 'idle' : navigator.onLine ? 'error' : 'offline');
+    faltered ||= !ok;
+    if (!busy) {
+      set(faltered ? (navigator.onLine ? 'error' : 'offline') : 'idle');
+      faltered = false;
+    }
   }
 }
 
@@ -165,8 +171,19 @@ function schedule(id: string): void {
   timer = setTimeout(() => void pushQueued(), 1200);
 }
 
-/** A send that failed (offline, or the account refusing for now) is tried again after this, as well as at the next pull. */
-const RETRY = 60_000;
+/**
+ * A send that failed is tried again, each time after longer, as well as at the next pull. Only a failure that
+ * may pass by itself (the connection, the server busy) is: an account that is full, or a course it refuses, would
+ * be gzipped and sent again every minute for nothing.
+ */
+const RETRY = [60_000, 120_000, 300_000, 900_000];
+let retries = 0;
+
+/** A refusal that sending the same thing again won't change: the account full (507), or any 4xx but "too many requests" and "timed out". */
+export const refusedForGood = (error: unknown): boolean => {
+  const status = Number(/^HTTP (\d{3})$/.exec(error instanceof Error ? error.message : '')?.[1]);
+  return (status >= 400 && status < 500 && status !== 429 && status !== 408) || status === 507;
+};
 
 function pushQueued(): Promise<unknown> {
   if (timer) clearTimeout(timer);
@@ -174,13 +191,29 @@ function pushQueued(): Promise<unknown> {
   const ids = [...queue];
   queue.clear();
   pushing = pushing.then(async () => {
-    const sent = await working(async () => {
-      for (const id of ids) await pushOne(id);
-      return true;
+    const failed: string[] = [];
+    let again = false;
+    await working(async () => {
+      let first: unknown;
+      // Each course on its own: one the account refuses doesn't hold back the rest.
+      for (const id of ids) {
+        try {
+          await pushOne(id);
+        } catch (error) {
+          if (!user) throw error;
+          failed.push(id);
+          again ||= !refusedForGood(error);
+          first ??= error;
+        }
+      }
+      if (first) throw first;
     });
-    if (sent || !user) return;
-    for (const id of ids) queue.add(id);
-    timer ??= setTimeout(() => void pushQueued(), RETRY);
+    if (!failed.length) retries = 0;
+    if (!failed.length || !user) return;
+    // Kept for the next pull or sign-out check either way; the timer only for what may pass, and not offline,
+    // where coming back online pulls.
+    for (const id of failed) queue.add(id);
+    if (again && navigator.onLine !== false) timer ??= setTimeout(() => void pushQueued(), RETRY[Math.min(retries++, RETRY.length - 1)]);
   });
   return pushing;
 }

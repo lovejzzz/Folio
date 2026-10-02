@@ -8,7 +8,7 @@ vi.mock('./toasts', () => ({ toast: vi.fn() }));
 const { db, loadCourse, saveCourse, versionOf } = await import('./db');
 const { useAccount } = await import('./account');
 const { toast } = await import('./toasts');
-const { forgetHere, pull, start, unsent } = await import('./sync');
+const { forgetHere, pull, refusedForGood, start, unsent } = await import('./sync');
 
 const teacher = { id: 'u1', name: 'Ada', email: 'ada@school.edu' };
 
@@ -143,6 +143,27 @@ describe('keeping the account and this device the same', () => {
     expect(useAccount.getState().sync).toBe('error');
     account.fault = () => null;
     expect(await unsent()).toBe(0);
+  });
+
+  it('sends the other courses when the account refuses one', async () => {
+    const refused = createCourse({ title: 'Too big' });
+    const fine = createCourse({ title: 'Ecology' });
+    await signedInWith(refused);
+    await saveCourse(fine);
+    await settle();
+    account.fault = (method, path) => (method === 'PUT' && path === `courses/${refused.id}` ? { status: 413 } : null);
+    await saveCourse(editedElsewhere(refused, 'Bigger still'));
+    await saveCourse(editedElsewhere(fine, 'Ecology II'));
+    await pull();
+    expect(account.courses.get(fine.id)?.course?.title).toBe('Ecology II');
+    expect(account.courses.get(refused.id)?.course?.title).toBe('Too big');
+    expect(useAccount.getState().sync).toBe('error');
+  });
+
+  it('tries again by itself only what may pass by itself', () => {
+    for (const status of [400, 413, 404, 507]) expect(refusedForGood(new Error(`HTTP ${status}`))).toBe(true);
+    for (const status of [408, 429, 500, 503]) expect(refusedForGood(new Error(`HTTP ${status}`))).toBe(false);
+    expect(refusedForGood(new TypeError('Failed to fetch'))).toBe(false);
   });
 
   it('works in a browser without Web Locks', async () => {

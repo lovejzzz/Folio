@@ -164,7 +164,7 @@ async function guardedRun(store: Store, inference: Inference, usages: Usage[], c
       list,
     );
   } catch (error) {
-    useBuild.setState({ running: false, stopping: false, controller: null });
+    useBuild.setState({ running: false, stopping: false, controller: null, cells: {} });
     toast({ key: 'build', message: errorMessage(error), tone: 'critical', duration: 0 });
     return null;
   }

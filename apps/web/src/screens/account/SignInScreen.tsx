@@ -6,14 +6,13 @@ import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { googleClientId } from '../../lib/googlePath';
 import { useT } from '../../i18n';
-import { finishSignIn, startSignIn } from '../../lib/googleSignIn';
+import { finishSignIn, safeReturn, startSignIn } from '../../lib/googleSignIn';
 import { announce, markJustSignedIn, SIGN_IN_WINDOW, writeHint, type AccountUser } from '../../state/account';
 
 type Step = { kind: 'going' | 'finishing' | 'done' } | { kind: 'failed'; message: string; popup: boolean };
 
 function returnTo(): string {
-  const asked = new URLSearchParams(window.location.search).get('return') ?? '/';
-  return asked.startsWith('/') && !asked.startsWith('//') ? asked : '/';
+  return safeReturn(new URLSearchParams(window.location.search).get('return'), window.location.origin);
 }
 
 const post = (path: string, body?: unknown) =>
@@ -56,7 +55,8 @@ async function arrive(): Promise<Step> {
     return { kind: 'done' };
   }
   markJustSignedIn();
-  window.location.replace(reply.returnTo);
+  // Checked again on the way out: what was remembered sat in this tab's storage in between.
+  window.location.replace(safeReturn(reply.returnTo, window.location.origin));
   return new Promise<never>(() => {});
 }
 
