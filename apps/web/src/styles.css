@@ -339,7 +339,15 @@
  */
 @media (pointer: coarse) {
   :is(input:not([type='checkbox'], [type='radio'], [type='range']), select, textarea):not(.text-16, .text-17, .text-18, .text-22, .text-28, .text-36, .text-48, .text-64),
-  [contenteditable='true']:is(.text-12, .text-13, .text-14) {
+  [contenteditable]:not([contenteditable='false']):is(.text-12, .text-13, .text-14) {
     font-size: 16px;
+  }
+  /* A field with no size of its own takes its container's, often 13 or 14px: brought up to 16px, never down. */
+  [contenteditable]:not([contenteditable='false']):not(.text-12, .text-13, .text-14, .text-16, .text-17, .text-18, .text-22, .text-28, .text-36, .text-48, .text-64) {
+    font-size: max(16px, 1em);
+  }
+  /* On a slide the text is sized to the slide: it grows only while it is being typed in. */
+  .folio-slide [contenteditable]:not([contenteditable='false']):not(:focus) {
+    font-size: inherit;
   }
 }

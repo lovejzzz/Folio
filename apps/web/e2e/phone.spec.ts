@@ -156,3 +156,30 @@ test('on a phone a study guide point can be removed', async ({ page }) => {
   await remove.click();
   await expect(page.getByRole('textbox', { name: /^Heading of point / })).toHaveCount(before - 1);
 });
+
+test('on a touch screen no editable text is smaller than 16px, so iOS never zooms into it', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
+  const base = page.url().replace(/\/map$/, '');
+  const smallest = () =>
+    page.evaluate(() =>
+      Math.min(
+        ...Array.from(document.querySelectorAll<HTMLElement>('[contenteditable]:not([contenteditable="false"])'))
+          .filter((el) => !el.closest('.folio-slide'))
+          .map((el) => parseFloat(getComputedStyle(el).fontSize)),
+      ),
+    );
+  for (const path of ['/m/rubrics', '/m/plan', '/m/quiz', '/m/study']) {
+    await page.goto(base + path);
+    await expect(page.locator('h1').first()).toBeVisible();
+    expect(await smallest(), path).toBeGreaterThanOrEqual(16);
+  }
+  // On a slide the text keeps the slide's size, and reaches 16px only while it is typed in.
+  await page.goto(`${base}/m/slides`);
+  const subtitle = page.locator('.folio-slide [contenteditable]').nth(1);
+  const resting = await subtitle.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  expect(resting).toBeLessThan(16);
+  await subtitle.focus();
+  expect(await subtitle.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(16);
+});
