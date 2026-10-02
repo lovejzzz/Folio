@@ -1,6 +1,7 @@
 import {
   BorderStyle,
   HeadingLevel,
+  LineRuleType,
   PageBreak,
   Paragraph,
   ShadingType,
@@ -143,6 +144,14 @@ function meta(ctx: BlockCtx, items: { label: string; value: string }[]): Table {
   });
 }
 
+/**
+ * The paragraph Word needs after a table or a box, kept to a hairline so it can never push onto a page of its
+ * own: a table that ended at the foot of a page left a blank page after it. The space after it keeps the gap.
+ */
+function spacer(): Paragraph {
+  return new Paragraph({ spacing: { before: 0, after: 160, line: 20, lineRule: LineRuleType.EXACT }, children: [] });
+}
+
 function terms(ctx: BlockCtx, items: { term: string; definition: string }[]): Paragraph[] {
   return items.map(
     (item) =>
@@ -236,13 +245,13 @@ export function renderBlock(ctx: BlockCtx, block: Block): DocxChild[] {
     case 'list':
       return list(ctx, block.ordered, block.items);
     case 'meta':
-      return [meta(ctx, block.items), new Paragraph({ spacing: { after: 0 }, children: [] })];
+      return [meta(ctx, block.items), spacer()];
     case 'table':
-      return [table(ctx, block.head, block.rows, block.widths), new Paragraph({ spacing: { after: 0 }, children: [] })];
+      return [table(ctx, block.head, block.rows, block.widths), spacer()];
     case 'terms':
       return terms(ctx, block.items);
     case 'note':
-      return [...note(ctx, block.label, block.text), new Paragraph({ spacing: { after: 0 }, children: [] })];
+      return [...note(ctx, block.label, block.text), spacer()];
     case 'question':
       return question(ctx, block);
     case 'slide':

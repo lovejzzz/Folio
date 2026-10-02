@@ -1,4 +1,5 @@
 import { charge, PRICES, reserve, settle, type Usage, type Hold } from './credits';
+import { count } from './counts';
 import type { Env, User } from './types';
 
 /**
@@ -80,6 +81,7 @@ async function forward(request: Request, key: string, req: { body: Body; model: 
     });
     if (!upstream.ok) {
       await settleAt(0, '');
+      await count(db, `ai_refused:${upstream.status}`);
       return refused(upstream);
     }
     const answer = await upstream.text();
@@ -94,6 +96,7 @@ async function forward(request: Request, key: string, req: { body: Body; model: 
   } catch {
     // Never reached, or the answer broke off before it could be read: nothing was had, so nothing stays held.
     await settleAt(0, '');
+    await count(db, 'ai_unreachable');
     return error(502, 'The model could not be reached.');
   }
 }
@@ -105,7 +108,10 @@ export async function proxyChat(request: Request, env: Env, user: User, waitUnti
   if (req instanceof Response) return req;
   const estimate = charge(req.model, { input: Math.ceil(raw.length / 3), output: req.cap, cacheRead: 0, cacheWrite: 0 });
   const held = await reserve(env.DB, user.id, estimate);
-  if (held === null) return error(402, 'Your Folio credits have run out.');
+  if (held === null) {
+    waitUntil(count(env.DB, 'credits_exhausted'));
+    return error(402, 'Your Folio credits have run out.');
+  }
   // Seen through even if the teacher's page goes away first, so what was held is always settled.
   const answer = forward(request, env.OPENAI_API_KEY, req, env.DB, user.id, held, fetchImpl);
   waitUntil(answer.catch(() => undefined));

@@ -95,16 +95,41 @@ function checkManifest(value: unknown): void {
 }
 
 /**
+ * Far beyond any real course (Folio plans at most 40 lessons): a file past these was made by hand or is
+ * damaged, and opening it would only freeze the page. Courses already on this device are never held to them.
+ */
+const IMPORT_LIMITS = { lessons: 200, tasks: 20_000, sources: 200, sourceText: 5_000_000, field: 200_000 };
+
+/** Whether any piece of text in this value, however deep, is longer than `limit`. */
+function hasLongText(value: unknown, limit: number): boolean {
+  if (typeof value === 'string') return value.length > limit;
+  if (Array.isArray(value)) return value.some((v) => hasLongText(v, limit));
+  return value !== null && typeof value === 'object' && Object.values(value).some((v) => hasLongText(v, limit));
+}
+
+function withinLimits(course: Course): Course {
+  const over =
+    course.lessonOrder.length > IMPORT_LIMITS.lessons ||
+    Object.keys(course.tasks).length > IMPORT_LIMITS.tasks ||
+    course.sourceOrder.length > IMPORT_LIMITS.sources ||
+    Object.values(course.sources).some((s) => s.text.length > IMPORT_LIMITS.sourceText) ||
+    // Every other piece of text: a title, a plan, a question. Sources are measured above.
+    hasLongText({ ...course, sources: {} }, IMPORT_LIMITS.field);
+  if (over) throw new CourseFormatError('tooLarge', 'This Folio file is too large to open.');
+  return course;
+}
+
+/**
  * Read a course from .folio bytes, or from a bare course JSON file.
  * Throws CourseFormatError with a code the interface words for the teacher.
  */
 export function readFolio(bytes: Uint8Array): Course {
   if (bytes.length > MAX_FOLIO_BYTES) throw new CourseFormatError('tooLarge', 'This Folio file is too large to open.');
-  if (looksLikeJson(bytes)) return parseCourse(parseJson(bytes, 'course'));
+  if (looksLikeJson(bytes)) return withinLimits(parseCourse(parseJson(bytes, 'course')));
   const files = unzip(bytes);
   const manifest = files['manifest.json'];
   const course = files['course.json'];
   if (!manifest || !course) throw new CourseFormatError('notFolio', 'This is not a Folio course file.');
   checkManifest(parseJson(manifest, 'file description'));
-  return parseCourse(parseJson(course, 'course'));
+  return withinLimits(parseCourse(parseJson(course, 'course')));
 }

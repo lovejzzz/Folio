@@ -28,7 +28,7 @@ pnpm preview        # serve the build, with the production headers
 
 **Browsers.** Safari 16.4, Chrome and Edge 111, Firefox 128, or newer. An older browser gets a message asking to update instead of a blank page.
 
-**Privacy.** No analytics, no tracking, no ads. Without an account, courses stay in the browser (IndexedDB), and a browser that has never signed in never contacts Folio's server. Signing in is optional (Google): your courses are then also kept in your account, so they follow you between devices. Your own key stays in the browser, and with it requests go straight to the AI company you chose. With Folio credits, requests pass through Folio's server, which keeps only the token counts it charges for. The [privacy policy](apps/web/src/screens/privacy/policy.ts) says all of this in full.
+**Privacy.** No analytics, no tracking of people, no ads; the server keeps only daily totals across everyone (sign-ins, AI requests and how they ended, credits used), tied to no account or course: `SELECT * FROM daily_counts ORDER BY day DESC` in the D1 console. Without an account, courses stay in the browser (IndexedDB), and a browser that has never signed in never contacts Folio's server. Signing in is optional (Google): your courses are then also kept in your account, so they follow you between devices. Your own key stays in the browser, and with it requests go straight to the AI company you chose. With Folio credits, requests pass through Folio's server, which keeps only the token counts it charges for. The [privacy policy](apps/web/src/screens/privacy/policy.ts) says all of this in full.
 
 ## What it does
 

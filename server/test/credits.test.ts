@@ -281,3 +281,30 @@ describe('beta features', () => {
     expect(allowedBetas(null)).toBe('');
   });
 });
+
+describe('the day’s counts', () => {
+  const counts = async () =>
+    Object.fromEntries((await env.DB.prepare('SELECT metric, value FROM daily_counts').all<{ metric: string; value: number }>()).results.map((r) => [r.metric, r.value]));
+
+  it('add up sign-ins, calls and how they ended, and credits used, tied to no one', async () => {
+    const cookie = await signIn();
+    reply = message;
+    expect((await ask(cookie)).status).toBe(200);
+    reply = () => new Response('{"type":"error","error":{"type":"overloaded_error"}}', { status: 529 });
+    await ask(cookie);
+    await settled();
+    const c = await counts();
+    expect(c).toMatchObject({ sign_in: 1, free_credits_granted: 1, 'ai_call:claude-sonnet-5-5': 1, 'ai_refused:529': 1 });
+    expect(c.millicredits_spent).toBeGreaterThan(0);
+    expect(Object.keys((await env.DB.prepare('SELECT * FROM daily_counts LIMIT 1').first()) ?? {}).sort()).toEqual(['day', 'metric', 'value']);
+  });
+
+  it('never stop a sign-in or a call when they can’t be written', async () => {
+    await env.DB.prepare('DROP TABLE daily_counts').run();
+    const cookie = await signIn();
+    reply = message;
+    expect((await ask(cookie)).status).toBe(200);
+    await settled();
+    expect(await env.DB.prepare('SELECT COUNT(*) AS n FROM credit_holds').first<{ n: number }>()).toEqual({ n: 0 });
+  });
+});

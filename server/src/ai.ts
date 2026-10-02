@@ -1,4 +1,5 @@
 import { charge, PRICES, reserve, settle, type Usage, type Hold as CreditHold } from './credits';
+import { count } from './counts';
 import type { Env, User } from './types';
 
 /**
@@ -127,6 +128,7 @@ async function forward(request: Request, key: string, req: Checked, hold: Hold, 
     });
     if (!upstream.ok) {
       await settleWith(0, false);
+      await count(hold.db, `ai_refused:${upstream.status}`);
       return refused(upstream);
     }
     if (req.body.stream === true && upstream.body) {
@@ -145,6 +147,7 @@ async function forward(request: Request, key: string, req: Checked, hold: Hold, 
   } catch {
     // Never reached, or the answer broke off before it could be read: nothing was had, so nothing stays held.
     await settleWith(0, false);
+    await count(hold.db, 'ai_unreachable');
     return error(502, 'api_error', 'The model could not be reached.');
   }
 }
@@ -156,7 +159,10 @@ export async function proxyMessages(request: Request, env: Env, user: User, wait
   // The most the call can cost: its input, guessed from its size, and the longest answer it may give.
   const estimate = charge(req.model, { input: Math.ceil(req.size / 3), output: req.maxTokens, cacheRead: 0, cacheWrite: 0 });
   const held = await reserve(env.DB, user.id, estimate);
-  if (held === null) return error(402, 'credits_exhausted', 'Your Folio credits have run out.');
+  if (held === null) {
+    waitUntil(count(env.DB, 'credits_exhausted'));
+    return error(402, 'credits_exhausted', 'Your Folio credits have run out.');
+  }
   // Seen through even if the teacher's page goes away first, so what was held is always settled.
   const answer = forward(request, env.ANTHROPIC_API_KEY, req, { db: env.DB, userId: user.id, held }, waitUntil, fetchImpl);
   waitUntil(answer.catch(() => undefined));

@@ -84,3 +84,16 @@ describe('renderDocx', () => {
     await expect(renderDocx([], { courseTitle: 'x' })).rejects.toThrow();
   });
 });
+
+describe('a Word file in Pages as in Word', () => {
+  it('makes Normal the default style, and ends each material on a hairline', async () => {
+    const course = sampleCourse();
+    const zip = unzipText(await renderDocx([project(course, 'map', { audience: 'student' }), project(course, 'syllabus', { audience: 'student' })], { courseTitle: course.title }));
+    // A paragraph with no style of its own is Normal, not the heading before it.
+    expect(zip.text('word/styles.xml')).toContain('<w:style w:type="paragraph" w:default="1" w:styleId="Normal">');
+    // The paragraph holding a material's page settings can't spill onto a blank page.
+    const document = zip.text('word/document.xml');
+    expect(document).not.toContain('<w:p><w:pPr><w:sectPr>');
+    expect(document).toContain('w:line="20" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr><w:sectPr>');
+  });
+});

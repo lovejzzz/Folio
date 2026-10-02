@@ -11,6 +11,7 @@ export const SCHEMA_SHAPE: Record<string, string[]> = {
   credit_holds: ['amount', 'created_at', 'id', 'user_id'],
   credit_ledger: ['amount', 'created_at', 'detail', 'id', 'kind', 'ref', 'user_id'],
   credits: ['balance', 'updated_at', 'user_id'],
+  daily_counts: ['day', 'metric', 'value'],
   free_grants: ['count', 'day', 'ip_hash'],
   sessions: ['expires_at', 'id_hash', 'user_id'],
   users: ['created_at', 'email', 'id', 'name'],

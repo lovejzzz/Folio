@@ -36,8 +36,12 @@ export const policy = {
       body: 'To tell you what a course cost, or how many credits it used, Folio counts the tokens the AI company reports for each request and prices them with the public list at openrouter.ai, read when the course is finished. That request carries nothing about you or your course.',
     },
     {
+      heading: 'Daily totals',
+      body: 'To see what is breaking, Folio’s server counts, each day and across everyone, how many sign-ins, AI requests, failed requests, purchases and saved courses there were, and how many credits were used. These are totals only: they aren’t linked to you, your account, your network address or your courses, and nothing you write is in them.',
+    },
+    {
       heading: 'What we don’t do',
-      body: 'No ads, no tracking, no analytics cookies. Nothing is sold, and nothing is shared beyond what this page describes: the AI company that writes your course, Stripe when you pay, Google when you sign in or export. Your courses are never used to train AI. The site is served by Cloudflare, which handles requests the way any web host does.',
+      body: 'No ads, no tracking of you, no analytics cookies. Nothing is sold, and nothing is shared beyond what this page describes: the AI company that writes your course, Stripe when you pay, Google when you sign in or export. Your courses are never used to train AI. The site is served by Cloudflare, which handles requests the way any web host does.',
     },
     {
       heading: 'Questions',

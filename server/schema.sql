@@ -73,3 +73,12 @@ CREATE TABLE IF NOT EXISTS free_grants (
   count INTEGER NOT NULL,
   PRIMARY KEY (ip_hash, day)
 );
+
+-- How Folio is doing, per day across everyone (sign-ins, AI calls and how they ended, credits used): counts only,
+-- never tied to an account, an address or a course.
+CREATE TABLE IF NOT EXISTS daily_counts (
+  day TEXT NOT NULL,
+  metric TEXT NOT NULL,
+  value INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (day, metric)
+);

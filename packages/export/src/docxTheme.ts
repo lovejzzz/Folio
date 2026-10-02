@@ -54,17 +54,21 @@ function heading(language: Language, size: number, before: number, bold: boolean
 
 export function documentStyles(language: Language): IStylesOptions {
   const zh = language === 'zh-CN';
+  const body = {
+    run: {
+      font: fontFor(language, 'body'),
+      size: SIZE.body,
+      color: printPalette.ink,
+      ...(zh ? { language: { value: 'zh-CN', eastAsia: 'zh-CN' } } : {}),
+    },
+    paragraph: { spacing: { line: LINE, after: 120 } },
+  };
   return {
+    // The headings are based on Normal and followed by it, so it has to exist: without it, Pages carried a
+    // heading's bold and size on into the plain paragraphs after it.
+    paragraphStyles: [{ id: 'Normal', name: 'Normal', quickFormat: true, ...body }],
     default: {
-      document: {
-        run: {
-          font: fontFor(language, 'body'),
-          size: SIZE.body,
-          color: printPalette.ink,
-          ...(zh ? { language: { value: 'zh-CN', eastAsia: 'zh-CN' } } : {}),
-        },
-        paragraph: { spacing: { line: LINE, after: 120 } },
-      },
+      document: body,
       heading1: heading(language, SIZE.h1, 0, false),
       heading2: heading(language, SIZE.h2, 360, false),
       heading3: heading(language, SIZE.h3, 280, true),

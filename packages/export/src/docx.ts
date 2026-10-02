@@ -1,3 +1,4 @@
+import { strFromU8, strToU8, unzipSync, zipSync, type Zippable } from 'fflate';
 import { AlignmentType, Document, Footer, HeadingLevel, Packer, PageNumber, Paragraph, TextRun, type ISectionOptions } from 'docx';
 import { cleanText, docLabels, type Block, type SemanticDoc } from '@folio/core';
 import { printPalette } from '@folio/ui/tokens';
@@ -88,5 +89,28 @@ export async function renderDocx(docs: SemanticDoc[], opts: DocxOptions): Promis
     numbering: numbering(),
     sections: docs.map((doc) => section(doc, courseTitle, lists)),
   });
-  return new Uint8Array(await Packer.toArrayBuffer(document));
+  return tidyForPages(new Uint8Array(await Packer.toArrayBuffer(document)));
+}
+
+const NORMAL = '<w:style w:type="paragraph" w:styleId="Normal">';
+/** The empty paragraph the docx library ends each material with, to hold its page settings. */
+const SECTION_BREAK = '<w:p><w:pPr><w:sectPr>';
+
+/**
+ * Two things the docx library can't say, which Pages reads differently from Word:
+ * - Normal is the default paragraph style. Without the mark, Pages gave a paragraph with no style of its own
+ *   the style of the heading before it: body text came out bold and large.
+ * - The paragraph that ends each material is a hairline. At full height it spilled onto a page of its own
+ *   whenever a material filled its last page, leaving a blank page.
+ */
+export function tidyForPages(file: Uint8Array): Uint8Array {
+  const parts = unzipSync(file);
+  const styles = parts['word/styles.xml'];
+  const document = parts['word/document.xml'];
+  if (!styles || !document) return file;
+  parts['word/styles.xml'] = strToU8(strFromU8(styles).replace(NORMAL, '<w:style w:type="paragraph" w:default="1" w:styleId="Normal">'));
+  parts['word/document.xml'] = strToU8(
+    strFromU8(document).replaceAll(SECTION_BREAK, '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr><w:sectPr>'),
+  );
+  return zipSync(parts as Zippable, { level: 6 });
 }

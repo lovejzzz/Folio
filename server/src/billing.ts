@@ -1,3 +1,4 @@
+import { count } from './counts';
 import { addEntry, addPurchase, amountOf, MILLI, purchaseOf, totalOf } from './credits';
 import type { Env, User } from './types';
 
@@ -110,7 +111,10 @@ async function purchased(env: Env, session: CheckoutSession): Promise<Response> 
   const credits = Number(session.metadata?.credits);
   if (!userId || !Number.isInteger(credits) || credits <= 0) return json({ error: 'metadata' }, 400);
   const detail = `${credits.toLocaleString('en-US')} credits ($${((session.amount_total ?? 0) / 100).toFixed(2)})`;
-  await addPurchase(env.DB, userId, credits * MILLI, paymentRef(session.payment_intent, session.id), detail);
+  if (await addPurchase(env.DB, userId, credits * MILLI, paymentRef(session.payment_intent, session.id), detail)) {
+    await count(env.DB, 'purchase');
+    await count(env.DB, 'credits_bought', credits);
+  }
   return json({ received: true });
 }
 

@@ -1,7 +1,8 @@
+import { count } from './counts';
 import { proxyMessages } from './ai';
 import { proxyChat } from './openai';
 import { checkout, PACKS, webhook } from './billing';
-import { grantFree, MILLI, schoolEmail, statement } from './credits';
+import { grantFree, MILLI, schoolEmail, statement, forgetPastGrantCounts } from './credits';
 import { listCourses, MAX_COURSE_BYTES, readCourse, removeAccount, removeCourse, writeCourse, type CourseMeta } from './courses';
 import { SignInError, verifyIdToken } from './google';
 import { missingSchemaCached } from './schemaShape';
@@ -62,7 +63,10 @@ async function signIn(request: Request, env: Env, fetchImpl?: typeof fetch): Pro
     const token = await startSession(env.DB, user);
     // A school account's first sign-in brings the free credits, within the limits that keep them from being farmed.
     // A grant that fails (the same account signing in twice at once) never fails the sign-in: the other one made it.
-    if (schoolEmail(who.email, who.emailVerified)) await grantFree(env.DB, user.id, await addressHash(request)).catch(() => 0);
+    const granted = schoolEmail(who.email, who.emailVerified) ? await grantFree(env.DB, user.id, await addressHash(request)).catch(() => 0) : 0;
+    await count(env.DB, 'sign_in');
+    if (granted) await count(env.DB, 'free_credits_granted');
+    await forgetPastGrantCounts(env.DB).catch(() => undefined);
     const res = json({ user });
     res.headers.append('set-cookie', setCookie(token));
     // Used once: the same token can't start a second session.
@@ -88,8 +92,14 @@ async function course(request: Request, env: Env, user: User, id: string): Promi
     const data = new Uint8Array(await request.arrayBuffer());
     if (data.length === 0 || data.length > MAX_COURSE_BYTES) return problem(413, 'too-large');
     const result = await writeCourse(env.DB, user.id, id, base, m, data);
-    if (result.ok) return json({ version: result.version });
-    if ('full' in result) return problem(507, 'account-full');
+    if (result.ok) {
+      await count(env.DB, 'course_saved');
+      return json({ version: result.version });
+    }
+    if ('full' in result) {
+      await count(env.DB, 'account_full');
+      return problem(507, 'account-full');
+    }
     return problem(409, 'conflict', { version: result.version, deleted: result.deleted });
   }
   if (request.method === 'DELETE') {

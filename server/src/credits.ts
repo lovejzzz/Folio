@@ -1,3 +1,4 @@
+import { count } from './counts';
 import type { D1Database } from './types';
 
 /**
@@ -88,6 +89,11 @@ export async function grantFree(db: D1Database, userId: string, addressHash: str
     db.prepare('DELETE FROM free_grants WHERE day < ?').bind(day),
   ]);
   return amount;
+}
+
+/** As the privacy page says, a network's count is kept for its day only: past days' go, at any sign-in. */
+export async function forgetPastGrantCounts(db: D1Database, now = Date.now()): Promise<void> {
+  await db.prepare('DELETE FROM free_grants WHERE day < ?').bind(new Date(now).toISOString().slice(0, 10)).run();
 }
 
 /** Credits bought: added once per payment, however many times the payment is reported. */
@@ -184,6 +190,9 @@ export async function settle(db: D1Database, userId: string, hold: Hold, cost: n
     statements.push(db.prepare("INSERT INTO credit_ledger (id, user_id, kind, amount, ref, detail, created_at) VALUES (?, ?, 'spend', ?, NULL, ?, ?)").bind(id(), userId, -cost, detail, now));
   }
   await db.batch(statements);
+  // Apart from the settling, so a count that fails never touches the credits.
+  if (detail) await count(db, `ai_call:${detail.split(' ')[0]}`);
+  if (cost > 0) await count(db, 'millicredits_spent', cost);
 }
 
 export interface LedgerRow {

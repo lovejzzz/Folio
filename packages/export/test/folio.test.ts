@@ -41,3 +41,17 @@ describe('.folio files', () => {
     expect(() => readFolio(newer)).toThrow(expect.objectContaining({ code: 'newerVersion' }));
   });
 });
+
+describe('a course file far beyond any real course', () => {
+  const course = sampleCourse();
+
+  it('is refused as too large, while a real one opens', () => {
+    expect(readFolio(writeFolio(course))).toEqual(course);
+    const huge = { ...course, title: 'x'.repeat(300_000) };
+    expect(() => readFolio(strToU8(JSON.stringify(huge)))).toThrow('This Folio file is too large to open.');
+    const first = course.lessons[course.lessonOrder[0]!]!;
+    const lessons = Object.fromEntries(Array.from({ length: 250 }, (_, i) => [`l_${i}`, { ...first, id: `l_${i}`, taskIds: [], faqIds: [] }]));
+    const many = { ...course, lessons, lessonOrder: Object.keys(lessons) };
+    expect(() => readFolio(strToU8(JSON.stringify(many)))).toThrow(CourseFormatError);
+  });
+});
