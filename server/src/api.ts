@@ -4,6 +4,7 @@ import { checkout, PACKS, webhook } from './billing';
 import { grantFree, MILLI, schoolEmail, statement } from './credits';
 import { listCourses, MAX_COURSE_BYTES, readCourse, removeAccount, removeCourse, writeCourse, type CourseMeta } from './courses';
 import { SignInError, verifyIdToken } from './google';
+import { missingSchema } from './schemaShape';
 import { clearCookie, clearNonce, endSession, newNonce, nonceCookie, nonceOf, setCookie, startSession, userOf } from './sessions';
 import type { Env, User } from './types';
 
@@ -123,6 +124,11 @@ export async function handle(request: Request, env: Env, fetchImpl?: typeof fetc
   const path = url.pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean);
   // Stripe's own call, trusted by its signature, not by a cookie or the page's header.
   if (path.join('/') === 'billing/webhook' && request.method === 'POST') return webhook(request, env);
+  // Whether production's database has every table and column the code uses: checked after each deploy.
+  if (path.join('/') === 'health' && request.method === 'GET') {
+    const missing = await missingSchema(env.DB);
+    return json(missing.length ? { ok: false, missing } : { ok: true }, missing.length ? 503 : 200);
+  }
   const changing = request.method !== 'GET' && request.method !== 'HEAD';
   if (changing && request.headers.get('x-folio') !== '1') return problem(403, 'forbidden');
   if (path[0] === 'session') {
