@@ -9,43 +9,44 @@ import { currentInference, errorMessage } from '../../state/model';
 import { updateSection } from '../../state/proposals';
 import { activeStore, useCourse } from '../../state/session';
 import { useUi } from '../../state/ui';
+import { commandText } from '../../i18n/commandText';
 
 /** A step in words, naming lessons by title as well as number (numbers are as the course stands now). */
 function describe(op: PlanOperation, t: Messages, course: Course): string {
   const name = (n: number) => orderedLessons(course)[n - 1]?.title || undefined;
   switch (op.op) {
     case 'addLesson':
-      return t.command.ops.addLesson(op);
+      return commandText.ops.addLesson(op);
     case 'removeLesson':
-      return t.command.ops.removeLesson({ ...op, name: name(op.lesson) });
+      return commandText.ops.removeLesson({ ...op, name: name(op.lesson) });
     case 'renameLesson':
-      return t.command.ops.renameLesson({ ...op, name: name(op.lesson) });
+      return commandText.ops.renameLesson({ ...op, name: name(op.lesson) });
     case 'moveLesson':
-      return t.command.ops.moveLesson({ ...op, name: name(op.lesson) });
+      return commandText.ops.moveLesson({ ...op, name: name(op.lesson) });
     case 'addObjective':
-      return t.command.ops.addObjective({ ...op, name: name(op.lesson) });
+      return commandText.ops.addObjective({ ...op, name: name(op.lesson) });
     case 'setQuizSize':
-      return t.command.ops.setQuizSize(op);
+      return commandText.ops.setQuizSize(op);
     case 'setMinutes':
       // One length for the whole lesson replaces its sessions: say so, not just the number.
-      return course.shape.sessions.length > 1 ? t.command.ops.setMinutesOneClass(op) : t.command.ops.setMinutes(op);
+      return course.shape.sessions.length > 1 ? commandText.ops.setMinutesOneClass(op) : commandText.ops.setMinutes(op);
     case 'setLevel':
-      return t.command.ops.setLevel(op);
+      return commandText.ops.setLevel(op);
     case 'setMaterial':
-      return t.command.ops.setMaterial({ material: t.materials[op.material], enabled: op.enabled });
+      return commandText.ops.setMaterial({ material: t.materials[op.material], enabled: op.enabled });
   }
 }
 
-function reason(r: SkipReason, t: Messages): string {
+function reason(r: SkipReason): string {
   switch (r.code) {
     case 'noLesson':
-      return t.command.skip.noLesson(r);
+      return commandText.skip.noLesson(r);
     case 'range':
-      return t.command.skip.range(r);
+      return commandText.skip.range(r);
     case 'tooMany':
-      return t.command.skip.tooMany(r);
+      return commandText.skip.tooMany(r);
     default:
-      return t.command.skip[r.code];
+      return commandText.skip[r.code];
   }
 }
 
@@ -56,10 +57,10 @@ function Skipped({ skipped }: { skipped: SkippedOperation[] }) {
   if (!skipped.length) return null;
   return (
     <div className="mt-3">
-      <p className="font-ui text-13 text-ink-2">{t.command.skipped(skipped.length)}</p>
+      <p className="font-ui text-13 text-ink-2">{commandText.skipped(skipped.length)}</p>
       <ul className="mt-1 space-y-1 font-ui text-13 text-ink-2">
         {skipped.map((s, i) => (
-          <li key={i}>{t.command.skipLine(describe(s.op, t, course), reason(s.reason, t))}</li>
+          <li key={i}>{commandText.skipLine(describe(s.op, t, course), reason(s.reason))}</li>
         ))}
       </ul>
     </div>
@@ -104,12 +105,12 @@ function PlanPreview({ proposal, before }: { proposal: Proposal; before: Set<str
   if (proposal.preview.length === 0) {
     return proposal.skipped.length ? (
       <div>
-        <p className="font-ui text-14 text-ink">{t.command.nothingToDo}</p>
+        <p className="font-ui text-14 text-ink">{commandText.nothingToDo}</p>
         <Skipped skipped={proposal.skipped} />
       </div>
     ) : (
       <p className="font-ui text-14 text-ink-2">
-        {t.command.nothing} {proposal.rationale}
+        {commandText.nothing} {proposal.rationale}
       </p>
     );
   }
@@ -119,7 +120,7 @@ function PlanPreview({ proposal, before }: { proposal: Proposal; before: Set<str
   return (
     <div className="rounded-control bg-well px-4 py-3">
       {proposal.note && <p className="mb-3 font-ui text-14 leading-relaxed text-ink">{proposal.note}</p>}
-      <p className="font-ui text-13 font-semibold text-ink">{t.command.preview}</p>
+      <p className="font-ui text-13 font-semibold text-ink">{commandText.preview}</p>
       <ul className="mt-2 space-y-1.5 font-ui text-14 text-ink">
         {proposal.preview.map((op, i) => (
           <li key={i}>
@@ -127,7 +128,7 @@ function PlanPreview({ proposal, before }: { proposal: Proposal; before: Set<str
           </li>
         ))}
       </ul>
-      {newlyStale.length > 0 && <p className="mt-2 font-ui text-13 text-ink-2">{t.command.thenUpdate(newlyStale.length)}</p>}
+      {newlyStale.length > 0 && <p className="mt-2 font-ui text-13 text-ink-2">{commandText.thenUpdate(newlyStale.length)}</p>}
       <Skipped skipped={proposal.skipped} />
     </div>
   );
@@ -149,13 +150,13 @@ export function AskPanel({ request, onDone, onBack }: { request: string; onDone:
       <div className="mt-4 min-h-24" aria-live="polite">
         {!proposal && !error && (
           <div className="space-y-3">
-            <p className="font-ui text-13 text-ink-2">{t.command.planning}</p>
+            <p className="font-ui text-13 text-ink-2">{commandText.planning}</p>
             <Skeleton lines={3} />
           </div>
         )}
         {error && <p className="font-ui text-14 text-critical">{error}</p>}
         {proposal && <PlanPreview proposal={proposal} before={before} />}
-        {changed && <p className="mt-2 font-ui text-13 text-attention">{t.command.changedMeanwhile}</p>}
+        {changed && <p className="mt-2 font-ui text-13 text-attention">{commandText.changedMeanwhile}</p>}
       </div>
       <div className="mt-5 flex justify-end gap-2">
         <Button variant="quiet" onPress={onBack}>
@@ -171,7 +172,7 @@ export function AskPanel({ request, onDone, onBack }: { request: string; onDone:
             applyPlan(proposal, before);
           }}
         >
-          {t.command.apply}
+          {commandText.apply}
         </Button>
         )}
       </div>

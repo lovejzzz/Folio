@@ -7,6 +7,7 @@ import { useCourse } from '../../state/session';
 import { useUi } from '../../state/ui';
 import { AskPanel } from './AskPanel';
 import { commandItems, matches, type CommandItem } from './items';
+import { commandText } from '../../i18n/commandText';
 
 function Option({ id, item, active, onRun, onHover, hint }: { id: string; item: CommandItem; active: boolean; onRun: () => void; onHover: () => void; hint?: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -46,16 +47,16 @@ interface ListProps {
 function CommandList({ listId, items, ask, activeId, onRun, onHover }: ListProps) {
   const t = useT();
   const groups = [
-    { id: 'goTo', label: t.command.goTo },
-    { id: 'materials', label: t.command.materials },
-    { id: 'actions', label: t.command.actions },
+    { id: 'goTo', label: commandText.goTo },
+    { id: 'materials', label: commandText.materials },
+    { id: 'actions', label: commandText.actions },
   ] as const;
   const option = (item: CommandItem, hint?: string) => (
     <Option key={item.id} id={`${listId}-${item.id}`} item={item} active={activeId === item.id} onRun={() => onRun(item)} onHover={() => onHover(item)} hint={hint} />
   );
   return (
     <div id={listId} role="listbox" aria-label={t.nav.commandBar} className="max-h-96 overflow-y-auto p-2">
-      {items.length === 0 && !ask && <p className="px-3 py-6 text-center font-ui text-14 text-ink-2">{t.command.noResults}</p>}
+      {items.length === 0 && !ask && <p className="px-3 py-6 text-center font-ui text-14 text-ink-2">{commandText.noResults}</p>}
       {groups.map((g) => {
         const inGroup = items.filter((i) => i.group === g.id);
         return inGroup.length ? (
@@ -66,9 +67,9 @@ function CommandList({ listId, items, ask, activeId, onRun, onHover }: ListProps
         ) : null;
       })}
       {ask && (
-        <div role="group" aria-label={t.command.ask} className="mt-1 border-t border-rule pt-1">
-          <p className="px-3 pb-1 pt-2 font-ui text-12 font-medium text-ink-2">{t.command.ask}</p>
-          {option(ask, t.command.askHint)}
+        <div role="group" aria-label={commandText.ask} className="mt-1 border-t border-rule pt-1">
+          <p className="px-3 pb-1 pt-2 font-ui text-12 font-medium text-ink-2">{commandText.ask}</p>
+          {option(ask, commandText.askHint)}
         </div>
       )}
     </div>
@@ -90,7 +91,7 @@ function SearchInput({ listId, activeId, value, onChange }: { listId: string; ac
         aria-label={t.nav.commandBar}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={narrow ? t.command.placeholderShort : t.command.placeholder}
+        placeholder={narrow ? commandText.placeholderShort : commandText.placeholder}
         className="h-14 min-w-0 flex-1 bg-transparent font-ui text-16 text-ink outline-none placeholder:text-ink-2"
       />
       <span className="hidden sm:contents">
@@ -118,7 +119,7 @@ export function CommandBar() {
   };
   const items = commandItems(course, t, navigate).filter((i) => !query.trim() || matches(i.label, query));
   const q = query.trim();
-  const ask: CommandItem | null = q.length > 3 ? { id: 'ask', group: 'actions', label: t.command.askItem(q), icon: <Sparkles size={16} strokeWidth={1.5} className="text-accent" />, run: () => setAsking(q) } : null;
+  const ask: CommandItem | null = q.length > 3 ? { id: 'ask', group: 'actions', label: commandText.askItem(q), icon: <Sparkles size={16} strokeWidth={1.5} className="text-accent" />, run: () => setAsking(q) } : null;
   const all = ask ? [...items, ask] : items;
   const run = (item: CommandItem) => {
     if (item.id !== 'ask') close();

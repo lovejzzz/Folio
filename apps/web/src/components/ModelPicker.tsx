@@ -2,8 +2,8 @@ import { DEFAULT_MODELS, listModels, type ModelOption, type ProviderId } from '@
 import { TextField, fieldClass, cx } from '@folio/ui';
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
-import { useT } from '../i18n';
 import { usePrefs } from '../state/prefs';
+import { settingsText } from '../i18n/settingsText';
 
 type Listing = { state: 'waiting' } | { state: 'loading' } | { state: 'ready'; models: ModelOption[] } | { state: 'failed' };
 
@@ -52,7 +52,6 @@ function useModelList(provider: ProviderId): Listing {
 
 /** Choose a model from the provider's own list; an empty choice means Folio's default for that provider. */
 export function ModelPicker({ provider }: { provider: ProviderId }) {
-  const t = useT();
   const id = useId();
   const saved = usePrefs((s) => s.models[provider] ?? '');
   const set = usePrefs((s) => s.set);
@@ -60,23 +59,23 @@ export function ModelPicker({ provider }: { provider: ProviderId }) {
   const fallback = DEFAULT_MODELS[provider];
   const save = (model: string) => set({ models: { ...usePrefs.getState().models, [provider]: model === fallback ? '' : model } });
   if (listing.state === 'failed') {
-    return <TextField label={t.settings.model} description={t.settings.modelListFailed(fallback)} placeholder={fallback} value={saved} onChange={(v) => save(v.trim())} />;
+    return <TextField label={settingsText.model} description={settingsText.modelListFailed(fallback)} placeholder={fallback} value={saved} onChange={(v) => save(v.trim())} />;
   }
   const current = saved || fallback;
   const models = listing.state === 'ready' ? listing.models : [];
   const known = models.some((m) => m.id === current);
-  const hint = listing.state === 'ready' ? t.settings.modelHint(fallback) : listing.state === 'loading' ? t.settings.modelLoading : t.settings.modelNeedsKey;
+  const hint = listing.state === 'ready' ? settingsText.modelHint(fallback) : listing.state === 'loading' ? settingsText.modelLoading : settingsText.modelNeedsKey;
   return (
     <div>
       <label htmlFor={id} className="mb-1.5 block font-ui text-13 font-medium text-ink">
-        {t.settings.model}
+        {settingsText.model}
       </label>
       <span className="relative block">
         <select id={id} value={current} disabled={listing.state !== 'ready'} onChange={(e) => save(e.target.value)} aria-describedby={`${id}-hint`} className={cx(fieldClass, 'h-9 appearance-none pr-8 disabled:opacity-60')}>
           {!known && <option value={current}>{current}</option>}
           {models.map((m) => (
             <option key={m.id} value={m.id}>
-              {m.id === fallback ? t.settings.modelRecommended(m.label) : m.label}
+              {m.id === fallback ? settingsText.modelRecommended(m.label) : m.label}
             </option>
           ))}
         </select>

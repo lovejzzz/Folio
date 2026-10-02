@@ -23,7 +23,7 @@ const call = (path: string, init: RequestInit & { cookie?: string } = {}) => {
 };
 
 async function signIn(claims: Record<string, unknown> = {}): Promise<string> {
-  const res = await call('session', { method: 'POST', body: JSON.stringify({ idToken: await google.token(claims), nonce: 'n-1' }) });
+  const res = await call('session', { method: 'POST', cookie: 'folio_signin=n-1', body: JSON.stringify({ idToken: await google.token(claims) }) });
   expect(res.status).toBe(200);
   return res.headers.get('set-cookie')!.split(';')[0]!;
 }
@@ -52,7 +52,21 @@ describe('signing in', () => {
       { idToken: 'a.b.c', nonce: 'n-1' },
       { idToken: `${(await google.token()).split('.').slice(0, 2).join('.')}.!!!`, nonce: 'n-1' },
     ];
-    for (const body of tries) expect((await call('session', { method: 'POST', body: JSON.stringify(body) })).status).toBe(401);
+    for (const { idToken, nonce } of tries) expect((await call('session', { method: 'POST', cookie: `folio_signin=${nonce}`, body: JSON.stringify({ idToken }) })).status).toBe(401);
+  });
+
+  it('takes a token only from the browser its nonce was given to, and only once', async () => {
+    const asked = await call('session/nonce', { method: 'POST' });
+    const set = asked.headers.get('set-cookie') ?? '';
+    const { nonce } = (await asked.json()) as { nonce: string };
+    expect(set).toContain(`folio_signin=${nonce}`);
+    expect(set).toMatch(/HttpOnly; Secure; SameSite=Lax; Max-Age=600/);
+    const idToken = await google.token({ nonce });
+    // Copied to another browser, nonce and all: it has no cookie, and the nonce in the body counts for nothing.
+    expect((await call('session', { method: 'POST', body: JSON.stringify({ idToken, nonce }) })).status).toBe(401);
+    const signedIn = await call('session', { method: 'POST', cookie: `folio_signin=${nonce}`, body: JSON.stringify({ idToken }) });
+    expect(signedIn.status).toBe(200);
+    expect(signedIn.headers.get('set-cookie')).toContain('folio_signin=; Path=/api/session; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
   });
 
   it('refuses changes without the header another site can’t send', async () => {

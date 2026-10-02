@@ -24,6 +24,8 @@ interface Session {
   unsubscribe: () => void;
   /** The version in IndexedDB as far as this tab knows. */
   savedVersion: string;
+  /** That version's sources: one still the same object hasn't changed, and the journal leaves its text out. */
+  savedSources: Course['sources'];
   /** Saves run one after another so each checks against the last. */
   saving: Promise<void>;
   /** Set while replacing the course with another tab's copy, so that isn't saved back. */
@@ -46,6 +48,7 @@ async function save(session: Session): Promise<void> {
   try {
     await saveCourseIfUnchanged(course, session.savedVersion, write);
     session.savedVersion = versionOf(course);
+    session.savedSources = course.sources;
     session.history = next;
     clearJournal(course.id);
     channel?.postMessage({ id: course.id, version: session.savedVersion });
@@ -85,6 +88,7 @@ export function openSession(course: Course, rows: readonly HistoryRow[] = []): C
     timer: null,
     unsubscribe: () => {},
     savedVersion: versionOf(course),
+    savedSources: course.sources,
     saving: Promise.resolve(),
     quiet: false,
     history: trackerFrom(sorted),
@@ -125,10 +129,11 @@ export async function loadSession(id: string): Promise<CourseStore | null> {
   const saved = loaded.course;
   const store = openSession(saved, loaded.history);
   // Work that was typed as the page closed last time, and never reached IndexedDB.
-  const unsaved = takeJournal(id, versionOf(saved));
+  const unsaved = takeJournal(saved);
   if (unsaved && active?.id === id) {
     store.reset(unsaved.course, mergeHistory(store.exportHistory(), unsaved.history));
     active.savedVersion = versionOf(saved);
+    active.savedSources = saved.sources;
     void flush(active);
   }
   return store;
@@ -159,12 +164,14 @@ export async function keepThisVersion(): Promise<void> {
   session.history.replace = true;
   if (saved) {
     session.savedVersion = versionOf(saved);
+    session.savedSources = saved.sources;
     return flush(session);
   }
   const course = session.store.getState();
   const { write, next } = historyDelta(course.id, session.store.getHistory(), session.history, SCHEMA_VERSION);
   await saveCourse(course, write);
   session.savedVersion = versionOf(course);
+  session.savedSources = course.sources;
   session.history = next;
 }
 
@@ -177,6 +184,7 @@ function replace(session: Session, course: Course, rows: readonly HistoryRow[]):
   session.history = trackerFrom(sorted);
   session.quiet = false;
   session.savedVersion = versionOf(course);
+  session.savedSources = course.sources;
   useUi.getState().setSaveState('saved');
 }
 
@@ -204,7 +212,7 @@ function onLeave(commitFocused: boolean): void {
   if (!session || !dirty(session) || useUi.getState().conflict) return;
   const course = session.store.getState();
   const { write } = historyDelta(course.id, session.store.getHistory(), session.history, SCHEMA_VERSION);
-  writeJournal(course, session.savedVersion, write.put.map((row) => row.entry));
+  writeJournal(course, session.savedVersion, write.put.map((row) => row.entry), session.savedSources);
   void flush(session);
 }
 

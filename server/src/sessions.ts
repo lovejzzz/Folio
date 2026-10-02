@@ -16,14 +16,25 @@ function newToken(): string {
   return btoa(String.fromCharCode(...raw)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-export function cookieOf(request: Request): string | null {
+export function cookieOf(request: Request, name = COOKIE): string | null {
   const header = request.headers.get('cookie') ?? '';
-  const match = header.split(/;\s*/).find((c) => c.startsWith(`${COOKIE}=`));
-  return match ? match.slice(COOKIE.length + 1) : null;
+  const match = header.split(/;\s*/).find((c) => c.startsWith(`${name}=`));
+  return match ? match.slice(name.length + 1) || null : null;
 }
 
 export const setCookie = (token: string) => `${COOKIE}=${token}; Path=/api; HttpOnly; Secure; SameSite=Lax; Max-Age=${DAYS * 86400}`;
 export const clearCookie = () => `${COOKIE}=; Path=/api; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
+
+/**
+ * The nonce a sign-in must carry, made here and held in this browser's cookie for ten minutes. Google writes it
+ * into the ID token, and the token is taken only with the cookie: one copied from somewhere else, nonce and all,
+ * can't be used to sign in from another browser.
+ */
+const NONCE = 'folio_signin';
+export const newNonce = () => newToken();
+export const nonceCookie = (nonce: string) => `${NONCE}=${nonce}; Path=/api/session; HttpOnly; Secure; SameSite=Lax; Max-Age=600`;
+export const clearNonce = () => `${NONCE}=; Path=/api/session; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
+export const nonceOf = (request: Request) => cookieOf(request, NONCE);
 
 /** Start a session for a user who just signed in; returns the cookie value. */
 export async function startSession(db: D1Database, user: User, now = Date.now()): Promise<string> {

@@ -5,10 +5,11 @@ import { useEffect } from 'react';
 import { Radio, RadioGroup } from 'react-aria-components';
 import { readHint, signIn, useAccount } from '../state/account';
 import { creditsText, refreshCredits, useCredits } from '../state/credits';
-import { useT, type Messages } from '../i18n';
+import { useT } from '../i18n';
 import { usePrefs } from '../state/prefs';
 import { BuyCredits } from './BuyCredits';
 import { ModelPicker } from './ModelPicker';
+import { settingsText } from '../i18n/settingsText';
 
 /** Where each provider makes and lists API keys: the "?" beside the key field goes straight there. */
 const KEY_PAGES: Partial<Record<ProviderId, { url: string; company: string }>> = {
@@ -20,11 +21,10 @@ const KEY_PAGES: Partial<Record<ProviderId, { url: string; company: string }>> =
 
 /** A small "?" that opens the provider's key page in a new tab, and says so on hover or focus. */
 function KeyHelp({ provider }: { provider: ProviderId }) {
-  const t = useT();
   const page = KEY_PAGES[provider];
   if (!page) return null;
   return (
-    <IconButton size="sm" label={t.settings.keyPage(page.company)} onPress={() => window.open(page.url, '_blank', 'noopener,noreferrer')} className="-my-1 size-6 rounded-full data-hovered:text-accent">
+    <IconButton size="sm" label={settingsText.keyPage(page.company)} onPress={() => window.open(page.url, '_blank', 'noopener,noreferrer')} className="-my-1 size-6 rounded-full data-hovered:text-accent">
       <CircleHelp size={15} strokeWidth={1.75} />
     </IconButton>
   );
@@ -48,8 +48,8 @@ export function ProviderChoice({ value, onChange, compact }: { value: ProviderId
             <span className="size-2 rounded-full bg-accent opacity-0 group-data-selected:opacity-100" />
           </span>
           <span className="min-w-0">
-            <span className="block font-ui text-14 font-medium text-ink">{t.settings.providers[p].name}</span>
-            {!compact && <span className="mt-0.5 block font-ui text-13 leading-snug text-ink-2">{t.settings.providers[p].note}</span>}
+            <span className="block font-ui text-14 font-medium text-ink">{settingsText.providers[p].name}</span>
+            {!compact && <span className="mt-0.5 block font-ui text-13 leading-snug text-ink-2">{settingsText.providers[p].note}</span>}
           </span>
         </Radio>
       ))}
@@ -63,10 +63,10 @@ export function hasKey(provider: ProviderId): boolean {
 }
 
 /** What still has to be filled in before a provider can be tried, or null. */
-export function missingSetup(provider: ProviderId, t: Messages): string | null {
+export function missingSetup(provider: ProviderId): string | null {
   if (provider === 'folio') return readHint() ? null : creditsText.signInFirst;
-  if (provider === 'local') return usePrefs.getState().localUrl.trim() ? null : t.settings.addressFirst;
-  return hasKey(provider) ? null : t.settings.keyFirst;
+  if (provider === 'local') return usePrefs.getState().localUrl.trim() ? null : settingsText.addressFirst;
+  return hasKey(provider) ? null : settingsText.keyFirst;
 }
 
 /** Folio credits: no key, a Google sign-in; then the balance, and how far it goes. */
@@ -107,25 +107,24 @@ function FolioFields() {
 
 /** The key (or server address) and model for one provider, saved as you type. */
 export function ProviderFields({ provider, showModel = true, onKey }: { provider: ProviderId; showModel?: boolean; onKey?: (key: string) => void }) {
-  const t = useT();
   const { keys, localUrl, set } = usePrefs();
   if (provider === 'folio') return <FolioFields />;
   return (
     <div className="space-y-3">
       {provider === 'local' ? (
-        <TextField label={t.settings.baseUrl} description={t.settings.baseUrlHint} value={localUrl} onChange={(v) => set({ localUrl: v })} />
+        <TextField label={settingsText.baseUrl} description={settingsText.baseUrlHint} value={localUrl} onChange={(v) => set({ localUrl: v })} />
       ) : (
         <div>
           <TextField
             label={
               <span className="inline-flex items-center gap-1">
-                {t.settings.key}
+                {settingsText.key}
                 <KeyHelp provider={provider} />
               </span>
             }
             type="password"
             autoComplete="off"
-            description={t.settings.keyHint}
+            description={settingsText.keyHint}
             value={keys[provider] ?? ''}
             onChange={(v) => {
               set({ keys: { ...usePrefs.getState().keys, [provider]: v.trim() } });

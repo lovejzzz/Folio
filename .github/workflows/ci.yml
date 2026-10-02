@@ -31,8 +31,8 @@ jobs:
       - run: pnpm build
       - name: Bundle budgets
         run: pnpm budget
-      - name: Install Chromium for Playwright
-        run: pnpm --filter @folio/web exec playwright install --with-deps chromium
+      - name: Install Chromium and WebKit for Playwright
+        run: pnpm --filter @folio/web exec playwright install --with-deps chromium webkit
       - name: End-to-end, accessibility and CSP checks
         run: pnpm test:e2e
       - uses: actions/upload-artifact@v4

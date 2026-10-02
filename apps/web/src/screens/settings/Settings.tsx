@@ -16,6 +16,7 @@ import { dropSession } from '../../state/session';
 import { toast } from '../../state/toasts';
 import { readHint } from '../../state/account';
 import { AccountSection } from './AccountSection';
+import { settingsText } from '../../i18n/settingsText';
 
 function Section({ title, lede, children }: { title: string; lede?: string; children: ReactNode }) {
   return (
@@ -38,27 +39,25 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 
 /** Which provider Folio is using, when it isn't the one on screen. */
 function ActiveNote({ provider }: { provider: ProviderId }) {
-  const t = useT();
   const active = usePrefs((s) => s.provider);
   const activeReady = usePrefs((s) => isConfigured(modelSettings(s)));
   if (!active || active === provider || !activeReady) return null;
-  return <p className="mt-3 font-ui text-13 text-ink-2">{t.settings.stillUsing(t.settings.providers[active].short, provider === 'local')}</p>;
+  return <p className="mt-3 font-ui text-13 text-ink-2">{settingsText.stillUsing(settingsText.providers[active].short, provider === 'local')}</p>;
 }
 
 function ModelSection() {
-  const t = useT();
   const navigate = useNavigate();
   const prefs = usePrefs();
   const [provider, setProvider] = useState<ProviderId>(prefs.provider ?? 'anthropic');
   const [status, setStatus] = useState<{ busy: boolean; message: string | null; ok: boolean }>({ busy: false, message: null, ok: false });
   const test = async () => {
-    const missing = missingSetup(provider, t);
+    const missing = missingSetup(provider);
     if (missing) return setStatus({ busy: false, message: missing, ok: false });
     setStatus({ busy: true, message: null, ok: false });
     try {
       await probeModel(provider);
       prefs.set({ provider });
-      setStatus({ busy: false, message: t.settings.testOk, ok: true });
+      setStatus({ busy: false, message: settingsText.testOk, ok: true });
     } catch (error) {
       setStatus({ busy: false, message: errorMessage(error, provider), ok: false });
     }
@@ -71,24 +70,24 @@ function ModelSection() {
     setStatus({ busy: false, message: null, ok: false });
   };
   return (
-    <Section title={t.settings.ai} lede={t.settings.aiLede}>
+    <Section title={settingsText.ai} lede={settingsText.aiLede}>
       <ProviderChoice value={provider} onChange={choose} />
       <div className="mt-6 max-w-md">
         <ProviderFields provider={provider} onKey={(key) => key && prefs.set({ provider })} />
         <div className="mt-4 flex flex-wrap items-center gap-3">
           {status.ok && (
             <Button variant="primary" onPress={() => void navigate({ to: '/' })}>
-              {t.settings.done}
+              {settingsText.done}
             </Button>
           )}
           {provider !== 'folio' && (
             <Button variant={status.ok ? 'secondary' : 'primary'} isDisabled={status.busy} onPress={() => void test()}>
-              {status.busy ? t.settings.testing : t.settings.test}
+              {status.busy ? settingsText.testing : settingsText.test}
             </Button>
           )}
           {provider !== 'local' && provider !== 'folio' && prefs.keys[provider] && (
             <Button variant="quiet" onPress={() => prefs.set({ keys: { ...prefs.keys, [provider]: '' } })}>
-              {t.settings.forget}
+              {settingsText.forget}
             </Button>
           )}
         </div>
@@ -107,12 +106,12 @@ function AppearanceSection() {
   const t = useT();
   const { theme, density, set } = usePrefs();
   return (
-    <Section title={t.settings.appearance}>
-      <Row label={t.settings.theme}>
-        <SegmentedControl label={t.settings.theme} value={theme} onChange={(v) => set({ theme: v })} options={[{ id: 'system', label: t.nav.themeSystem }, { id: 'light', label: t.nav.themeLight }, { id: 'dark', label: t.nav.themeDark }]} />
+    <Section title={settingsText.appearance}>
+      <Row label={settingsText.theme}>
+        <SegmentedControl label={settingsText.theme} value={theme} onChange={(v) => set({ theme: v })} options={[{ id: 'system', label: t.nav.themeSystem }, { id: 'light', label: t.nav.themeLight }, { id: 'dark', label: t.nav.themeDark }]} />
       </Row>
-      <Row label={t.settings.density}>
-        <SegmentedControl label={t.settings.density} value={density} onChange={(v) => set({ density: v })} options={[{ id: 'comfortable', label: t.map.comfortable }, { id: 'compact', label: t.map.compact }]} />
+      <Row label={settingsText.density}>
+        <SegmentedControl label={settingsText.density} value={density} onChange={(v) => set({ density: v })} options={[{ id: 'comfortable', label: t.map.comfortable }, { id: 'compact', label: t.map.compact }]} />
       </Row>
     </Section>
   );
@@ -132,19 +131,19 @@ function DataSection() {
     const { writeFolio, zipFiles, slugFilename } = await import('@folio/export');
     const courses = await allCourses();
     const files = courses.map((c) => ({ name: slugFilename(c.title, '', '', 'folio'), bytes: writeFolio(c) }));
-    download({ name: t.settings.backupAllName, mime: 'application/zip', bytes: zipFiles(files) });
+    download({ name: settingsText.backupAllName, mime: 'application/zip', bytes: zipFiles(files) });
   };
   return (
-    <Section title={t.settings.data} lede={t.settings.dataLede}>
-      {used && <p className="mb-4 font-ui text-13 text-ink-2">{t.settings.storage(used)}</p>}
-      {kept === false && <p className="mb-4 font-ui text-13 text-attention">{t.settings.notKept}</p>}
+    <Section title={settingsText.data} lede={settingsText.dataLede}>
+      {used && <p className="mb-4 font-ui text-13 text-ink-2">{settingsText.storage(used)}</p>}
+      {kept === false && <p className="mb-4 font-ui text-13 text-attention">{settingsText.notKept}</p>}
       <div className="flex flex-wrap gap-2">
-        <Button onPress={() => void saveAll()}>{t.settings.exportAll}</Button>
+        <Button onPress={() => void saveAll()}>{settingsText.exportAll}</Button>
         <Button variant="quiet" className="text-critical" onPress={() => setConfirm(true)}>
-          {t.settings.deleteAll}
+          {settingsText.deleteAll}
         </Button>
       </div>
-      <p className="mt-6 font-ui text-13 text-ink-2">{t.settings.accountNote}</p>
+      <p className="mt-6 font-ui text-13 text-ink-2">{settingsText.accountNote}</p>
       <p className="mt-2 flex flex-wrap gap-x-5 font-ui text-13">
         <Link to="/privacy" className="text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">
           {t.privacy.title}
@@ -153,12 +152,12 @@ function DataSection() {
           {t.privacy.terms}
         </Link>
         <a href="/fonts-licence.txt" className="text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">
-          {t.settings.fontsLicence}
+          {settingsText.fontsLicence}
         </a>
       </p>
-      <Dialog isOpen={confirm} onOpenChange={setConfirm} title={t.settings.deleteAll} size="sm">
+      <Dialog isOpen={confirm} onOpenChange={setConfirm} title={settingsText.deleteAll} size="sm">
         <div className="px-6 pb-6">
-          <p className="mt-2 font-ui text-14 text-ink-2">{signedIn ? t.settings.deleteAllConfirmAccount : t.settings.deleteAllConfirm}</p>
+          <p className="mt-2 font-ui text-14 text-ink-2">{signedIn ? settingsText.deleteAllConfirmAccount : settingsText.deleteAllConfirm}</p>
           <div className="mt-6 flex justify-end gap-2">
             <Button variant="quiet" onPress={() => setConfirm(false)}>{t.common.cancel}</Button>
             <Button
@@ -201,14 +200,13 @@ function usePurchaseReturn() {
 }
 
 export function Settings() {
-  const t = useT();
-  usePageTitle(t.settings.title);
+  usePageTitle(settingsText.title);
   usePurchaseReturn();
   return (
     <div className="min-h-dvh">
       <SimpleHeader />
       <main id="main" className="mx-auto max-w-3xl space-y-6 px-5 pb-24 pt-8 md:pt-12">
-        <h1 className="font-display text-48 leading-none text-ink">{t.settings.title}</h1>
+        <h1 className="font-display text-48 leading-none text-ink">{settingsText.title}</h1>
         <AccountSection Section={Section} />
         <ModelSection />
         <AppearanceSection />

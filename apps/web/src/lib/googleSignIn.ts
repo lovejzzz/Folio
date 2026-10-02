@@ -15,9 +15,12 @@ interface Pending {
   popup: boolean;
 }
 
-/** Remember this sign-in in this tab, and return where to send the teacher. */
-export function startSignIn(clientId: string, origin: string, returnTo: string, popup: boolean): string {
-  const pending: Pending = { state: crypto.randomUUID(), nonce: crypto.randomUUID(), returnTo: returnTo.startsWith('/') ? returnTo : '/', popup };
+/**
+ * Remember this sign-in in this tab, and return where to send the teacher. The nonce is the one Folio's server
+ * gave this browser: it takes Google's token back only with it.
+ */
+export function startSignIn(clientId: string, origin: string, returnTo: string, popup: boolean, nonce: string): string {
+  const pending: Pending = { state: crypto.randomUUID(), nonce, returnTo: returnTo.startsWith('/') ? returnTo : '/', popup };
   sessionStorage.setItem(PENDING, JSON.stringify(pending));
   const query = new URLSearchParams({
     client_id: clientId,
@@ -31,7 +34,7 @@ export function startSignIn(clientId: string, origin: string, returnTo: string, 
   return `https://accounts.google.com/o/oauth2/v2/auth?${query.toString()}`;
 }
 
-export type SignInReply = { idToken: string; nonce: string; returnTo: string; popup: boolean } | { error: 'cancelled' | 'failed'; returnTo: string; popup: boolean };
+export type SignInReply = { idToken: string; returnTo: string; popup: boolean } | { error: 'cancelled' | 'failed'; returnTo: string; popup: boolean };
 
 /** Google's reply in the address, if there is one. A reply to a sign-in this tab didn't start is refused. */
 export function finishSignIn(hash: string): SignInReply | null {
@@ -43,5 +46,5 @@ export function finishSignIn(hash: string): SignInReply | null {
   if (!pending || reply.get('state') !== pending.state) return { error: 'failed', returnTo: '/', popup: pending?.popup ?? false };
   const idToken = reply.get('id_token');
   if (!idToken) return { error: reply.get('error') === 'access_denied' ? 'cancelled' : 'failed', returnTo: pending.returnTo, popup: pending.popup };
-  return { idToken, nonce: pending.nonce, returnTo: pending.returnTo, popup: pending.popup };
+  return { idToken, returnTo: pending.returnTo, popup: pending.popup };
 }

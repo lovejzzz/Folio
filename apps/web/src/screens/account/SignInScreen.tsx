@@ -16,9 +16,18 @@ function returnTo(): string {
   return asked.startsWith('/') && !asked.startsWith('//') ? asked : '/';
 }
 
+const post = (path: string, body?: unknown) =>
+  fetch(`/api/${path}`, { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-folio': '1' }, ...(body ? { body: JSON.stringify(body) } : {}) });
+
+/** The nonce for this sign-in, from Folio's server, which keeps it in this browser's cookie. */
+async function askNonce(): Promise<string | null> {
+  const res = await post('session/nonce');
+  return res.ok ? ((await res.json()) as { nonce: string }).nonce : null;
+}
+
 /** Hand Google's ID token to Folio's server, which checks it and starts the session. */
-async function complete(idToken: string, nonce: string): Promise<AccountUser | null> {
-  const res = await fetch('/api/session', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-folio': '1' }, body: JSON.stringify({ idToken, nonce }) });
+async function complete(idToken: string): Promise<AccountUser | null> {
+  const res = await post('session', { idToken });
   if (!res.ok) return null;
   return ((await res.json()) as { user: AccountUser }).user;
 }
@@ -30,11 +39,14 @@ async function arrive(): Promise<Step> {
   if (!reply) {
     const clientId = googleClientId();
     if (!clientId) return { kind: 'failed', message: accountText.unavailable, popup: false };
-    window.location.assign(startSignIn(clientId, window.location.origin, returnTo(), window.name === SIGN_IN_WINDOW));
+    const popup = window.name === SIGN_IN_WINDOW;
+    const nonce = await askNonce().catch(() => null);
+    if (!nonce) return { kind: 'failed', message: accountText.failed, popup };
+    window.location.assign(startSignIn(clientId, window.location.origin, returnTo(), popup, nonce));
     return new Promise<never>(() => {});
   }
   if ('error' in reply) return { kind: 'failed', message: reply.error === 'cancelled' ? accountText.cancelled : accountText.failed, popup: reply.popup };
-  const user = await complete(reply.idToken, reply.nonce).catch(() => null);
+  const user = await complete(reply.idToken).catch(() => null);
   if (!user) return { kind: 'failed', message: accountText.failed, popup: reply.popup };
   writeHint(user);
   announce({ type: 'signed-in', user });

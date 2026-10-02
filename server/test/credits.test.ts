@@ -55,7 +55,7 @@ const settled = async () => {
 };
 
 async function signIn(sub = 'g-123', ip?: string): Promise<string> {
-  const res = await call('session', { method: 'POST', ip, body: JSON.stringify({ idToken: await google.token({ sub, email: `${sub}@example.edu` }), nonce: 'n-1' }) });
+  const res = await call('session', { method: 'POST', ip, cookie: 'folio_signin=n-1', body: JSON.stringify({ idToken: await google.token({ sub, email: `${sub}@example.edu` }) }) });
   expect(res.status).toBe(200);
   return res.headers.get('set-cookie')!.split(';')[0]!;
 }
@@ -205,10 +205,10 @@ describe('free credits, farmed', () => {
 
 describe('free credits for school accounts only', () => {
   it('come with a confirmed .edu address, not with any other', async () => {
-    const edu = await call('session', { method: 'POST', body: JSON.stringify({ idToken: await google.token({ sub: 'g-edu', email: 'Ada@Cs.Example.EDU' }), nonce: 'n-1' }) });
+    const edu = await call('session', { method: 'POST', cookie: 'folio_signin=n-1', body: JSON.stringify({ idToken: await google.token({ sub: 'g-edu', email: 'Ada@Cs.Example.EDU' }) }) });
     expect((await balance(edu.headers.get('set-cookie')!.split(';')[0]!)).balance).toBe(FREE_CREDITS);
     for (const [sub, claims] of [['g-gmail', { email: 'ada@gmail.com' }], ['g-unconfirmed', { email: 'ada@example.edu', email_verified: false }]] as const) {
-      const res = await call('session', { method: 'POST', body: JSON.stringify({ idToken: await google.token({ sub, ...claims }), nonce: 'n-1' }) });
+      const res = await call('session', { method: 'POST', cookie: 'folio_signin=n-1', body: JSON.stringify({ idToken: await google.token({ sub, ...claims }) }) });
       const cookie = res.headers.get('set-cookie')!.split(';')[0]!;
       const got = (await (await call('credits', { cookie })).json()) as { balance: number; school: boolean };
       expect(got.balance).toBe(0);

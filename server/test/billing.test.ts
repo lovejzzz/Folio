@@ -36,7 +36,7 @@ const call = (path: string, init: RequestInit & { cookie?: string } = {}) => {
 };
 
 async function signIn(): Promise<string> {
-  const res = await call('session', { method: 'POST', body: JSON.stringify({ idToken: await google.token(), nonce: 'n-1' }) });
+  const res = await call('session', { method: 'POST', cookie: 'folio_signin=n-1', body: JSON.stringify({ idToken: await google.token() }) });
   return res.headers.get('set-cookie')!.split(';')[0]!;
 }
 

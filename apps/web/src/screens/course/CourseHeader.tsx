@@ -12,6 +12,8 @@ import { useUi } from '../../state/ui';
 import { AccountButton } from '../../components/AccountButton';
 import { BuildStatus } from './BuildStatus';
 import { useChangeCount } from './useChangeCount';
+import { exportText } from '../../i18n/exportText';
+import { commandText } from '../../i18n/commandText';
 
 const tabClass =
   'flex h-8 items-center gap-1.5 rounded-control px-2.5 font-ui text-14 text-ink-2 outline-none transition-colors duration-120 hover:bg-well hover:text-ink focus-visible:ring-2 focus-visible:ring-accent current:text-ink current:bg-paper current:shadow-sheet';
@@ -108,14 +110,14 @@ function MoreMenu() {
         {t.common.redo}
       </MenuItem>
       <MenuItem id="export" icon={<Download size={16} />} onAction={() => toggleDrawer('export')}>
-        {t.command.exportItem}
+        {commandText.exportItem}
       </MenuItem>
       <MenuItem id="sources" icon={<BookMarked size={16} />} onAction={() => toggleDrawer('sources')}>
-        {t.command.sourcesItem}
+        {commandText.sourcesItem}
       </MenuItem>
       <MenuSeparator />
       <MenuItem id="new" icon={<Plus size={16} />} onAction={() => void navigate({ to: '/' })}>
-        {t.command.newCourse}
+        {commandText.newCourse}
       </MenuItem>
       <MenuItem id="library" icon={<Library size={16} />} onAction={() => void navigate({ to: '/library' })}>
         {t.nav.library}
@@ -166,7 +168,7 @@ function Actions() {
             </Button>
             <Button variant={drawer === 'export' ? 'primary' : 'secondary'} aria-expanded={drawer === 'export'} onPress={() => toggleDrawer('export')} className="ml-1">
               <Download size={16} strokeWidth={1.75} aria-hidden />
-              {t.export.title}
+              {exportText.title}
             </Button>
           </span>
         </>

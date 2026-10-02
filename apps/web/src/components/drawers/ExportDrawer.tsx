@@ -5,7 +5,7 @@ import { useState, type ReactNode } from 'react';
 import { useParams } from '@tanstack/react-router';
 import { Radio, RadioGroup } from 'react-aria-components';
 import { router } from '../../app/router';
-import { useT, type Messages } from '../../i18n';
+import { useT } from '../../i18n';
 import { download, makeExport } from '../../lib/exporter';
 import { exportErrorMessage } from '../../lib/exportErrors';
 import { GOOGLE_RETURN_PATH } from '../../lib/googlePath';
@@ -13,6 +13,7 @@ import { flushNow, useCourse } from '../../state/session';
 import { toast } from '../../state/toasts';
 import { DocView } from '../DocView';
 import { FORMATS, effectiveChoice, googleClientId, initialChoice, kindsFor, lessonIdsFor, type ExportChoice, type FormatChoice } from './exportOptions';
+import { exportText } from '../../i18n/exportText';
 
 const ICONS: Record<FormatChoice, ReactNode> = {
   docx: <FileText size={18} strokeWidth={1.5} />,
@@ -35,10 +36,9 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 }
 
 function FormatPicker({ value, onChange }: { value: FormatChoice; onChange: (f: FormatChoice) => void }) {
-  const t = useT();
   const formats = FORMATS.filter((f) => f !== 'google' || googleClientId());
   return (
-    <RadioGroup aria-label={t.export.format} value={value} onChange={(v) => onChange(v as FormatChoice)} className="space-y-1">
+    <RadioGroup aria-label={exportText.format} value={value} onChange={(v) => onChange(v as FormatChoice)} className="space-y-1">
       {formats.map((f) => (
         <Radio
           key={f}
@@ -49,8 +49,8 @@ function FormatPicker({ value, onChange }: { value: FormatChoice; onChange: (f: 
             {ICONS[f]}
           </span>
           <span>
-            <span className="block font-ui text-14 font-medium text-ink">{t.export.formats[f as keyof typeof t.export.formats]}</span>
-            <span className="block font-ui text-12 leading-4 text-ink-2">{t.export.formatHints[f as keyof typeof t.export.formatHints]}</span>
+            <span className="block font-ui text-14 font-medium text-ink">{exportText.formats[f as keyof typeof exportText.formats]}</span>
+            <span className="block font-ui text-12 leading-4 text-ink-2">{exportText.formatHints[f as keyof typeof exportText.formatHints]}</span>
           </span>
         </Radio>
       ))}
@@ -75,7 +75,7 @@ function Preview({ choice }: { choice: ExportChoice }) {
   );
 }
 
-async function runExport(choice: ExportChoice, course: Course, t: Messages): Promise<void> {
+async function runExport(choice: ExportChoice, course: Course): Promise<void> {
   const kinds = kindsFor(course, choice);
   const lessonIds = lessonIdsFor(choice);
   const search = { kinds, audience: choice.audience, ...(lessonIds ? { lessons: lessonIds } : {}) };
@@ -91,17 +91,17 @@ async function runExport(choice: ExportChoice, course: Course, t: Messages): Pro
   }
   const file = await makeExport({ course, kinds, audience: choice.audience, format: choice.format, ...(lessonIds ? { lessonIds } : {}) });
   download(file);
-  toast({ message: t.export.done(file.name), duration: 4000 });
+  toast({ message: exportText.done(file.name), duration: 4000 });
 }
 
 function WhatField({ choice, set }: { choice: ExportChoice; set: (patch: Partial<ExportChoice>) => void }) {
   const t = useT();
   const course = useCourse();
   return (
-    <Field label={t.export.what}>
-      <SegmentedControl label={t.export.what} value={choice.scope} onChange={(scope) => set({ scope })} className="w-full" options={[{ id: 'whole', label: t.export.whole }, { id: 'lesson', label: t.export.oneLesson }, { id: 'selected', label: t.export.selected }]} />
+    <Field label={exportText.what}>
+      <SegmentedControl label={exportText.what} value={choice.scope} onChange={(scope) => set({ scope })} className="w-full" options={[{ id: 'whole', label: exportText.whole }, { id: 'lesson', label: exportText.oneLesson }, { id: 'selected', label: exportText.selected }]} />
       {choice.scope === 'lesson' && (
-        <select aria-label={t.export.lessonPick} value={choice.lessonId} onChange={(e) => set({ lessonId: e.target.value })} className={cx(fieldClass, 'h-9')}>
+        <select aria-label={exportText.lessonPick} value={choice.lessonId} onChange={(e) => set({ lessonId: e.target.value })} className={cx(fieldClass, 'h-9')}>
           {orderedLessons(course).map((l, i) => (
             <option key={l.id} value={l.id}>
               {t.common.lesson(i + 1)} · {l.title}
@@ -122,7 +122,7 @@ function KindPicker({ choice, set }: { choice: ExportChoice; set: (patch: Partia
   return (
     <div className="pt-1">
       <button type="button" onClick={() => set({ kinds: all ? [] : kinds })} className="mb-2 rounded-control font-ui text-13 font-medium text-accent outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">
-        {all ? t.export.clearAll : t.export.selectAll}
+        {all ? exportText.clearAll : exportText.selectAll}
       </button>
       <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
         {kinds.map((k: MaterialKind) => (
@@ -137,7 +137,6 @@ function KindPicker({ choice, set }: { choice: ExportChoice; set: (patch: Partia
 
 /** Export: what, for whom, in which format. Sensible defaults make it one click. */
 export function ExportDrawer() {
-  const t = useT();
   const course = useCourse();
   const lessons = orderedLessons(course);
   const { lessonId } = useParams({ strict: false });
@@ -148,44 +147,44 @@ export function ExportDrawer() {
   const backup = choice.format === 'folio';
   const run = () => {
     setBusy(true);
-    runExport(effectiveChoice(choice), course, t)
-      .catch((error: unknown) => toast({ message: exportErrorMessage(error, t), tone: 'critical' }))
+    runExport(effectiveChoice(choice), course)
+      .catch((error: unknown) => toast({ message: exportErrorMessage(error), tone: 'critical' }))
       .finally(() => setBusy(false));
   };
   const noSlides = choice.format === 'pptx' && !lessons.some((l) => (choice.scope !== 'lesson' || l.id === choice.lessonId) && l.slides.length);
-  const cta = choice.format === 'pdf' ? t.export.print : choice.format === 'google' ? t.export.uploadGoogle : choice.format === 'folio' ? t.export.downloadBackup : t.export.download(t.export.formats[choice.format as keyof typeof t.export.formats]);
+  const cta = choice.format === 'pdf' ? exportText.print : choice.format === 'google' ? exportText.uploadGoogle : choice.format === 'folio' ? exportText.downloadBackup : exportText.download(exportText.formats[choice.format as keyof typeof exportText.formats]);
   return (
     <>
       <div className="space-y-6 p-5">
         {backup ? (
           <p className="flex gap-2.5 rounded-control bg-well px-4 py-3 font-ui text-13 leading-relaxed text-ink-2">
             <EyeOff size={15} strokeWidth={1.5} className="mt-0.5 shrink-0" aria-hidden />
-            {t.export.folioNote}
+            {exportText.folioNote}
           </p>
         ) : (
           <>
             <WhatField choice={choice} set={set} />
-            <Field label={t.export.who}>
-              <SegmentedControl label={t.export.who} value={choice.audience} onChange={(audience) => set({ audience })} className="w-full" options={[{ id: 'student', label: t.export.student }, { id: 'teacher', label: t.export.teacher }]} />
+            <Field label={exportText.who}>
+              <SegmentedControl label={exportText.who} value={choice.audience} onChange={(audience) => set({ audience })} className="w-full" options={[{ id: 'student', label: exportText.student }, { id: 'teacher', label: exportText.teacher }]} />
               {/* Says what's in the copy, and warns plainly when it holds the answers. */}
               <p className={cx('font-ui text-12', choice.audience === 'teacher' ? 'font-medium text-attention' : 'text-ink-2')}>
-                {choice.audience === 'teacher' ? t.export.teacherHint : t.export.studentHint}
+                {choice.audience === 'teacher' ? exportText.teacherHint : exportText.studentHint}
               </p>
             </Field>
           </>
         )}
-        <Field label={t.export.format}>
+        <Field label={exportText.format}>
           <FormatPicker value={choice.format} onChange={(format) => set({ format })} />
         </Field>
-        <Field label={t.export.preview}>
+        <Field label={exportText.preview}>
           <Preview choice={choice} />
         </Field>
       </div>
       {/* The action stays in view while the choices above scroll; the preview pushed it off a laptop screen. */}
       <div className="sticky bottom-0 space-y-2 border-t border-rule bg-paper p-4">
-        {noSlides && <p className="font-ui text-13 text-attention">{t.export.noSlides}</p>}
+        {noSlides && <p className="font-ui text-13 text-attention">{exportText.noSlides}</p>}
         <Button variant="primary" size="lg" className="w-full" isDisabled={busy || kinds.length === 0 || noSlides} onPress={run}>
-          {busy ? t.export.working : cta}
+          {busy ? exportText.working : cta}
         </Button>
       </div>
     </>

@@ -29,6 +29,7 @@ function fakeAccount({ putDelay = 0 } = {}) {
       const path = new URL(req.url()).pathname.replace('/api/', '');
       calls.push(`${req.method()} ${path}`);
       const send = (body: unknown, status = 200) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
+      if (path === 'session/nonce') return send({ nonce: 'n-1' });
       if (path === 'session') return send(req.method() === 'DELETE' ? { ok: true } : { user });
       if (path === 'courses') return send({ courses: [...courses].map(([id, c]) => ({ id, version: c.version, deleted: c.deleted, title: c.title, lessonCount: 0, updatedAt: '' })) });
       const id = path.split('/')[1]!;

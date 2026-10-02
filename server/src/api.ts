@@ -4,7 +4,7 @@ import { checkout, PACKS, webhook } from './billing';
 import { grantFree, MILLI, schoolEmail, statement } from './credits';
 import { listCourses, MAX_COURSE_BYTES, readCourse, removeAccount, removeCourse, writeCourse, type CourseMeta } from './courses';
 import { SignInError, verifyIdToken } from './google';
-import { clearCookie, endSession, setCookie, startSession, userOf } from './sessions';
+import { clearCookie, clearNonce, endSession, newNonce, nonceCookie, nonceOf, setCookie, startSession, userOf } from './sessions';
 import type { Env, User } from './types';
 
 /**
@@ -50,16 +50,23 @@ async function addressHash(request: Request): Promise<string> {
 }
 
 async function signIn(request: Request, env: Env, fetchImpl?: typeof fetch): Promise<Response> {
-  const body = (await request.json().catch(() => null)) as { idToken?: unknown; nonce?: unknown } | null;
-  if (typeof body?.idToken !== 'string' || typeof body.nonce !== 'string') return problem(400, 'bad-request');
+  const body = (await request.json().catch(() => null)) as { idToken?: unknown } | null;
+  if (typeof body?.idToken !== 'string') return problem(400, 'bad-request');
+  // Only the nonce this browser was given: one sent along in the body would be whatever the token says.
+  const nonce = nonceOf(request);
+  if (!nonce) return problem(401, 'sign-in-failed', { detail: 'This sign-in ran out of time.' });
   try {
-    const who = await verifyIdToken(body.idToken, { clientId: env.VITE_GOOGLE_CLIENT_ID, nonce: body.nonce, fetchImpl });
+    const who = await verifyIdToken(body.idToken, { clientId: env.VITE_GOOGLE_CLIENT_ID, nonce, fetchImpl });
     const user: User = { id: who.sub, email: who.email, name: who.name };
     const token = await startSession(env.DB, user);
     // A school account's first sign-in brings the free credits, within the limits that keep them from being farmed.
     // A grant that fails (the same account signing in twice at once) never fails the sign-in: the other one made it.
     if (schoolEmail(who.email, who.emailVerified)) await grantFree(env.DB, user.id, await addressHash(request)).catch(() => 0);
-    return json({ user }, 200, { 'set-cookie': setCookie(token) });
+    const res = json({ user });
+    res.headers.append('set-cookie', setCookie(token));
+    // Used once: the same token can't start a second session.
+    res.headers.append('set-cookie', clearNonce());
+    return res;
   } catch (error) {
     if (error instanceof SignInError) return problem(401, 'sign-in-failed', { detail: error.message });
     throw error;
@@ -119,6 +126,10 @@ export async function handle(request: Request, env: Env, fetchImpl?: typeof fetc
   const changing = request.method !== 'GET' && request.method !== 'HEAD';
   if (changing && request.headers.get('x-folio') !== '1') return problem(403, 'forbidden');
   if (path[0] === 'session') {
+    if (path[1] === 'nonce' && request.method === 'POST') {
+      const nonce = newNonce();
+      return json({ nonce }, 200, { 'set-cookie': nonceCookie(nonce) });
+    }
     if (request.method === 'POST') return signIn(request, env, fetchImpl);
     if (request.method === 'DELETE') {
       await endSession(env.DB, request);

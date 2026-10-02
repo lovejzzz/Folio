@@ -4,13 +4,12 @@ import { Printer } from 'lucide-react';
 import { useEffect } from 'react';
 import { printRoute } from '../../app/router';
 import { DocView } from '../../components/DocView';
-import { useT } from '../../i18n';
 import { pinTheme } from '../../state/prefs';
 import { useCourse } from '../../state/session';
+import { exportText } from '../../i18n/exportText';
 
 /** The print view is the sheet, without chrome. "Save as PDF" from here gives the PDF. */
 export function PrintScreen() {
-  const t = useT();
   const course = useCourse();
   const search = printRoute.useSearch();
   const { audience, lessons } = search;
@@ -35,10 +34,10 @@ export function PrintScreen() {
   return (
     <div className="bg-paper">
       <div className="no-print sticky top-0 flex items-center justify-between gap-4 border-b border-rule bg-desk px-5 py-3">
-        <p className="font-ui text-13 text-ink-2">{t.export.printHint}</p>
+        <p className="font-ui text-13 text-ink-2">{exportText.printHint}</p>
         <Button variant="primary" onPress={() => window.print()}>
           <Printer size={16} strokeWidth={1.5} aria-hidden />
-          {t.export.printNow}
+          {exportText.printNow}
         </Button>
       </div>
       <main id="main" className="mx-auto max-w-sheet px-6 py-12 print:max-w-none print:p-0" lang={course.language}>

@@ -9,6 +9,7 @@ import { useUi } from '../state/ui';
 import { openSample } from '../lib/sample';
 import { ProviderChoice, ProviderFields, missingSetup } from './ProviderFields';
 import { z } from 'zod';
+import { settingsText } from '../i18n/settingsText';
 
 const ProbeSchema = z.object({ ok: z.boolean() });
 
@@ -29,10 +30,9 @@ export async function probeModel(provider: ProviderId): Promise<void> {
 
 /** Check the chosen provider works, make it the one Folio uses, and carry on with what was waiting. */
 function useConnect(provider: ProviderId, then: (() => void) | null, close: () => void) {
-  const t = useT();
   const [state, setState] = useState<{ busy: boolean; error: string | null }>({ busy: false, error: null });
   const connect = async () => {
-    const missing = missingSetup(provider, t);
+    const missing = missingSetup(provider);
     if (missing) return setState({ busy: false, error: missing });
     setState({ busy: true, error: null });
     try {
@@ -81,7 +81,7 @@ export function ConnectDialog() {
               </p>
             )}
             <Button variant="primary" size="lg" className="w-full" isDisabled={state.busy} onPress={() => void connect()}>
-              {state.busy ? t.settings.testing : t.connect.connectAndContinue}
+              {state.busy ? settingsText.testing : t.connect.connectAndContinue}
             </Button>
           </li>
         </ol>

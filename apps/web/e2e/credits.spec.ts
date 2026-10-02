@@ -14,6 +14,7 @@ async function fakeFolio(page: Page, balance: { value: number }) {
   await page.context().route(/\/api\/(session|credits|courses)/, async (route) => {
     const path = new URL(route.request().url()).pathname;
     const send = (body: unknown) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+    if (path.endsWith('/session/nonce')) return send({ nonce: 'n-1' });
     if (path.endsWith('/session')) {
       if (route.request().method() === 'POST') user = { id: 'g-1', email: 'ada@example.edu', name: 'Ada Teacher' };
       return send({ user });
