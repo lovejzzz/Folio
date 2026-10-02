@@ -4,6 +4,7 @@ import { hasMarks, plainText, textRuns, type Block, type SemanticDoc } from '@fo
 import { printFonts, printPalette } from '@folio/ui/tokens';
 import { cleanDoc } from './xml';
 import { ExportError } from './errors';
+import { MIN_SIZE, fitSize, splitToFit, type Box } from './fit';
 
 /**
  * Slide decks in the "paper and ink" look: paper background, Georgia ink
@@ -64,6 +65,13 @@ function footer(slide: PptSlide, f: Faces, lesson: string): void {
 
 type RunOptions = PptxGenJS.TextPropsOptions;
 
+/** A bullet's text starts after its marker, about this far in (inches). */
+const INDENT = 0.32;
+const BULLETS: Box = { w: TEXT_W - INDENT, h: 4.6, gap: 10 };
+
+/** The size these lines fit their box at, from the layout's own size down: as measured, not left to the app. */
+const sized = (lines: string[], box: Box, max: number, min = MIN_SIZE) => fitSize(lines.map(plainText), box, max, min) ?? min;
+
 /** One line as runs: code in the mono face on a light well, β̂_educ and R^2 as sub- and superscripts. */
 function lineRuns(text: string, base: RunOptions, first: RunOptions = {}): PptxGenJS.TextProps[] {
   const parts = textRuns(text);
@@ -84,21 +92,25 @@ function inline(text: string, base: RunOptions): string | PptxGenJS.TextProps[] 
   return hasMarks(text) ? text.split('\n').flatMap((line) => lineRuns(line, base)) : text;
 }
 
+/**
+ * Bullets, or for a question its choices lettered A, B, C. The letters are written as text: Keynote numbers an
+ * automatic letter list 1, 2, 3, and a teacher's "the answer is B" would then point at nothing.
+ */
 function bulletRuns(items: string[], f: Faces, size: number, lettered: boolean): PptxGenJS.TextProps[] {
   const base: RunOptions = { fontFace: f.body, fontSize: size, color: printPalette.ink2, lang: f.lang };
-  const first: RunOptions = { bullet: lettered ? { type: 'number', numberType: 'alphaUcPeriod' } : { indent: 22 }, paraSpaceAfter: 10 };
-  return items.flatMap((text) => lineRuns(text, base, first));
+  const first: RunOptions = { bullet: lettered ? false : { indent: 22 }, paraSpaceAfter: 10 };
+  return items.flatMap((text, i) => lineRuns(lettered ? `${String.fromCharCode(65 + i)}.  ${text}` : text, base, first));
 }
 
 function titleSlide(slide: PptSlide, s: Slide, f: Faces): void {
   slide.addText(inline(s.title, { fontFace: f.title }), {
-    x: LEFT, y: 1.6, w: TEXT_W, h: 2.4, fontFace: f.title, fontSize: 48, color: printPalette.ink,
+    x: LEFT, y: 1.6, w: TEXT_W, h: 2.4, fontFace: f.title, fontSize: sized([s.title], { w: TEXT_W, h: 2.4 }, 48, 24), color: printPalette.ink,
     valign: 'bottom', fit: 'shrink', lang: f.lang, margin: 0,
   });
   slide.addShape('line', { x: LEFT, y: 4.25, w: 1.4, h: 0, line: { color: printPalette.tab.slides, width: 2 } });
   if (s.bullets.length) {
     slide.addText(inline(s.bullets.join('\n'), { fontFace: f.body }), {
-      x: LEFT, y: 4.5, w: TEXT_W, h: 1.8, fontFace: f.body, fontSize: 22, color: printPalette.ink2,
+      x: LEFT, y: 4.5, w: TEXT_W, h: 1.8, fontFace: f.body, fontSize: sized(s.bullets, { w: TEXT_W, h: 1.8, gap: 6 }, 22), color: printPalette.ink2,
       valign: 'top', fit: 'shrink', lang: f.lang, margin: 0, paraSpaceAfter: 6,
     });
   }
@@ -106,11 +118,11 @@ function titleSlide(slide: PptSlide, s: Slide, f: Faces): void {
 
 function bulletsSlide(slide: PptSlide, s: Slide, f: Faces): void {
   slide.addText(inline(s.title, { fontFace: f.title }), {
-    x: LEFT, y: 0.55, w: TEXT_W, h: 1.1, fontFace: f.title, fontSize: 32, color: printPalette.ink,
+    x: LEFT, y: 0.55, w: TEXT_W, h: 1.1, fontFace: f.title, fontSize: sized([s.title], { w: TEXT_W, h: 1.1 }, 32, 20), color: printPalette.ink,
     valign: 'bottom', fit: 'shrink', lang: f.lang, margin: 0,
   });
   if (s.bullets.length) {
-    slide.addText(bulletRuns(s.bullets, f, 22, false), {
+    slide.addText(bulletRuns(s.bullets, f, sized(s.bullets, BULLETS, 22), false), {
       x: LEFT, y: 1.95, w: TEXT_W, h: 4.6, valign: 'top', fit: 'shrink', margin: 0,
     });
   }
@@ -118,11 +130,11 @@ function bulletsSlide(slide: PptSlide, s: Slide, f: Faces): void {
 
 function questionSlide(slide: PptSlide, s: Slide, f: Faces): void {
   slide.addText(inline(s.title, { fontFace: f.title }), {
-    x: LEFT, y: 0.9, w: TEXT_W, h: 2.3, fontFace: f.title, fontSize: 36, color: printPalette.ink,
+    x: LEFT, y: 0.9, w: TEXT_W, h: 2.3, fontFace: f.title, fontSize: sized([s.title], { w: TEXT_W, h: 2.3 }, 36, 20), color: printPalette.ink,
     valign: 'middle', fit: 'shrink', lang: f.lang, margin: 0,
   });
   if (s.bullets.length) {
-    slide.addText(bulletRuns(s.bullets, f, 24, true), {
+    slide.addText(bulletRuns(s.bullets, f, sized(s.bullets, { w: TEXT_W - 0.3 - INDENT, h: 3.0, gap: 10 }, 24), true), {
       x: LEFT + 0.3, y: 3.5, w: TEXT_W - 0.3, h: 3.0, valign: 'top', fit: 'shrink', margin: 0,
     });
   }
@@ -130,12 +142,12 @@ function questionSlide(slide: PptSlide, s: Slide, f: Faces): void {
 
 function quoteSlide(slide: PptSlide, s: Slide, f: Faces): void {
   slide.addText(inline(s.title, { fontFace: f.title }), {
-    x: LEFT + 0.6, y: 1.2, w: TEXT_W - 1.2, h: 3.4, fontFace: f.title, fontSize: 38, italic: true,
+    x: LEFT + 0.6, y: 1.2, w: TEXT_W - 1.2, h: 3.4, fontFace: f.title, fontSize: sized([s.title], { w: TEXT_W - 1.2, h: 3.4 }, 38, 20), italic: true,
     color: printPalette.ink, valign: 'middle', fit: 'shrink', lang: f.lang, margin: 0,
   });
   if (s.bullets.length) {
     slide.addText(inline(s.bullets.join('\n'), { fontFace: f.body }), {
-      x: LEFT + 0.6, y: 4.8, w: TEXT_W - 1.2, h: 1.4, fontFace: f.body, fontSize: 20, color: printPalette.ink2,
+      x: LEFT + 0.6, y: 4.8, w: TEXT_W - 1.2, h: 1.4, fontFace: f.body, fontSize: sized(s.bullets, { w: TEXT_W - 1.2, h: 1.4 }, 20), color: printPalette.ink2,
       align: 'right', valign: 'top', fit: 'shrink', lang: f.lang, margin: 0,
     });
   }
@@ -147,6 +159,20 @@ const LAYOUTS: Record<Slide['layout'], (slide: PptSlide, s: Slide, f: Faces) => 
   question: questionSlide,
   quote: quoteSlide,
 };
+
+/**
+ * A bullet list too long for one slide even at the smallest size goes on over as many as it needs, each with
+ * the title marked as continued; the speaker notes stay with the first.
+ */
+function continued(s: Slide, f: Faces): Slide[] {
+  if (s.layout !== 'bullets' || fitSize(s.bullets.map(plainText), BULLETS, 22) !== null) return [s];
+  const mark = f.lang === 'zh-CN' ? '（续）' : ' (continued)';
+  return splitToFit(s.bullets.map(plainText), BULLETS, 18).reduce<Slide[]>((out, run) => {
+    const from = out.reduce((n, x) => n + x.bullets.length, 0);
+    const bullets = s.bullets.slice(from, from + run.length);
+    return [...out, out.length ? { ...s, title: s.title + mark, bullets, notes: undefined } : { ...s, bullets }];
+  }, []);
+}
 
 /** Some pptxgenjs builds return a Node Buffer or ArrayBuffer; normalise to a plain Uint8Array. */
 function toBytes(out: string | ArrayBuffer | Blob | Uint8Array): Uint8Array {
@@ -195,7 +221,7 @@ export async function renderPptx(given: SemanticDoc): Promise<Uint8Array> {
   if (!slides.length) {
     slides = [{ t: 'slide', n: 1, layout: 'title', title: doc.title, bullets: doc.subtitle ? [doc.subtitle] : [], lesson: '' }];
   }
-  for (const s of slides) {
+  for (const s of slides.flatMap((x) => continued(x, f))) {
     const slide = pptx.addSlide({ masterName: MASTER });
     LAYOUTS[s.layout](slide, s, f);
     footer(slide, f, s.lesson);

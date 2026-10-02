@@ -89,3 +89,37 @@ describe('code in slides', () => {
     expect(notesText(zip)).toContain('Show summary() output.');
   });
 });
+
+describe('text that has to fit its slide', () => {
+  const long = 'Students compare the two samples, say which one was chosen at random, and explain in a full sentence how the other could mislead a reader of the survey.';
+  const deck = (bullets: string[]): SemanticDoc => ({
+    ...project(course, 'slides', { audience: 'teacher', lessonIds: [] }),
+    blocks: [{ t: 'slide', n: 1, layout: 'bullets', title: 'How samples mislead', bullets, notes: 'Say it slowly.', lesson: 'Lesson 4' }],
+  });
+  const sizes = (xml: string) => [...xml.matchAll(/sz="(\d+)"/g)].map((m) => Number(m[1]));
+
+  it('keeps the layout’s own sizes when the words fit', async () => {
+    const xml = unzipText(await renderPptx(deck(['Random samples', 'Convenience samples']))).text('ppt/slides/slide1.xml');
+    expect(sizes(xml)).toEqual(expect.arrayContaining([3200, 2200]));
+  });
+
+  it('sets a long list smaller, never below 14 points', async () => {
+    const xml = unzipText(await renderPptx(deck(Array.from({ length: 6 }, () => long)))).text('ppt/slides/slide1.xml');
+    const body = sizes(xml).filter((n) => n < 3200);
+    expect(Math.max(...body)).toBeLessThan(2200);
+    expect(Math.min(...sizes(xml))).toBeGreaterThanOrEqual(1100);
+    expect(Math.min(...body.filter((n) => n !== 1100))).toBeGreaterThanOrEqual(1400);
+  });
+
+  it('carries a list too long for one slide over to the next, with the notes on the first', async () => {
+    const zip = unzipText(await renderPptx(deck(Array.from({ length: 16 }, (_, i) => `${i + 1}. ${long}`))));
+    const parts = zip.names.filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n)).sort();
+    expect(parts.length).toBeGreaterThan(1);
+    expect(zip.text('ppt/slides/slide2.xml')).toContain('How samples mislead (continued)');
+    // Every bullet is on some slide, once.
+    const all = parts.map((p) => zip.text(p)).join('');
+    for (let i = 1; i <= 16; i++) expect(all.split(`>${i}. Students compare`).length - 1).toBe(1);
+    expect(notesText(zip)).toContain('Say it slowly.');
+    expect(notesText(zip).split('Say it slowly.').length - 1).toBe(1);
+  });
+});
