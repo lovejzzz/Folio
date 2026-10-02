@@ -14,7 +14,7 @@ interface Stored {
  * Folio's /api and Google, played by the test: sign-in succeeds for one teacher, and the account keeps
  * courses by version as the real server does. One account is shared by every browser in the test.
  */
-function fakeAccount() {
+function fakeAccount({ putDelay = 0 } = {}) {
   const courses = new Map<string, Stored>();
   const calls: string[] = [];
   const user = { id: 'g-1', email: 'ada@example.edu', name: 'Ada Teacher' };
@@ -41,6 +41,8 @@ function fakeAccount() {
       if ((have?.version ?? 0) !== base) return send({ error: 'conflict', version: have?.version ?? 0 }, 409);
       const title = JSON.parse(decodeURIComponent(req.headers()['x-folio-meta']!)).title as string;
       courses.set(id, { version: base + 1, deleted: false, bytes: req.postDataBuffer()!, title });
+      // The account has the course before the device hears so: the gap a slow connection leaves.
+      if (putDelay) await new Promise((r) => setTimeout(r, putDelay));
       return send({ version: base + 1 });
     });
   }
@@ -148,4 +150,56 @@ test('two devices change the same course: both versions are kept, nothing is los
   await b.getByText('Reading the world with data', { exact: true }).click();
   await expect(b.getByRole('link', { name: /Measures of spread/ }).first()).toBeVisible();
   await other.close();
+});
+
+test('two tabs of one browser send a new course once: no copy, no word of another device', async ({ page, context }) => {
+  const account = fakeAccount({ putDelay: 2500 });
+  await account.attach(context);
+  await page.goto('/');
+  await signIn(page);
+  const second = await context.newPage();
+  await second.goto('/');
+  await expect(second.getByRole('button', { name: 'Account: ada@example.edu' })).toBeVisible();
+
+  // A course made in the first tab; the second tab catches up with the account before the first has sent it.
+  await openSample(page);
+  await second.evaluate(() => window.dispatchEvent(new Event('online')));
+  await expect.poll(() => account.courses.size).toBe(1);
+  // Long enough for both tabs to have sent the course, had each been going to.
+  await page.waitForTimeout(5000);
+  expect(account.calls.filter((c) => c.startsWith('PUT'))).toHaveLength(1);
+  expect(account.courses.size).toBe(1);
+  for (const tab of [page, second]) await expect(tab.getByText(/was also changed on another device/)).toHaveCount(0);
+  await second.goto('/library');
+  await expect(second.getByText('Reading the world with data')).toHaveCount(1);
+});
+
+test('a course deleted on one device and changed on another is kept once, as a copy', async ({ page, context }) => {
+  const account = fakeAccount();
+  await account.attach(context);
+  await openSample(page);
+  await page.goto('/');
+  await signIn(page);
+  await page.getByRole('dialog', { name: 'Add these courses to your account?' }).getByRole('button', { name: 'Add 1 course' }).click();
+  await expect.poll(() => account.courses.size).toBe(1);
+  const [id] = [...account.courses.keys()];
+
+  await page.goto('/library');
+  await page.getByText('Reading the world with data').click();
+  await page.getByRole('link', { name: /Center and spread/ }).first().click();
+  await expect(page.getByRole('textbox', { name: 'Title of lesson 3' }).first()).toBeVisible();
+
+  // Another device deletes it from the account; this one, not yet caught up, changes it.
+  account.courses.set(id!, { ...account.courses.get(id!)!, deleted: true, version: 2 });
+  await retype(page, 'Title of lesson 3', 'Measures of spread');
+  // The account no longer has it: the tab leaves the course, whose changes stay as a copy.
+  await page.waitForURL((url) => url.pathname === '/');
+  await page.goto('/library');
+  await expect(page.getByRole('link', { name: /Reading the world with data \(this device\)/ })).toHaveCount(1);
+  await expect(page.getByRole('link', { name: /Reading the world with data/ })).toHaveCount(1);
+  // Catching up again makes no second copy.
+  await page.evaluate(() => window.dispatchEvent(new Event('online')));
+  await expect.poll(() => account.calls.filter((c) => c === 'GET courses').length).toBeGreaterThan(2);
+  await page.waitForTimeout(1500);
+  await expect(page.getByRole('link', { name: /Reading the world with data/ })).toHaveCount(1);
 });

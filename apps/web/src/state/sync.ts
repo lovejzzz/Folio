@@ -77,43 +77,82 @@ async function check(res: Response): Promise<Response> {
   return res;
 }
 
-/** The account's copy replaces this device's. An open tab follows, or asks if it has unsaved work. */
-async function download(id: string): Promise<void> {
+/**
+ * One tab at a time talks to the account about its courses. The tabs of a browser share this device's copies:
+ * without this, two of them send the same change and the slower is told another device got there first.
+ */
+function alone<T>(task: () => Promise<T>): Promise<T> {
+  return typeof navigator !== 'undefined' && navigator.locks ? (navigator.locks.request('folio.sync', task) as Promise<T>) : task();
+}
+
+interface AccountCopy {
+  version: number;
+  course: Course;
+  history: HistoryRow[];
+}
+
+/** The account's copy of a course, or null when the account no longer has it. */
+async function fetchCopy(id: string): Promise<AccountCopy | null> {
   const res = await check(await api(`courses/${id}`));
-  if (res.status === 404 || !user) return;
+  if (res.status === 404) return null;
   const version = Number(res.headers.get('x-folio-version'));
   const { course, history } = JSON.parse(await gunzip(await res.arrayBuffer())) as { course: Course; history: HistoryRow[] };
-  const parsed = parseCourse(course);
-  // Recorded before the save, so the save is known to match the account and isn't sent back.
-  await db.sync.put({ id, account: user.id, state: 'linked', version, synced: versionOf(parsed) });
-  await saveCourse(parsed, { courseId: id, replace: true, put: history, remove: [] });
-  courses.postMessage({ id, version: versionOf(parsed) });
+  return { version, course: parseCourse(course), history };
 }
 
-/** Another device changed the course too: this device's version becomes a copy, and the account's is kept. */
+/** The account's copy replaces this device's. An open tab follows, or asks if it has unsaved work. */
+async function adopt(id: string, copy: AccountCopy): Promise<void> {
+  if (!user) return;
+  // Recorded before the save, so the save is known to match the account and isn't sent back.
+  await db.sync.put({ id, account: user.id, state: 'linked', version: copy.version, synced: versionOf(copy.course) });
+  await saveCourse(copy.course, { courseId: id, replace: true, put: copy.history, remove: [] });
+  courses.postMessage({ id, version: versionOf(copy.course) });
+}
+
+async function download(id: string): Promise<void> {
+  const copy = await fetchCopy(id);
+  if (copy) await adopt(id, copy);
+}
+
+/**
+ * The account's copy isn't the one this device last had. Changed on another device: this device's version
+ * becomes a copy, and the account's is kept. Deleted there: the copy is all that stays. But when the account
+ * holds this very version (another tab sent it, or the answer to our own send was lost), nothing was changed
+ * elsewhere, and the two are only matched up again.
+ */
 async function keepBoth(id: string, local: Course): Promise<void> {
   const t = accountText;
-  await saveCourse({ ...local, id: newId('c'), title: t.copyTitle(local.title || currentMessages().common.untitled) });
-  await download(id);
-  toast({ key: `both-${id}`, message: t.keptBoth(local.title || currentMessages().common.untitled), duration: 0 });
+  const theirs = await fetchCopy(id);
+  if (!user) return;
+  if (theirs && versionOf(theirs.course) === versionOf(local)) {
+    await db.sync.put({ id, account: user.id, state: 'linked', version: theirs.version, synced: versionOf(local) });
+    return;
+  }
+  const title = local.title || currentMessages().common.untitled;
+  await saveCourse({ ...local, id: newId('c'), title: t.copyTitle(title) });
+  if (theirs) await adopt(id, theirs);
+  else await forget(id);
+  toast({ key: `both-${id}`, message: theirs ? t.keptBoth(title) : t.keptDeleted(title), duration: 0 });
 }
 
-async function pushOne(id: string): Promise<void> {
-  const row = await linked(id);
-  const loaded = row ? await loadCourseWithHistory(id) : null;
-  if (!row || !loaded || versionOf(loaded.course) === row.synced) return;
-  const { course, history } = loaded;
-  const meta = { title: course.title, lessonCount: course.lessonOrder.length, updatedAt: course.updatedAt };
-  const res = await check(
-    await api(`courses/${id}`, {
-      method: 'PUT',
-      body: await gzip(JSON.stringify({ course, history })),
-      headers: { 'if-match': String(row.version), 'x-folio-meta': encodeURIComponent(JSON.stringify(meta)) },
-    }),
-  );
-  if (res.status === 409) return keepBoth(id, course);
-  const { version } = (await res.json()) as { version: number };
-  await db.sync.put({ ...row, version, synced: versionOf(course) });
+function pushOne(id: string): Promise<void> {
+  return alone(async () => {
+    const row = await linked(id);
+    const loaded = row ? await loadCourseWithHistory(id) : null;
+    if (!row || !loaded || versionOf(loaded.course) === row.synced) return;
+    const { course, history } = loaded;
+    const meta = { title: course.title, lessonCount: course.lessonOrder.length, updatedAt: course.updatedAt };
+    const res = await check(
+      await api(`courses/${id}`, {
+        method: 'PUT',
+        body: await gzip(JSON.stringify({ course, history })),
+        headers: { 'if-match': String(row.version), 'x-folio-meta': encodeURIComponent(JSON.stringify(meta)) },
+      }),
+    );
+    if (res.status === 409) return keepBoth(id, course);
+    const { version } = (await res.json()) as { version: number };
+    await db.sync.put({ ...row, version, synced: versionOf(course) });
+  });
 }
 
 const queue = new Set<string>();
@@ -153,12 +192,12 @@ async function onWrite(write: { type: string; id: string }): Promise<void> {
 
 /** Remove this device's copy of an account course (signing out, or deleted on another device). */
 async function forget(id: string): Promise<void> {
-  if (activeStore()?.getState().id === id) {
-    dropSession(id);
-    window.location.assign('/');
-  }
+  const open = activeStore()?.getState().id === id;
+  if (open) dropSession(id);
   await deleteCourse(id, { forget: true });
   await db.sync.delete(id);
+  // Only once the copy is gone: a page that leaves first can leave it behind, to be found again as a change.
+  if (open) window.location.assign('/');
 }
 
 async function applyListed(s: Listed): Promise<void> {
@@ -183,9 +222,13 @@ async function applyListed(s: Listed): Promise<void> {
 export function pull(): Promise<unknown> {
   return working(async () => {
     if (!user) return;
-    const res = await check(await api('courses'));
-    const { courses: listed } = (await res.json()) as { courses: Listed[] };
-    for (const s of listed) await applyListed(s);
+    // Listed and applied with no send under way in any tab: a send half done reads as a change made elsewhere.
+    await alone(async () => {
+      const res = await check(await api('courses'));
+      const { courses: listed } = (await res.json()) as { courses: Listed[] };
+      for (const s of listed) await applyListed(s);
+    });
+    if (!user) return;
     for (const row of await db.sync.where('account').equals(user.id).toArray()) if (row.state === 'linked') queue.add(row.id);
     await pushQueued();
   });

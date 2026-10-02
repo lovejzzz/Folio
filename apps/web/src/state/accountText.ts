@@ -31,6 +31,7 @@ export const accountText = {
   // Conflicts.
   copyTitle: (title: string) => `${title} (this device)`,
   keptBoth: (title: string) => `“${title}” was also changed on another device. Both versions are kept: yours is now “${title} (this device)”.`,
+  keptDeleted: (title: string) => `“${title}” was deleted on another device. Your changes are kept as “${title} (this device)”.`,
   // Signing out.
   signOutTitle: 'Sign out?',
   signOutBody: 'Your courses stay in your account. This browser forgets them until you sign in again.',
