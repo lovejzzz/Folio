@@ -16,6 +16,7 @@ import {
   outlinePrompt,
   runBuild,
   runJob,
+  runTextAction,
   syllabusCheckPrompt,
   type BuildTarget,
   type ModelSettings,
@@ -158,6 +159,23 @@ describe('files sharing a prompt', () => {
     const prompt = outlinePrompt({ brief: 'Biology', lessonCount: 4, minutesPerLesson: 50, level: '', language: 'en', sources: [{ title: 'Textbook', text: reading }, { title: 'BIO101', text: syllabus }], syllabus: 'BIO101.pdf' });
     expect(prompt).toContain(syllabus);
     expect(count(prompt, 'the rest of this source is not shown')).toBe(1);
+  });
+});
+
+describe('Translate', () => {
+  it('puts English into Spanish, and Chinese from an older course into English', async () => {
+    const asked: { system: string; prompt: string }[] = [];
+    const inf = fakeInference((req) => {
+      asked.push(req);
+      return { text: 'Hola' };
+    });
+    await runTextAction(inf, { action: 'translate', selection: 'Hello', context: 'Greetings', language: 'en' });
+    await runTextAction(inf, { action: 'translate', selection: '你好', context: 'Greetings', language: 'zh-CN' });
+    expect(asked[0]!.prompt).toContain('into Spanish');
+    expect(asked[0]!.system).toContain('Latin American Spanish');
+    expect(asked[0]!.system).not.toContain('Write in clear English');
+    expect(asked[1]!.prompt).toContain('into English');
+    expect(asked[1]!.system).toContain('Write in clear English');
   });
 });
 

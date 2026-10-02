@@ -10,14 +10,18 @@ export const PROMPT_VERSION = 'folio-prompts@15';
 
 const SOURCE_BUDGET = 12000;
 
-function languageLine(language: Language, locale: string): string {
+/** What Folio writes in: a course's language, or Spanish, which only a translation is written in. */
+export type WritingLanguage = Language | 'es';
+
+function languageLine(language: WritingLanguage, locale: string): string {
+  if (language === 'es') return 'Write in clear, neutral Latin American Spanish suited to the level of the students, as used in North American classrooms. Keep names, titles of works, code and maths as they are.';
   if (language === 'zh-CN')
     return 'Write every piece of text in Simplified Chinese (简体中文), with natural Chinese classroom phrasing. Use 《》 only for titles of works (poems, books, articles); when naming a lesson, put its title in “”.';
   const where = /^en-/i.test(locale) ? ` The teacher's locale is ${locale}: use its spelling, currency and units unless the brief says otherwise.` : '';
   return `Write in clear English suited to the level of the students. Use sentence case for titles and headings (capitalise only the first word and names), but keep the published capitalisation of works you cite.${where}`;
 }
 
-export function systemPrompt(language: Language, locale = ''): string {
+export function systemPrompt(language: WritingLanguage, locale = ''): string {
   return [
     'You help a teacher build a course in Folio, a tool that turns one course document into lesson plans, slides, quizzes and other classroom materials.',
     'Write material a teacher could use tomorrow: specific to the subject, with real examples, real terms, real numbers and correct facts. Never write placeholders such as "Topic 1", "key concept" or "Session 1 topic"; name the actual content.',
@@ -354,7 +358,7 @@ const actionAsks: Record<TextAction, (language: Language) => string> = {
   harder: () => 'Rewrite the selected text so it is more challenging, for students who need stretch: more precise terms and a sharper demand, not more sentences.',
   easier: () => 'Rewrite the selected text so it is easier, with more support, for students who find this hard.',
   translate: (language) =>
-    language === 'zh-CN' ? 'Translate the selected text into English.' : 'Translate the selected text into Simplified Chinese.',
+    language === 'zh-CN' ? 'Translate the selected text into English.' : 'Translate the selected text into Spanish.',
   explain: () => 'Explain the selected text for the teacher in two or three sentences, under 70 words in all: what it means and why it matters here.',
 };
 

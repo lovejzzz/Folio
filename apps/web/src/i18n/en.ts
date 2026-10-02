@@ -653,7 +653,9 @@ export const en = {
     simplify: 'Simplify',
     harder: 'Harder',
     easier: 'Easier',
-    translate: 'Translate',
+    translate: 'Translate to Spanish',
+    /** On text written in Chinese, from a course made before Folio was English only. */
+    toEnglish: 'Translate to English',
     explain: 'Explain',
     working: 'Writing…',
     suggestion: 'Suggested change',

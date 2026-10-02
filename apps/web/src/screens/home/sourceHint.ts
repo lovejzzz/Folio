@@ -8,7 +8,6 @@ const ASKS_FOR_SOURCES = [
   /\b(?:primary|historical|original) (?:sources?|documents?)\b/i,
   /\b(?:built|based) (?:on|around|from) my\b/i,
   /\bmy (?:own )?(?:notes|slides|handouts?|worksheets?|readings?)\b/i,
-  /史料|原始资料|原始文献|材料分析|我的(?:讲义|笔记|课件|教案)/,
 ];
 
 export function asksForSources(brief: string): boolean {

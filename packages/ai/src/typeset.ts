@@ -1,5 +1,3 @@
-import type { Language } from '@folio/core';
-
 /**
  * Models write straight quotes ("like this", it's); a printed page uses curly
  * ones. English text from the model is set with “ ” ‘ ’ before it is stored.
@@ -21,7 +19,7 @@ export function smartQuotes(text: string): string {
 }
 
 /** Apply `smartQuotes` to every string in a model's answer (English only), leaving calculations alone. */
-export function typesetDraft<T>(value: T, language: Language): T {
+export function typesetDraft<T>(value: T, language: string): T {
   if (language !== 'en') return value;
   const walk = (v: unknown, key?: string): unknown => {
     if (typeof v === 'string') return key === 'expression' ? v : smartQuotes(v);

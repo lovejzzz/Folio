@@ -6,7 +6,7 @@ import { OUT, readCourses, routeToBridge, type Call } from './helpers';
 /**
  * A whole course, built by a real model: api.anthropic.com is routed to the
  * bridge (scripts/claude-bridge.mjs), which answers through `claude -p`.
- *   LIVE=zh pnpm test:live build   (scenarios: en, zh, stats, sources, vague, history)
+ *   LIVE=stats pnpm test:live build   (scenarios: en, stats, sources, vague, history)
  */
 
 const SOURCE = `# How we found out how plants grow
@@ -20,11 +20,10 @@ In 1779 Jan Ingenhousz showed that plants only restore air in sunlight, and only
 In 1804 Nicolas-Théodore de Saussure weighed plants and the air around them and showed that the gain in mass came from carbon dioxide in the air and from water, not from the soil.`;
 
 const SCENARIOS: Record<string, { brief: string; lessons: number; files?: { name: string; text: string }[] }> = {
-  sources: { brief: 'Two lessons for Year 8 on the history of photosynthesis experiments, built on my notes.', lessons: 2, files: [{ name: 'history notes.md', text: SOURCE }] },
+  sources: { brief: 'Two lessons for grade 8 on the history of photosynthesis experiments, built on my notes.', lessons: 2, files: [{ name: 'history notes.md', text: SOURCE }] },
   vague: { brief: 'teach my kids about money', lessons: 4 },
-  en: { brief: 'Photosynthesis for Year 7, four lessons of 50 minutes. Hands-on practicals, and a short quiz to close every lesson.', lessons: 4 },
-  zh: { brief: '唐诗入门，三节课，初中二年级，每节课45分钟。重点是李白和杜甫，要有朗读和小组讨论。', lessons: 3 },
-  history: { brief: 'GCSE History, Year 10: the causes of the First World War. Four 60-minute lessons built around source analysis and one extended essay question on how far the alliance system caused the war.', lessons: 4 },
+  en: { brief: 'Photosynthesis for grade 7, four lessons of 50 minutes. Hands-on practicals, and a short quiz to close every lesson.', lessons: 4 },
+  history: { brief: 'AP European History, grade 11: the causes of the First World War. Four 60-minute lessons built around source analysis and one DBQ essay on how far the alliance system caused the war.', lessons: 4 },
   stats: { brief: 'Descriptive statistics for grade 11: mean, median, range and interquartile range, with lots of worked numeric examples. Three lessons.', lessons: 3 },
 };
 
