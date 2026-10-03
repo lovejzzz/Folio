@@ -38,7 +38,14 @@ export const IN_CLASS =
 /** A test, quiz or exam taken in class, as a paper to print, with its key. */
 export function testAsk(lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
-  return `Write ${toward ? `"${toward}"` : 'the test this lesson holds'} as a paper students are handed, to be taken in the time the plan gives it. Under "instructions", what students read at the top: the time allowed, what they may use and how to show their work. Then the questions, each complete as printed (a multiple-choice question lists its choices as A, B, C and D), with the points it carries and, for the key, its answer with the working or the points a marker looks for. Cover what the lessons up to this one taught, in proportion to the time each took, with new cases and new numbers, never the examples the lessons worked; mix short questions with ones that ask students to show reasoning, at the level these students are taught. Make the points add up to a round total.`;
+  return [
+    `Write ${toward ? `"${toward}"` : 'the test this lesson holds'} as a paper students are handed, to be taken in the time the plan gives it.`,
+    'Under "instructions", what students read at the top: the time allowed, what they may use and how to show their work. Then the questions, each complete as printed (a multiple-choice question lists its choices as A, B, C and D), with the points it carries and, for the key, its answer with the working and what each point is for.',
+    // Unbounded, "new numbers" took a grade 3 paper to elevenths and sixteenths.
+    'Cover what the plan says the paper covers, in proportion to the time each part took, and nothing not yet taught. Use new cases and new numbers, never the examples the lessons worked, but of the same kinds and sizes the lessons used. Mix short questions with ones that ask students to show reasoning, at the level these students are taught.',
+    'Every point is for something the printed question asks: no points for unasked work, and none added to reach a round total. A figure a question needs (a number line, a graph, a diagram) is described in square brackets, exactly enough for the teacher to draw or print it.',
+    'Before you answer, work every question from its printed text alone: it must be answerable as written, its table or data must be right, and its key must match.',
+  ].join(' ');
 }
 
 /** How university teaching differs from school, said once in the course background. */
@@ -57,6 +64,6 @@ const NOTHING_SHOWN = 'Nothing left on the board or screen while students take i
 /** What a plan is told about the graded papers its lesson holds. */
 export function gradedPapers(course: Course, lesson: Lesson): string {
   // Its paper is the lesson's own material: the plan runs it and writes none of it.
-  if (lesson.homework.kind === 'test') return `The test this lesson holds has its own paper: the plan gives it most of the lesson, says how the room is set and what students may use, and writes no questions. ${NOTHING_SHOWN}`;
+  if (lesson.homework.kind === 'test') return `The test or quiz this lesson holds has its own paper: the plan gives it its time (most of the lesson for a unit test or exam; ten to twenty minutes for a short quiz, which tests earlier lessons and not what this lesson has just taught), says what it covers, how the room is set and what students may use, and writes no questions. ${NOTHING_SHOWN}`;
   return course.materials.quiz.enabled ? QUIZ_IS_MATERIAL : QUIZ_IN_PLAN;
 }

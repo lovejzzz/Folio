@@ -95,6 +95,12 @@ export function sharedComponent(course: Course, lesson: Lesson): string {
   const sharing = orderedLessons(course).filter((l) => l.homework.kind === lesson.homework.kind && l.homework.toward.trim() === toward);
   if (sharing.length < 2) return '';
   const place = sharing.findIndex((l) => l.id === lesson.id) + 1;
+  // Papers of one component (two quizzes) told only "cover the lessons so far" came out alike, title and half the questions.
+  if (lesson.homework.kind === 'test') {
+    const earlier = sharing[place - 2]?.taskIds.map((id) => course.tasks[id]).find((t) => t?.kind === 'assignment');
+    const before = earlier?.kind === 'assignment' ? ` The paper before it, "${earlier.title}", asked: ${clipNote(earlier.steps.join(' | '), 900)} Repeat none of it.` : '';
+    return `"${toward}" is ${sharing.length} papers, and this is number ${place}: title it so (for example "Quiz ${place}" with what it covers), and test what was taught since the paper before it, not the same ground again.${before}`;
+  }
   const told = `"${toward}" is set as an assignment in ${sharing.length} lessons, and this is part ${place} of ${sharing.length}: write only the part that belongs to this lesson, title it so it can be told apart from the other parts (for example "${toward}: " followed by this lesson's focus), and never say this part alone carries the component's whole weight. Students read it as an assignment in its own right: no "part", "component" or count of parts in its text.`;
   // Written each on its own, weekly responses in one course asked for 300, 400 and 600 words.
   const before = sharing[place - 2];
