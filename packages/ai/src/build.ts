@@ -76,10 +76,11 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
   // Plans are written in lesson order, each knowing the ones before it, so a course teaches one version of
   // each idea; the other parts fill the queue meanwhile, so a build takes little longer.
   const position = (lessonId: string) => host.getCourse().lessonOrder.indexOf(lessonId);
-  // Parts of one graded piece set in several lessons are written in order too, each seeing the part before it.
+  // Parts of one graded piece set in several lessons, and the steps toward one, are written in order too, each
+  // seeing what came before it.
   const toward = (lessonId: string) => {
     const homework = host.getCourse().lessons[lessonId]?.homework;
-    return homework?.kind === 'assignment' ? homework.toward.trim() : '';
+    return homework && homework.kind !== 'none' ? `${homework.kind}:${homework.toward.trim()}` : '';
   };
   const blocked = (t: BuildTarget): boolean => {
     const queued = [...pending, ...[...running.keys()].map(parseKey)];

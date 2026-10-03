@@ -42,6 +42,19 @@ export function earlierLessons(course: Course, lesson: Lesson): string {
 }
 
 /**
+ * The steps toward a larger piece, lesson by lesson, are one path: written each on its own, three lessons of a
+ * course set the same step, "Choose a study for your research summary".
+ */
+export function earlierSteps(course: Course, lesson: Lesson): string {
+  const toward = lesson.homework.toward.trim();
+  const before = orderedLessons(course)
+    .slice(0, course.lessonOrder.indexOf(lesson.id))
+    .filter((l) => l.homework.kind === 'step' && l.homework.toward.trim() === toward);
+  const titles = before.flatMap((l) => l.taskIds.map((id) => course.tasks[id]).flatMap((t) => (t?.kind === 'assignment' ? [`"${t.title}"`] : [])));
+  return titles.length ? `Earlier lessons already set these steps toward it: ${titles.join(', ')}. This is the next step: different from them, and building on them.` : '';
+}
+
+/**
  * A graded component set as an assignment in several lessons is shared between them. Told only its name, each
  * lesson wrote the whole component: the same title twice, each claiming the component's full weight.
  */

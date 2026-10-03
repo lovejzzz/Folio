@@ -134,6 +134,23 @@ describe('parts of one graded piece', () => {
   });
 });
 
+describe('steps toward one larger piece', () => {
+  it('are written in order, each told the steps already set', async () => {
+    const store = new CourseStore(smallCourse());
+    store.apply(orderedLessons(store.getState()).map((l) => cmd('lesson.homework', { lessonId: l.id, homework: { kind: 'step', toward: 'Final essay' } })), { label: { key: 'b' }, source: 'teacher' });
+    const asked: string[] = [];
+    const inf = fakeInference((req) => {
+      if (req.task === 'folio_plan') return planDraft;
+      asked.push(JSON.stringify(req));
+      return { title: `Step ${asked.length}`, prompt: 'Do the next thing.', steps: ['a'] };
+    });
+    const targets = missingTargets(store.getState()).filter((t) => t.kind === 'plan' || t.kind === 'assignments');
+    await runBuild({ inference: inf, getCourse: store.getState, commit: (_t, c) => store.apply(c, { label: { key: 'b' }, source: 'ai', undoable: false }), signal: new AbortController().signal }, targets);
+    expect(asked[0]).not.toContain('already set these steps');
+    expect(asked[1]).toContain('already set these steps toward it: \\"Step 1\\"');
+  });
+});
+
 describe('homework changed mid-build', () => {
   it('writes no assignment for a lesson set to no homework after the build began', async () => {
     const store = new CourseStore(smallCourse());

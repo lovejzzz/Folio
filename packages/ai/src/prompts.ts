@@ -1,5 +1,5 @@
 import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
-import { earlierLessons, earlierNotes, sharedComponent } from './continuity';
+import { earlierLessons, earlierNotes, earlierSteps, sharedComponent } from './continuity';
 import { trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 
@@ -269,7 +269,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
   assignments: (c, lesson) => {
     const toward = lesson.homework.toward.trim();
     if (lesson.homework.kind === 'step')
-      return `Write one short, ungraded step toward ${toward ? `"${toward}"` : 'the larger graded piece the course builds to'}, suited to where this lesson falls in the course: for example choosing a question, gathering evidence, an outline or a draft section. It should take students well under an hour, and be done at home: nothing in it needs a partner, a classmate or the classroom's materials, and young children can do it with someone at home. Give a title, what to do, and one to four steps (the page numbers them, so leave numbers out).`;
+      return `Write one short, ungraded step toward ${toward ? `"${toward}"` : 'the larger graded piece the course builds to'}, suited to where this lesson falls in the course: for example choosing a question, gathering evidence, an outline or a draft section. It should take students well under an hour, and be done at home: nothing in it needs a partner, a classmate or the classroom's materials, and young children can do it with someone at home. Give a title, what to do, and one to four steps (the page numbers them, so leave numbers out). ${earlierSteps(c, lesson)}`.trim();
     return [
       toward
         ? `Write the assignment "${toward}" as the brief describes it, with its length and requirements, set in this lesson and drawing on the course so far: two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.`
