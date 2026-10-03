@@ -51,7 +51,7 @@ Use these names exactly. They are what students see on screen.
 - If a script uses an older API, Unity may show a "Script Updating Consent" dialog offering to update the files: students following the page's code should not see it.
 - Edit > Duplicate (Ctrl+D, Command+D on a Mac) names the copy "Ball (1)", selects it and does NOT start a rename. To rename a selected object: Edit > Rename (F2 on Windows, Enter on a Mac), type the name, press Enter.
 - A primitive's Inspector reads, in order: Transform, "Cube (Mesh Filter)" (or "Sphere (Mesh Filter)"), Box Collider (or Sphere Collider), Mesh Renderer, then the material.
-- A project made from Universal 3D already has these folders in Assets: Materials, Resources, Scenes, Settings, TutorialInfo, and a Readme. Students use the existing Materials folder; they do not create one.
+- A project made from Universal 3D has in Assets: Scenes, Settings, TutorialInfo, a Readme and InputSystem_Actions. There is no Materials, Scripts or Prefabs folder until the student makes one (Assets > Create > Folder).
 - The Game view's aspect dropdown is the third control in its toolbar and reads "Free Aspect" in a new project. The choice is kept per project: each new project needs "16:9 Aspect" chosen again.
 - Changes made during Play to objects in the scene (a Transform, a Rigidbody's Mass) are undone when Play stops. Changes to assets (a material's color or Smoothness, a physics material) are kept.
 - An unsaved scene shows an asterisk after its name in the Hierarchy on both systems; do not rely on the window's title bar.
