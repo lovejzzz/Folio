@@ -124,17 +124,30 @@ export function earlierNotes(lesson: Lesson): string {
   return `A review of the previous version of this plan found these problems. Write the plan so that none of them is in it:\n${notes.join('\n')}`;
 }
 
-/** What the lesson sets as homework, so its plan and materials agree on it: untold, each plan guessed. */
-export function homeworkLine(lesson: Lesson): string {
+/** What the lesson sets as homework, when it is due and what is handed in today, so its plan and materials agree: untold, each plan guessed. */
+/** When the work a lesson sets is handed in, in the words a plan or an assignment can use. */
+export function dueWords(course: Course, lesson: Lesson): string {
+  const due = lesson.homework.due ? course.lessons[lesson.homework.due] : undefined;
+  const gap = due ? course.lessonOrder.indexOf(due.id) - course.lessonOrder.indexOf(lesson.id) : 0;
+  if (!due || gap < 1) return '';
+  return gap === 1 ? 'It is due at the start of the next lesson.' : `It is due at the start of the lesson "${due.title}", ${gap} lessons from now.`;
+}
+
+export function homeworkLine(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
-  if (lesson.homework.kind === 'none') return 'This lesson sets no homework.';
+  const collected = orderedLessons(course)
+    .filter((l) => l.homework.due === lesson.id && l.id !== lesson.id)
+    .map((l) => (l.homework.toward.trim() ? `"${l.homework.toward.trim()}" (set in "${l.title}")` : `the work set in "${l.title}"`));
+  // Set, due and collected were three guesses: one piece had two due dates and a close that said "give its due date".
+  const due = collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan collects it.` : '';
+  if (lesson.homework.kind === 'none') return `This lesson sets no homework.${due}`;
   const named = toward ? `"${toward}"` : 'a graded piece';
   // The paper and the rubric are their own material: a plan that also wrote them gave the lesson two.
-  if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions, and writes no questions.`;
-  if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done and graded in class with a rubric written separately: the plan runs it, with time for every student, and writes no criteria.`;
-  const set = 'which the plan has the teacher set before students leave, without spelling out its tasks or naming files and handouts it may not have';
-  if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}.`;
-  return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}"` : ''}, ${set}.`;
+  if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions (or, when the summary says it is sat after the course ends, reviews for it and says when and how it is sat), and writes no questions.${due}`;
+  if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done and graded in class with a rubric written separately: the plan runs it, with time for every student, and writes no criteria.${due}`;
+  const set = `which the plan has the teacher set before students leave, naming it and when it is due, without spelling out its tasks or naming files and handouts it may not have. ${dueWords(course, lesson)}`.trim();
+  if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}${due}`;
+  return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}"` : ''}, ${set}${due}`;
 }
 
 /**

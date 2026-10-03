@@ -1,5 +1,5 @@
 import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
-import { courseSoFar, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
+import { courseSoFar, dueWords, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
 import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 
@@ -171,6 +171,8 @@ export function courseBackground(course: Course): string {
     sessionsLine(course),
     isHigherEducation(course.audience.level) ? UNIVERSITY_TEACHING : '',
     briefLine(course),
+    // The teacher's rules reach every writer: late days and integrity appeared in one assignment of five.
+    course.policies.trim() ? `Class policies, as the teacher set them:\n${clip(course.policies.trim(), 1500)}` : '',
     gradingLine(course),
     sourcesBlock(course),
   ]
@@ -191,7 +193,7 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     // only that, they quoted other lessons' titles at students instead.
     `This is the lesson "${lesson.title}". ${lesson.summary} Refer to other lessons as "last time" (only the lesson just before), "earlier in the course", "next time" or "later in the course", never by title or number.`,
     objectives ? `Its objectives:\n${objectives}` : '',
-    homeworkLine(lesson),
+    homeworkLine(course, lesson),
     readings ? `Students read before this lesson:\n${readings}` : '',
   ]
     .filter(Boolean)
@@ -252,7 +254,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
       'Plan only what can really happen in the time, place and with the materials the lesson has. Whatever students are to see, make or finish in a segment has to be possible within that segment\'s minutes; when something takes longer, such as a process that needs hours or days to show a result, plan around it (start it earlier, use results prepared in advance, or come back to it later) and say how in the teacher notes. The slides, quiz and study guide are written from this plan and take everything in it as having happened.',
       c.shape.minutesPerLesson >= 120 && !lessonSessions(c).length ? 'A meeting this long has a break of about ten minutes near its middle, as a segment of its own.' : '',
       'What the brief says of particular students (a newcomer, heritage speakers, students who need support) shapes the plan where it matters, with something for their own learning; it is not repeated in every segment.',
-      'In the teacher notes, give the safety precautions a careful teacher would take with what students handle, taste, heat, cut or mix (protective gear, ventilation, heat a reaction gives off, disposal, allergies, materials that must never be eaten); these are outside the word limit of the notes. Where the material is painful (violence, racism, abuse, the language of period sources), say how to handle it with care, and never have students play the people who suffered or inflicted it.',
+      'In the teacher notes, give the safety precautions a careful teacher would take with what students handle, taste, heat, cut or mix (protective gear, ventilation, heat a reaction gives off, disposal, allergies, materials that must never be eaten); these are outside the word limit of the notes, and where nothing needs guarding against, nothing is said. Code the teacher demonstrates or hands out (worked code, starter code, tests) is written out in full in the notes, each line in its own backticks, also outside the word limit. Where the material is painful (violence, racism, abuse, the language of period sources), say how to handle it with care, and never have students play the people who suffered or inflicted it.',
       `A piece graded in the lesson is never modelled with the very case students then hand in. ${gradedPapers(c, lesson)} Nothing in these instructions is repeated in the plan as advice to the teacher.`,
       'A text students read that is not among the teacher\'s sources is named exactly (author, title, and the section or passage to use, by its opening words when it has no number), so the teacher can find it, with a note to prepare copies; never just "an excerpt".',
       'When a segment uses another of the lesson\'s materials, such as the quiz, the slides or the assignment, say what students do with it, not what its questions or items will be: those are written separately, from this plan.',
@@ -277,7 +279,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
       toward
         ? `Write the assignment "${toward}" as the brief describes it, with its length and requirements, set in this lesson and drawing on the course so far; ${own}: two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.`
         : 'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
-      lesson.homework.kind === 'inclass' ? IN_CLASS : ANSWER_KEY,
+      lesson.homework.kind === 'inclass' ? IN_CLASS : `${ANSWER_KEY} ${dueWords(c, lesson)}`.trim(),
       sharedComponent(c, lesson),
       rubricLevels(c),
     ]

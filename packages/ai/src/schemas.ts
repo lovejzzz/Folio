@@ -33,6 +33,7 @@ export const OutlineDraft = z.object({
           .default('assignment')
           .describe('The graded or handed-in work this lesson holds, following how the brief says the course is assessed'),
         homeworkToward: z.string().default('').describe('The graded component the homework counts toward, named as under "grading"; empty if none'),
+        homeworkDue: z.number().int().min(1).nullable().default(null).describe('The number of the lesson at whose start this work is handed in; null when it is done in class, nothing is handed in, or it is due after the last lesson'),
         suggestedReadings: z
           .array(line)
           .max(3)

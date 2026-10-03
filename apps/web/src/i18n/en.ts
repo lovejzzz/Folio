@@ -230,6 +230,7 @@ export const en = {
     kinds: { assignment: 'Graded assignment', step: 'A step toward a bigger piece', test: 'Test or quiz in class', inclass: 'Graded in class, with a rubric', none: 'No homework' },
     stepToward: (what: string) => `Builds toward: ${what}`,
     countsToward: (what: string) => `Counts toward: ${what}`,
+    due: (n: number) => `Due at the start of lesson ${n}`,
     none: 'No homework in this lesson.',
     noRubric: 'A step toward a bigger piece has no rubric of its own.',
     testNoRubric: 'A test is marked with its answer key, not a rubric.',

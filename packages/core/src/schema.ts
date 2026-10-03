@@ -97,6 +97,8 @@ export const HomeworkSchema = z.object({
   kind: HomeworkKindSchema,
   /** The graded component it counts toward, in the grading's words ("Final essay"); empty if none is named. */
   toward: text,
+  /** The lesson at whose start the work is handed in; absent when it is done in class, or no lesson is named. */
+  due: id.optional(),
 });
 export type Homework = z.infer<typeof HomeworkSchema>;
 

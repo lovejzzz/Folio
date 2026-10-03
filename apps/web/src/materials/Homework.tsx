@@ -14,7 +14,8 @@ export function HomeworkPicker({ course, lesson, className = 'mb-5', underHeadin
   const t = useT();
   const n = lessonNumber(course, lesson.id);
   const { kind, toward } = lesson.homework;
-  const set = (next: HomeworkKind) => edit([cmd('lesson.homework', { lessonId: lesson.id, homework: { kind: next, toward } })], { key: 'setHomework', values: { n } });
+  const set = (next: HomeworkKind) => edit([cmd('lesson.homework', { lessonId: lesson.id, homework: { ...lesson.homework, kind: next } })], { key: 'setHomework', values: { n } });
+  const due = lesson.homework.due && (kind === 'assignment' || kind === 'step') ? lessonNumber(course, lesson.homework.due) : 0;
   return (
     <div className={cx('no-print flex flex-wrap items-center gap-x-3 gap-y-1 font-ui text-13 text-ink-2', className)}>
       <label className="flex items-center gap-2">
@@ -32,6 +33,7 @@ export function HomeworkPicker({ course, lesson, className = 'mb-5', underHeadin
         </select>
       </label>
       {kind !== 'none' && toward && <span>{kind === 'step' ? t.homework.stepToward('') : t.homework.countsToward('')}<span lang={course.language}>{toward}</span></span>}
+      {due > 0 && <span>{t.homework.due(due)}</span>}
     </div>
   );
 }

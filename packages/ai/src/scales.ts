@@ -29,7 +29,7 @@ export function universityRubric(locale: string): string {
 
 /** New problems need their answers: without a key the teacher works every problem set before marking it. */
 export const ANSWER_KEY =
-  'Under "answerKey", give the teacher the worked answer to each step, one per line and numbered as the steps are; leave it empty only when the work has no single answer, such as an essay or a project.';
+  'Under "answerKey", give the teacher the worked answer to each step, one per line and numbered as the steps are; leave it empty only when the work has no single answer, such as an essay or a project. For code that is tested automatically, the steps give the exact file, function names, parameters and return values, and the key gives test cases with their expected results; the rubric separates what the tests mark from what is marked by reading. An assignment asks for more than the session already built together.';
 
 /** Work graded in the lesson itself: a presentation, a seminar, an interview, something made in class. */
 export const IN_CLASS =
@@ -39,7 +39,7 @@ export const IN_CLASS =
 export function testAsk(lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   return [
-    `Write ${toward ? `"${toward}"` : 'the test this lesson holds'} as a paper students are handed, to be taken in the time the plan gives it.`,
+    `Write ${toward ? `"${toward}"` : 'the test this lesson holds'} as a paper students are handed, to be taken in the time the plan gives it (a final exam sat after the course is set for the usual two to three hours unless the brief says otherwise, and covers the whole course).`,
     'Under "instructions", what students read at the top: the time allowed, what they may use and how to show their work. Then the questions, each complete as printed (a multiple-choice question lists its choices as A, B, C and D), with the points it carries and, for the key, its answer with the working and what each point is for.',
     // Unbounded, "new numbers" took a grade 3 paper to elevenths and sixteenths.
     'Cover what the plan says the paper covers, in proportion to the time each part took, and nothing not yet taught. Use new cases and new numbers, never the examples the lessons worked, but of the same kinds and sizes the lessons used. Mix short questions with ones that ask students to show reasoning, at the level these students are taught.',

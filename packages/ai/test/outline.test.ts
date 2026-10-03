@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { orderedLessons } from '@folio/core';
-import { OutlineDraft, courseFromOutline, groundedIn, lessonContext, outlinePrompt, type NewCourseRequest } from '../src';
+import { OutlineDraft, courseFromOutline, groundedIn, lessonContext, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
 
 const req: NewCourseRequest = {
   brief: 'Political philosophy for second-year undergraduates. Readings from Hobbes and Locke. Problem sets 30%, midterm 30%, final exam 40%.',
@@ -46,6 +46,22 @@ describe('the outline', () => {
       ['Final exam', 40],
     ]);
     expect(new Set(course.grading.map((g) => g.id)).size).toBe(3);
+  });
+
+  it('records the lesson where homework is handed in, and tells both lessons', () => {
+    const draft = OutlineDraft.parse({
+      title: 'E', summary: 'S.', subject: 'Philosophy', level: 'University',
+      lessons: [{ ...lessons[0], homework: 'assignment', homeworkToward: 'Final essay', homeworkDue: 2 }, { ...lessons[1], homework: 'none' }],
+      grading: [{ item: 'Final essay', weight: 100 }],
+    });
+    const course = courseFromOutline(req, draft);
+    const [first, second] = orderedLessons(course);
+    expect(first!.homework.due).toBe(second!.id);
+    expect(sectionPrompt(course, first!, 'plan')).toContain('It is due at the start of the next lesson.');
+    expect(sectionPrompt(course, second!, 'plan')).toContain(`Due at the start of this lesson: "Final essay" (set in "${first!.title}"). The plan collects it.`);
+    // A due lesson that isn't later is no due date at all.
+    const back = courseFromOutline(req, OutlineDraft.parse({ ...draft, lessons: [{ ...draft.lessons[0], homeworkDue: 1 }, draft.lessons[1]] }));
+    expect(orderedLessons(back)[0]!.homework.due).toBeUndefined();
   });
 
   it('carries the teacher’s policies over from the brief or syllabus, and leaves them empty when none are stated', () => {

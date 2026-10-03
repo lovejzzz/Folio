@@ -52,6 +52,8 @@ export function projectAssignments(ctx: Ctx): Block[] {
       const { kind } = lesson.homework;
       if (kind === 'step' && toward) blocks.push({ t: 'para', text: l.buildsToward(toward), tone: 'muted' });
       if (kind === 'test' || kind === 'inclass') blocks.push({ t: 'para', text: kind === 'test' ? l.takenInClass : l.gradedInClass, tone: 'muted' });
+      const due = lesson.homework.due ? course.lessons[lesson.homework.due] : undefined;
+      if (due && (kind === 'assignment' || kind === 'step')) blocks.push({ t: 'para', text: l.dueAt(due.title), tone: 'muted' });
       const steps = filledTexts(a.steps);
       if (steps.length) {
         blocks.push({ t: 'heading', level: 3, text: kind === 'test' ? l.questions : l.steps });
