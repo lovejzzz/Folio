@@ -188,5 +188,318 @@
   "lesson": 1,
   "settle": "*",
   "why": "The page was followed step by step in Unity and corrected."
+ },
+ {
+  "lesson": 2,
+  "slot": 1,
+  "src": "/samples/unity/media/w02-preview.mp4",
+  "poster": "/samples/unity/media/w02-preview.poster.webp",
+  "caption": "The finished Arena: the ball drops onto the ramp, rolls down and stops at the far wall."
+ },
+ {
+  "lesson": 2,
+  "slot": 3,
+  "src": "/samples/unity/media/w01-hub-create.webp",
+  "caption": "The New project screen, as in week 1. This time the project name is OrbCollector."
+ },
+ {
+  "lesson": 2,
+  "slot": 4,
+  "src": "/samples/unity/media/w02-editor-new.webp",
+  "caption": "The new project with the scene saved as Arena: the title bar and the Project window both show the name."
+ },
+ {
+  "lesson": 2,
+  "slot": 5,
+  "drop": true,
+  "why": "The same picture as the one under the last step."
+ },
+ {
+  "lesson": 2,
+  "slot": 6,
+  "src": "/samples/unity/media/files/OrbCollector-week2-start.zip"
+ },
+ {
+  "lesson": 2,
+  "slot": 7,
+  "src": "/samples/unity/media/w02-floor-transform.webp",
+  "caption": "Floor’s Transform once Position and Scale are both typed in."
+ },
+ {
+  "lesson": 2,
+  "slot": 8,
+  "src": "/samples/unity/media/w02-arena-plain.webp",
+  "caption": "The Game view at 16:9 Aspect: the whole floor and all four walls are in view."
+ },
+ {
+  "lesson": 2,
+  "slot": 9,
+  "src": "/samples/unity/media/w02-floor-components.webp",
+  "caption": "Floor in the Inspector. Each outlined heading is one component."
+ },
+ {
+  "lesson": 2,
+  "slot": 10,
+  "drop": true,
+  "why": "Shown by the two pictures above it."
+ },
+ {
+  "lesson": 2,
+  "slot": 11,
+  "src": "/samples/unity/media/w02-material-inspector.webp",
+  "caption": "M_Floor in the Inspector: the color box beside Base Map, and Smoothness below it."
+ },
+ {
+  "lesson": 2,
+  "slot": 12,
+  "src": "/samples/unity/media/w02-color-window.webp",
+  "caption": "The Color window with 3B4A5A typed into the Hexadecimal box."
+ },
+ {
+  "lesson": 2,
+  "slot": 13,
+  "drop": true,
+  "why": "A still picture cannot show a drag."
+ },
+ {
+  "lesson": 2,
+  "slot": 14,
+  "src": "/samples/unity/media/w02-materials.webp",
+  "caption": "Slate floor, gray-blue walls, and the four materials in the Materials folder."
+ },
+ {
+  "lesson": 2,
+  "slot": 15,
+  "src": "/samples/unity/media/w02-light-emission.webp",
+  "caption": "The Directional Light with Light Appearance set to Color. The color box is orange for the test in the next steps."
+ },
+ {
+  "lesson": 2,
+  "slot": 16,
+  "src": "/samples/unity/media/w02-light-orange.webp",
+  "caption": "One orange light tints every surface."
+ },
+ {
+  "lesson": 2,
+  "slot": 17,
+  "src": "/samples/unity/media/w02-light-white.webp",
+  "caption": "The arena under the warm white light, with the walls’ shadows on the floor."
+ },
+ {
+  "lesson": 2,
+  "slot": 18,
+  "src": "/samples/unity/media/w02-ramp-ball.webp",
+  "caption": "The Scene view once Ramp and Ball are both placed: the ball hangs above the high end of the ramp."
+ },
+ {
+  "lesson": 2,
+  "slot": 19,
+  "src": "/samples/unity/media/w02-ball-rigidbody.webp",
+  "caption": "Ball in the Inspector with its new Rigidbody at the bottom."
+ },
+ {
+  "lesson": 2,
+  "slot": 20,
+  "src": "/samples/unity/media/w02-rigidbody.mp4",
+  "poster": "/samples/unity/media/w02-rigidbody.poster.webp",
+  "caption": "The same scene twice: first with no Rigidbody on Ball, then with one."
+ },
+ {
+  "lesson": 2,
+  "slot": 21,
+  "src": "/samples/unity/media/w02-rolling.webp",
+  "caption": "Halfway down the ramp, about two seconds after pressing Play."
+ },
+ {
+  "lesson": 2,
+  "slot": 22,
+  "src": "/samples/unity/media/w02-collider-off.webp",
+  "caption": "The box at the left of the Sphere Collider heading, unticked."
+ },
+ {
+  "lesson": 2,
+  "slot": 23,
+  "src": "/samples/unity/media/w02-two-balls.webp",
+  "caption": "Mass 1 and Mass 10, side by side all the way down."
+ },
+ {
+  "lesson": 2,
+  "slot": 24,
+  "src": "/samples/unity/media/w02-tests.mp4",
+  "poster": "/samples/unity/media/w02-tests.poster.webp",
+  "caption": "Two of the tests: the collider switched off, then the light and heavy balls together."
+ },
+ {
+  "lesson": 2,
+  "slot": 25,
+  "src": "/samples/unity/media/files/OrbCollector-week2-end.zip"
+ },
+ {
+  "lesson": 2,
+  "slot": 26,
+  "src": "/samples/unity/media/w02-bounce.mp4",
+  "poster": "/samples/unity/media/w02-bounce.poster.webp",
+  "caption": "Ball_Bouncy with Bounciness 0.8 and Bounce Combine set to Maximum."
+ },
+ {
+  "lesson": 2,
+  "find": "Click the **Game** tab and check that the shape dropdown at its top left reads **16:9 Aspect**.",
+  "replace": "Click the **Game** tab. In the bar along its top, open the third dropdown, which reads **Free Aspect** in a new project, and choose **16:9 Aspect**.",
+  "why": "The aspect choice is kept per project: a new project is on Free Aspect."
+ },
+ {
+  "lesson": 2,
+  "find": "check the aspect dropdown reads 16:9 Aspect and the camera numbers match.",
+  "replace": "set the aspect dropdown in the Game view to 16:9 Aspect and check that the camera numbers match.",
+  "why": "As above."
+ },
+ {
+  "lesson": 2,
+  "find": "anything you change in the Inspector is thrown away when you press Play again to stop.",
+  "replace": "anything you change on an object in the scene is put back as it was when you press Play again to stop. (A change to a material is the exception: it stays.)",
+  "why": "Changes to assets made during Play are kept."
+ },
+ {
+  "lesson": 2,
+  "find": "find the components in order: **Transform**, **Mesh Filter**, **Mesh Renderer** and **Box Collider**.",
+  "replace": "find its four components: **Transform**, **Cube (Mesh Filter)**, **Box Collider** and **Mesh Renderer**.",
+  "why": "The headings and their order as Unity 6000.6 shows them."
+ },
+ {
+  "lesson": 2,
+  "find": "it has **Transform**, **Mesh Filter**, **Mesh Renderer** and **Sphere Collider**, but no Rigidbody.",
+  "replace": "it has **Transform**, **Sphere (Mesh Filter)**, **Sphere Collider** and **Mesh Renderer**, but no Rigidbody.",
+  "why": "As above."
+ },
+ {
+  "lesson": 2,
+  "find": "then rename the copy and change its numbers.",
+  "replace": "then choose Edit > Rename, type the new name, press Enter and change its numbers.",
+  "why": "Duplicate does not start a rename."
+ },
+ {
+  "lesson": 2,
+  "find": "Click **Ball**, choose **Edit > Duplicate**, and type Ball_Heavy as its name.",
+  "replace": "Click **Ball** and choose **Edit > Duplicate**. The copy is called Ball (1) and is selected. Choose **Edit > Rename**, type Ball_Heavy and press Enter.",
+  "why": "The copy is named Ball (1) and is not in edit mode."
+ },
+ {
+  "lesson": 2,
+  "find": "and raise its Bounciness to 0.8. Drag it onto the Material box of the Sphere Collider, which reads None (Physics Material). If the bounces are weak, the floor has no material so the bounce is averaged: set Bounce Combine on PM_Bouncy to Maximum.",
+  "replace": "raise its Bounciness to 0.8 and set its Bounce Combine to Maximum. Drag it onto the Material box of the Sphere Collider, which reads None (Physics Material). Bounce Combine matters because the floor has no physics material: left on Average, the ball’s 0.8 is averaged with the floor’s 0 and it bounces only once.",
+  "why": "Measured: Average gives one bounce, Maximum gives eight or more."
+ },
+ {
+  "lesson": 2,
+  "find": "Look through the Light component for a Range value and raise it until the glow reaches the walls.",
+  "replace": "A new Point Light has an Intensity of 1, which is too weak to see here: raise **Intensity** to about 30. Range only sets how far the light can reach, and the 10 it starts with is enough.",
+  "why": "Tried in the editor: Range changes nothing; Intensity 30 gives a clear pool of light."
+ },
+ {
+  "lesson": 2,
+  "find": "while the far corners stay dark.",
+  "replace": "while the floor far from it keeps its own color.",
+  "why": "The sky still lights the scene at Intensity 0.4."
+ },
+ {
+  "lesson": 2,
+  "find": "(Lamp Intensity is too low or Range too small)",
+  "replace": "(Lamp Intensity is too low: try 30)",
+  "why": "As above."
+ },
+ {
+  "lesson": 2,
+  "find": "5, 7, 4",
+  "replace": "-6, 7, 4",
+  "why": "At 5, 7, 4 the graded sphere lands touching Ball_Bouncy from the challenge.",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "−",
+  "replace": "-",
+  "why": "A value a student types uses the keyboard hyphen.",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "Arena tinted orange by the Directional Light set to FF8A1F, with the Color window open.",
+  "replace": "Arena tinted orange by the Directional Light set to FF8A1F: the floor and walls all look orange-brown.",
+  "why": "The picture shows the Game view only."
+ },
+ {
+  "lesson": 2,
+  "settle": "*",
+  "why": "The page was followed step by step in Unity and corrected."
+ },
+ {
+  "find": "centred",
+  "replace": "centered",
+  "all": true,
+  "spelling": true,
+  "why": "The course is en-US."
+ },
+ {
+  "find": "centre",
+  "replace": "center",
+  "all": true,
+  "spelling": true,
+  "why": "The course is en-US."
+ },
+ {
+  "find": "Colour",
+  "replace": "Color",
+  "all": true,
+  "spelling": true,
+  "why": "The course is en-US."
+ },
+ {
+  "find": "colour",
+  "replace": "color",
+  "all": true,
+  "spelling": true,
+  "why": "The course is en-US."
+ },
+ {
+  "find": "grey",
+  "replace": "gray",
+  "all": true,
+  "spelling": true,
+  "why": "The course is en-US."
+ },
+ {
+  "find": "metres",
+  "replace": "meters",
+  "all": true,
+  "spelling": true,
+  "why": "The course is en-US."
+ },
+ {
+  "find": "labelled",
+  "replace": "labeled",
+  "all": true,
+  "spelling": true,
+  "why": "The course is en-US."
+ },
+ {
+  "find": "cancelled",
+  "replace": "canceled",
+  "all": true,
+  "spelling": true,
+  "why": "The course is en-US."
+ },
+ {
+  "find": "practise",
+  "replace": "practice",
+  "all": true,
+  "spelling": true,
+  "why": "The course is en-US."
+ },
+ {
+  "find": "Practise",
+  "replace": "Practice",
+  "all": true,
+  "spelling": true,
+  "why": "The course is en-US."
  }
 ]

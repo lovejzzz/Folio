@@ -85,7 +85,12 @@ function slots(page: PageBlock[]): Slot[] {
   const gone = new Set<string>();
   const out: Slot[] = [];
   for (const block of page) {
-    if (block.type === 'image' || block.type === 'video') out.push({ fill: (src, poster, caption) => Object.assign(block, { src }, block.type === 'video' && poster ? { poster } : {}, caption ? { caption } : {}), drop: () => void gone.add(block.id) });
+    // A picture slot filled with a recording becomes a clip: what the page asked to show turned out to move.
+    if (block.type === 'image' || block.type === 'video')
+      out.push({
+        fill: (src, poster, caption) => Object.assign(block, { src }, caption ? { caption } : {}, src.endsWith('.mp4') ? { type: 'video', poster: poster ?? '', clip: true, minutes: 0.2, transcript: '', ...(block.type === 'video' ? { minutes: block.minutes, transcript: block.transcript, clip: block.clip } : {}) } : {}),
+        drop: () => void gone.add(block.id),
+      });
     if (block.type === 'file') out.push({ fill: (src) => void (block.href = src), drop: () => void gone.add(block.id) });
     if (block.type === 'steps') for (const step of block.items) if (step.shot) out.push({ fill: (src, _poster, caption) => void Object.assign(step.shot!, { src }, caption ? { caption } : {}), drop: () => void delete step.shot });
   }
