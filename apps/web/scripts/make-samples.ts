@@ -6,7 +6,7 @@
 // A sample is shown as Folio's best work, so after the build every part a check flagged is written again
 // (--polish does only that, on samples already written).
 // Writes apps/web/public/samples/<name>.json; logs every call to apps/web/scripts/.samples-log.jsonl.
-import { MATERIAL_KINDS, CourseStore, orderedLessons, parseCourse, type Course, type GeneratedKind } from '@folio/core';
+import { MATERIAL_KINDS, CourseStore, cmd, orderedLessons, parseCourse, type Course, type GeneratedKind } from '@folio/core';
 import { BUILT_ON_PLAN, courseFromOutline, createInference, generateOutline, missingTargets, runBuild, type BuildHost, type BuildTarget, type NewCourseRequest } from '@folio/ai';
 import { spawn } from 'node:child_process';
 import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
@@ -26,11 +26,11 @@ const CWD = mkdtempSync(join(tmpdir(), 'folio-samples-'));
 /** Each sample's brief, written as a teacher there would: a unit for school, a semester for university. */
 export const BRIEFS: Record<SampleName, string> = {
   elementary:
-    'Life cycles of plants and animals for grade 2 science: a two-week unit of ten 40-minute lessons. Students observe and compare the life cycles of a bean plant, a butterfly and a frog, put the stages in order, and notice what all living things share: they are born, grow, reproduce and die. Start a bean-sprouting observation in the first lesson that students record in an observation journal through the unit, use picture cards for sequencing, and read aloud a picture book where it helps. Short check-ins along the way; the unit ends with a drawing-and-labeling assessment of one life cycle, graded with a simple rubric.',
+    'Life cycles of plants and animals for grade 2 science: a two-week unit of ten 40-minute lessons. Students observe and compare the life cycles of a bean plant, a butterfly and a frog, put the stages in order, and notice what all living things share: they are born, grow, reproduce and die. Start a bean-sprouting observation in the first lesson that students record in an observation journal through the unit, use picture cards for sequencing, and read aloud a picture book where it helps. Short check-ins along the way are practice and are not graded. The only graded work is the final drawing-and-labeling assessment of one life cycle, done in the last lesson and scored with a simple rubric: it is 100% of the unit grade.',
   middle:
-    'Writing argumentative essays for grade 8 English language arts: a three-week unit of fifteen 45-minute lessons. Students learn to state a clear claim, support it with reasons and evidence from two short articles, explain how the evidence supports the claim, answer a counterclaim, and organize a five-paragraph essay with an introduction and a conclusion. Use a topic they care about: should school start later? Supply the two articles, one for and one against. Build the essay in steps across the unit: a planning organizer, model paragraphs, drafting in class, a peer review session and revision. Grading: the final essay 60% with a rubric, the organizer and drafts 25%, and short quizzes on the terms of argument 15%.',
+    'Writing argumentative essays for grade 8 English language arts: a three-week unit of fifteen 45-minute lessons. Students learn to state a clear claim, support it with reasons and evidence from two short articles, explain how the evidence supports the claim, answer a counterclaim, and organize a five-paragraph essay with an introduction and a conclusion. The topic is one they care about: should school start later? Use the two attached opinion articles, one for and one against, as the evidence students read, mark up and cite. Build the essay in steps across the unit: a planning organizer, model paragraphs, drafting in class, a peer review session and revision. Grading: the final essay 60% with a rubric, the organizer and drafts 25%, and short quizzes on the terms of argument 15%.',
   university:
-    'Introduction to ethics for first-year university students: a 14-week semester, each week a 75-minute lecture and a 50-minute seminar. Begin with what ethics is and how to argue about it; then consequentialism, deontology, virtue ethics, social contract theory and moral relativism, with classic readings (Mill, Kant, Aristotle, Hobbes, James Rachels); then apply the theories to current questions: what we owe distant strangers, the moral status of animals, and who is responsible when an AI system causes harm. The last week reviews for the exam. Give each seminar discussion questions students prepare in advance. Grading: weekly reading responses 20%, seminar participation 10%, a 1,200-word paper on one theory 20%, a 2,000-word argumentative paper 25%, and a final exam 25%, with rubrics for the papers.',
+    'Introduction to ethics for first-year university students: a 14-week semester, each week a 75-minute lecture and a 50-minute seminar. The textbook is James Rachels and Stuart Rachels, The Elements of Moral Philosophy, with primary readings each week. Week 1, what morality is (Rachels, chapter 1). Week 2, how to argue about ethics (Anthony Weston, A Rulebook for Arguments). Week 3, cultural relativism (Rachels, chapter 2). Week 4, utilitarianism (John Stuart Mill, Utilitarianism, chapter 2; Rachels, chapters 7 and 8). Week 5, Kant (Immanuel Kant, Groundwork of the Metaphysics of Morals, section II; Rachels, chapters 9 and 10). Week 6, virtue ethics (Aristotle, Nicomachean Ethics, book II; Rachels, chapter 12). Week 7, social contract theory (Thomas Hobbes, Leviathan, chapters 13 to 15; Rachels, chapter 6). Week 8, the theories tested on hard cases (Judith Jarvis Thomson, "The Trolley Problem"). Weeks 9 and 10, what we owe distant strangers (Peter Singer, "Famine, Affluence, and Morality"; Thomas Nagel, "The Problem of Global Justice"). Week 11, the moral status of animals (Peter Singer, "All Animals Are Equal"; Carl Cohen, "The Case for the Use of Animals in Biomedical Research"). Week 12, who is responsible when an AI system causes harm (Andreas Matthias, "The responsibility gap"; Robert Sparrow, "Killer Robots"). Week 13, from a case to an argument: writing the final paper. Week 14, review for the exam. Students prepare the seminar discussion questions in advance. Grading: weekly reading responses of 400 to 500 words 20%, seminar participation 10%, a 1,200-word paper defending one theory, due in week 7, 20%, a 2,000-word argumentative paper on one of the applied questions, due in week 13, 25%, and a final exam 25%, with rubrics for the papers.',
 };
 
 function run(cmd: string, args: string[], input: string): Promise<string> {
@@ -119,7 +119,28 @@ const cliFetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
 }) as typeof fetch;
 
 /** The request the home page makes from this brief, with every material. */
-function requestFor(brief: string): NewCourseRequest {
+/** The class policies each teacher would type in: Folio leaves them to the teacher. */
+const POLICIES: Record<SampleName, string> = {
+  elementary:
+    'Observation journals, check-ins and quizzes are practice and are not graded. The final life cycle drawing is scored with the rubric; a student who is absent draws it on their return.\n\nSpelling does not count toward the score: a name that can be read, such as "krisalis", is accepted. Read any prompt aloud for a student who needs it.\n\nBeans and other materials are for looking at, never for eating. Tell me about any food allergies before the unit begins.',
+  middle:
+    'Bring your writing folder to every class: the organizer, drafts and peer review sheets all stay in it until the final essay is handed in.\n\nDrafts are due on the day set in class. A late draft can still earn full credit if it is finished before peer review, so that your partner has something to read.\n\nEssays use evidence only from the two unit articles, with the article named each time. Copying sentences without quotation marks, from the articles or anywhere else, is plagiarism.',
+  university:
+    'Attendance at seminars is expected; participation is graded on preparation and contribution, not on how often you speak. Read the assigned texts before the seminar and bring them with you.\n\nPapers are submitted through the course site by 11:59 p.m. on the due date. Late papers lose a third of a letter grade per day unless an extension is arranged before the due date.\n\nAI tools may be used to brainstorm or check grammar, but not to write any part of submitted work; say in a note at the end of a paper how you used them. All work follows the university\'s academic integrity policy.\n\nStudents who need accommodations should contact Accessibility Services and let me know in the first two weeks.',
+};
+
+/** The files a teacher would attach with each brief. */
+const ATTACHED: Partial<Record<SampleName, string[]>> = { middle: ['article-for.md', 'article-against.md'] };
+
+function attached(name: SampleName): { title: string; text: string }[] {
+  return (ATTACHED[name] ?? []).map((file) => {
+    const text = readFileSync(join(WEB, 'scripts/sample-sources', file), 'utf8');
+    return { title: text.split('\n')[0]!.replace(/^#\s*/, ''), text };
+  });
+}
+
+function requestFor(name: SampleName): NewCourseRequest {
+  const brief = BRIEFS[name];
   return {
     brief,
     lessonCount: guessLessons(brief),
@@ -130,7 +151,7 @@ function requestFor(brief: string): NewCourseRequest {
     language: 'en',
     locale: 'en-US',
     materials: [...MATERIAL_KINDS],
-    sources: [],
+    sources: attached(name),
   };
 }
 
@@ -186,8 +207,16 @@ async function make(name: SampleName, polishOnly: boolean): Promise<void> {
   if (polishOnly) {
     store = new CourseStore(parseCourse(JSON.parse(readFileSync(join(OUT, `${name}.json`), 'utf8'))));
   } else {
-    const req = requestFor(BRIEFS[name]);
+    const req = requestFor(name);
     store = new CourseStore(courseFromOutline(req, await generateOutline(inference, req)));
+    store.apply([cmd('course.update', { policies: POLICIES[name] })], { label: { key: 'built' }, source: 'teacher', undoable: false });
+    // A graded drawing done in class has no homework to set, and so no rubric: the teacher sets it as the last
+    // lesson's graded assignment, so Folio writes its instructions and rubric.
+    if (name === 'elementary') {
+      const last = orderedLessons(store.getState()).at(-1)!;
+      const item = store.getState().grading[0]?.item ?? '';
+      store.apply([cmd('lesson.homework', { lessonId: last.id, homework: { kind: 'assignment', toward: item } })], { label: { key: 'built' }, source: 'teacher', undoable: false });
+    }
     console.log(`${name}: outline "${store.getState().title}", ${orderedLessons(store.getState()).length} lessons`);
   }
   for (let round = 0; round < 3 && missingTargets(store.getState()).length; round++) await build(name, store, missingTargets(store.getState()), failed);

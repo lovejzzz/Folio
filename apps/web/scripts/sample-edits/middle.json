@@ -1,0 +1,655 @@
+[
+ {
+  "find": "Final essay (with rubric)",
+  "replace": "Final essay",
+  "why": "Grading item should read 'Final essay'",
+  "all": true
+ },
+ {
+  "lesson": 1,
+  "find": "The evidence is Torres’s report in passage [6] that students",
+  "replace": "The evidence is Torres’s report that students",
+  "why": "Passage numbers are internal; teachers never see them"
+ },
+ {
+  "lesson": 1,
+  "find": "The evidence is Torres’s report in passage [6]: after",
+  "replace": "The evidence is Torres’s report: after",
+  "why": "Passage numbers are internal"
+ },
+ {
+  "lesson": 1,
+  "find": "so it is checkable evidence for a reason. See passage [6].",
+  "replace": "so it is checkable evidence for a reason.",
+  "why": "Passage numbers are internal"
+ },
+ {
+  "lesson": 2,
+  "find": "Recall: what did the author want us to do?",
+  "replace": "First look: what does the author want us to do?",
+  "why": "Article is first read in this class; nothing assigned it before"
+ },
+ {
+  "lesson": 2,
+  "find": "Students take out the article they read before class, Let Us Sleep: Why School Should Start Later.\nOn a sticky note",
+  "replace": "Hand out printed copies of Let Us Sleep: Why School Should Start Later. Students read the first paragraph silently.\nOn a sticky note",
+  "why": "Lesson 1 assigns no reading, so the article cannot have been read before class"
+ },
+ {
+  "lesson": 2,
+  "find": "Students read the article before class. Today they annotate it",
+  "replace": "Hand out printed copies of the article at the start of class. Today students read and annotate it",
+  "why": "Lesson 1 assigns no reading"
+ },
+ {
+  "lesson": 2,
+  "find": "Take out your article",
+  "replace": "Read the first paragraph",
+  "why": "Matches in-class first reading"
+ },
+ {
+  "lesson": 2,
+  "find": "Ask the class to find one more underlined fact",
+  "replace": "Ask the class to find one more fact to underline",
+  "why": "Clearer instruction",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "Also underline “2014\" and",
+  "replace": "Also underline “2014” and",
+  "why": "Mismatched quotation mark"
+ },
+ {
+  "lesson": 2,
+  "find": "Maya Torres says her strongest support for a later start is the Seattle results:",
+  "replace": "One of Maya Torres’s strongest pieces of evidence is the Seattle results:",
+  "why": "Torres never says which evidence is her strongest"
+ },
+ {
+  "lesson": 2,
+  "find": "Half an hour more sleep is less than the 8 to 10 hours experts recommend. Does that make the evidence weaker or stronger for her claim?",
+  "replace": "Half an hour more sleep may still leave some students short of the 8 to 10 hours experts recommend. Does that make the evidence weaker for her claim, or does it still help?",
+  "why": "Original compared an increase with a nightly total, which is confused logic"
+ },
+ {
+  "lesson": 2,
+  "find": "Torres says the bus, sports and job problems ‘can be solved.’ What would she need to show us so that this sentence is more than her opinion?",
+  "replace": "Torres says the bus, sports and job problems ‘can be solved,’ and she points to California’s law. Does that example make the sentence more than her opinion? What more could she show us?",
+  "why": "Torres does give support (California law); question ignored it"
+ },
+ {
+  "lesson": 2,
+  "find": "The AAP recommended starts at 8:30 or later.",
+  "replace": "Pediatricians recommended starts at 8:30 or later.",
+  "why": "Abbreviation AAP is never introduced to students"
+ },
+ {
+  "lesson": 3,
+  "find": "Project the first two paragraphs of A Later Start Is Not the Easy Fix It Seems, by Daniel Okafor.",
+  "replace": "Hand out printed copies of A Later Start Is Not the Easy Fix It Seems, by Daniel Okafor, and project the first two paragraphs.",
+  "why": "Article is first read in this class; previous lesson assigned no reading"
+ },
+ {
+  "lesson": 3,
+  "find": "Students read the article before class.",
+  "replace": "Hand out printed copies before the model; students read the rest as they annotate.",
+  "why": "Previous lesson assigned no reading of this article"
+ },
+ {
+  "lesson": 3,
+  "find": "Un­graded preparation for the Final essay.",
+  "replace": "Ungraded preparation for the final essay.",
+  "why": "Hidden soft hyphen in 'Ungraded'; lowercase as elsewhere"
+ },
+ {
+  "lesson": 3,
+  "find": "Work on your own at home; you do not need your class materials.",
+  "replace": "Work on your own at home with your annotated articles.",
+  "why": "Step 3 needs a detail from the articles"
+ },
+ {
+  "lesson": 3,
+  "find": " (Source 11)",
+  "replace": "",
+  "why": "Internal passage numbers leaked into explanation"
+ },
+ {
+  "lesson": 3,
+  "find": " (Sources 12–14)",
+  "replace": "",
+  "why": "Internal passage numbers leaked"
+ },
+ {
+  "lesson": 3,
+  "find": " (Sources 6, 15)",
+  "replace": "",
+  "why": "Internal passage numbers leaked"
+ },
+ {
+  "lesson": 3,
+  "find": " (Source 15)",
+  "replace": "",
+  "why": "Internal passage numbers leaked"
+ },
+ {
+  "lesson": 3,
+  "find": " (Sources 3–8, 12–16)",
+  "replace": "",
+  "why": "Internal passage numbers leaked"
+ },
+ {
+  "lesson": 4,
+  "find": "Torres’s article, passage [6].",
+  "replace": "Torres’s article.",
+  "why": "Internal passage numbers",
+  "all": true
+ },
+ {
+  "lesson": 4,
+  "find": "Torres makes this claim in passage 2.",
+  "replace": "Torres makes this claim in her first paragraph.",
+  "why": "Internal passage numbers"
+ },
+ {
+  "lesson": 4,
+  "find": "A fact can support an argumentative claim as evidence (passage 6).",
+  "replace": "A fact can support an argumentative claim as evidence.",
+  "why": "Internal passage numbers"
+ },
+ {
+  "lesson": 4,
+  "find": "Which revision makes “Early school is bad” a specific claim someone could argue against?",
+  "replace": "Which revision makes “A later start is bad” a specific claim someone could argue against?",
+  "why": "Keyed answer 'should not move its start time later' reversed the meaning of 'Early school is bad'; now matches the class revision of 'A later start is bad'"
+ },
+ {
+  "lesson": 4,
+  "find": "Early school can make students feel tired.",
+  "replace": "A later start can cause some problems.",
+  "why": "Distractors must revise the same statement"
+ },
+ {
+  "lesson": 4,
+  "find": "Our school’s early start time is a big problem.",
+  "replace": "A later start is a big problem for families.",
+  "why": "Distractors must revise the same statement"
+ },
+ {
+  "lesson": 4,
+  "find": "Some students prefer a later start time.",
+  "replace": "Some families dislike a later start time.",
+  "why": "Distractors must revise the same statement"
+ },
+ {
+  "lesson": 6,
+  "find": "Display two statements about teenage sleep from Let Us Sleep: Why School Should Start Later.",
+  "replace": "Display two statements about teenage sleep: a general one written for this warm-up, and a close paraphrase of a sentence from Let Us Sleep: Why School Should Start Later.",
+  "why": "Neither statement is an exact quotation from Torres"
+ },
+ {
+  "lesson": 6,
+  "find": "Statement A: “Lots of teenagers are tired in the morning.” Expected:",
+  "replace": "Statement A (written for the warm-up, not from the article): “Lots of teenagers are tired in the morning.” Expected:",
+  "why": "Make clear A is not from Torres"
+ },
+ {
+  "lesson": 6,
+  "find": "Statement B: “The American Academy of Sleep Medicine says",
+  "replace": "Statement B (paraphrase of Torres): “The American Academy of Sleep Medicine says",
+  "why": "Make clear B is a paraphrase"
+ },
+ {
+  "lesson": 6,
+  "settle": "Segment 1, Which would convince a skeptical friend?",
+  "why": "fixed by the edits above"
+ },
+ {
+  "lesson": 6,
+  "find": "Reliable: fits the reason and has source clues. Relevant only: fits but few clues. Weak: off the reason, opinion, or nothing to check. Stress that clues are not proof.",
+  "replace": "Check fit first: evidence that does not fit the reason is Weak for that reason, however trustworthy its source. Reliable: fits the reason and names a source a reader can trust and trace, such as experts or a measured study. Relevant only: fits but names no source. Weak: off the reason, opinion, or nothing to check. Stress that clues are not proof.",
+  "why": "Separate relevance (fit) from reliability (source)"
+ },
+ {
+  "lesson": 6,
+  "find": "Evidence can be labeled reliable (fits the reason and gives source clues), relevant only (fits the reason but gives few clues), or weak (off the reason, opinion, or nothing to check).",
+  "replace": "Check two things in order. First, relevance: does it fit the reason? Evidence that does not fit is weak for that reason, however trustworthy its source. Second, reliability: does it name a source a reader can trust and trace? Evidence that fits and names such a source is reliable; evidence that fits but names no source is relevant only.",
+  "why": "Review note: relevance and reliability are different judgments"
+ },
+ {
+  "lesson": 6,
+  "find": "Source clues help readers investigate reliability, but clues alone do not establish it.",
+  "replace": "Source clues, such as a named expert group or a measured study, are what let a reader judge reliability. Reliable evidence is trusted, not proven.",
+  "why": "Old definition contradicted how the label is used in the lesson"
+ },
+ {
+  "lesson": 6,
+  "find": "Reliable: fits the reason and gives source clues. Relevant only: fits the reason but gives few clues.",
+  "replace": "Check fit first: evidence that does not fit the reason is Weak for it, however trustworthy the source. Reliable: fits the reason and names a source a reader can trust and trace. Relevant only: fits the reason but names no source.",
+  "why": "Separate relevance from reliability"
+ },
+ {
+  "lesson": 6,
+  "find": "Reliable means it fits the reason and gives source clues.",
+  "replace": "First check fit: evidence that does not fit the reason is Weak for that reason, even from a trustworthy source. Reliable means it fits the reason and names a source a reader can trust and trace, such as experts or a measured study.",
+  "why": "Separate relevance from reliability"
+ },
+ {
+  "lesson": 6,
+  "find": "They let a reader trace the evidence and check it, so we call it reliable.",
+  "replace": "They show the statement comes from a named group of sleep experts that a reader could look up, so we call it reliable.",
+  "why": "Ground 'reliable' in the trustworthy source, not clues alone"
+ },
+ {
+  "lesson": 6,
+  "settle": "Key idea 3",
+  "why": "fixed by the edits above: fit is checked first for every label, and Reliable now means the evidence fits and names a trustworthy, traceable source; label names kept because they match the course objective"
+ },
+ {
+  "lesson": 6,
+  "find": "Students read both articles before class: Let Us Sleep",
+  "replace": "Students need their annotated copies of both articles: Let Us Sleep",
+  "why": "Articles were read and annotated in earlier lessons, not before this class"
+ },
+ {
+  "lesson": 6,
+  "find": "Display two sentences together with their surrounding passages: passage [15] for Sentence 1 and passage [6] for Sentence 2. Students may use those passages when identifying source clues.",
+  "replace": "Display each sentence with the paragraph around it: Okafor’s Seattle paragraph for Sentence 1 and Torres’s Seattle paragraph for Sentence 2. Students may use those paragraphs when identifying source clues.",
+  "why": "Internal passage numbers"
+ },
+ {
+  "lesson": 6,
+  "find": "Display the two sentences with their passages: passage [15] for Sentence 1 and passage [6] for Sentence 2.",
+  "replace": "Display each sentence with the paragraph around it: Okafor’s Seattle paragraph for Sentence 1 and Torres’s Seattle paragraph for Sentence 2.",
+  "why": "Internal passage numbers"
+ },
+ {
+  "lesson": 6,
+  "find": "Work on your own; you do not need a partner or classroom materials.",
+  "replace": "Work on your own with your annotated articles.",
+  "why": "Steps need the articles"
+ },
+ {
+  "lesson": 6,
+  "find": "(Torres, paragraph 3)",
+  "replace": "(Torres, the paragraph that begins “First”)",
+  "why": "Paragraph numbers were wrong"
+ },
+ {
+  "lesson": 6,
+  "find": "(Torres, paragraph 6)",
+  "replace": "(Torres, the paragraph that begins “Second”)",
+  "why": "Paragraph numbers were wrong"
+ },
+ {
+  "lesson": 6,
+  "find": "(Okafor, paragraph 12)",
+  "replace": "(Okafor, the paragraph that begins “The first problem”)",
+  "why": "Okafor's article has no paragraph 12"
+ },
+ {
+  "lesson": 6,
+  "find": "how should you label this evidence from passage 3:",
+  "replace": "how should you label this evidence from Torres:",
+  "why": "Internal passage numbers"
+ },
+ {
+  "lesson": 6,
+  "find": "Passage 6 reports that students",
+  "replace": "Torres reports that Seattle students",
+  "why": "Internal passage numbers"
+ },
+ {
+  "lesson": 6,
+  "find": "how should you label this evidence from passage 13:",
+  "replace": "how should you label this evidence from Okafor:",
+  "why": "Internal passage numbers"
+ },
+ {
+  "lesson": 7,
+  "find": "Project three ways to bring in the same evidence from Let Us Sleep: Why School Should Start Later.",
+  "replace": "Project three ways to bring in evidence from one paragraph of Let Us Sleep: Why School Should Start Later, the paragraph about the body’s clock.",
+  "why": "The quotation and paraphrase are of different sentences, not the same evidence"
+ },
+ {
+  "lesson": 7,
+  "find": "Another writer could paraphrase it:",
+  "replace": "Another writer could paraphrase the sentences just before it in the same paragraph:",
+  "why": "The paraphrase is not of the quoted sentence"
+ },
+ {
+  "lesson": 7,
+  "find": "Seattle students slept longer on school nights, but gave no amount.",
+  "replace": "Seattle students slept longer on school nights.",
+  "why": "Awkward appended phrase gave the distractor away"
+ },
+ {
+  "lesson": 8,
+  "find": "send younger children to school earlier (transportation paragraph).",
+  "replace": "send younger children to school earlier.",
+  "why": "Leaked source pointer",
+  "all": true
+ },
+ {
+  "lesson": 8,
+  "find": "his claim about hidden problems",
+  "replace": "his claim about new problems",
+  "why": "Okafor says a later start would create new problems, not hidden ones",
+  "all": true
+ },
+ {
+  "lesson": 9,
+  "find": "Name this move for the class: Torres is answering a counterclaim, the point Okafor makes against her claim.",
+  "replace": "Name this move for the class: Torres is answering a counterclaim, a point the other side makes against her claim, like the problems Okafor raises.",
+  "why": "Torres's article does not respond to Okafor; she answers what 'some people say'"
+ },
+ {
+  "lesson": 9,
+  "find": "Name the move: Torres is answering a counterclaim, the point Okafor makes against her claim.",
+  "replace": "Name the move: Torres is answering a counterclaim, a point the other side makes against her claim, like the problems Okafor raises.",
+  "why": "Torres's article does not respond to Okafor"
+ },
+ {
+  "lesson": 9,
+  "find": "Students read A Later Start Is Not the Easy Fix It Seems by Daniel Okafor before class.",
+  "replace": "Students read A Later Start Is Not the Easy Fix It Seems by Daniel Okafor earlier in the unit.",
+  "why": "The article was read and annotated in an earlier lesson, not assigned before this class"
+ },
+ {
+  "lesson": 9,
+  "find": "“These steps cost little and do not require changing the schedule.”",
+  "replace": "“These steps cost little and do not require changing the schedule for an entire community.”",
+  "why": "Quotation was cut mid-sentence without an ellipsis; now matches the article"
+ },
+ {
+  "lesson": 9,
+  "find": "Torres’s answer is that a scheduling problem is not a reason to keep a schedule that leaves teenagers short on sleep, and she points to Seattle, where students slept a little more than half an hour longer on school nights.",
+  "replace": "The model rebuttal from class answers that a scheduling problem is not a reason to keep a schedule that leaves teenagers short on sleep, and it points to Torres’s Seattle evidence: students slept a little more than half an hour longer on school nights.",
+  "why": "Misattribution: this rebuttal is the class model, not Torres's words; her article never uses Seattle to answer the bus point"
+ },
+ {
+  "lesson": 9,
+  "find": "Would a reader trust Torres more or less because she admits that the cost is real?",
+  "replace": "Would a reader trust the writer more or less because the rebuttal admits that the cost is real?",
+  "why": "Follows the fix above: the admission is in the class model, not Torres's article"
+ },
+ {
+  "lesson": 10,
+  "find": "later in the evening (passages [3] and [4]).",
+  "replace": "later in the evening.",
+  "why": "Machine-sounding passage index references in teacher notes",
+  "all": true
+ },
+ {
+  "lesson": 10,
+  "find": "Rebut: Seattle shows the sleep benefit is real.",
+  "replace": "Rebut: The bus problem is a cost to plan for, not a reason to keep short sleep. Seattle shows the sleep benefit is real.",
+  "why": "Rebuttal now answers the bus point directly before weighing it against the sleep gain",
+  "all": true
+ },
+ {
+  "lesson": 10,
+  "find": "Rebut that Seattle shows the sleep benefit is real, and neither article",
+  "replace": "Rebut that the bus problem is a cost to plan for, not a reason to keep short sleep. Seattle shows the sleep benefit is real, and neither article",
+  "why": "Match the revised model rebuttal"
+ },
+ {
+  "lesson": 10,
+  "find": "The Seattle card shows students actually gaining about half an hour of sleep after the school moved from 7:50 to 8:45 a.m.",
+  "replace": "The Seattle card shows students actually gaining a little more than half an hour of sleep after Seattle’s public high schools moved from 7:50 to 8:45 a.m.",
+  "why": "Article: several public high schools, 'a little more than half an hour'"
+ },
+ {
+  "lesson": 11,
+  "find": "Collect drafts later as part of Organizer and drafts.",
+  "replace": "Students keep the draft in their folder; it counts later toward Organizer and drafts.",
+  "why": "Drafts are needed again for the full essay and the at-home task; collection was contradictory",
+  "all": true
+ },
+ {
+  "lesson": 11,
+  "find": "Collect drafts as part of Organizer and drafts.",
+  "replace": "Students keep the draft in their folder; it counts later toward Organizer and drafts.",
+  "why": "Drafts are needed again when students assemble the full essay",
+  "all": true
+ },
+ {
+  "lesson": 11,
+  "find": "Drafts are collected as part of Organizer and drafts.",
+  "replace": "Drafts stay in students’ folders and count later toward Organizer and drafts.",
+  "why": "Consistency with the drafts being reused"
+ },
+ {
+  "lesson": 11,
+  "find": "and that the rebuttal claims no more than the evidence shows",
+  "replace": "and that any line about the other side claims no more than the evidence shows",
+  "why": "A conclusion has no rebuttal; the check is about the synthesis line on the other side",
+  "all": true
+ },
+ {
+  "lesson": 11,
+  "find": "use your own notebook to revise an introduction and conclusion for your essay",
+  "replace": "use your own notebook to write a second version of your introduction and conclusion",
+  "why": "The class drafts stay at school; the steps ask students to write, not revise"
+ },
+ {
+  "lesson": 12,
+  "find": "A later start would help students get the sleep they need.",
+  "replace": "A later start would help students get more of the sleep they need.",
+  "why": "Topic sentence promised more than half an hour of extra sleep shows, against the lesson's own rule",
+  "all": true
+ },
+ {
+  "lesson": 12,
+  "find": "gives students a real chance at the sleep they need",
+  "replace": "gives students more of the sleep they need",
+  "why": "Link back matched to what the evidence shows",
+  "all": true
+ },
+ {
+  "lesson": 12,
+  "find": "The extra sleep matters because the goal of changing the schedule is to give students more rest.",
+  "replace": "Half an hour every school night adds up to more than two hours of extra sleep in a five-day week.",
+  "why": "Model commentary was circular; now adds the writer's own thinking",
+  "all": true
+ },
+ {
+  "lesson": 12,
+  "find": "The Seattle result supports a later start by showing that a schedule change can help students sleep longer.",
+  "replace": "That extra rest brings tired teenagers closer to the 8 to 10 hours that sleep experts say they need.",
+  "why": "Model commentary only restated the evidence; now links it to the sleep need",
+  "all": true
+ },
+ {
+  "lesson": 12,
+  "find": "The extra sleep matters because the goal is more rest.",
+  "replace": "Half an hour a night adds up over a week.",
+  "why": "Slide bullet matches revised model commentary"
+ },
+ {
+  "lesson": 12,
+  "find": "The Seattle result shows a schedule change can help sleep.",
+  "replace": "That brings teens closer to 8 to 10 hours.",
+  "why": "Slide bullet matches revised model commentary"
+ },
+ {
+  "lesson": 12,
+  "find": "The commentary adds that the goal of changing the schedule is to give students more rest.",
+  "replace": "The commentary adds that half an hour a night adds up to more than two hours over a school week.",
+  "why": "FAQ matches revised model commentary"
+ },
+ {
+  "lesson": 12,
+  "find": "It says the result shows a schedule change can help students sleep longer.",
+  "replace": "It says only that students got more sleep.",
+  "why": "FAQ matches revised model"
+ },
+ {
+  "lesson": 12,
+  "find": "He concludes, “If the high school starts later, something else has to change.”",
+  "replace": "He adds, “If the high school starts later, something else has to change.”",
+  "why": "This is not Okafor's conclusion; it comes mid-paragraph",
+  "all": true
+ },
+ {
+  "lesson": 12,
+  "find": "4. This matters because one bus schedule links every school in the district, so moving the high school is not a change that stays in one building. (C)",
+  "replace": "4. Okafor explains that a district would need to buy more buses and hire more drivers, or send younger children to school earlier. (E)",
+  "why": "Model put evidence after commentary, breaking the set order the lesson teaches",
+  "all": true
+ },
+ {
+  "lesson": 12,
+  "find": "5. Okafor explains that a district would need to buy more buses and hire more drivers, or send younger children to school earlier. (E)",
+  "replace": "5. This matters because one bus schedule links every school in the district, so moving the high school is not a change that stays in one building. (C)",
+  "why": "Second half of the reorder: evidence, then commentary",
+  "all": true
+ },
+ {
+  "lesson": 12,
+  "find": "Collect the slips and completed drafts. Students with unfinished paragraphs keep their drafts, complete them at home, and submit them next time.",
+  "replace": "Collect the slips. Students keep both drafts in their folders and finish any unfinished paragraph at home, since they need the drafts next time.",
+  "why": "Drafts were collected but the homework and next lesson need them"
+ },
+ {
+  "lesson": 12,
+  "find": "Skim slips for commentary that only repeats the evidence. Return those drafts with one question: so what?",
+  "replace": "Skim slips for commentary that only repeats the evidence. Hand those slips back next time with one question: so what?",
+  "why": "Drafts are no longer collected"
+ },
+ {
+  "lesson": 12,
+  "find": "Collect slips and completed drafts. Skim slips for commentary that only repeats the evidence, and return those drafts with one question: so what? Students with unfinished paragraphs keep their drafts, finish at home and submit them next time.",
+  "replace": "Collect the slips. Skim them for commentary that only repeats the evidence, and hand those slips back next time with one question: so what? Students keep both drafts in their folders and finish any unfinished paragraph at home.",
+  "why": "Drafts are needed for homework and the next lesson"
+ },
+ {
+  "lesson": 12,
+  "find": "Finish any unfinished paragraphs at home and hand them in next time.",
+  "replace": "Finish any unfinished paragraphs at home and bring both drafts next time.",
+  "why": "Consistency with drafts staying with students"
+ },
+ {
+  "lesson": 13,
+  "find": "Students draft their third reason and counterclaim paragraph, then join",
+  "replace": "Students draft their counterclaim paragraph, then join",
+  "why": "The essay has two reasons; there is no third reason paragraph"
+ },
+ {
+  "lesson": 13,
+  "find": "Label the moves from last time in the margin",
+  "replace": "Label the counterclaim moves in the margin",
+  "why": "Last lesson was body paragraphs, not counterclaims",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "A counterclaim paragraph follows the chain students learned last time:",
+  "replace": "A counterclaim paragraph uses the moves students learned for answering a counterclaim:",
+  "why": "Counterclaim moves were not taught last time"
+ },
+ {
+  "lesson": 13,
+  "find": "A counterclaim paragraph follows the chain you learned last time:",
+  "replace": "A counterclaim paragraph uses the moves you learned for answering a counterclaim:",
+  "why": "Counterclaim moves were not taught last time"
+ },
+ {
+  "lesson": 13,
+  "find": "Those students use the organizer boxes to finish the gap during drafting time and the intro or conclusion at the end of class.",
+  "replace": "Those students fill the gap from the matching organizer box during drafting time.",
+  "why": "Garbled sentence"
+ },
+ {
+  "lesson": 13,
+  "find": "Those students use the organizer boxes to finish the gap during drafting time, and the introduction or conclusion at the end of class.",
+  "replace": "Those students fill the gap from the matching organizer box during drafting time.",
+  "why": "Garbled sentence"
+ },
+ {
+  "lesson": 13,
+  "find": "Students who chose a different point from Okafor, such as after-school jobs or other ways to help sleep, answer that point instead.",
+  "replace": "Students who chose a different point from Okafor, such as after-school jobs or other ways to help sleep, answer that point instead. Students arguing against a later start answer Torres, often her Seattle result.",
+  "why": "Against-side students had no instruction for their counterclaim paragraph",
+  "all": true
+ },
+ {
+  "lesson": 14,
+  "find": "Link each item to what students drafted last time",
+  "replace": "Link each item to what students drafted in their essays",
+  "why": "Signal phrases and commentary were drafted two lessons ago, not last time",
+  "all": true
+ },
+ {
+  "lesson": 14,
+  "find": "Marcus’s second paragraph quotes Torres on",
+  "replace": "Marcus’s second paragraph cites Torres on",
+  "why": "Marcus paraphrases; there are no quotation marks in that paragraph"
+ },
+ {
+  "lesson": 14,
+  "find": "falling asleep around 11 p.m.",
+  "replace": "not feeling tired until around 11 p.m.",
+  "why": "Torres says teens do not feel tired until about 11 p.m., not that they fall asleep then"
+ },
+ {
+  "lesson": 14,
+  "find": "the 11 p.m. bedtime",
+  "replace": "the late tiredness around 11 p.m.",
+  "why": "Torres says teens do not feel tired until about 11 p.m.; she gives no bedtime",
+  "all": true
+ },
+ {
+  "lesson": 15,
+  "find": "The paragraph uses Let Us Sleep: Why School Should Start Later: Seattle moved from 7:50 a.m. to 8:45 a.m. in 2016. Show the move from Developing to Good or Excellent.",
+  "replace": "Before: “Seattle’s public high schools moved their start time from 7:50 a.m. to 8:45 a.m. in 2016. According to Torres, students slept a little more than half an hour longer on school nights. That is why our school should start later.” (+E on the second sentence.)\nAfter: keep the first two sentences, then write: “Torres adds that they did not simply stay up later, so the later bell gave them real extra rest. For teenagers who need 8 to 10 hours, half an hour every school night is a real gain, which is why our school should start at 8:30 a.m. or later.”\nUse the Evidence and explanation row: the before version is Developing (little explanation), the after version is Good. Show the move from Developing to Good.",
+  "why": "The model paragraph was referred to but never given; the teacher needs the text"
+ },
+ {
+  "lesson": 15,
+  "find": "Torres writes, “students slept a little more than half an hour longer on school nights.”",
+  "replace": "Torres writes that “students slept a little more than half an hour longer on weekends.”",
+  "why": "Distractor was also an acceptable citation; now the quoted words do not match"
+ },
+ {
+  "lesson": 15,
+  "find": "Torres writes that students “slept a little more than half an hour longer on school nights.”",
+  "replace": "Torres writes that students “slept about an hour longer on school nights.”",
+  "why": "Distractor was fully correct (two right answers); now misquotes the article"
+ },
+ {
+  "lesson": 15,
+  "find": "In a citation, check the quotation marks, the signal phrase and the writer’s name.",
+  "replace": "In a citation, check the quotation marks, the signal phrase that names the writer, and that quoted words match the article exactly.",
+  "why": "Matches the three citation checks taught in the lesson"
+ },
+ {
+  "lesson": 15,
+  "find": "What would a reviewer need to see added before they marked it +E, and would you reject that suggestion?",
+  "replace": "What would a reviewer need to see added before they stopped marking it +E, and would you reject that suggestion?",
+  "why": "Question was logically reversed"
+ },
+ {
+  "lesson": 15,
+  "find": "hard to follow, and errors sometimes interfere with meaning.",
+  "replace": "hard to follow, or errors sometimes interfere with meaning.",
+  "why": "Descriptor required both problems at once, leaving essays with only one unplaced"
+ },
+ {
+  "lesson": 15,
+  "find": "difficult to follow, and frequent errors interfere with meaning.",
+  "replace": "difficult to follow, or frequent errors interfere with meaning.",
+  "why": "Same fix at Beginning level"
+ },
+ {
+  "lesson": 10,
+  "settle": "Segment 2, Tour of the planning organizer using Torres",
+  "why": "fixed by the edits above: the rebuttal now answers the bus point directly (a cost to plan for, not a reason to keep short sleep) and still admits neither article shows bus costs"
+ },
+ {
+  "lesson": 3,
+  "find": "is not the simple fix it seems. He states this in the first paragraph",
+  "replace": "is not the easy fix it seems, as his title says. He states it again in the first paragraph",
+  "why": "Okafor never writes \"simple fix\": his title says \"easy fix\", his first paragraph \"simple answer\"."
+ }
+]

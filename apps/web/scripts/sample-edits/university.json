@@ -1,0 +1,933 @@
+[
+ {
+  "find": "Explain why the argument is invalid",
+  "replace": "Explain why the cultural differences argument is invalid",
+  "why": "Objective is unclear out of context: which argument?"
+ },
+ {
+  "lesson": 1,
+  "find": "The practice of guiding conduct by reason",
+  "replace": "At the very least, the effort to guide conduct by reason",
+  "why": "Rachels gives a minimum conception, not a full definition; match the key ideas"
+ },
+ {
+  "lesson": 1,
+  "find": "A consideration that bears on what we ought to do and can be assessed by anyone affected.",
+  "replace": "A consideration about what we ought to do that rests on the interests of those affected and can be checked impartially.",
+  "why": "Old definition was odd ('assessed by anyone affected') and did not match the lesson's test"
+ },
+ {
+  "lesson": 1,
+  "find": "Self-interest is not never moral, since it can happen to line up with what morality asks.",
+  "replace": "Self-interest is not always opposed to morality: it can line up with what morality asks.",
+  "why": "Awkward double negative"
+ },
+ {
+  "lesson": 1,
+  "find": "asks everyone to bring a short moral argument with its premises and conclusion identified.",
+  "replace": "asks everyone to bring one example of a fallacy in a moral argument, from the reading or from public debate.",
+  "why": "Next seminar uses fallacy examples students prepared; the argument they were asked to bring is never used"
+ },
+ {
+  "lesson": 1,
+  "find": "Preparation feeds seminar participation, which the course grading counts.",
+  "replace": "Preparation counts toward seminar participation, 10% of the grade.",
+  "all": true,
+  "why": "Machine-sounding phrasing"
+ },
+ {
+  "lesson": 1,
+  "find": "later in the unit",
+  "replace": "later in the course",
+  "all": true,
+  "why": "This is a 14-week course, not a unit"
+ },
+ {
+  "lesson": 2,
+  "find": "Take two of the fallacy examples you prepared from the reading, such as",
+  "replace": "Take two of the fallacy examples the group prepared, or two from the lecture, such as",
+  "why": "The examples cited are lecture examples, not from Weston"
+ },
+ {
+  "lesson": 2,
+  "find": "students practise restating",
+  "replace": "students practice restating",
+  "why": "US spelling for a North American course"
+ },
+ {
+  "lesson": 2,
+  "find": "No word count is specified for weekly reading responses; write enough to address each requirement clearly. Use a specific passage or rule from Weston, without inventing a page number. This response is one part of the course’s weekly reading responses.",
+  "replace": "Write 400–500 words. Name a specific rule from Weston and say where in the book it appears. This response contributes to the Weekly reading responses component, worth 20% of the course grade.",
+  "why": "Machine boilerplate; other weekly responses give a length and the weight"
+ },
+ {
+  "lesson": 3,
+  "find": "5. Societies disagree about slavery, so we cannot be sure slavery is wrong. Does not follow.",
+  "replace": "5. Societies disagree about slavery, so we cannot be sure slavery is wrong. Does not follow: how sure we can be depends on the reasons on each side, not on the bare fact of disagreement.",
+  "why": "Bare 'does not follow' is too quick for an epistemic claim; give the reason"
+ },
+ {
+  "lesson": 3,
+  "find": "Before the seminar, students prepare a chapter 2 example of a differing cultural practice, distinguishing documented beliefs and circumstances from their own interpretations; the two student leaders prepare the tolerance question in Leaders’ questions: does relativism support tolerance? This preparation supports Seminar participation.",
+  "replace": "For the seminar, each student prepares one example of a practice that differs across cultures, keeping what is documented separate from their own interpretation. The two student leaders prepare an opening question on whether relativism supports tolerance.",
+  "why": "Machine-sounding: quotes a segment title and capitalized grading item"
+ },
+ {
+  "lesson": 3,
+  "find": "Before the seminar, students prepare a chapter 2 example of a differing cultural practice, separating documented beliefs and circumstances from their own interpretations. This supports Seminar participation. The two student leaders prepare the tolerance question.",
+  "replace": "For the seminar, each student prepares one example of a practice that differs across cultures, keeping what is documented separate from their own interpretation. The two student leaders prepare an opening question on whether relativism supports tolerance.",
+  "why": "Same fix on the slide notes"
+ },
+ {
+  "lesson": 3,
+  "find": "Even if relativism fails, Rachels draws three lessons from it. First, our own customs may be cultural prejudice rather than moral truth. Second, we should keep an open mind when we meet unfamiliar practices. Third, some differences",
+  "replace": "Even if relativism fails, Rachels draws two lessons from it. First, our own customs may be cultural prejudice rather than moral truth. Second, we should keep an open mind when we meet unfamiliar practices. His discussion of disagreement adds a third point: some differences",
+  "why": "Rachels draws two lessons from relativism (as the lecture and FAQ say); shared values come from a separate section"
+ },
+ {
+  "lesson": 3,
+  "find": "and the three lessons that survive.",
+  "replace": "and the lessons that survive.",
+  "why": "Consistency with the two-lessons attribution"
+ },
+ {
+  "lesson": 3,
+  "find": "Refer to the reading by chapter; do not invent quotations or page numbers.",
+  "replace": "Cite the reading by chapter, and check any quotation against the text.",
+  "why": "'Do not invent' reads as a note to an AI, not to students"
+ },
+ {
+  "lesson": 4,
+  "find": "for example using long-run consequences against demandingness.",
+  "replace": "for example using the standard-versus-motive distinction against demandingness.",
+  "why": "The lecture treats long-run effects as a legitimate way to limit the demand; the mismatch it teaches is standard-versus-motive"
+ },
+ {
+  "lesson": 4,
+  "find": "Using long-run consequences against demandingness is a typical mismatch.",
+  "replace": "Using the standard-versus-motive distinction against demandingness is a typical mismatch. Long-run consequences can limit the demand but do not remove it.",
+  "why": "Contradicted the paragraph's own use of long-run effects as a limiting reply"
+ },
+ {
+  "lesson": 4,
+  "find": "Reconstructed, it runs: if everyone’s happiness counts equally, then Dana should redirect the discretionary spending to relief; so the principle demands great sacrifice.",
+  "replace": "Reconstructed, it runs: the principle requires Dana to redirect the discretionary spending to relief, and to keep giving while giving does more good than harm; a correct moral theory would not demand that much sacrifice; so the principle is mistaken.",
+  "why": "The old version stated a consequence of the theory, not an objection to it: the evaluative premise and the conclusion against the theory were missing"
+ },
+ {
+  "lesson": 4,
+  "find": "Premise: If each person’s happiness counts equally, and redirecting Dana’s discretionary spending to famine relief produces greater overall happiness, the principle requires that spending to be redirected. Conclusion: The principle requires Dana to give up at least that discretionary spending.",
+  "replace": "Premises: Because each person’s happiness counts equally, the principle requires Dana to redirect discretionary spending to famine relief whenever that produces more overall happiness. A correct moral theory would not demand that much sacrifice. Conclusion: The principle demands too much, so it is mistaken or needs revising.",
+  "why": "Model answer gave a consequence of the theory, not an objection to it"
+ },
+ {
+  "lesson": 4,
+  "find": "Students answer by returning to Mill’s chapter 2 and to Rachels, chapter 7.",
+  "replace": "Students answer by returning to Mill’s chapter 2 and to Rachels, chapters 7 and 8.",
+  "why": "Rachels discusses whether pleasure is all that matters in chapter 8"
+ },
+ {
+  "lesson": 4,
+  "find": "Does Rachels in chapter 7 treat Mill",
+  "replace": "Does Rachels treat Mill",
+  "why": "Same: the discussion is not confined to chapter 7"
+ },
+ {
+  "lesson": 4,
+  "find": "Paraphrase and identify the relevant chapter or section; do not invent quotations or page numbers.",
+  "replace": "Paraphrase, cite the chapter you draw on, and check any quotation against the text.",
+  "why": "'Do not invent' reads as a note to an AI, not to students"
+ },
+ {
+  "lesson": 4,
+  "find": "earlier in the unit",
+  "replace": "earlier in the course",
+  "all": true,
+  "why": "This is a 14-week course, not a unit"
+ },
+ {
+  "lesson": 4,
+  "find": "later in the unit",
+  "replace": "later in the course",
+  "all": true,
+  "why": "This is a 14-week course, not a unit"
+ },
+ {
+  "lesson": 5,
+  "find": "Groundwork of the Metaphysics of Morals, section II",
+  "replace": "Groundwork of the Metaphysics of Morals, sections I and II",
+  "why": "The good will, acting from duty and the shopkeeper are in section I; the lecture teaches them"
+ },
+ {
+  "lesson": 5,
+  "find": "Present on slides Kant’s claim in section II that moral worth",
+  "replace": "Present on slides Kant’s claim in section I that moral worth",
+  "why": "Moral worth and the shopkeeper are in Groundwork section I, not II"
+ },
+ {
+  "lesson": 5,
+  "find": "Reading for this session: Kant, Groundwork, section II,",
+  "replace": "Reading for this session: Kant, Groundwork, sections I and II,",
+  "why": "Match corrected reading"
+ },
+ {
+  "lesson": 5,
+  "find": "In section II of the Groundwork, Kant says an act has moral worth",
+  "replace": "In section I of the Groundwork, Kant says an act has moral worth",
+  "why": "Misattributed section"
+ },
+ {
+  "lesson": 5,
+  "find": "is good without qualification. Rachels, chapter 10, presents this as respect for persons.",
+  "replace": "is good without qualification.",
+  "why": "Rachels's 'respect for persons' is about the humanity formulation, not the good will"
+ },
+ {
+  "lesson": 5,
+  "find": "that dignity does not depend on how useful they are.",
+  "replace": "that dignity does not depend on how useful they are. Rachels, chapter 10, calls this respect for persons.",
+  "why": "Move the Rachels chapter 10 link to the idea it actually describes"
+ },
+ {
+  "lesson": 5,
+  "find": "feelings may accompany acting from duty. Rachels, chapter 10, presents this as respect for persons.",
+  "replace": "feelings may accompany acting from duty. The shopkeeper example is in section I of the Groundwork.",
+  "why": "Misplaced Rachels link; give the actual source of the example"
+ },
+ {
+  "lesson": 5,
+  "find": "accompany acting from duty. Rachels, chapter 10, presents this view as respect for persons.",
+  "replace": "accompany acting from duty.",
+  "why": "Rachels's respect for persons concerns the humanity formulation, covered below"
+ },
+ {
+  "lesson": 5,
+  "find": "2. I will cheat on an exam when sure not to be caught, in order to get a higher grade. Fails: contradiction in conception, since grades would no longer signal anything.",
+  "replace": "2. I will cheat on an exam when sure not to be caught, in order to get a higher grade. Disputed item. The usual answer is a contradiction in conception: if everyone cheated whenever they could, a grade would no longer be taken as a sign of what a student knows, so the higher grade would lose the value that is the purpose of cheating. Some will reply that the mark still rises. Let them argue it; this maxim returns in the seminar as a test of how maxims are worded.",
+  "why": "Review note: the verdict is contested and the old key leaned on a harmful consequence; present the purpose-defeating argument and mark it disputed"
+ },
+ {
+  "lesson": 5,
+  "find": "2 fails, contradiction in conception, since grades would no longer signal anything.",
+  "replace": "2 is disputed: the usual answer is a contradiction in conception, because a grade would no longer be taken as a sign of what a student knows, so the purpose of cheating fails. Let students argue it; it returns in the seminar.",
+  "why": "Same fix on slide notes"
+ },
+ {
+  "lesson": 5,
+  "find": "The exam maxim fails the same way: “I will cheat on an exam when sure not to be caught, in order to get a higher grade.” If everyone cheated, grades would no longer signal anything.",
+  "replace": "The exam maxim is often said to fail the same way: “I will cheat on an exam when sure not to be caught, in order to get a higher grade.” If everyone cheated whenever they could, a grade would no longer be taken as a sign of what a student knows, so the higher grade would lose the value that was the point of cheating. This verdict is disputed, and the seminar tests it.",
+  "why": "Same fix in study guide; the point is that the purpose fails, not that harm results"
+ },
+ {
+  "lesson": 5,
+  "settle": "Segment 3, Testing maxims against the universal law",
+  "why": "fixed by the edits above: the cheating item now gives the purpose-defeating argument and is marked disputed, tying into the seminar on maxim wording"
+ },
+ {
+  "lesson": 5,
+  "find": "I will keep a promise because honesty usually improves outcomes.",
+  "replace": "I will always keep the promises I make to my friends.",
+  "why": "Old distractor arguably states an action and a purpose, so two answers could be defended"
+ },
+ {
+  "lesson": 5,
+  "find": "Make a brief working outline for the Paper defending one theory.",
+  "replace": "Make a brief working outline for your paper defending one theory.",
+  "why": "Machine-sounding capitalized grading item"
+ },
+ {
+  "lesson": 6,
+  "find": "With slides, return to the murderer at the door from last time. Set the Kantian maxim test and Mill’s count of consequences beside the virtue question:",
+  "replace": "With slides, pose the murderer at the door: a would-be killer asks where your friend is hiding. Set Kant’s answer, that you still may not lie, and Mill’s count of consequences beside the virtue question:",
+  "why": "The murderer at the door was never taught in the Kant lesson; introduce it here instead of recalling it."
+ },
+ {
+  "lesson": 6,
+  "find": "Return to the murderer at the door from last time. Set the Kantian maxim test and Mill’s count of consequences beside the virtue question:",
+  "replace": "Pose the murderer at the door: a would-be killer asks where your friend is hiding. Set Kant’s answer, that you still may not lie, and Mill’s count of consequences beside the virtue question:",
+  "why": "Same: the case was not in the previous lesson."
+ },
+ {
+  "lesson": 6,
+  "find": "Take the murderer at the door from last time.",
+  "replace": "Take the murderer at the door: a would-be killer asks where your friend is hiding. Kant held that you still may not lie.",
+  "why": "Same: the case was not in the previous lesson."
+ },
+ {
+  "lesson": 6,
+  "find": "Avoid claiming Aristotle settles the case. Virtue ethics gives a different question and no algorithm; that is the very",
+  "replace": "Kant’s verdict comes from his late essay on a supposed right to lie, not from the Groundwork. Avoid claiming Aristotle settles the case. Virtue ethics gives a different question and no algorithm; that is the very",
+  "why": "Tell the lecturer where Kant's verdict on lying to the murderer comes from."
+ },
+ {
+  "lesson": 6,
+  "find": "The tutor reminds students that the paper defending one theory counts for 20% of the grade, and asks them to start choosing a theory and its strongest objection.",
+  "replace": "The tutor reminds students that the paper defending one theory counts for 20% of the grade and is due next week, and asks them to choose a theory and its strongest objection now.",
+  "why": "The paper is due in week 7, so week 6 is too late to only start choosing."
+ },
+ {
+  "lesson": 6,
+  "find": "Do not require students to commit yet.",
+  "replace": "It is due next week, so students should leave with a theory chosen.",
+  "why": "Same: paper due in week 7."
+ },
+ {
+  "lesson": 6,
+  "find": "The paper defending one theory counts for 20% of the grade, so they should begin thinking about which theory to defend and its strongest objection.",
+  "replace": "The paper defending one theory counts for 20% of the grade and is due next week, so they should choose the theory to defend and its strongest objection now.",
+  "why": "Same: paper due in week 7."
+ },
+ {
+  "lesson": 6,
+  "find": "For your paper defending one theory, which counts for 20% of the grade, start choosing a theory and its strongest objection.",
+  "replace": "Your paper defending one theory, which counts for 20% of the grade, is due next week. Choose your theory and its strongest objection now.",
+  "why": "Same: paper due in week 7."
+ },
+ {
+  "lesson": 7,
+  "find": "Boss punishment differs from reputation in reply to the Fool; the reply is contested.",
+  "replace": "Hobbes’s reply to the Fool: a known covenant-breaker cannot expect others to admit him into any alliance for defense, except by their mistake, so breaking faith is a gamble reason does not recommend. The reply is contested.",
+  "why": "Garbled note ('boss punishment'); state Hobbes's actual reply to the Fool."
+ },
+ {
+  "lesson": 7,
+  "find": "Note that this reply is contested, and that punishment by a boss differs from reputation.",
+  "replace": "His point: a known covenant-breaker cannot expect others to admit him into any alliance for defense, except by their mistake, so reason does not recommend the gamble. Note that this reply is contested.",
+  "why": "Same garble on the slide notes."
+ },
+ {
+  "lesson": 7,
+  "find": "so injustice is breaking them without cause.",
+  "replace": "so injustice is failing to keep them.",
+  "why": "Hobbes defines injustice as not performing covenants; 'without cause' is not his."
+ },
+ {
+  "lesson": 7,
+  "find": "Justice is keeping covenants; injustice is breaking them without cause",
+  "replace": "Justice is keeping covenants; injustice is breaking them",
+  "why": "Same."
+ },
+ {
+  "lesson": 7,
+  "find": "Injustice is breaking them without cause.",
+  "replace": "Injustice is failing to keep them.",
+  "why": "Same."
+ },
+ {
+  "lesson": 7,
+  "find": "is due on the date in the syllabus and is scored",
+  "replace": "is due at the end of this week and is scored",
+  "why": "The paper is due in week 7, this week."
+ },
+ {
+  "lesson": 7,
+  "find": "is due on the date in the syllabus, and is scored",
+  "replace": "is due at the end of this week, and is scored",
+  "why": "Same."
+ },
+ {
+  "lesson": 7,
+  "find": "Paper defending one theory: date in the syllabus",
+  "replace": "Paper defending one theory: due this week",
+  "why": "Same."
+ },
+ {
+  "lesson": 7,
+  "find": "such as Robert Latimer’s actions toward his daughter Tracy or the prisoner’s dilemma.",
+  "replace": "such as Robert Latimer’s actions toward his daughter Tracy or the murderer at the door.",
+  "why": "The prisoner's dilemma models self-interest, not a moral case each theory can be applied to."
+ },
+ {
+  "lesson": 8,
+  "find": "If killing were always worse, nobody could turn the switch, so the distinction cannot settle the cases alone. It returns next time with famine.",
+  "replace": "Foot’s idea is that killing one is worse than letting five die; that is why the surgeon may not operate. If that held generally, nobody could turn the switch, so the distinction cannot settle the cases alone. Next time, Singer asks whether letting distant people die is wrong when we could save them.",
+  "why": "Make the comparison precise (killing one vs letting five die) and fix the preview: the next lesson does not use the killing/letting-die distinction."
+ },
+ {
+  "lesson": 8,
+  "find": "The distinction returns next time with famine.",
+  "replace": "Next time, Singer asks whether letting distant people die is wrong when we could save them.",
+  "why": "Accurate preview of Singer."
+ },
+ {
+  "lesson": 8,
+  "find": "If killing were always worse than letting die, the bystander could not turn the switch,",
+  "replace": "If killing one were always worse than letting five die, the bystander could not turn the switch,",
+  "why": "The point needs killing one versus letting five die."
+ },
+ {
+  "lesson": 8,
+  "find": "If killing were always worse than letting die, the bystander could never turn the switch,",
+  "replace": "If killing one were always worse than letting five die, the bystander could never turn the switch,",
+  "why": "Same."
+ },
+ {
+  "lesson": 8,
+  "find": "If killing were always worse, nobody could turn the switch.",
+  "replace": "If killing one were always worse than letting five die, nobody could turn the switch.",
+  "why": "Same."
+ },
+ {
+  "lesson": 8,
+  "find": "Keep the two terms apart, because the distinction returns next time in the famine argument.",
+  "replace": "Keep the two terms apart. Next time, Singer asks whether letting distant people die can be as wrong as failing to save a child in front of you.",
+  "why": "Accurate preview of Singer."
+ },
+ {
+  "lesson": 8,
+  "find": "Next time, the killing and letting die distinction returns in the famine argument.",
+  "replace": "Next time, Singer asks whether letting distant people die is wrong when we could save them at small cost.",
+  "why": "Same."
+ },
+ {
+  "lesson": 9,
+  "find": "D. Distance, and other possible helpers, do not change what I ought to do. Supporting claim defending E.",
+  "replace": "D. Distance, and other possible helpers, do not change what I ought to do. Supporting claim: it blocks the reply that B does not reach distant people or cases where others could help. It defends applying B to the famine, not E’s factual claim that giving works.",
+  "why": "Review note is right: D defends the reach of the principle, not E's empirical claim."
+ },
+ {
+  "lesson": 9,
+  "find": "F needs A, B and E; D defends E; C supports B.",
+  "replace": "F needs A, B and E; D defends applying B to the famine case; C supports B.",
+  "why": "Same."
+ },
+ {
+  "lesson": 9,
+  "find": "The claim about distance and other helpers defends that last premise.",
+  "replace": "The claim about distance and other helpers defends applying the principle to distant famine victims; it does not show that giving works.",
+  "why": "Same."
+ },
+ {
+  "lesson": 9,
+  "find": "Singer then adds a supporting claim for the third premise: distance, and the number of other people who could help, do not change what we ought to do.",
+  "replace": "Singer then adds a supporting claim: distance, and the number of other people who could help, do not change what we ought to do. This defends applying the principle to distant famine victims.",
+  "why": "Same."
+ },
+ {
+  "lesson": 9,
+  "find": "the distance claim defended the third,",
+  "replace": "the distance claim defended applying the principle to the famine case,",
+  "why": "Same."
+ },
+ {
+  "lesson": 9,
+  "find": "the distance claim defends the giving premise.",
+  "replace": "the distance claim defends applying the principle to distant people.",
+  "why": "Same."
+ },
+ {
+  "lesson": 9,
+  "settle": "Segment 3, Rebuild the drowning child argument",
+  "why": "Fixed by the edits above: card D, the dependency key, slide notes, study guide and quiz explanation now say D defends the principle's reach, not E."
+ },
+ {
+  "lesson": 9,
+  "find": "Link back to last time: the contract theorist",
+  "replace": "Link back to the social contract lesson: the contract theorist",
+  "why": "Last time was the trolley lesson, not social contract."
+ },
+ {
+  "lesson": 9,
+  "find": " This response contributes to the weekly reading responses component.",
+  "replace": "",
+  "why": "Machine boilerplate."
+ },
+ {
+  "lesson": 10,
+  "find": "In the first, a neighbor in your own town cannot afford insulin.",
+  "replace": "In the first, a fellow citizen in your own town cannot afford insulin.",
+  "why": "Review note: make shared citizenship explicit."
+ },
+ {
+  "lesson": 10,
+  "find": "does the state owe the first person justice, and do we owe the second person justice, or only humanity?",
+  "replace": "do we owe the fellow citizen justice? Do we owe the stranger justice, or only humanity?",
+  "why": "Review note: keep the same duty-bearer in both cases."
+ },
+ {
+  "lesson": 10,
+  "find": "Case 1: a neighbor in your town cannot afford insulin",
+  "replace": "Case 1: a fellow citizen in your town cannot afford insulin",
+  "why": "Same."
+ },
+ {
+  "lesson": 10,
+  "find": "Vote by hand: does the state owe the neighbor justice?",
+  "replace": "Vote by hand: do we owe the fellow citizen justice?",
+  "why": "Same."
+ },
+ {
+  "lesson": 10,
+  "find": "a neighbor in your own town who cannot afford insulin",
+  "replace": "a fellow citizen in your own town who cannot afford insulin",
+  "why": "Same."
+ },
+ {
+  "lesson": 10,
+  "settle": "Segment 1, Fellow citizen or distant stranger",
+  "why": "Fixed by the edits above: case 1 is now a fellow citizen and both questions ask what we owe."
+ },
+ {
+  "lesson": 10,
+  "find": "4. A rich state is asked to equalize incomes with a poor state. Cosmopolitans call it justice; Nagel denies it, as there are no shared institutions.",
+  "replace": "4. People in a poor country claim a fair share of the world’s wealth as a matter of justice, not charity. Cosmopolitans agree. Nagel says it is not justice, since no shared sovereign makes both peoples joint authors of common laws; humanity still requires relieving desperate need.",
+  "why": "Review note is right: cosmopolitans do not demand equal incomes, and Nagel's condition is a shared sovereign, not shared institutions of any kind."
+ },
+ {
+  "lesson": 10,
+  "find": "Asking a rich state to equalize incomes with a poor state is the disputed case. Cosmopolitans call it justice. Nagel denies it, because there are no shared institutions to ground it.",
+  "replace": "The disputed case is a claim that people in poor countries are owed a fair share of the world’s wealth as a matter of justice. Cosmopolitans say yes. Nagel says no, because no shared sovereign makes people in both countries joint authors of common laws. Humanity still requires relieving desperate need.",
+  "why": "Same."
+ },
+ {
+  "lesson": 10,
+  "settle": "Segment 4, Justice or humanity?",
+  "why": "Fixed by the edits above: item 4 and the study guide now state a fair-share claim and Nagel's sovereign condition."
+ },
+ {
+  "lesson": 10,
+  "find": "He says humanity gives reason to build institutions. Students decide whether this suffices.",
+  "replace": "He adds that justice beyond the state would need new global institutions, which he expects to begin as unjust structures of power and only later face demands for legitimacy. Students decide whether this suffices.",
+  "why": "Nagel does not argue that humanity gives reason to build institutions; his conclusion is that the path to global justice runs through unjust institutions first."
+ },
+ {
+  "lesson": 10,
+  "find": "and that humanity gives reason to build institutions.",
+  "replace": "and that justice beyond the state must wait for new global institutions.",
+  "why": "Same."
+ },
+ {
+  "lesson": 10,
+  "find": "He adds that humanity gives reason to build institutions.",
+  "replace": "He adds that justice beyond the state would need new global institutions, which he expects to begin as unjust structures of power.",
+  "why": "Same."
+ },
+ {
+  "lesson": 10,
+  "find": "Does humanity give reason to build institutions?",
+  "replace": "Must global justice wait for new institutions?",
+  "why": "Same."
+ },
+ {
+  "lesson": 10,
+  "find": "He adds that humanity gives us reason to build global institutions.",
+  "replace": "He adds that justice beyond the state would need new global institutions. He expects these to begin as unjust structures of power and only later face demands for legitimacy.",
+  "why": "Same."
+ },
+ {
+  "lesson": 10,
+  "find": "or whether duties of humanity give reason to build institutions.",
+  "replace": "or whether justice must wait for new global institutions.",
+  "why": "Same."
+ },
+ {
+  "lesson": 10,
+  "find": "or that humanity gives reason to build institutions.",
+  "replace": "or that justice must wait for new global institutions.",
+  "why": "Same."
+ },
+ {
+  "lesson": 10,
+  "find": " This response contributes to Weekly reading responses (20% of the course grade).",
+  "replace": "",
+  "why": "Machine boilerplate."
+ },
+ {
+  "lesson": 11,
+  "find": "Singer’s argument from marginal cases says this reply is convenient, not principled.",
+  "replace": "Critics who press the argument from marginal cases say this reply is convenient, not principled.",
+  "why": "Singer's 1974 essay predates Cohen's 1986 kind-based reply, so it cannot be Singer who answers that reply."
+ },
+ {
+  "lesson": 11,
+  "find": "Singer uses the argument from marginal cases to challenge capacity-based exclusions such as Cohen’s.",
+  "replace": "Singer uses the argument from marginal cases to challenge capacity-based exclusions, and critics turn the same argument on Cohen.",
+  "why": "Chronology: Singer's essay could not target Cohen's later paper."
+ },
+ {
+  "lesson": 11,
+  "find": "Singer uses the argument from marginal cases against capacity-based exclusions like Cohen’s.",
+  "replace": "Singer uses the argument from marginal cases against capacity-based exclusions, and critics turn the same argument on Cohen.",
+  "why": "Chronology: Singer's essay could not target Cohen's later paper."
+ },
+ {
+  "lesson": 11,
+  "find": "In groups of three, as last time, students receive six statements from Cohen’s argument on the slide, in jumbled order.",
+  "replace": "In groups of three, students receive six statements from Cohen’s argument, shuffled, on a slide or handout.",
+  "why": "Lesson 10 did not use groups of three, and the activity slide does not hold the statements."
+ },
+ {
+  "lesson": 11,
+  "find": "Groups of three, as last time",
+  "replace": "Groups of three",
+  "why": "Lesson 10 did not use groups of three."
+ },
+ {
+  "lesson": 11,
+  "find": "Six statements from Cohen’s argument appear in jumbled order, shown to students in the group activity.",
+  "replace": "Show the six statements below in a shuffled order on a separate slide or handout.",
+  "why": "Machine-sounding note; tells the lecturer what to prepare."
+ },
+ {
+  "lesson": 12,
+  "find": "The tutor then removes the warning from card A and the commander’s knowledge from card B, and asks whether the verdict changes.",
+  "replace": "The tutor then changes three facts: the documentation gives no warning, the drone passed the ministry’s crowded-area testing, and the commander deploys it as approved. The tutor asks whether the verdict changes.",
+  "why": "Review note: the variant differed between description and notes; one consistent variant now."
+ },
+ {
+  "lesson": 12,
+  "find": "After the variant, with no warning and no waiver, everyone acted reasonably and nobody could foresee the harm, so a gap opens. Common mistake: letting one card alone decide the case. No materials are handled.",
+  "replace": "In the variant, everyone acted reasonably on what they knew and nobody could foresee this harm, so a gap in Matthias’s sense plausibly opens. Some students will say the manufacturer still answers for selling a learning system at all; keep that for the seminar’s first question. Common mistake: letting one card alone decide the case.",
+  "why": "Consistent variant with the facts that support its verdict; removes boilerplate."
+ },
+ {
+  "lesson": 12,
+  "find": "Then remove the warning from card A and the commander’s knowledge from card B, and ask whether the verdict changes.",
+  "replace": "Then change three facts: no warning in the documentation, the drone passed crowded-area testing, and the commander deployed it as approved. Ask whether the verdict changes.",
+  "why": "Same consistent variant on the slide."
+ },
+ {
+  "lesson": 12,
+  "find": "In the variant, with no warning and no waiver, everyone acted reasonably and nobody could foresee the harm, so a gap opens.",
+  "replace": "In the variant, everyone acted reasonably on what they knew and nobody could foresee this harm, so a gap plausibly opens.",
+  "why": "Same consistent variant on the slide."
+ },
+ {
+  "lesson": 12,
+  "find": "Now remove the warning and the waiver. Everyone acted reasonably and nobody could foresee the harm, so a gap opens.",
+  "replace": "Now change the facts: there is no warning, the drone passed crowded-area testing, and the commander deployed it as approved. Everyone acted reasonably on what they knew and nobody could foresee this harm, so a gap plausibly opens.",
+  "why": "Same consistent variant in the study guide."
+ },
+ {
+  "lesson": 12,
+  "find": "If the warning and the waiver are removed, everyone acted reasonably and nobody could foresee the harm, so a gap opens.",
+  "replace": "Now suppose there was no warning, the drone passed crowded-area testing, and the commander deployed it as approved. Then everyone acted reasonably on what they knew and nobody could foresee this harm, so a gap plausibly opens.",
+  "why": "Same consistent variant in the FAQ."
+ },
+ {
+  "lesson": 12,
+  "find": "Change the Sentinel facts so that no one was warned and no testing was waived.",
+  "replace": "Change the Sentinel facts so that no one was warned and the drone passed crowded-area testing.",
+  "why": "Matches the class variant."
+ },
+ {
+  "lesson": 12,
+  "find": "In groups of three, students receive six statements from Sparrow’s argument on the slide, in jumbled order.",
+  "replace": "In groups of three, students receive six statements from Sparrow’s argument, shuffled, on a slide or handout.",
+  "why": "The activity slide does not hold the statements."
+ },
+ {
+  "lesson": 12,
+  "find": "Display the six jumbled statements on this slide.",
+  "replace": "Show the six statements below in a shuffled order on a separate slide or handout.",
+  "why": "The slide does not hold the statements; tells the lecturer what to prepare."
+ },
+ {
+  "lesson": 12,
+  "find": "Students decide which applied question they might choose, and say so if they wish.",
+  "replace": "Students say which applied question they have chosen for the paper, which is due next week.",
+  "why": "The paper is due in week 13, so choosing a question cannot wait."
+ },
+ {
+  "lesson": 12,
+  "find": "Students may decide which applied question they might choose.",
+  "replace": "Students say which applied question they have chosen; the paper is due next week.",
+  "why": "The paper is due in week 13."
+ },
+ {
+  "lesson": 12,
+  "find": "The part of just war theory that governs conduct within war, including the requirement that deaths be attributable to someone answerable for them.",
+  "replace": "The part of just war theory that governs conduct within war. Sparrow reads it as requiring that someone be answerable for each death caused.",
+  "why": "The answerability requirement is Sparrow's reading, not a standard textbook clause of jus in bello."
+ },
+ {
+  "lesson": 12,
+  "settle": "Segment 5, Assign responsibility in one case",
+  "why": "Fixed by the edits above: one variant (no warning, testing passed, deployed as approved) used in plan, slide, study guide, FAQ and discussion, with the facts that support a gap."
+ },
+ {
+  "lesson": 13,
+  "find": "Name the graded component this prepares: the argumentative paper on an applied question (25%).",
+  "replace": "Name the graded component this prepares: the argumentative paper on an applied question (25%), due at the end of this week.",
+  "why": "The course says the paper is due in week 13; say so.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "despite inadequate safeguards",
+  "replace": "despite the warning that it was untested in crowded areas",
+  "why": "Uses the actual Sentinel facts from lesson 12 so the thesis rests on a stated, foreseeable risk.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "Sparrow’s argument fails because, in the Warden case, the commander who chose to deploy it knowing its testing record is answerable, so there is no gap",
+  "replace": "In the Sentinel case there is no responsibility gap, because the commander deployed the drone at a market-side checkpoint after reading the warning that it was untested in crowded areas",
+  "why": "Review note: 'knowing its testing record' did not establish a foreseeable risk, and one hypothetical case cannot refute Sparrow's general argument; thesis now claims only what the case supports.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "Expected sketch: premises, the commander chose to deploy and knew the testing record and safeguards. Objection, a learning automaton changes its own rules, so neither control nor knowledge holds. Reply, deploying a system known to be unpredictable is itself a controlled act with foreseeable risk.",
+  "replace": "Expected sketch: premises, the commander read the warning that Sentinel was untested in crowded areas, and she still deployed it at a market-side checkpoint. Bridge, a person who knowingly imposes a specific, serious risk on others answers for harm that realizes that risk, as someone who lends a car with known faulty brakes answers for the crash. Objection, Sparrow’s strongest: she chose to deploy, not to fire on this car, and it is unfair to blame her for a killing she did not choose. Reply, the killing is the very harm the warning named, so she answers for it as a realized risk, even though she did not choose it as an act. Sparrow can say back that this makes her answerable for the risk, not for the killing itself. The thesis is about this case only; it does not refute Sparrow’s general argument.",
+  "why": "Review note: the model must link deployment to the particular killing and meet Sparrow's distinction.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "knew the testing record and safeguards",
+  "replace": "had read the warning that it was untested in crowded areas",
+  "why": "Uses the stated Sentinel facts.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "that the commander chose to deploy it, knew the testing record, and knew the safeguards were inadequate.",
+  "replace": "that the documentation warned Sentinel was untested in crowded areas, that the commander read the warning and still deployed it at a market-side checkpoint, and that the ministry waived crowded-area testing.",
+  "why": "Uses the stated Sentinel facts."
+ },
+ {
+  "lesson": 13,
+  "find": "For the Warden thesis, the strongest objection from Matthias or Sparrow is that a learning automaton changes its own rules, so neither control nor knowledge holds. A reply is that deploying a system known to be unpredictable is itself a controlled act with foreseeable risk.",
+  "replace": "For the Sentinel thesis, the strongest objection comes from Sparrow: the commander chose to deploy, not to fire on this car, and it is unfair to blame her for a killing she did not choose. A reply is that the killing is the very harm the warning named, so she answers for it as a realized risk. Sparrow can say back that this makes her answerable for the risk, not for the killing itself.",
+  "why": "Matches the corrected model sketch."
+ },
+ {
+  "lesson": 13,
+  "find": "the strongest objection (Cohen’s own kind-based reply), and a reply that names the premise or step it breaks.",
+  "replace": "the strongest objection (Cohen’s reason for judging rights by kind: the capacity for moral judgment is not a test given to humans one by one), and a reply that names the premise or step it breaks.",
+  "why": "Review note: the thesis already rejects Cohen's kind reply, so restating it is no objection; use his justification for it."
+ },
+ {
+  "lesson": 13,
+  "find": "Bridge premise: the claim linking the evidence to the conclusion. Common mistake",
+  "replace": "Model: premise 1, some humans, such as infants, cannot make moral judgments. Premise 2, Cohen still grants them rights because normal members of their kind can. Bridge, a reason for granting rights to an individual must be a fact about that individual, not about other members of its kind. Objection, Cohen: the capacity is not a test given to humans one by one; rights belong to beings of a kind. Reply, then Cohen must say why the human kind is the relevant kind and not the kind of creature that can suffer; until he does, the bridge stands. Cohen can say back that moral agency is the capacity at the core of rights, so the kind defined by it is the right kind. Bridge premise: the claim linking the evidence to the conclusion. Common mistake",
+  "why": "Gives the lecturer the modeled defense the segment asks for."
+ },
+ {
+  "lesson": 13,
+  "find": "Strongest objection: Cohen’s own kind-based reply",
+  "replace": "Strongest objection: Cohen’s reason for judging rights by kind",
+  "why": "Review note on segment 3."
+ },
+ {
+  "lesson": 13,
+  "find": "Then present the strongest objection, Cohen’s own reply that standing goes with the kind of being, and a reply that says which premise it denies or which step it breaks.",
+  "replace": "Then present the strongest objection: Cohen’s reason for judging rights by kind, since the capacity for moral judgment is not a test given to humans one by one. Reply: then Cohen must say why the human kind is the relevant kind and not the kind of creature that can suffer. Say which premise or step the reply targets.",
+  "why": "Review note on segment 3."
+ },
+ {
+  "lesson": 13,
+  "find": "The objection to answer is the strongest one a thoughtful opponent would raise, such as Cohen’s kind-based reply to the argument from marginal cases.",
+  "replace": "The objection to answer is the strongest one a thoughtful opponent would raise. Against a paper that rejects Cohen’s kind-based reply, that is Cohen’s reason for judging rights by kind.",
+  "why": "Review note on segment 3."
+ },
+ {
+  "lesson": 13,
+  "find": "For the animal thesis, that is Cohen’s own kind-based reply.",
+  "replace": "For the animal thesis, that is Cohen’s reason for his reply: the capacity for moral judgment is not a test given to humans one by one, so rights go with the kind.",
+  "why": "Review note on segment 3."
+ },
+ {
+  "lesson": 13,
+  "find": "Cohen’s own kind-based reply is the strongest objection to it.",
+  "replace": "The strongest objection is Cohen’s reason for that reply: the capacity for moral judgment is not a test given to humans one by one.",
+  "why": "Review note on segment 3."
+ },
+ {
+  "lesson": 13,
+  "find": "We should not buy factory-farmed meat. Animals can suffer, and factory farming causes them great suffering for taste and convenience. Causing needless suffering is wrong, and Cohen himself grants this. Buying such meat pays for it.",
+  "replace": "We should not buy factory-farmed meat, because buying it pays for needless suffering. Animals can suffer, and factory farming causes them great suffering. Most of us can eat well without this meat, so that suffering serves only taste and convenience. Causing needless suffering is wrong, and Cohen himself grants this. Paying others to cause it is wrong for the same reason.",
+  "why": "Review note: the model now has a reason clause and defends why the suffering is needless and why buying is wrong.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "Cohen replies that animals have no rights, but my premise needs no rights, so his reply leaves the conclusion standing.",
+  "replace": "One might object that a single purchase changes nothing, so no buyer is responsible. But buyers together keep the farms running, and each buyer chooses to join in paying for the harm.",
+  "why": "Review note: Cohen's denial of rights does not challenge an argument built on his own concession; use the buyer's-responsibility objection and answer it.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "lacks the reason clause required by this plan; revise it before treating it as an A-level thesis",
+  "replace": "lacks a reason clause, so the thesis scores C",
+  "why": "Machine-sounding 'required by this plan'; give the rubric score directly.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "lacks the reason clause required by this plan.",
+  "replace": "lacks a reason clause, so the thesis scores C.",
+  "why": "Machine-sounding 'required by this plan'."
+ },
+ {
+  "lesson": 13,
+  "find": "Objection, reply, and revision",
+  "replace": "Objection and reply",
+  "why": "A grader cannot see revision in a single submitted paper; the criterion must judge what is on the page."
+ },
+ {
+  "lesson": 13,
+  "find": ", considers the opponent’s response, and revises the weakest part of the paper.",
+  "replace": ", considers the opponent’s response, and shows how the argument survives it.",
+  "why": "Gradable from the submitted paper."
+ },
+ {
+  "lesson": 13,
+  "find": "Answers a substantial objection and revises the paper, but the reply, the opponent’s response, or the revision could be more specific.",
+  "replace": "Answers a substantial objection, but the reply or the opponent’s response could be more specific.",
+  "why": "Gradable from the submitted paper."
+ },
+ {
+  "lesson": 13,
+  "find": "or gives a reply that does not show how the argument survives; revision leaves a major weakness.",
+  "replace": "or gives a reply that does not show how the argument survives.",
+  "why": "Gradable from the submitted paper."
+ },
+ {
+  "lesson": 13,
+  "find": "Omits a serious objection or gives only a bare disagreement, and does not use the rubric to address weaknesses.",
+  "replace": "Omits a serious objection or gives only a bare disagreement.",
+  "why": "Gradable from the submitted paper."
+ },
+ {
+  "lesson": 13,
+  "find": "when the Warden fires on the minibus",
+  "replace": "when Sentinel fires on the car carrying civilians",
+  "why": "Lesson 12's case is the Sentinel drone firing on a car; 'Warden' and 'minibus' never appeared.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "Warden case",
+  "replace": "Sentinel case",
+  "why": "Case name must match lesson 12.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "Warden thesis",
+  "replace": "Sentinel thesis",
+  "why": "Case name must match lesson 12.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "Warden sketch",
+  "replace": "Sentinel sketch",
+  "why": "Case name must match lesson 12.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "find": "learning turret",
+  "replace": "learning drone",
+  "why": "Sentinel is a drone, not a turret.",
+  "all": true
+ },
+ {
+  "lesson": 13,
+  "settle": "Segment 2, Sharpen four draft theses",
+  "why": "Fixed by the edits above: thesis 4 and the case thesis now rest on the stated Sentinel facts (the crowded-area warning the commander read)."
+ },
+ {
+  "lesson": 13,
+  "settle": "Segment 3, Premises, a bridge",
+  "why": "Fixed by the edits above: the objection is now Cohen's justification for judging by kind, with a modeled reply and Cohen's rejoinder."
+ },
+ {
+  "lesson": 13,
+  "settle": "Segment 4, Build a defense",
+  "why": "Fixed by the edits above: the model links deployment to the killing as a realized, warned-of risk, meets Sparrow's objection, and limits the thesis to the case."
+ },
+ {
+  "lesson": 13,
+  "settle": "Segment 5, Revise a paragraph",
+  "why": "Fixed by the edits above: the model revision defends 'needless' and the wrong of buying, and answers the buyer's-responsibility objection."
+ },
+ {
+  "lesson": 13,
+  "settle": "Segment 6, Leaders open",
+  "why": "Not a real problem: week 13 is a writing workshop with no assigned reading, and the seminar already has students draw on Singer, Cohen, Matthias and Sparrow through their own drafts."
+ },
+ {
+  "lesson": 14,
+  "find": "Mill’s rule-based defense",
+  "replace": "Mill’s reply from secondary principles",
+  "why": "Lesson 4 taught Mill's reply as long-run consequences and secondary principles; 'rule-based defense' suggests rule utilitarianism, which Mill's chapter 2 does not set out.",
+  "all": true
+ },
+ {
+  "lesson": 14,
+  "find": "; reply to the innocent scapegoat.",
+  "replace": "; then test it against the stipulation that the framing is never discovered.",
+  "why": "Matches the objector's move taught in lesson 4.",
+  "all": true
+ },
+ {
+  "lesson": 14,
+  "find": "Pick presenters who chose different questions.",
+  "replace": "Groups that finish early outline an applied question, such as whether Cohen’s appeal to kind answers the argument from marginal cases. Pick presenters who chose different questions.",
+  "why": "The final exam covers the applied half of the course too."
+ },
+ {
+  "lesson": 14,
+  "find": "Skills: apply the test to the case, state the strongest objection fairly, make the reply answer it directly.",
+  "replace": "Skills: apply the test to the case, state the strongest objection fairly, make the reply answer it directly. Remind students that the exam covers the whole course, including cultural relativism and the applied questions on Nagel, animals and responsibility for AI.",
+  "why": "The review omitted relativism and three applied weeks the exam covers."
+ },
+ {
+  "lesson": 14,
+  "find": "Then learn the shape of a strong exam answer: thesis, test applied, strongest objection, direct reply, verdict.",
+  "replace": "Then learn the shape of a strong exam answer: thesis, test applied, strongest objection, direct reply, verdict. The exam covers the whole course, so also review cultural relativism and the applied readings: Singer, Nagel, Cohen, Matthias and Sparrow.",
+  "why": "The exam covers the whole course."
+ },
+ {
+  "lesson": 14,
+  "find": "The plan describes Kantian beneficence as an imperfect duty that leaves latitude in how to help. It describes generosity as a virtue without a fixed amount.",
+  "replace": "Kant treats beneficence as an imperfect duty that leaves latitude in how to help. Virtue ethics treats generosity as a virtue but sets no fixed amount.",
+  "why": "Student-facing explanation referred to 'the plan'."
+ },
+ {
+  "lesson": 1,
+  "find": "300–400-word",
+  "replace": "400–500-word",
+  "all": true,
+  "why": "Every weekly response is the same length."
+ },
+ {
+  "lesson": 4,
+  "find": "300–400-word",
+  "replace": "400–500-word",
+  "all": true,
+  "why": "Every weekly response is the same length."
+ },
+ {
+  "lesson": 8,
+  "find": "350–500-word",
+  "replace": "400–500-word",
+  "all": true,
+  "why": "Every weekly response is the same length."
+ },
+ {
+  "lesson": 9,
+  "find": "300–500-word",
+  "replace": "400–500-word",
+  "all": true,
+  "why": "Every weekly response is the same length."
+ },
+ {
+  "lesson": 10,
+  "find": "400–600-word",
+  "replace": "400–500-word",
+  "all": true,
+  "why": "Every weekly response is the same length."
+ },
+ {
+  "find": "chapter 11",
+  "replace": "chapter 6",
+  "all": true,
+  "why": "Social contract theory is chapter 6 of Rachels and Rachels (9th and 10th editions); chapter 11 is the ethics of care."
+ }
+]

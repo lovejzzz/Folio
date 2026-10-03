@@ -1,0 +1,692 @@
+[
+ {
+  "find": "Tell me about any food allergies before the unit begins.",
+  "replace": "Tell me about any food allergies before the unit begins, especially to beans, peas or peanuts, which are all legumes.",
+  "why": "Bean unit: name legume allergies explicitly for families"
+ },
+ {
+  "lesson": 1,
+  "find": "Prep: soak dry beans overnight; have spares. Safety: beans are a choking hazard and some students have legume allergies, so check records.",
+  "replace": "Prep: use dry pinto or lima beans from the grocery store. Soak them in water 8 to 12 hours the night before; have spares. Safety: raw dry beans are harmful to eat (raw lima and kidney beans can make people sick), beans are a choking hazard, and some students have legume allergies, so check records.",
+  "why": "Safety: raw lima/kidney beans are toxic; soaking time; bean type"
+ },
+ {
+  "lesson": 1,
+  "find": "Prep: soak dry beans overnight and have spares.",
+  "replace": "Prep: soak dry pinto or lima beans 8 to 12 hours the night before and have spares. Raw dry beans, including lima and kidney beans, are harmful to eat.",
+  "why": "Same safety note on the slide"
+ },
+ {
+  "lesson": 1,
+  "find": "Place the bags in a bright classroom location out of direct sunlight.",
+  "replace": "Tape the bags to a window that does not get direct sun, or set them on a bright shelf near it. Direct sun overheats sealed bags and makes them mold.",
+  "why": "Later lessons keep bags 'at the window'; make placement consistent and safe",
+  "all": true
+ },
+ {
+  "lesson": 1,
+  "find": "because the bean is the first living thing in our unit",
+  "replace": "because we will watch this bean all unit",
+  "why": "The cat and chicken came first; the claim was wrong",
+  "all": true
+ },
+ {
+  "lesson": 1,
+  "find": "The bean is the first living thing in our unit.",
+  "replace": "We will watch this bean all unit.",
+  "why": "Same fix in the study guide"
+ },
+ {
+  "lesson": 1,
+  "find": "Make extra sets for absent students.",
+  "replace": "Print or draw the card sets ahead, plus extra sets for absent students.",
+  "why": "Cards were never listed as prep",
+  "all": true
+ },
+ {
+  "lesson": 1,
+  "find": "A life cycle includes the changes a living thing goes through during its life.",
+  "replace": "The new young can start the life cycle again.",
+  "why": "Duplicate of the first quiz item; test the cycle idea instead (prompt and explanation)",
+  "all": true
+ },
+ {
+  "lesson": 1,
+  "find": "Name the four parts of a life cycle and explain how the cycle starts again.",
+  "replace": "Name the four life cycle words. How does the cycle start again?",
+  "why": "Easier to read for 7-year-olds"
+ },
+ {
+  "lesson": 1,
+  "find": "The lesson teaches the stages born, grow, reproduce, and die, and explains that the young carry on the cycle.",
+  "replace": "Every living thing is born, grows, reproduces and dies. Its young grow up and carry on the cycle.",
+  "why": "Student-facing machine wording"
+ },
+ {
+  "lesson": 2,
+  "find": "Each student gets their sealed bag from the window and looks closely without opening it.",
+  "replace": "Each student gets their sealed bag from the window spot (out of direct sun) and looks closely without opening it.",
+  "why": "Remind teacher of safe placement",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "Cards only, no real objects needed.",
+  "replace": "Print or draw one card set and one two-column mat per pair ahead of time. Cards only, no real objects needed.",
+  "why": "Prep for cards and mats"
+ },
+ {
+  "lesson": 2,
+  "find": "It can move and needs toys.",
+  "replace": "It can move like an animal.",
+  "why": "Giveaway distractor"
+ },
+ {
+  "lesson": 2,
+  "find": "It has food and never changes.",
+  "replace": "It is small and hard.",
+  "why": "Giveaway distractor"
+ },
+ {
+  "lesson": 2,
+  "find": "Soil and toys.",
+  "replace": "Soil to eat.",
+  "why": "Giveaway distractor; use the taught misconception"
+ },
+ {
+  "lesson": 2,
+  "find": "Paper and air.",
+  "replace": "Rocks and sand.",
+  "why": "Giveaway distractor"
+ },
+ {
+  "lesson": 2,
+  "find": "A toy truck is living because it can move.",
+  "replace": "A rock needs food, water and air.",
+  "why": "Duplicate of the toy truck question; still False"
+ },
+ {
+  "lesson": 2,
+  "find": "A toy truck can move, but it does not grow or need food, water, and air to survive.",
+  "replace": "A toy truck and a rock do not grow, and they do not need food, water or air. They are nonliving.",
+  "why": "Shared explanation now fits both the truck item and the new rock item",
+  "all": true
+ },
+ {
+  "lesson": 3,
+  "find": "Use pinto or lima beans, not raw kidney beans.",
+  "replace": "Use pinto or lima beans. Raw dry beans of any kind, including lima and kidney beans, are harmful to eat.",
+  "why": "Raw lima beans are also toxic",
+  "all": true
+ },
+ {
+  "lesson": 3,
+  "find": "Start spare bags several days before class so a root and a small sprout are visible.",
+  "replace": "About a week before the unit starts, soak and bag extra beans, one per pair plus a few spares, so a root and a small shoot are visible by today.",
+  "why": "Concrete prep timing and quantity"
+ },
+ {
+  "lesson": 3,
+  "find": "If you see mold or a bad smell, do not open the bag and tell the teacher.",
+  "replace": "If students see mold or a bad smell, they do not open the bag and tell you.",
+  "why": "Teacher note addressed to the teacher"
+ },
+ {
+  "lesson": 3,
+  "find": "point to the root, which came out first, and the small sprout.",
+  "replace": "point to the root, which came out first, and the small shoot that grows up.",
+  "why": "Sprout is a stage in this unit; the part is the shoot"
+ },
+ {
+  "lesson": 3,
+  "find": "After the root, a sprout pushes out. It will grow into the bean plant.",
+  "replace": "After the root, a shoot pushes up. It will grow into the stem and leaves. A seed with a root and a shoot is called a sprout.",
+  "why": "Keep sprout as a stage, shoot as a part, matching the stage list"
+ },
+ {
+  "lesson": 3,
+  "find": "A small sprout comes after the root",
+  "replace": "A small shoot comes after the root",
+  "why": "Same"
+ },
+ {
+  "lesson": 3,
+  "find": "After the root, a sprout pushes out and will grow into the bean plant.",
+  "replace": "After the root, a shoot pushes up and will grow into the stem and leaves. A seed with a root and a shoot is a sprout.",
+  "why": "Same"
+ },
+ {
+  "lesson": 3,
+  "find": "The root comes out first, then the sprout",
+  "replace": "The root comes out first, then the shoot",
+  "why": "Same"
+ },
+ {
+  "lesson": 3,
+  "find": "After the root, a sprout pushes out. The sprout will grow into the bean plant. Example: on the prepared sprouting bean, the root had come out first and a small sprout was starting.",
+  "replace": "After the root, a shoot pushes up. The shoot will grow into the stem and leaves. A seed with a root and a shoot is called a sprout. Example: on the prepared sprouting bean, the root had come out first and a small shoot was starting.",
+  "why": "Same"
+ },
+ {
+  "lesson": 3,
+  "find": "After the root, a small sprout pushes out. The sprout will grow into the bean plant.",
+  "replace": "After the root, a small shoot pushes up. It will grow into the stem and leaves.",
+  "why": "Same"
+ },
+ {
+  "lesson": 3,
+  "find": "A tiny new plant that has just begun to grow out of a seed.",
+  "replace": "A seed with a root and a tiny shoot growing out of it. The shoot is the part that grows up.",
+  "why": "Defines shoot; sprout matches the stage card"
+ },
+ {
+  "lesson": 3,
+  "find": "The sprout comes out first and grows down.",
+  "replace": "The shoot comes out first and grows down.",
+  "why": "Match the part name"
+ },
+ {
+  "lesson": 3,
+  "find": "Next time, we will check our bean bags again. Think about what the sprout may do.”",
+  "replace": "Next time, we will check our bean bags again. Think about what the sprout may do.",
+  "why": "Stray closing quotation mark"
+ },
+ {
+  "lesson": 4,
+  "find": "Bean plants take weeks to flower, so bring photos, or pots you started earlier that show a seedling and an adult plant. Our beans may still be seeds or may have grown into sprouts or seedlings.",
+  "replace": "A bean plant takes about 8 weeks to flower and make pods, so use photos unless you planted pots about two months before the unit. Our beans will still be seeds or sprouts with a root and a small shoot.",
+  "why": "Prep needed weeks ahead; seedlings in 4 days is unrealistic"
+ },
+ {
+  "lesson": 4,
+  "find": "Our beans may still be seeds, sprouts or seedlings, so use photos or earlier-started pots for stages we cannot observe yet.",
+  "replace": "Our beans will still be seeds or sprouts. A bean plant takes about 8 weeks to make pods, so use photos for the stages we cannot observe.",
+  "why": "Same on the slide"
+ },
+ {
+  "lesson": 4,
+  "find": "Our beans in the bags may still be seeds, or they may be sprouts or seedlings.",
+  "replace": "Our beans in the bags may still be seeds, or they may be sprouts.",
+  "why": "Realistic for day 4"
+ },
+ {
+  "lesson": 4,
+  "find": "Pre-sort and laminate the sets.",
+  "replace": "Make the sets ahead from photos or simple drawings, plus one large set for the board, and laminate them.",
+  "why": "Cards were never listed as prep"
+ },
+ {
+  "lesson": 4,
+  "find": "Expected: the root came out first, then a sprout.",
+  "replace": "Expected: the root came out first, then a small shoot.",
+  "why": "Sprout is the stage; shoot is the part",
+  "all": true
+ },
+ {
+  "lesson": 4,
+  "find": "Each student draws their own bean as it looks now and labels the root or sprout.",
+  "replace": "Each student draws their own bean as it looks now and labels the root and the shoot, if there is one.",
+  "why": "Label parts, not stage names"
+ },
+ {
+  "lesson": 4,
+  "find": "Label the root or sprout",
+  "replace": "Label the root and the shoot",
+  "why": "Same"
+ },
+ {
+  "lesson": 4,
+  "find": "label the root or the sprout",
+  "replace": "label the root and the shoot",
+  "why": "Same"
+ },
+ {
+  "lesson": 4,
+  "find": "seed to sprout, sprout to seedling, or seedling to adult plant",
+  "replace": "seed to sprout, or sprout to seedling",
+  "why": "Beans in bags cannot reach seedling in two weeks of lessons",
+  "all": true
+ },
+ {
+  "lesson": 4,
+  "find": "An adult plant growing flowers",
+  "replace": "A seedling growing taller",
+  "why": "Flowers are part of reproducing; distractor was arguably correct"
+ },
+ {
+  "lesson": 4,
+  "find": "Write the five bean plant stages in order, from seed to seed.",
+  "replace": "Your bean has a root and a small shoot. It has no green leaves yet. What stage is it? What stage comes next?",
+  "why": "Duplicated the ordering question"
+ },
+ {
+  "lesson": 4,
+  "find": "Seed, sprout, seedling, adult plant, new seeds in a pod.",
+  "replace": "It is a sprout. Next it becomes a seedling.",
+  "why": "Answer for the new item"
+ },
+ {
+  "lesson": 4,
+  "find": "These are the five stages in the bean plant life cycle, in order.",
+  "replace": "A seed with a root and a shoot is a sprout. When it grows its first green leaves, it is a seedling.",
+  "why": "Explanation for the new item"
+ },
+ {
+  "lesson": 5,
+  "find": "Before reading, say, “Listen for how the story begins and what the little animal does all day.”",
+  "replace": "Before reading, say, “This is a made-up story. Some parts are true and some are pretend. Listen for how the story begins and what the little animal does all day.”",
+  "why": "Fiction read-aloud must be framed as a story"
+ },
+ {
+  "lesson": 5,
+  "find": "The book skips the molting stage, so mention it next.",
+  "replace": "The book skips molting, so mention it next. Molting is not a stage.",
+  "why": "Molting is not a life cycle stage"
+ },
+ {
+  "lesson": 5,
+  "find": "Short check, not graded. Clues and answers:",
+  "replace": "Short check, not graded. Prepare one small egg card and one caterpillar card per student (a quick drawing is fine). Clues and answers:",
+  "why": "Cards were never listed as prep"
+ },
+ {
+  "lesson": 5,
+  "find": "To get food and make a chrysalis",
+  "replace": "To get food and stay small",
+  "why": "Distractor was partly true (eating prepares for the chrysalis)"
+ },
+ {
+  "lesson": 5,
+  "find": "It eats its skin to get bigger",
+  "replace": "It stretches its skin to get bigger",
+  "why": "Monarch caterpillars often do eat their shed skin; use the taught misconception"
+ },
+ {
+  "lesson": 5,
+  "find": "It loses its wings to get bigger",
+  "replace": "It sleeps a lot to get bigger",
+  "why": "Giveaway distractor (caterpillars have no wings)"
+ },
+ {
+  "lesson": 5,
+  "find": "It changes its leaf to get bigger",
+  "replace": "It moves to a new leaf to get bigger",
+  "why": "Clearer distractor"
+ },
+ {
+  "lesson": 5,
+  "find": "A monarch egg is tiny, about the size of a pinhead, and is laid on a leaf.",
+  "replace": "A caterpillar hatches out of an egg.",
+  "why": "Duplicate of the egg-stage question; still True"
+ },
+ {
+  "lesson": 5,
+  "find": "The egg is tiny and is laid on a leaf.",
+  "replace": "The egg hatches, and a caterpillar comes out.",
+  "why": "Explanation for the new item"
+ },
+ {
+  "lesson": 5,
+  "find": "Explain why a caterpillar eats leaves as it grows. Also describe what happens to its skin.",
+  "replace": "Why does a caterpillar eat so many leaves? What happens to its skin as it grows?",
+  "why": "Easier to read for 7-year-olds"
+ },
+ {
+  "lesson": 5,
+  "find": " This guide helps you remember what you learned.",
+  "replace": "",
+  "why": "Machine boilerplate in the study guide"
+ },
+ {
+  "lesson": 6,
+  "find": "Give each pair four picture cards: egg on a leaf, caterpillar, chrysalis, and butterfly.",
+  "replace": "Give each pair four picture cards (egg on a leaf, caterpillar, chrysalis and butterfly) and one arrow card.",
+  "why": "The arrow card is used in the next step but was never handed out"
+ },
+ {
+  "lesson": 6,
+  "find": "What is the pupa stage of a butterfly called?",
+  "replace": "What is the hard case around a butterfly pupa called?",
+  "why": "The lesson teaches that the chrysalis is the case and pupa is the stage; the old question named the stage and keyed the case"
+ },
+ {
+  "lesson": 7,
+  "find": "Accept all guesses and revisit them in the egg segment.",
+  "replace": "Accept all guesses and revisit them at the end of the lesson.",
+  "why": "Guesses are revisited in the close (as the slide says), not in the egg segment; also removes planner jargon"
+ },
+ {
+  "lesson": 7,
+  "find": "On a leaf, such as a butterfly egg",
+  "replace": "On a leaf, like a butterfly egg",
+  "why": "'such as' made the distractor read oddly"
+ },
+ {
+  "lesson": 8,
+  "find": "Show the egg mass photo from last time",
+  "replace": "Show the frogspawn photo from last time",
+  "why": "Last time the photo was called frogspawn; 'egg mass' was a new, untaught term",
+  "all": true
+ },
+ {
+  "lesson": 8,
+  "find": "picture cards: egg mass, tadpole, froglet, adult frog",
+  "replace": "picture cards: egg, tadpole, froglet, adult frog",
+  "why": "Stage name must match the chant, quiz and final word bank: egg",
+  "all": true
+ },
+ {
+  "lesson": 8,
+  "find": "Expected order: egg mass, tadpole, froglet, adult frog.",
+  "replace": "Expected order: egg, tadpole, froglet, adult frog.",
+  "why": "Consistent stage name",
+  "all": true
+ },
+ {
+  "lesson": 8,
+  "find": "add an arrow from adult frog back to egg mass.",
+  "replace": "add an arrow from adult frog back to egg.",
+  "why": "Consistent stage name",
+  "all": true
+ },
+ {
+  "lesson": 8,
+  "find": "Students open their journals to the egg mass and tadpole page from last time",
+  "replace": "Students open their journals to the egg and tadpole page from last time",
+  "why": "Matches the journal page made last time"
+ },
+ {
+  "lesson": 8,
+  "find": "Open to the egg mass and tadpole page",
+  "replace": "Open to the egg and tadpole page",
+  "why": "Matches the journal page made last time"
+ },
+ {
+  "lesson": 8,
+  "find": "A frog egg mass looks like a clump of clear jelly with black dots.",
+  "replace": "Frog eggs come in a clump of clear jelly with black dots, called frogspawn.",
+  "why": "Uses the term taught last time"
+ },
+ {
+  "lesson": 8,
+  "find": "Read each clue aloud. Students hold up the matching card from their set.",
+  "replace": "Read each clue aloud. Pairs hold up the matching card from their set.",
+  "why": "Each pair has one set of cards"
+ },
+ {
+  "lesson": 8,
+  "find": "A froglet has no tail, and an adult frog lays new eggs.",
+  "replace": "A froglet has no tail at all.",
+  "why": "Two-part true/false is a trap for 7-year-olds: half true, half false"
+ },
+ {
+  "lesson": 8,
+  "find": "A froglet has a short bit of tail left. An adult frog has no tail and lays new eggs.",
+  "replace": "A froglet still has a short bit of tail left. Only the adult frog has no tail.",
+  "why": "Matches the one-part statement"
+ },
+ {
+  "lesson": 9,
+  "find": "Expected answers: our bean seed was already living before it sprouted. If it has sprouted or grown new roots or leaves, our drawings show growth.",
+  "replace": "Expected answers: for a plant, sprouting is like being born: the tiny plant inside the seed comes out, the way a caterpillar hatches from an egg. The seed was already living before it sprouted, just as an egg is. New roots and leaves in our drawings show growth.",
+  "why": "The plan never said whether the bean has been 'born', the first thing students are asked about"
+ },
+ {
+  "lesson": 9,
+  "find": "Expected: the seed was already living before it sprouted; new roots or leaves show growth;",
+  "replace": "Expected: for a plant, sprouting is like being born, and the seed was already living before it sprouted; new roots or leaves show growth;",
+  "why": "Same fix on the slide"
+ },
+ {
+  "lesson": 9,
+  "find": "Our bean seed was already living before it sprouted. If it has sprouted or grown new roots or leaves, your drawings show that it grows.",
+  "replace": "Our bean seed was already living before it sprouted. For a plant, sprouting is like being born: the tiny plant comes out of the seed, the way a caterpillar hatches from an egg. New roots and leaves in your drawings show that it grows.",
+  "why": "Same fix in the study guide"
+ },
+ {
+  "lesson": 9,
+  "find": "Pair early finishers with a slower pair.",
+  "replace": "Pair early finishers with a pair that needs help.",
+  "why": "'slower pair' is unkind wording",
+  "all": true
+ },
+ {
+  "lesson": 9,
+  "find": "Keep the cards and journals available for them.",
+  "replace": "Keep a set of picture cards for each cycle ready for them.",
+  "why": "Journals hold labeled practice drawings and must not be out during the drawing"
+ },
+ {
+  "lesson": 9,
+  "find": "Keep the cards and journals available.",
+  "replace": "Keep a set of picture cards for each cycle ready.",
+  "why": "Same fix on the slide"
+ },
+ {
+  "lesson": 9,
+  "find": "They are different. A butterfly makes a chrysalis. A frog has a tadpole with a tail and gills. Both animals start as an egg, look very different when young, and grow into adults that lay new eggs.",
+  "replace": "No. Only things that both animals have go in the middle. A chrysalis belongs only to the butterfly, so it goes in the Butterfly circle. A tadpole with a tail and gills belongs only to the frog, so it goes in the Frog circle. Both animals start as an egg and grow into adults that lay new eggs, so those cards go in the middle.",
+  "why": "The old answer did not answer the question asked"
+ },
+ {
+  "lesson": 10,
+  "find": "Stage labels",
+  "replace": "Stage labels (spelling does not count)",
+  "why": "Spelling must not count for 7-year-olds; puts the rule in the rubric itself"
+ },
+ {
+  "lesson": 10,
+  "find": "Students choose one life cycle and draw and label its stages, then are scored with a simple rubric.",
+  "replace": "Students choose one life cycle, draw and label its stages, and check their work against a simple rubric.",
+  "why": "Scoring happens after class, not in the lesson"
+ },
+ {
+  "lesson": 10,
+  "find": "Each student tells a partner one change in the bean since last time. Students write today’s date and draw or write what they observe in their bean observation journals.\nThen everyone says “born, grow, reproduce, die” with the hand motions from last time.\nSay, “Today you show what you know about a life cycle. You will draw one and label it.”",
+  "replace": "Students open their journals to their first bean drawing and compare it with the bean in the bag. Each student tells a partner, “At first my bean was ___. Now it ___.”\nSay, “Our beans sprouted and grew. After today they go into cups of soil, so we can watch for flowers and pods.” Students put their journals away.\nEveryone says “born, grow, reproduce, die” with the hand motions. Say, “Today you show what you know about a life cycle. You will draw one and label it.”",
+  "why": "The two-week bean observation was never wrapped up; journals (with labeled practice drawings) must be put away before the drawing"
+ },
+ {
+  "lesson": 10,
+  "find": "Safety: beans and bag contents are never tasted. Students wash hands after touching the bags, and tell you about any mold; do not open moldy bags. Dried beans are a choking risk for young children, so keep them sealed. Keep this short; the drawing needs the time.",
+  "replace": "Safety: beans and bag contents are never tasted. Students wash hands after touching the bags, and tell you about any mold; do not open moldy bags. Beans are a choking risk for young children, so the bags stay sealed. Keep this short; the drawing needs the time. This is the last bean check. After class, plant each sprouted bean in a cup of soil on the windowsill, so the class can keep watching for flowers and pods.",
+  "why": "Says what happens to the sprouting beans after the unit; the beans are soaked, not dried"
+ },
+ {
+  "lesson": 10,
+  "find": "Have bean bags at the window, picture cards, word bank strips, paper, pencils and crayons ready.",
+  "replace": "Have ready: the bean bags and hand lenses, observation journals, the scoring chart, chart paper and a marker for the model, a mixed-up set of picture cards for each student’s chosen cycle (bean, butterfly and frog sets), word bank strips, drawing paper, pencils and crayons. Before class, take down the rows of cards posted on the board last time.",
+  "why": "Materials list was incomplete (hand lenses, journals, chart, model paper); the posted rows show the assessed order"
+ },
+ {
+  "lesson": 10,
+  "find": "Tell your partner one change since last time",
+  "replace": "Find your first bean drawing in your journal",
+  "why": "Bean wrap-up, matches the new warm-up"
+ },
+ {
+  "lesson": 10,
+  "find": "Write the date in your journal",
+  "replace": "Tell a partner: “At first my bean was ___. Now it ___.”",
+  "why": "Bean wrap-up"
+ },
+ {
+  "lesson": 10,
+  "find": "Draw or write what you see",
+  "replace": "Put your journal away",
+  "why": "Journals are put away before the drawing"
+ },
+ {
+  "lesson": 10,
+  "find": "Students take their sealed bags from the window and may use a hand lens. Safety: never taste beans or bag contents. Students wash hands after touching bags and tell you about any mold; do not open moldy bags. Dried beans are a choking risk, so keep bags sealed. Do the hand motions from last time with the words. Then say: Today you show what you know about a life cycle. You will draw one and label it. Keep this short; the drawing needs the time.",
+  "replace": "Students take their sealed bags from the window and may use a hand lens. They compare the bean with their first bean drawing and tell a partner how it changed. Say: Our beans sprouted and grew. After today they go into cups of soil, so we can watch for flowers and pods. Students put their journals away. Safety: never taste beans or bag contents. Students wash hands after touching bags and tell you about any mold; do not open moldy bags. Beans are a choking risk, so bags stay sealed. Do the hand motions with the words. Then say: Today you show what you know about a life cycle. You will draw one and label it. Keep this short; the drawing needs the time.",
+  "why": "Matches the new warm-up"
+ },
+ {
+  "lesson": 10,
+  "find": "Show a chart with four rows: Excellent, Good, Developing, Beginning. Read each row aloud in kid words.\nModel with a butterfly. Draw the egg on a leaf and write the label “egg” under it.",
+  "replace": "Show a chart with two columns, My stages and My words, and four rows: Excellent, Good, Developing, Beginning. Read each row aloud. Say that spelling does not count.\nModel with the chicken, which is not one of today’s choices. Draw an egg in a nest and write the label “egg” under it.",
+  "why": "Modeling the butterfly gave away part of an assessed answer; chart now matches the two-criterion rubric"
+ },
+ {
+  "lesson": 10,
+  "find": "Chart rows, shown with no points or numbers:\nExcellent: all stages drawn in the correct order, and every stage has the correct label.\nGood: stages in the correct order, and most labels are correct.\nDeveloping: one stage is missing or out of order, or several labels are missing or wrong.\nBeginning: few stages are drawn, and labels are mostly missing.\nExpected: students say “caterpillar” comes next.",
+  "replace": "The rubric scores two rows, each on its own.\nStages and order. Excellent (4 points): every stage is drawn, all in the correct order. Good (3 points): one stage is missing or in the wrong place. Developing (2 points): two stages are missing or in the wrong place. Beginning (1 point): three or more stages are missing or in the wrong place.\nStage labels. Excellent (4 points): every stage has a label that names it correctly. Good (3 points): one stage has a missing or wrong label. Developing (2 points): two stages have missing or wrong labels. Beginning (1 point): three or more stages have missing or wrong labels.\nSpelling does not count: a word that can be read, such as “krisalis”, is correct. A stage that is not drawn counts as a missing label. A drawing earns up to 8 points.\nThe student chart shows the same rows in kid words, with no points. My stages: all my stages, in order / one stage missing or in the wrong place / two stages missing or in the wrong place / three or more. My words: every stage has the right word / one word missing or wrong / two words missing or wrong / three or more.\nExpected: students say “chick” comes next.",
+  "why": "Rubric levels overlapped and left gaps; the plan now states the rubric exactly, with points and the spelling rule"
+ },
+ {
+  "lesson": 10,
+  "find": "Excellent: all stages in order, every label correct",
+  "replace": "Excellent: every stage, in order; every stage has the right word",
+  "why": "Matches the new rubric"
+ },
+ {
+  "lesson": 10,
+  "find": "Good: stages in order, most labels correct",
+  "replace": "Good: one stage missing or in the wrong place; one word missing or wrong",
+  "why": "Matches the new rubric"
+ },
+ {
+  "lesson": 10,
+  "find": "Developing: a stage missing or out of order, or labels missing or wrong",
+  "replace": "Developing: two stages missing or in the wrong place; two words missing or wrong",
+  "why": "Matches the new rubric"
+ },
+ {
+  "lesson": 10,
+  "find": "Beginning: few stages, labels mostly missing",
+  "replace": "Beginning: three or more stages missing or in the wrong place; three or more words missing or wrong",
+  "why": "Matches the new rubric"
+ },
+ {
+  "lesson": 10,
+  "find": "Read each row aloud in kid words. Show no points or numbers. Model with a butterfly: draw the egg on a leaf and write the label egg under it. Ask: What comes next? Is my drawing in order so far? Expected answer: caterpillar.",
+  "replace": "Read each row aloud. Each drawing gets one level for its stages and one level for its words, and spelling does not count. Show no points. Model with the chicken, which is not one of today’s choices: draw an egg in a nest and write the label egg under it. Ask: What comes next? Is my drawing in order so far? Expected answer: chick.",
+  "why": "Matches the new rubric; the model no longer gives away a butterfly answer"
+ },
+ {
+  "lesson": 10,
+  "find": "Word banks, one per strip:\nButterfly: egg, caterpillar, chrysalis, butterfly.\nFrog: egg, tadpole, froglet, adult frog.\nBean: copy the words from your five bean picture cards onto the strip.\nStudents may use the cards while planning and drawing. Students who lay cards wrongly can re-check against the posted rows of cards from last time.",
+  "replace": "Before class, take down the rows of cards posted on the board last time, so the order is not on display. Give each student a mixed-up set of cards for the cycle they choose.\nWord banks, one per strip, with the words in mixed order:\nButterfly: chrysalis, egg, butterfly, caterpillar.\nFrog: froglet, egg, adult frog, tadpole.\nBean: seedling, seed, new seeds in a pod, sprout, adult plant. Accept “pod” for the last bean stage.\nStudents may use their own cards and word bank while planning and drawing. Do not check or fix the order of their cards.",
+  "why": "Word banks listed the stages in the assessed order, the bean bank was never given, and the posted rows showed the answers during the assessment"
+ },
+ {
+  "lesson": 10,
+  "find": "Butterfly: egg, caterpillar, chrysalis, butterfly. Frog: egg, tadpole, froglet, adult frog. Bean: students copy the words from their five bean picture cards onto the strip. Students touch each card in order and say the stage name aloud. Anyone who lays cards wrongly can re-check against the posted rows of cards from last time.",
+  "replace": "The words on each strip are in mixed order. Butterfly: chrysalis, egg, butterfly, caterpillar. Frog: froglet, egg, adult frog, tadpole. Bean: seedling, seed, new seeds in a pod, sprout, adult plant. Students touch each card in order and say the stage name aloud. Do not check or fix the order of their cards; the rows from last time are taken down.",
+  "why": "Same fix on the slide"
+ },
+ {
+  "lesson": 10,
+  "find": "Walk around and ask, “Which stage comes first? What is this stage called?”",
+  "replace": "Walk around and say, “Tell me about your drawing,” without giving answers.",
+  "why": "Asking which stage comes first and what it is called prompts the assessed answers"
+ },
+ {
+  "lesson": 10,
+  "find": "This is the only graded work in the unit, and it is 100% of the unit grade. Score it later using the four rubric levels. Give no hints about answers, only the word bank and the cards. Safety: pencils and crayons only; no scissors or glue. Common mistakes: stages out of order, a missing chrysalis or froglet, and misspelled labels. Accept spelling that is readable.",
+  "replace": "This is the only graded work in the unit, and it is 100% of the unit grade. Do not score while students draw: collect the drawings and score them after class with the rubric. Give no hints about answers; students use only their word bank and cards. Safety: pencils and crayons only; no scissors or glue. Common mistakes: stages out of order, and a missing chrysalis or froglet. Spelling does not count: accept any label that can be read.",
+  "why": "Misspelling was listed as a mistake although spelling does not count; makes clear scoring happens after class"
+ },
+ {
+  "lesson": 10,
+  "find": "This slide stays up while students work. Give no hints about answers, only the word bank and the cards. Walk around and ask: Which stage comes first? What is this stage called? Common mistakes to watch for, without correcting them: stages out of order, a missing chrysalis or froglet, and misspelled labels. Accept readable spelling. No scissors or glue. This drawing is the only graded work in the unit and is 100% of the unit grade; you score it later.",
+  "replace": "This slide stays up while students work. Give no hints about answers; students use only their word bank and cards. Walk around and say: Tell me about your drawing. Do not correct stages or labels now. Spelling does not count. No scissors or glue. This drawing is the only graded work in the unit and is 100% of the unit grade; score it after class with the rubric.",
+  "why": "Same fixes on the slide"
+ },
+ {
+  "lesson": 10,
+  "find": "Students only check their work. You decide the level later. Expected: most children find a missing or misspelled label.",
+  "replace": "Students only check their work. You decide the levels after class. Expected: some children find a missing label or a stage in the wrong place. Spelling does not count, so do not send them to fix spelling.",
+  "why": "Spelling does not count"
+ },
+ {
+  "lesson": 10,
+  "find": "Students only check their own work; you decide the level later. Expect most children to find a missing or misspelled label.",
+  "replace": "Students only check their own work; you decide the levels after class. Expect some children to find a missing label or a stage in the wrong place. Spelling does not count.",
+  "why": "Spelling does not count"
+ },
+ {
+  "lesson": 10,
+  "find": "The drawing is scored for two things: the stages are in the right order, and each stage has the correct label. The levels are Excellent, Good, Developing and Beginning.",
+  "replace": "The drawing is scored for two things: the stages are in the right order, and each stage has the correct label. Each one gets its own level: Excellent, Good, Developing or Beginning. Spelling does not count.",
+  "why": "Matches the rubric's two separate criteria"
+ },
+ {
+  "lesson": 10,
+  "find": "Your drawing is scored for two things: the stages are in the right order, and each stage has the correct label. The levels are Excellent, Good, Developing and Beginning. Excellent means all stages are drawn in the correct order and every stage has the correct label. Good means the stages are in order and most labels are correct. Developing means one stage is missing or out of order, or several labels are missing or wrong. Beginning means few stages are drawn and the labels are mostly missing.",
+  "replace": "Your drawing gets two levels: one for your stages and one for your labels. Each level is Excellent, Good, Developing or Beginning. For stages, Excellent means every stage is drawn in the correct order. Good means one stage is missing or in the wrong place. Developing means two stages are, and Beginning means three or more are. For labels, Excellent means every stage has the right word. Good means one word is missing or wrong. Developing means two words are, and Beginning means three or more are. Spelling does not count.",
+  "why": "Matches the new rubric"
+ },
+ {
+  "lesson": 10,
+  "find": "Use the picture cards and word bank as guides. This is the only graded work in the unit and counts for 100% of the unit grade. The teacher will score your drawing later with the rubric.",
+  "replace": "You may use your picture cards and word bank. Spelling does not count. Your teacher will look at your drawing after class.",
+  "why": "Grade-weight boilerplate is not for 7-year-olds"
+ },
+ {
+  "lesson": 10,
+  "find": "All stages are drawn in the correct order.",
+  "replace": "Every stage is drawn, all in the correct order.",
+  "why": "Rubric levels overlapped and left gaps; levels now count missing or misplaced stages"
+ },
+ {
+  "lesson": 10,
+  "find": "Stages are drawn in the correct order.",
+  "replace": "One stage is missing or in the wrong place.",
+  "why": "Good was identical to Excellent"
+ },
+ {
+  "lesson": 10,
+  "find": "One stage is missing or out of order.",
+  "replace": "Two stages are missing or in the wrong place.",
+  "why": "No overlap or gap between levels"
+ },
+ {
+  "lesson": 10,
+  "find": "Few stages are drawn.",
+  "replace": "Three or more stages are missing or in the wrong place.",
+  "why": "No overlap or gap between levels"
+ },
+ {
+  "lesson": 10,
+  "find": "Every stage has the correct label.",
+  "replace": "Every stage has a label that names it correctly.",
+  "why": "Clear count-based levels"
+ },
+ {
+  "lesson": 10,
+  "find": "Most stage labels are correct.",
+  "replace": "One stage has a missing or wrong label.",
+  "why": "'Most' overlapped with 'several'"
+ },
+ {
+  "lesson": 10,
+  "find": "Several labels are missing or wrong.",
+  "replace": "Two stages have missing or wrong labels.",
+  "why": "No overlap or gap between levels"
+ },
+ {
+  "lesson": 10,
+  "find": "Labels are mostly missing.",
+  "replace": "Three or more stages have missing or wrong labels.",
+  "why": "No overlap or gap between levels"
+ },
+ {
+  "lesson": 10,
+  "find": "Your teacher looks at two things: are the stages in the right order, and does each stage have the correct label? The levels are Excellent, Good, Developing and Beginning. Before you hand in your drawing, read the rubric rows and check your own work. Your teacher decides the level later.",
+  "replace": "Your teacher looks at two things: are the stages in the right order, and does each stage have the correct label? Each one gets its own level: Excellent, Good, Developing or Beginning. Spelling does not count. Before you hand in your drawing, read the chart and check your own work. Your teacher decides the levels after class.",
+  "why": "Matches the rubric"
+ },
+ {
+  "lesson": 10,
+  "settle": "Segment 2, How the drawing is scored",
+  "why": "fixed by the edits above: rubric levels now count missing/misplaced stages and missing/wrong labels (0, 1, 2, 3+), so they cannot overlap or leave gaps, and the plan states the rubric exactly"
+ },
+ {
+  "find": "Drawing-and-labeling assessment of one life cycle",
+  "replace": "Life cycle drawing",
+  "all": true,
+  "why": "A name a 7-year-old can read, the same in the grading, the assignment and its rubric."
+ }
+]
