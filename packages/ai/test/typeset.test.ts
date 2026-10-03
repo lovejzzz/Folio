@@ -38,4 +38,9 @@ describe('model text outside course content', () => {
     const plan = await planCourseChange(fakeInference(() => ({ summary: `"Light and leaves" moves first.`, operations: [] })), smallCourse(), 'move it');
     expect(plan.rationale).toBe('“Light and leaves” moves first.');
   });
+
+  it('leaves code between backticks as written, and still sets the prose around it', () => {
+    expect(smartQuotes("Run `t.test(x, mu = 5, alternative = 'greater')` and read \"p-value\"; it's small.")).toBe("Run `t.test(x, mu = 5, alternative = 'greater')` and read “p-value”; it’s small.");
+    expect(smartQuotes('`paste("a", "b")` joins them, as in "ab".')).toBe('`paste("a", "b")` joins them, as in “ab”.');
+  });
 });

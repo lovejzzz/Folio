@@ -1,9 +1,15 @@
 /**
  * Models write straight quotes ("like this", it's); a printed page uses curly
  * ones. English text from the model is set with “ ” ‘ ’ before it is stored.
- * Primes after digits (5' 3") and anything in an `expression` stay as written.
+ * Primes after digits (5' 3"), code between backticks and anything in an `expression` stay as written.
  */
 export function smartQuotes(text: string): string {
+  // Code between backticks stays exactly as written: `c('a', 'b')` with curly quotes does not run.
+  if (text.includes('`')) return text.split(/(`[^`\n]*`)/).map((part, i) => (i % 2 ? part : curl(part))).join('');
+  return curl(text);
+}
+
+function curl(text: string): string {
   return (
     text
       // Apostrophes inside or at the end of words: it's, students', '90s stays below.
