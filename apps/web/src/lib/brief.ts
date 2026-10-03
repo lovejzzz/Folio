@@ -63,11 +63,14 @@ function firstCount(text: string, patterns: [source: string, read: (m: RegExpMat
 
 const times = (a: number | null, b: number | null): number | null => (a && b ? a * b : null);
 
+// With "a week" after it, any class meeting counts: "two 90-minute case discussions a week" was read as one a week.
+const EN_MEETING = String.raw`(?:lessons?|sessions?|classes|class|periods?|lectures?|seminars?|workshops?|discussions?|meetings?|tutorials?|recitations?)\b`;
+
 /** "2 lessons a week for 6 weeks" → 12; "每周两节课，共六周" → 12; either way round. */
 function lessonsFromRate(text: string, anySize = false): number | null {
   return firstCount(text, [
-    [String.raw`${EN_COUNT}[\s-]+${EN_FILLER}${EN_LESSON}[\s-]+(?:a|per|each|every)[\s-]+week\b.*?\b(${EN_NUMBER})[\s-]+weeks?\b`, (m) => times(enNumber(m[1]!), enNumber(m[2]!))],
-    [String.raw`\b(${EN_NUMBER})[\s-]+weeks?\b.*?${EN_COUNT}[\s-]+${EN_FILLER}${EN_LESSON}[\s-]+(?:a|per|each|every)[\s-]+week\b`, (m) => times(enNumber(m[2]!), enNumber(m[1]!))],
+    [String.raw`${EN_COUNT}[\s-]+${EN_FILLER}${EN_MEETING}[\s-]+(?:a|per|each|every)[\s-]+week\b.*?\b(${EN_NUMBER})[\s-]+weeks?\b`, (m) => times(enNumber(m[1]!), enNumber(m[2]!))],
+    [String.raw`\b(${EN_NUMBER})[\s-]+weeks?\b.*?${EN_COUNT}[\s-]+${EN_FILLER}${EN_MEETING}[\s-]+(?:a|per|each|every)[\s-]+week\b`, (m) => times(enNumber(m[2]!), enNumber(m[1]!))],
     [String.raw`(?:每周|一周|每星期)(${ZH_NUMBER})\s*${ZH_LESSON}.*?(${ZH_NUMBER})\s*(?:周|个星期|星期)`, (m) => times(zhNumber(m[1]!), zhNumber(m[2]!))],
     [String.raw`${ZH_NOT_COUNT_BEFORE}(${ZH_NUMBER})\s*(?:周|个星期)[^每]{0,12}(?:每周|每星期)(${ZH_NUMBER})\s*${ZH_LESSON}`, (m) => times(zhNumber(m[2]!), zhNumber(m[1]!))],
   ], anySize);

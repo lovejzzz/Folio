@@ -22,6 +22,9 @@ describe('reading the brief for the chips', () => {
     ['four weeks of 8 sessions on ecology', 8],
     // Rates multiply out.
     ['2 lessons a week for 6 weeks', 12],
+    ['Competitive strategy for MBA students: a 10-week quarter, two 90-minute case discussions a week.', 20],
+    ['Principles of microeconomics for undergraduates: a 14-week semester, two 75-minute lectures a week.', 28],
+    ['A 12-week graduate seminar, one 2.5-hour meeting a week.', 12],
     ['one lesson per week over ten weeks', 10],
     ['three 50-minute classes each week for 4 weeks', 12],
     // Words between the number and "lessons".
