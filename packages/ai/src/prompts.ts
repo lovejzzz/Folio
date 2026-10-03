@@ -1,6 +1,6 @@
 import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
-import { courseSoFar, earlierLessons, earlierNotes, earlierSteps, homeworkLine, sharedComponent } from './continuity';
-import { trueFalseOrder, universityRubric } from './scales';
+import { courseSoFar, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
+import { UNIVERSITY_TEACHING, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 
 /**
@@ -127,9 +127,6 @@ export function isHigherEducation(level: string): boolean {
   return /universit|college|undergrad|graduate|postgrad|master|doctoral|ph\.?d|\b[bm]\.?sc\b|\bmba\b|degree|本科|研究生|大学|硕士|博士/i.test(level);
 }
 
-const UNIVERSITY_TEACHING =
-  'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. A seminar runs on discussion of the reading: keep the instructor\'s exposition short and let students lead. Leave out school routines such as warm-up games, exit tickets or reading aloud in turn, unless the brief or syllabus asks for them.';
-
 /**
  * The teacher's own words. Sections otherwise see only what the outline kept,
  * and "each week one student presents" was lost: it carries no grade weight.
@@ -189,9 +186,10 @@ export function lessonContext(course: Course, lesson: Lesson): string {
   return [
     // No number: given one, models write "lesson 3" into the materials. The background lists the order; given
     // only that, they quoted other lessons' titles at students instead.
-    `This is the lesson "${lesson.title}". ${lesson.summary} Refer to other lessons as "last time" (only the lesson just before), "earlier in the unit", "next time" or "later in the unit", never by title or number.`,
+    `This is the lesson "${lesson.title}". ${lesson.summary} Refer to other lessons as "last time" (only the lesson just before), "earlier in the course", "next time" or "later in the course", never by title or number.`,
     objectives ? `Its objectives:\n${objectives}` : '',
     homeworkLine(lesson),
+    nextReading(course, lesson),
     readings ? `Students read before this lesson:\n${readings}` : '',
   ]
     .filter(Boolean)
@@ -213,7 +211,7 @@ function planSummary(lesson: Lesson): string {
 
 /** What a material built on the plan owes it: the plan is what the teacher has read and agreed to. */
 const FOLLOW_REST =
-  'Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception. When the lesson holds a graded test or exam, no material students see beforehand repeats its questions or gives their answers.';
+  'Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception. When the lesson holds a graded test or exam, no other material of the lesson repeats its questions or gives their answers.';
 const FOLLOW_PLAN = `Use the same examples, data and figures as the plan. ${FOLLOW_REST}`;
 /**
  * Work students do on their own is not the class practice copied out: told to use the plan's examples, graded
@@ -264,10 +262,10 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
       `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need. Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
       'Plan only what can really happen in the time, place and with the materials the lesson has. Whatever students are to see, make or finish in a segment has to be possible within that segment\'s minutes; when something takes longer, such as a process that needs hours or days to show a result, plan around it (start it earlier, use results prepared in advance, or come back to it later) and say how in the teacher notes. The slides, quiz and study guide are written from this plan and take everything in it as having happened.',
       'In the teacher notes, give the safety precautions a careful teacher would take with what students handle, taste, heat, cut or mix (protective gear, ventilation, heat a reaction gives off, disposal, allergies, materials that must never be eaten); these are outside the word limit of the notes. Where the material is painful (violence, racism, abuse, the language of period sources), say how to handle it with care, and never have students play the people who suffered or inflicted it.',
-      'A piece graded in the lesson is never modelled with the very case students then hand in. A graded test or exam in the lesson asks about new cases, not the examples the course taught with, covers what the lessons before it taught, and has its questions, answers and points written out in the notes, however long. Nothing in these instructions is repeated in the plan as advice to the teacher.',
-      'A text students read that is not among the teacher\'s sources is named exactly (author, title, and section or date), so the teacher can find it, with a note to prepare copies; never just "an excerpt".',
+      'A piece graded in the lesson is never modelled with the very case students then hand in. A graded test or exam in the lesson asks about new cases, not the examples the course taught with, covers what the lessons before it taught, and has its questions (with the choices, where it has them), answers and the points each carries within the test written out in the notes, however long; points within a test are for the plan to set, unlike a share of the course grade. Nothing in these instructions is repeated in the plan as advice to the teacher.',
+      'A text students read that is not among the teacher\'s sources is named exactly (author, title, and the section or passage to use, by its opening words when it has no number), so the teacher can find it, with a note to prepare copies; never just "an excerpt".',
       'When a segment uses another of the lesson\'s materials, such as the quiz, the slides or the assignment, say what students do with it, not what its questions or items will be: those are written separately, from this plan.',
-      'When a segment gives students a set of items to work on that no other material holds, such as statements to sort, scenarios to classify, cases to match or data to read, write every item out in the teacher notes, one per line with its expected answer, however many there are; the word limit is for the rest of the notes. Keep such a set to what fits the minutes, usually four to six items. Never describe items that are left for the teacher to write.',
+      'When a segment gives students a set of items to work on that no other material holds, such as statements to sort, scenarios to classify, cases to match or data to read, write every item out in the teacher notes, one per line with its expected answer, however many there are; the word limit is for the rest of the notes. Keep such a set to what fits the minutes, usually four to six items. Never describe items that are left for the teacher to write. The same holds for a single question, such as an exit ticket: no other material holds it, so its wording and expected answer are in the plan.',
     ].join(' '),
   slides: (c) =>
     ['Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes. When the plan has students work from items "on the slide", the slide shows every item in full, even past the bullet limits. A slide shown while students work on a task, quiz or assessment gives its instructions and prompt, never the answers: those come on a later slide or in the notes.', slidesFor(c)].filter(Boolean).join(' '),

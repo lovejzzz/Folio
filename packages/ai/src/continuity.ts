@@ -117,7 +117,14 @@ export function earlierNotes(lesson: Lesson): string {
 export function homeworkLine(lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   if (lesson.homework.kind === 'none') return 'This lesson sets no homework.';
-  const set = 'written separately; the plan sets it before students leave, with anything they need to take home';
+  const set = 'which the plan has the teacher set before students leave, with anything they need to take home, without spelling out its tasks';
   if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}.`;
   return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}"` : ''}, ${set}.`;
+}
+
+/** What students read before the next lesson: a plan not told it sent them home with "no further task". */
+export function nextReading(course: Course, lesson: Lesson): string {
+  const next = orderedLessons(course)[course.lessonOrder.indexOf(lesson.id) + 1];
+  const readings = (next?.readings ?? []).map((r) => r.trim()).filter(Boolean);
+  return readings.length ? `Before the next lesson students read: ${readings.join('; ')}. The plan tells them so before they leave.` : '';
 }

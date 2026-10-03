@@ -127,8 +127,9 @@ export type AssignmentDraft = z.infer<typeof AssignmentDraft>;
 
 /** A short ungraded step toward a larger graded piece: no rubric, since the piece has its own. */
 export const StepDraft = z.object({
-  title: line,
-  prompt: line,
+  // A step once came back as a second lesson plan under the lesson's own title: a step is a few sentences.
+  title: line.max(120),
+  prompt: line.max(1200).describe('What to do, in a few sentences'),
   steps: z.array(line).min(1).max(6),
 });
 export type StepDraft = z.infer<typeof StepDraft>;

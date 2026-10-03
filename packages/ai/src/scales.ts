@@ -25,3 +25,7 @@ export function universityRubric(locale: string): string {
       : 'the grade bands used where the course is taught, each level worth the lowest mark of its band';
   return `Name the rubric levels after ${bands}. Write each descriptor as a marker would, for work at that band.`;
 }
+
+/** How university teaching differs from school, said once in the course background. */
+export const UNIVERSITY_TEACHING =
+  'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. A seminar runs on discussion of the reading: keep the instructor\'s exposition short and let students lead. Leave out school routines such as warm-up games, exit tickets or reading aloud in turn, unless the brief or syllabus asks for them.';
