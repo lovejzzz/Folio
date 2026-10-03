@@ -15,7 +15,7 @@ const clipNote = (note: string) => {
   return flat.length > 240 ? `${flat.slice(0, 240)}…` : flat;
 };
 
-function lessonDigest(lesson: Lesson): string {
+function lessonDigest(lesson: Lesson, course: Course): string {
   const ideas = lesson.keyIdeas.map((k) => `  - ${k}`).join('\n');
   const terms = lesson.vocabulary.map((v) => v.term).join(', ');
   // Whole descriptions, and the start of the notes: a later lesson used a floor number line it couldn't see was
@@ -23,7 +23,9 @@ function lessonDigest(lesson: Lesson): string {
   const flow = lesson.segments
     .map((s) => `  - ${s.title}: ${s.description.replace(/\n+/g, ' ')}${s.teacherNotes.trim() ? ` (Notes: ${clipNote(s.teacherNotes)})` : ''}`)
     .join('\n');
-  return [`"${lesson.title}"`, ideas && ` Key ideas:\n${ideas}`, terms && ` Terms: ${terms}`, flow && ` What students did:\n${flow}`].filter(Boolean).join('\n');
+  // The homework too: no plan set, collected or used the homework the lesson before had given.
+  const homework = lesson.taskIds.map((id) => course.tasks[id]).flatMap((t) => (t?.kind === 'assignment' ? [`"${t.title}": ${clipNote(t.prompt)}`] : []))[0];
+  return [`"${lesson.title}"`, ideas && ` Key ideas:\n${ideas}`, terms && ` Terms: ${terms}`, flow && ` What students did:\n${flow}`, homework && ` Homework it set: ${homework}`].filter(Boolean).join('\n');
 }
 
 /** The planned lessons before this one, nearest last, within the budget. */
@@ -32,7 +34,7 @@ function digests(course: Course, lesson: Lesson, budget: number): string {
   const kept: string[] = [];
   let used = 0;
   for (const l of before.reverse()) {
-    const digest = lessonDigest(l);
+    const digest = lessonDigest(l, course);
     if (used + digest.length > budget) break;
     kept.unshift(digest);
     used += digest.length;
@@ -53,7 +55,7 @@ export function courseSoFar(course: Course, lesson: Lesson): string {
 export function earlierLessons(course: Course, lesson: Lesson): string {
   const kept = digests(course, lesson, EARLIER_BUDGET);
   if (!kept) return '';
-  return `The lessons before this one, as already planned:\n${kept}\n\nThis lesson follows them: use the same names, terms, stages, examples and classroom setups, build on what they taught rather than teaching it again differently or presenting it as new, and when something they started goes on in this lesson (an experiment, a project, a class chart), continue it as they set it up and finish what they left for this lesson (a result to measure, work to hand back), on a realistic timeline for how often the class meets (seeds take days to sprout, paint hours to dry). Under vocabulary, list only the terms this lesson introduces: the terms above are already taught, and when this lesson uses them it keeps their meaning.`;
+  return `The lessons before this one, as already planned:\n${kept}\n\nThis lesson follows them: use the same names, terms, stages, examples and classroom setups, build on what they taught rather than teaching it again differently or presenting it as new, and when something they started goes on in this lesson (an experiment, a project, a class chart), continue it as they set it up and finish what they left for this lesson (a result to measure, homework to collect or use, work to hand back), on a realistic timeline for how often the class meets (seeds take days to sprout, paint hours to dry). Under vocabulary, list only the terms this lesson introduces: the terms above are already taught, and when this lesson uses them it keeps their meaning.`;
 }
 
 /**
@@ -115,6 +117,7 @@ export function earlierNotes(lesson: Lesson): string {
 export function homeworkLine(lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   if (lesson.homework.kind === 'none') return 'This lesson sets no homework.';
-  if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, written separately.`;
-  return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}"` : ''}, written separately.`;
+  const set = 'written separately; the plan sets it before students leave, with anything they need to take home';
+  if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}.`;
+  return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}"` : ''}, ${set}.`;
 }
