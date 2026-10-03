@@ -20,9 +20,9 @@ const BlockDraft = z.object({
   kind: z.string().default('').describe('callout: checkpoint, stuck, why, tip, warning or version. code: the language. file: starter, checkpoint, solution or resource. video: "clip" for a short silent recording of the screen, "talk" for one with the instructor speaking'),
   title: z.string().default('').describe('callout: a short title, or empty'),
   shots: z
-    .array(z.object({ step: z.number().int().min(1), shows: line, alt: line }))
+    .array(z.object({ step: z.number().int().min(1), shows: line, alt: line, caption: z.string().default('') }))
     .default([])
-    .describe('steps only: a screenshot under a step, by the step\'s number in this block, where the thing to click is hard to find or the result is worth seeing'),
+    .describe('steps only: a screenshot under a step, by the step\'s number in this block, where the thing to click is hard to find or the result is worth seeing; "caption" is one line telling the student what to compare'),
   shows: z.string().default('').describe('image, video, file: exactly what it must show or hold, written for the person who will make it'),
   alt: z.string().default('').describe('image, clip: what a student who cannot see it needs from it: the names and values visible, what happens'),
   minutes: z.number().min(0).max(60).default(0).describe('video: its length'),
@@ -100,7 +100,7 @@ function toBlock(raw: BlockDraft): PageBlock {
         type: 'steps',
         items: b.items.map((text, i) => {
           const shot = b.shots.find((s) => s.step === i + 1);
-          return { id: newId('x'), text, ...(shot ? { shot: { src: '', alt: shot.alt, caption: '', shows: shot.shows } } : {}) };
+          return { id: newId('x'), text, ...(shot ? { shot: { src: '', alt: shot.alt, caption: shot.caption, shows: shot.shows } } : {}) };
         }),
       };
     case 'callout':
@@ -143,14 +143,15 @@ const HOURS_SLACK = 0.25;
 export function checkModule(v: ModuleDraft, course: Course): Problem[] {
   const problems: Problem[] = [];
   const want = (course.online?.hoursPerWeek ?? 9) * 60;
-  const got = v.checklist.reduce((n, c) => n + c.minutes, 0);
+  // Optional work is not owed: counted, it let a week reach its hours on a challenge nobody has to do.
+  const got = v.checklist.reduce((n, c) => n + (/\boptional\b/i.test(c.label) ? 0 : c.minutes), 0);
   if (Math.abs(got - want) > want * HOURS_SLACK) problems.push(issue(`The checklist adds up to ${got} minutes; the week is ${want} minutes of student work. Change the work or the estimates so they agree`));
   const liveMinutes = v.live.reduce((n, s) => n + s.minutes, 0);
   if (isMixedOnline(course) && liveMinutes !== (course.online?.liveMinutes || 75)) problems.push(issue(`The live session's segments add up to ${liveMinutes} minutes; the session is ${course.online?.liveMinutes || 75}`));
   const blocks = v.parts.flatMap((p) => p.blocks);
   if (blocks.some((b) => b.type === 'image' && !b.alt.trim())) problems.push(issue('Every image needs "alt": what a student who cannot see it needs to know'));
   if (blocks.some((b) => (b.type === 'image' || b.type === 'video') && !b.shows.trim())) problems.push(issue('Every image and video needs "shows": what it must show, for the person who makes it'));
-  if (blocks.some((b) => (b.type === 'image' || b.type === 'video') && !b.text.trim())) problems.push(issue('Every image and video needs its caption under "text": one line telling the student what to compare'));
+  if (blocks.some((b) => ((b.type === 'image' || b.type === 'video') && !b.text.trim()) || b.shots.some((x) => !x.caption.trim()))) problems.push(issue('Every image and video needs its caption under "text", and every screenshot under a step its "caption": one line telling the student what to compare'));
   if (blocks.some((b) => b.type === 'video' && !isClip(b) && !b.transcript.trim())) problems.push(issue('Every video in which someone speaks needs its transcript'));
   if (blocks.some((b) => b.type === 'video' && isClip(b) && !b.alt.trim())) problems.push(issue('Every clip needs "alt": what happens in it, for a student who cannot see it'));
   if (blocks.some((b) => b.type === 'video' && b.minutes > 6)) problems.push(issue('No video runs over six minutes: split it'));
@@ -236,7 +237,7 @@ export function moduleAsk(course: Course, lesson: Lesson): string {
   return [
     'Write this week\'s module page: the page the student works through alone. It teaches; it is not a plan of what a teacher will do.',
     'Under "intro", 60 to 120 words: why this week matters, how it follows last week, and what the student will have made or be able to do by Sunday.',
-    `Under "checklist", everything the student does this week in order, each with the kind of activity, an honest estimate in minutes for a student new to it, and the day it is due when it has a deadline. The week is planned as about ${hours * 60} minutes: when honest estimates fall short or run over, change the work, never the estimates. No item runs over 60 minutes: split it.${others ? ` It includes, by name, the other materials of the week, which are written separately from this page: ${others}.` : ''}`,
+    `Under "checklist", everything the student does this week in order, each with the kind of activity, an honest estimate in minutes for a student new to it, and the day it is due when it has a deadline. The week is planned as about ${hours * 60} minutes: when honest estimates fall short or run over, change the work, never the estimates. No item runs over 60 minutes: split it. Anything optional says "optional" in its label and is not counted in the week.${others ? ` It includes, by name, the other materials of the week, which are written separately from this page: ${others}.` : ''}`,
     'Under "parts", the teaching itself, in the order the student does it: two to eight parts, each a chunk a student can finish in one sitting, built from blocks. Explain ideas in short paragraphs with an example each; use a list only for things that are a list. Where a short video of the instructor explaining would help, give a "video" block with its full transcript (under six minutes, about 130 words a minute) and say under "shows" what is on screen; the page must still teach a student who only reads the transcript. Where students read something, name it exactly and say what to read it for. Every part says why the student is doing it.',
     HANDS_ON,
     isMixedOnline(course) ? mixedAsk(course) : '',
@@ -260,7 +261,7 @@ export function moduleSummary(lesson: Lesson): string {
 const clip = (text: string, room: number) => (text.length > room ? `${text.slice(0, room)}…` : text);
 
 /** An earlier week, for the page that follows it: its parts, what was built and the names it gave things. */
-export function moduleDigest(lesson: Lesson): string {
+export function moduleDigest(lesson: Lesson, course?: Course): string {
   const page = lesson.page ?? [];
   const parts = page.flatMap((b, i) => {
     if (b.type !== 'heading' || b.level !== 2) return [];
@@ -271,7 +272,9 @@ export function moduleDigest(lesson: Lesson): string {
   const terms = lesson.vocabulary.map((v) => v.term).join(', ');
   // Whole, never clipped: a ball placed where an earlier week's ramp still stood could not be moved by any key.
   const leaves = lesson.facilitation?.leaves ?? [];
-  return [`"${lesson.title}" (${Math.round(pageMinutes(page) / 60)} h)`, lesson.keyIdeas.length ? ` Key ideas:\n${lesson.keyIdeas.map((k) => `  - ${k}`).join('\n')}` : '', terms && ` Terms: ${terms}`, parts.length ? ` What students did:\n${parts.join('\n')}` : '', leaves.length ? ` What their work holds at the end of that week:\n${leaves.map((k) => `  - ${k}`).join('\n')}` : '']
+  // What the graded work had students add is in their project too: a sphere from one week's build sat where the next week put the ball.
+  const graded = (course ? lesson.taskIds.map((id) => course.tasks[id]) : []).flatMap((t) => (t?.kind === 'assignment' ? [`  - ${t.title}: ${clip(t.steps.join(' '), 700)}`] : []));
+  return [`"${lesson.title}" (${Math.round(pageMinutes(page) / 60)} h)`, lesson.keyIdeas.length ? ` Key ideas:\n${lesson.keyIdeas.map((k) => `  - ${k}`).join('\n')}` : '', terms && ` Terms: ${terms}`, parts.length ? ` What students did:\n${parts.join('\n')}` : '', leaves.length ? ` What their work holds at the end of that week:\n${leaves.map((k) => `  - ${k}`).join('\n')}` : '', graded.length ? ` Graded work that week, which students also did in the same project:\n${graded.join('\n')}` : '']
     .filter(Boolean)
     .join('\n');
 }
@@ -282,7 +285,7 @@ export const ONLINE_ASKS = {
   discussions:
     'Write one prompt for the week\'s discussion forum, addressed to the students. It is open enough that no two posts can be the same: each student brings something of their own (what they made, a choice they took and why, where they got stuck). Say what the first post holds, due Thursday, and what the two replies do, due Sunday (for work that can be shared: try a classmate\'s, and say one thing that works and one to change). Do not say how posts are graded: Folio adds that, the same every week. Under "followUps", two or three things the instructor can ask in the thread to push it further.',
   assignments:
-    'Students do this alone and submit it online. Write "prompt" in three short paragraphs: why they are doing it, what to do, and how it is judged. Say exactly what to submit, in the form the grading or the brief gives (a screenshot, a short screen recording, a link), in any common file type, the same for Windows and Mac. It asks only for what the page has taught, the capture and upload included, and for a guided build it asks for something of the student\'s own on top (a change, an addition, a choice explained), so that no two submissions are alike; it may build on the page\'s challenge, and puts nothing where the page already put something. What counts as complete, and every rubric criterion, is something the submitted file shows; when the work is graded complete or incomplete, say which rubric level is complete. Say what help is allowed, AI tools included, as the class policies say; when they say nothing, ask students to note any help they used.',
+    'Students do this alone and submit it online. Write "prompt" in three short paragraphs: why they are doing it, what to do, and how it is judged. Say exactly what to submit, in the form the grading or the brief gives (a screenshot, a short screen recording, a link), in any common file type, the same for Windows and Mac. It asks only for what the page has taught, the capture and upload included, and for a guided build it asks for something of the student\'s own on top (a change, an addition, a choice explained), so that no two submissions are alike; it may build on the page\'s challenge, and puts nothing where the page already put something. What counts as complete, and every rubric criterion, is something a submitted file shows: ask for as many screenshots as that takes (settings on two objects are two pictures) and say what each one shows. Where the task changes a value the page set, its last step puts the value back; when the work is graded complete or incomplete, say which rubric level is complete. Say what help is allowed, AI tools included, as the class policies say; when they say nothing, ask students to note any help they used.',
   faq: 'Write the week\'s "Stuck?" list: three to five problems students most often hit this week, each as the question they would ask, with what they see (the exact error text when there is one), and the fix in order. Add where to ask when the fix does not work: the course\'s Q&A forum.',
   study: 'This is the week\'s recap, the page a student rereads before next week or before a test: say what they can now do, not what the page covered.',
 } as const;
@@ -303,7 +306,7 @@ export function earlierModules(course: Course, lesson: Lesson, budget: number): 
   const kept: string[] = [];
   let used = 0;
   for (const l of before.reverse()) {
-    const digest = moduleDigest(l);
+    const digest = moduleDigest(l, course);
     if (used + digest.length > budget) break;
     kept.unshift(digest);
     used += digest.length;

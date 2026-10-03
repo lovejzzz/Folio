@@ -39,7 +39,7 @@ function digests(course: Course, lesson: Lesson, budget: number): string {
   const kept: string[] = [];
   let used = 0;
   for (const l of before.reverse()) {
-    const digest = l.page?.length ? moduleDigest(l) : lessonDigest(l, course);
+    const digest = l.page?.length ? moduleDigest(l, course) : lessonDigest(l, course);
     if (used + digest.length > budget) break;
     kept.unshift(digest);
     used += digest.length;

@@ -24,7 +24,7 @@ const draft = (): ModuleDraft =>
         title: 'Make the cube spin',
         blocks: [
           { type: 'text', text: 'A script tells an object what to do.' },
-          { type: 'steps', items: ['In the **Project** window, right-click **Assets**.', 'Choose **Create > Scripting > MonoBehaviour Script**.'], shots: [{ step: 2, shows: 'The Create menu open on Scripting', alt: 'The Create menu with MonoBehaviour Script highlighted' }] },
+          { type: 'steps', items: ['In the **Project** window, right-click **Assets**.', 'Choose **Create > Scripting > MonoBehaviour Script**.'], shots: [{ step: 2, shows: 'The Create menu open on Scripting', alt: 'The Create menu with MonoBehaviour Script highlighted', caption: 'The menu path to the new script.' }] },
           { type: 'code', kind: 'csharp', text: 'void Update()\n{\n    transform.Rotate(0f, 90f * Time.deltaTime, 0f); // "spin"\n}' },
           { type: 'video', kind: 'clip', text: 'Your cube should turn like this.', shows: 'The Game view with the cube turning for five seconds', alt: 'The cube turns steadily about its upright axis.', minutes: 0.2 },
           { type: 'callout', kind: 'checkpoint', title: 'Checkpoint', text: 'You should see the cube turning steadily in the Game view.', items: ['It went wrong if the cube stays still or the Console shows a red message.'] },
@@ -98,6 +98,18 @@ describe('an online course with no set meeting time', () => {
     const [first, second] = orderedLessons(c);
     const built: Course = { ...c, lessons: { ...c.lessons, [first!.id]: { ...first!, page: modulePage(draft(), 'en'), facilitation: { announcement: 'a', watchFor: [], feedback: [], atRisk: '', leaves: ['Ramp at 0, 2, -4, tilted 20 degrees', 'Ball at 0, 6, -7 with a Rigidbody'] } } } };
     expect(sectionPrompt(built, built.lessons[second!.id]!, 'plan') + courseBackground(built)).toContain('Ramp at 0, 2, -4, tilted 20 degrees');
+  });
+
+  it('tells a later week what the graded work added to the project, and leaves optional work out of the week\'s hours', () => {
+    const c = online();
+    const [first, second] = orderedLessons(c);
+    const task = { id: 't_1', lessonId: first!.id, kind: 'assignment' as const, title: 'Weekly build: a sphere of your own', prompt: 'p', steps: ['Add a Sphere named ScriptStudy at Position 6, 1, 5.'], rubricId: null, objectiveIds: [], flags: [], toward: 'Weekly builds' };
+    const built = { ...c, tasks: { t_1: task }, lessons: { ...c.lessons, [first!.id]: { ...first!, page: modulePage(draft(), 'en'), taskIds: ['t_1'] } } } as unknown as Course;
+    expect(sectionPrompt(built, built.lessons[second!.id]!, 'plan') + courseBackground(built)).toContain('ScriptStudy at Position 6, 1, 5');
+    const v = draft();
+    const base = checkModule(v, c).length;
+    v.checklist.push({ label: 'Optional challenge: a timer', activity: 'practice', minutes: 600, due: '' });
+    expect(checkModule(v, c)).toHaveLength(base);
   });
 
   it('keeps code as typed, and sets a name the screen shows in bold', () => {

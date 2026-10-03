@@ -117,7 +117,7 @@ function modulePage(title: string) {
         title: 'Draw the leaf',
         blocks: [
           { type: 'text', text: 'A diagram shows where the light goes in.' },
-          { type: 'steps', items: ['Open your notebook to a **new page**.', 'Draw a leaf and label the stomata.'], shots: [{ step: 2, shows: 'A hand-drawn leaf with the stomata labelled', alt: 'A leaf drawn in pencil, with arrows to the stomata on its underside.' }] },
+          { type: 'steps', items: ['Open your notebook to a **new page**.', 'Draw a leaf and label the stomata.'], shots: [{ step: 2, shows: 'A hand-drawn leaf with the stomata labelled', alt: 'A leaf drawn in pencil, with arrows to the stomata on its underside.', caption: 'Your drawing should label the stomata like this.' }] },
           { type: 'video', kind: 'clip', text: 'Watch which way the leaf ends up facing.', shows: 'A leaf turning toward a lamp over a day, sped up', alt: 'The leaf turns slowly until it faces the lamp.', minutes: 0.3 },
           { type: 'callout', kind: 'checkpoint', text: 'You should see a leaf with its stomata labelled on the underside. It went wrong if the labels point at the veins.' },
           { type: 'code', kind: 'text', text: 'carbon dioxide + water -> glucose + oxygen' },

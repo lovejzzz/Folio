@@ -49,13 +49,12 @@ Use these names exactly. They are what students see on screen.
 - Edit > Duplicate (Ctrl+D, Command+D on a Mac) names the copy "Ball (1)", selects it and does NOT start a rename. To rename a selected object: Edit > Rename (F2 on Windows, Enter on a Mac), type the name, press Enter.
 - The Game view's aspect dropdown is the third control in its toolbar and reads "Free Aspect" in a new project. The choice is kept per project: each new project needs "16:9 Aspect" chosen again.
 - Changes made during Play to objects in the scene (a Transform, a Rigidbody's Mass) are undone when Play stops. Changes to assets (a material's color or Smoothness, a physics material) are kept.
-- An unsaved scene shows an asterisk after its name in the Hierarchy on both systems; do not rely on the window's title bar.
+- An unsaved scene shows an asterisk after its name in the Hierarchy; do not rely on the title bar.
 - A new Physics Material (Assets > Create > Physics Material): Bounciness 0, Bounce Combine Average. A ball with Bounciness 0.8 on a floor with no material bounces once; with Bounce Combine set to Maximum it bounces eight times or more.
 - A new Point Light: Range 10, Intensity 1, no shadows: invisible on a floor 4 units below. Range does not make it brighter; Intensity 30 gives a clear pool of light. Lowering the Directional Light does not make the scene dark, because the sky still lights it.
-- A number box takes the keyboard hyphen for a negative value; a typographic minus sign pasted from a page is rejected.
 
 ## UI, text and effects, checked in this version
-- The first time a TextMeshPro object is added (GameObject > UI (Canvas) > Text - TextMeshPro), a window titled "TMP Importer" opens: click "Import TMP Essentials", wait, and close the window. It happens once per project.
+- The first time a TextMeshPro object is added (GameObject > UI (Canvas) > Text - TextMeshPro), a window titled "TMP Importer" opens: click "Import TMP Essentials", then "Import Anyway" in the box titled "Unofficial Unity source" that follows, wait, and close the window. Once per project; it can leave two red layout lines in the Console (Clear removes them).
 - Adding the first UI object also adds a Canvas (components: Canvas, Canvas Scaler, Graphic Raycaster) and an EventSystem (components: Event System, Input System UI Input Module). The text object is named "Text (TMP)" and sits under Canvas; its component is "TextMeshPro - Text (UI)", and in code its type is TMP_Text (using TMPro;).
 - A particle system is GameObject > Visual Effects > Particle System (there is no "Effects" menu). An audio source is GameObject > Audio > Audio Source, or Add Component > Audio Source.
 - A prefab is made by dragging an object from the Hierarchy into a folder in the Project window; Assets > Create has only "Prefab Variant" at its top level (Assets > Create > Scene > Prefab makes an empty one).
