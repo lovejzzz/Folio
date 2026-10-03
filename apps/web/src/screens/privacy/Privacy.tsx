@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { useT } from '../../i18n';
@@ -25,7 +26,7 @@ interface LegalText {
 }
 
 /** A page of plain text in sections: the privacy policy, the terms, about Folio. */
-export function LegalPage({ title, text }: { title: string; text: LegalText }) {
+export function LegalPage({ title, text, children }: { title: string; text: LegalText; children?: ReactNode }) {
   usePageTitle(title);
   return (
     <div className="min-h-dvh">
@@ -44,6 +45,7 @@ export function LegalPage({ title, text }: { title: string; text: LegalText }) {
             </section>
           ))}
         </div>
+        {children}
       </main>
     </div>
   );

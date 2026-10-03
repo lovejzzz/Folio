@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .accl { stroke: #2B46C4 } .tint { fill: #EDF0FC } .num { fill: #2B46C4 } .numt { fill: #FFFFFF }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .accl { stroke: #8FA3FF } .tint { fill: #23284A } .num { fill: #8FA3FF } .numt { fill: #11152E }
+    }
+  </style>
+  <rect class="bg" width="800" height="420" rx="20"/>
+  <ellipse class="accl" cx="400" cy="210" rx="250" ry="138" fill="none" stroke-width="2" stroke-dasharray="6 7"/>
+
+  <rect class="tint" x="300" y="176" width="200" height="68" rx="34"/>
+  <text class="acc" x="400" y="206" font-size="15" font-weight="600" text-anchor="middle">Fix the pipeline,</text>
+  <text class="acc" x="400" y="227" font-size="15" font-weight="600" text-anchor="middle">not one course</text>
+
+  <g font-size="14">
+    <rect class="card" x="300" y="28" width="200" height="64" rx="12"/>
+    <circle class="num" cx="322" cy="60" r="12"/><text class="numt" x="322" y="65" text-anchor="middle" font-size="13" font-weight="700">1</text>
+    <text class="ink" x="342" y="56" font-weight="600">Write real courses</text><text class="ink2" x="342" y="76" font-size="13">grade 2 to university</text>
+
+    <rect class="card" x="566" y="104" width="206" height="64" rx="12"/>
+    <circle class="num" cx="588" cy="136" r="12"/><text class="numt" x="588" y="141" text-anchor="middle" font-size="13" font-weight="700">2</text>
+    <text class="ink" x="608" y="132" font-weight="600">Check every part</text><text class="ink2" x="608" y="152" font-size="13">timing, keys, grading</text>
+
+    <rect class="card" x="566" y="252" width="206" height="64" rx="12"/>
+    <circle class="num" cx="588" cy="284" r="12"/><text class="numt" x="588" y="289" text-anchor="middle" font-size="13" font-weight="700">3</text>
+    <text class="ink" x="608" y="280" font-weight="600">Read as a teacher</text><text class="ink2" x="608" y="300" font-size="13">lesson by lesson</text>
+
+    <rect class="card" x="300" y="328" width="200" height="64" rx="12"/>
+    <circle class="num" cx="322" cy="360" r="12"/><text class="numt" x="322" y="365" text-anchor="middle" font-size="13" font-weight="700">4</text>
+    <text class="ink" x="342" y="356" font-weight="600">Ask why it happened</text><text class="ink2" x="342" y="376" font-size="13">and if it would recur</text>
+
+    <rect class="card" x="28" y="252" width="206" height="64" rx="12"/>
+    <circle class="num" cx="50" cy="284" r="12"/><text class="numt" x="50" y="289" text-anchor="middle" font-size="13" font-weight="700">5</text>
+    <text class="ink" x="70" y="280" font-weight="600">Fix the cause</text><text class="ink2" x="70" y="300" font-size="13">for every course</text>
+
+    <rect class="card" x="28" y="104" width="206" height="64" rx="12"/>
+    <circle class="num" cx="50" cy="136" r="12"/><text class="numt" x="50" y="141" text-anchor="middle" font-size="13" font-weight="700">6</text>
+    <text class="ink" x="70" y="132" font-weight="600">Write again, verify</text><text class="ink2" x="70" y="152" font-size="13">gone, and nothing new</text>
+  </g>
+</svg>

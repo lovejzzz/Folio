@@ -1,0 +1,69 @@
+[
+  {
+    "version": "0.0.1",
+    "date": "October 3, 2026",
+    "title": "Sample courses, and courses that hold together",
+    "lede": "Folio’s first numbered release. Three new sample courses to explore, and a round of improvements to how every course is written, found by building those samples to the standard of a teacher who has to teach them tomorrow.",
+    "sections": [
+      {
+        "heading": "Three sample courses, one for each stage",
+        "body": "“Or open a sample course” now lets you choose. Each one was written by Folio from a teacher’s brief, the same way your courses are, then read lesson by lesson and polished. Open one, change anything, export it: it is your own copy.",
+        "bullets": [
+          "Elementary: plant and animal life cycles, a ten-lesson grade 2 science unit with a bean garden students watch grow.",
+          "Middle school: writing argumentative essays, a fifteen-lesson grade 8 unit built on two opinion articles about later school start times.",
+          "University: introduction to ethics, a fourteen-week semester with a lecture and a seminar every week."
+        ],
+        "image": { "src": "/changelog/0.0.1-chooser.webp", "alt": "The sample chooser: elementary school, middle school and university", "width": 1600, "height": 1000 }
+      },
+      {
+        "heading": "A full course at a glance",
+        "body": "Each sample is the size a teacher there would plan: a unit for school, a whole semester for university, with every lesson’s plan, slides, study guide, quiz, assignment, rubric, discussion questions and answers to students’ questions.",
+        "image": { "src": "/changelog/0.0.1-map.webp", "alt": "The map of the fourteen-week ethics course, every lesson and its materials", "width": 1600, "height": 1000 }
+      },
+      {
+        "heading": "Lessons that remember each other",
+        "body": "Lesson plans used to be written side by side, each knowing only the others’ titles, so one lesson could give a bean plant five stages and the next only four. Now each plan is written knowing what the lessons before it taught: the same terms and stages, the same cases, and anything still under way, like seeds sprouting by the window, carried on as it was set up. Each lesson lists only the vocabulary it introduces.",
+        "image": { "src": "/changelog/0.0.1-continuity.svg", "alt": "Before: four lessons planned alone contradict each other. Now: each plan reads the ones before it", "width": 800, "height": 400 }
+      },
+      {
+        "heading": "Plans you can teach as written",
+        "body": "Every plan now reads the way an experienced teacher would want it before walking into class.",
+        "bullets": [
+          "Safety notes for anything students handle, taste, heat or cut, such as allergies or materials that must never be eaten.",
+          "Realistic timing for things that take days, counted against how often the class meets.",
+          "When a plan shows students how their work is scored, it uses the rubric’s own levels.",
+          "Slides shown during a test give its instructions only, never the answers.",
+          "Homework steps can be done at home, without a partner or classroom materials.",
+          "Other lessons are “last time” and “next time”, not quoted titles."
+        ],
+        "image": { "src": "/changelog/0.0.1-lesson.webp", "alt": "A grade 2 lesson plan with key ideas, timed segments and teacher notes", "width": 1600, "height": 1000 }
+      },
+      {
+        "heading": "Every material agrees with the plan",
+        "body": "Each plan gets a second read before anything is built on it. If the plan is written again, what that read found now goes into the rewrite, so the same mistake isn’t made twice. The reviewer also knows the slides, quiz and rubric are written separately, so it no longer asks for them inside the plan.",
+        "image": { "src": "/changelog/0.0.1-pipeline.svg", "alt": "Brief, outline, lesson plan, second read, and the materials written from the plan", "width": 800, "height": 330 }
+      },
+      {
+        "heading": "Your files, cited by name",
+        "body": "When you attach articles or notes, Folio now refers to them by title or author, the way you would with students, never by internal passage numbers.",
+        "compare": {
+          "before": "The evidence is Torres’s report in passage [6] that students slept more.",
+          "after": "The evidence is Torres’s report that Seattle students slept a little more than half an hour longer on school nights."
+        }
+      },
+      {
+        "heading": "Assessment that adds up",
+        "body": "When one graded piece is built across several lessons, each lesson now writes its own part, with its own title, instead of each claiming the whole grade. And when a course has weekly work as well as larger papers, every paper is set in a lesson, so none goes missing.",
+        "compare": {
+          "before": "Life cycle drawing and labeling check (“worth 100% of the course grade”) · Life cycle drawing and labeling check",
+          "after": "Life cycle drawing and labeling check: bean plant stage · Life cycle drawing and labeling check: butterfly and frog"
+        }
+      },
+      {
+        "heading": "How we find what to fix",
+        "body": "These improvements came from a new routine. We write real courses from teachers’ briefs, from grade 2 to university, check every part, and read each lesson as the teacher who would teach it. For every problem we ask why Folio wrote it and whether it would happen in another course. If it would, we fix the cause, so every teacher’s course gets better, not just the one we read.",
+        "image": { "src": "/changelog/0.0.1-quality-loop.svg", "alt": "The quality routine: write real courses, check, read as a teacher, ask why, fix the cause, verify", "width": 800, "height": 420 }
+      }
+    ]
+  }
+]

@@ -648,6 +648,17 @@ export const en = {
     offlineAction: 'You’re offline. Connect to the internet, then try again.',
   },
   /** The policy's own text is in screens/privacy/policy.ts, loaded with that page. */
+  changelog: {
+    eyebrow: 'Changelog',
+    title: 'What’s new in Folio',
+    lede: 'Every update to Folio, newest first, with what changed and why. Each release adds 0.0.1 to the version.',
+    loading: 'Loading the changelog…',
+    failed: 'The changelog could not be loaded. Check your connection and try again.',
+    before: 'Before',
+    after: 'Now',
+    version: (v: string) => `Version ${v}`,
+    whatsNew: 'What’s new',
+  },
   privacy: {
     title: 'Privacy',
     link: 'Privacy',

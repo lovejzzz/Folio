@@ -1,3 +1,6 @@
+import { Link } from '@tanstack/react-router';
+import { useT } from '../../i18n';
+import { VERSION } from '../../version';
 import { LegalPage } from '../privacy/Privacy';
 
 const about = {
@@ -16,5 +19,18 @@ const about = {
 
 /** Who makes Folio and how to reach them. Linked from the home page. */
 export function About() {
-  return <LegalPage title="About Folio" text={about} />;
+  const t = useT();
+  return (
+    <LegalPage title="About Folio" text={about}>
+      <Link
+        to="/changelog"
+        className="mt-12 inline-flex items-center gap-3 rounded-full border border-rule px-4 py-2 font-ui text-14 text-ink-2 outline-none transition-colors duration-120 hover:border-field hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+      >
+        <span className="rounded-full bg-accent-tint px-2 py-0.5 font-mono text-13 text-accent" aria-label={t.changelog.version(VERSION)}>
+          v{VERSION}
+        </span>
+        <span>{t.changelog.whatsNew} →</span>
+      </Link>
+    </LegalPage>
+  );
 }

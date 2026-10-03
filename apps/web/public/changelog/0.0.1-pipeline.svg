@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .accl { stroke: #2B46C4 } .tint { fill: #EDF0FC } .ln { stroke: #8A857A }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .accl { stroke: #8FA3FF } .tint { fill: #23284A } .ln { stroke: #807B71 }
+    }
+  </style>
+  <rect class="bg" width="800" height="330" rx="20"/>
+
+  <g font-size="14">
+    <rect class="card" x="32" y="70" width="128" height="72" rx="12"/>
+    <text class="ink" x="96" y="102" text-anchor="middle" font-weight="600">Your brief</text>
+    <text class="ink2" x="96" y="124" text-anchor="middle">or syllabus</text>
+
+    <rect class="card" x="196" y="70" width="128" height="72" rx="12"/>
+    <text class="ink" x="260" y="102" text-anchor="middle" font-weight="600">Outline</text>
+    <text class="ink2" x="260" y="124" text-anchor="middle">lessons · grading</text>
+
+    <rect class="tint" x="360" y="62" width="160" height="88" rx="14"/>
+    <text class="acc" x="440" y="98" text-anchor="middle" font-weight="600">Lesson plan</text>
+    <text class="acc" x="440" y="120" text-anchor="middle" font-size="13">in order, with safety</text>
+    <text class="acc" x="440" y="137" text-anchor="middle" font-size="13">and realistic timing</text>
+
+    <rect class="card" x="556" y="70" width="212" height="72" rx="12"/>
+    <text class="ink" x="662" y="102" text-anchor="middle" font-weight="600">Second read</text>
+    <text class="ink2" x="662" y="124" text-anchor="middle">a reviewer checks the plan</text>
+  </g>
+  <g class="ln" stroke-width="2" fill="none" stroke-linecap="round">
+    <path d="M164 106 H190"/><path d="M183 99 L191 106 L183 113"/>
+    <path d="M328 106 H354"/><path d="M347 99 L355 106 L347 113"/>
+    <path d="M524 106 H550"/><path d="M543 99 L551 106 L543 113"/>
+  </g>
+  <path class="accl" d="M662 66 C 662 34, 440 34, 440 56" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
+  <path class="accl" d="M433 49 L440 57 L447 49" stroke-width="2" fill="none"/>
+  <text class="acc" x="551" y="26" font-size="13" text-anchor="middle">what it found goes into the rewrite</text>
+
+  <path class="ln" d="M440 154 V 196" stroke-width="2" fill="none"/>
+  <path class="ln" d="M433 189 L440 197 L447 189" stroke-width="2" fill="none"/>
+  <text class="ink2" x="452" y="182" font-size="13">everything else is written from the plan</text>
+
+  <g font-size="14" text-anchor="middle">
+    <rect class="card" x="32" y="208" width="112" height="52" rx="10"/><text class="ink" x="88" y="239">Slides</text>
+    <rect class="card" x="156" y="208" width="112" height="52" rx="10"/><text class="ink" x="212" y="239">Quiz</text>
+    <rect class="card" x="280" y="208" width="112" height="52" rx="10"/><text class="ink" x="336" y="239">Study guide</text>
+    <rect class="card" x="404" y="208" width="112" height="52" rx="10"/><text class="ink" x="460" y="239">Assignment</text>
+    <rect class="card" x="528" y="208" width="112" height="52" rx="10"/><text class="ink" x="584" y="239">Rubric</text>
+    <rect class="card" x="652" y="208" width="116" height="52" rx="10"/><text class="ink" x="710" y="239">Discussion</text>
+  </g>
+  <text class="ink2" x="400" y="296" font-size="13" text-anchor="middle">same examples, same words, same scoring levels: the materials agree with the plan and with each other</text>
+</svg>

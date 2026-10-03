@@ -51,6 +51,12 @@ const aboutRoute = createRoute({
   component: lazyRouteComponent(() => import('../screens/about/About'), 'About'),
 });
 
+const changelogRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/changelog',
+  component: lazyRouteComponent(() => import('../screens/changelog/Changelog'), 'Changelog'),
+});
+
 const termsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/terms',
@@ -177,6 +183,7 @@ const routeTree = rootRoute.addChildren([
   privacyRoute,
   termsRoute,
   aboutRoute,
+  changelogRoute,
   printRoute,
   googleRoute,
   signInRoute,

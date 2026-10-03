@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .accl { stroke: #2B46C4 } .tint { fill: #EDF0FC } .bad { fill: #A8321F } .badt { fill: #FBEAE6 } .rule { stroke: #CFC8B9 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .accl { stroke: #8FA3FF } .tint { fill: #23284A } .bad { fill: #F08A76 } .badt { fill: #3A2420 } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="400" rx="20"/>
+
+  <text class="ink2" x="40" y="46" font-size="15" font-weight="600" letter-spacing="0.6">BEFORE · EACH LESSON PLANNED ALONE</text>
+  <g font-size="14">
+    <rect class="card" x="40" y="66" width="160" height="96" rx="12"/>
+    <text class="ink" x="56" y="94" font-weight="600">Lesson 1</text>
+    <rect class="badt" x="56" y="110" width="128" height="34" rx="8"/><text class="bad" x="66" y="131" font-size="13">bean has 5 stages</text>
+
+    <rect class="card" x="224" y="66" width="160" height="96" rx="12"/>
+    <text class="ink" x="240" y="94" font-weight="600">Lesson 2</text>
+    <rect class="badt" x="240" y="110" width="128" height="34" rx="8"/><text class="bad" x="250" y="131" font-size="13">beans in bags</text>
+
+    <rect class="card" x="408" y="66" width="160" height="96" rx="12"/>
+    <text class="ink" x="424" y="94" font-weight="600">Lesson 3</text>
+    <rect class="badt" x="424" y="110" width="128" height="34" rx="8"/><text class="bad" x="434" y="131" font-size="13">bean has 4 stages</text>
+
+    <rect class="card" x="592" y="66" width="168" height="96" rx="12"/>
+    <text class="ink" x="608" y="94" font-weight="600">Lesson 4</text>
+    <rect class="badt" x="608" y="110" width="136" height="34" rx="8"/><text class="bad" x="618" y="131" font-size="13">beans now in jars?</text>
+  </g>
+
+  <line class="rule" x1="40" y1="196" x2="760" y2="196" stroke-width="1.5" stroke-dasharray="4 6"/>
+
+  <text class="acc" x="40" y="236" font-size="15" font-weight="600" letter-spacing="0.6">NOW · EACH PLAN READS THE ONES BEFORE IT</text>
+  <g font-size="14">
+    <rect class="card" x="40" y="256" width="150" height="96" rx="12"/>
+    <text class="ink" x="56" y="284" font-weight="600">Lesson 1</text>
+    <text class="ink2" x="56" y="308">sets up the</text><text class="ink2" x="56" y="328">bean garden</text>
+
+    <rect class="card" x="230" y="256" width="150" height="96" rx="12"/>
+    <text class="ink" x="246" y="284" font-weight="600">Lesson 2</text>
+    <text class="ink2" x="246" y="308">checks the</text><text class="ink2" x="246" y="328">bean garden</text>
+
+    <rect class="card" x="420" y="256" width="150" height="96" rx="12"/>
+    <text class="ink" x="436" y="284" font-weight="600">Lesson 3</text>
+    <text class="ink2" x="436" y="308">same 5 stages,</text><text class="ink2" x="436" y="328">same words</text>
+
+    <rect class="card" x="610" y="256" width="150" height="96" rx="12"/>
+    <text class="ink" x="626" y="284" font-weight="600">Lesson 4</text>
+    <text class="ink2" x="626" y="308">builds on what</text><text class="ink2" x="626" y="328">was taught</text>
+  </g>
+  <g class="accl" stroke-width="2.5" fill="none" stroke-linecap="round">
+    <path d="M194 304 H222"/><path d="M214 296 L223 304 L214 312"/>
+    <path d="M384 304 H412"/><path d="M404 296 L413 304 L404 312"/>
+    <path d="M574 304 H602"/><path d="M594 296 L603 304 L594 312"/>
+  </g>
+  <rect class="tint" x="40" y="364" width="720" height="26" rx="13"/>
+  <text class="acc" x="400" y="382" font-size="13" text-anchor="middle">carried forward: key ideas · terms · what students did · what is still growing</text>
+</svg>

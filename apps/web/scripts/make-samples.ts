@@ -6,6 +6,10 @@
 // A sample is shown as Folio's best work, so after the build every part a check flagged is written again
 // (--polish does only that, on samples already written).
 // Writes apps/web/public/samples/<name>.json; logs every call to apps/web/scripts/.samples-log.jsonl.
+// A quality check-up runs other briefs the same way and keeps the course exactly as a teacher would get it:
+//   ... make-samples.ts --briefs <file.json> --out <dir> [names]
+// where the file is [{ "name", "brief", "attach"?: [absolute paths], "syllabus"?: title of the attached file that
+// is the syllabus, "policies"? }]; nothing is written again.
 import { MATERIAL_KINDS, CourseStore, cmd, orderedLessons, parseCourse, type Course, type GeneratedKind } from '@folio/core';
 import { BUILT_ON_PLAN, courseFromOutline, createInference, generateOutline, missingTargets, runBuild, type BuildHost, type BuildTarget, type NewCourseRequest } from '@folio/ai';
 import { spawn } from 'node:child_process';
@@ -16,7 +20,12 @@ import { guessLessons, guessLevel, guessMinutes, guessQuizSize, guessSessions } 
 import type { SampleName } from '../src/lib/samples';
 
 const WEB = new URL('..', import.meta.url).pathname;
-const OUT = join(WEB, 'public/samples');
+const ARGS = process.argv.slice(2);
+const option = (flag: string): string | undefined => {
+  const i = ARGS.indexOf(flag);
+  return i >= 0 ? ARGS[i + 1] : undefined;
+};
+const OUT = option('--out') ?? join(WEB, 'public/samples');
 const LOG = join(WEB, 'scripts/.samples-log.jsonl');
 mkdirSync(OUT, { recursive: true });
 /** An empty folder for the CLIs to run in: they read nothing of this repository. */
@@ -132,15 +141,35 @@ const POLICIES: Record<SampleName, string> = {
 /** The files a teacher would attach with each brief. */
 const ATTACHED: Partial<Record<SampleName, string[]>> = { middle: ['article-for.md', 'article-against.md'] };
 
-function attached(name: SampleName): { title: string; text: string }[] {
-  return (ATTACHED[name] ?? []).map((file) => {
-    const text = readFileSync(join(WEB, 'scripts/sample-sources', file), 'utf8');
+interface Spec {
+  brief: string;
+  attach: string[];
+  policies: string;
+  syllabus?: string;
+}
+
+/** A check-up's own briefs, when it gives a file of them. */
+const CHECKUP: Record<string, Spec> | null = option('--briefs')
+  ? Object.fromEntries(
+      (JSON.parse(readFileSync(option('--briefs')!, 'utf8')) as (Partial<Spec> & { name: string; brief: string })[]).map((b) => [b.name, { brief: b.brief, attach: b.attach ?? [], policies: b.policies ?? '', syllabus: b.syllabus }]),
+    )
+  : null;
+
+function specFor(name: string): Spec {
+  if (CHECKUP) return CHECKUP[name] ?? (() => { throw new Error(`no brief named ${name}`); })();
+  const sample = name as SampleName;
+  return { brief: BRIEFS[sample], attach: (ATTACHED[sample] ?? []).map((file) => join(WEB, 'scripts/sample-sources', file)), policies: POLICIES[sample] };
+}
+
+function attached(paths: string[]): { title: string; text: string }[] {
+  return paths.map((path) => {
+    const text = readFileSync(path, 'utf8');
     return { title: text.split('\n')[0]!.replace(/^#\s*/, ''), text };
   });
 }
 
-function requestFor(name: SampleName): NewCourseRequest {
-  const brief = BRIEFS[name];
+function requestFor(spec: Spec): NewCourseRequest {
+  const brief = spec.brief;
   return {
     brief,
     lessonCount: guessLessons(brief),
@@ -151,7 +180,8 @@ function requestFor(name: SampleName): NewCourseRequest {
     language: 'en',
     locale: 'en-US',
     materials: [...MATERIAL_KINDS],
-    sources: attached(name),
+    sources: attached(spec.attach),
+    ...(spec.syllabus ? { syllabus: spec.syllabus } : {}),
   };
 }
 
@@ -200,19 +230,20 @@ async function build(name: string, store: CourseStore, targets: BuildTarget[], f
   return summary.built;
 }
 
-async function make(name: SampleName, polishOnly: boolean): Promise<void> {
+async function make(name: string, polishOnly: boolean): Promise<void> {
   const started = Date.now();
   const failed: string[] = [];
   let store: CourseStore;
   if (polishOnly) {
     store = new CourseStore(parseCourse(JSON.parse(readFileSync(join(OUT, `${name}.json`), 'utf8'))));
   } else {
-    const req = requestFor(name);
+    const spec = specFor(name);
+    const req = requestFor(spec);
     store = new CourseStore(courseFromOutline(req, await generateOutline(inference, req)));
-    store.apply([cmd('course.update', { policies: POLICIES[name] })], { label: { key: 'built' }, source: 'teacher', undoable: false });
+    if (spec.policies) store.apply([cmd('course.update', { policies: spec.policies })], { label: { key: 'built' }, source: 'teacher', undoable: false });
     // A graded drawing done in class has no homework to set, and so no rubric: the teacher sets it as the last
     // lesson's graded assignment, so Folio writes its instructions and rubric.
-    if (name === 'elementary') {
+    if (name === 'elementary' && !CHECKUP) {
       const last = orderedLessons(store.getState()).at(-1)!;
       const item = store.getState().grading[0]?.item ?? '';
       store.apply([cmd('lesson.homework', { lessonId: last.id, homework: { kind: 'assignment', toward: item } })], { label: { key: 'built' }, source: 'teacher', undoable: false });
@@ -220,7 +251,8 @@ async function make(name: SampleName, polishOnly: boolean): Promise<void> {
     console.log(`${name}: outline "${store.getState().title}", ${orderedLessons(store.getState()).length} lessons`);
   }
   for (let round = 0; round < 3 && missingTargets(store.getState()).length; round++) await build(name, store, missingTargets(store.getState()), failed);
-  for (let round = 0; round < 2 && flawed(store.getState()).length; round++) {
+  // A check-up keeps what a teacher would get: the review's notes stay, nothing is written again.
+  for (let round = 0; round < 2 && !CHECKUP && flawed(store.getState()).length; round++) {
     console.log(`${name}: writing again ${flawed(store.getState()).length} parts`);
     noteFlags(name, store.getState());
     await build(name, store, flawed(store.getState()), failed);
@@ -232,8 +264,7 @@ async function make(name: SampleName, polishOnly: boolean): Promise<void> {
   console.log(`${name}: done in ${((Date.now() - started) / 60000).toFixed(1)} min, ${missingTargets(course).length} parts missing, ${left} still flagged${failed.length ? `; failures seen: ${failed.slice(0, 3).join(' | ')}` : ''}`);
 }
 
-const args = process.argv.slice(2);
-const polishOnly = args.includes('--polish');
-const names = args.filter((a) => a !== '--polish');
-const asked = (names.length ? names : Object.keys(BRIEFS)) as SampleName[];
+const polishOnly = ARGS.includes('--polish');
+const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs'].includes(ARGS[i - 1] ?? ''));
+const asked = names.length ? names : Object.keys(CHECKUP ?? BRIEFS);
 await Promise.all(asked.map((name) => make(name, polishOnly)));
