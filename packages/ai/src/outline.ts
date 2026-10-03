@@ -1,4 +1,4 @@
-import { MATERIAL_KINDS, OnlineSchema, SHAPE_LIMITS, createCourse, materialsForLevel, createSource, emptyLesson, newId, type Course, type Delivery, type Language, type MaterialKind, type Online, type Session } from '@folio/core';
+import { MATERIAL_KINDS, OnlineSchema, SHAPE_LIMITS, createCourse, materialsForLevel, createSource, emptyLesson, newId, type Course, type Delivery, type Homework, type Lesson, type Language, type MaterialKind, type Online, type Session } from '@folio/core';
 import type { Inference } from './inference';
 import { runJob, type Problem } from './jobs';
 import { filesBlock, sameTitle } from './files';
@@ -55,7 +55,8 @@ export function outlinePrompt(input: OutlineInput): string {
     'Under "suggestedReadings", for a university course only, suggest up to three well-known further readings per lesson that the brief does not already list: established works a lecturer would recognise on that lesson\'s topic, with author, title and year, and a chapter only when you are sure of it. When the brief asks for readings by author or by kind without naming the works (two articles a week by named philosophers), propose here the works a teacher of the field would assign: the plans are written from them until the teacher confirms. Suggest each work once in the course, for the lesson it fits best. The teacher checks them before anything is assigned, so leave the list empty rather than guess.',
     'Under "grading", list every graded component the brief or an attached syllabus names, such as weekly quizzes and a final essay, with the weight it gives each; when it gives no weight, set it to null rather than guess. Leave the list empty if neither says how the course is graded.',
     'Under "policies", copy the class policies the brief or an attached syllabus states, in their words, one policy per paragraph separated by a blank line; leave it empty when they state none, and never write policies of your own.',
-    'Under "homework", decide the graded or handed-in work each lesson holds, from how the brief or syllabus says the course is assessed. "assignment" is a graded piece set in that lesson to be done outside class: every lesson when the brief sets weekly problem sets or homework, and only as many lessons as the brief says when it says how often (twice a week is two lessons in five); only the lesson where it is set when there is one final essay, project or portfolio. "step" is a short ungraded step toward a larger graded piece, such as choosing a question, an outline or a draft section; use it in the lessons leading up to that piece. "test" is a written quiz, test or exam taken in that lesson: Folio writes its paper, key and points. "inclass" is other work done and graded in that lesson with a rubric: a presentation, a seminar, an oral interview, an essay or a piece made in class. "none" is for a lesson where nothing is handed in or graded. Every graded component is held by at least one lesson, as "assignment", "test" or "inclass", except one spread through every lesson with nothing to write for it (exit tickets). Participation that carries a share of the grade is "inclass" in the first lesson, so that how it is judged and recorded is written once. A rubric-graded piece that students take turns at through the term (leading a seminar, presenting) is "inclass" in the first lesson where it happens, so its brief and rubric are written once. When the course has both weekly work and larger graded pieces such as papers or projects, each larger piece is still set in the lesson where it is set, with "homeworkToward" naming it, and that lesson\'s weekly work gives way to it: a graded paper that no lesson sets is never written. Set a larger piece only once the lessons it draws on have been taught. When neither says how the course is assessed, use "assignment" for every lesson. Under "homeworkToward", name the graded component the work counts toward, as you named it under "grading". Under "homeworkDue", give the number of the lesson at whose start an assignment or step is handed in: usually the next lesson for a weekly set or a step; for a larger piece, the week the brief gives, or a lesson late enough that everything it asks for has been taught and students have had time to write it.',
+    'A lesson can hold more than one piece. Under "also", list what it holds beside its main piece: the weekly work in a week where a larger piece is set; a prospectus, outline or draft on the way to a paper, as a "step" toward it; a piece run in class while another is set. A piece students work toward for weeks (a term paper, a project, a presentation each student gives in turn) is set in the first lesson, under "also" if that lesson has other work, so its brief exists from the start. Say "homeworkStanding" (or "standing" under "also") is true for a piece that is the same task every time, only its subject changing (a weekly response to the reading, a preparation memo): Folio writes it once and sets it again as it stands, and such a piece prepares for the lesson it is due at.',
+    'Under "homework", decide the graded or handed-in work each lesson holds, from how the brief or syllabus says the course is assessed. "assignment" is a graded piece set in that lesson to be done outside class: every lesson when the brief sets weekly problem sets or homework, and only as many lessons as the brief says when it says how often (twice a week is two lessons in five); only the lesson where it is set when there is one final essay, project or portfolio. "step" is a short ungraded step toward a larger graded piece, such as choosing a question, an outline or a draft section; use it in the lessons leading up to that piece. "test" is a written quiz, test or exam taken in that lesson: Folio writes its paper, key and points. "inclass" is other work done and graded in that lesson with a rubric: a presentation, a seminar, an oral interview, an essay or a piece made in class. "none" is for a lesson where nothing is handed in or graded. Every graded component is held by at least one lesson, as "assignment", "test" or "inclass", except one spread through every lesson with nothing to write for it (exit tickets). Participation that carries a share of the grade is "inclass" in the first lesson, so that how it is judged and recorded is written once. A rubric-graded piece that students take turns at through the term (leading a seminar, presenting) is "inclass" in the first lesson where it happens, so its brief and rubric are written once. When the course has both weekly work and larger graded pieces such as papers or projects, each larger piece is still set in the lesson where it is set, with "homeworkToward" naming it, and that lesson\'s weekly work goes under "also": a graded paper that no lesson sets is never written, and weekly work is set every week. Set a larger piece only once the lessons it draws on have been taught. When neither says how the course is assessed, use "assignment" for every lesson. Under "homeworkToward", name the graded component the work counts toward, as you named it under "grading". Under "homeworkDue", give the number of the lesson at whose start an assignment or step is handed in: usually the next lesson for a weekly set or a step; for a larger piece, the week the brief gives, or a lesson late enough that everything it asks for has been taught and students have had time to write it.',
   ];
   if (weekly(input)) parts.push(onlineOutlineRules(input.online?.hoursPerWeek ?? 9));
   if (input.sources.length) {
@@ -114,6 +115,25 @@ function towardGraded(outline: OutlineDraft): (toward: string) => string {
 
 export { sameTitle };
 
+/**
+ * The work a lesson holds, from its outline: the main piece and any beside it. When each is handed in is noted
+ * as a lesson number, and resolved to that lesson once all have their ids.
+ */
+function piecesOf(draft: OutlineDraft['lessons'][number], i: number, counts: (toward: string) => string, dueAt: [Homework, number][]): Pick<Lesson, 'homework' | 'also'> {
+  const homework: Homework = { kind: draft.homework, toward: draft.homework === 'none' ? '' : counts(draft.homeworkToward), ...(draft.homeworkStanding && draft.homework !== 'none' ? { standing: true } : {}) };
+  const later = (kind: string, due: number | null) => (kind === 'assignment' || kind === 'step') && due !== null && due > i + 1;
+  if (later(draft.homework, draft.homeworkDue)) dueAt.push([homework, draft.homeworkDue!]);
+  const also: Homework[] = [];
+  for (const p of draft.also) {
+    const piece: Homework = { kind: p.kind, toward: counts(p.toward), ...(p.standing ? { standing: true } : {}) };
+    // The same component twice in one lesson is one piece: the second is dropped.
+    if ([homework, ...also].some((o) => o.kind === piece.kind && o.toward === piece.toward)) continue;
+    also.push(piece);
+    if (later(p.kind, p.due)) dueAt.push([piece, p.due!]);
+  }
+  return { homework, also };
+}
+
 /** Turn an agreed outline into a course in the planning state. */
 export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft): Course {
   const course = createCourse({
@@ -142,13 +162,11 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   const counts = towardGraded(outline);
   const readings = outline.lessons.map((d) => d.readings.filter((r) => named(r.namedIn)).map((r) => clean(r.work)).filter(Boolean));
   const seen = new Set(readings.flat().map(key));
-  const dueAt = new Map<string, number>();
+  const dueAt: [Homework, number][] = [];
   for (const [i, draft] of outline.lessons.entries()) {
     const lesson = emptyLesson(newId('l'), draft.title, draft.summary);
     lesson.readings = readings[i] ?? [];
-    lesson.homework = { kind: draft.homework, toward: draft.homework === 'none' ? '' : counts(draft.homeworkToward) };
-    // When it is handed in, as a later lesson: resolved to that lesson once all have their ids.
-    if ((draft.homework === 'assignment' || draft.homework === 'step') && draft.homeworkDue && draft.homeworkDue > i + 1) dueAt.set(lesson.id, draft.homeworkDue);
+    Object.assign(lesson, piecesOf(draft, i, counts, dueAt));
     lesson.suggestedReadings = draft.suggestedReadings
       .map(clean)
       .filter((r) => r && !seen.has(key(r)) && seen.add(key(r)));
@@ -163,10 +181,9 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   const graded = outline.grading.filter((g) => g.item.trim());
   // A course graded one way only is graded 100% that way; with several, a missing weight stays for the teacher to give.
   const whole = graded.length === 1 && graded[0]!.weight === null;
-  for (const [lessonId, n] of dueAt) {
+  for (const [piece, n] of dueAt) {
     const due = course.lessonOrder[n - 1];
-    const lesson = course.lessons[lessonId];
-    if (due && lesson) lesson.homework.due = due;
+    if (due) piece.due = due;
   }
   // The teacher's own policies, carried over: a syllabus's late and integrity rules were left on the file.
   course.policies = (outline.policies ?? '').trim();

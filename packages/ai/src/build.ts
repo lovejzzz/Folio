@@ -1,4 +1,4 @@
-import { GENERATED_KINDS, orderedLessons, setsWork, type Command, type Course, type GeneratedKind } from '@folio/core';
+import { GENERATED_KINDS, lessonPieces, orderedLessons, setsWork, type Command, type Course, type GeneratedKind } from '@folio/core';
 
 /** The lesson still exists and still asks for this section: the teacher may have changed its homework mid-build. */
 const stillWanted = (course: Course, t: BuildTarget) => {
@@ -78,15 +78,16 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
   const position = (lessonId: string) => host.getCourse().lessonOrder.indexOf(lessonId);
   // Parts of one graded piece set in several lessons, and the steps toward one, are written in order too, each
   // seeing what came before it.
-  const toward = (lessonId: string) => {
-    const homework = host.getCourse().lessons[lessonId]?.homework;
-    return homework && homework.kind !== 'none' ? `${homework.kind}:${homework.toward.trim()}` : '';
+  const pieces = (lessonId: string) => {
+    const lesson = host.getCourse().lessons[lessonId];
+    return lesson ? lessonPieces(lesson).map((p) => `${p.kind}:${p.toward.trim()}`) : [];
   };
+  const shares = (a: string, b: string) => pieces(a).some((key) => pieces(b).includes(key));
   const blocked = (t: BuildTarget): boolean => {
     const queued = [...pending, ...[...running.keys()].map(parseKey)];
     const waiting = queued.filter((o) => o.kind === 'plan');
     if (t.kind === 'plan') return waiting.some((o) => position(o.lessonId) < position(t.lessonId));
-    if (t.kind === 'assignments' && toward(t.lessonId) && queued.some((o) => o.kind === 'assignments' && toward(o.lessonId) === toward(t.lessonId) && position(o.lessonId) < position(t.lessonId))) return true;
+    if (t.kind === 'assignments' && queued.some((o) => o.kind === 'assignments' && position(o.lessonId) < position(t.lessonId) && shares(o.lessonId, t.lessonId))) return true;
     return BUILT_ON_PLAN.has(t.kind) && waiting.some((o) => o.lessonId === t.lessonId);
   };
 

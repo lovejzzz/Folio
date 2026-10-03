@@ -6,6 +6,7 @@ import {
   type Course,
   type Discussion,
   type FaqEntry,
+  type Homework,
   type Language,
   type Lesson,
   type MaterialConfig,
@@ -51,6 +52,7 @@ export function emptyLesson(idValue: string, title: string, summary = ''): Lesso
     readings: [],
     suggestedReadings: [],
     homework: { kind: 'assignment', toward: '' },
+    also: [],
     segments: [],
     keyIdeas: [],
     vocabulary: [],
@@ -129,6 +131,17 @@ export function orderedObjectives(course: Course): Objective[] {
   }
   for (const o of Object.values(course.objectives)) if (!seen.has(o.id)) out.push(o);
   return out;
+}
+
+/** Every piece of work a lesson holds: its main piece first, then the others. */
+export function lessonPieces(lesson: Pick<Lesson, 'homework' | 'also'>): Homework[] {
+  return [lesson.homework, ...(lesson.also ?? [])].filter((p) => p.kind !== 'none');
+}
+
+/** The piece an assignment was written for: the one that names its component, else the lesson's main piece. */
+export function pieceOf(lesson: Pick<Lesson, 'homework' | 'also'>, assignment: Pick<Assignment, 'toward'>): Homework {
+  const toward = (assignment.toward ?? '').trim();
+  return (toward && lessonPieces(lesson).find((p) => p.toward.trim() === toward)) || lesson.homework;
 }
 
 export function lessonTasks(course: Course, lesson: Lesson): Task[] {

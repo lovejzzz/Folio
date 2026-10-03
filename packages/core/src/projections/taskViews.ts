@@ -1,5 +1,5 @@
 import { filledTexts, isBlankCriterion, isBlankDiscussion, isBlankFaq } from '../blank';
-import { answerText, lessonAssignments, lessonDiscussions, lessonFaq } from '../course';
+import { answerText, lessonAssignments, lessonDiscussions, lessonFaq, pieceOf } from '../course';
 import { setsWork } from '../ripple';
 import type { Block } from '../semantic';
 import type { Rubric } from '../schema';
@@ -48,11 +48,13 @@ export function projectAssignments(ctx: Ctx): Block[] {
       blocks.push(lessonHeading(ctx, lesson));
       blocks.push({ t: 'heading', level: 3, text: field(ctx, a.id, 'title', a.title) });
       blocks.push({ t: 'para', text: field(ctx, a.id, 'prompt', a.prompt) });
-      const toward = lesson.homework.toward.trim();
-      const { kind } = lesson.homework;
+      // A lesson can hold several pieces: each assignment is labelled as the piece it was written for.
+      const piece = pieceOf(lesson, a);
+      const toward = piece.toward.trim();
+      const { kind } = piece;
       if (kind === 'step' && toward) blocks.push({ t: 'para', text: l.buildsToward(toward), tone: 'muted' });
       if (kind === 'test' || kind === 'inclass') blocks.push({ t: 'para', text: kind === 'test' ? l.takenInClass : l.gradedInClass, tone: 'muted' });
-      const due = lesson.homework.due ? course.lessons[lesson.homework.due] : undefined;
+      const due = piece.due ? course.lessons[piece.due] : undefined;
       if (due && (kind === 'assignment' || kind === 'step')) blocks.push({ t: 'para', text: l.dueAt(due.title), tone: 'muted' });
       const steps = filledTexts(a.steps);
       if (steps.length) {

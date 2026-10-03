@@ -1,5 +1,9 @@
-import { orderedLessons, type Course, type Lesson } from '@folio/core';
+import { lessonPieces, orderedLessons, type Course, type Lesson } from '@folio/core';
 import { moduleDigest, moduleSummary } from './online';
+import { otherPieces, workOf } from './workJobs';
+
+/** Whether a lesson holds a piece of this kind for this component, as its main piece or beside it. */
+const holds = (l: Lesson, kind: string, toward: string) => lessonPieces(l).some((p) => p.kind === kind && p.toward.trim() === toward);
 
 /**
  * What one lesson's materials owe the lessons around it. Each lesson is written in its own call, and a lesson
@@ -82,9 +86,12 @@ export function earlierSteps(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   const before = orderedLessons(course)
     .slice(0, course.lessonOrder.indexOf(lesson.id))
-    .filter((l) => l.homework.kind === 'step' && l.homework.toward.trim() === toward);
+    .filter((l) => holds(l, 'step', toward));
   // Told the titles alone, the next step changed its title and asked the same thing.
-  const steps = before.flatMap((l) => l.taskIds.map((id) => course.tasks[id]).flatMap((t) => (t?.kind === 'assignment' ? [`"${t.title}": ${clipNote(t.prompt)}`] : [])));
+  const steps = before.flatMap((l) => {
+    const t = workOf(course, l, toward);
+    return t?.kind === 'assignment' ? [`"${t.title}": ${clipNote(t.prompt)}`] : [];
+  });
   return steps.length ? `Earlier lessons already set these steps toward it:\n${steps.map((s) => `- ${s}`).join('\n')}\nThis is the next step: it asks for something those did not, and builds on them.` : '';
 }
 
@@ -95,20 +102,20 @@ export function earlierSteps(course: Course, lesson: Lesson): string {
 export function sharedComponent(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   if (!toward) return '';
-  const sharing = orderedLessons(course).filter((l) => l.homework.kind === lesson.homework.kind && l.homework.toward.trim() === toward);
+  const sharing = orderedLessons(course).filter((l) => holds(l, lesson.homework.kind, toward));
   if (sharing.length < 2) return '';
   const place = sharing.findIndex((l) => l.id === lesson.id) + 1;
   if (lesson.homework.kind === 'inclass') return `"${toward}" is taken over ${sharing.length} lessons, a group in each: write it once and whole, since the later lessons use it as it stands, with running notes that say who goes in which lesson.`;
   // Papers of one component (two quizzes) told only "cover the lessons so far" came out alike, title and half the questions.
   if (lesson.homework.kind === 'test') {
-    const earlier = sharing[place - 2]?.taskIds.map((id) => course.tasks[id]).find((t) => t?.kind === 'assignment');
+    const earlier = workOf(course, sharing[place - 2], toward);
     const before = earlier?.kind === 'assignment' ? ` The paper before it, "${earlier.title}", asked: ${clipNote(earlier.steps.join(' | '), 900)} Repeat none of it.` : '';
     return `"${toward}" is ${sharing.length} papers, and this is number ${place}: title it so (for example "Quiz ${place}" with what it covers), and test what was taught since the paper before it, not the same ground again.${before}`;
   }
   const told = `"${toward}" is set as an assignment in ${sharing.length} lessons, and this is part ${place} of ${sharing.length}: write only the part that belongs to this lesson, title it so it can be told apart from the other parts (for example "${toward}: " followed by this lesson's focus), and never say this part alone carries the component's whole weight. Students read it as an assignment in its own right: no "part", "component" or count of parts in its text.`;
   // Written each on its own, weekly responses in one course asked for 300, 400 and 600 words.
   const before = sharing[place - 2];
-  const last = before?.taskIds.map((id) => course.tasks[id]).find((t) => t?.kind === 'assignment');
+  const last = workOf(course, before, toward);
   if (!last || last.kind !== 'assignment') return told;
   // Its tasks too: told only the prompt, the fourth problem set repeated a problem from the third.
   const tasks = clipNote(last.steps.join(' | '), 700);
@@ -138,15 +145,19 @@ export function dueWords(course: Course, lesson: Lesson): string {
 export function homeworkLine(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   const collected = orderedLessons(course)
-    .filter((l) => l.homework.due === lesson.id && l.id !== lesson.id)
-    .map((l) => {
-      // By what was actually set: named by what it counts toward, a step's due day collected the whole paper.
-      const set = l.taskIds.map((id) => course.tasks[id]).find((t) => t?.kind === 'assignment');
-      const what = set?.kind === 'assignment' ? `"${set.title}"` : l.homework.kind === 'step' ? 'the short step' : `"${l.homework.toward.trim() || 'the assignment'}"`;
-      return `${what} (set in "${l.title}"${l.homework.kind === 'step' ? ', an ungraded step' : ''})`;
-    });
+    .filter((l) => l.id !== lesson.id)
+    .flatMap((l) =>
+      lessonPieces(l)
+        .filter((p) => p.due === lesson.id)
+        .map((p) => {
+          // By what was actually set: named by what it counts toward, a step's due day collected the whole paper.
+          const set = workOf(course, l, p.toward.trim());
+          const what = set?.kind === 'assignment' ? `"${set.title}"` : p.kind === 'step' ? 'the short step' : `"${p.toward.trim() || 'the assignment'}"`;
+          return `${what} (set in "${l.title}"${p.kind === 'step' ? ', an ungraded step' : ''})`;
+        }),
+    );
   // Set, due and collected were three guesses: one piece had two due dates and a close that said "give its due date".
-  const due = collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan collects it.` : '';
+  const due = `${otherPieces(lesson)}${collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan collects it.` : ''}`;
   if (lesson.homework.kind === 'none') return `This lesson sets no homework.${due}`;
   const named = toward ? `"${toward}"` : 'a graded piece';
   // The paper and the rubric are their own material: a plan that also wrote them gave the lesson two.
@@ -202,11 +213,13 @@ export function ownPiece(course: Course, lesson: Lesson): boolean {
  */
 export function inClassPieces(course: Course): string {
   const seen = new Set<string>();
-  const lines = orderedLessons(course).flatMap((l) => {
-    const toward = l.homework.toward.trim();
-    if (l.homework.kind !== 'inclass' || !toward || seen.has(toward)) return [];
-    seen.add(toward);
-    return [`"${toward}" has its brief and rubric written with the lesson "${l.title}"`];
-  });
+  const lines = orderedLessons(course).flatMap((l) =>
+    lessonPieces(l).flatMap((p) => {
+      const toward = p.toward.trim();
+      if (p.kind !== 'inclass' || !toward || seen.has(toward)) return [];
+      seen.add(toward);
+      return [`"${toward}" has its brief and rubric written with the lesson "${l.title}"`];
+    }),
+  );
   return lines.length ? `${lines.join('; ')}. A lesson that runs one of these says so and scores with that rubric; it writes no criteria of its own.` : '';
 }

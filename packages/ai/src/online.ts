@@ -2,7 +2,7 @@ import { cmd, hasModulePages, newId, orderedLessons, pageMinutes, pageText, type
 import { z } from 'zod';
 import type { Problem } from './jobs';
 import { isMixedOnline, mixedAsk } from './live';
-import { flagsAt, type SectionJob } from './workJobs';
+import { flagsAt, otherPieces, type SectionJob } from './workJobs';
 
 /**
  * Online courses with no set meeting time. The week's "plan" is a module page written for the student, who
@@ -198,6 +198,10 @@ export function onlineBackground(course: Course): string {
 
 /** The work a week sets, in an online course: nothing is "handed in at the start of a lesson". */
 export function onlineHomeworkLine(course: Course, lesson: Lesson): string {
+  return `${mainPiece(course, lesson)}${otherPieces(lesson)}`;
+}
+
+function mainPiece(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   const named = toward ? `"${toward}"` : 'a graded piece';
   const due = lesson.homework.due && lesson.homework.due !== lesson.id ? course.lessons[lesson.homework.due] : undefined;

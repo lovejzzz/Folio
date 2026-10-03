@@ -97,7 +97,7 @@ function fillLesson(course: Course, lesson: Lesson, spec: LessonSpec, levels: Co
   const { title, prompt, steps } = spec.assignment;
   const all = [
     ...tasks,
-    { ...base, id: newId('t'), kind: 'assignment' as const, title, prompt, steps, rubricId, answerKey: '' },
+    { ...base, id: newId('t'), kind: 'assignment' as const, title, prompt, steps, rubricId, answerKey: '', toward: '' },
     ...spec.discussions.map(([p, followUps]) => ({ ...base, id: newId('t'), kind: 'discussion' as const, prompt: p, followUps })),
   ];
   for (const task of all) course.tasks[task.id] = task;

@@ -34,6 +34,19 @@ export const OutlineDraft = z.object({
           .describe('The graded or handed-in work this lesson holds, following how the brief says the course is assessed'),
         homeworkToward: z.string().default('').describe('The graded component the homework counts toward, named as under "grading"; empty if none'),
         homeworkDue: z.number().int().min(1).nullable().default(null).describe('The number of the lesson at whose start this work is handed in; null when it is done in class, nothing is handed in, or it is due after the last lesson'),
+        homeworkStanding: z.boolean().default(false).describe('True when this piece is the same task every time it is set, only its subject changing: a weekly response paper, a preparation memo, a reading journal'),
+        also: z
+          .array(
+            z.object({
+              kind: z.enum(['assignment', 'step', 'test', 'inclass']),
+              toward: z.string().default('').describe('The graded component it counts toward, named as under "grading"'),
+              due: z.number().int().min(1).nullable().default(null).describe('The number of the lesson at whose start it is handed in, as for "homeworkDue"'),
+              standing: z.boolean().default(false),
+            }),
+          )
+          .max(4)
+          .default([])
+          .describe('Other work this lesson holds beside its main piece; empty in most lessons'),
         suggestedReadings: z
           .array(line)
           .max(3)

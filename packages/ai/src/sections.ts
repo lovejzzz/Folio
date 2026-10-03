@@ -9,6 +9,7 @@ import {
   checkQuestion,
   cmd,
   hasModulePages,
+  lessonPieces,
   duplicatePrompts,
   type Flag,
   newId,
@@ -277,6 +278,24 @@ const readPlan = (reviewer: Inference, course: Course, lesson: Lesson, signal?: 
 };
 
 /**
+ * The work a lesson holds, piece by piece: each is written as if it were the lesson's only one, a piece that is
+ * the same wherever it is set is taken from where it was first written, and the lesson is filled with all of them
+ * at once. Written one piece to a lesson, a seminar's weekly paper gave way whenever a larger piece was set.
+ */
+async function writeWork(course: Course, lesson: Lesson, write: (piece: Lesson) => Promise<SectionResult>): Promise<SectionResult> {
+  const results: SectionResult[] = [];
+  for (const homework of lessonPieces(lesson)) {
+    const piece = { ...lesson, homework, also: [] };
+    const continued = continuedInClass(course, piece);
+    results.push(continued ? { commands: continued, flagged: 0 } : await write(piece));
+  }
+  const fills = results.flatMap((r) => r.commands).flatMap((c) => (c.type === 'tasks.fill' ? [c.payload] : []));
+  if (!fills.length) return { commands: [], flagged: 0 };
+  const merged = cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: fills.flatMap((f) => f.flags), tasks: fills.flatMap((f) => f.tasks), rubrics: fills.flatMap((f) => f.rubrics ?? []) });
+  return { commands: [merged], flagged: results.reduce((n, r) => n + r.flagged, 0) };
+}
+
+/**
  * The first week of an online course is written with the course's Start here page. Written or not, the week
  * stands: a page that could not be had is asked for again the next time the first week is written.
  */
@@ -299,22 +318,22 @@ export async function generateSection(
   if (!lesson) throw new Error(`No lesson ${lessonId}`);
   // A module page is several times a plan's length, and is given the room.
   const planTask = (k: GeneratedKind) => (k === 'plan' && hasModulePages(course) ? 'folio_module' : `folio_${k}`);
-  const run = async <T>(job: SectionJob<T>, revise?: Revision<T>): Promise<SectionResult> => {
+  const run = async <T>(job: SectionJob<T>, revise?: Revision<T>, of: Lesson = lesson): Promise<SectionResult> => {
     const result = await runJob(inference, {
       task: planTask(kind),
       system: systemPrompt(course.language, course.locale),
       context: courseBackground(course),
-      prompt: sectionPrompt(course, lesson, kind),
+      prompt: sectionPrompt(course, of, kind),
       effort: SECTION_EFFORT[kind],
       schema: job.schema,
-      tidy: job.tidy ? (v) => job.tidy!(v, course, lesson) : undefined,
-      check: job.check ? (v) => job.check!(v, course, lesson) : undefined,
+      tidy: job.tidy ? (v) => job.tidy!(v, course, of) : undefined,
+      check: job.check ? (v) => job.check!(v, course, of) : undefined,
       signal,
       onText: partials(options.onProgress),
     });
     const { value, problems } = revise ? await revise(result.value) : { value: result.value, problems: [] };
     const all = [...result.problems, ...problems];
-    return { commands: job.toCommands(typesetDraft(value, course.language), all, course, lesson), flagged: all.length };
+    return { commands: job.toCommands(typesetDraft(value, course.language), all, course, of), flagged: all.length };
   };
   const { reviewer } = options;
   // The plan once more, for a review that left notes: the same request, with the notes in it.
@@ -334,13 +353,7 @@ export async function generateSection(
     case 'quiz':
       return run(quiz);
     case 'assignments':
-      if (lesson.homework.kind === 'none') return { commands: [], flagged: 0 };
-      if (lesson.homework.kind === 'test') return run(test);
-      {
-        const continued = continuedInClass(course, lesson);
-        if (continued) return { commands: continued, flagged: 0 };
-      }
-      return lesson.homework.kind === 'step' ? run(step) : run(assignments);
+      return writeWork(course, lesson, (piece) => (piece.homework.kind === 'test' ? run(test, undefined, piece) : piece.homework.kind === 'step' ? run(step, undefined, piece) : run(assignments, undefined, piece)));
     case 'discussions':
       return run(discussions);
     case 'faq':

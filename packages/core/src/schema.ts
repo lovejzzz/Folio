@@ -100,6 +100,8 @@ export const HomeworkSchema = z.object({
   toward: text,
   /** The lesson at whose start the work is handed in; absent when it is done in class, or no lesson is named. */
   due: id.optional(),
+  /** The same task every time, only its subject changing (a weekly response paper): written once, and set again as it stands. */
+  standing: z.boolean().optional(),
 });
 export type Homework = z.infer<typeof HomeworkSchema>;
 
@@ -117,6 +119,11 @@ export const LessonSchema = z.object({
   suggestedReadings: z.array(text).default([]),
   // Courses saved before this had an assignment in every lesson.
   homework: HomeworkSchema.default({ kind: 'assignment', toward: '' }),
+  /**
+   * Other work the lesson holds beside its main piece: the weekly memo in the week a project part is set, the
+   * brief of a paper in the week its prospectus is due. A course's graded work does not come one piece a lesson.
+   */
+  also: z.array(HomeworkSchema).default([]),
   segments: z.array(SegmentSchema),
   keyIdeas: z.array(text),
   vocabulary: z.array(TermSchema),
@@ -177,6 +184,8 @@ export const AssignmentSchema = z.object({
   rubricId: id.nullable(),
   /** Worked answers and how to mark them, for the teacher's copy only; empty for work with no single answer. */
   answerKey: text.default(''),
+  /** The graded component it was written for, so a lesson with several pieces knows which is which. */
+  toward: text.default(''),
 });
 export type Assignment = z.infer<typeof AssignmentSchema>;
 

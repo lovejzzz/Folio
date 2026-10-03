@@ -1,4 +1,4 @@
-import { cmd, newId, type Command, type Course, type Flag, type Lesson, type Rubric, type Task } from '@folio/core';
+import { cmd, lessonPieces, newId, type Command, type Course, type Flag, type Lesson, type Rubric, type Task } from '@folio/core';
 import type { JobSpec, Problem } from './jobs';
 import { AssignmentDraft, StepDraft, TestDraft } from './schemas';
 import { tidySteps, unnumberSteps } from './tidy';
@@ -59,6 +59,7 @@ export const assignments: SectionJob<AssignmentDraft> = {
       steps: v.steps,
       rubricId: rubric.id,
       answerKey: v.answerKey.trim(),
+      toward: lesson.homework.toward.trim(),
     };
     return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: flagsAt(problems, null), tasks: [task], rubrics: [rubric] })];
   },
@@ -79,6 +80,7 @@ export const step: SectionJob<StepDraft> = {
       steps: v.steps,
       rubricId: null,
       answerKey: '',
+      toward: lesson.homework.toward.trim(),
     };
     return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: flagsAt(problems, null), tasks: [task], rubrics: [] })];
   },
@@ -107,24 +109,42 @@ export const test: SectionJob<TestDraft> = {
       steps: v.questions.map((q) => `${withoutPoints(q.question, q.points)} (${pointsOf(q.points)})`),
       rubricId: null,
       answerKey: [...v.questions.map((q, i) => `${i + 1}. ${withoutPoints(q.answer, q.points)} (${pointsOf(q.points)})`), `Total: ${pointsOf(total)}`].join('\n'),
+      toward: lesson.homework.toward.trim(),
     };
     return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: flagsAt(problems, null), tasks: [task], rubrics: [] })];
   },
 };
 
+const PIECE: Record<string, string> = { assignment: 'the graded assignment', step: 'a short ungraded step toward', test: 'the graded test', inclass: 'the piece graded in class', none: '' };
+
+/** What a lesson holds beside its main piece, for its plan: the plan sets or runs each, and writes none of them. */
+export function otherPieces(lesson: Lesson): string {
+  const others = (lesson.also ?? []).filter((p) => p.kind !== 'none').map((p) => `${PIECE[p.kind]}${p.toward.trim() ? ` "${p.toward.trim()}"` : ''}${p.standing ? ', the same task as every time it is set' : ''}`);
+  return others.length ? ` The lesson also holds, each written separately: ${others.join('; ')}. The plan gives each its moment (set before students leave, or run in the lesson) and writes none of them.` : '';
+}
+
+/** The assignment a lesson holds for one component: the one written for it, else the lesson's first. */
+export function workOf(course: Course, lesson: Lesson | undefined, toward: string): Task | undefined {
+  const all = (lesson?.taskIds ?? []).map((id) => course.tasks[id]).filter((t) => t?.kind === 'assignment');
+  return all.find((t) => t?.kind === 'assignment' && t.toward.trim() === toward) ?? all[0];
+}
+
 /**
- * A piece graded in class over several lessons (an oral interview taken in two groups) is one piece: the later
- * lessons take the first one's instructions, rubric and running notes as they stand. Written again for each
- * lesson, the second day's students were scored on a different rubric for the same 40%.
+ * A piece that is one piece wherever it appears is written once, and the later lessons take the first one's
+ * instructions, rubric and notes as they stand: work graded in class over several lessons (an oral interview
+ * taken in two groups), and a standing task set again each week (a response to the reading). Written again for
+ * each lesson, the second day's students were scored on a different rubric for the same 40%, and a seminar's
+ * weekly response paper came with nine briefs and nine rubrics.
  */
 export function continuedInClass(course: Course, lesson: Lesson): Command[] | null {
+  const { kind, standing } = lesson.homework;
   const toward = lesson.homework.toward.trim();
-  if (lesson.homework.kind !== 'inclass' || !toward) return null;
+  if (!(kind === 'inclass' || standing) || !toward) return null;
   const first = course.lessonOrder
     .slice(0, course.lessonOrder.indexOf(lesson.id))
     .map((id) => course.lessons[id])
-    .find((l) => l?.homework.kind === 'inclass' && l.homework.toward.trim() === toward);
-  const source = first?.taskIds.map((id) => course.tasks[id]).find((t) => t?.kind === 'assignment');
+    .find((l) => l && lessonPieces(l).some((p) => p.kind === kind && p.toward.trim() === toward));
+  const source = workOf(course, first, toward);
   if (!source || source.kind !== 'assignment') return null;
   const scale = source.rubricId ? course.rubrics[source.rubricId] : undefined;
   const levelIds = new Map((scale?.levels ?? []).map((lv) => [lv.id, newId('x')]));
@@ -136,6 +156,6 @@ export function continuedInClass(course: Course, lesson: Lesson): Command[] | nu
         criteria: scale.criteria.map((c) => ({ id: newId('x'), name: c.name, descriptors: Object.fromEntries(Object.entries(c.descriptors).map(([id, text]) => [levelIds.get(id) ?? id, text])) })),
       }
     : null;
-  const task: Task = { ...source, ...base(lesson), id: newId('t'), objectiveIds: [...lesson.objectiveIds], flags: [], rubricId: rubric?.id ?? null };
+  const task: Task = { ...source, ...base(lesson), id: newId('t'), objectiveIds: [...lesson.objectiveIds], flags: [], rubricId: rubric?.id ?? null, toward };
   return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: [], tasks: [task], rubrics: rubric ? [rubric] : [] })];
 }

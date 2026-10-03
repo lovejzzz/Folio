@@ -1,5 +1,5 @@
 import { filledTexts, isBlankSegment, statedObjectives } from './blank';
-import { orderedLessons } from './course';
+import { lessonPieces, orderedLessons } from './course';
 import type { Flag } from './flags';
 import { hashValue } from './ids';
 import { sectionFor, type GeneratedKind, type MaterialKind } from './materials';
@@ -36,7 +36,8 @@ function inputHash(course: Course, lesson: Lesson, key: BasisKey): string {
       // then carry a 'lesson' key that nothing reads, and stay up to date.
       return hashValue(lesson.title);
     case 'homework':
-      return hashValue([lesson.homework.kind, lesson.homework.toward]);
+      // Hashed alone when the lesson holds one piece, as before a lesson could hold several.
+      return lesson.also?.length ? hashValue([lesson.homework.kind, lesson.homework.toward, lesson.also.map((p) => [p.kind, p.toward])]) : hashValue([lesson.homework.kind, lesson.homework.toward]);
     case 'readings':
       // Only the plan and discussions build on the reading. A section stamped before readings existed has no
       // 'readings' in its basis, so it stays up to date until it is next built.
@@ -84,8 +85,8 @@ export type CellState = 'off' | 'none' | 'empty' | 'ready' | 'attention' | 'stal
 
 /** Whether a lesson has anything to write for this material: no homework, no assignment; a step, no rubric. */
 export function setsWork(lesson: Lesson, kind: MaterialKind): boolean {
-  if (kind === 'assignments') return lesson.homework.kind !== 'none';
-  if (kind === 'rubrics') return lesson.homework.kind === 'assignment' || lesson.homework.kind === 'inclass';
+  if (kind === 'assignments') return lessonPieces(lesson).length > 0;
+  if (kind === 'rubrics') return lessonPieces(lesson).some((p) => p.kind === 'assignment' || p.kind === 'inclass');
   return true;
 }
 
