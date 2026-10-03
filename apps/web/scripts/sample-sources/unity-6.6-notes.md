@@ -3,7 +3,7 @@
 Use these names exactly. They are what students see on screen.
 
 ## Unity Hub
-- Sidebar: Projects, Templates, Installs. Settings is the gear at the top right; licenses are under Settings > Licenses > Add license.
+- Sidebar: Projects, Installs. Licenses are under Settings (the gear) > Licenses > Add license.
 - Projects > New project. The screen opens on the "Learning" templates. Open the dropdown beside the search box and choose "Core" to see Universal 2D, Universal 3D, High Definition 3D and others. The Editor version is chosen at the top of this screen.
 - With a template selected, the panel on the right shows Project name, Location and the Create project button. The Project name box is also a dropdown: students choose "Create new local project" (not the default, which connects to Unity Cloud), then type the name.
 
@@ -17,7 +17,6 @@ Use these names exactly. They are what students see on screen.
 ## Menus (top menu bar)
 - File: New Scene, Open Scene, Save, Save As..., Build Profiles, Build And Run. There is no "Build Settings". The Build Profiles window has "Scene List" at its top left (a new project already lists SampleScene; "Add Open Scenes" adds the open one) and no platform list until you click "Add Build Profile": the "Platform Browser" opens, with Windows, macOS and Linux under Desktop and an "Add Build Profile" button at the bottom right; the new profile is marked Active and "Build" is at the bottom. A Mac build also leaves a folder ending in "BackUpThisFolder_ButDontShipItWithYourGame".
 - Edit: Undo, Redo, Duplicate, Rename, Delete, Play Mode, Project Settings... On a Mac, preferences are Unity > Settings...; on Windows, Edit > Preferences...
-- GameObject: Create Empty, Create Empty Child, 2D Object, 3D Object, Visual Effects, Light, Audio, UI Toolkit, UI (Canvas), Camera.
 - GameObject > 3D Object: Cube, Sphere, Capsule, Cylinder, Plane, Quad, Text - TextMeshPro.
 - GameObject > UI (Canvas): Image, Text - TextMeshPro, Panel, Button - TextMeshPro, Toggle, Slider, Canvas, Event System. The menu is named "UI (Canvas)", not "UI".
 - GameObject > Visual Effects: Particle System, Trail, Line. GameObject > Audio: Audio Source. GameObject > Light: Directional Light, Point Light, Spot Light.
