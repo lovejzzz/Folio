@@ -1,5 +1,5 @@
-import { filledTexts, hasModulePages, lessonSessions, orderedLessons, statedObjectives, type Course, type Delivery, type Language, type Lesson, type Online, type Session, type SessionKind } from '@folio/core';
-import { courseSoFar, dueWords, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
+import { hasModulePages, lessonSessions, orderedLessons, statedObjectives, type Course, type Delivery, type Language, type Lesson, type Online, type Session, type SessionKind } from '@folio/core';
+import { courseSoFar, dueWords, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, readBefore, sharedComponent } from './continuity';
 import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 import { LIVE_ASKS, isLiveOnline, liveBackground, runOfShow } from './live';
@@ -191,10 +191,8 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     .map((o, i) => `${i + 1}. ${o.text}`)
     .join('\n');
   // A brief that asks for readings and names only authors left most weeks of a doctoral seminar with nothing to read.
-  const proposed = filledTexts(lesson.suggestedReadings).map((r) => `- ${r}`).join('\n');
-  const readings = filledTexts(lesson.readings)
-    .map((r) => `- ${r}`)
-    .join('\n');
+  const before = readBefore(lesson);
+  const readings = before.works.map((r) => `- ${r}`).join('\n');
   return [
     // No number: given one, models write "lesson 3" into the materials. The background lists the order; given
     // only that, they quoted other lessons' titles at students instead.
@@ -202,7 +200,7 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     objectives ? `Its objectives:\n${objectives}` : '',
     hasModulePages(course) ? onlineHomeworkLine(course, lesson) : homeworkLine(course, lesson),
     // Called "proposed, for the teacher to confirm", the words came back in teacher notes and slide notes.
-    readings ? `Students read before this lesson:\n${readings}` : proposed ? `Students read before this lesson (plan from these, naming them in full):\n${proposed}` : '',
+    readings ? `Students read before this lesson${before.proposed ? ' (plan from these, naming them in full)' : ''}:\n${readings}` : '',
   ]
     .filter(Boolean)
     .join('\n\n');
@@ -277,12 +275,12 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
   assignments: (c, lesson) => {
     const toward = lesson.homework.toward.trim();
     if (lesson.homework.kind === 'step')
-      return `Write one short, ungraded step toward ${toward ? `"${toward}"` : 'the larger graded piece the course builds to'}, suited to where this lesson falls in the course: for example choosing a question, gathering evidence, an outline or a draft section. It should take students well under an hour, and be done at home: nothing in it needs a partner, a classmate or the classroom's materials, and young children can do it with someone at home. Give a title, what to do, and one to four steps (the page numbers them, so leave numbers out). ${earlierSteps(c, lesson)}`.trim();
+      return `Write one short, ungraded step toward ${toward ? `"${toward}"` : 'the larger graded piece the course builds to'}, suited to where this lesson falls in the course: for example choosing a question, gathering evidence, an outline or a draft section. It should take students well under an hour, and be done at home: nothing in it needs a partner, a classmate or the classroom's materials, and young children can do it with someone at home. Give a title, what to do, and one to four steps (the page numbers them, so leave numbers out). When the brief names this step (a proposal, a prospectus, a draft), write that step, on each student's own topic and never on this lesson's. ${dueWords(c, lesson)} ${earlierSteps(c, lesson)}`.replace(/ +/g, ' ').trim();
     if (lesson.homework.kind === 'test') return [testAsk(lesson), sharedComponent(c, lesson)].filter(Boolean).join(' ');
     // The same task every time (a weekly response paper): written once, for every time it is set.
     if (lesson.homework.standing && toward)
       return [
-        `Write "${toward}" as the brief describes it. It is set again and again through the course in the same form, and this one text stands for every time: so its subject is never this lesson's topic but "the reading (or the topic) of the lesson it is due at", it prepares students for that lesson, and it names no week, text or case of its own. Give its length and requirements as the brief does, two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level, that hold for any week.`,
+        `Write "${toward}" as the brief describes it. It is set again and again through the course in the same form, and this one text stands for every time: so its subject is never this lesson's topic but "the reading (or the topic) of the lesson it is due at", it prepares students for that lesson, and it names no week, topic, text or case: not this lesson's and not the next one's. Give its length and requirements as the brief does, two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level, that hold for any week.`,
         'It is due at the start of the lesson after the one that sets it, each time.',
         rubricLevels(c),
       ].join(' ');

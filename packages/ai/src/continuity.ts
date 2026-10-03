@@ -158,7 +158,8 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
     );
   // Set, due and collected were three guesses: one piece had two due dates and a close that said "give its due date".
   const due = `${otherPieces(lesson)}${collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan collects it.` : ''}`;
-  if (lesson.homework.kind === 'none') return `This lesson sets no homework.${due}`;
+  // "Sets no homework" beside a standing weekly paper had half the plans run the paper in class instead.
+  if (lesson.homework.kind === 'none') return `${(lesson.also ?? []).some((p) => p.kind !== 'none') ? '' : 'This lesson sets no homework.'}${due}`.trim();
   const named = toward ? `"${toward}"` : 'a graded piece';
   // The paper and the rubric are their own material: a plan that also wrote them gave the lesson two.
   if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions (or, when the summary says it is sat after the course ends, reviews for it and says when and how it is sat), and writes no questions.${due}`;
@@ -168,6 +169,22 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
   return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}" (the plan calls it by that name, not one of its own)` : ''}, ${set}${due}`;
 }
 
+/** A reading that names no work: "Journal articles by Putnam", "selected readings on the topic". */
+const VAGUE = /^(journal |selected |assorted |various |recent |key )?(articles?|papers?|readings?|essays?|selections?|excerpts?|chapters?)\b/i;
+
+/**
+ * What students read before a lesson. The brief's own readings come first; the works Folio proposed stand in
+ * when the brief gave none for the lesson, or gave only a description of them: a seminar planned from "Kim's
+ * assigned articles" never opened one, and no close ever told students what to read.
+ */
+export function readBefore(lesson: Lesson): { works: string[]; proposed: boolean } {
+  const given = lesson.readings.map((r) => r.trim()).filter(Boolean);
+  const proposed = lesson.suggestedReadings.map((r) => r.trim()).filter(Boolean);
+  const named = given.filter((r) => !(VAGUE.test(r) && !/\d{4}/.test(r)));
+  if (named.length === given.length && given.length) return { works: given, proposed: false };
+  return { works: [...named, ...proposed], proposed: proposed.length > 0 };
+}
+
 /**
  * What comes next, so the close can prepare students for it: a plan not told sent them home with "no further
  * task" before a lesson that assumed the reading, and no quiz was ever announced the lesson before.
@@ -175,7 +192,7 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
 export function nextReading(course: Course, lesson: Lesson): string {
   const next = orderedLessons(course)[course.lessonOrder.indexOf(lesson.id) + 1];
   if (!next) return '';
-  const readings = next.readings.map((r) => r.trim()).filter(Boolean);
+  const readings = readBefore(next).works;
   return [
     // Told to announce a quiz "if it holds one", nine plans in thirteen announced that none was held: the test is named only when there is one.
     next.summary.trim() ? `Next time: ${next.summary.trim()} The close tells students what to expect${next.homework.kind === 'test' ? `, and announces the test it holds${next.homework.toward.trim() ? ` ("${next.homework.toward.trim()}")` : ''}` : ''}.` : '',

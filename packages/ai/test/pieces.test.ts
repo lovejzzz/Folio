@@ -67,8 +67,26 @@ describe('a lesson that holds more than one piece of work', () => {
   it('tells the plan of every piece it holds, and of everything due', () => {
     const course = courseFromOutline(req, outline());
     const [first, , third] = orderedLessons(course);
-    expect(lessonContext(course, first!)).toMatch(/also holds, each written separately: the piece graded in class "Presentation"; the graded assignment "Seminar paper"/);
+    expect(lessonContext(course, first!)).toMatch(/also holds, each written separately: the piece graded in class "Presentation" \(run in the lesson\); the graded assignment "Seminar paper" \(set before students leave\)/);
     expect(lessonContext(course, third!)).toMatch(/Due at the start of this lesson: "Seminar paper" \(set in "Dualism"\); "Weekly response papers" \(set in "Functionalism"\); the short step \(set in "Functionalism", an ungraded step\)/);
+  });
+
+  it('keeps a standing piece out of class time, and never says a lesson with one sets no homework', () => {
+    const course = courseFromOutline(req, outline());
+    const second = orderedLessons(course)[1]!;
+    const weekly: Course = { ...course, lessons: { ...course.lessons, [second.id]: { ...second, homework: { ...second.homework, kind: 'none', toward: '' }, also: [{ kind: 'assignment', toward: 'Weekly response papers', standing: true }] } } };
+    const told = lessonContext(weekly, weekly.lessons[second.id]!);
+    expect(told).toMatch(/"Weekly response papers" \(done outside class every time/);
+    expect(told).not.toMatch(/sets no homework/);
+  });
+
+  it('plans from the works Folio proposed when the brief only describes its readings, and tells students to read them', () => {
+    const course = courseFromOutline(req, outline());
+    const [first, second] = orderedLessons(course);
+    const vague: Course = { ...course, lessons: { ...course.lessons, [second!.id]: { ...second!, readings: ['Journal articles by Putnam'], suggestedReadings: ['Putnam, H. (1967). Psychological predicates.'] } } };
+    expect(lessonContext(vague, vague.lessons[second!.id]!)).toMatch(/plan from these, naming them in full\):\n- Putnam, H\. \(1967\)/);
+    expect(lessonContext(vague, vague.lessons[second!.id]!)).not.toMatch(/Journal articles by Putnam/);
+    expect(sectionPrompt(vague, vague.lessons[first!.id]!, 'plan')).toMatch(/Before the next lesson students read: Putnam, H\. \(1967\)/);
   });
 
   it('writes each piece once, sets a standing piece again as it stands, and labels each by its component', async () => {

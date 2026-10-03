@@ -332,7 +332,9 @@ export async function generateSection(
       onText: partials(options.onProgress),
     });
     const { value, problems } = revise ? await revise(result.value) : { value: result.value, problems: [] };
-    const all = [...result.problems, ...problems];
+    // The checks are of the text that is kept: a rewritten plan carried the first draft's flags and none of its own.
+    const checked = value !== result.value && job.check ? job.check(value, course, of) : result.problems;
+    const all = [...checked, ...problems];
     return { commands: job.toCommands(typesetDraft(value, course.language), all, course, of), flagged: all.length };
   };
   const { reviewer } = options;
