@@ -1,4 +1,4 @@
-import { lessonPieces, orderedLessons, type Course, type Lesson } from '@folio/core';
+import { hasModulePages, lessonPieces, orderedLessons, type Course, type Lesson } from '@folio/core';
 import { moduleDigest, moduleSummary } from './online';
 import { otherPieces, workOf } from './workJobs';
 
@@ -138,6 +138,8 @@ export function dueWords(course: Course, lesson: Lesson): string {
   const due = lesson.homework.due ? course.lessons[lesson.homework.due] : undefined;
   const gap = due ? course.lessonOrder.indexOf(due.id) - course.lessonOrder.indexOf(lesson.id) : 0;
   if (!due || gap < 1) return '';
+  // A week's work is due on its Sunday: told "at the start of the next lesson", an online assignment gave a room course's deadline.
+  if (hasModulePages(course)) return `It is due by Sunday night ${gap === 1 ? 'of next week' : `${gap} weeks from now`}.`;
   // Said as a count, not a title: students were told to "submit it at the start of Research ethics and the IRB".
   return gap === 1 ? 'It is due at the start of the next lesson.' : `It is due at the start of the lesson ${gap} lessons after this one, the one on "${due.title}": to students that lesson is named by what it covers, never by its title or a count of lessons.`;
 }

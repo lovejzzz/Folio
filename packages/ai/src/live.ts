@@ -57,6 +57,7 @@ export function runOfShow(course: Course): string {
 /** What the other materials of a week with a live session are asked for, beside what an online week asks. */
 export const MIXED_ASKS = {
   slides: "The slides are for the week's live session and follow its run of show, segment by segment, with the same groups, tasks and minutes.",
+  quiz: 'In a week with a live session this quiz is taken once, before the session, so the instructor can see what is unclear: say so in place of "as often as they like". When the grading gives it a share, it counts by being completed on time, not by its score.',
   discussions: 'This week\u2019s forum prompt is one preparation post, due the day before the live session, with no replies: say what the post holds and that the session opens from the posts.',
 } as const;
 
@@ -76,7 +77,7 @@ export const LIVE_ASKS = {
 export function mixedAsk(course: Course): string {
   const minutes = course.online?.liveMinutes || 75;
   return [
-    `This week also has one live session of ${minutes} minutes in a video meeting. Group the checklist as before the session, in the session and after it: the checklist names the live session and what to have open for it. The parts before the session prepare for it and say so ("you will use this in the session to…"); the self-check is taken before the session, so the instructor can see what is unclear; the forum post, if any, is one preparation post due the day before the session, with no replies, and the session's opening uses the posts and the self-check's results. The last guided part before the wrap-up is "If you miss the session": the recording, and a short task that stands in for it.`,
+    `This week also has one live session of ${minutes} minutes in a video meeting. Group the checklist as before the session, in the session and after it: the checklist names the live session and what to have open for it. The parts before the session prepare for it and say so ("you will use this in the session to…"); the self-check is taken before the session, so the instructor can see what is unclear; the forum post, if any, is one preparation post due the day before the session, with no replies, and the session's opening uses the posts and the self-check's results. After the session comes work that extends it (finishing or applying what the rooms began), never only next week's reading. The last guided part before the wrap-up is "If you miss the session": the recording and that session's exit ticket, within a week, and nothing else.`,
     `Under "live", plan that session, with its segments' minutes adding up to ${minutes}. ${runOfShow(course)}`,
   ].join(' ');
 }

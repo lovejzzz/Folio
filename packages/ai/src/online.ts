@@ -206,7 +206,11 @@ export function onlineBackground(course: Course): string {
 
 /** The work a week sets, in an online course: nothing is "handed in at the start of a lesson". */
 export function onlineHomeworkLine(course: Course, lesson: Lesson): string {
-  return `${mainPiece(course, lesson)}${otherPieces(lesson)}`;
+  // What earlier weeks set and this week collects belongs in this week's checklist: untold, a log due Sunday was on no list.
+  const due = orderedLessons(course)
+    .filter((l) => l.id !== lesson.id)
+    .flatMap((l) => [l.homework, ...(l.also ?? [])].filter((p) => p.kind !== 'none' && p.due === lesson.id).map((p) => `"${p.toward.trim() || 'the assignment'}" (set in "${l.title}")`));
+  return `${mainPiece(course, lesson)}${otherPieces(lesson)}${due.length ? ` Due by Sunday night of this week from earlier weeks: ${due.join('; ')}. The checklist lists it.` : ''}`;
 }
 
 function mainPiece(course: Course, lesson: Lesson): string {
@@ -254,7 +258,7 @@ export function moduleSummary(lesson: Lesson): string {
   if (!lesson.page?.length) return '';
   const ideas = lesson.keyIdeas.map((k) => `- ${k}`).join('\n');
   // The slides and the forum prompt of a week with a live session are written from its run of show, which the page does not show.
-  const live = lesson.segments.length ? `\n\nThe week's live session, segment by segment:\n${lesson.segments.map((x) => `- ${x.title} (${x.kind}, ${x.minutes} min): ${x.description}`).join('\n')}` : '';
+  const live = lesson.segments.length ? `\n\nThe week's live session, segment by segment:\n${lesson.segments.map((x) => `- ${x.title} (${x.kind}, ${x.minutes} min): ${x.description}${x.teacherNotes ? ` [Instructor: ${x.teacherNotes}]` : ''}`).join('\n')}` : '';
   return `The week's key ideas:\n${ideas}\n\nThe week's module page, as the student reads it:\n${pageText(lesson.page)}${live}`;
 }
 

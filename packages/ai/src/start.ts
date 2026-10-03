@@ -2,6 +2,7 @@ import { cmd, lessonPieces, newId, orderedLessons, type Command, type Course, ty
 import { z } from 'zod';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
+import { isMixedOnline } from './live';
 import { courseBackground, systemPrompt } from './prompts';
 import { typesetDraft } from './typeset';
 
@@ -60,20 +61,21 @@ export function startPages(v: StartDraft, course: Course): CoursePage[] {
 /** How many graded pieces the outline sets toward each grading item: counted here, because a model miscounts fourteen weeks. */
 export function pieceCounts(course: Course): string {
   const counts = new Map<string, number>();
-  for (const lesson of orderedLessons(course)) for (const p of lessonPieces(lesson)) if (p.toward.trim() && !p.standing) counts.set(p.toward.trim(), (counts.get(p.toward.trim()) ?? 0) + 1);
+  for (const lesson of orderedLessons(course)) for (const p of lessonPieces(lesson)) if (p.toward.trim() && !p.standing && p.kind !== 'step') counts.set(p.toward.trim(), (counts.get(p.toward.trim()) ?? 0) + 1);
   if (!counts.size) return '';
   return ` Pieces set across the course: ${[...counts].map(([item, n]) => `"${item}" ${n}`).join(', ')}. Use these counts.`;
 }
 
 export function startPrompt(course: Course): string {
   const hours = course.online?.hoursPerWeek ?? 9;
+  const mixed = isMixedOnline(course);
   return [
     'Write the "Start here" page of this course: what a student reads before the first week, alone. Address the student as "you".',
-    `Under "firstSteps", what to do first, in order. Under "rhythm", how every week runs: when the week opens, the first forum post by Thursday, replies and all other work by Sunday night, about ${hours} hours in all. Under "need", everything to install or buy, each with its exact version, its cost, where it comes from and what the computer must have; take versions and names from the brief and the teacher's sources, and leave out a requirement you are not sure of rather than send the student to look for it. When the first week's page teaches the set-up, "firstSteps" and "need" say what will be needed and that week 1 walks through installing it: they do not give a second, shorter set of steps.`,
+    `Under "firstSteps", what to do first, in order. Under "rhythm", how every week runs: when the week opens, ${mixed ? `the page, the self-check and one forum post before the live session, the live session of ${course.online?.liveMinutes || 75} minutes (its day and time are the instructor's to add), and all other work by Sunday night` : 'the first forum post by Thursday, replies and all other work by Sunday night'}, about ${hours} hours in all. Under "need", everything to install or buy, each with its exact version, its cost, where it comes from and what the computer must have; take versions and names from the brief and the teacher's sources, and leave out a requirement you are not sure of rather than send the student to look for it. When the first week's page teaches the set-up, "firstSteps" and "need" say what will be needed and that week 1 walks through installing it: they do not give a second, shorter set of steps.`,
     `Under "grading", one entry for each graded component the course has, in the grading's words: what counts toward it, how many pieces there are, and how they make its share. Give only shares the grading gives.${pieceCounts(course)}`,
     'Under "help", where to ask (the course\'s Q&A forum) and what to put in a question: what you did, what you expected, what happened, the exact error text and a screenshot.',
     'Under "instructor", what the instructor does every week and how soon, as a plan for them to confirm: an announcement when the week opens, answers in the forum within one working day, feedback on submitted work within a week.',
-    'Under "toAdd", what only the instructor can supply, as a list for them alone: their name and how to reach them, office hours, each policy the course needs that the class policies do not already state (late work, what help and AI tools are allowed, academic integrity, accessibility and accommodations), and a line asking them to confirm or change the response times the student\'s page promises in their name. Never write these yourself, and never put a blank for them on the student\'s page.',
+    `Under "toAdd", what only the instructor can supply, as a list for them alone: their name and how to reach them, office hours,${mixed ? ' the day, time and time zone of the live session, its meeting link and the shared document,' : ''} each policy the course needs that the class policies do not already state (late work, what help and AI tools are allowed, academic integrity, accessibility and accommodations), and a line asking them to confirm or change the response times the student's page promises in their name. Never write these yourself, and never put a blank for them on the student's page.`,
   ].join(' ');
 }
 

@@ -338,7 +338,7 @@ function onlineAsk(course: Course, lesson: Lesson, kind: SectionPromptKind): str
   if (kind === 'faq') return ONLINE_ASKS.faq;
   if (kind === 'slides') return mixed ? `${asks.slides(course, lesson)} ${LIVE_ASKS.slides} ${MIXED_ASKS.slides}` : asks.slides(course, lesson);
   if (kind === 'assignments' && (lesson.homework.kind === 'test' || lesson.homework.kind === 'step')) return asks.assignments(course, lesson);
-  return `${asks[kind](course, lesson)} ${ONLINE_ASKS[kind]}`;
+  return `${asks[kind](course, lesson)} ${ONLINE_ASKS[kind]}${mixed && kind === 'quiz' ? ` ${MIXED_ASKS.quiz}` : ''}`;
 }
 
 /** The per-call part of a section request; the course itself goes in courseBackground. */

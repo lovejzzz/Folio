@@ -2,6 +2,7 @@ import { OnlineSchema, hasModulePages, orderedLessons, pageMinutes, textRuns, ty
 import { describe, expect, it } from 'vitest';
 import { OutlineDraft, courseBackground, courseFromOutline, generateSection, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
 import { applyModuleReview } from '../src/moduleReview';
+import { startPrompt } from '../src/start';
 import { checkRunOfShow } from '../src/live';
 import { ModuleDraft, checkModule, modulePage } from '../src/online';
 import { typesetDraft } from '../src/typeset';
@@ -207,6 +208,9 @@ describe('a course taught live online, or with a live session beside its weekly 
     expect(forum).toMatch(/one preparation post, due the day before the live session, with no replies/);
     expect(forum).not.toMatch(/two replies/);
     expect(sectionPrompt(c, lesson, 'slides')).toMatch(/follow its run of show/);
+    expect(sectionPrompt(c, lesson, 'quiz')).toMatch(/taken once, before the session/);
+    expect(startPrompt(c)).toMatch(/one forum post before the live session[\s\S]*time zone of the live session/);
+    expect(startPrompt(c)).not.toMatch(/first forum post by Thursday/);
     // A session under 90 minutes is never held to a break.
     expect(checkRunOfShow([{ kind: 'practice', title: 'Rooms', minutes: 40 }, { kind: 'discuss', title: 'Debrief', minutes: 35 }])).toEqual([]);
   });
