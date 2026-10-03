@@ -14,7 +14,8 @@ function blockView(ctx: Ctx, b: PageBlock): Block[] {
   const m = ctx.l.module;
   switch (b.type) {
     case 'heading':
-      return [{ t: 'heading', level: 3, text: b.text }];
+      // Under a part's heading, which is the document's lowest level: set as a label, so a reader can tell which is inside which.
+      return [{ t: 'para', text: `**${b.text.replace(/\*/g, '')}**` }];
     case 'text':
       return [{ t: 'para', text: b.text }];
     case 'list':
