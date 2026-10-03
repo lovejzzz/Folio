@@ -787,6 +787,206 @@
   "why": "Seen when following the page: the camera sits behind a wall taller than the Ball."
  },
  {
+  "lesson": 5,
+  "slot": 1,
+  "src": "/samples/unity/media/w05-preview.mp4",
+  "poster": "/samples/unity/media/w05-preview.poster.webp",
+  "caption": "The finished Orb Collector: eight pickups, a score that counts, and You win! at the end."
+ },
+ {
+  "lesson": 5,
+  "slot": 2,
+  "src": "/samples/unity/media/files/OrbCollector-week4-end.zip"
+ },
+ {
+  "lesson": 5,
+  "slot": 3,
+  "src": "/samples/unity/media/w05-console-clear.webp",
+  "caption": "A clear Console: nothing red or yellow."
+ },
+ {
+  "lesson": 5,
+  "slot": 4,
+  "src": "/samples/unity/media/w05-hierarchy.webp",
+  "caption": "The Arena scene once the two test pickups are deleted."
+ },
+ {
+  "lesson": 5,
+  "slot": 5,
+  "src": "/samples/unity/media/w05-aspect.webp",
+  "caption": "The aspect dropdown, third in the Game view toolbar, reading 16:9 Aspect."
+ },
+ {
+  "lesson": 5,
+  "slot": 6,
+  "src": "/samples/unity/media/w05-start.webp",
+  "caption": "The Ball at rest with the camera behind and above it."
+ },
+ {
+  "lesson": 5,
+  "slot": 7,
+  "drop": true,
+  "why": "The Color window was pictured in week 2."
+ },
+ {
+  "lesson": 5,
+  "slot": 8,
+  "src": "/samples/unity/media/w05-pickup.webp",
+  "caption": "Pickup in the Inspector: Position -4, 1, -4, Scale 0.6, and Is Trigger ticked."
+ },
+ {
+  "lesson": 5,
+  "slot": 9,
+  "drop": true,
+  "why": "The Tags list could not be pictured open."
+ },
+ {
+  "lesson": 5,
+  "slot": 10,
+  "src": "/samples/unity/media/w05-tagged.webp",
+  "caption": "The Tag dropdown now reads Pickup."
+ },
+ {
+  "lesson": 5,
+  "slot": 11,
+  "src": "/samples/unity/media/w05-through.mp4",
+  "poster": "/samples/unity/media/w05-through.poster.webp",
+  "caption": "With Is Trigger ticked, the Ball passes through the Pickup instead of bumping it."
+ },
+ {
+  "lesson": 5,
+  "slot": 12,
+  "src": "/samples/unity/media/w05-rotator.webp",
+  "caption": "Rotator (Script) on the Pickup, with Spin 45, 90, 45."
+ },
+ {
+  "lesson": 5,
+  "slot": 13,
+  "src": "/samples/unity/media/w05-spin.mp4",
+  "poster": "/samples/unity/media/w05-spin.poster.webp",
+  "caption": "The Pickup tumbling. The Ball is parked beside it so the camera has it in view."
+ },
+ {
+  "lesson": 5,
+  "slot": 15,
+  "drop": true,
+  "why": "Needs Visual Studio Code."
+ },
+ {
+  "lesson": 5,
+  "slot": 16,
+  "src": "/samples/unity/media/w05-touched.webp",
+  "caption": "Just after the touch: the Pickup is gone."
+ },
+ {
+  "lesson": 5,
+  "slot": 17,
+  "src": "/samples/unity/media/w05-touched-console.webp",
+  "caption": "The line your new method wrote."
+ },
+ {
+  "lesson": 5,
+  "slot": 18,
+  "src": "/samples/unity/media/w05-eight.webp",
+  "caption": "Pickup and its seven copies in the Hierarchy."
+ },
+ {
+  "lesson": 5,
+  "slot": 19,
+  "src": "/samples/unity/media/w05-score-fields.webp",
+  "caption": "Score 0 and Total Pickups 8 on the Ball. Three components above are folded here to save room."
+ },
+ {
+  "lesson": 5,
+  "slot": 20,
+  "src": "/samples/unity/media/w05-score-console.webp",
+  "caption": "The last lines after all eight: the score counts up, then You win!"
+ },
+ {
+  "lesson": 5,
+  "slot": 21,
+  "src": "/samples/unity/media/w05-import-anyway.webp",
+  "caption": "After you click Import TMP Essentials, Unity asks about the package: click Import Anyway."
+ },
+ {
+  "lesson": 5,
+  "slot": 22,
+  "src": "/samples/unity/media/w05-scoretext.webp",
+  "caption": "ScoreText: anchored top left, Pos X 220, Pos Y -40, Width 400, Height 60, and the text Score: 0 / 8."
+ },
+ {
+  "lesson": 5,
+  "slot": 23,
+  "src": "/samples/unity/media/w05-texts.webp",
+  "caption": "Both texts in the Game view before Play: the score at the top left, the win message in the middle."
+ },
+ {
+  "lesson": 5,
+  "slot": 24,
+  "src": "/samples/unity/media/w05-wired.webp",
+  "caption": "Score Text and Win Text filled in on the Ball."
+ },
+ {
+  "lesson": 5,
+  "slot": 25,
+  "src": "/samples/unity/media/w05-collect.mp4",
+  "poster": "/samples/unity/media/w05-collect.poster.webp",
+  "caption": "All eight pickups in one run."
+ },
+ {
+  "lesson": 5,
+  "slot": 26,
+  "src": "/samples/unity/media/w05-saved.webp",
+  "caption": "Saved: no asterisk after Arena, and an empty Console."
+ },
+ {
+  "lesson": 5,
+  "slot": 27,
+  "src": "/samples/unity/media/files/OrbCollector-week5-end.zip"
+ },
+ {
+  "lesson": 5,
+  "slot": 28,
+  "src": "/samples/unity/media/w05-win.webp",
+  "caption": "Score: 8 / 8 and You win!"
+ },
+ {
+  "lesson": 5,
+  "find": "SampleScene",
+  "replace": "Arena",
+  "why": "The scene has been called Arena since week 2.",
+  "all": true
+ },
+ {
+  "lesson": 5,
+  "find": "0, 1, -4",
+  "replace": "0, 1, 6",
+  "why": "At 0, 1, -4 the pickup sits hidden under the Ramp."
+ },
+ {
+  "lesson": 5,
+  "find": "-2, 1, -2",
+  "replace": "-7, 1, -7",
+  "why": "At -2, 1, -2 the pickup pokes through the Ramp."
+ },
+ {
+  "lesson": 5,
+  "find": "wait for it to finish, and close the window. This happens once per project.",
+  "replace": "then click **Import Anyway** in the box titled Unofficial Unity source that follows (the package comes with Unity itself). Wait for it to finish and close the TMP Importer window. This happens once per project. If the Console shows a red line or two about layout straight after, click **Clear**: they do not come back.",
+  "why": "Seen in 6000.6.4: the import asks for confirmation and leaves two harmless layout errors."
+ },
+ {
+  "lesson": 5,
+  "find": "click Maximize On Play in the Game view toolbar",
+  "replace": "open the Play Focused dropdown in the Game view toolbar and choose Play Maximized",
+  "why": "The control as 6000.6 names it."
+ },
+ {
+  "lesson": 5,
+  "settle": "*",
+  "why": "The page was followed in Unity with the keys driven as a player would."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
