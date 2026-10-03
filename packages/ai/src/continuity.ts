@@ -166,7 +166,8 @@ export function nextReading(course: Course, lesson: Lesson): string {
   if (!next) return '';
   const readings = next.readings.map((r) => r.trim()).filter(Boolean);
   return [
-    next.summary.trim() ? `Next time: ${next.summary.trim()} The close tells students what to expect, and announces a quiz or test only if it holds one.` : '',
+    // Told to announce a quiz "if it holds one", nine plans in thirteen announced that none was held: the test is named only when there is one.
+    next.summary.trim() ? `Next time: ${next.summary.trim()} The close tells students what to expect${next.homework.kind === 'test' ? `, and announces the test it holds${next.homework.toward.trim() ? ` ("${next.homework.toward.trim()}")` : ''}` : ''}.` : '',
     readings.length ? `Before the next lesson students read: ${readings.join('; ')}. The plan tells them so before they leave.` : '',
   ]
     .filter(Boolean)
