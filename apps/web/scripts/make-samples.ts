@@ -260,7 +260,11 @@ async function build(name: string, store: CourseStore, targets: BuildTarget[], f
     inference,
     reviewer: inference,
     getCourse: store.getState,
-    commit: (_target, commands) => store.apply(commands, { label: { key: 'built' }, source: 'ai', undoable: false }),
+    commit: (_target, commands) => {
+      store.apply(commands, { label: { key: 'built' }, source: 'ai', undoable: false });
+      // Kept as it grows: a long course cut short is carried on with --polish, not started again.
+      writeFileSync(join(OUT, `${name}.json`), JSON.stringify({ ...store.getState(), status: 'building' }));
+    },
     onEvent: (event) => void (event.type === 'error' && failed.push(`${event.target.kind}: ${event.error.message}`)),
     signal: new AbortController().signal,
   };
