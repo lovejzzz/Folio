@@ -1,5 +1,5 @@
 import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
-import { earlierLessons, earlierNotes, earlierSteps, sharedComponent } from './continuity';
+import { earlierLessons, earlierNotes, earlierSteps, homeworkLine, sharedComponent } from './continuity';
 import { trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 
@@ -128,7 +128,7 @@ export function isHigherEducation(level: string): boolean {
 }
 
 const UNIVERSITY_TEACHING =
-  'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. A seminar runs on discussion of the reading: keep the tutor\'s exposition short and let students lead. Leave out school routines such as warm-up games, exit tickets or written responses collected at the end, or reading aloud in turn.';
+  'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. A seminar runs on discussion of the reading: keep the instructor\'s exposition short and let students lead. Leave out school routines such as warm-up games, exit tickets or reading aloud in turn, unless the brief or syllabus asks for them.';
 
 /**
  * The teacher's own words. Sections otherwise see only what the outline kept,
@@ -189,8 +189,9 @@ export function lessonContext(course: Course, lesson: Lesson): string {
   return [
     // No number: given one, models write "lesson 3" into the materials. The background lists the order; given
     // only that, they quoted other lessons' titles at students instead.
-    `This is the lesson "${lesson.title}". ${lesson.summary} Refer to other lessons as "last time", "next time" or "later in the unit", never by title or number.`,
+    `This is the lesson "${lesson.title}". ${lesson.summary} Refer to other lessons as "last time" (only the lesson just before), "earlier in the unit", "next time" or "later in the unit", never by title or number.`,
     objectives ? `Its objectives:\n${objectives}` : '',
+    homeworkLine(lesson),
     readings ? `Students read before this lesson:\n${readings}` : '',
   ]
     .filter(Boolean)
@@ -211,8 +212,14 @@ function planSummary(lesson: Lesson): string {
 }
 
 /** What a material built on the plan owes it: the plan is what the teacher has read and agreed to. */
-const FOLLOW_PLAN =
-  'Use the same examples, data and figures as the plan. Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception.';
+const FOLLOW_REST =
+  'Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception. When the lesson holds a graded test or exam, no material students see beforehand repeats its questions or gives their answers.';
+const FOLLOW_PLAN = `Use the same examples, data and figures as the plan. ${FOLLOW_REST}`;
+/**
+ * Work students do on their own is not the class practice copied out: told to use the plan's examples, graded
+ * problem sets repeated the worked examples, numbers and all, with the answers in the study guide.
+ */
+const FOLLOW_PLAN_NEW_ITEMS = `Keep the plan's facts, data, methods and terms, but give students new items to work: other numbers or cases than the plan's worked examples and class practice, so the work can't be copied from the lesson. ${FOLLOW_REST}`;
 
 /**
  * One scale for every rubric in a course. Each assignment is written on its
@@ -227,7 +234,7 @@ function scaleLine(course: Course): string {
   if (!rubricked && !Object.keys(course.rubrics).length) return '';
   const existing = Object.values(course.rubrics).find((r) => r.levels.length >= 3);
   const names = existing ? existing.levels.map((l) => `"${l.label}"`).join(', ') : isHigherEducation(course.audience.level) ? '' : '"Excellent", "Good", "Developing" and "Beginning"';
-  return names ? `The course's rubrics score work as ${names}; a plan that shows students how work is scored uses those levels.` : '';
+  return names ? `The course's rubrics score work as ${names}; a plan that shows students how such work is scored uses those levels. Tests and exams are marked in points, not by these levels.` : '';
 }
 
 function rubricLevels(course: Course): string {
@@ -256,23 +263,25 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
     [
       `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need. Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
       'Plan only what can really happen in the time, place and with the materials the lesson has. Whatever students are to see, make or finish in a segment has to be possible within that segment\'s minutes; when something takes longer, such as a process that needs hours or days to show a result, plan around it (start it earlier, use results prepared in advance, or come back to it later) and say how in the teacher notes. The slides, quiz and study guide are written from this plan and take everything in it as having happened.',
-      'In the teacher notes, give the safety precautions a careful teacher would take with what students handle, taste, heat or cut, such as allergies or materials that must never be eaten.',
+      'In the teacher notes, give the safety precautions a careful teacher would take with what students handle, taste, heat, cut or mix (protective gear, ventilation, heat a reaction gives off, disposal, allergies, materials that must never be eaten); these are outside the word limit of the notes. Where the material is painful (violence, racism, abuse, the language of period sources), say how to handle it with care, and never have students play the people who suffered or inflicted it.',
+      'A graded test or exam in the lesson asks about new cases, not the examples the course taught with, covers what the lessons before it taught, and has its questions, answers and points written out in the notes, however long. Nothing in these instructions is repeated in the plan as advice to the teacher.',
+      'A text students read that is not among the teacher\'s sources is named exactly (author, title, and section or date), so the teacher can find it, with a note to prepare copies; never just "an excerpt".',
       'When a segment uses another of the lesson\'s materials, such as the quiz, the slides or the assignment, say what students do with it, not what its questions or items will be: those are written separately, from this plan.',
       'When a segment gives students a set of items to work on that no other material holds, such as statements to sort, scenarios to classify, cases to match or data to read, write every item out in the teacher notes, one per line with its expected answer, however many there are; the word limit is for the rest of the notes. Keep such a set to what fits the minutes, usually four to six items. Never describe items that are left for the teacher to write.',
     ].join(' '),
   slides: (c) =>
-    ['Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes. Slides shown while students take a test or assessment give its instructions only, never what it assesses.', slidesFor(c)].filter(Boolean).join(' '),
+    ['Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes. When the plan has students work from items "on the slide", the slide shows every item in full, even past the bullet limits. A slide shown while students work on a task, quiz or assessment gives its instructions and prompt, never the answers: those come on a later slide or in the notes.', slidesFor(c)].filter(Boolean).join(' '),
   study: () =>
     'Write a study guide for students to read after the lesson: a short overview, then two to four key points, each with a heading and a clear explanation that includes an example.',
   quiz: (c, lesson) =>
-    `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer and true/false questions where they fit, and numeric ones only when the lesson itself involves calculation. For a choice question, "answer" repeats the correct choice exactly. For a true/false question, "choices" is ["True", "False"] and "answer" is "True" or "False", never the statement. Make every wrong choice an answer a student at this level might really give: a common misconception about this content, a half-right idea, or a mix-up with a nearby idea from the course. A wrong choice students would dismiss at a glance tests nothing. Each must still be clearly wrong to an expert; if a teacher could argue for it, rewrite it. Then keep the choices even: about the same length and the same kind of detail, so the right one can't be spotted by its length. Get there by writing the right answer plainly and briefly, never by padding wrong choices with causes, mechanisms or facts invented to fill them out. Never refer to a choice by its letter or position. Where a question practises a skill, use new numbers or cases, not the plan's worked examples, so it can't be answered from memory of the lesson; facts and data the plan gives stay as the plan has them. Students see no pictures: a number line, graph or diagram a question needs is described fully in words, or the question is asked another way. Write a true/false question as a plain statement, without "True or false:" in front. ${trueFalseOrder(c, lesson)} Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression". Where a calculation has competing conventions (quartiles, percentiles, rounding), say in the question which method to use, so only one answer is right.`,
+    `Write exactly ${c.shape.quizSize} quiz questions that assess this lesson's objectives. Mix formats: mostly multiple choice with four choices and one clearly correct answer, plus short-answer and true/false questions where they fit, and numeric ones only when the lesson itself involves calculation. For a choice question, "answer" repeats the correct choice exactly. For a true/false question, "choices" is ["True", "False"] and "answer" is "True" or "False", never the statement. Make every wrong choice an answer a student at this level might really give: a common misconception about this content, a half-right idea, or a mix-up with a nearby idea from the course. A wrong choice students would dismiss at a glance tests nothing. Each must still be clearly wrong to an expert; if a teacher could argue for it, rewrite it. Then keep the choices even: about the same length and the same kind of detail, so the right one can't be spotted by its length. Get there by writing the right answer plainly and briefly, never by padding wrong choices with causes, mechanisms or facts invented to fill them out. Never refer to a choice by its letter or position. Students see no pictures: a number line, graph or diagram a question needs is described fully in words, or the question is asked another way. Write a true/false question as a plain statement, without "True or false:" in front. ${trueFalseOrder(c, lesson)} Spread the difficulty: mostly 2, with some 1 and at least one 3. For numeric answers, give the calculation in "expression". Where a calculation has competing conventions (quartiles, percentiles, rounding), say in the question which method to use, so only one answer is right.`,
   assignments: (c, lesson) => {
     const toward = lesson.homework.toward.trim();
     if (lesson.homework.kind === 'step')
       return `Write one short, ungraded step toward ${toward ? `"${toward}"` : 'the larger graded piece the course builds to'}, suited to where this lesson falls in the course: for example choosing a question, gathering evidence, an outline or a draft section. It should take students well under an hour, and be done at home: nothing in it needs a partner, a classmate or the classroom's materials, and young children can do it with someone at home. Give a title, what to do, and one to four steps (the page numbers them, so leave numbers out). ${earlierSteps(c, lesson)}`.trim();
     return [
       toward
-        ? `Write the assignment "${toward}" as the brief describes it, with its length and requirements, set in this lesson and drawing on the course so far: two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.`
+        ? `Write the assignment "${toward}" as the brief describes it, with its length and requirements, set in this lesson and drawing on the course so far; it is a piece of the whole course, so its topic and criteria come from the brief, not from this one lesson's topic: two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.`
         : 'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
       sharedComponent(c, lesson),
       rubricLevels(c),
@@ -315,7 +324,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
   if (BUILT_ON_PLAN.has(kind)) {
     const plan = planSummary(lesson);
     // Each job invents what the sources don't give; without the plan, a quiz and a plan gave one coefficient two standard errors.
-    if (plan) parts.push(`${plan}\n\n${FOLLOW_PLAN}`);
+    if (plan) parts.push(`${plan}\n\n${kind === 'quiz' || kind === 'assignments' ? FOLLOW_PLAN_NEW_ITEMS : FOLLOW_PLAN}`);
   }
   if (kind === 'plan') parts.push(earlierLessons(course, lesson), earlierNotes(lesson));
   if ((kind === 'plan' || kind === 'quiz') && course.sourceOrder.length) {

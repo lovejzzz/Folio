@@ -147,7 +147,7 @@ describe('steps toward one larger piece', () => {
     const targets = missingTargets(store.getState()).filter((t) => t.kind === 'plan' || t.kind === 'assignments');
     await runBuild({ inference: inf, getCourse: store.getState, commit: (_t, c) => store.apply(c, { label: { key: 'b' }, source: 'ai', undoable: false }), signal: new AbortController().signal }, targets);
     expect(asked[0]).not.toContain('already set these steps');
-    expect(asked[1]).toContain('already set these steps toward it: \\"Step 1\\"');
+    expect(asked[1]).toContain('already set these steps toward it:\\n- \\"Step 1\\": Do the next thing.');
   });
 });
 

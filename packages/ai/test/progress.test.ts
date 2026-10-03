@@ -27,6 +27,30 @@ describe('a section taking shape', () => {
     expect(seen.slice(-2)).toEqual([{ type: 'checking' }, { type: 'reviewed', fixes: ['Say which atoms to balance.'], notes: 0 }]);
   });
 
+  const note = (why: string) => ({ part: 'segment', number: 1, field: 'description', kind: 'feasibility', why, find: '', replace: '' });
+
+  it('is written once more when its review leaves notes, told what they are, and kept if it comes back cleaner', async () => {
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const writer = fakeInference((_req, call) => (call === 1 ? planDraft : { ...planDraft, keyIdeas: ['Rewritten', 'Plants make sugar from light'] }));
+    const reviewer = fakeInference((_req, call) => ({ issues: call === 1 ? [note('The leaves need a week in the dark first.')] : [] }));
+    const result = await generateSection(writer, course, lesson.id, 'plan', undefined, { reviewer });
+    expect(writer.calls).toHaveLength(2);
+    expect(writer.calls[1]!.prompt).toContain('The leaves need a week in the dark first.');
+    expect(result.flagged).toBe(0);
+    expect(JSON.stringify(result.commands)).toContain('Rewritten');
+  });
+
+  it('keeps the first plan when the rewrite does no better', async () => {
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const writer = fakeInference((_req, call) => (call === 1 ? planDraft : { ...planDraft, keyIdeas: ['Rewritten', 'Plants make sugar from light'] }));
+    const reviewer = fakeInference(() => ({ issues: [note('Still not possible in the time.')] }));
+    const result = await generateSection(writer, course, lesson.id, 'plan', undefined, { reviewer });
+    expect(result.flagged).toBe(1);
+    expect(JSON.stringify(result.commands)).not.toContain('Rewritten');
+  });
+
   it('is not asked to stream when nobody is watching', async () => {
     const course = smallCourse();
     const writer = streaming({ slides: [{ layout: 'title', title: 'T', bullets: [], notes: '' }] });

@@ -293,19 +293,36 @@ function partials(onProgress: ((progress: SectionProgress) => void) | undefined)
 /** A revision of a section before it is saved, with any problems it leaves for the teacher. */
 type Revision<T> = (value: T) => Promise<{ value: T; problems: Problem[] }>;
 
+type ReviewNote = Extract<Flag, { code: 'reviewNote' }>;
+/** Writes the plan again, told what its review found. */
+type Rewrite = (notes: ReviewNote[]) => Promise<PlanDraft>;
+
 /**
  * The plan after its review, with what the review could not fix as notes for the teacher; or the plan as
  * written if the review can't be had: a failed second read must never cost the teacher the first. Stopping
  * still stops.
+ *
+ * Notes the review can't fix in a few words used to stay as notes while the slides, quiz and guide were built
+ * on the flawed plan and repeated it. So a plan left with notes is written once more, told what they are, and
+ * read again; the version with fewer notes is kept, so the rewrite can only help.
  */
-async function reviewed(reviewer: Inference, course: Course, lesson: Lesson, draft: PlanDraft, options: SectionOptions, signal?: AbortSignal): Promise<{ value: PlanDraft; problems: Problem[] }> {
+async function reviewed(reviewer: Inference, course: Course, lesson: Lesson, draft: PlanDraft, options: SectionOptions, signal?: AbortSignal, rewrite?: Rewrite): Promise<{ value: PlanDraft; problems: Problem[] }> {
+  const stopped = (error: unknown) => error instanceof InferenceError && error.kind === 'aborted';
+  const flags = (plan: PlanDraft, notes: Awaited<ReturnType<typeof reviewPlan>>['notes']): ReviewNote[] =>
+    notes.map((n) => ({ code: 'reviewNote', values: { where: issuePlace(plan, n), text: n.why } }));
   try {
     options.onProgress?.({ type: 'checking' });
-    const { plan, issues, notes } = await reviewPlan(reviewer, course, lesson, draft, { signal });
-    options.onProgress?.({ type: 'reviewed', fixes: issues.map((i) => i.why), notes: notes.length });
-    return { value: plan, problems: notes.map((n) => ({ index: null, flag: { code: 'reviewNote', values: { where: issuePlace(plan, n), text: n.why } } })) };
+    let read = await reviewPlan(reviewer, course, lesson, draft, { signal });
+    if (read.notes.length && rewrite) {
+      const again = await rewrite(flags(read.plan, read.notes))
+        .then((plan) => reviewPlan(reviewer, course, lesson, plan, { signal }))
+        .catch((error: unknown) => (stopped(error) ? Promise.reject(error) : null));
+      if (again && again.notes.length < read.notes.length) read = again;
+    }
+    options.onProgress?.({ type: 'reviewed', fixes: read.issues.map((i) => i.why), notes: read.notes.length });
+    return { value: read.plan, problems: flags(read.plan, read.notes).map((flag) => ({ index: null, flag })) };
   } catch (error) {
-    if (error instanceof InferenceError && error.kind === 'aborted') throw error;
+    if (stopped(error)) throw error;
     // Kept as written, and marked: the teacher must know this plan had no second read.
     return { value: draft, problems: [{ index: null, flag: { code: 'unreviewed' } }] };
   }
@@ -340,9 +357,15 @@ export async function generateSection(
     return { commands: job.toCommands(typesetDraft(value, course.language), all, course, lesson), flagged: all.length };
   };
   const { reviewer } = options;
+  // The plan once more, for a review that left notes: the same request, with the notes in it.
+  const rewrite: Rewrite = async (notes) => {
+    const noted = { ...lesson, gen: { ...lesson.gen, plan: { basis: {}, at: '', edited: false, ...lesson.gen.plan, flags: notes } } };
+    const spec = { task: 'folio_plan', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: sectionPrompt(course, noted, 'plan'), effort: SECTION_EFFORT.plan, schema: plan.schema, signal };
+    return (await runJob(inference, { ...spec, tidy: plan.tidy ? (v) => plan.tidy!(v, course, lesson) : undefined, check: plan.check ? (v) => plan.check!(v, course, lesson) : undefined })).value;
+  };
   switch (kind) {
     case 'plan':
-      return run(plan, reviewer ? (draft) => reviewed(reviewer, course, lesson, draft, options, signal) : undefined);
+      return run(plan, reviewer ? (draft) => reviewed(reviewer, course, lesson, draft, options, signal, rewrite) : undefined);
     case 'slides':
       return run(slides);
     case 'study':

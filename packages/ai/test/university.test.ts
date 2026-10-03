@@ -53,12 +53,13 @@ describe('every course', () => {
     expect(s).toMatch(/never LaTeX/);
   });
 
-  it('writes the quiz and the assignment from the lesson plan, with its figures', () => {
+  it('writes the quiz and the assignment from the lesson plan: its facts, with new items to work', () => {
     const c = smallCourse();
     const lesson = orderedLessons(c).find((l) => l.segments.length) ?? orderedLessons(c)[0]!;
     const withPlan = { ...lesson, keyIdeas: ['The mean is 7.2'], segments: [{ id: 'x1', session: 0, kind: 'teach' as const, title: 'Worked example', minutes: 10, description: 'Mean of 4, 9, 8 is 7', teacherNotes: '' }] };
     for (const kind of ['quiz', 'assignments'] as const) {
-      expect(sectionPrompt(c, withPlan, kind)).toMatch(/Mean of 4, 9, 8 is 7[\s\S]*same examples, data and figures/);
+      expect(sectionPrompt(c, withPlan, kind)).toMatch(/Mean of 4, 9, 8 is 7[\s\S]*Keep the plan's facts, data, methods and terms, but give students new items/);
     }
+    expect(sectionPrompt(c, withPlan, 'slides')).toMatch(/Mean of 4, 9, 8 is 7[\s\S]*same examples, data and figures/);
   });
 });
