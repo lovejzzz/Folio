@@ -21,6 +21,7 @@ import {
 } from '@folio/core';
 import { InferenceError, type Inference } from './inference';
 import { parsePartialJson } from './partial';
+import { newVocabulary } from './continuity';
 import { issuePlace, reviewPlan } from './review';
 import { runJob, type JobSpec, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
@@ -76,7 +77,7 @@ function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flags:
 
 const plan: SectionJob<PlanDraft> = {
   schema: PlanDraft,
-  tidy: (v, course, lesson) => tidyLessonNames(tidyPlanSources(v), course, lesson),
+  tidy: (v, course, lesson) => newVocabulary(tidyLessonNames(tidyPlanSources(v), course, lesson), course, lesson),
   check: (v, course) =>
     checkSessionMinutes(
       v.segments.map((s) => ({ session: s.session - 1, minutes: s.minutes })),

@@ -42,6 +42,19 @@ export function earlierLessons(course: Course, lesson: Lesson): string {
 }
 
 /**
+ * A lesson lists the vocabulary it introduces. Asked for that, plans still listed terms again, and the review
+ * spent its notes on them: terms the lessons before this one list are dropped here instead.
+ */
+export function newVocabulary<T extends { vocabulary: { term: string }[] }>(plan: T, course: Course, lesson: Lesson): T {
+  const known = new Set(
+    orderedLessons(course)
+      .slice(0, Math.max(0, course.lessonOrder.indexOf(lesson.id)))
+      .flatMap((l) => l.vocabulary.map((v) => v.term.trim().toLowerCase())),
+  );
+  return { ...plan, vocabulary: plan.vocabulary.filter((v) => !known.has(v.term.trim().toLowerCase())) };
+}
+
+/**
  * The steps toward a larger piece, lesson by lesson, are one path: written each on its own, three lessons of a
  * course set the same step, "Choose a study for your research summary".
  */

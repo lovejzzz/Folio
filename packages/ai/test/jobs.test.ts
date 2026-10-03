@@ -229,6 +229,8 @@ describe('runBuild', () => {
     expect(plans[1]).toContain('The lessons before this one');
     expect(plans[1]).toContain('Terms: Chlorophyll');
     expect(plans[1]).toContain('(Notes: Balance it together.)');
+    // The second lesson's plan offered the same term again: listed once, where it was introduced.
+    expect(orderedLessons(store.getState()).map((l) => l.vocabulary.map((v) => v.term))).toEqual([['Chlorophyll'], []]);
   });
 
   it('stops everything on an auth error', async () => {
