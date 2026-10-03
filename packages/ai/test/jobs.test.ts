@@ -205,7 +205,7 @@ describe('a piece graded in class over two lessons', () => {
     const [a, b] = [first!, second!].map((l) => c.tasks[c.lessons[l.id]!.taskIds.at(-1)!]!);
     const told = (t: typeof a) => (t?.kind === 'assignment' ? [t.title, t.steps, t.answerKey] : null);
     expect(told(b)).toEqual(told(a));
-    const rubrics = [a, b].map((t) => (t!.kind === 'assignment' ? c.rubrics[t.rubricId!]! : null));
+    const rubrics = [a, b].map((t) => (t?.kind === "assignment" ? c.rubrics[t.rubricId!]! : null));
     expect(rubrics[0]!.id).not.toBe(rubrics[1]!.id);
     expect(rubrics[1]!.criteria.map((k) => Object.values(k.descriptors))).toEqual(rubrics[0]!.criteria.map((k) => Object.values(k.descriptors)));
   });
