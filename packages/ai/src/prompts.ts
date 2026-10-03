@@ -1,5 +1,6 @@
 import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
-import { earlierLessons, sharedComponent } from './continuity';
+import { earlierLessons, earlierNotes, sharedComponent } from './continuity';
+import { trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 
 /**
@@ -140,7 +141,9 @@ function gradingLine(course: Course): string {
   const items = course.grading.map((g) => (g.weight ? `${g.item} (${g.weight}%)` : g.item)).join(', ');
   return [
     items ? `The course is graded by: ${items}.` : '',
-    'Anything the brief or the grading has happen in class, such as a student presentation, a debate or a test, needs a place in the lesson plans; work that prepares for a graded component says which one. State a weight or a mark only as the grading gives it; never infer one.',
+    // Told that every piece of work "says which one", a course named its final assessment in a dozen materials.
+    'Anything the brief or the grading has happen in class, such as a student presentation, a debate or a test, needs a place in the lesson plans; an assignment that prepares for a graded component says which one, and other materials need not. State a weight or a mark only as the grading gives it; never infer one.',
+    scaleLine(course),
   ]
     .filter(Boolean)
     .join(' ');
@@ -180,8 +183,9 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     .map((r) => `- ${r}`)
     .join('\n');
   return [
-    // No number: given one, models write "lesson 3" into the materials. The background lists the order.
-    `This is the lesson "${lesson.title}". ${lesson.summary}`,
+    // No number: given one, models write "lesson 3" into the materials. The background lists the order; given
+    // only that, they quoted other lessons' titles at students instead.
+    `This is the lesson "${lesson.title}". ${lesson.summary} Refer to other lessons as "last time", "next time" or "later in the unit", never by title or number.`,
     objectives ? `Its objectives:\n${objectives}` : '',
     readings ? `Students read before this lesson:\n${readings}` : '',
   ]
@@ -207,37 +211,18 @@ const FOLLOW_PLAN =
   'Use the same examples, data and figures as the plan. Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception.';
 
 /**
- * Asked to "make about half true", models swing to all false or all true. So
- * Folio sets the order: alternating within a quiz, and starting true in odd
- * lessons and false in even ones. A quiz often has a single true/false
- * question, so starting by a hash of the lesson id could make every answer
- * in a course "true" (it did, in a live run); by position it comes out even.
- */
-function trueFalseOrder(course: Course, lesson: Lesson): string {
-  const startTrue = course.lessonOrder.indexOf(lesson.id) % 2 === 0;
-  const [first, second] = startTrue ? ['true', 'false'] : ['false', 'true'];
-  return `If you include true/false questions, make the first statement ${first}, the second ${second}, and keep alternating.`;
-}
-
-/**
- * Lecturers mark on their institution's scale, not "Excellent … Beginning, 4 … 1".
- * The levels take the local grade bands, each worth the lowest mark of its band.
- */
-function universityRubric(locale: string): string {
-  const bands = /^en-(GB|IE)$/i.test(locale)
-    ? 'the UK degree classes, exactly "First", "Upper second", "Lower second" and "Third", with 70, 60, 50 and 40 as the points'
-    : /^en-(US|CA)$/i.test(locale)
-      ? 'letter grades, exactly "A", "B", "C" and "D", with 90, 80, 70 and 60 as the points'
-      : 'the grade bands used where the course is taught, each level worth the lowest mark of its band';
-  return `Name the rubric levels after ${bands}. Write each descriptor as a marker would, for work at that band.`;
-}
-
-/**
  * One scale for every rubric in a course. Each assignment is written on its
  * own, and a history course came back with four scales in four lessons. A
  * course that has a rubric already passes its levels on, so a teacher's
  * renamed levels carry to the next assignment.
  */
+/** The names of the levels the course's rubrics use, so a plan that shows students the scoring uses them too. */
+function scaleLine(course: Course): string {
+  const existing = Object.values(course.rubrics).find((r) => r.levels.length >= 3);
+  const names = existing ? existing.levels.map((l) => `"${l.label}"`).join(', ') : isHigherEducation(course.audience.level) ? '' : '"Excellent", "Good", "Developing" and "Beginning"';
+  return names ? `The course's rubrics score work as ${names}; a plan that shows students how work is scored uses those levels.` : '';
+}
+
 function rubricLevels(course: Course): string {
   const existing = Object.values(course.rubrics).find((r) => r.levels.length >= 3);
   if (existing) {
@@ -264,11 +249,12 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
     [
       `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need. Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
       'Plan only what can really happen in the time, place and with the materials the lesson has. Whatever students are to see, make or finish in a segment has to be possible within that segment\'s minutes; when something takes longer, such as a process that needs hours or days to show a result, plan around it (start it earlier, use results prepared in advance, or come back to it later) and say how in the teacher notes. The slides, quiz and study guide are written from this plan and take everything in it as having happened.',
+      'In the teacher notes, give the safety precautions a careful teacher would take with what students handle, taste, heat or cut, such as allergies or materials that must never be eaten.',
       'When a segment uses another of the lesson\'s materials, such as the quiz, the slides or the assignment, say what students do with it, not what its questions or items will be: those are written separately, from this plan.',
       'When a segment gives students a set of items to work on that no other material holds, such as statements to sort, scenarios to classify, cases to match or data to read, write every item out in the teacher notes, one per line with its expected answer, however many there are; the word limit is for the rest of the notes. Keep such a set to what fits the minutes, usually four to six items. Never describe items that are left for the teacher to write.',
     ].join(' '),
   slides: (c) =>
-    ['Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes.', slidesFor(c)].filter(Boolean).join(' '),
+    ['Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes. Slides shown while students take a test or assessment give its instructions only, never what it assesses.', slidesFor(c)].filter(Boolean).join(' '),
   study: () =>
     'Write a study guide for students to read after the lesson: a short overview, then two to four key points, each with a heading and a clear explanation that includes an example.',
   quiz: (c, lesson) =>
@@ -276,7 +262,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
   assignments: (c, lesson) => {
     const toward = lesson.homework.toward.trim();
     if (lesson.homework.kind === 'step')
-      return `Write one short, ungraded step toward ${toward ? `"${toward}"` : 'the larger graded piece the course builds to'}, suited to where this lesson falls in the course: for example choosing a question, gathering evidence, an outline or a draft section. It should take students well under an hour. Give a title, what to do, and one to four steps (the page numbers them, so leave numbers out).`;
+      return `Write one short, ungraded step toward ${toward ? `"${toward}"` : 'the larger graded piece the course builds to'}, suited to where this lesson falls in the course: for example choosing a question, gathering evidence, an outline or a draft section. It should take students well under an hour, and be done at home: nothing in it needs a partner, a classmate or the classroom's materials, and young children can do it with someone at home. Give a title, what to do, and one to four steps (the page numbers them, so leave numbers out).`;
     return [
       toward
         ? `Write the assignment "${toward}" as the brief describes it, with its length and requirements, set in this lesson and drawing on the course so far: two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.`
@@ -324,7 +310,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     // Each job invents what the sources don't give; without the plan, a quiz and a plan gave one coefficient two standard errors.
     if (plan) parts.push(`${plan}\n\n${FOLLOW_PLAN}`);
   }
-  if (kind === 'plan') parts.push(earlierLessons(course, lesson));
+  if (kind === 'plan') parts.push(earlierLessons(course, lesson), earlierNotes(lesson));
   if ((kind === 'plan' || kind === 'quiz') && course.sourceOrder.length) {
     parts.push(
       kind === 'quiz'

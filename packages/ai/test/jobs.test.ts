@@ -94,6 +94,16 @@ describe('a graded piece set in several lessons', () => {
   });
 });
 
+describe('a plan written again after its review', () => {
+  it('is told what the review found in the version before', () => {
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    expect(sectionPrompt(course, lesson, 'plan')).not.toContain('previous version');
+    const flagged = { ...lesson, gen: { ...lesson.gen, plan: { basis: {}, at: '', edited: false, flags: [{ code: 'reviewNote' as const, values: { where: 'Segment 2', text: 'The sum is 12, not 14.' } }] } } };
+    expect(sectionPrompt(course, flagged, 'plan')).toContain('- Segment 2: The sum is 12, not 14.');
+  });
+});
+
 describe('homework changed mid-build', () => {
   it('writes no assignment for a lesson set to no homework after the build began', async () => {
     const store = new CourseStore(smallCourse());

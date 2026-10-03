@@ -73,7 +73,9 @@ export function planReviewPrompt(course: Course, lesson: Lesson, plan: PlanDraft
       'For each problem, say under "why" what is wrong, briefly, for the teacher. When a small change to a few words fixes it and you are sure of the fix, copy under "find" the exact words that are wrong, character for character and enough of them to appear only once in that field, and give under "replace" what should stand in their place; to add a missing step, find the sentence it belongs after and replace it with that sentence followed by the new one. When the fix needs the teacher\'s judgment or a larger change, leave "find" and "replace" empty: the teacher will see your note.',
       // Without this line a reviewer lists precision that only matters beyond the students' level: nearly half its findings.
       'Judge accuracy at the level these students are taught: a simplification that the usual textbooks for this level make, and that is not wrong for these students, is not a problem; do not add precision, qualifications or exceptions that only matter beyond this level.',
-      'Do not list style preferences, activities you would add, or timing you would change. Return an empty list if the plan is sound.',
+      // The rubric, quiz and slides a plan mentions are written after it, from it: a reviewer not told so asked for them in most plans.
+      'The course\'s other materials (the slides, quiz, assignment and its rubric, study guide and discussion questions) are written separately, from this plan: a plan that uses one need not contain it, so do not list it as missing.',
+      'Do not list style preferences, activities you would add, or timing you would change, and give no links. Return an empty list if the plan is sound.',
     ].join(' '),
   ]
     .filter(Boolean)

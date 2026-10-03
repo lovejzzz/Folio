@@ -29,7 +29,7 @@ export function earlierLessons(course: Course, lesson: Lesson): string {
     used += digest.length;
   }
   if (!kept.length) return '';
-  return `The lessons before this one, as already planned:\n${kept.join('\n\n')}\n\nThis lesson follows them: use the same names, terms, stages, examples and classroom setups, build on what they taught rather than teaching it again differently, and when something they started goes on in this lesson (an experiment, a project, a class chart), continue it as they set it up. Under vocabulary, list only the terms this lesson introduces: the terms above are already taught, and when this lesson uses them it keeps their meaning.`;
+  return `The lessons before this one, as already planned:\n${kept.join('\n\n')}\n\nThis lesson follows them: use the same names, terms, stages, examples and classroom setups, build on what they taught rather than teaching it again differently or presenting it as new, and when something they started goes on in this lesson (an experiment, a project, a class chart), continue it as they set it up, on a realistic timeline for how often the class meets (seeds take days to sprout, paint hours to dry). Under vocabulary, list only the terms this lesson introduces: the terms above are already taught, and when this lesson uses them it keeps their meaning.`;
 }
 
 /**
@@ -43,4 +43,14 @@ export function sharedComponent(course: Course, lesson: Lesson): string {
   if (sharing.length < 2) return '';
   const place = sharing.findIndex((l) => l.id === lesson.id) + 1;
   return `"${toward}" is set as an assignment in ${sharing.length} lessons, and this is part ${place} of ${sharing.length}: write only the part that belongs to this lesson, title it so it can be told apart from the other parts (for example "${toward}: " followed by this lesson's focus), and never say this part alone carries the component's whole weight.`;
+}
+
+/**
+ * Writing a plan again after its review left notes: the new plan is told what the old one got wrong. Written
+ * afresh without them, a plan made the same mistakes again, or new ones as often as not.
+ */
+export function earlierNotes(lesson: Lesson): string {
+  const notes = (lesson.gen.plan?.flags ?? []).flatMap((f) => (f.code === 'reviewNote' ? [`- ${f.values.where}: ${f.values.text}`] : []));
+  if (!notes.length) return '';
+  return `A review of the previous version of this plan found these problems. Write the plan so that none of them is in it:\n${notes.join('\n')}`;
 }
