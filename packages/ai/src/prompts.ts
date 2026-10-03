@@ -1,5 +1,5 @@
 import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
-import { courseSoFar, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
+import { courseSoFar, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
 import { UNIVERSITY_TEACHING, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 
@@ -198,19 +198,6 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     .join('\n\n');
 }
 
-/**
- * The plan as the materials built on it see it. The teacher notes go too: they hold the expected answers and the
- * misconceptions to watch for, and a study guide written without them stated one of those misconceptions as fact.
- */
-function planSummary(lesson: Lesson): string {
-  if (!lesson.segments.length) return '';
-  const ideas = lesson.keyIdeas.map((k) => `- ${k}`).join('\n');
-  const flow = lesson.segments
-    .map((s) => `- ${s.title} (${s.minutes} min): ${s.description}${s.teacherNotes.trim() ? `\n  Teacher notes: ${s.teacherNotes.trim()}` : ''}`)
-    .join('\n');
-  return `The lesson plan's key ideas:\n${ideas}\n\nThe lesson runs like this:\n${flow}`;
-}
-
 /** What a material built on the plan owes it: the plan is what the teacher has read and agreed to. */
 const FOLLOW_REST =
   'Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception. When the lesson holds a graded test or exam, no other material of the lesson repeats its questions or gives their answers, whatever examples the plan uses; and where the lesson sets graded work, the materials help students do it without doing it for them.';
@@ -261,8 +248,9 @@ export const BUILT_ON_PLAN: ReadonlySet<SectionPromptKind> = new Set(['slides', 
 const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string> = {
   plan: (c) =>
     [
-      `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need. Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
+      `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need (up to eight terms; in a course that teaches a language, every word and phrase the lesson teaches, each with its meaning). Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
       'Plan only what can really happen in the time, place and with the materials the lesson has. Whatever students are to see, make or finish in a segment has to be possible within that segment\'s minutes; when something takes longer, such as a process that needs hours or days to show a result, plan around it (start it earlier, use results prepared in advance, or come back to it later) and say how in the teacher notes. The slides, quiz and study guide are written from this plan and take everything in it as having happened.',
+      'What the brief says of particular students (a newcomer, heritage speakers, students who need support) shapes the plan where it matters, with something for their own learning; it is not repeated in every segment.',
       'In the teacher notes, give the safety precautions a careful teacher would take with what students handle, taste, heat, cut or mix (protective gear, ventilation, heat a reaction gives off, disposal, allergies, materials that must never be eaten); these are outside the word limit of the notes. Where the material is painful (violence, racism, abuse, the language of period sources), say how to handle it with care, and never have students play the people who suffered or inflicted it.',
       'A piece graded in the lesson is never modelled with the very case students then hand in. A graded quiz, test or exam in the lesson asks about new cases with new numbers, not the examples the course taught with, covers what the lessons before it taught, and has its questions (with the choices, where it has them), answers and the points each carries written out in the notes, however long. Nothing left on the board or screen while students take it gives an answer. Nothing in these instructions is repeated in the plan as advice to the teacher.',
       'A text students read that is not among the teacher\'s sources is named exactly (author, title, and the section or passage to use, by its opening words when it has no number), so the teacher can find it, with a note to prepare copies; never just "an excerpt".',
@@ -291,7 +279,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
   },
   discussions: (c) =>
     [
-      'Write two discussion prompts that make students think and disagree productively, each with two or three follow-up questions for the teacher.',
+      'Write two discussion prompts that make students think and disagree productively, each with two or three follow-up questions for the teacher. In a course that teaches a language, the prompts get students using that language at their level, not debating about it in another.',
       lessonSessions(c).some((s) => s.kind === 'seminar') ? 'They are for the seminar: rooted in the reading, for students to lead.' : '',
     ]
       .filter(Boolean)

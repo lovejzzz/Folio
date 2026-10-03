@@ -130,3 +130,16 @@ export function nextReading(course: Course, lesson: Lesson): string {
   const readings = (next?.readings ?? []).map((r) => r.trim()).filter(Boolean);
   return readings.length ? `Before the next lesson students read: ${readings.join('; ')}. The plan tells them so before they leave.` : '';
 }
+
+/**
+ * The plan as the materials built on it see it. The teacher notes go too: they hold the expected answers and the
+ * misconceptions to watch for, and a study guide written without them stated one of those misconceptions as fact.
+ */
+export function planSummary(lesson: Lesson): string {
+  if (!lesson.segments.length) return '';
+  const ideas = lesson.keyIdeas.map((k) => `- ${k}`).join('\n');
+  const flow = lesson.segments
+    .map((s) => `- ${s.title} (${s.minutes} min): ${s.description}${s.teacherNotes.trim() ? `\n  Teacher notes: ${s.teacherNotes.trim()}` : ''}`)
+    .join('\n');
+  return `The lesson plan's key ideas:\n${ideas}\n\nThe lesson runs like this:\n${flow}`;
+}

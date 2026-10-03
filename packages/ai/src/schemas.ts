@@ -69,7 +69,8 @@ export const PlanDraft = z.object({
     )
     .min(3)
     .max(8),
-  vocabulary: z.array(z.object({ term: line, definition: line })).max(8),
+  // Up to eight in most lessons; a language lesson lists every word it teaches (a numbers lesson taught 31).
+  vocabulary: z.array(z.object({ term: line, definition: line })).max(40),
 });
 export type PlanDraft = z.infer<typeof PlanDraft>;
 
