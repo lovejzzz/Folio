@@ -1,5 +1,76 @@
 [
   {
+    "version": "0.0.2",
+    "date": "October 3, 2026",
+    "title": "A second read that changes the plan, and homework that is new work",
+    "lede": "We wrote six more courses overnight, from grade 3 fractions to a college psychology course built from a syllabus, and had each one read lesson by lesson the way its teacher would. These are the fixes that came out of it.",
+    "sections": [
+      {
+        "heading": "When the second read finds a problem, the plan is rewritten",
+        "body": "Every lesson plan gets a second read before anything is built on it. Small fixes were made on the spot, but anything bigger used to be left as a note for you, while the slides, quiz and study guide were built on the flawed plan and repeated it. Now a plan left with notes is written once more, told what the read found, and read again. Whichever version comes out cleaner is kept. In our chemistry and history courses, the notes left for the teacher went from four each to none.",
+        "image": {
+          "src": "/changelog/0.0.2-second-read.svg",
+          "alt": "Before, a review note stayed on an unchanged plan. Now the plan is rewritten with the note and read again",
+          "width": 800,
+          "height": 340
+        }
+      },
+      {
+        "heading": "Homework is new work, not the class examples again",
+        "body": "Problem sets and quiz questions were being told to use the plan’s examples, so graded homework repeated what the class had just worked through together, with the answers already on the board. Now they keep the lesson’s methods and facts but give students new problems.",
+        "compare": {
+          "before": "In class: “6.0 mol H₂ makes how many mol NH₃?” For homework: “find the moles of NH₃ made from 6.0 mol H₂.”",
+          "after": "For homework: “For 2Mg + O₂ → 2MgO, write the mole ratio of Mg to MgO. Use it to find the moles of MgO made from 3.60 mol Mg.”"
+        },
+        "image": {
+          "src": "/changelog/0.0.2-problems.webp",
+          "alt": "A grade 10 chemistry problem set on mole ratios with new problems",
+          "width": 1600,
+          "height": 1000
+        }
+      },
+      {
+        "heading": "Steps that build toward the big piece",
+        "body": "When several lessons set a step toward an essay or a paper, or a problem set every few days, each used to be written on its own. One course set the same step three lessons running. Now they are written in order, each knowing what the ones before asked, so steps build on each other and recurring work keeps one length and format. Homework also follows the rhythm you ask for: “twice a week” is twice a week, not every lesson.",
+        "image": {
+          "src": "/changelog/0.0.2-steps.svg",
+          "alt": "Before: the same step set three times. Now: an evidence log, a working claim, connecting evidence, then the essay",
+          "width": 800,
+          "height": 300
+        }
+      },
+      {
+        "heading": "Tests have a lesson, questions, answers and points",
+        "body": "A unit test worth half the grade used to be only “previewed” in the last lesson. Now graded work that happens in class is given a lesson when the course is outlined, and a lesson with a test writes its questions, answer key and points out in full, asks about new cases, and keeps them out of that lesson’s study guide and quiz. The same goes for an exit ticket: its question and expected answer are in the plan. (A printable test paper as its own material is still to come.)",
+        "image": {
+          "src": "/changelog/0.0.2-test.webp",
+          "alt": "The last lesson of a chemistry unit, now a 55-minute unit test with its rules and timing",
+          "width": 1600,
+          "height": 1000
+        }
+      },
+      {
+        "heading": "Care with hard material, and with what students handle",
+        "body": "Plans now say how to handle painful content, and never ask students to play the people who suffered or inflicted it. Lab plans cover what a careful teacher would: protective gear, ventilation, the heat a reaction gives off, and disposal.",
+        "compare": {
+          "before": "“You are a returning Confederate soldier or a newly freed person in Georgia. What is the first problem you must solve?”",
+          "after": "“Violence is the content. Warn students before you begin, give plain facts without graphic detail, and let anyone step out quietly. Never assign roles of victims or attackers.”"
+        }
+      },
+      {
+        "heading": "Lessons hand over to each other",
+        "body": "A plan now knows what homework its own lesson sets and sets it before students leave; the next lesson collects or uses it. It knows what students should read before the next lesson and tells them. Later lessons see how earlier ones set things up, down to the teacher notes, and finish what was left for them, like a lab result waiting to be measured. Work that runs over several days is started early enough when the course is outlined.",
+        "bullets": [
+          "Texts students read are named exactly, down to the passage, with a note to prepare copies; never just “an excerpt”.",
+          "A final essay asks only for what the course really gave students.",
+          "A paper for the whole course takes its topic from your brief, not from the lesson that happens to set it.",
+          "Slides show the items students work from, and hold back the answers until the reveal.",
+          "University courses say “instructor”, and keep any routine your syllabus asks for."
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.0.1",
     "date": "October 3, 2026",
     "title": "Sample courses, and courses that hold together",
@@ -13,17 +84,32 @@
           "Middle school: writing argumentative essays, a fifteen-lesson grade 8 unit built on two opinion articles about later school start times.",
           "University: introduction to ethics, a fourteen-week semester with a lecture and a seminar every week."
         ],
-        "image": { "src": "/changelog/0.0.1-chooser.webp", "alt": "The sample chooser: elementary school, middle school and university", "width": 1600, "height": 1000 }
+        "image": {
+          "src": "/changelog/0.0.1-chooser.webp",
+          "alt": "The sample chooser: elementary school, middle school and university",
+          "width": 1600,
+          "height": 1000
+        }
       },
       {
         "heading": "A full course at a glance",
         "body": "Each sample is the size a teacher there would plan: a unit for school, a whole semester for university, with every lesson’s plan, slides, study guide, quiz, assignment, rubric, discussion questions and answers to students’ questions.",
-        "image": { "src": "/changelog/0.0.1-map.webp", "alt": "The map of the fourteen-week ethics course, every lesson and its materials", "width": 1600, "height": 1000 }
+        "image": {
+          "src": "/changelog/0.0.1-map.webp",
+          "alt": "The map of the fourteen-week ethics course, every lesson and its materials",
+          "width": 1600,
+          "height": 1000
+        }
       },
       {
         "heading": "Lessons that remember each other",
         "body": "Lesson plans used to be written side by side, each knowing only the others’ titles, so one lesson could give a bean plant five stages and the next only four. Now each plan is written knowing what the lessons before it taught: the same terms and stages, the same cases, and anything still under way, like seeds sprouting by the window, carried on as it was set up. Each lesson lists only the vocabulary it introduces.",
-        "image": { "src": "/changelog/0.0.1-continuity.svg", "alt": "Before: four lessons planned alone contradict each other. Now: each plan reads the ones before it", "width": 800, "height": 400 }
+        "image": {
+          "src": "/changelog/0.0.1-continuity.svg",
+          "alt": "Before: four lessons planned alone contradict each other. Now: each plan reads the ones before it",
+          "width": 800,
+          "height": 400
+        }
       },
       {
         "heading": "Plans you can teach as written",
@@ -36,12 +122,22 @@
           "Homework steps can be done at home, without a partner or classroom materials.",
           "Other lessons are “last time” and “next time”, not quoted titles."
         ],
-        "image": { "src": "/changelog/0.0.1-lesson.webp", "alt": "A grade 2 lesson plan with key ideas, timed segments and teacher notes", "width": 1600, "height": 1000 }
+        "image": {
+          "src": "/changelog/0.0.1-lesson.webp",
+          "alt": "A grade 2 lesson plan with key ideas, timed segments and teacher notes",
+          "width": 1600,
+          "height": 1000
+        }
       },
       {
         "heading": "Every material agrees with the plan",
         "body": "Each plan gets a second read before anything is built on it. If the plan is written again, what that read found now goes into the rewrite, so the same mistake isn’t made twice. The reviewer also knows the slides, quiz and rubric are written separately, so it no longer asks for them inside the plan.",
-        "image": { "src": "/changelog/0.0.1-pipeline.svg", "alt": "Brief, outline, lesson plan, second read, and the materials written from the plan", "width": 800, "height": 330 }
+        "image": {
+          "src": "/changelog/0.0.1-pipeline.svg",
+          "alt": "Brief, outline, lesson plan, second read, and the materials written from the plan",
+          "width": 800,
+          "height": 330
+        }
       },
       {
         "heading": "Your files, cited by name",
@@ -62,7 +158,12 @@
       {
         "heading": "How we find what to fix",
         "body": "These improvements came from a new routine. We write real courses from teachers’ briefs, from grade 2 to university, check every part, and read each lesson as the teacher who would teach it. For every problem we ask why Folio wrote it and whether it would happen in another course. If it would, we fix the cause, so every teacher’s course gets better, not just the one we read.",
-        "image": { "src": "/changelog/0.0.1-quality-loop.svg", "alt": "The quality routine: write real courses, check, read as a teacher, ask why, fix the cause, verify", "width": 800, "height": 420 }
+        "image": {
+          "src": "/changelog/0.0.1-quality-loop.svg",
+          "alt": "The quality routine: write real courses, check, read as a teacher, ask why, fix the cause, verify",
+          "width": 800,
+          "height": 420
+        }
       }
     ]
   }

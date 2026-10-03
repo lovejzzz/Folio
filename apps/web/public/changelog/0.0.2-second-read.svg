@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 340" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .accl { stroke: #2B46C4 } .tint { fill: #EDF0FC } .ln { stroke: #8A857A } .bad { fill: #A8321F } .badt { fill: #FBEAE6 } .good { fill: #2F6B3A } .goodt { fill: #E7F2E6 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .accl { stroke: #8FA3FF } .tint { fill: #23284A } .ln { stroke: #807B71 } .bad { fill: #F08A76 } .badt { fill: #3A2420 } .good { fill: #8FCB98 } .goodt { fill: #1F3323 }
+    }
+  </style>
+  <rect class="bg" width="800" height="340" rx="20"/>
+
+  <text class="ink2" x="36" y="44" font-size="15" font-weight="600" letter-spacing="0.6">BEFORE · THE NOTE STAYED, AND EVERYTHING WAS BUILT ON THE PLAN</text>
+  <g font-size="14">
+    <rect class="card" x="36" y="60" width="150" height="60" rx="12"/><text class="ink" x="111" y="95" text-anchor="middle" font-weight="600">Lesson plan</text>
+    <rect class="card" x="226" y="60" width="150" height="60" rx="12"/><text class="ink" x="301" y="95" text-anchor="middle" font-weight="600">Second read</text>
+    <rect class="badt" x="416" y="60" width="150" height="60" rx="12"/><text class="bad" x="491" y="87" text-anchor="middle" font-weight="600">A note for you</text><text class="bad" x="491" y="106" text-anchor="middle" font-size="13">plan unchanged</text>
+    <rect class="card" x="606" y="60" width="158" height="60" rx="12"/><text class="ink" x="685" y="87" text-anchor="middle" font-weight="600">Slides, quiz, guide</text><text class="bad" x="685" y="106" text-anchor="middle" font-size="13">repeat the flaw</text>
+  </g>
+  <g class="ln" stroke-width="2" fill="none" stroke-linecap="round">
+    <path d="M190 90 H220"/><path d="M213 83 L221 90 L213 97"/>
+    <path d="M380 90 H410"/><path d="M403 83 L411 90 L403 97"/>
+    <path d="M570 90 H600"/><path d="M593 83 L601 90 L593 97"/>
+  </g>
+
+  <line class="ln" x1="36" y1="152" x2="764" y2="152" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.6"/>
+
+  <text class="acc" x="36" y="190" font-size="15" font-weight="600" letter-spacing="0.6">NOW · THE PLAN IS WRITTEN AGAIN WITH THE NOTE, AND READ AGAIN</text>
+  <g font-size="14">
+    <rect class="card" x="36" y="206" width="130" height="60" rx="12"/><text class="ink" x="101" y="241" text-anchor="middle" font-weight="600">Lesson plan</text>
+    <rect class="card" x="196" y="206" width="130" height="60" rx="12"/><text class="ink" x="261" y="241" text-anchor="middle" font-weight="600">Second read</text>
+    <rect class="tint" x="356" y="206" width="130" height="60" rx="12"/><text class="acc" x="421" y="233" text-anchor="middle" font-weight="600">Rewrite</text><text class="acc" x="421" y="252" text-anchor="middle" font-size="13">with the note</text>
+    <rect class="card" x="516" y="206" width="110" height="60" rx="12"/><text class="ink" x="571" y="241" text-anchor="middle" font-weight="600">Read again</text>
+    <rect class="goodt" x="656" y="206" width="108" height="60" rx="12"/><text class="good" x="710" y="233" text-anchor="middle" font-weight="600">Materials</text><text class="good" x="710" y="252" text-anchor="middle" font-size="13">from the fix</text>
+  </g>
+  <g class="accl" stroke-width="2.2" fill="none" stroke-linecap="round">
+    <path d="M170 236 H190"/><path d="M183 229 L191 236 L183 243"/>
+    <path d="M330 236 H350"/><path d="M343 229 L351 236 L343 243"/>
+    <path d="M490 236 H510"/><path d="M503 229 L511 236 L503 243"/>
+    <path d="M630 236 H650"/><path d="M643 229 L651 236 L643 243"/>
+  </g>
+  <text class="ink2" x="400" y="304" font-size="13" text-anchor="middle">Whichever version the second read finds cleaner is kept, so the rewrite can only help.</text>
+</svg>
