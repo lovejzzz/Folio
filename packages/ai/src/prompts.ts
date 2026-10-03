@@ -1,4 +1,5 @@
 import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
+import { earlierLessons, sharedComponent } from './continuity';
 import type { Effort } from './inference';
 
 /**
@@ -280,6 +281,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
       toward
         ? `Write the assignment "${toward}" as the brief describes it, with its length and requirements, set in this lesson and drawing on the course so far: two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.`
         : 'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
+      sharedComponent(c, lesson),
       rubricLevels(c),
     ]
       .filter(Boolean)
@@ -322,6 +324,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     // Each job invents what the sources don't give; without the plan, a quiz and a plan gave one coefficient two standard errors.
     if (plan) parts.push(`${plan}\n\n${FOLLOW_PLAN}`);
   }
+  if (kind === 'plan') parts.push(earlierLessons(course, lesson));
   if ((kind === 'plan' || kind === 'quiz') && course.sourceOrder.length) {
     parts.push(
       kind === 'quiz'
@@ -331,7 +334,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     );
   }
   parts.push(asks[kind](course, lesson));
-  return parts.join('\n\n');
+  return parts.filter(Boolean).join('\n\n');
 }
 
 /**

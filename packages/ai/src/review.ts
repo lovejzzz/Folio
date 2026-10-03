@@ -2,6 +2,7 @@ import type { Course, Lesson } from '@folio/core';
 import { z } from 'zod';
 import type { Inference, ModelSettings, ProviderId } from './inference';
 import { runJob } from './jobs';
+import { earlierLessons } from './continuity';
 import { courseBackground, lessonContext, systemPrompt } from './prompts';
 import type { PlanDraft } from './schemas';
 
@@ -60,20 +61,23 @@ function planText(plan: PlanDraft): string {
 export function planReviewPrompt(course: Course, lesson: Lesson, plan: PlanDraft): string {
   return [
     lessonContext(course, lesson),
+    earlierLessons(course, lesson),
     `The lesson plan to review:\n${planText(plan)}`,
     [
       'Check this plan the way an experienced teacher of this subject and level would before teaching it, and list every problem they would have to fix first. Go through it systematically:',
       'work out every number, calculation, equation and expected answer yourself; check every factual claim, example, definition and demonstration against what is true, keeping a quotation from a source or document as it is unless you are certain it is misquoted; check that numbers, quantities and situations are realistic for what they describe;',
       'check that each demonstration or activity would really produce the result described, under the conditions, in the time and with the materials given, and that each expected answer or result follows from everything students are given, every item, card, data point and text included;',
       'check that a model or worked example really shows what it is meant to model;',
-      'and check each segment against the others and against its notes: a step that a later segment or an answer key depends on must be there, an answer key must match its task, and a note must not contradict the description or a rule the plan sets.',
-      'Kinds: "fact" (wrong or misleading content), "feasibility" (cannot happen as written), "consistency" (the plan contradicts itself), "level" (clearly wrong for these students).',
+      'and check each segment against the others and against its notes: a step that a later segment or an answer key depends on must be there, an answer key must match its task, and a note must not contradict the description or a rule the plan sets; and, when earlier lessons are given, check the plan keeps to their names, terms and stages and continues what they started as they set it up.',
+      'Kinds: "fact" (wrong or misleading content), "feasibility" (cannot happen as written), "consistency" (the plan contradicts itself or the lessons before it), "level" (clearly wrong for these students).',
       'For each problem, say under "why" what is wrong, briefly, for the teacher. When a small change to a few words fixes it and you are sure of the fix, copy under "find" the exact words that are wrong, character for character and enough of them to appear only once in that field, and give under "replace" what should stand in their place; to add a missing step, find the sentence it belongs after and replace it with that sentence followed by the new one. When the fix needs the teacher\'s judgment or a larger change, leave "find" and "replace" empty: the teacher will see your note.',
       // Without this line a reviewer lists precision that only matters beyond the students' level: nearly half its findings.
       'Judge accuracy at the level these students are taught: a simplification that the usual textbooks for this level make, and that is not wrong for these students, is not a problem; do not add precision, qualifications or exceptions that only matter beyond this level.',
       'Do not list style preferences, activities you would add, or timing you would change. Return an empty list if the plan is sound.',
     ].join(' '),
-  ].join('\n\n');
+  ]
+    .filter(Boolean)
+    .join('\n\n');
 }
 
 /** The field's text with the quoted words replaced, or null when they are not there exactly once: a short phrase found twice could be fixed in the wrong place. */

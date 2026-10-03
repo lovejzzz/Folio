@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CourseStore, cmd, orderedLessons, staleItems } from '@folio/core';
-import { generateSection, InferenceError, missingTargets, runBuild, runJob, type BuildTarget } from '../src';
+import { generateSection, InferenceError, missingTargets, runBuild, runJob, sectionPrompt, type BuildTarget } from '../src';
 import { fakeInference, planDraft, quizDraft, smallCourse } from './fake';
 import { z } from 'zod';
 
@@ -82,6 +82,18 @@ describe('homework', () => {
   });
 });
 
+describe('a graded piece set in several lessons', () => {
+  it('tells each lesson which part it writes, so titles differ and none claims the whole weight', () => {
+    const store = new CourseStore(smallCourse());
+    const lessons = orderedLessons(store.getState());
+    store.apply(lessons.map((l) => cmd('lesson.homework', { lessonId: l.id, homework: { kind: 'assignment', toward: 'Portfolio' } })), { label: { key: 'b' }, source: 'teacher' });
+    const course = store.getState();
+    expect(sectionPrompt(course, course.lessons[lessons[1]!.id]!, 'assignments')).toContain(`this is part 2 of ${lessons.length}`);
+    store.apply([cmd('lesson.homework', { lessonId: lessons[1]!.id, homework: { kind: 'assignment', toward: 'Lab report' } })], { label: { key: 'b' }, source: 'teacher' });
+    expect(sectionPrompt(store.getState(), store.getState().lessons[lessons[1]!.id]!, 'assignments')).not.toContain('part ');
+  });
+});
+
 describe('homework changed mid-build', () => {
   it('writes no assignment for a lesson set to no homework after the build began', async () => {
     const store = new CourseStore(smallCourse());
@@ -136,6 +148,29 @@ describe('runBuild', () => {
     expect(order.indexOf('0:plan')).toBeLessThan(order.indexOf('0:slides'));
     expect(missingTargets(store.getState())).toEqual([]);
     expect(staleItems(store.getState())).toEqual([]);
+  });
+
+  it('writes plans in lesson order, each knowing the plans before it', async () => {
+    const store = new CourseStore(smallCourse());
+    const inf = fakeInference(answer);
+    const order: string[] = [];
+    await runBuild(
+      {
+        inference: inf,
+        getCourse: store.getState,
+        commit: (t: BuildTarget, commands) => {
+          if (t.kind === 'plan') order.push(t.lessonId);
+          store.apply(commands, { label: { key: 'b' }, source: 'ai', undoable: false });
+        },
+        signal: new AbortController().signal,
+      },
+      missingTargets(store.getState()),
+    );
+    expect(order).toEqual(store.getState().lessonOrder);
+    const plans = inf.calls.filter((c) => c.task === 'folio_plan').map((c) => JSON.stringify(c));
+    expect(plans[0]).not.toContain('The lessons before this one');
+    expect(plans[1]).toContain('The lessons before this one');
+    expect(plans[1]).toContain('Terms: Chlorophyll');
   });
 
   it('stops everything on an auth error', async () => {

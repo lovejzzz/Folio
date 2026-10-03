@@ -73,9 +73,14 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
   // seven and a half minutes; four brings it near five and a half without crowding rate limits.
   const limit = host.concurrency ?? 4;
 
-  const blocked = (t: BuildTarget): boolean =>
-    BUILT_ON_PLAN.has(t.kind) &&
-    [...pending, ...[...running.keys()].map(parseKey)].some((o) => o.lessonId === t.lessonId && o.kind === 'plan');
+  // Plans are written in lesson order, each knowing the ones before it, so a course teaches one version of
+  // each idea; the other parts fill the queue meanwhile, so a build takes little longer.
+  const position = (lessonId: string) => host.getCourse().lessonOrder.indexOf(lessonId);
+  const blocked = (t: BuildTarget): boolean => {
+    const waiting = [...pending, ...[...running.keys()].map(parseKey)].filter((o) => o.kind === 'plan');
+    if (t.kind === 'plan') return waiting.some((o) => position(o.lessonId) < position(t.lessonId));
+    return BUILT_ON_PLAN.has(t.kind) && waiting.some((o) => o.lessonId === t.lessonId);
+  };
 
   // A plan that failed takes with it what would be written from it: written without, those parts would look
   // finished and be wrong. They stay missing, for Resume to write once the plan is.
