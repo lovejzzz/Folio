@@ -1185,6 +1185,146 @@
   "why": "The page was followed in Unity; the counts it gives (three, five, fifteen) were measured and hold."
  },
  {
+  "lesson": 7,
+  "slot": 1,
+  "src": "/samples/unity/media/w07-loop.mp4",
+  "poster": "/samples/unity/media/w07-loop.poster.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 3,
+  "src": "/samples/unity/media/w07-title.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 4,
+  "src": "/samples/unity/media/w07-hierarchy.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 5,
+  "src": "/samples/unity/media/w07-play.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 6,
+  "src": "/samples/unity/media/files/Dodge-week6-end.zip"
+ },
+ {
+  "lesson": 7,
+  "slot": 7,
+  "src": "/samples/unity/media/w07-importer.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 8,
+  "drop": true,
+  "why": "The open anchor presets grid was not captured."
+ },
+ {
+  "lesson": 7,
+  "slot": 9,
+  "src": "/samples/unity/media/w07-lives.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 10,
+  "src": "/samples/unity/media/w07-manager.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 11,
+  "src": "/samples/unity/media/w07-restarted.webp",
+  "caption": "In Play the text reads Lives: 3."
+ },
+ {
+  "lesson": 7,
+  "slot": 12,
+  "drop": true,
+  "why": "The Tags list could not be pictured open."
+ },
+ {
+  "lesson": 7,
+  "slot": 13,
+  "src": "/samples/unity/media/w07-tag.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 14,
+  "src": "/samples/unity/media/w07-lives2.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 15,
+  "drop": true,
+  "why": "The Color window was pictured in week 2."
+ },
+ {
+  "lesson": 7,
+  "slot": 16,
+  "drop": true,
+  "why": "The next picture shows the panel with its message and button."
+ },
+ {
+  "lesson": 7,
+  "slot": 17,
+  "src": "/samples/unity/media/w07-panel.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 18,
+  "src": "/samples/unity/media/w07-wired.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 19,
+  "src": "/samples/unity/media/w07-onclick.webp",
+  "caption": "On Click () calls GameManager.Restart. Three components above Button are folded here to save room."
+ },
+ {
+  "lesson": 7,
+  "slot": 20,
+  "drop": true,
+  "why": "The same view as the picture in the part on hits."
+ },
+ {
+  "lesson": 7,
+  "slot": 21,
+  "src": "/samples/unity/media/w07-over.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 22,
+  "src": "/samples/unity/media/w07-restarted.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 23,
+  "src": "/samples/unity/media/w07-console.webp"
+ },
+ {
+  "lesson": 7,
+  "slot": 24,
+  "src": "/samples/unity/media/files/Dodge-week7-end.zip"
+ },
+ {
+  "lesson": 7,
+  "slot": 25,
+  "drop": true,
+  "why": "The challenge result was not built for the sample."
+ },
+ {
+  "lesson": 7,
+  "find": "Look at **Interval** again: it is back to 2.",
+  "replace": "Click **Spawner** in the **Hierarchy** again, because reloading the scene cleared your selection, and look at **Interval**: it has started again from 2.",
+  "why": "After Restart nothing is selected, so the Inspector is empty."
+ },
+ {
+  "lesson": 7,
+  "settle": "*",
+  "why": "The page was followed in Unity: lose three lives, Game over, Restart, then twenty seconds unhit. SampleScene is in the build list of a new project, so Restart loads it."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
