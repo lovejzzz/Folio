@@ -242,7 +242,7 @@ export function moduleAsk(course: Course, lesson: Lesson): string {
     'Under "wrapUp", 80 to 120 words: what the student can now do, one question to test themselves on each objective, and a look ahead to next week.',
     'Under "vocabulary", the terms this week introduces, each in one plain sentence.',
     'Under "facilitation", the instructor\'s part of the week, never shown to students: the announcement to post on Monday (what the week is, the one thing to get right, the deadlines), what to watch for in the forum and in submitted work and what to do about it, comments to adapt when giving feedback, and whom to contact by midweek.',
-    'A term is explained in a sentence where it first appears. The graded work and the forum prompt are written separately and shown to the student with this page: the page names each once, in the checklist, with its deadline, and says nothing of what they ask, how they are submitted or how they are graded.',
+    'The teacher\'s sources are for you: the page takes its facts and names from them without mentioning them, and sends students to a source only when it is among this week\'s readings. A term is explained in a sentence where it first appears. The graded work and the forum prompt are written separately and shown to the student with this page: the page names each once, in the checklist, with its deadline, and says nothing of what they ask, how they are submitted or how they are graded.',
     'Never write a placeholder for the instructor to fill in, and never promise a file, link, video or reading that the page does not give as a block.',
   ].join(' ');
 }
