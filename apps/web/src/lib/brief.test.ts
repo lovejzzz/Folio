@@ -208,6 +208,8 @@ describe('weeks in a brief', () => {
   it('never takes a week that owns something for the length of the course', () => {
     expect(guessLessons("A 13-week seminar, one 3-hour meeting a week. Each student presents one week's readings.")).toBe(13);
     expect(guessLessons('Two classes a week for six weeks; each week’s quiz is on Friday.')).toBe(12);
+    expect(guessLessons('Taught online: each week an asynchronous module plus one live 75-minute session on Thursday evening, for 12 weeks.')).toBe(12);
+    expect(guessLessons('One lesson of 50 minutes on the water cycle.')).toBe(1);
   });
 });
 

@@ -129,7 +129,11 @@ export function guessLessons(text: string): number | null {
   }
   // A rate too large for one course ("five periods a week for 36 weeks") is no count at all: Folio asks instead.
   if (lessonsFromRate(text, true) !== null) return lessonsFromRate(text);
-  return lessonsNamed(text) ?? lessonsFromWeeks(text);
+  const named = lessonsNamed(text);
+  const weeks = lessonsFromWeeks(text);
+  // "One live session each week, for 12 weeks": the one is what a week holds, and the weeks are the count.
+  if (named === 1 && weeks && weeks > 1) return weeks;
+  return named ?? weeks;
 }
 
 /** A US grade, named as the level menu names it. */
