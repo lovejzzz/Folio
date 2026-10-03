@@ -1017,6 +1017,174 @@
   "why": "The page was followed in Unity with the keys driven as a player would."
  },
  {
+  "lesson": 6,
+  "slot": 1,
+  "src": "/samples/unity/media/w06-preview.mp4",
+  "poster": "/samples/unity/media/w06-preview.poster.webp",
+  "caption": "Where this week ends: the start of Dodge, with hazards that fall faster and faster."
+ },
+ {
+  "lesson": 6,
+  "slot": 2,
+  "src": "/samples/unity/media/w01-hub-create.webp",
+  "caption": "The New project screen, as in week 1. This time the project name is Dodge."
+ },
+ {
+  "lesson": 6,
+  "slot": 3,
+  "drop": true,
+  "why": "The open dropdown in Unity Hub was not captured."
+ },
+ {
+  "lesson": 6,
+  "slot": 4,
+  "src": "/samples/unity/media/w06-new.webp",
+  "caption": "The new Dodge project: SampleScene with Main Camera, Directional Light and Global Volume."
+ },
+ {
+  "lesson": 6,
+  "slot": 5,
+  "src": "/samples/unity/media/w06-floor.webp",
+  "caption": "Floor’s Transform: Position 0, -0.5, 0 and Scale 14, 1, 14."
+ },
+ {
+  "lesson": 6,
+  "slot": 6,
+  "src": "/samples/unity/media/w06-camera.webp",
+  "caption": "Main Camera at 0, 12, -10, tilted down 55 degrees."
+ },
+ {
+  "lesson": 6,
+  "slot": 7,
+  "src": "/samples/unity/media/w06-arena.webp",
+  "caption": "The Floor as the camera sees it, before anything stands on it."
+ },
+ {
+  "lesson": 6,
+  "slot": 8,
+  "src": "/samples/unity/media/w06-scripts-folder.webp",
+  "caption": "The Scripts folder inside Assets, beside Scenes and Settings (shown here a few steps later, with PlayerMover already in it)."
+ },
+ {
+  "lesson": 6,
+  "slot": 9,
+  "src": "/samples/unity/media/w06-constraints.webp",
+  "caption": "Constraints opened on the Rigidbody, with Freeze Rotation X, Y and Z ticked."
+ },
+ {
+  "lesson": 6,
+  "slot": 10,
+  "drop": true,
+  "why": "Shown in the picture of the Scripts folder above."
+ },
+ {
+  "lesson": 6,
+  "slot": 11,
+  "src": "/samples/unity/media/w06-mover.webp",
+  "caption": "Player Mover (Script) under the Rigidbody, with Speed 6."
+ },
+ {
+  "lesson": 6,
+  "slot": 12,
+  "src": "/samples/unity/media/w06-move.mp4",
+  "poster": "/samples/unity/media/w06-move.poster.webp",
+  "caption": "The Player moved with the keys. It stops the moment a key is released."
+ },
+ {
+  "lesson": 6,
+  "slot": 13,
+  "src": "/samples/unity/media/files/Dodge-week6-start.zip"
+ },
+ {
+  "lesson": 6,
+  "slot": 14,
+  "drop": true,
+  "why": "Covered by the pictures above."
+ },
+ {
+  "lesson": 6,
+  "slot": 16,
+  "drop": true,
+  "why": "The Color window was pictured in week 2."
+ },
+ {
+  "lesson": 6,
+  "slot": 17,
+  "src": "/samples/unity/media/w06-hazard.webp",
+  "caption": "Hazard before it becomes a prefab: Scale 0.8 and a Rigidbody at the bottom."
+ },
+ {
+  "lesson": 6,
+  "slot": 18,
+  "src": "/samples/unity/media/w06-prefab.webp",
+  "caption": "The Hazard prefab in the Prefabs folder. Its icon is a blue cube."
+ },
+ {
+  "lesson": 6,
+  "slot": 19,
+  "src": "/samples/unity/media/w06-copy.webp",
+  "caption": "A copy in the scene after the prefab’s Scale was changed: it reads 1, 1, 1 too."
+ },
+ {
+  "lesson": 6,
+  "slot": 20,
+  "src": "/samples/unity/media/w06-clean.webp",
+  "caption": "Back to five objects in the Hierarchy; the prefab is safe in the Project window."
+ },
+ {
+  "lesson": 6,
+  "slot": 21,
+  "src": "/samples/unity/media/w06-spawner.webp",
+  "caption": "Hazard Prefab now reads Hazard, and Interval starts at 2."
+ },
+ {
+  "lesson": 6,
+  "slot": 22,
+  "src": "/samples/unity/media/w06-spawn.mp4",
+  "poster": "/samples/unity/media/w06-spawn.poster.webp",
+  "caption": "About twenty seconds of play: the gap between hazards shrinks as you watch."
+ },
+ {
+  "lesson": 6,
+  "slot": 23,
+  "src": "/samples/unity/media/w06-piling.webp",
+  "caption": "Before the cleanup script: after fifteen seconds, ten hazards and none has left."
+ },
+ {
+  "lesson": 6,
+  "slot": 24,
+  "drop": true,
+  "why": "The prefab’s Inspector is too long to show the new component in one picture."
+ },
+ {
+  "lesson": 6,
+  "slot": 25,
+  "drop": true,
+  "why": "The clip above shows the same thing."
+ },
+ {
+  "lesson": 6,
+  "slot": 26,
+  "src": "/samples/unity/media/w06-twenty.webp",
+  "caption": "About twenty seconds in, with the cleanup: six Hazard(Clone) entries, the oldest about to go."
+ },
+ {
+  "lesson": 6,
+  "slot": 27,
+  "src": "/samples/unity/media/w06-steady.webp",
+  "caption": "After about half a minute Interval reaches 0.4 and stays there."
+ },
+ {
+  "lesson": 6,
+  "slot": 28,
+  "src": "/samples/unity/media/files/Dodge-week6-end.zip"
+ },
+ {
+  "lesson": 6,
+  "settle": "*",
+  "why": "The page was followed in Unity; the counts it gives (three, five, fifteen) were measured and hold."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
