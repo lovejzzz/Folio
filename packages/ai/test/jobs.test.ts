@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CourseStore, cmd, orderedLessons, staleItems } from '@folio/core';
-import { generateSection, InferenceError, missingTargets, runBuild, runJob, sectionPrompt, type BuildTarget } from '../src';
+import { generateSection, InferenceError, missingTargets, runBuild, runJob, sectionPrompt, courseBackground, type BuildTarget } from '../src';
 import { fakeInference, planDraft, quizDraft, smallCourse } from './fake';
 import { z } from 'zod';
 
@@ -94,6 +94,17 @@ describe('a graded piece set in several lessons', () => {
   });
 });
 
+describe('rubric levels in a plan', () => {
+  it('are named only in a course that has a rubric to score with', () => {
+    const store = new CourseStore(smallCourse());
+    const lesson = () => orderedLessons(store.getState())[0]!;
+    expect(courseBackground(store.getState())).toContain('"Excellent", "Good", "Developing" and "Beginning"');
+    store.apply(orderedLessons(store.getState()).map((l) => cmd('lesson.homework', { lessonId: l.id, homework: { kind: 'none', toward: '' } })), { label: { key: 'b' }, source: 'teacher' });
+    expect(courseBackground(store.getState())).not.toContain('score work as');
+    expect(lesson().homework.kind).toBe('none');
+  });
+});
+
 describe('a plan written again after its review', () => {
   it('is told what the review found in the version before', () => {
     const course = smallCourse();
@@ -101,6 +112,25 @@ describe('a plan written again after its review', () => {
     expect(sectionPrompt(course, lesson, 'plan')).not.toContain('previous version');
     const flagged = { ...lesson, gen: { ...lesson.gen, plan: { basis: {}, at: '', edited: false, flags: [{ code: 'reviewNote' as const, values: { where: 'Segment 2', text: 'The sum is 12, not 14.' } }] } } };
     expect(sectionPrompt(course, flagged, 'plan')).toContain('- Segment 2: The sum is 12, not 14.');
+  });
+});
+
+describe('parts of one graded piece', () => {
+  it('are written in lesson order, each told what the part before asked', async () => {
+    const store = new CourseStore(smallCourse());
+    const lessons = orderedLessons(store.getState());
+    store.apply(lessons.map((l) => cmd('lesson.homework', { lessonId: l.id, homework: { kind: 'assignment', toward: 'Weekly responses' } })), { label: { key: 'b' }, source: 'teacher' });
+    const asked: string[] = [];
+    const inf = fakeInference((req) => {
+      if (req.task === 'folio_plan') return planDraft;
+      asked.push(JSON.stringify(req));
+      return { title: `Response ${asked.length}`, prompt: `Write 400 words, part ${asked.length}.`, steps: ['a', 'b'], rubric: { levels: [{ label: 'Good', points: 2 }, { label: 'OK', points: 1 }, { label: 'Weak', points: 0 }], criteria: [{ name: 'Ideas', descriptors: ['x', 'y', 'z'] }, { name: 'Writing', descriptors: ['x', 'y', 'z'] }] } };
+    });
+    const targets = missingTargets(store.getState()).filter((t) => t.kind === 'plan' || t.kind === 'assignments');
+    await runBuild({ inference: inf, getCourse: store.getState, commit: (_t, c) => store.apply(c, { label: { key: 'b' }, source: 'ai', undoable: false }), signal: new AbortController().signal }, targets);
+    expect(asked).toHaveLength(2);
+    expect(asked[0]).not.toContain('The part before this one');
+    expect(asked[1]).toContain('The part before this one, \\"Response 1\\", asked: Write 400 words, part 1.');
   });
 });
 
@@ -181,6 +211,7 @@ describe('runBuild', () => {
     expect(plans[0]).not.toContain('The lessons before this one');
     expect(plans[1]).toContain('The lessons before this one');
     expect(plans[1]).toContain('Terms: Chlorophyll');
+    expect(plans[1]).toContain('(Notes: Balance it together.)');
   });
 
   it('stops everything on an auth error', async () => {

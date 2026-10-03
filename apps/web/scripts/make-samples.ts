@@ -11,7 +11,7 @@
 // where the file is [{ "name", "brief", "attach"?: [absolute paths], "syllabus"?: title of the attached file that
 // is the syllabus, "policies"? }]; nothing is written again.
 import { MATERIAL_KINDS, CourseStore, cmd, orderedLessons, parseCourse, type Course, type GeneratedKind } from '@folio/core';
-import { BUILT_ON_PLAN, courseFromOutline, createInference, generateOutline, missingTargets, runBuild, type BuildHost, type BuildTarget, type NewCourseRequest } from '@folio/ai';
+import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, type BuildHost, type BuildTarget, type NewCourseRequest } from '@folio/ai';
 import { spawn } from 'node:child_process';
 import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -168,12 +168,32 @@ function attached(paths: string[]): { title: string; text: string }[] {
   });
 }
 
+/**
+ * As the app does before the outline: read the brief and files, and answer any question with the answer Folio
+ * offers first, its most likely. The questions are kept beside the course, to be read as part of the check-up.
+ */
+async function clarified(name: string, req: NewCourseRequest, spec: Spec): Promise<NewCourseRequest> {
+  const read = await clarifyCourse(inference, { brief: req.brief, sources: req.sources, language: req.language, locale: req.locale, level: req.level, lessonCount: req.lessonCount, defaultLessons: 4, sessions: req.sessions }).catch(() => null);
+  const answers = (read?.questions ?? []).map((q) => ({ question: q.question, answer: q.options[0]! }));
+  writeFileSync(join(OUT, `${name}.clarify.json`), JSON.stringify({ read, answers }, null, 1));
+  const syllabus = (read ? read.syllabus : spec.syllabus) || undefined;
+  return {
+    ...req,
+    brief: briefWithAnswers(req.brief, answers),
+    lessonCount: lessonsToPlan({ ...req, defaultLessons: 4 }, read, answers),
+    minutesPerLesson: minutesToPlan(req.minutesPerLesson, read, answers),
+    level: req.level || read?.level || '',
+    ...(syllabus ? { syllabus } : {}),
+  };
+}
+
 function requestFor(spec: Spec): NewCourseRequest {
   const brief = spec.brief;
   return {
     brief,
     lessonCount: guessLessons(brief),
-    minutesPerLesson: guessMinutes(brief) ?? 50,
+    // A check-up asks as the app does: an unstated length is left for the files and the questions to settle.
+    minutesPerLesson: guessMinutes(brief) ?? (CHECKUP ? 0 : 50),
     sessions: guessSessions(brief) ?? undefined,
     quizSize: guessQuizSize(brief) ?? 5,
     level: guessLevel(brief) ?? '',
@@ -181,7 +201,6 @@ function requestFor(spec: Spec): NewCourseRequest {
     locale: 'en-US',
     materials: [...MATERIAL_KINDS],
     sources: attached(spec.attach),
-    ...(spec.syllabus ? { syllabus: spec.syllabus } : {}),
   };
 }
 
@@ -238,7 +257,7 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
     store = new CourseStore(parseCourse(JSON.parse(readFileSync(join(OUT, `${name}.json`), 'utf8'))));
   } else {
     const spec = specFor(name);
-    const req = requestFor(spec);
+    const req = CHECKUP ? await clarified(name, requestFor(spec), spec) : requestFor(spec);
     store = new CourseStore(courseFromOutline(req, await generateOutline(inference, req)));
     if (spec.policies) store.apply([cmd('course.update', { policies: spec.policies })], { label: { key: 'built' }, source: 'teacher', undoable: false });
     // A graded drawing done in class has no homework to set, and so no rubric: the teacher sets it as the last

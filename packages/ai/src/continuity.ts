@@ -8,12 +8,21 @@ import { orderedLessons, type Course, type Lesson } from '@folio/core';
  */
 
 /** Room for the earlier lessons in a plan request: a long course keeps the nearest in full. */
-const EARLIER_BUDGET = 9000;
+const EARLIER_BUDGET = 14000;
+
+const clipNote = (note: string) => {
+  const flat = note.trim().replace(/\s+/g, ' ');
+  return flat.length > 240 ? `${flat.slice(0, 240)}…` : flat;
+};
 
 function lessonDigest(lesson: Lesson): string {
   const ideas = lesson.keyIdeas.map((k) => `  - ${k}`).join('\n');
   const terms = lesson.vocabulary.map((v) => v.term).join(', ');
-  const flow = lesson.segments.map((s) => `  - ${s.title}: ${s.description.split('\n')[0]}`).join('\n');
+  // Whole descriptions, and the start of the notes: a later lesson used a floor number line it couldn't see was
+  // marked only in fourths, from notes the digest left out.
+  const flow = lesson.segments
+    .map((s) => `  - ${s.title}: ${s.description.replace(/\n+/g, ' ')}${s.teacherNotes.trim() ? ` (Notes: ${clipNote(s.teacherNotes)})` : ''}`)
+    .join('\n');
   return [`"${lesson.title}"`, ideas && ` Key ideas:\n${ideas}`, terms && ` Terms: ${terms}`, flow && ` What students did:\n${flow}`].filter(Boolean).join('\n');
 }
 
@@ -42,7 +51,12 @@ export function sharedComponent(course: Course, lesson: Lesson): string {
   const sharing = orderedLessons(course).filter((l) => l.homework.kind === 'assignment' && l.homework.toward.trim() === toward);
   if (sharing.length < 2) return '';
   const place = sharing.findIndex((l) => l.id === lesson.id) + 1;
-  return `"${toward}" is set as an assignment in ${sharing.length} lessons, and this is part ${place} of ${sharing.length}: write only the part that belongs to this lesson, title it so it can be told apart from the other parts (for example "${toward}: " followed by this lesson's focus), and never say this part alone carries the component's whole weight.`;
+  const told = `"${toward}" is set as an assignment in ${sharing.length} lessons, and this is part ${place} of ${sharing.length}: write only the part that belongs to this lesson, title it so it can be told apart from the other parts (for example "${toward}: " followed by this lesson's focus), and never say this part alone carries the component's whole weight.`;
+  // Written each on its own, weekly responses in one course asked for 300, 400 and 600 words.
+  const before = sharing[place - 2];
+  const last = before?.taskIds.map((id) => course.tasks[id]).find((t) => t?.kind === 'assignment');
+  if (!last || last.kind !== 'assignment') return told;
+  return `${told} The part before this one, "${last.title}", asked: ${last.prompt} Keep this part's length, format and demand in line with it.`;
 }
 
 /**

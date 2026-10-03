@@ -61,6 +61,8 @@ describe('the outline', () => {
     const silent = OutlineDraft.parse({ title: 'E', summary: 'S.', subject: 'P', level: 'U', lessons });
     expect(orderedLessons(courseFromOutline(req, silent)).map((l) => l.homework.kind)).toEqual(['assignment', 'assignment']);
     expect(outlinePrompt({ ...req, sources: [] })).toContain('Under "homework"');
+    // Graded work done in class is placed by the outline: planned one lesson at a time, no plan gave the quizzes.
+    expect(outlinePrompt({ ...req, sources: [] })).toContain('decide which lessons hold it');
   });
 
   it('suggests each further reading once, and never one already assigned', () => {
