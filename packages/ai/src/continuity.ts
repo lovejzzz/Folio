@@ -119,7 +119,7 @@ export function earlierNotes(lesson: Lesson): string {
 export function homeworkLine(lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   if (lesson.homework.kind === 'none') return 'This lesson sets no homework.';
-  const set = 'which the plan has the teacher set before students leave, with anything they need to take home, without spelling out its tasks';
+  const set = 'which the plan has the teacher set before students leave, without spelling out its tasks or naming files and handouts it may not have';
   if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}.`;
   return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}"` : ''}, ${set}.`;
 }
