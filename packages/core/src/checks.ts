@@ -12,7 +12,11 @@ export interface DraftQuestion {
   answer: string;
   /** For arithmetic questions: an expression whose value is the answer. */
   expression?: string | null;
+  explanation?: string;
 }
+
+/** A model thinking aloud in its explanation: it found its own answer wrong and left both. */
+const SECOND_THOUGHTS = /(?:^|[.!?]\s+)(?:wait|hold on|actually|on second thought|correction)\s*[,:—–-]|\bthe correct (?:choice|answer|option) (?:must|should) (?:be|use)\b/i;
 
 const norm = (s: string): string => s.trim().toLowerCase().replace(/\s+/g, ' ');
 
@@ -30,6 +34,7 @@ export function checkQuestion(q: DraftQuestion): Flag[] {
     problems.push({ code: 'noModelAnswer' });
   }
   if (q.format === 'numeric') problems.push(...checkNumeric(q));
+  if (q.explanation && SECOND_THOUGHTS.test(q.explanation)) problems.push({ code: 'explanationUnsure' });
   return problems;
 }
 

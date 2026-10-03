@@ -93,15 +93,24 @@ export function AssignmentEditor({ course, lesson, showRubric = true }: { course
       {lessonAssignments(course, lesson).map((a) => {
         const update = (fields: Partial<typeof a>) => save([cmd('task.update', { taskId: a.id, fields })]);
         const rubric = a.rubricId ? course.rubrics[a.rubricId] : undefined;
+        const isTest = lesson.homework.kind === 'test';
         return (
           <article key={a.id} className="space-y-4">
             {a.flags.length > 0 && <FlagNote flags={a.flags} lessonId={lesson.id} kind="assignments" itemId={a.id} />}
             <EditableText as="h3" value={a.title} label={t.tasks.assignmentTitle} required className="block text-22 font-semibold leading-8 text-ink" onCommit={(title) => update({ title })} />
             <EditableText as="p" multiline value={a.prompt} label={a.title} context={a.title} className="block" onCommit={(prompt) => update({ prompt })} />
             <div>
-              <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{t.tasks.steps}</h4>
-              <EditableList ordered items={a.steps} label={t.tasks.steps} addLabel={t.tasks.addStep} placeholder={t.tasks.step} lang={course.language} context={a.title} onChange={(steps) => update({ steps })} />
+              <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{isTest ? t.tasks.questions : t.tasks.steps}</h4>
+              <EditableList ordered items={a.steps} label={isTest ? t.tasks.questions : t.tasks.steps} addLabel={isTest ? t.tasks.addQuestion : t.tasks.addStep} placeholder={isTest ? t.tasks.question : t.tasks.step} lang={course.language} context={a.title} onChange={(steps) => update({ steps })} />
             </div>
+            {(a.answerKey || isTest) && (
+              <div className="rounded-control bg-well px-4 py-3">
+                <h4 className="font-ui text-13 font-semibold text-ink">
+                  {t.tasks.answerKey} <span className="font-normal text-ink-2">· {t.tasks.answerKeyNote}</span>
+                </h4>
+                <EditableText as="p" multiline value={a.answerKey} label={t.tasks.answerKey} placeholder={t.tasks.answerKeyEmpty} context={a.title} className="mt-2 block whitespace-pre-line font-ui text-14 text-ink-2" onCommit={(answerKey) => update({ answerKey })} />
+              </div>
+            )}
             {showRubric && rubric && (
               <div>
                 <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{t.tasks.rubric}</h4>

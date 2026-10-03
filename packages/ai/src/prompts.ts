@@ -1,6 +1,6 @@
 import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
-import { courseSoFar, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
-import { UNIVERSITY_TEACHING, trueFalseOrder, universityRubric } from './scales';
+import { courseSoFar, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
+import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 
 /**
@@ -216,7 +216,7 @@ const FOLLOW_PLAN_NEW_ITEMS = `Keep the plan's facts, data, methods and terms, b
 /** The names of the levels the course's rubrics use, so a plan that shows students the scoring uses them too. */
 function scaleLine(course: Course): string {
   // Only a course with a rubric has levels: given them regardless, a plan told students of levels that existed nowhere.
-  const rubricked = course.materials.rubrics.enabled && orderedLessons(course).some((l) => l.homework.kind === 'assignment');
+  const rubricked = course.materials.rubrics.enabled && orderedLessons(course).some((l) => l.homework.kind === 'assignment' || l.homework.kind === 'inclass');
   if (!rubricked && !Object.keys(course.rubrics).length) return '';
   const existing = Object.values(course.rubrics).find((r) => r.levels.length >= 3);
   const names = existing ? existing.levels.map((l) => `"${l.label}"`).join(', ') : isHigherEducation(course.audience.level) ? '' : '"Excellent", "Good", "Developing" and "Beginning"';
@@ -235,14 +235,6 @@ function rubricLevels(course: Course): string {
     : 'Name the rubric levels exactly "Excellent", "Good", "Developing" and "Beginning", with 4, 3, 2 and 1 as the points.';
 }
 
-/**
- * Graded papers held in a lesson. A test is written out in the plan, since no other material holds it; a short
- * quiz on the lesson is the quiz material, or the plan and the quiz each wrote their own questions.
- */
-const QUIZ_IN_PLAN =
-  'A graded quiz, test or exam in the lesson asks about new cases with new numbers, not the examples the course taught with, covers what the lessons before it taught, fits the minutes it has, and has its questions (with the choices, where it has them), answers and the points each carries written out in the notes, however long. Nothing left on the board or screen while students take it gives an answer.';
-const QUIZ_IS_MATERIAL = `${QUIZ_IN_PLAN.replace('A graded quiz, test or exam', 'A graded test or exam')} A short quiz on the lesson itself is the lesson's quiz, written separately: the plan gives it time and says how it is marked, and writes no second set of questions.`;
-
 export type SectionPromptKind = 'plan' | 'slides' | 'study' | 'quiz' | 'assignments' | 'discussions' | 'faq';
 
 /**
@@ -253,13 +245,13 @@ export type SectionPromptKind = 'plan' | 'slides' | 'study' | 'quiz' | 'assignme
 export const BUILT_ON_PLAN: ReadonlySet<SectionPromptKind> = new Set(['slides', 'study', 'quiz', 'assignments', 'discussions', 'faq']);
 
 const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string> = {
-  plan: (c) =>
+  plan: (c, lesson) =>
     [
       `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need (up to eight terms; in a course that teaches a language, every word and phrase the lesson teaches, each with its meaning). Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
       'Plan only what can really happen in the time, place and with the materials the lesson has. Whatever students are to see, make or finish in a segment has to be possible within that segment\'s minutes; when something takes longer, such as a process that needs hours or days to show a result, plan around it (start it earlier, use results prepared in advance, or come back to it later) and say how in the teacher notes. The slides, quiz and study guide are written from this plan and take everything in it as having happened.',
       'What the brief says of particular students (a newcomer, heritage speakers, students who need support) shapes the plan where it matters, with something for their own learning; it is not repeated in every segment.',
       'In the teacher notes, give the safety precautions a careful teacher would take with what students handle, taste, heat, cut or mix (protective gear, ventilation, heat a reaction gives off, disposal, allergies, materials that must never be eaten); these are outside the word limit of the notes. Where the material is painful (violence, racism, abuse, the language of period sources), say how to handle it with care, and never have students play the people who suffered or inflicted it.',
-      `A piece graded in the lesson is never modelled with the very case students then hand in. ${c.materials.quiz.enabled ? QUIZ_IS_MATERIAL : QUIZ_IN_PLAN} Nothing in these instructions is repeated in the plan as advice to the teacher.`,
+      `A piece graded in the lesson is never modelled with the very case students then hand in. ${gradedPapers(c, lesson)} Nothing in these instructions is repeated in the plan as advice to the teacher.`,
       'A text students read that is not among the teacher\'s sources is named exactly (author, title, and the section or passage to use, by its opening words when it has no number), so the teacher can find it, with a note to prepare copies; never just "an excerpt".',
       'When a segment uses another of the lesson\'s materials, such as the quiz, the slides or the assignment, say what students do with it, not what its questions or items will be: those are written separately, from this plan.',
       'When a segment gives students a set of items to work on that no other material holds, such as statements to sort, scenarios to classify, cases to match or data to read, write every item out in the teacher notes, one per line with its expected answer, however many there are; the word limit is for the rest of the notes. Keep such a set to what fits the minutes, usually four to six items. Never describe items that are left for the teacher to write. The same holds for a single question, such as an exit ticket: no other material holds it, so its wording and expected answer are in the plan.',
@@ -274,6 +266,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
     const toward = lesson.homework.toward.trim();
     if (lesson.homework.kind === 'step')
       return `Write one short, ungraded step toward ${toward ? `"${toward}"` : 'the larger graded piece the course builds to'}, suited to where this lesson falls in the course: for example choosing a question, gathering evidence, an outline or a draft section. It should take students well under an hour, and be done at home: nothing in it needs a partner, a classmate or the classroom's materials, and young children can do it with someone at home. Give a title, what to do, and one to four steps (the page numbers them, so leave numbers out). ${earlierSteps(c, lesson)}`.trim();
+    if (lesson.homework.kind === 'test') return testAsk(lesson);
     // One of a run (weekly sets) is about its lesson; a piece of its own (a paper, a project) is about the course.
     const own = sharedComponent(c, lesson)
       ? 'it is about what this lesson taught'
@@ -282,6 +275,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
       toward
         ? `Write the assignment "${toward}" as the brief describes it, with its length and requirements, set in this lesson and drawing on the course so far; ${own}: two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.`
         : 'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
+      lesson.homework.kind === 'inclass' ? IN_CLASS : ANSWER_KEY,
       sharedComponent(c, lesson),
       rubricLevels(c),
     ]
@@ -327,7 +321,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
   }
   if (kind === 'plan') parts.push(nextReading(course, lesson), earlierLessons(course, lesson), earlierNotes(lesson));
   // A graded piece of its own, not one of a weekly run: it is written from the course, not from one lesson.
-  if (kind === 'assignments' && lesson.homework.kind === 'assignment' && lesson.homework.toward.trim() && !sharedComponent(course, lesson)) parts.push(courseSoFar(course, lesson));
+  if (kind === 'assignments' && ownPiece(course, lesson)) parts.push(courseSoFar(course, lesson));
   if ((kind === 'plan' || kind === 'quiz') && course.sourceOrder.length) {
     parts.push(
       kind === 'quiz'

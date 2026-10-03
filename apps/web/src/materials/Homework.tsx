@@ -3,7 +3,7 @@ import { cx } from '@folio/ui';
 import { useT } from '../i18n';
 import { edit } from '../state/edit';
 
-const KINDS: HomeworkKind[] = ['assignment', 'step', 'none'];
+const KINDS: HomeworkKind[] = ['assignment', 'step', 'test', 'inclass', 'none'];
 
 /**
  * What students hand in from this lesson, and what it counts toward. The
@@ -39,6 +39,6 @@ export function HomeworkPicker({ course, lesson, className = 'mb-5', underHeadin
 /** In place of an assignment or rubric the lesson doesn't set: says why, so the gap doesn't read as missing. */
 export function NoWork({ lesson, kind }: { lesson: Lesson; kind: 'assignments' | 'rubrics' }) {
   const t = useT();
-  const text = lesson.homework.kind === 'none' ? t.homework.none : t.homework.noRubric;
+  const text = lesson.homework.kind === 'none' ? t.homework.none : lesson.homework.kind === 'test' ? t.homework.testNoRubric : t.homework.noRubric;
   return <p className="rounded-control bg-well px-4 py-3 font-ui text-14 text-ink-2">{kind === 'assignments' ? t.homework.none : text}</p>;
 }

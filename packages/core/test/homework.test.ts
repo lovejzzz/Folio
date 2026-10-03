@@ -52,4 +52,37 @@ describe('homework', () => {
     const rubricTitle = store.getState().rubrics[lessonAssignments(store.getState(), store.getState().lessons[lesson.id]!)[0]!.rubricId!]!.title;
     expect(JSON.stringify(project(store.getState(), 'rubrics', { audience: 'student' }))).not.toContain(rubricTitle);
   });
+
+  it('keeps a test’s answer key for the teacher: the student copy has the questions and no key', () => {
+    const store = new CourseStore(sampleCourse());
+    const lesson = orderedLessons(store.getState())[0]!;
+    const [assignment] = lessonAssignments(store.getState(), lesson);
+    store.apply(
+      [
+        cmd('lesson.homework', { lessonId: lesson.id, homework: { kind: 'test', toward: 'Unit test' } }),
+        cmd('task.update', { taskId: assignment!.id, fields: { title: 'Unit test', steps: ['Find the median of 3, 9, 4. (2 points)'], answerKey: '1. 4 (2 points)\nTotal: 2 points', rubricId: null } }),
+      ],
+      label,
+    );
+    const now = store.getState();
+    expect(cellState(now, now.lessons[lesson.id]!, 'rubrics')).toBe('none');
+    const teacher = JSON.stringify(project(now, 'assignments', { audience: 'teacher' }));
+    const student = JSON.stringify(project(now, 'assignments', { audience: 'student' }));
+    expect(teacher).toContain('Total: 2 points');
+    expect(teacher).toContain('Questions');
+    expect(student).toContain('Find the median of 3, 9, 4.');
+    expect(student).not.toContain('Total: 2 points');
+    expect(student).toContain('Taken in class');
+  });
+
+  it('reads an assignment saved before answer keys as having none, and gives in-class graded work a rubric', () => {
+    const saved = JSON.parse(JSON.stringify(sampleCourse())) as { tasks: Record<string, Record<string, unknown>> };
+    for (const t of Object.values(saved.tasks)) delete t.answerKey;
+    const course = parseCourse(saved);
+    const lesson = orderedLessons(course)[0]!;
+    expect(lessonAssignments(course, lesson)[0]!.answerKey).toBe('');
+    const store = new CourseStore(course);
+    store.apply([cmd('lesson.homework', { lessonId: lesson.id, homework: { kind: 'inclass', toward: 'Presentation' } })], label);
+    expect(cellState(store.getState(), store.getState().lessons[lesson.id]!, 'rubrics')).not.toBe('none');
+  });
 });

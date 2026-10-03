@@ -81,7 +81,7 @@ export type CellState = 'off' | 'none' | 'empty' | 'ready' | 'attention' | 'stal
 /** Whether a lesson has anything to write for this material: no homework, no assignment; a step, no rubric. */
 export function setsWork(lesson: Lesson, kind: MaterialKind): boolean {
   if (kind === 'assignments') return lesson.homework.kind !== 'none';
-  if (kind === 'rubrics') return lesson.homework.kind === 'assignment';
+  if (kind === 'rubrics') return lesson.homework.kind === 'assignment' || lesson.homework.kind === 'inclass';
   return true;
 }
 

@@ -21,7 +21,7 @@ function useNothingToWrite(kind: MaterialKind, selected: boolean): string | null
   if (!selected) return null;
   const set = course.lessonOrder.map((id) => course.lessons[id]?.homework.kind ?? 'none');
   if (kind === 'assignments' && set.every((k) => k === 'none')) return t.plan.noHomework;
-  if (kind === 'rubrics' && !set.includes('assignment')) return t.plan.noGradedHomework;
+  if (kind === 'rubrics' && !set.includes('assignment') && !set.includes('inclass')) return t.plan.noGradedHomework;
   return null;
 }
 

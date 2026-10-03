@@ -29,9 +29,9 @@ export const OutlineDraft = z.object({
           .default([])
           .describe('What students read before this lesson; empty if the brief and sources name nothing to read'),
         homework: z
-          .enum(['assignment', 'step', 'none'])
+          .enum(['assignment', 'step', 'test', 'inclass', 'none'])
           .default('assignment')
-          .describe('What students hand in after this lesson, following how the brief says the course is assessed'),
+          .describe('The graded or handed-in work this lesson holds, following how the brief says the course is assessed'),
         homeworkToward: z.string().default('').describe('The graded component the homework counts toward, named as under "grading"; empty if none'),
         suggestedReadings: z
           .array(line)
@@ -124,8 +124,26 @@ export const AssignmentDraft = z.object({
       .min(2)
       .max(5),
   }),
+  answerKey: z.string().default('').describe('For the teacher: the worked answer to each step, one per line, numbered as the steps are; empty when the work has no single answer, such as an essay'),
 });
 export type AssignmentDraft = z.infer<typeof AssignmentDraft>;
+
+/** A test, quiz or exam taken in class, as a paper a teacher can print and mark. */
+export const TestDraft = z.object({
+  title: line,
+  instructions: line.describe('What students read at the top of the paper: time allowed, what they may use, how to show their work'),
+  questions: z
+    .array(
+      z.object({
+        question: line.describe('The question as printed, complete in itself; a multiple-choice question lists its choices as A, B, C and D'),
+        points: z.number().int().min(1).max(100),
+        answer: line.describe('The answer for the key, with the working or the points a marker looks for'),
+      }),
+    )
+    .min(3)
+    .max(40),
+});
+export type TestDraft = z.infer<typeof TestDraft>;
 
 /** A short ungraded step toward a larger graded piece: no rubric, since the piece has its own. */
 export const StepDraft = z.object({

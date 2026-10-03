@@ -60,3 +60,12 @@ describe('other checks', () => {
     expect(passageText(s, s.passages[1]!.id)).toBe(second);
   });
 });
+
+describe('an explanation that argues with its answer', () => {
+  it('is flagged, and a plain one is not', () => {
+    const q = { format: 'choice' as const, prompt: 'What time is 2:45?', choices: ['Son las tres menos cuarto', 'Son las dos y cuarto', 'Son las tres y cuarto'], answer: 'Son las tres y cuarto' };
+    expect(checkQuestion({ ...q, explanation: 'Three and a quarter. Wait, the correct choice must use menos cuarto.' }).map((f) => f.code)).toContain('explanationUnsure');
+    expect(checkQuestion({ ...q, explanation: 'A quarter to three is tres menos cuarto.' })).toEqual([]);
+    expect(checkQuestion({ ...q, explanation: 'Students wait for the bell, then answer. Actually seeing the clock helps.' })).toEqual([]);
+  });
+});

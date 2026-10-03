@@ -20,6 +20,8 @@ const KnownFlag = z.discriminatedUnion('code', [
   plain('duplicateChoices'),
   plain('answerNotInChoices'),
   plain('noModelAnswer'),
+  /** The explanation argues with its own answer ("Wait, the correct choice must be…"): the key can't be trusted. */
+  plain('explanationUnsure'),
   plain('answerNotNumber'),
   withValues('answerMismatch', { stated: z.string(), computed: z.string() }),
   withValues('minutesMismatch', { total: z.number(), target: z.number() }),
@@ -70,6 +72,8 @@ export function describeFlag(flag: Flag): string {
       return 'The answer is not one of the choices.';
     case 'noModelAnswer':
       return 'The question has no model answer.';
+    case 'explanationUnsure':
+      return 'The explanation corrects itself, so the answer may be wrong: decide the answer, then explain it plainly.';
     case 'answerNotNumber':
       return 'The answer to a numeric question is not a number.';
     case 'answerMismatch':

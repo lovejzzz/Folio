@@ -27,7 +27,7 @@ describe('tidyTrueFalse', () => {
 
 describe('tidySteps', () => {
   it('drops numbers the page would repeat', () => {
-    const v = tidySteps({ title: 't', prompt: 'p', steps: ['1. List MLR.1 to MLR.5.', 'Step 2: Run lm().', '第三步：解释系数', '2 × 3 is a product, not a number prefix', '2.5 hours of reading', '3:1 odds'], rubric: { levels: [], criteria: [] } });
+    const v = tidySteps({ title: 't', prompt: 'p', steps: ['1. List MLR.1 to MLR.5.', 'Step 2: Run lm().', '第三步：解释系数', '2 × 3 is a product, not a number prefix', '2.5 hours of reading', '3:1 odds'], rubric: { levels: [], criteria: [] }, answerKey: '' });
     expect(v.steps).toEqual(['List MLR.1 to MLR.5.', 'Run lm().', '解释系数', '2 × 3 is a product, not a number prefix', '2.5 hours of reading', '3:1 odds']);
   });
 });

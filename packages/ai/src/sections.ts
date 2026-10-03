@@ -1,6 +1,6 @@
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
-import { tidyFaq, tidyFollowUps, tidyLessonNames, tidyPlanSources, tidySlides, tidySteps, tidyTrueFalse, unnumberSteps } from './tidy';
+import { tidyFaq, tidyFollowUps, tidyLessonNames, tidyPlanSources, tidySlides, tidyTrueFalse } from './tidy';
 import {
   checkSessionMinutes,
   lessonSessions,
@@ -16,18 +16,15 @@ import {
   type GeneratedKind,
   type Lesson,
   type Question,
-  type Rubric,
-  type Task,
 } from '@folio/core';
 import { InferenceError, type Inference } from './inference';
 import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
+import { assignments, base, flagsAt, step, test, type SectionJob } from './workJobs';
 import { issuePlace, reviewPlan } from './review';
-import { runJob, type JobSpec, type Problem } from './jobs';
+import { runJob, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
 import {
-  AssignmentDraft,
-  StepDraft,
   DiscussionsDraft,
   FaqDraft,
   PlanDraft,
@@ -36,21 +33,6 @@ import {
   StudyDraft,
   type QuestionDraft,
 } from './schemas';
-
-/** Everything one generated section needs: its schema, its checks and how it becomes commands. */
-interface SectionJob<T> {
-  schema: JobSpec<T>['schema'];
-  tidy?: (value: T, course: Course, lesson: Lesson) => T;
-  check?: (value: T, course: Course, lesson: Lesson) => Problem[];
-  toCommands: (value: T, problems: Problem[], course: Course, lesson: Lesson) => Command[];
-}
-
-/** The flags for one item, or for the whole section when index is null. */
-function flagsAt(problems: Problem[], index: number | null): Flag[] {
-  return problems.filter((p) => p.index === index).map((p) => p.flag);
-}
-
-const base = (lesson: Lesson) => ({ lessonId: lesson.id, sourceRefs: [], origin: 'ai' as const, edited: false });
 
 function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flags: Flag[]): Question {
   const graded = draft.format === 'choice' || draft.format === 'truefalse';
@@ -167,59 +149,6 @@ const quiz: SectionJob<QuizDraft> = {
       tasks: balanceChoices(v.questions.map((q, i) => toQuestion(q, course, lesson, flagsAt(problems, i)))),
     }),
   ],
-};
-
-const assignments: SectionJob<AssignmentDraft> = {
-  schema: AssignmentDraft,
-  tidy: tidySteps,
-  check: (v) =>
-    v.rubric.criteria
-      .filter((c) => c.descriptors.length !== v.rubric.levels.length)
-      .map((c) => ({ index: null, flag: { code: 'criterionLevels', values: { criterion: c.name } } })),
-  toCommands: (v, problems, _course, lesson) => {
-    const levels = v.rubric.levels.map((lv) => ({ id: newId('x'), label: lv.label, points: lv.points }));
-    const rubric: Rubric = {
-      id: newId('r'),
-      title: v.title,
-      levels,
-      criteria: v.rubric.criteria.map((c) => ({
-        id: newId('x'),
-        name: c.name,
-        descriptors: Object.fromEntries(levels.map((lv, i) => [lv.id, c.descriptors[i] ?? ''])),
-      })),
-    };
-    const task: Task = {
-      ...base(lesson),
-      id: newId('t'),
-      kind: 'assignment',
-      objectiveIds: [...lesson.objectiveIds],
-      flags: [],
-      title: v.title,
-      prompt: v.prompt,
-      steps: v.steps,
-      rubricId: rubric.id,
-    };
-    return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: flagsAt(problems, null), tasks: [task], rubrics: [rubric] })];
-  },
-};
-
-const step: SectionJob<StepDraft> = {
-  schema: StepDraft,
-  tidy: unnumberSteps,
-  toCommands: (v, problems, _course, lesson) => {
-    const task: Task = {
-      ...base(lesson),
-      id: newId('t'),
-      kind: 'assignment',
-      objectiveIds: [...lesson.objectiveIds],
-      flags: [],
-      title: v.title,
-      prompt: v.prompt,
-      steps: v.steps,
-      rubricId: null,
-    };
-    return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: flagsAt(problems, null), tasks: [task], rubrics: [] })];
-  },
 };
 
 const discussions: SectionJob<DiscussionsDraft> = {
@@ -375,6 +304,7 @@ export async function generateSection(
       return run(quiz);
     case 'assignments':
       if (lesson.homework.kind === 'none') return { commands: [], flagged: 0 };
+      if (lesson.homework.kind === 'test') return run(test);
       return lesson.homework.kind === 'step' ? run(step) : run(assignments);
     case 'discussions':
       return run(discussions);

@@ -165,6 +165,30 @@ describe('a graded piece of the whole course', () => {
   });
 });
 
+describe('a test taken in class', () => {
+  it('is written as a paper: questions with points for students, the key for the teacher', async () => {
+    const store = new CourseStore(smallCourse());
+    const [first] = orderedLessons(store.getState());
+    store.apply([cmd('lesson.homework', { lessonId: first!.id, homework: { kind: 'test', toward: 'Unit test' } })], { label: { key: 'b' }, source: 'teacher' });
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'plan')).toContain('writes no questions');
+    const inf = fakeInference(() => ({
+      title: 'Unit test',
+      instructions: 'You have 40 minutes. Show your work.',
+      questions: [
+        { question: 'What gas do plants take in?', points: 2, answer: 'Carbon dioxide' },
+        { question: 'Where is chlorophyll found? A leaf B root C stem D flower', points: 1, answer: 'A' },
+        { question: 'Explain why a leaf kept in the dark loses its starch.', points: 5, answer: 'No light, so no photosynthesis; stored starch is used up.' },
+      ],
+    }));
+    const result = await generateSection(inf, store.getState(), first!.id, 'assignments');
+    expect(inf.calls[0]!.prompt).toContain('as a paper students are handed');
+    store.apply(result.commands, { label: { key: 'b' }, source: 'ai' });
+    const task = store.getState().tasks[store.getState().lessons[first!.id]!.taskIds.at(-1)!]!;
+    expect(task.kind === 'assignment' && [task.steps[0], task.steps[1], task.rubricId]).toEqual(['What gas do plants take in? (2 points)', 'Where is chlorophyll found? A leaf B root C stem D flower (1 point)', null]);
+    expect(task.kind === 'assignment' && task.answerKey).toBe('1. Carbon dioxide (2 points)\n2. A (1 point)\n3. No light, so no photosynthesis; stored starch is used up. (5 points)\nTotal: 8 points');
+  });
+});
+
 describe('homework changed mid-build', () => {
   it('writes no assignment for a lesson set to no homework after the build began', async () => {
     const store = new CourseStore(smallCourse());

@@ -18,14 +18,45 @@ export function trueFalseOrder(course: Course, lesson: Lesson): string {
  * The levels take the local grade bands, each worth the lowest mark of its band.
  */
 export function universityRubric(locale: string): string {
+  // North American colleges score rubrics on four performance levels, 4 to 1 (as the AAC&U VALUE rubrics do):
+  // named after letter grades with 90 to 60 as points, flawless work earned 90 and missing work 60.
+  if (/^en-(US|CA)$/i.test(locale)) return 'Name the rubric levels exactly "Exemplary", "Proficient", "Developing" and "Beginning", with 4, 3, 2 and 1 as the points. Write each descriptor as a marker would, for work at that level.';
   const bands = /^en-(GB|IE)$/i.test(locale)
     ? 'the UK degree classes, exactly "First", "Upper second", "Lower second" and "Third", with 70, 60, 50 and 40 as the points'
-    : /^en-(US|CA)$/i.test(locale)
-      ? 'letter grades, exactly "A", "B", "C" and "D", with 90, 80, 70 and 60 as the points'
-      : 'the grade bands used where the course is taught, each level worth the lowest mark of its band';
+    : 'the grade bands used where the course is taught, each level worth the lowest mark of its band';
   return `Name the rubric levels after ${bands}. Write each descriptor as a marker would, for work at that band.`;
+}
+
+/** New problems need their answers: without a key the teacher works every problem set before marking it. */
+export const ANSWER_KEY =
+  'Under "answerKey", give the teacher the worked answer to each step, one per line and numbered as the steps are; leave it empty only when the work has no single answer, such as an essay or a project.';
+
+/** Work graded in the lesson itself: a presentation, a seminar, an interview, something made in class. */
+export const IN_CLASS =
+  'This piece is done and graded in class, not taken home: the steps say what students do in the lesson, the rubric is what the teacher scores with while or after they do it, and "answerKey" tells the teacher how to run and score it for a whole class in the time (who goes when, what the others do), or is empty.';
+
+/** A test, quiz or exam taken in class, as a paper to print, with its key. */
+export function testAsk(lesson: Lesson): string {
+  const toward = lesson.homework.toward.trim();
+  return `Write ${toward ? `"${toward}"` : 'the test this lesson holds'} as a paper students are handed, to be taken in the time the plan gives it. Under "instructions", what students read at the top: the time allowed, what they may use and how to show their work. Then the questions, each complete as printed (a multiple-choice question lists its choices as A, B, C and D), with the points it carries and, for the key, its answer with the working or the points a marker looks for. Cover what the lessons up to this one taught, in proportion to the time each took, with new cases and new numbers, never the examples the lessons worked; mix short questions with ones that ask students to show reasoning, at the level these students are taught. Make the points add up to a round total.`;
 }
 
 /** How university teaching differs from school, said once in the course background. */
 export const UNIVERSITY_TEACHING =
   'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. A seminar runs on discussion of the reading: keep the instructor\'s exposition short and let students lead. Leave out school routines such as warm-up games, exit tickets or reading aloud in turn, unless the brief or syllabus asks for them.';
+
+/**
+ * Graded papers held in a lesson. A test is written out in the plan, since no other material holds it; a short
+ * quiz on the lesson is the quiz material, or the plan and the quiz each wrote their own questions.
+ */
+const QUIZ_IN_PLAN =
+  'A graded quiz, test or exam in the lesson asks about new cases with new numbers, not the examples the course taught with, covers what the lessons before it taught, fits the minutes it has, and has its questions (with the choices, where it has them), answers and the points each carries written out in the notes, however long. Nothing left on the board or screen while students take it gives an answer.';
+const QUIZ_IS_MATERIAL = `${QUIZ_IN_PLAN.replace('A graded quiz, test or exam', 'A graded test or exam')} A short quiz on the lesson itself is the lesson's quiz, written separately: the plan gives it time and says how it is marked, and writes no second set of questions.`;
+const NOTHING_SHOWN = 'Nothing left on the board or screen while students take it gives an answer.';
+
+/** What a plan is told about the graded papers its lesson holds. */
+export function gradedPapers(course: Course, lesson: Lesson): string {
+  // Its paper is the lesson's own material: the plan runs it and writes none of it.
+  if (lesson.homework.kind === 'test') return `The test this lesson holds has its own paper: the plan gives it most of the lesson, says how the room is set and what students may use, and writes no questions. ${NOTHING_SHOWN}`;
+  return course.materials.quiz.enabled ? QUIZ_IS_MATERIAL : QUIZ_IN_PLAN;
+}

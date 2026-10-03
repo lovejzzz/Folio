@@ -49,12 +49,16 @@ export function projectAssignments(ctx: Ctx): Block[] {
       blocks.push({ t: 'heading', level: 3, text: field(ctx, a.id, 'title', a.title) });
       blocks.push({ t: 'para', text: field(ctx, a.id, 'prompt', a.prompt) });
       const toward = lesson.homework.toward.trim();
-      if (lesson.homework.kind === 'step' && toward) blocks.push({ t: 'para', text: l.buildsToward(toward), tone: 'muted' });
+      const { kind } = lesson.homework;
+      if (kind === 'step' && toward) blocks.push({ t: 'para', text: l.buildsToward(toward), tone: 'muted' });
+      if (kind === 'test' || kind === 'inclass') blocks.push({ t: 'para', text: kind === 'test' ? l.takenInClass : l.gradedInClass, tone: 'muted' });
       const steps = filledTexts(a.steps);
       if (steps.length) {
-        blocks.push({ t: 'heading', level: 3, text: l.steps });
+        blocks.push({ t: 'heading', level: 3, text: kind === 'test' ? l.questions : l.steps });
         blocks.push({ t: 'list', ordered: true, items: steps });
       }
+      // The key is the teacher's: a student copy of a test or a problem set never carries it.
+      if (ctx.teacher && a.answerKey.trim()) blocks.push({ t: 'note', label: l.answerKey, text: a.answerKey.trim() });
       const rubric = a.rubricId && setsWork(lesson, 'rubrics') ? course.rubrics[a.rubricId] : undefined;
       if (rubric) {
         blocks.push({ t: 'para', text: l.gradedWith(rubric.title), tone: 'muted' });

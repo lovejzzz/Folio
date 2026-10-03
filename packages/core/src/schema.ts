@@ -84,12 +84,14 @@ export const StudyPointSchema = z.object({ id, heading: text, explanation: text 
 export type StudyPoint = z.infer<typeof StudyPointSchema>;
 
 /**
- * What students hand in from a lesson, as the course's assessment plan has it:
+ * The graded or handed-in work a lesson holds, as the course's assessment plan has it:
  * a graded assignment, a short ungraded step toward a larger graded piece (a
- * thesis, an outline, a draft), or nothing. A course graded by weekly quizzes
- * and one final essay has an essay to write once, not every week.
+ * thesis, an outline, a draft), a test taken in class (a quiz, test or exam, written
+ * as a paper with its key), a piece graded in class with a rubric (a presentation,
+ * a seminar, an interview, work made in the lesson), or nothing. A course graded by
+ * weekly quizzes and one final essay has an essay to write once, not every week.
  */
-export const HomeworkKindSchema = z.enum(['assignment', 'step', 'none']);
+export const HomeworkKindSchema = z.enum(['assignment', 'step', 'test', 'inclass', 'none']);
 export type HomeworkKind = z.infer<typeof HomeworkKindSchema>;
 export const HomeworkSchema = z.object({
   kind: HomeworkKindSchema,
@@ -163,8 +165,11 @@ export const AssignmentSchema = z.object({
   kind: z.literal('assignment'),
   title: text,
   prompt: text,
+  /** The tasks of an assignment; the questions of a test, each with its points. */
   steps: z.array(text),
   rubricId: id.nullable(),
+  /** Worked answers and how to mark them, for the teacher's copy only; empty for work with no single answer. */
+  answerKey: text.default(''),
 });
 export type Assignment = z.infer<typeof AssignmentSchema>;
 

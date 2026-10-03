@@ -36,7 +36,8 @@ describe('university courses', () => {
     const uk = university('en-GB');
     const us = university('en-US');
     expect(sectionPrompt(uk, lesson(uk), 'assignments')).toMatch(/"First", "Upper second"/);
-    expect(sectionPrompt(us, lesson(us), 'assignments')).toMatch(/"A", "B"/);
+    // North American colleges: four performance levels scored 4 to 1, so full marks can be earned.
+    expect(sectionPrompt(us, lesson(us), 'assignments')).toMatch(/"Exemplary", "Proficient", "Developing" and "Beginning", with 4, 3, 2 and 1/);
     const school = smallCourse();
     expect(sectionPrompt(school, lesson(school), 'assignments')).not.toMatch(/grade bands|degree classes|letter grades/);
     expect(sectionPrompt({ ...school, rubrics: {} }, lesson(school), 'assignments')).toMatch(/exactly "Excellent", "Good", "Developing" and "Beginning"/);

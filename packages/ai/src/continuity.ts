@@ -92,7 +92,7 @@ export function earlierSteps(course: Course, lesson: Lesson): string {
 export function sharedComponent(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   if (!toward) return '';
-  const sharing = orderedLessons(course).filter((l) => l.homework.kind === 'assignment' && l.homework.toward.trim() === toward);
+  const sharing = orderedLessons(course).filter((l) => l.homework.kind === lesson.homework.kind && l.homework.toward.trim() === toward);
   if (sharing.length < 2) return '';
   const place = sharing.findIndex((l) => l.id === lesson.id) + 1;
   const told = `"${toward}" is set as an assignment in ${sharing.length} lessons, and this is part ${place} of ${sharing.length}: write only the part that belongs to this lesson, title it so it can be told apart from the other parts (for example "${toward}: " followed by this lesson's focus), and never say this part alone carries the component's whole weight. Students read it as an assignment in its own right: no "part", "component" or count of parts in its text.`;
@@ -119,6 +119,10 @@ export function earlierNotes(lesson: Lesson): string {
 export function homeworkLine(lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   if (lesson.homework.kind === 'none') return 'This lesson sets no homework.';
+  const named = toward ? `"${toward}"` : 'a graded piece';
+  // The paper and the rubric are their own material: a plan that also wrote them gave the lesson two.
+  if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions, and writes no questions.`;
+  if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done and graded in class with a rubric written separately: the plan runs it, with time for every student, and writes no criteria.`;
   const set = 'which the plan has the teacher set before students leave, without spelling out its tasks or naming files and handouts it may not have';
   if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}.`;
   return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}"` : ''}, ${set}.`;
@@ -151,4 +155,11 @@ export function planSummary(lesson: Lesson): string {
     .map((s) => `- ${s.title} (${s.minutes} min): ${s.description}${s.teacherNotes.trim() ? `\n  Teacher notes: ${s.teacherNotes.trim()}` : ''}`)
     .join('\n');
   return `The lesson plan's key ideas:\n${ideas}\n\nThe lesson runs like this:\n${flow}`;
+}
+
+/** A graded piece of its own (a paper, a project, a test, a performance), not one of a run of weekly sets. */
+export function ownPiece(course: Course, lesson: Lesson): boolean {
+  const { kind, toward } = lesson.homework;
+  if (kind === 'test' || kind === 'inclass') return true;
+  return kind === 'assignment' && Boolean(toward.trim()) && !sharedComponent(course, lesson);
 }
