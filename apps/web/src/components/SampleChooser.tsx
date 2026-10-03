@@ -43,7 +43,7 @@ export function SampleChooser() {
                     type="button"
                     disabled={opening !== null}
                     onClick={() => void open(name)}
-                    className="block h-full w-full rounded-control border border-rule px-4 py-3 text-left outline-none transition-colors duration-120 hover:border-field hover:bg-well focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
+                    className="flex h-full w-full flex-col items-start justify-start rounded-control border border-rule px-4 py-3 text-left outline-none transition-colors duration-120 hover:border-field hover:bg-well focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
                   >
                     <span className="block font-reading text-17 text-ink">{SAMPLES[name].title}</span>
                     <span className="mt-0.5 block font-ui text-13 text-ink-2">{opening === name ? t.samples.opening : SAMPLES[name].detail}</span>

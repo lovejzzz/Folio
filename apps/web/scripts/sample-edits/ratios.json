@@ -1,0 +1,318 @@
+[
+ {
+  "find": "A calculator may be used only where the lesson says so; quizzes and the unit test are done without one.",
+  "replace": "No calculators are used in this unit. Class work, quizzes and the unit test are all done by hand.",
+  "why": "No lesson ever allows a calculator, so the old rule pointed at nothing."
+ },
+ {
+  "find": "Quiz corrections done in class earn back half of the points lost.",
+  "replace": "Each quiz is gone over in class when it is handed back. Corrections written then earn back half of the points lost.",
+  "why": "Policy now matches the lessons, which go over each returned quiz."
+ },
+ {
+  "lesson": 1,
+  "find": "two quantities. Use drawings only; no real food.",
+  "replace": "two quantities.",
+  "why": "Stray safety note on the title slide; it is already in the warm-up."
+ },
+ {
+  "lesson": 1,
+  "find": "three parts about a class of pets",
+  "replace": "three parts about a pet store window",
+  "why": "The ticket is about a pet store window, not a class of pets."
+ },
+ {
+  "lesson": 1,
+  "find": "Preview that later in the course they will build tables of equal ratios.",
+  "replace": "Preview that next time they will build tables of equivalent ratios.",
+  "why": "The next lesson does this; use the term it teaches.",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "Find ?: 12:? Answer",
+  "replace": "Find 12:? Answer",
+  "why": "Garbled item."
+ },
+ {
+  "lesson": 2,
+  "find": "No: 4 × 2.5 = 10 but 3 × 2.5 = 7.5, not 6.",
+  "replace": "No: 3 × 2 = 6 but 4 × 2 = 8, not 10.",
+  "why": "Whole-number check that matches the method taught; a 2.5 multiplier is beyond this lesson.",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "Not graded; no real food.",
+  "replace": "Do not grade this ticket.",
+  "why": "Machine-sounding note."
+ },
+ {
+  "lesson": 2,
+  "find": "Drawings only, no real food. Collect the sheets",
+  "replace": "Collect the sheets",
+  "why": "No drawing of food in a trail mix table; stray note."
+ },
+ {
+  "lesson": 2,
+  "find": " There is no homework for this lesson.",
+  "replace": "",
+  "why": "Echoed setup instruction."
+ },
+ {
+  "lesson": 3,
+  "find": "2. Boys to girls 5:7, 20 boys. Unit 4: 28 girls.",
+  "replace": "2. Boys to girls 5:7, 30 boys. Unit 6: 42 girls.",
+  "why": "All four practice problems had a unit of 4, so students could guess."
+ },
+ {
+  "lesson": 3,
+  "find": "3. Oats to raisins 4:3, 28 cups in all. Unit 4: 16 oats, 12 raisins.",
+  "replace": "3. Oats to raisins 4:3, 35 cups in all. 7 boxes, unit 5: 20 oats, 15 raisins.",
+  "why": "Same: vary the unit value."
+ },
+ {
+  "lesson": 3,
+  "find": "There are 20 boys. How many girls?",
+  "replace": "There are 30 boys. How many girls?",
+  "why": "Match the plan."
+ },
+ {
+  "lesson": 3,
+  "find": "3. Oats to raisins is 4:3. There are 28 cups in all.",
+  "replace": "3. Oats to raisins is 4:3. There are 35 cups in all.",
+  "why": "Match the plan."
+ },
+ {
+  "lesson": 3,
+  "find": "2. Unit 4: 28 girls. 3. Unit 4: 16 oats, 12 raisins.",
+  "replace": "2. Unit 6: 42 girls. 3. Unit 5: 20 oats, 15 raisins.",
+  "why": "Match the plan."
+ },
+ {
+  "lesson": 3,
+  "find": "Preview that later in the course they will find how much of a quantity one box is worth when the box stands for a rate.",
+  "replace": "Tell students that next time opens with the first quiz, on ratio language, ratio tables and tape diagrams. After the quiz they will meet rates, such as miles per hour.",
+  "why": "Garbled preview; students were never told about the graded quiz.",
+  "all": true
+ },
+ {
+  "lesson": 3,
+  "find": "3 equal shells boxes above 4 equal buttons boxes",
+  "replace": "3 equal boxes for shells above 4 equal boxes for buttons",
+  "why": "Awkward wording."
+ },
+ {
+  "lesson": 3,
+  "find": "4 equal shells boxes above 3 equal buttons boxes",
+  "replace": "4 equal boxes for shells above 3 equal boxes for buttons",
+  "why": "Awkward wording."
+ },
+ {
+  "lesson": 3,
+  "find": "4 larger shells boxes above 3 smaller buttons boxes",
+  "replace": "4 larger boxes for shells above 3 smaller boxes for buttons",
+  "why": "Awkward wording."
+ },
+ {
+  "lesson": 3,
+  "find": "4 equal buttons boxes above 3 equal shells boxes",
+  "replace": "4 equal boxes for buttons above 3 equal boxes for shells",
+  "why": "Awkward wording."
+ },
+ {
+  "lesson": 4,
+  "find": "Quiz, 10 points.\nQ1 (2): A garden has 6 tulips and 9 daisies. (a) Write tulips to daisies as a:b. 6:9 (1). (b) Write tulips to all flowers as a:b and say part-to-part or part-to-whole. 6:15, part-to-whole (1).\nQ2 (2): A parking lot has cars and trucks in the ratio 3:7. Say it with ‘for every’ (3 cars for every 7 trucks, 1). Write trucks to cars as a:b (7:3, 1).\nQ3 (3): Paint mix, blue to white. Complete the table: blue 2, 6, ?, 14; white 5, ?, 25, ?. Answers: 15 (1), 10 (1), 35 (1).\nQ4 (3): Stars to hearts on stickers is 5:2, with 21 stickers in all. Draw a tape diagram with 5 boxes over 2 boxes (1). One unit is 21 ÷ 7 = 3 (1). 15 stars and 6 hearts (1).\nAccept 6/9 style answers only if the order is right; note it, do not deduct for ratio form.",
+  "replace": "Quiz, 10 points.\nQ1 (2): A garden has 6 tulips and 9 daisies. (a) Write tulips to daisies as a:b. Answer: 6:9 (1). (b) Write tulips to all flowers as a:b and say whether it is part-to-part or part-to-whole. Answer: 6:15, part-to-whole (1 for both).\nQ2 (2): A parking lot has cars and trucks in the ratio 3:7. (a) Say the ratio using ‘for every’. Answer: 3 cars for every 7 trucks (1). (b) Write trucks to cars as a:b. Answer: 7:3 (1).\nQ3 (3): A paint mix uses 4 cans of blue for every 9 cans of white. Complete the table: blue 4, 12, ?, 28; white 9, ?, 45, ?. Answers: white 27 (1), blue 20 (1), white 63 (1).\nQ4 (3): Stickers come as stars and hearts in the ratio 5:2, with 21 stickers in all. Draw a tape diagram and find how many of each there are. Answers: 5 boxes over 2 boxes (1); one unit is 21 ÷ 7 = 3 (1); 15 stars and 6 hearts (1).\nIf a student writes a ratio as 6/9, accept it when the order is right and write a note on the paper; take no points off for the form.",
+  "why": "Quiz key mixed questions with answers; Q3 reused the class's 2:5 numbers (10:25); each question now reads as a question with its answer and points."
+ },
+ {
+  "lesson": 4,
+  "find": "Fill in the first column: 60 words in 2 minutes.",
+  "replace": "Fill in the first column: Mia types 60 words in 2 minutes.",
+  "why": "Mia was named before she was introduced."
+ },
+ {
+  "lesson": 4,
+  "find": "‘for each 1'",
+  "replace": "‘for each 1’",
+  "why": "Mismatched quote mark."
+ },
+ {
+  "lesson": 4,
+  "find": "“4\"",
+  "replace": "“4”",
+  "why": "Mismatched quote mark."
+ },
+ {
+  "lesson": 4,
+  "find": "Look at 36 gallons in 4 minutes and 36 gallons in 4 gallons of paint. How could the bare number 9 mean different things?",
+  "replace": "Look at 36 gallons in 4 minutes and $36 for 4 tickets. Both give the number 9. How could the bare number 9 mean different things?",
+  "why": "Garbled case: gallons in gallons of paint."
+ },
+ {
+  "lesson": 5,
+  "find": "Show three rates one at a time. Students find the unit rate on a mini whiteboard and hold it up.\nOne student reads the answer aloud as a sentence with per or for each.\nRemind the class that the quantity after per is the one we divide by.",
+  "replace": "Hand back the first quiz. Show the answers and work the ratio table and tape diagram questions on the board. Students write corrections beside their mistakes and hand the papers back in.\nThen show three rates one at a time. Students find the unit rate on a mini whiteboard and hold it up.\nOne student reads each answer aloud as a sentence with per or for each.",
+  "why": "The returned quiz was handed back but never gone over, and the policy promises corrections in class."
+ },
+ {
+  "lesson": 5,
+  "find": "Items: 1. 24 miles in 6 hours: 4 miles per hour. 2. $15 for 5 pounds of apples: $3 per pound. 3. 56 pages in 7 hours: 8 pages for each hour. Check units. Use last time’s exit tickets to call on students who divided by the wrong quantity. Hand back last time’s quiz papers as students arrive.",
+  "replace": "Quiz first, about 3 minutes: corrections earn back half of the points lost, so collect the papers again. Then the rates, briskly. Items: 1. 24 miles in 6 hours: 4 miles per hour. 2. $15 for 5 pounds of apples: $3 per pound. 3. 56 pages in 7 hours: 8 pages for each hour. Check units, and remind the class that the quantity after per is the one we divide by. Use last time’s exit tickets to call on students who divided by the wrong quantity.",
+  "why": "Same: go over the quiz, then the warm-up rates."
+ },
+ {
+  "lesson": 5,
+  "find": "Hand back last time’s quiz papers as students arrive. Today students",
+  "replace": "Hand back the first quiz and go over it before the warm-up rates. Students write corrections and hand the papers back in. Today students",
+  "why": "Match the plan."
+ },
+ {
+  "lesson": 5,
+  "find": "Market B because 8 pounds cost less per package",
+  "replace": "Market B because 8 pounds is more than 6 pounds",
+  "why": "Garbled wrong choice."
+ },
+ {
+  "lesson": 5,
+  "find": "Use the pencil packs (12 for $3 and 20 for $4) or the grapes",
+  "replace": "Use the granola bars (5 for $4 and 20 for $17) or the grapes",
+  "why": "The pencil packs support the claim; the granola bars are the class's counterexample."
+ },
+ {
+  "lesson": 6,
+  "find": "Hand out 100-grids and colored pencils; no safety concerns.",
+  "replace": "Hand out 100-grids and colored pencils.",
+  "why": "Echoed generator note."
+ },
+ {
+  "lesson": 6,
+  "find": "Say ‘per 100' as you say ‘per hour’ earlier: the number after per is the comparison.",
+  "replace": "Say ‘per 100’ the way you said ‘per hour’ for unit rates: the number after per is what you compare to.",
+  "why": "Garbled sentence and mismatched quote."
+ },
+ {
+  "lesson": 6,
+  "find": "Say ‘per 100' the way you say",
+  "replace": "Say ‘per 100’ the way you say",
+  "why": "Mismatched quote mark."
+ },
+ {
+  "lesson": 6,
+  "find": "How is ‘per 100' like",
+  "replace": "How is ‘per 100’ like",
+  "why": "Mismatched quote mark."
+ },
+ {
+  "lesson": 6,
+  "find": "Draw ÷5 arrows over both rows to get 7 to 20, so 35% = 7/20. Write the decimal 0.35 beside it.",
+  "replace": "Draw ÷5 arrows over both rows to get 7 to 20, so 35% = 7/20. Say that 7/20 is in simplest form: no whole number larger than 1 divides both 7 and 20. Write the decimal 0.35 beside it.",
+  "why": "Simplest form is asked for in the practice, the exit ticket, the quiz and the test but was never taught.",
+  "all": true
+ },
+ {
+  "lesson": 6,
+  "find": "Link to earlier ratio tables: dividing both rows by the same number keeps the ratio equivalent.",
+  "replace": "Link to earlier ratio tables: dividing both rows by the same number keeps the ratio equivalent. A ratio has a simplest form in the same way: 6:4 becomes 3:2 when both numbers are divided by 2.",
+  "why": "Teach simplest form for ratios too; the unit test asks for it.",
+  "all": true
+ },
+ {
+  "lesson": 6,
+  "find": "which simplifies to 7/20.",
+  "replace": "which simplifies to 7/20. That is its simplest form, because no whole number larger than 1 divides both 7 and 20.",
+  "why": "Name and define simplest form."
+ },
+ {
+  "lesson": 6,
+  "find": "Divide 35 and 100 by 5 to get 7 and 20, so 35% = 7/20.",
+  "replace": "Divide 35 and 100 by 5 to get 7 and 20, so 35% = 7/20. This is the simplest form, because no whole number larger than 1 divides both 7 and 20. A ratio is simplified the same way: 6:4 becomes 3:2 when you divide both numbers by 2.",
+  "why": "Study guide now explains simplest form."
+ },
+ {
+  "lesson": 6,
+  "find": "Preview that next time they will find percents of quantities.",
+  "replace": "Tell students that next time opens with the second quiz, on unit rates, unit price, speed and percent as a fraction. After the quiz they will find percents of quantities.",
+  "why": "Students were never told about the graded quiz.",
+  "all": true
+ },
+ {
+  "lesson": 6,
+  "find": "Next time: percents of quantities",
+  "replace": "Next time: quiz, then percents of quantities",
+  "why": "Match the plan."
+ },
+ {
+  "lesson": 7,
+  "find": "Q3 (2): A cyclist rides 14 miles per hour. (a) How far in 5 hours? 14 × 5 = 70 miles (1). (b) How long to ride 42 miles? 42 ÷ 14 = 3 hours (1).",
+  "replace": "Q3 (2): A ferry travels 18 miles per hour. (a) How far does it go in 5 hours? 18 × 5 = 90 miles (1). (b) How long does it take to go 54 miles? 54 ÷ 18 = 3 hours (1).",
+  "why": "The quiz bank two lessons earlier has a cyclist, 42 miles, 3 hours and 14 miles per hour: the same numbers."
+ },
+ {
+  "lesson": 7,
+  "find": "9 students (5% is not needed; 100% ÷ 5)",
+  "replace": "9 students (divide both rows by 5)",
+  "why": "Unclear note."
+ },
+ {
+  "lesson": 7,
+  "find": "If 12 students are 40% of a club, then 10% is 3 students and 100% is 30 students.",
+  "replace": "If 12 students in a club are 40% of the class, then 10% is 3 students and 100% is 30 students.",
+  "why": "The plan's problem says the club is 40% of the class."
+ },
+ {
+  "lesson": 8,
+  "find": "The board and screen are blank.",
+  "replace": "The board is blank and the screen shows only the test rules.",
+  "why": "The slides are shown during set-up, so the screen is not blank."
+ },
+ {
+  "lesson": 8,
+  "find": "Test, 30 points. Walk the room silently; give no hints.\nQ1 (3). A fruit bowl has 9 plums and 6 peaches. (a) Write the ratio of plums to peaches with a colon and with the word to. 9:6 and 9 to 6 (1). (b) Write the ratio of peaches to all the fruit in simplest form. 6 to 15 = 2 to 5 (2).\nQ2 (4). Fruit punch uses 3 cups of juice for every 4 cups of sparkling water. (a) Complete the ratio table. Juice: 3, 6, ?, 21. Water: 4, ?, 20, ?. Answers: 8 (1), 15 (1), 28 (1). (b) How many cups of juice go with 36 cups of sparkling water? 27 cups (1).\nQ3 (4). Maya and Leo share 45 stickers in the ratio 4 to 5, Maya to Leo. (a) Draw a tape diagram. Maya 4 equal boxes, Leo 5 equal boxes, 9 in all (1). (b) How many stickers in each box? 45 ÷ 9 = 5 (1). (c) How many stickers does each get? Maya 20 (1), Leo 25 (1).\nQ4 (5). (a) A machine fills 54 bottles in 9 minutes. Find the unit rate. 6 bottles per minute (1). (b) Shop P sells 5 notebooks for $7.50. Shop Q sells 8 notebooks for $11.20. Find each unit price and say which is the better buy. P: $1.50 per notebook (1). Q: $1.40 per notebook (1). Q is the better buy because its unit price is lower (1). (c) How many bottles does the machine fill in 15 minutes? 90 bottles (1).\nQ5 (3). A bus travels at 40 miles per hour. (a) How far does it go in 6 hours? 240 miles (1). (b) How long does it take to go 280 miles? 280 ÷ 40 = 7 hours (2: 1 for the operation, 1 for the answer with units).\nQ6 (4). (a) 28 squares of a 100-grid are shaded. Write this as a percent and as a fraction in simplest form. 28% (1), 7/25 (1). (b) Write 85% as a fraction in simplest form and as a decimal. 17/20 (1), 0.85 (1).\nQ7 (4). (a) Find 30% of 90 students. 10% is 9, so 30% is 27 students (2). (b) 18 is 25% of a number. Find the number. 25% is 18, so 100% is 72 (2).\nQ8 (3). Sam says, ‘12% of 50 is 12, because 12% of 100 is 12.’ Explain the mistake and find the correct answer. The whole is 50, not 100 (1). 50 is half of 100, so halve the 12 (1). 12% of 50 is 6 (1).\nGive full credit for any correct method, such as a table or a diagram. Take no points off for simplest form unless asked.",
+  "replace": "Test, 30 points. Walk the room silently; give no hints.\nQ1 (3). A crate holds 4 plums and 12 peaches. (a) Write the ratio of plums to peaches with a colon and with the word to. 4:12 and 4 to 12 (1). (b) Write the ratio of peaches to all the fruit, then write it in simplest form. 12 to 16 (1), 3 to 4 (1).\nQ2 (4). Fruit punch uses 5 cups of juice for every 6 cups of sparkling water. (a) Complete the ratio table. Juice: 5, 10, ?, 35. Water: 6, ?, 30, ?. Answers: water 12 (1), juice 25 (1), water 42 (1). (b) How many cups of juice go with 54 cups of sparkling water? 45 cups (1).\nQ3 (4). Maya and Leo share 45 stickers in the ratio 4 to 5, Maya to Leo. (a) Draw a tape diagram. Maya 4 equal boxes, Leo 5 equal boxes, 9 in all (1). (b) How many stickers in each box? 45 ÷ 9 = 5 (1). (c) How many stickers does each get? Maya 20 (1), Leo 25 (1).\nQ4 (5). (a) A machine fills 54 bottles in 9 minutes. Find the unit rate. 6 bottles per minute (1). (b) How many bottles does the machine fill in 15 minutes? 90 bottles (1). (c) Shop P sells 5 notebooks for $9. Shop Q sells 8 notebooks for $13.60. Find each unit price and say which is the better buy. P: $1.80 per notebook (1). Q: $1.70 per notebook (1). Q is the better buy because its unit price is lower (1).\nQ5 (3). A bus travels at 40 miles per hour. (a) How far does it go in 6 hours? 240 miles (1). (b) How long does it take to go 280 miles? 280 ÷ 40 = 7 hours (2: 1 for the operation, 1 for the answer with units).\nQ6 (4). (a) 36 squares of a 100-grid are shaded. Write this as a percent and as a fraction in simplest form. 36% (1), 9/25 (1). (b) Write 85% as a fraction in simplest form and as a decimal. 17/20 (1), 0.85 (1).\nQ7 (4). (a) Find 30% of 90 students. 10% is 9, so 30% is 27 students (2: 1 for the method, 1 for the answer). (b) 18 is 25% of a number. Find the number. 25% is 18, so 100% is 4 × 18 = 72 (2: 1 for the method, 1 for the answer).\nQ8 (3). Sam says, ‘12% of 50 is 12, because 12% of 100 is 12.’ Explain the mistake and find the correct answer. The whole is 50, not 100 (1). 50 is half of 100, so halve the 12 (1). 12% of 50 is 6 (1).\nGive full credit for any correct method, such as a table or a diagram. Simplest form is required only in Q1(b) and Q6.",
+  "why": "Test reused earlier numbers: Q1 was the first quiz's 6, 9 and 15; Q2's table was the trail mix exit ticket reversed; Q4's unit prices were the class's rice example ($1.50 and $1.40); Q6(a) was word for word the second quiz's Q4(a). New numbers, labeled table answers, the bottle parts kept together, and the 2-point parts split."
+ },
+ {
+  "lesson": 8,
+  "find": "Count the papers as students hand them in and thank the class for their work.\nStudents sit quietly while any late papers are collected.\nSay that the test results will be shared once the papers are marked.\nPreview that next time the class will go over the test and talk about the unit.",
+  "replace": "Count the test papers as students hand them in and check that every paper has a name.\nHand back the second quiz. Show the answers and work the unit price and percent questions on the board.\nStudents write corrections beside their mistakes and hand the quiz back in.\nSay that the test results will be shared once the papers are marked, and that next time the class will go over the test.",
+  "why": "The second quiz was never returned or gone over; these 7 minutes were spent sitting quietly."
+ },
+ {
+  "lesson": 8,
+  "find": "Check that every paper has a name. Do not discuss answers while others are still writing. Note any students who ran out of time or left Q8 blank, to follow up when marking.",
+  "replace": "Corrections earn back half of the points lost on the quiz, so collect the quiz papers again. Do not discuss the test questions yet: absent students may still have to sit it. Note any students who ran out of time or left Q8 blank, to follow up when marking.",
+  "why": "Same."
+ },
+ {
+  "lesson": 8,
+  "find": "Stay seated and quiet until all are in",
+  "replace": "Your second quiz comes back: write your corrections",
+  "why": "Match the plan."
+ },
+ {
+  "lesson": 8,
+  "find": "Students sit quietly while any late papers are collected. Say that the test results will be shared once the papers are marked. Preview that next time the class will go over the test and talk about the unit.",
+  "replace": "Then hand back the second quiz, show the answers and work the unit price and percent questions on the board. Students write corrections and hand the quiz back in; corrections earn back half of the points lost. Say that the test results will be shared once the papers are marked and that next time the class will go over the test. Do not discuss the test questions yet.",
+  "why": "Match the plan."
+ },
+ {
+  "lesson": 8,
+  "find": "Keep this slide up while students work. It reminds them what a strong explanation holds without giving any answers. Written explanations are scored on reasoning, not length. Walk the room silently and give no hints.",
+  "replace": "Show this slide before students turn their papers over, then move on: ‘name the whole’ is too close to a hint for the last question to stay up during the test. Written explanations are scored on reasoning, not length. Walk the room silently and give no hints.",
+  "why": "Left on screen, this slide hints at the explanation question."
+ },
+ {
+  "lesson": 8,
+  "find": "Find 15% of 80.",
+  "replace": "Find 20% of 60.",
+  "why": "Same item as the quiz bank one lesson earlier."
+ },
+ {
+  "lesson": 8,
+  "find": "15% is 15 per 100. Multiplying 80 by 15/100 gives 12.",
+  "replace": "10% of 60 is 6, so 20% is 2 × 6 = 12.",
+  "why": "New numbers; use the taught method, not multiplying by 15/100."
+ }
+]

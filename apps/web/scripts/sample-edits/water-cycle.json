@@ -1,0 +1,455 @@
+[
+ {
+  "find": "Lesson quizzes are open-notebook.",
+  "replace": "Lesson quizzes are taken alone with notebooks closed; the picture word bank and Spanish key terms stay out.",
+  "why": "Policy said open-notebook but every lesson has notebooks put away for the quiz"
+ },
+ {
+  "find": "This is ungraded practice for Labeled diagram and paragraph.",
+  "replace": "This is ungraded practice for your final labeled diagram and paragraph.",
+  "why": "Grading item name pasted into a sentence for students",
+  "all": true
+ },
+ {
+  "lesson": 1,
+  "find": "holds a cold metal spoon in the steam, so students see",
+  "replace": "holds a cold metal spoon in the white cloud above the spout, so students see",
+  "why": "“Steam” was used for both the visible cloud and the gas; name the cloud instead"
+ },
+ {
+  "lesson": 1,
+  "find": "Misconception: steam is a gas. The visible cloud is liquid droplets;",
+  "replace": "Misconception: the white cloud is a gas. The cloud you can see is liquid droplets;",
+  "why": "Same: avoid “steam” meaning two things"
+ },
+ {
+  "lesson": 1,
+  "find": "Steam burns, so use an oven mitt",
+  "replace": "The hot vapor and the cloud can burn, so use an oven mitt",
+  "why": "Same: avoid “steam” meaning two things"
+ },
+ {
+  "lesson": 1,
+  "find": "hold a cold metal spoon in the steam so new droplets",
+  "replace": "hold a cold metal spoon in the white cloud above the spout so new droplets",
+  "why": "Same: avoid “steam” meaning two things"
+ },
+ {
+  "lesson": 1,
+  "find": "held a cold spoon in the kettle steam, new droplets",
+  "replace": "held a cold spoon in the white cloud above the kettle, new droplets",
+  "why": "Same: avoid “steam” meaning two things"
+ },
+ {
+  "lesson": 1,
+  "find": "Before class, set a clear glass of ice water on the front table, set up a demonstration bag at least a day ahead, and have the poster, picture cards and picture word banks ready.",
+  "replace": "Set up a demonstration bag at least a day ahead. Have a clear glass, ice and water ready to set out during the warm-up. The kettle, cups, ice, zip bags and markers are in the classroom; bring the rest: the two puddle photos, the stage poster, the picture cards, a metal spoon, an oven mitt, tongs, tape and the picture word banks.",
+  "why": "Plan sets the glass out in the warm-up, not before class; spoon, mitt, tongs, tape and photos are not in the teacher’s notes and were never listed to bring"
+ },
+ {
+  "lesson": 1,
+  "find": "Water falling from clouds as rain, snow, sleet or hail (precipitación).",
+  "replace": "Water falling from clouds as rain, snow or hail (precipitación).",
+  "why": "Sleet is never taught and has no Spanish term; later lessons teach rain, snow and hail"
+ },
+ {
+  "lesson": 1,
+  "find": "solid (sólido), liquid (líquido) and gas.",
+  "replace": "solid (sólido), liquid (líquido) and gas (gas).",
+  "why": "Give all three state words their Spanish in the same format"
+ },
+ {
+  "lesson": 1,
+  "find": "Each question is worth 2 points. Questions use new cases, not the lesson examples.\nQ1. Frost forms on a car window in Flagstaff on a winter morning. In what state is frost? A) solid B) liquid C) gas D) none of these. Answer: A.\nQ2. Which one is a gas? A) a drop of fog B) water vapor in a dry room C) a lake D) a sleet pellet. Answer: B.\nQ3. Snow falls on a mountain peak. Which stage of the water cycle is this? A) evaporation B) condensation C) precipitation D) collection. Answer: C.\nQ4. Rain runs into a reservoir and stays there. Which stage is this? A) evaporation B) condensation C) precipitation D) collection. Answer: D.\nQ5. A student marks the waterline on the bag with a marker. Why? A) to decorate the bag B) to see if the water level changes C) to keep the bag closed D) to make the water warmer. Answer: B.",
+  "replace": "Use this lesson’s five-question quiz. Each question is worth 2 points, 10 points in all. For the written answers, accept any wording that gives the idea; spelling does not count. The newcomer may answer in Spanish or tell you the answer aloud. Collect to mark later.",
+  "why": "The note listed a second, different set of quiz questions from the lesson’s actual five-question quiz"
+ },
+ {
+  "lesson": 2,
+  "find": "Wipe a wet stripe on the whiteboard with a damp sponge and trace its edge in marker. Students watch it shrink while you explain",
+  "replace": "Wipe a thin damp stripe on the whiteboard with a well-wrung sponge and trace its edge in marker. Students watch it shrink while you explain",
+  "why": "A dripping stripe will not dry within the segment; a thin film does"
+ },
+ {
+  "lesson": 2,
+  "find": "Stripe visibly shrinks in a few minutes; trace again to show the change.",
+  "replace": "Wring the sponge hard and test it before class: a thin film shrinks in two or three minutes in dry classroom air, but a dripping stripe will not. Trace again to show the change. If part of the stripe is left when the segment ends, look again before the quiz.",
+  "why": "Make the demo show its result in the time, with a fallback"
+ },
+ {
+  "lesson": 2,
+  "find": "Wipe a wet stripe on the whiteboard with a damp sponge and trace its edge in marker. Students watch it shrink; trace again to show the change.",
+  "replace": "Wipe a thin damp stripe on the whiteboard with a well-wrung sponge and trace its edge in marker. A thin film shrinks in two or three minutes; a dripping stripe will not. Students watch it shrink; trace again to show the change.",
+  "why": "Same fix in the slide notes"
+ },
+ {
+  "lesson": 2,
+  "find": "Read slide text aloud to the two below-grade readers.",
+  "replace": "Read slide text aloud to the two below-grade readers. The lamp and clear cups are in the classroom; bring a sponge, rulers and a cardboard card. Start a second pair of cups a day ahead, one near the lamp and one shaded, for students to read today.",
+  "why": "Sponge, rulers and card are not in the teacher’s notes; the day-ahead cups need to be flagged at the start"
+ },
+ {
+  "lesson": 2,
+  "find": "Total 8 points; each question 2 points. Quiz cases are new.\nQ1. A wet towel hangs on a clothesline on a hot day and is dry in an hour. Where did most of the water go? A) into the air as water vapor B) into the ground C) back into the towel D) it turned into ice. Answer: A.\nQ2. Two identical bowls hold the same amount of water on the same patio for the same amount of time. Both have the same airflow. One is shaded, and sunlight keeps the other bowl’s water warmer. Which bowl would you expect to lose water faster? A) the shaded bowl B) the sunny bowl C) both lose water equally fast D) neither loses water. Answer: B.\nQ3. Which is true about water vapor? A) it is tiny drops you can see B) it is a gas you cannot see C) it is ice crystals D) it is a cloud. Answer: B.\nQ4. A wet sidewalk dries faster at noon than at 7 a.m. Why? A) the sun gives more heat at noon B) the sidewalk is thirstier C) the water sinks in D) the water freezes. Answer: A.\nCollect to mark later.",
+  "replace": "Use this lesson’s five-question quiz. Each question is worth 2 points, 10 points in all. For the written answers, accept any wording that gives the idea; spelling does not count. The newcomer may answer in Spanish or tell you the answer aloud. Collect to mark later.",
+  "why": "The note listed four different questions worth 8 points; the lesson’s quiz has five"
+ },
+ {
+  "lesson": 2,
+  "find": "Do not mix this up with condensation, which you studied earlier in the course.",
+  "replace": "Do not mix this up with condensation, which you met in the first lesson and will study next.",
+  "why": "Condensation is taught after this lesson, not before"
+ },
+ {
+  "lesson": 2,
+  "find": "does not leak through the glass or vanish",
+  "replace": "does not leak through the cup or vanish",
+  "why": "The cups are plastic"
+ },
+ {
+  "lesson": 2,
+  "find": "Drops on the outside of a cold glass are a different thing. You will study how they form later in the course.",
+  "replace": "Drops on the outside of a cold glass are a different thing: water vapor from the air turns into liquid on the cold glass. The next lesson looks at this closely.",
+  "why": "Students already saw this explained in the first lesson; the answer withheld it"
+ },
+ {
+  "lesson": 2,
+  "find": "Spanish key words: calor (heat), líquido (liquid), vapor (vapor).",
+  "replace": "Key words in Spanish: heat (calor), liquid (líquido), vapor (vapor).",
+  "why": "One format for Spanish terms: English first, Spanish in parentheses"
+ },
+ {
+  "lesson": 3,
+  "find": "plan to read frames aloud for the two below-grade readers.",
+  "replace": "plan to read frames aloud for the two below-grade readers. Bring food coloring and paper towels, which are not in the classroom supplies, and make an E card and a C card for each pair. Before class, color the demonstration cup of ice water and set it out early so drops have time to form.",
+  "why": "Food coloring, paper towels and the cards were used without saying to bring them"
+ },
+ {
+  "lesson": 3,
+  "find": "Droplets may be few or none yet; accept what students really see. If both cups read the same, write “no measurable difference.” Picture word bank",
+  "replace": "Droplets may be few or none yet; accept what students really see. If both cups read the same, write “no measurable difference.” Before class, run the lamp on the lamp cup for a few hours while you are in the room, then switch it off in time to cool. Picture word bank",
+  "why": "The lamp was unplugged overnight and off in class, so the lamp cup had no lamp time before its final reading"
+ },
+ {
+  "lesson": 3,
+  "find": "Food coloring can stain; keep it with the teacher and wipe spills. Never drink from lab cups.",
+  "replace": "Bring a small bottle of food coloring; it is not in the classroom supplies. It can stain, so keep it with the teacher and wipe spills. Never drink from lab cups.",
+  "why": "Say to bring the food coloring"
+ },
+ {
+  "lesson": 3,
+  "find": " by asking for evidence, and do not accept them as true.",
+  "replace": " by asking for evidence.",
+  "why": "Instruction to the writer echoed in the notes"
+ },
+ {
+  "lesson": 3,
+  "find": "Wet chalk marks on the sidewalk fade in the sun: evaporation",
+  "replace": "Wet footprints on the sidewalk fade in the sun: evaporation",
+  "why": "Chalk marks do not fade by evaporation; the case was confusing"
+ },
+ {
+  "lesson": 3,
+  "find": "wet chalk marks fading in the sun",
+  "replace": "wet footprints fading in the sun",
+  "why": "Same case, kept consistent",
+  "all": true
+ },
+ {
+  "lesson": 3,
+  "find": "wet chalk marks fading on a sunny sidewalk",
+  "replace": "wet footprints fading on a sunny sidewalk",
+  "why": "Same case, kept consistent"
+ },
+ {
+  "lesson": 3,
+  "find": "Total 8 points; each question 2 points. Cases are new.\nQ1. A cold can of lemonade sits on a table outside on a warm day. Drops of water form on the outside of the can. Where did the drops come from? A) water vapor in the air B) a leak in the can C) lemonade seeping through the metal D) the can made new water. Answer: A.\nQ2. A bathroom mirror gets foggy after a hot shower. What process makes the fog? A) evaporation B) condensation C) collection D) none of these. Answer: B.\nQ3. A bowl of water sits in the sun on a Phoenix patio. After a day it has less water. What happened? A) condensation B) precipitation C) evaporation D) collection. Answer: C.\nQ4. What must happen to water vapor for it to turn into droplets? A) it is heated B) it is cooled C) it is frozen solid D) it is stirred. Answer: B.",
+  "replace": "Use this lesson’s five-question quiz. Each question is worth 2 points, 10 points in all. For the written answers, accept any wording that gives the idea; spelling does not count. The newcomer may answer in Spanish or tell you the answer aloud. Collect to mark later.",
+  "why": "The note listed four different questions worth 8 points; the lesson’s quiz has five"
+ },
+ {
+  "lesson": 3,
+  "find": "Collect the quizzes to mark later. The quiz uses new cases, not the ones from today’s activities.",
+  "replace": "Collect the quizzes to mark later. Each question is worth 2 points.",
+  "why": "One quiz question is about the bag and the cup, so “new cases” was untrue"
+ },
+ {
+  "lesson": 3,
+  "find": "In the ice water demo, drops formed on the dry outside surface of the cup.",
+  "replace": "Drops that form on the dry outside of a cup of ice water come from water vapor in the air.",
+  "why": "A graded item should not depend on whether a pair’s cup happened to show drops in dry air; this tests the idea instead (still true)"
+ },
+ {
+  "lesson": 3,
+  "find": "To lose heat and become colder. Cooling water vapor makes it turn into liquid.",
+  "replace": "To lose heat and become colder. Cooling water vapor makes it turn into liquid (enfriar).",
+  "why": "Key term had no Spanish"
+ },
+ {
+  "lesson": 3,
+  "find": "To change from a gas, such as water vapor, into a liquid.",
+  "replace": "To change from a gas, such as water vapor, into a liquid (condensar).",
+  "why": "Key term had no Spanish"
+ },
+ {
+  "lesson": 3,
+  "find": "A very small drop of liquid water.",
+  "replace": "A very small drop of liquid water (gotita).",
+  "why": "Key term had no Spanish"
+ },
+ {
+  "lesson": 3,
+  "find": "The outside layer of an object, such as the outside of a cold cup.",
+  "replace": "The outside layer of an object, such as the outside of a cold cup (superficie).",
+  "why": "Key term had no Spanish"
+ },
+ {
+  "lesson": 3,
+  "find": "Spanish words to remember: frío (cold) and gotas (drops).",
+  "replace": "Words in Spanish: cold (frío) and drops (gotas).",
+  "why": "One format for Spanish terms"
+ },
+ {
+  "lesson": 3,
+  "find": "Spanish words to remember: calor (heat) and frío (cold).",
+  "replace": "Words in Spanish: heat (calor) and cold (frío).",
+  "why": "One format for Spanish terms"
+ },
+ {
+  "lesson": 3,
+  "find": "Picture word bank: air, cool (frío), vapor (vapor de agua), droplets (gotas), condensation (condensación).",
+  "replace": "Use the picture word bank if it helps: air (aire), cold (frío), water vapor (vapor de agua), drops (gotas), condensation (condensación).",
+  "why": "Not a step as written; English and Spanish did not match (cool/frío, vapor/vapor de agua) and air had no Spanish"
+ },
+ {
+  "lesson": 4,
+  "find": "Each student writes a prediction: “I think the bag will show ___ because ___.”",
+  "replace": "Each student rereads the prediction written when the bag was built: “I think the bag will show ___ because ___.”",
+  "why": "Writing a new prediction on the fourth day defeats comparing the result with the original prediction"
+ },
+ {
+  "lesson": 4,
+  "find": "Write: “I think the bag will show ___ because ___.”",
+  "replace": "Reread your prediction: “I think the bag will show ___ because ___.”",
+  "why": "Same fix on the slide"
+ },
+ {
+  "lesson": 4,
+  "find": "Droplets may be few or none, and a few days is a short time.",
+  "replace": "By now most bags show droplets on the inside, and some drops have grown and run back down to the water: point to this as the model’s precipitation and collection. A bag on a shaded pane may show few.",
+  "why": "After several days on a sunny window a sealed bag normally shows droplets; the note also never tied the bag to this lesson’s two stages",
+  "all": true
+ },
+ {
+  "lesson": 4,
+  "find": "fingers wiggle downward",
+  "replace": "fingers fall",
+  "why": "The first lesson taught this hand motion as “fingers fall”",
+  "all": true
+ },
+ {
+  "lesson": 4,
+  "find": "Total 8 points; each question 2 points. Cases are new.\nQ1. A shallow pan of water sits on a sunny patio in Tucson all afternoon. By evening it is almost empty. What happened? A) Heat turned the water into vapor in the air. B) The cold air made the water vanish. C) The water turned into hail. Answer: A.\nQ2. After a hot shower, small drops of water form on the bathroom mirror. Where did the drops come from? A) a leak in the mirror B) water vapor in the air cooling on the mirror C) the mirror making new water. Answer: B.\nQ3. Over a mountain, tiny droplets in a cloud join into bigger, heavier drops. What happens next? A) They fall as rain. B) They sink into the ground inside the cloud. C) They turn back into the mountain. Answer: A.\nQ4. Rain runs down a hillside and fills a small pond. Which part of the water cycle is this? A) evaporation B) collection C) condensation. Answer: B.\nSafety: none needed.",
+  "replace": "Use this lesson’s five-question quiz. Each question is worth 2 points, 10 points in all. For the written answers, accept any wording that gives the idea; spelling does not count. The newcomer may answer in Spanish or tell you the answer aloud. Collect to mark later.",
+  "why": "The note listed four different questions worth 8 points and ended “Safety: none needed.”; the lesson’s quiz has five"
+ },
+ {
+  "lesson": 4,
+  "find": "Picture word bank allowed for the newcomer.",
+  "replace": "Use your picture word bank if you need it.",
+  "why": "The notes allow the word bank for all three supported students"
+ },
+ {
+  "lesson": 4,
+  "find": "Read all frames aloud to the two below-grade readers.",
+  "replace": "Read all frames aloud to the two below-grade readers. Bring one set of five story strips per pair, a photo of snow on mountains in northern Arizona, and picture cards for lluvia, nieve and granizo.",
+  "why": "Prep items were not listed at the start"
+ },
+ {
+  "lesson": 4,
+  "find": "Rain water that flows downhill over the land instead of soaking in.",
+  "replace": "Rain water that flows downhill over the land instead of soaking in (escorrentía).",
+  "why": "Key term had no Spanish"
+ },
+ {
+  "lesson": 4,
+  "find": "Balls of ice that fall from strong storm clouds.",
+  "replace": "Balls of ice that fall from strong storm clouds (granizo).",
+  "why": "Key term had no Spanish"
+ },
+ {
+  "lesson": 4,
+  "find": "In Arizona, summer monsoon winds bring moist air that helps thunderstorms form.",
+  "replace": "In Arizona, summer monsoon winds bring moist air that helps thunderstorms form (monzón).",
+  "why": "Key term had no Spanish"
+ },
+ {
+  "lesson": 4,
+  "find": "lluvia (rain), nieve (snow), granizo (hail), nube (cloud)",
+  "replace": "rain (lluvia), snow (nieve), hail (granizo), cloud (nube)",
+  "why": "One format for Spanish terms",
+  "all": true
+ },
+ {
+  "lesson": 4,
+  "find": "Spanish word: recolección.",
+  "replace": "In Spanish: collection (recolección).",
+  "why": "One format for Spanish terms"
+ },
+ {
+  "lesson": 4,
+  "find": "Add recolección (collection) to your path.",
+  "replace": "Add collection (recolección) to your path.",
+  "why": "One format for Spanish terms"
+ },
+ {
+  "lesson": 4,
+  "find": "such as in a wash, river, lake, or ground.",
+  "replace": "such as in a wash, a river, a lake or the ground.",
+  "why": "Grammar"
+ },
+ {
+  "lesson": 5,
+  "find": "Accept what students really see. Droplets may be few or none. Say a short test shows only part of the cycle, and that is still a real result.",
+  "replace": "Accept what students really see. Most bags show droplets and drops that ran back down to the water; a few may show little. Say the bag shows only part of the cycle, and that is still a real result.",
+  "why": "After a week on a sunny window the bag normally shows droplets"
+ },
+ {
+  "lesson": 5,
+  "find": "Accept what students really see: droplets may be few or none. A short test shows only part of the cycle, and that is still a real result.",
+  "replace": "Accept what students really see: most bags show droplets and drops that ran back down to the water, and a few may show little. The bag shows only part of the cycle, and that is still a real result.",
+  "why": "Same fix in the slide notes"
+ },
+ {
+  "lesson": 5,
+  "find": "Do not use a Phoenix drop or the bag; students hand in their own path.",
+  "replace": "The model starts far from Phoenix on purpose, so no student can copy it for the path they hand in.",
+  "why": "Instruction to the writer echoed in the notes"
+ },
+ {
+  "lesson": 5,
+  "find": "Do not use a Phoenix drop or the bag as the model: students hand in their own path.",
+  "replace": "The model starts far from Phoenix on purpose, so no student can copy it for the path they hand in.",
+  "why": "Same"
+ },
+ {
+  "lesson": 5,
+  "find": "Collect the paragraphs with the diagrams.",
+  "replace": "Students keep the diagram and paragraph: they finish them at home and hand them in next time.",
+  "why": "The plan collected the graded piece in class and then also set it as graded take-home work"
+ },
+ {
+  "lesson": 5,
+  "find": "Collect paragraphs with diagrams.",
+  "replace": "Students keep the diagram and paragraph to finish at home.",
+  "why": "Same"
+ },
+ {
+  "lesson": 5,
+  "find": "Hand in work and set the graded take-home",
+  "replace": "Share and set the graded take-home",
+  "why": "Same: nothing is handed in today except the quiz"
+ },
+ {
+  "lesson": 5,
+  "find": "Hand in work and take-home",
+  "replace": "Share and take-home",
+  "why": "Same"
+ },
+ {
+  "lesson": 5,
+  "find": "set the graded take-home assignment that counts toward Labeled diagram and paragraph.",
+  "replace": "set the graded take-home: students finish the diagram and paragraph they started today. This is the 70% piece.",
+  "why": "Same; grading item name pasted into a sentence"
+ },
+ {
+  "lesson": 5,
+  "find": "Check that every student’s name is on the diagram and paragraph you collected.",
+  "replace": "Check that every student’s name is on the diagram and paragraph before they go home, and glance at each one so you know who needs help finishing.",
+  "why": "Same"
+ },
+ {
+  "lesson": 5,
+  "find": "Check every name is on the collected diagram and paragraph.",
+  "replace": "Check every name is on the diagram and paragraph before they go home.",
+  "why": "Same"
+ },
+ {
+  "lesson": 5,
+  "find": "set the graded take-home assignment, which counts toward Labeled diagram and paragraph.",
+  "replace": "set the graded take-home: students finish the diagram and paragraph they started today, the 70% piece.",
+  "why": "Same"
+ },
+ {
+  "lesson": 5,
+  "find": "Graded take-home: see the page",
+  "replace": "Graded take-home: finish your diagram and paragraph",
+  "why": "Tell students what the take-home is"
+ },
+ {
+  "lesson": 5,
+  "find": "Today students finish the graded work for the unit: a labeled diagram and a paragraph tracing one water drop.",
+  "replace": "Today students do the graded work for the unit: a labeled diagram and a paragraph tracing one water drop, started in class and finished at home.",
+  "why": "Same"
+ },
+ {
+  "lesson": 5,
+  "find": "The diagram and paragraph count toward the Labeled diagram and paragraph component.",
+  "replace": "Together they are 70% of the unit grade.",
+  "why": "Machine-sounding sentence"
+ },
+ {
+  "lesson": 5,
+  "find": "Use the starting place on your take-home page. Make a labeled diagram",
+  "replace": "Finish the diagram and paragraph you started in class, using the starting place you chose. Make a labeled diagram",
+  "why": "Link the assignment to the class draft"
+ },
+ {
+  "lesson": 5,
+  "find": "Your diagram and paragraph count toward the Labeled diagram and paragraph grade.",
+  "replace": "This is the graded diagram and paragraph, worth 70% of the unit grade.",
+  "why": "Machine-sounding sentence"
+ },
+ {
+  "lesson": 5,
+  "find": "Draw a title and a diagram that shows your drop’s path",
+  "replace": "Finish your diagram. Give it a title and show your drop’s path",
+  "why": "Students finish the class draft; “draw a title” was odd"
+ },
+ {
+  "lesson": 5,
+  "find": "Write one short paragraph of about 4–6 sentences. Trace the drop in order",
+  "replace": "Finish your paragraph of about 4–6 sentences. Trace the drop in order",
+  "why": "Same"
+ },
+ {
+  "lesson": 5,
+  "find": "Total 8 points; each question 2 points. Cases are new.\nQ1. A wet towel hangs on a clothesline in Mesa on a hot, sunny afternoon. By evening it is dry. Where did the water go? A) It turned into vapor in the air. B) It soaked into the clothesline. C) It turned into ice. Answer: A.\nQ2. After a hot shower, a bathroom mirror gets covered with tiny drops. Why? A) The mirror leaks. B) Water vapor cooled on the cool mirror and became drops. C) The mirror makes new water. Answer: B.\nQ3. In a cloud over Flagstaff, tiny droplets join together and grow too heavy to stay up. What happens next? A) They fall as rain, snow or hail. B) They turn back into vapor inside the cloud. C) They stop moving. Answer: A.\nQ4. After a storm, water runs down a hillside into a creek that flows to a lake. What is this stage called? A) evaporation B) condensation C) collection. Answer: C.\nSet up desks apart. Keep the picture word bank scrambled so it gives no answer.",
+  "replace": "Use this lesson’s five-question quiz. Each question is worth 2 points, 10 points in all. For the written answers, accept any wording that gives the idea; spelling does not count. The newcomer may answer in Spanish or tell you the answer aloud. Collect to mark later. Set desks apart. Keep the picture word bank scrambled so it gives no answer.",
+  "why": "The note listed four different questions worth 8 points; the lesson’s quiz has five"
+ },
+ {
+  "lesson": 5,
+  "find": "The quiz is worth 8 points, 2 points per question, and uses new cases.",
+  "replace": "The quiz has five questions worth 2 points each, 10 points in all.",
+  "why": "Five questions at 2 points is 10, and one question is about the bag"
+ },
+ {
+  "lesson": 5,
+  "find": "A drawing with labels and arrows that shows how something works.",
+  "replace": "A drawing with labels and arrows that shows how something works (diagrama).",
+  "why": "Key term had no Spanish"
+ },
+ {
+  "lesson": 5,
+  "find": "A word or short phrase written next to a part of a drawing to name it.",
+  "replace": "A word or short phrase written next to a part of a drawing to name it (etiqueta).",
+  "why": "Key term had no Spanish"
+ },
+ {
+  "lesson": 5,
+  "find": "To follow something step by step from where it starts.",
+  "replace": "To follow something step by step from where it starts (seguir).",
+  "why": "Key term had no Spanish"
+ }
+]

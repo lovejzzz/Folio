@@ -1,0 +1,922 @@
+[
+ {
+  "find": "Problem sets are due at the start of class two days after they are set.",
+  "replace": "Problem sets are due at the start of the next class after they are set.",
+  "why": "Every lesson collects the problem set at the next class (lessons 4, 6, 8, 10), and the last set could not be due two days later because the test is the next class."
+ },
+ {
+  "lesson": 1,
+  "find": "5. 3.5 mol H₂O: total atoms? 2.1 × 10²⁴ molecules × 3 = 6.3 × 10²⁴ atoms",
+  "replace": "5. 3.50 mol H₂O: total atoms? 3.50 × 6.022 × 10²³ = 2.11 × 10²⁴ molecules; × 3 atoms per molecule = 6.32 × 10²⁴ atoms",
+  "why": "One item used two significant figures while the lesson asks for three."
+ },
+ {
+  "lesson": 1,
+  "find": "5. 3.5 mol H₂O: how many atoms in total?",
+  "replace": "5. 3.50 mol H₂O: how many atoms in total?",
+  "why": "Three significant figures, matching the notes."
+ },
+ {
+  "lesson": 1,
+  "find": "5) 3.5 mol × 6.022 × 10²³ = 2.1 × 10²⁴ molecules, and each molecule has 3 atoms, so 6.3 × 10²⁴ atoms.",
+  "replace": "5) 3.50 mol × 6.022 × 10²³ = 2.11 × 10²⁴ molecules, and each molecule has 3 atoms, so 6.32 × 10²⁴ atoms.",
+  "why": "Three significant figures, matching the plan."
+ },
+ {
+  "lesson": 1,
+  "find": "20 grains pre-counted",
+  "replace": "a spare set of 20 grains counted in advance, in case the class count runs long",
+  "why": "The plan has the class count the 20 grains, so the pre-counted set is a backup; say so.",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "the balance readings: 1 mol",
+  "replace": "the two masses: 1 mol",
+  "why": "Sodium is not weighed in class (the notes say to show its value on the board), so these are not balance readings.",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "In class, 1 mol of sodium atoms weighed 22.99 g and 1 mol of water molecules weighed 18.02 g.",
+  "replace": "One mole of sodium atoms has a mass of 22.99 g and one mole of water molecules has a mass of 18.02 g.",
+  "why": "Sodium was not weighed in class."
+ },
+ {
+  "lesson": 2,
+  "find": ": 40.08 + 2 × (16.00 + 1.01) = 74.10 g/mol\n5",
+  "replace": ": 26.98 + 3 × (16.00 + 1.01) = 78.01 g/mol\n5",
+  "why": "Practice item 4 was the same compound the teacher had just modelled; a new one makes students apply the parentheses rule themselves."
+ },
+ {
+  "lesson": 2,
+  "find": "4. Ca(OH)₂",
+  "replace": "4. Al(OH)₃",
+  "why": "Practice item 4 was the compound just modelled; the label changes in the notes and on the slide.",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "4. 74.10 g/mol.",
+  "replace": "4. 78.01 g/mol.",
+  "why": "Matches the changed practice item."
+ },
+ {
+  "lesson": 2,
+  "find": "ignoring the 2 outside parentheses",
+  "replace": "ignoring the subscript outside the parentheses",
+  "why": "Item 4 now has a 3 outside the parentheses.",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "Mistake: ignoring",
+  "replace": "Twelve minutes is tight once Ca(OH)₂ has been modelled. If pairs fall behind, skip item 1, which only repeats a table lookup, and keep items 4 and 5.\nMistake: ignoring",
+  "why": "Tell the teacher what to cut if the practice does not fit."
+ },
+ {
+  "lesson": 3,
+  "find": "Model puts the unit you want to cancel in the denominator.",
+  "replace": "Model putting the unit you want to cancel in the denominator.",
+  "why": "Grammar."
+ },
+ {
+  "lesson": 3,
+  "find": "If you had found 190 mol",
+  "replace": "If you had found 336 mol",
+  "why": "4.00 × 84.01 = 336, not 190."
+ },
+ {
+  "lesson": 3,
+  "find": "6.00 g Ca × (6.022 × 10²³ atoms / 1 mol) × (1 mol / 40.08 g)",
+  "replace": "6.00 g Ca × (40.08 g / 1 mol) × (1 mol / 6.022 × 10²³ atoms)",
+  "why": "This choice was the correct setup with its factors in the other order, so the item had two right answers."
+ },
+ {
+  "lesson": 3,
+  "find": "Hand out the problem set before students leave, tell them it counts toward Problem sets, and give them a copy of the periodic table to take home.",
+  "replace": "Hand out the first problem set before students leave, tell them it is due at the start of next class, and give them a copy of the periodic table to take home.",
+  "why": "Grading-category wording is not something to say to students; the due date is."
+ },
+ {
+  "lesson": 3,
+  "find": "Problem set counts toward Problem sets",
+  "replace": "Problem set 1: due at the start of next class",
+  "why": "Student-facing boilerplate."
+ },
+ {
+  "lesson": 3,
+  "find": "Hand out the problem set before students leave and tell them it counts toward Problem sets.",
+  "replace": "Hand out the first problem set before students leave and tell them it is due at the start of next class.",
+  "why": "Same fix in the slide notes."
+ },
+ {
+  "lesson": 3,
+  "find": "give final answers to three significant figures. This graded assignment counts toward Problem sets.",
+  "replace": "give molar masses to two decimal places and other final answers to three significant figures. This problem set is due at the start of next class.",
+  "why": "Boilerplate removed; problem 1 is a molar mass, which the course writes to two decimal places."
+ },
+ {
+  "lesson": 3,
+  "find": "Problem sets: Moles, mass, and particles",
+  "replace": "Problem set 1: Moles, mass, and particles",
+  "why": "The title carried the grading category as a prefix.",
+  "all": true
+ },
+ {
+  "lesson": 3,
+  "find": "Calculations are accurate and final answers use three significant figures.",
+  "replace": "Calculations are accurate; molar masses are given to two decimal places and other final answers to three significant figures.",
+  "why": "Keeps the rubric in line with the course convention for molar masses."
+ },
+ {
+  "lesson": 3,
+  "find": "Remind students the rounded atomic masses on the class table are the ones to use.",
+  "replace": "Remind students the rounded atomic masses on the class table are the ones to use.\nAnswer key for problem set 1:\n1. CaCl₂: 40.08 + 2 × 35.45 = 110.98 g/mol\n2. NH₃ is 14.01 + 3 × 1.01 = 17.04 g/mol; 18.0 g × (1 mol / 17.04 g) = 1.06 mol\n3. KBr is 39.10 + 79.90 = 119.00 g/mol; 0.425 mol × (119.00 g / 1 mol) = 50.6 g\n4. 12.0 g S × (1 mol / 32.06 g) = 0.374 mol; × 6.022 × 10²³ atoms/mol = 2.25 × 10²³ atoms. Size check: a fraction of a mole, and a very large number of atoms.",
+  "why": "The set uses new problems, so the teacher needs a key."
+ },
+ {
+  "lesson": 4,
+  "find": "Tell students the problem set counts toward Problem sets. Use the half sheets",
+  "replace": "Use the half sheets",
+  "why": "Grading-category boilerplate; the set is simply collected.",
+  "all": true
+ },
+ {
+  "lesson": 4,
+  "find": "\nPaper work only; no flames.",
+  "replace": "\nPaper work only; no flames. Twelve minutes is tight for five equations with tallies. If pairs fall behind, make item 5 a challenge for early finishers and be sure every pair finishes item 4.",
+  "why": "Tell the teacher what to cut if the practice does not fit."
+ },
+ {
+  "lesson": 4,
+  "find": "Here is a worked example that was not on your practice sheet: Mg + O₂ → MgO",
+  "replace": "Here is the first practice equation worked in full: Mg + O₂ → MgO",
+  "why": "This equation is item 1 of the class practice."
+ },
+ {
+  "lesson": 4,
+  "find": "Leave a lone element, such as O₂ in 2Mg + O₂ → 2MgO or Fe in 4Fe + 3O₂ → 2Fe₂O₃, for last.",
+  "replace": "Leave an element that stands alone, such as O₂ in CH₄ + 2O₂ → CO₂ + 2H₂O or Cu in 2Al + 3CuCl₂ → 2AlCl₃ + 3Cu, for last.",
+  "why": "In the two examples given, both reactants stand alone, and the study guide balances oxygen first in the magnesium equation; these examples show the rule."
+ },
+ {
+  "lesson": 5,
+  "find": "Write the mole ratio",
+  "replace": "1. N₂ + 3H₂ → 2NH₃: write the mole ratio of NH₃ to H₂",
+  "why": "The five practice problems were on no slide."
+ },
+ {
+  "lesson": 5,
+  "find": "Write the full unit setup",
+  "replace": "2. N₂ + 3H₂ → 2NH₃: 0.600 mol N₂ makes how many mol NH₃?",
+  "why": "Practice problems onto the slide."
+ },
+ {
+  "lesson": 5,
+  "find": "Then write the answer",
+  "replace": "3. CH₄ + 2O₂ → CO₂ + 2H₂O: 3.00 mol CH₄ needs how many mol O₂?",
+  "why": "Practice problems onto the slide."
+ },
+ {
+  "lesson": 5,
+  "find": "Swap with a neighboring pair after the third problem",
+  "replace": "4. C₃H₈ + 5O₂ → 3CO₂ + 4H₂O: 0.500 mol C₃H₈ makes how many mol CO₂?",
+  "why": "Practice problems onto the slide."
+ },
+ {
+  "lesson": 5,
+  "find": "Finished early? Explain which coefficient goes on top",
+  "replace": "5. 4Fe + 3O₂ → 2Fe₂O₃: 2.40 mol Fe₂O₃ needs how many mol O₂?",
+  "why": "Practice problems onto the slide."
+ },
+ {
+  "lesson": 5,
+  "find": "The five problems are on the handout or board.",
+  "replace": "For each problem, pairs write the mole ratio, then the full unit setup, then the answer. After the third problem, pairs swap papers with a neighboring pair and compare. Pairs that finish early explain to each other how they chose which coefficient went on top.",
+  "why": "The instructions move to the notes now that the slide shows the problems; there was no handout."
+ },
+ {
+  "lesson": 5,
+  "find": "Because the coefficients are 2 and 1",
+  "replace": "Because the coefficients are 2 and 1. Decide in pairs whether it is true, using last time’s masses",
+  "why": "Makes room on this slide for the exit check questions, which were on no slide."
+ },
+ {
+  "lesson": 5,
+  "find": "True or false? Decide in pairs",
+  "replace": "Exit check Q1 (after the discussion): 2C₂H₂ + 5O₂ → 4CO₂ + 2H₂O. How many moles of O₂ react with 0.800 mol C₂H₂? Show your setup.",
+  "why": "Exit check questions were on no slide."
+ },
+ {
+  "lesson": 5,
+  "find": "Use the masses from last time",
+  "replace": "Exit check Q2: 2KClO₃ → 2KCl + 3O₂. How many moles of O₂ form from 1.50 mol KClO₃?",
+  "why": "Exit check questions were on no slide."
+ },
+ {
+  "lesson": 5,
+  "find": "Then give the two-question exit check on half sheets",
+  "replace": "Keep the two exit check questions covered until that sentence is on the board. Then give the two-question exit check on half sheets",
+  "why": "The slide now carries both the discussion and the exit check."
+ },
+ {
+  "lesson": 5,
+  "find": "Hand out the second problem set before students leave. Tell them it counts toward Problem sets, and give them a copy of the periodic table to take home.",
+  "replace": "Hand out the second problem set before students leave. Tell them it is due at the start of next class and that they need the periodic table they took home.",
+  "why": "Boilerplate removed; students already have a take-home table from the first set."
+ },
+ {
+  "lesson": 5,
+  "find": "Hand out the second problem set before students leave. Tell them it counts toward Problem sets, and give each a copy of the periodic table to take home.",
+  "replace": "Hand out the second problem set before students leave. Tell them it is due at the start of next class and that they need the periodic table they took home.",
+  "why": "Same fix in the slide notes."
+ },
+ {
+  "lesson": 5,
+  "find": "Problem set handed out today",
+  "replace": "Problem set 2: due at the start of next class",
+  "why": "Gives students the due date."
+ },
+ {
+  "lesson": 5,
+  "find": "give final answers to three significant figures. This graded assignment counts toward Problem sets.",
+  "replace": "give final answers to three significant figures. This problem set is due at the start of next class.",
+  "why": "Boilerplate removed."
+ },
+ {
+  "lesson": 5,
+  "find": "Problem sets: Mole ratios and reaction amounts",
+  "replace": "Problem set 2: Mole ratios and reaction amounts",
+  "why": "The title carried the grading category as a prefix.",
+  "all": true
+ },
+ {
+  "lesson": 5,
+  "find": "For 2Mg + O₂ → 2MgO, calculate the mass of MgO made from 12.0 g Mg. Convert grams of Mg to moles first, then use the mole ratio and convert moles of MgO to grams. Show units in each step.",
+  "replace": "For 4Al + 3O₂ → 2Al₂O₃, calculate how many moles of O₂ react with 13.5 g Al. Convert grams of Al to moles first, then use the mole ratio. Show units in each step.",
+  "why": "The full mass-to-mass chain is not taught until lesson 7; grams to moles to moles uses only what has been taught and prepares for it."
+ },
+ {
+  "lesson": 5,
+  "find": "Remind students to show unit setups and use the rounded atomic masses on the class table.",
+  "replace": "Remind students to show unit setups and use the rounded atomic masses on the class table.\nAnswer key for problem set 2:\n1. 2 mol AlCl₃ / 3 mol Cl₂\n2. 0.625 mol CaCO₃ × (1 mol CO₂ / 1 mol CaCO₃) = 0.625 mol CO₂\n3. 1.20 mol O₂ × (2 mol MgO / 1 mol O₂) = 2.40 mol MgO\n4. 13.5 g Al × (1 mol / 26.98 g) = 0.500 mol Al; × (3 mol O₂ / 4 mol Al) = 0.375 mol O₂\n",
+  "why": "The set uses new problems, so the teacher needs a key."
+ },
+ {
+  "lesson": 6,
+  "find": "cup. Tell students the problem set counts toward Problem sets.",
+  "replace": "cup.",
+  "why": "Grading-category boilerplate; the set is simply collected."
+ },
+ {
+  "lesson": 6,
+  "find": "time. Tell students that the problem set counts toward Problem sets.",
+  "replace": "time.",
+  "why": "Same boilerplate in the slide notes."
+ },
+ {
+  "lesson": 6,
+  "find": "Pairs put on goggles, then weigh the",
+  "replace": "Pairs put on goggles and aprons, then weigh the",
+  "why": "Course policy requires an apron on lab days."
+ },
+ {
+  "lesson": 6,
+  "find": "masses. Safety: goggles on for all handling; hair tied back; keep the balance dry; no tasting or eating anything in the lab; baking soda is harmless but may irritate eyes.",
+  "replace": "masses; the prediction is the baking soda mass × 0.524.\nPrep for 14 pairs: 1 L of 5% white vinegar (700 mL is used), a 250 g box of baking soda (about 30 g is used), 14 clear plastic cups of at least 250 mL with a 50 mL line marked on each, 14 weigh boats, 14 spatulas or spoons, paper towels, and a data sheet for every student. Balances must read to 0.01 g; four or more keep the line short.\nSafety: goggles and apron on for all handling; hair tied back; keep the balance dry; no tasting or eating anything in the lab. Baking soda and vinegar are mild, but both sting the eyes. For a splash in the eye, rinse at the eyewash station for several minutes and tell the teacher.",
+  "why": "No prep quantities were given for a class; adds amounts for 14 pairs, the balance precision the mass difference needs, and what to do for an eye splash."
+ },
+ {
+  "lesson": 6,
+  "find": "Baking soda is harmless but may irritate eyes.",
+  "replace": "Baking soda is mild but stings the eyes: for a splash, rinse at the eyewash station for several minutes.",
+  "why": "Eye-splash response was missing."
+ },
+ {
+  "lesson": 6,
+  "find": "Goggles on; hair tied back",
+  "replace": "Goggles and apron on; hair tied back",
+  "why": "Apron is required by the course policy."
+ },
+ {
+  "lesson": 6,
+  "find": "Safety: goggles; 5% vinegar is mild but stings eyes,",
+  "replace": "Before the final weighing, have pairs swirl the cup gently, off the balance, until no new bubbles rise, so that less CO₂ stays dissolved. Safety: goggles and apron; 5% vinegar is mild but stings eyes, so rinse a splash at the eyewash station for several minutes;",
+  "why": "Swirling makes the measured mass far closer to the prediction; adds the eye-splash response."
+ },
+ {
+  "lesson": 6,
+  "find": "Safety: 5% vinegar is mild but stings eyes, never",
+  "replace": "Before the final weighing, pairs swirl the cup gently, off the balance, until no new bubbles rise. Safety: 5% vinegar is mild but stings eyes; rinse a splash at the eyewash station for several minutes. Never",
+  "why": "Same additions in the slide notes."
+ },
+ {
+  "lesson": 6,
+  "find": "measured values a little low or high.",
+  "replace": "most pairs to measure 0.05 to 0.15 g less than they predicted. A value above the prediction usually means liquid was lost.",
+  "why": "Gives the teacher the result to expect, worked from the solubility of CO₂ in 50 mL of liquid."
+ },
+ {
+  "lesson": 6,
+  "find": "a pattern. Expect values a little low or high. Likely reasons: some",
+  "replace": "a pattern. Expect most pairs to measure 0.05 to 0.15 g less than they predicted. A value above the prediction usually means liquid was lost. Likely reasons: some",
+  "why": "Same expectation in the slide notes."
+ },
+ {
+  "lesson": 6,
+  "find": "report. It counts toward Lab reports.\nGive each pair a copy of their recorded data and the periodic table to take home.",
+  "replace": "report and give its due date.\nEach student takes home their own data sheet and a periodic table.",
+  "why": "Boilerplate removed; the notes say every student records the data, so each takes their own sheet."
+ },
+ {
+  "lesson": 6,
+  "find": "home. Remind students to bring only their own measured values to the report.",
+  "replace": "home. Remind students to bring only their own measured values to the report. Students keep the data sheet and bring it back: the next lesson opens with it, and it is the fallback data in the percent yield lesson.\nMarking check for the reports: predicted CO₂ = mass of baking soda × 44.01 ÷ 84.01, which is the mass × 0.524.",
+  "why": "Later lessons use this data sheet; adds a quick check for marking reports that use each pair’s own masses."
+ },
+ {
+  "lesson": 6,
+  "find": "report is set; it counts toward Lab reports",
+  "replace": "report is set; note the due date",
+  "why": "Grading-category boilerplate on a student slide."
+ },
+ {
+  "lesson": 6,
+  "find": "report; it counts toward Lab reports. Give each pair a copy of their recorded data and the periodic table.",
+  "replace": "report and give its due date. Each student takes home their own data sheet and a periodic table, and brings the sheet back next time.",
+  "why": "Matches the plan."
+ },
+ {
+  "lesson": 6,
+  "find": "procedure, such as CO₂ dissolving in the liquid or spilled foam.",
+  "replace": "procedure and the direction of the difference.",
+  "why": "The lab report is graded on the student’s own explanation of the difference; the summary should not supply it."
+ },
+ {
+  "lesson": 6,
+  "find": "grams. Then give reasons that fit what you did. Some CO₂ may stay dissolved in the liquid. Foam may have sprayed out of the cup. Powder may have been left in the boat. The balance may not have settled. A little water vapor may have left with the gas. Choose the reasons that match",
+  "replace": "grams, and note which value is larger. Then look for reasons in what you actually did. Ask yourself three questions. Did all the CO₂ that formed leave the cup? Did anything other than CO₂ leave the cup? Did all the baking soda you weighed end up in the vinegar? For each answer, work out whether it would make your measured CO₂ higher or lower than the prediction, and check that the direction matches your result. Choose the reasons that fit",
+  "why": "The guide listed the error sources the report is graded on; it now gives questions that lead students to find and test their own."
+ },
+ {
+  "lesson": 6,
+  "find": "Measured and predicted values will rarely match exactly. Find the difference in grams, then give reasons that fit what you did. Some CO₂ may stay dissolved in the liquid, powder may be left in the boat, foam may spray out, or the balance may not have settled.",
+  "replace": "A gap does not mean you did something wrong. Measured and predicted values rarely match exactly. Find the difference in grams and note which value is larger. Then think back over the procedure: what could have kept CO₂ in the cup, and what besides CO₂ could have left it? Pick the reasons that fit what your pair did and that push the result in the direction you saw.",
+  "why": "The FAQ listed the error sources the report is graded on; reworded to guide without supplying them."
+ },
+ {
+  "lesson": 6,
+  "find": "Which explanations fit what we actually did: CO₂ dissolving in the liquid, foam spraying out, powder left in the boat, a balance that had not settled?",
+  "replace": "List every explanation you can find in the procedure. For each one, would it make the measured CO₂ lower or higher than the prediction?",
+  "why": "The follow-up handed students the list of error sources the report asks them to find."
+ },
+ {
+  "lesson": 6,
+  "find": "measures less CO₂ than it predicted. Give one reason from the procedure that could help explain the difference.",
+  "replace": "forgets to put the weigh boat back on the balance for the final weighing. Will their measured mass of CO₂ come out too high or too low? Explain.",
+  "why": "The old item and its shown answer supplied the error source the lab report is graded on; this checks the weighing method instead."
+ },
+ {
+  "lesson": 6,
+  "find": "Some CO₂ may have stayed dissolved in the liquid.",
+  "replace": "Too high. The boat’s mass is missing from the final reading, so it is counted as part of the mass lost.",
+  "why": "Answer for the replaced item."
+ },
+ {
+  "lesson": 6,
+  "find": "The measured mass can differ from the prediction. Carbon dioxide remaining dissolved in the liquid is one procedure-related reason for a lower measured value.",
+  "replace": "Measured CO₂ is the starting mass minus the final mass. Leaving the boat off makes the final mass smaller, so the difference comes out larger than the mass of CO₂ that escaped.",
+  "why": "Explanation for the replaced item."
+ },
+ {
+  "lesson": 6,
+  "find": "Lab reports: carbon dioxide from baking soda and vinegar",
+  "replace": "Lab report: carbon dioxide from baking soda and vinegar",
+  "why": "The title carried the grading category as a prefix.",
+  "all": true
+ },
+ {
+  "lesson": 7,
+  "find": "0.500 mol N₂; × 2/1 = 1.00 mol NH₃; × 17.04 g/mol = 17.0 g.",
+  "replace": "0.500 mol N₂; × 2/1 = 0.999 mol NH₃; × 17.04 g/mol = 17.0 g. The calculator holds 0.4996 for the first step, so doubling it gives 0.999, not 1.00: keep the calculator value between steps and round only what is written down.",
+  "why": "With the unrounded value carried, as the course requires, the middle step is 0.999 mol; the same quantity is already 0.999 mol in the limiting-reactant practice.",
+  "all": true
+ },
+ {
+  "lesson": 7,
+  "find": "0.500 mol N₂. Next, 0.500 mol N₂ × 2/1 = 1.00 mol NH₃. Last, 1.00 mol × 17.04 g/mol = 17.0 g NH₃. Keep",
+  "replace": "0.4996 mol N₂, which you write as 0.500 mol. Next, × 2/1 = 0.999 mol NH₃. Last, × 17.04 g/mol = 17.0 g NH₃. Keep the calculator value between steps, and round only the numbers you write down, to",
+  "why": "One rounding convention: carry the calculator value, round what is written."
+ },
+ {
+  "lesson": 7,
+  "find": "left 0.98 mol, 1.98 g",
+  "replace": "left 0.980 mol, 1.98 g",
+  "why": "Three significant figures, as everywhere else.",
+  "all": true
+ },
+ {
+  "lesson": 7,
+  "find": "− 1.00 = 0.98 mol, which is",
+  "replace": "− 1.00 = 0.980 mol, which is",
+  "why": "Three significant figures."
+ },
+ {
+  "lesson": 7,
+  "find": "mol H₂, so 0.98 mol (1.98 g)",
+  "replace": "mol H₂, so 0.980 mol (1.98 g)",
+  "why": "Three significant figures."
+ },
+ {
+  "lesson": 7,
+  "find": "Cl₂ (0.0501 mol Cl₂ needs 0.100 mol Na; Na has 0.200 mol).",
+  "replace": "Cl₂. 3.55 ÷ 70.90 = 0.0501 mol Cl₂ could make 0.100 mol NaCl; 0.200 mol Na could make 0.200 mol NaCl.",
+  "why": "The key used a different method from the one just taught (compare the product each reactant could make)."
+ },
+ {
+  "lesson": 7,
+  "find": "counts toward Problem sets, and give them a copy of the periodic table to take",
+  "replace": "is due at the start of next class and that they need the periodic table they took",
+  "why": "Boilerplate removed; students already have a take-home table, and they need the due date."
+ },
+ {
+  "lesson": 7,
+  "find": "three significant figures. Plan a short review for students who compared grams instead of moles.",
+  "replace": "three significant figures. Next time is a lab day: closed-toe shoes, and long hair tied back. Plan a short review for students who compared grams instead of moles.\nAnswer key for problem set 3:\n1. KBr is 39.10 + 79.90 = 119.00 g/mol. 6.50 g K × (1 mol / 39.10 g) = 0.166 mol K; × (2 mol KBr / 2 mol K) = 0.166 mol KBr; × (119.00 g / 1 mol) = 19.8 g KBr\n2. Al: 5.40 g ÷ 26.98 g/mol = 0.200 mol; × 2/2 = 0.200 mol Fe. Fe₂O₃ is 159.70 g/mol: 8.00 g ÷ 159.70 g/mol = 0.0501 mol; × 2/1 = 0.100 mol Fe. Fe₂O₃ is limiting.\n3. 0.100 mol Fe forms. It uses up 0.100 mol Al, so 0.200 − 0.100 = 0.100 mol Al is left.\n4. C₃H₈ is 44.11 g/mol: 10.0 g ÷ 44.11 g/mol = 0.227 mol, which could make 0.680 mol CO₂. O₂: 32.0 g ÷ 32.00 g/mol = 1.00 mol, which could make 0.600 mol CO₂. O₂ is limiting. C₃H₈ used: 1.00 mol O₂ × 1/5 = 0.200 mol; left: 0.2267 − 0.2000 = 0.0267 mol. CO₂: 0.600 mol × 44.01 g/mol = 26.4 g",
+  "why": "The set uses new problems, so the teacher needs a key; also reminds students of the lab-day dress policy before the copper lab."
+ },
+ {
+  "lesson": 7,
+  "find": "Problem set counts toward Problem sets",
+  "replace": "Problem set 3: due at the start of next class",
+  "why": "Student-facing boilerplate; gives the due date."
+ },
+ {
+  "lesson": 7,
+  "find": "Students finish the sentence aloud. Before the exit check is collected, run the short two-question half sheet alone and without notes; it is not graded, and the sheets help you plan a short review. Then hand out the problem set before students leave, tell them it counts toward Problem sets, and give each a copy of the periodic table to take",
+  "replace": "Before this slide, run the two-question exit check: write the two questions from the lesson plan on the board, and students answer them on a half sheet, alone and without notes. It is not graded; the sheets help you plan a short review. Then students finish the sentence aloud. Hand out the third problem set before students leave, tell them it is due at the start of next class and that they need the periodic table they took",
+  "why": "The note was garbled about when the exit check runs, and its questions are on no slide."
+ },
+ {
+  "lesson": 7,
+  "find": "The third problem set counts toward Problem sets, so keep",
+  "replace": "On the third problem set, show",
+  "why": "Boilerplate."
+ },
+ {
+  "lesson": 7,
+  "find": "graded assignment counts toward Problem sets.",
+  "replace": "problem set is due at the start of next class.",
+  "why": "Boilerplate removed; gives the due date."
+ },
+ {
+  "lesson": 7,
+  "find": "Problem sets: Mass-to-mass and limiting reactants",
+  "replace": "Problem set 3: Mass-to-mass and limiting reactants",
+  "why": "The title carried the grading category as a prefix.",
+  "all": true
+ },
+ {
+  "lesson": 8,
+  "find": "aloud. Tell students the problem set counts toward Problem sets.",
+  "replace": "aloud.",
+  "why": "Grading-category boilerplate; the set is simply collected."
+ },
+ {
+  "lesson": 8,
+  "find": "Remind students the problem set counts toward Problem sets. Pairs",
+  "replace": "Pairs",
+  "why": "Same boilerplate in the slide notes."
+ },
+ {
+  "lesson": 8,
+  "find": "goggles and weigh a labeled filter paper, then record its mass. They weigh their foil piece and their copper(II) chloride, then dissolve the salt in 40 mL of water in a",
+  "replace": "goggles, aprons and gloves. They weigh a labeled filter paper and record its mass. They weigh their foil piece, copy the mass of copper(II) chloride written on their cup, and dissolve the salt in 40 mL of water in a 250 mL",
+  "why": "Gloves and apron were only in the teacher notes; the salt is weighed out in advance, so pairs record its mass, which also makes nine minutes workable."
+ },
+ {
+  "lesson": 8,
+  "find": "(give half the pairs): about 0.25 g foil, 3.40 g salt. Al limits (0.0139 mol Cu vs 0.0199 mol); about 0.88 g Cu. Setup B: about 0.50 g foil, 1.70 g salt. CuCl₂ limits (0.00997 mol vs 0.0278 mol); about 0.63 g Cu. Pairs use their own masses.\nPrep: pre-cut foil and check one piece on a balance. Pre-measure salt into labeled cups. Set up funnels. Run a trial reaction first.\nSafety: goggles, apron and nitrile gloves. Copper(II) chloride is harmful if swallowed and irritates skin and eyes, so no tasting and no eating. If skin or eyes are splashed, rinse for 15",
+  "replace": "(seven pairs): about 0.25 g foil, 3.40 g salt. Al limits (0.0139 mol Cu vs 0.0199 mol); about 0.88 g Cu. Setup B (seven pairs): about 0.50 g foil, 1.70 g salt. CuCl₂ limits (0.00997 mol vs 0.0278 mol); about 0.63 g Cu. Pairs use their own masses. Quick check: when Al limits, predicted copper is the foil mass × 3.53; when CuCl₂ limits, it is the salt mass × 0.373.\nPrep for 14 pairs: 40 g of CuCl₂·2H₂O (the pairs use 35.7 g; the rest is for your trial runs). Weigh it into 14 labeled cups, seven of 3.40 g and seven of 1.70 g, and write the exact mass on each cup. Cut 14 pieces of regular kitchen foil, about 7 cm × 8 cm for 0.25 g and 8 cm × 14 cm for 0.50 g, and check one of each on a balance. For each pair: a 250 mL beaker, stirring rod, thermometer, tweezers, spatula, funnel, filter paper, a flask to catch the filtrate, a wash bottle of water, a watch glass and a pencil. For the room: balances reading to 0.01 g, 30 pairs of nitrile gloves, 2 L of distilled water, a labeled 2 L bottle for copper solution waste and a labeled tub for solid copper waste. Run one trial of each setup first.\nSafety: goggles, apron and nitrile gloves from now until clean-up ends. Copper(II) chloride is harmful if swallowed and irritates skin and eyes, so no tasting and no eating. Show students the eyewash station before they start. For a splash in the eye: go to the eyewash at once, hold the eyelids open, rinse for at least 15 minutes, and send for the school nurse. For a splash on skin: rinse under running water for several",
+  "why": "Prep was not sized for a class: adds amounts and equipment for 14 pairs (seven per setup), foil sizes, waste containers, and a full eye-splash procedure."
+ },
+ {
+  "lesson": 8,
+  "find": "Goggles on; weigh a",
+  "replace": "Goggles, apron and gloves on; weigh a",
+  "why": "Gloves and apron were missing from the student slide."
+ },
+ {
+  "lesson": 8,
+  "find": "foil and your copper(II) chloride",
+  "replace": "foil; copy the salt mass from your cup",
+  "why": "Matches the plan: the salt is weighed out in advance."
+ },
+ {
+  "lesson": 8,
+  "find": "Dissolve the salt in 40 mL of water",
+  "replace": "Dissolve the salt in 40 mL of water in the beaker",
+  "why": "Matches the plan."
+ },
+ {
+  "lesson": 8,
+  "find": "so no tasting and no eating. If skin or eyes are splashed, rinse for 15 minutes. Wash hands after. Do not",
+  "replace": "so no tasting and no eating. For a splash in the eye: eyewash station at once, eyelids held open, at least 15 minutes, and send for the school nurse. For skin: rinse under running water for several minutes. Wash hands after. Do not",
+  "why": "Eye-splash procedure was too thin to act on."
+ },
+ {
+  "lesson": 8,
+  "find": "whether the beaker feels warm.",
+  "replace": "the thermometer reading.",
+  "why": "Students were told to feel a beaker that the safety note says not to handle."
+ },
+ {
+  "lesson": 8,
+  "find": "heat. Keep the beaker on the bench and use a thermometer to check warming. Let it cool before handling. Small bubbles are hydrogen, so keep flames away and keep the room ventilated. Do not touch the solution. Keep goggles",
+  "replace": "a lot of heat. The solution can pass 50 °C within a few minutes, so the beaker stays on the bench, nobody holds it or leans over it, and pairs read the thermometer instead of touching the glass. If a mixture foams up or steams, the pair steps back and calls you. Let the beaker cool for a few minutes before the next step. The bubbles are hydrogen: no flames or sparks, and keep windows open or the room ventilation running. Do not touch the solution. Goggles and gloves stay",
+  "why": "States how hot the reaction gets (worked from the heat of reaction for these amounts in 40 mL) and what students do about it; makes ventilation concrete."
+ },
+ {
+  "lesson": 8,
+  "find": "foil into the beaker; stir gently every minute",
+  "replace": "the foil in; the beaker gets hot, so leave it on the bench",
+  "why": "Heat warning was missing from the student slide."
+ },
+ {
+  "lesson": 8,
+  "find": "Record at start, about 5 minutes, about",
+  "replace": "Stir gently every minute; record at start, 5 and",
+  "why": "Keeps five bullets while making room for the heat warning."
+ },
+ {
+  "lesson": 8,
+  "find": "left, bubbles, solid, warmth",
+  "replace": "left, bubbles, solid, temperature",
+  "why": "Students read the thermometer; they do not feel the beaker."
+ },
+ {
+  "lesson": 8,
+  "find": "heat. Keep the beaker on the bench and check warming with a thermometer. Let it cool before handling. Small bubbles are hydrogen, so keep flames away and keep the room ventilated. Do not touch the solution. Keep goggles",
+  "replace": "a lot of heat, and the solution can pass 50 °C within a few minutes. The beaker stays on the bench; nobody holds it or leans over it; pairs read the thermometer instead of touching the glass. Let it cool for a few minutes before the next step. The bubbles are hydrogen: no flames or sparks, and keep windows open or the room ventilation running. Do not touch the solution. Goggles and gloves stay",
+  "why": "Same safety detail in the slide notes."
+ },
+ {
+  "lesson": 8,
+  "find": "salts that would add mass after drying. Dry flat at room temperature for at least 24 hours, or in an oven set no higher than 80 °C. Next time, pairs weigh paper plus copper. Dry it again, let it cool to room temperature, and reweigh. Repeat until consecutive readings agree within 0.02 g, then subtract the paper’s mass. Arrange supervised drying and weighing so the final mass is available for the lab report.\nSafety: pour all filtrate into a labeled heavy-metal waste container, never down the drain. Put leftover foil and other copper-contaminated solids in the designated solid chemical waste container. Retain the filter paper and copper for drying and weighing, then follow the school’s chemical waste procedure. Gloves stay on while filtering.",
+  "replace": "salts. Filtering is the slow step: have pairs let the copper settle, pour most of the liquid through the paper first, then wash the copper in. Funnels can finish draining during the discussion. Dry the papers flat on their watch glasses at room temperature until next lesson (at least 24 hours), or in an oven no hotter than 80 °C for about an hour. Before next lesson, test two or three papers for constant mass: weigh, dry for 15 minutes more, and reweigh; the readings should agree within 0.02 g. Next lesson, pairs weigh the paper plus copper once and subtract the paper’s mass.\nSafety: all filtrate and rinse water go into the labeled copper waste bottle, never down the drain. Leftover foil goes into the labeled tub for solid copper waste; the copper and filter paper join it after next lesson’s weighing. Hand both containers to the school’s chemical waste collection. Gloves stay on until the bench is wiped down.",
+  "why": "The repeated dry-and-reweigh cycle was left to a later lesson that has no time for it; the teacher now checks constant mass beforehand and pairs weigh once. Adds how to fit the filtering into ten minutes and where each kind of copper waste goes."
+ },
+ {
+  "lesson": 8,
+  "find": "Label the watch glass; clean up;",
+  "replace": "Filtrate goes in the waste bottle, never the sink; label your watch glass;",
+  "why": "Disposal of the copper solution was missing from the student slide."
+ },
+ {
+  "lesson": 8,
+  "find": "salts that would add mass after drying. Dry flat at room temperature for at least 24 hours, or in an oven no higher than 80 °C. Next time, pairs weigh paper plus copper, dry again, cool and reweigh until consecutive readings agree within 0.02 g, then subtract the paper’s mass. Arrange supervised drying and weighing. Safety: all filtrate goes into the labeled heavy-metal waste container, never down the drain. Leftover foil and copper-contaminated solids go in the designated solid chemical waste container. Gloves stay on while filtering.",
+  "replace": "salts. Filtering is the slow step: pairs let the copper settle, pour most of the liquid through first, then wash the copper in; funnels can finish draining during the discussion. Dry flat at room temperature until next lesson (at least 24 hours), or in an oven no hotter than 80 °C for about an hour, and test two or three papers for constant mass yourself before next lesson. Next lesson, pairs weigh paper plus copper once and subtract the paper’s mass. Safety: all filtrate and rinse water go into the labeled copper waste bottle, never down the drain. Leftover foil goes into the labeled tub for solid copper waste. Gloves stay on until the bench is wiped down.",
+  "why": "Matches the revised plan for drying, weighing and waste."
+ },
+ {
+  "lesson": 8,
+  "find": "confirm it.\nBefore students leave, set the lab report on this experiment. It counts toward Lab reports.",
+  "replace": "test it.\nBefore students leave, set the lab report on this experiment and give its due date, after next lesson.",
+  "why": "The sentence was a ready-made conclusion for a report graded on the student’s own conclusion; boilerplate replaced by the due date, which must follow the copper weighing."
+ },
+ {
+  "lesson": 8,
+  "find": "leaving. Make sure each watch glass is labeled with pair initials and left somewhere undisturbed to dry.",
+  "replace": "leaving, and tell them to bring the sheet next lesson, when pairs weigh the dried copper and add that mass to the report. Make sure each watch glass is labeled with pair initials and left somewhere undisturbed to dry. Marking check for the reports: when Al limits, predicted copper = foil mass × 3.53 (1.5 × 63.55 ÷ 26.98); when CuCl₂ limits, predicted copper = salt mass × 0.373 (63.55 ÷ 170.5).",
+  "why": "The next lesson needs the data sheet; adds a quick check for marking reports that use each pair’s own masses."
+ },
+ {
+  "lesson": 8,
+  "find": "My observations confirm it",
+  "replace": "My observations test it",
+  "why": "Was a model conclusion sentence on a student slide."
+ },
+ {
+  "lesson": 8,
+  "find": "report set today; counts toward Lab reports",
+  "replace": "report set today; due after next lesson",
+  "why": "Boilerplate replaced by the due date."
+ },
+ {
+  "lesson": 8,
+  "find": "home: your recorded data and a periodic table",
+  "replace": "home your data sheet and bring it back next time",
+  "why": "The next lesson needs the data sheet."
+ },
+ {
+  "lesson": 8,
+  "find": "confirm it. Before students leave, set the lab report on this experiment. It counts toward Lab reports.",
+  "replace": "test it. Before students leave, set the lab report on this experiment; it is due after next lesson, when the copper mass is added.",
+  "why": "Matches the plan."
+ },
+ {
+  "lesson": 8,
+  "find": "few grams of it is many moles. Always compare the moles of product each reactant could make, using the coefficients. Example: Setup A used about 0.25 g foil and 3.40 g salt. They could make 0.0139 mol Cu and 0.0199 mol Cu, so Al limits. Setup B used about 0.50 g foil and 1.70 g salt. They could make 0.0278 mol Cu and 0.00997 mol Cu, so CuCl₂ limits. Use your own measured masses for your own prediction.",
+  "replace": "small mass of foil is a lot of moles. Always compare the moles of product each reactant could make, using the coefficients. Look again at the example above: 0.80 g of aluminum is far less mass than 3.00 g of the salt, but the aluminum could make 0.0445 mol Cu and the salt only 0.0176 mol, so the salt limits. Now do the same with the masses on your own data sheet. Your report needs your own numbers and your own working.",
+  "why": "The guide worked both lab setups, which is the calculation the lab report is graded on; it now points to the model example and to the student’s own data."
+ },
+ {
+  "lesson": 8,
+  "find": "Example: a pair in Setup A that sees no foil and a still-blue solution has confirmed its prediction that Al limits. If your observations do not match, think about a reason that fits what you did. The reaction may not have finished, the oxide layer on the foil may have slowed it, you may have made a weighing slip, or you may have used the wrong mole ratio.",
+  "replace": "In your report, set what you saw beside what you predicted and say whether they agree. If they do not agree, do not force them to. Go back over two things: your calculation (the masses, the molar masses, the mole ratio) and your procedure (how long the reaction ran, and how the foil behaved at the start). Then say which one you think explains the mismatch, and why.",
+  "why": "Removed the model conclusion sentence and the list of mismatch reasons, which the report is graded on; the guide now tells students how to reason from their own evidence."
+ },
+ {
+  "lesson": 8,
+  "find": "filtering, so the copper is not mixed with aluminum. Filter the copper and rinse it three times, because rinsing removes dissolved salts that would add mass after drying. Dry it until its mass stops changing. Example: if the dried copper still held salt, its mass would read too high and the comparison with your prediction would be unfair. Pour all filtrate into the labeled heavy-metal waste container,",
+  "replace": "filtering. Filter the copper, rinse it three times, and let it dry until its mass stops changing. Each step either keeps something else out of the final mass or keeps copper in it. For each step, ask yourself: if we had skipped it, what else would be on the paper, or what copper would be missing? Would the mass read higher or lower? You will need that reasoning when you compare your dried copper with your prediction. Pour all filtrate into the labeled waste bottle,",
+  "why": "The guide stated an error source and its direction, which the report is graded on; reworded as questions."
+ },
+ {
+  "lesson": 8,
+  "find": "prediction. Next time the class will weigh the dried copper and compare it with the predicted mass.",
+  "replace": "prediction. Next time you will weigh your dried copper and compare it with your predicted mass.",
+  "why": "Pairs weigh their own copper."
+ },
+ {
+  "lesson": 8,
+  "find": "Rinsing washes away dissolved salts that would stay on the copper and add mass once it dries. The copper must also dry until its mass stops changing, because leftover water would make it look heavier. Next time you will weigh the paper plus copper, dry it again, and reweigh until the readings agree. Then you subtract the paper’s mass to get a copper mass you can trust",
+  "replace": "Each step protects the mass you will compare with your prediction. Think about what is on the copper before it is rinsed, and what is still in it before it is dry, and which way each would move the balance reading. The copper is left to dry until its mass stops changing. Next time you weigh the paper plus copper and subtract the paper’s mass. That is the copper mass",
+  "why": "The answer gave error sources with their direction, which the report is graded on, and described a reweighing cycle that students do not do."
+ },
+ {
+  "lesson": 8,
+  "find": "Include the dried copper mass when it is provided.",
+  "replace": "Add your dried copper mass after you weigh it next lesson.",
+  "why": "Pairs weigh their own copper next lesson; nobody “provides” it."
+ },
+ {
+  "lesson": 8,
+  "find": "When your dried copper mass is provided,",
+  "replace": "After you weigh your dried copper next lesson,",
+  "why": "Same fix."
+ },
+ {
+  "lesson": 8,
+  "find": "Lab reports: limiting reactant with copper chloride and aluminum",
+  "replace": "Lab report: limiting reactant with copper chloride and aluminum",
+  "why": "The title carried the grading category as a prefix.",
+  "all": true
+ },
+ {
+  "lesson": 9,
+  "find": "Students compare actual with theoretical",
+  "replace": "Students weigh the dried copper from the lab, compare actual with theoretical",
+  "why": "The lesson now picks up the copper left to dry in the lab."
+ },
+ {
+  "lesson": 9,
+  "find": "Remind students the lab report from last time is due on the date they were given. Today’s reactions involve no chemicals handled by students.",
+  "replace": "Pairs weigh their dried copper today and add it to the copper lab report, so the report is due after this lesson. Students handle only the dried copper; they wear goggles and gloves for that.",
+  "why": "The lab left copper drying for this lesson and the report needs its mass, but this lesson never weighed it.",
+  "all": true
+ },
+ {
+  "lesson": 9,
+  "find": "Rework the Zn + CuCl₂ → ZnCl₂ + Cu example from last time: 1.00 g of each reactant, and CuCl₂ is the limiting reactant. The theoretical yield is the mass of Cu from the limiting reactant.\nSuppose a student dried and weighed 0.380",
+  "replace": "Work a new example that also makes copper, Zn + CuCl₂ → ZnCl₂ + Cu, with 1.00 g of each reactant. Students check that CuCl₂ is the limiting reactant. The theoretical yield is the mass of Cu from the limiting reactant.\nSuppose a student dried and weighed 0.400",
+  "why": "There was no zinc example last time. The actual yield is changed so the percent yield is the same whether or not the theoretical yield is rounded first."
+ },
+ {
+  "lesson": 9,
+  "find": "Theoretical: 0.00744 mol CuCl₂ × 1/1 × 63.55 g/mol = 0.473 g Cu. Percent yield = 0.380 ÷ 0.473 × 100% = 80.3%. The 0.380 g is hypothetical; last time’s copper was not weighed. Mistake: dividing theoretical",
+  "replace": "Limiting check: Zn is 65.38 g/mol, so 1.00 g is 0.0153 mol and could make 0.0153 mol Cu. CuCl₂ is 134.45 g/mol, so 1.00 g is 0.00744 mol and could make 0.00744 mol Cu. CuCl₂ limits. Theoretical: 0.00744 mol CuCl₂ × 1/1 × 63.55 g/mol = 0.473 g Cu. Percent yield = 0.400 ÷ 0.473 × 100% = 84.6%. The 0.400 g is made up; pairs find their own copper yield in the next activity. This example uses dry CuCl₂, not the blue dihydrate from the lab. Mistake: dividing theoretical",
+  "why": "Adds the limiting-reactant check the example relies on, and removes the claim that the lab copper was not weighed."
+ },
+ {
+  "lesson": 9,
+  "find": "a student weighed 0.380 g of dry",
+  "replace": "a student weighed 0.400 g of dry",
+  "why": "Number changed with the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "Theoretical: 0.00744 mol CuCl₂ × 1/1 × 63.55 g/mol = 0.473 g Cu. Percent yield = 0.380 ÷ 0.473 × 100% = 80.3%. The 0.380 g is hypothetical; last time’s copper was not weighed. Build the formula",
+  "replace": "Limiting check: 1.00 g Zn is 0.0153 mol; 1.00 g CuCl₂ (134.45 g/mol) is 0.00744 mol; each makes one mole of Cu per mole, so CuCl₂ limits. Theoretical: 0.00744 mol CuCl₂ × 1/1 × 63.55 g/mol = 0.473 g Cu. Percent yield = 0.400 ÷ 0.473 × 100% = 84.6%. The 0.400 g is made up; pairs find their own copper yield next. Build the formula",
+  "why": "Matches the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "from our own CO₂ data",
+  "replace": "from our own copper",
+  "why": "The lab left copper to dry for this lesson; this activity now weighs it."
+ },
+ {
+  "lesson": 9,
+  "find": "take out their data sheets from the baking soda and vinegar lab earlier in the course.\nThey find their predicted mass of CO₂ (theoretical yield) and their measured mass of CO₂ (actual yield).\nThey calculate percent yield and write it on the sheet.\nPairs then write one reason their measured mass could be smaller than predicted.",
+  "replace": "put on goggles and gloves, collect their dried copper on its filter paper, and weigh the paper and copper together.\nThey subtract the filter paper’s mass from their lab data sheet. The result is their actual yield of copper. Their predicted mass of copper is the theoretical yield.\nThey calculate percent yield and write it on the sheet.\nPairs then write one reason from their own procedure that could explain the gap.",
+  "why": "The copper lab promised that pairs would weigh their dried copper in this lesson and the report needs that mass, but the lesson used the baking soda data instead."
+ },
+ {
+  "lesson": 9,
+  "find": "Pairs use their own numbers. If a sheet is missing, use this hypothetical example: 2.00 g NaHCO₃ gives 2.00 ÷ 84.01 = 0.0238 mol, × 1/1 × 44.01 = 1.05 g CO₂; actual 0.92 g gives 87.6%. Acceptable reasons: CO₂ dissolved in the vinegar, reaction not finished, scale error.",
+  "replace": "Before class, check that the copper is dry: the two or three papers you tested should agree within 0.02 g. Set the watch glasses out near the balances. Pairs use their own numbers. Check example: predicted 0.88 g and weighed 0.75 g gives 0.75 ÷ 0.88 × 100% = 85%; masses this small have two significant figures on a 0.01 g balance, so the percent yield has two as well. Expect about 75% to 105%. Low values: copper left on the foil, beaker or stirring rod, or aluminum used up making hydrogen. Values above 100%: copper still damp, salts not rinsed out, bits of foil in the copper, or copper that darkened as it oxidized. A pair whose copper was lost uses its baking soda data sheet instead: the predicted CO₂ is the theoretical yield and the measured CO₂ is the actual yield.\nSafety: goggles and gloves; carry the paper on its watch glass and do not blow on the powder. After weighing, the copper and paper go into the labeled tub for solid copper waste. Wash hands. Students add the copper mass and percent yield to their lab report.",
+  "why": "The plan notes and the slide notes shared the old baking soda fallback; both now give the teacher expected copper results, a check example, a fallback, and safety and disposal for the dried copper.",
+  "all": true
+ },
+ {
+  "lesson": 9,
+  "find": "Your CO₂ data: find your percent",
+  "replace": "Your copper: find your percent",
+  "why": "Matches the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "Take out your baking soda and vinegar data sheet",
+  "replace": "Goggles and gloves on; collect your dried copper",
+  "why": "Matches the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "Find predicted mass of CO₂: theoretical",
+  "replace": "Weigh paper and copper; subtract the paper: actual",
+  "why": "Matches the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "measured mass of CO₂: actual",
+  "replace": "your predicted mass of copper: theoretical",
+  "why": "Matches the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "your measured mass was smaller",
+  "replace": "from your procedure for the gap",
+  "why": "Matches the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "3.00 g Mg (24.31 g/mol) gives MgO (40.31 g/mol). Actual 4.35 g. Percent yield? Theoretical 4.97 g; retain the unrounded value in the calculation: 4.35 ÷ (3.00 ÷ 24.31 × 40.31) × 100% = 87.4%",
+  "replace": "3.60 g Mg (24.31 g/mol) gives MgO (40.31 g/mol). Actual 5.25 g. Percent yield? Theoretical: 3.60 ÷ 24.31 × 40.31 = 5.97 g; 5.25 ÷ 5.97 × 100% = 87.9%",
+  "why": "With the old numbers the answer depended on whether the theoretical yield was rounded first (87.4% or 87.5%); these give 87.9% either way."
+ },
+ {
+  "lesson": 9,
+  "find": "3.00 g Mg (24.31 g/mol) gives MgO (40.31 g/mol); actual 4.35 g; percent yield? Item 3: a student reports 112%; why is this a sign of error? Item 4: theoretical 8.50 g, percent yield 76.0%; actual yield? Circulate and check that actual is divided by theoretical. Review answers on the board afterward: 84.7%; theoretical 4.97 g, retain the unrounded value, 87.4%;",
+  "replace": "3.60 g Mg (24.31 g/mol) gives MgO (40.31 g/mol); actual 5.25 g; percent yield? Item 3: a student reports 112%; why is this a sign of error? Item 4: theoretical 8.50 g, percent yield 76.0%; actual yield? Circulate and check that actual is divided by theoretical. Review answers on the board afterward: 84.7%; theoretical 5.97 g, 87.9%;",
+  "why": "Same numbers as the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "set and a copy of the periodic table to take home. Tell them it counts toward Problem sets.",
+  "replace": "set. Tell them it is due at the start of next class, before the test, and that they need the periodic table they took home.",
+  "why": "Boilerplate removed; gives the due date."
+ },
+ {
+  "lesson": 9,
+  "find": "Tell students the due date for the problem set. Remind them to show unit setups, use the rounded atomic masses on the class table, and give final answers to three significant figures. The test is marked in points; tell students to bring a calculator and the periodic table.",
+  "replace": "Remind students to show unit setups, use the rounded atomic masses on the class table, and give final answers to three significant figures. The test is marked out of 40 points. Students bring a calculator; the class periodic table is handed out with the test.\nAnswer key for problem set 4:\n1. 5.60 g CaO × (1 mol / 56.08 g) = 0.0999 mol CaO; × (1 mol Ca(OH)₂ / 1 mol CaO) × (74.10 g / 1 mol) = 7.40 g Ca(OH)₂. Percent yield: 6.40 ÷ 7.40 × 100% = 86.5%\n2. Mg: 6.20 g ÷ 24.31 g/mol = 0.255 mol; × 1/3 = 0.0850 mol Mg₃N₂. N₂: 3.40 g ÷ 28.02 g/mol = 0.121 mol; × 1/1 = 0.121 mol Mg₃N₂. Mg is limiting, although it has the larger mass. Mg₃N₂ is 100.95 g/mol, so the theoretical yield is 0.0850 mol × 100.95 g/mol = 8.58 g. Percent yield: 7.55 ÷ 8.58 × 100% = 88.0%\n3. 9.36 ÷ 9.00 × 100% = 104%. A yield above 100% means more product than the reactants could make, so the weighed mass is not all product. Likely cause: the solid was still wet, or it held an impurity such as leftover reactant.\n4. 7.20 ÷ 8.00 × 100% = 90.0%. Any two distinct causes, such as an incomplete reaction and product lost in handling (left on glassware or filter paper); a side reaction also counts.",
+  "why": "The set uses new problems, so the teacher needs a key; the test lesson hands out the class periodic table, so students need bring only a calculator."
+ },
+ {
+  "lesson": 9,
+  "find": "Fourth problem set counts toward Problem sets",
+  "replace": "Problem set 4: due at the start of next class",
+  "why": "Student-facing boilerplate; gives the due date."
+ },
+ {
+  "lesson": 9,
+  "find": "Take home the periodic table",
+  "replace": "Use the periodic table you took home",
+  "why": "Students already have a take-home table."
+ },
+ {
+  "lesson": 9,
+  "find": "set and a copy of the periodic table. Tell them the due date. Remind them to show unit setups, use the rounded atomic masses on the class table, and give final answers to three significant figures. The unit test covers the mole, molar mass, balancing, mole ratios, limiting reactants and percent yield. It is marked in points. Tell students to bring a calculator and the periodic table.",
+  "replace": "set. It is due at the start of next class, before the test. Remind them to show unit setups, use the rounded atomic masses on the class table, and give final answers to three significant figures. The unit test covers the mole, molar mass, balancing, mole ratios, limiting reactants and percent yield. It is marked out of 40 points. Students bring a calculator; the class periodic table is handed out with the test.",
+  "why": "Matches the plan and the test lesson."
+ },
+ {
+  "lesson": 9,
+  "find": "0.380 g of copper. That 0.380",
+  "replace": "0.400 g of copper. That 0.400",
+  "why": "Number changed with the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "hypothetical student collected 0.380 g of copper when the theoretical yield was 0.473 g. Percent yield = 0.380 ÷ 0.473 × 100% = 80.3%.",
+  "replace": "student collected 0.400 g of copper when the theoretical yield was 0.473 g. Percent yield = 0.400 ÷ 0.473 × 100% = 84.6%.",
+  "why": "Number changed with the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "in points. Review your problem sets and your lab data sheets. Practice showing unit setups, use the rounded atomic masses on the class periodic table, and give final answers to three significant figures. Bring a calculator and your periodic table. The fourth problem set counts toward Problem sets, so use it as practice for",
+  "replace": "out of 40 points. Review your problem sets and your lab data sheets. Practice showing unit setups, use the rounded atomic masses on the class periodic table, and give final answers to three significant figures. Bring a calculator; the class periodic table will be on your desk. The fourth problem set practices",
+  "why": "Boilerplate removed; matches the test lesson, where the class table is handed out."
+ },
+ {
+  "lesson": 9,
+  "find": "0.380 g of copper when the theoretical yield is 0.473 g, so the percent yield is 80.3%. One student says, ‘That is a bad result, because a careful chemist would get 100%.’ Another says, ‘A percent yield of 80%",
+  "replace": "0.400 g of copper when the theoretical yield is 0.473 g, so the percent yield is 84.6%. One student says, ‘That is a bad result, because a careful chemist would get 100%.’ Another says, ‘A percent yield of about 85%",
+  "why": "Numbers changed with the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "a result of 80.3% or a result",
+  "replace": "a result of 84.6% or a result",
+  "why": "Number changed with the plan."
+ },
+ {
+  "lesson": 9,
+  "find": "graded assignment counts toward Problem sets.",
+  "replace": "problem set is due at the start of next class.",
+  "why": "Boilerplate removed; gives the due date."
+ },
+ {
+  "lesson": 9,
+  "find": "2Na + Cl₂ → 2NaCl, 4.60 g Na reacts with excess Cl₂. Calculate the theoretical mass of NaCl, then find the percent yield if 10.1 g NaCl",
+  "replace": "CaO + H₂O → Ca(OH)₂, 5.60 g CaO reacts with excess water. Calculate the theoretical mass of Ca(OH)₂, then find the percent yield if 6.40 g Ca(OH)₂",
+  "why": "The old problem was the exit check from the mass-to-mass lesson (4.60 g Na to NaCl), already answered in class."
+ },
+ {
+  "lesson": 9,
+  "find": "CaCO₃ → CaO + CO₂, 12.5 g CaCO₃ reacts. Calculate the theoretical mass of CaO, then find the percent yield if 5.80 g CaO",
+  "replace": "3Mg + N₂ → Mg₃N₂, 6.20 g Mg is heated with 3.40 g N₂. Find the limiting reactant and the theoretical mass of Mg₃N₂, then find the percent yield if 7.55 g Mg₃N₂",
+  "why": "The old problem reused the reaction from problem set 2 and its answer changed with rounding; this one makes students find the theoretical yield from the limiting reactant, which the lesson stresses."
+ },
+ {
+  "lesson": 9,
+  "find": "For 2H₂ + O₂ → 2H₂O, the theoretical yield is 9.00 g and the collected",
+  "replace": "A student filters, dries and weighs a solid product. The theoretical yield is 9.00 g and the weighed",
+  "why": "The product was water, for which the taught causes (wet or impure solid) make no sense."
+ },
+ {
+  "lesson": 9,
+  "find": "Problem sets: Percent yield and product loss",
+  "replace": "Problem set 4: Percent yield and product loss",
+  "why": "The title carried the grading category as a prefix.",
+  "all": true
+ },
+ {
+  "lesson": 10,
+  "find": "These count toward Problem sets and Lab reports, respectively. Students sit with space between them and clear their desks except for a pencil and a calculator.\nHand out the class periodic table of rounded atomic masses and Avogadro’s number, 6.022 × 10²³, face up on each desk.\nRead the rules aloud: work alone, show every setup with units, give final calculated amounts and percent yields to three significant figures, keep molar masses to the precision of the class table, and use the smallest whole-number coefficients when balancing, and raise a hand if something is unclear.\nTell students the test is marked in points and counts toward Unit test.",
+  "replace": "Students sit with space between them and clear their desks except for a pencil and a calculator.\nHand out the class periodic table of rounded atomic masses and Avogadro’s number, 6.022 × 10²³, face up on each desk.\nRead the rules aloud: work alone, show every setup with units, give final calculated amounts and percent yields to three significant figures, keep molar masses to the precision of the class table, and use the smallest whole-number coefficients when balancing. Raise a hand if something is unclear.\nTell students the test is marked out of 40 points and is worth 50% of the course grade.",
+  "why": "Boilerplate and a run-on sentence."
+ },
+ {
+  "lesson": 10,
+  "find": "These count toward Problem sets and Lab reports, respectively. Hand",
+  "replace": "Hand",
+  "why": "Boilerplate."
+ },
+ {
+  "lesson": 10,
+  "find": "Graded test, marked in points",
+  "replace": "Graded test, marked out of 40 points",
+  "why": "Says what the points are."
+ },
+ {
+  "lesson": 10,
+  "find": "Counts toward Unit test",
+  "replace": "Worth 50% of the course grade",
+  "why": "Grading-category boilerplate on a student slide."
+ },
+ {
+  "lesson": 10,
+  "find": "test is marked in points and counts toward Unit test. Keep the board",
+  "replace": "test is marked out of 40 points and is worth 50% of the course grade. Keep the board",
+  "why": "Boilerplate."
+ },
+ {
+  "lesson": 10,
+  "find": "ten minutes left.\nCollect each paper at the end of the segment, or when a student finishes and",
+  "replace": "ten minutes left.\nCollect each paper when time is up, or when a student finishes and",
+  "why": "Product jargon."
+ },
+ {
+  "lesson": 10,
+  "find": "ten minutes left. Collect each paper at the end of the segment, or when a student finishes and",
+  "replace": "ten minutes left. Collect each paper when time is up, or when a student finishes and",
+  "why": "Product jargon."
+ },
+ {
+  "lesson": 10,
+  "find": "Use the class atomic masses: H 1.01, C 12.01, N 14.01, O 16.00, Na 22.99, Mg 24.31, Al 26.98, S 32.07, Cl 35.45, K 39.10, Ca 40.08, Fe 55.85. Award method points even if a wrong earlier value is carried through correctly; where the key specifies an answer with a unit, withhold that point if the unit is missing; do not apply an additional unit deduction.\n\nQ1 (2): How many molecules are in 0.250 mol of SO₂? Answer: 0.250 × 6.022 × 10²³ = 1.51 × 10²³ molecules. 1 for setup, 1 for answer.\n\nQ2 (2): Find the molar mass of calcium nitrate, Ca(NO₃)₂. Answer: 40.08 + 2(14.01) + 6(16.00) = 164.10 g/mol. 1 for atom counts, 1 for answer.\n\nQ3 (3): Find the mass of 0.450 mol of Na₂CO₃. Answer: molar mass 2(22.99) + 12.01 + 3(16.00) = 105.99 g/mol; 0.450 × 105.99 = 47.7 g. 1 molar mass, 1 setup, 1 answer with unit.\n\nQ4 (3): How many moles are in 25.0 g of NaCl? Answer: molar mass 58.44 g/mol; 25.0 ÷ 58.44 = 0.428 mol. 1 molar mass, 1 setup, 1 answer with unit.\n\nQ5 (4): Balance each equation. (a) ___ C₃H₈ + ___ O₂ → ___ CO₂ + ___ H₂O. Answer: 1, 5, 3, 4. (b) ___ Fe + ___ O₂ → ___ Fe₂O₃. Answer: 4, 3, 2. 2 points each; all coefficients must be correct.\n\nQ6 (4): 4NH₃ + 5O₂ → 4NO + 6H₂O. (a) How many moles of H₂O form from 0.800 mol NH₃? Answer: 0.800 × 6/4 = 1.20 mol. (b) How many moles of O₂ react with 0.800 mol NH₃? Answer: 0.800 × 5/4 = 1.00 mol. 2 points each: 1 for the ratio, 1 for the answer.\n\nQ7 (5): 2KClO₃ → 2KCl + 3O₂. What mass of O₂ forms from 15.0 g KClO₃? Answer: molar mass KClO₃ 122.55 g/mol; 15.0 ÷ 122.55 = 0.1224 mol; × 3/2 = 0.1836 mol O₂; × 32.00 g/mol = 5.88 g. 1 molar mass, 1 moles, 1 ratio, 1 mass, 1 answer with unit.\n\nQ8 (8): 2Na + Cl₂ → 2NaCl. A mixture has 4.60 g Na and 5.00 g Cl₂. (a) Find the moles of NaCl that the Na could make. Answer: 4.60 ÷ 22.99 = 0.200 mol Na; × 2/2 = 0.200 mol NaCl. (2) (b) Find the moles of NaCl that the Cl₂ could make. Answer: Cl₂ is 70.90 g/mol; 5.00 ÷ 70.90 = 0.0705 mol; × 2/1 = 0.141 mol NaCl. (2) (c) Name the limiting reactant. Answer: Cl₂, because it makes less NaCl. (1) (d) Find the theoretical yield of NaCl in grams. Answer: 0.141 mol × 58.44 g/mol = 8.24 g. (3: 1 uses the limiting reactant, 1 molar mass, 1 answer with unit)\n\nQ9 (4): A student collects 6.95 g of NaCl from the reaction in Q8. (a) Find the percent yield. Answer: 6.95 ÷ 8.24 × 100% = 84.3%. (3: 1 formula with actual over theoretical, 1 numbers, 1 answer) (b) Give one reason the student collected less than the theoretical yield. Answer: any one of an incomplete reaction, product left on glassware or filter paper, or a side reaction. (1)\n\nQ10 (5): N₂ + 3H₂ → 2NH₃. A mixture has 10.0 g H₂ and 28.0 g N₂. A student says H₂ is limiting because 10.0 g is less than 28.0 g. Is the student correct? Show the calculation. Answer: H₂ is 2.02 g/mol, so 10.0 ÷ 2.02 = 4.95 mol; × 2/3 = 3.30 mol NH₃. N₂ is 28.02 g/mol, so 28.0 ÷ 28.02 = 0.999 mol; × 2/1 = 2.00 mol NH₃. N₂ makes less NH₃, so N₂ limits and the student is not correct. 1 for each mole conversion, 1 for each ratio, 1 for the conclusion.\n\nCollect all papers and calculators-only desks.",
+  "replace": "Copy the test paper below for students, leaving working space under each question. The answer key follows it. Atomic masses needed, from the class table: H 1.01, C 12.01, N 14.01, O 16.00, Na 22.99, Cl 35.45, K 39.10, Ca 40.08, Fe 55.85.\nMarking: award method points when a wrong earlier value is carried through correctly. Where the key says ‘answer with unit’, withhold that point if the unit is missing; make no other deduction for units. Accept an answer that differs by 1 in the third significant figure because of rounding between steps.\n\nTEST PAPER\nUnit test: stoichiometry. Name: ____________ Total: 40 points.\nShow every setup with units. Give molar masses to two decimal places and other final answers to three significant figures.\n1. (2 points) How many molecules are in 0.725 mol of SO₂?\n2. (2 points) Find the molar mass of calcium nitrate, Ca(NO₃)₂.\n3. (3 points) Find the mass of 0.450 mol of K₂CO₃.\n4. (3 points) How many moles are in 30.0 g of KCl?\n5. (4 points) Balance each equation.\n(a) ___ C₂H₄ + ___ O₂ → ___ CO₂ + ___ H₂O\n(b) ___ Al + ___ HCl → ___ AlCl₃ + ___ H₂\n6. (4 points) 4NH₃ + 5O₂ → 4NO + 6H₂O\n(a) How many moles of H₂O form from 1.40 mol NH₃?\n(b) How many moles of O₂ react with 1.40 mol NH₃?\n7. (5 points) 2NaHCO₃ → Na₂CO₃ + H₂O + CO₂. What mass of CO₂ forms when 20.0 g of NaHCO₃ is heated?\n8. (8 points) 2Fe + 3Cl₂ → 2FeCl₃. A mixture has 5.00 g Fe and 6.00 g Cl₂.\n(a) Find the moles of FeCl₃ that the Fe could make.\n(b) Find the moles of FeCl₃ that the Cl₂ could make.\n(c) Name the limiting reactant.\n(d) Find the theoretical yield of FeCl₃ in grams.\n9. (4 points) A student collects 7.80 g of FeCl₃ from the reaction in question 8.\n(a) Find the percent yield.\n(b) Give one reason the student collected less than the theoretical yield.\n10. (5 points) 2C + O₂ → 2CO. A mixture has 3.00 g C and 3.20 g O₂. A student says C is limiting because 3.00 g is less than 3.20 g. Is the student correct? Show the calculation.\n\nANSWER KEY\n1. 0.725 mol × 6.022 × 10²³ molecules/mol = 4.37 × 10²³ molecules. 1 setup, 1 answer.\n2. 40.08 + 2(14.01) + 6(16.00) = 164.10 g/mol. 1 atom counts, 1 answer.\n3. Molar mass 2(39.10) + 12.01 + 3(16.00) = 138.21 g/mol; 0.450 mol × 138.21 g/mol = 62.2 g. 1 molar mass, 1 setup, 1 answer with unit.\n4. Molar mass 39.10 + 35.45 = 74.55 g/mol; 30.0 g ÷ 74.55 g/mol = 0.402 mol. 1 molar mass, 1 setup, 1 answer with unit.\n5. (a) 1, 3, 2, 2. (b) 2, 6, 2, 3. 2 points each; all coefficients must be correct. Accept a blank for 1.\n6. (a) 1.40 × 6/4 = 2.10 mol H₂O. (b) 1.40 × 5/4 = 1.75 mol O₂. 2 points each: 1 ratio, 1 answer.\n7. NaHCO₃ is 84.01 g/mol; 20.0 ÷ 84.01 = 0.238 mol; × 1/2 = 0.119 mol CO₂; × 44.01 g/mol = 5.24 g. 1 molar mass, 1 moles, 1 ratio, 1 mass setup, 1 answer with unit. A student who uses the 1 : 1 ratio from the vinegar lab gets 10.5 g and loses only the ratio point.\n8. (a) 5.00 ÷ 55.85 = 0.0895 mol Fe; × 2/2 = 0.0895 mol FeCl₃. (2: 1 moles, 1 ratio) (b) Cl₂ is 70.90 g/mol; 6.00 ÷ 70.90 = 0.0846 mol; × 2/3 = 0.0564 mol FeCl₃. (2: 1 moles, 1 ratio) (c) Cl₂, because it makes less FeCl₃. (1) (d) FeCl₃ is 55.85 + 3(35.45) = 162.20 g/mol; 0.0564 mol × 162.20 g/mol = 9.15 g. (3: 1 uses the limiting reactant, 1 molar mass, 1 answer with unit)\n9. (a) 7.80 ÷ 9.15 × 100% = 85.2%. (3: 1 formula with actual over theoretical, 1 numbers, 1 answer) Mark from the student’s own answer to 8(d). (b) Any one of an incomplete reaction, product left on glassware or filter paper, or a side reaction. (1)\n10. C: 3.00 ÷ 12.01 = 0.250 mol; × 2/2 = 0.250 mol CO. O₂: 3.20 ÷ 32.00 = 0.100 mol; × 2/1 = 0.200 mol CO. O₂ makes less CO, so O₂ limits and the student is not correct. 1 for each mole conversion, 1 for each ratio, 1 for the conclusion.\n\nCollect every paper.",
+  "why": "The test existed only as questions and answers run together. It is now a paper that can be copied, followed by a re-worked key. Six questions repeated earlier class items or their numbers (Q1 the first lesson’s practice, Q3 a warm-up molar mass, Q5 two practice equations, Q7 a quiz reaction, Q8 an exit check, Q10 a practice problem); all are replaced with new items, chosen so that answers do not change with rounding between steps."
+ },
+ {
+  "lesson": 10,
+  "find": "6.00 g Mg and 6.00 g O₂. The grams are equal, so grams tell you nothing. Mg: 6.00 ÷ 24.31 = 0.247 mol Mg, and the ratio 2/2 gives 0.247 mol MgO. O₂: 6.00 ÷ 32.00 = 0.188 mol O₂, and the ratio 2/1 gives 0.375",
+  "replace": "2.40 g Mg and 2.40 g O₂. The grams are equal, so grams tell you nothing. Mg: 2.40 ÷ 24.31 = 0.0987 mol Mg, and the ratio 2/2 gives 0.0987 mol MgO. O₂: 2.40 ÷ 32.00 = 0.0750 mol O₂, and the ratio 2/1 gives 0.150",
+  "why": "With 6.00 g the theoretical yield in the next point was 9.95 g or 9.96 g depending on rounding; these masses give one answer either way."
+ },
+ {
+  "lesson": 10,
+  "find": "0.247 mol MgO. Molar mass of MgO is 24.31 + 16.00 = 40.31 g/mol, so the theoretical yield is 0.247 × 40.31 = 9.96 g. Percent yield compares what you really got with that maximum: percent yield = actual yield ÷ theoretical yield × 100%. Suppose a student collects 8.50 g of MgO. Then 8.50 ÷ 9.96 × 100% = 85.3%.",
+  "replace": "0.0987 mol MgO. Molar mass of MgO is 24.31 + 16.00 = 40.31 g/mol, so the theoretical yield is 0.0987 × 40.31 = 3.98 g. Percent yield compares what you really got with that maximum: percent yield = actual yield ÷ theoretical yield × 100%. Suppose a student collects 3.40 g of MgO. Then 3.40 ÷ 3.98 × 100% = 85.4%.",
+  "why": "9.96 g came from a rounded intermediate value (the unrounded chain gives 9.95 g); the new numbers follow the one rounding convention."
+ },
+ {
+  "lesson": 10,
+  "find": "in points, and it counts toward the Unit test",
+  "replace": "out of 40 points and is worth 50% of the course",
+  "why": "Boilerplate."
+ }
+]

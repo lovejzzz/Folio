@@ -1,0 +1,983 @@
+[
+ {
+  "find": "We read them as evidence, we do not repeat slurs aloud, and anyone may step out for a moment without asking.",
+  "replace": "We read them as evidence. When a source prints a slur or another offensive term for race, the teacher says “the slur” or skips the word, and students never say it aloud. Anyone may step out for a moment without asking.",
+  "why": "One explicit rule for offensive period language, matching the lesson notes."
+ },
+ {
+  "find": "Exit tickets are collected every lesson and cannot be made up without an excused absence.",
+  "replace": "An exit ticket is collected every lesson and scored from 0 to 3: 3 for every part correct, 2 for most parts correct, 1 for an attempt with a major gap, 0 if not handed in. The eight scores add up to a mark out of 24, which is the exit-ticket grade (30%). A missed ticket cannot be made up without an excused absence.",
+  "why": "Gives the exit tickets a simple scoring rule that adds up to the 30%."
+ },
+ {
+  "lesson": 1,
+  "find": "the paragraph beginning “One-eighth of the whole population were colored slaves” and the final paragraph",
+  "replace": "the opening of the paragraph beginning “One-eighth of the whole population were colored slaves”, as far as “somehow the cause of the war”, and the final paragraph",
+  "why": "That paragraph runs to about 400 words; the task and key use only its opening, so name where the excerpt ends."
+ },
+ {
+  "lesson": 1,
+  "find": "Slavery and the period term “colored” are named plainly; do not assign students to speak as any people involved.",
+  "replace": "The first excerpt uses the period term “colored”. Students read it on the page and do not say it; in discussion everyone says “Black people” or “enslaved people”.",
+  "why": "Replaces an echoed role-play instruction that does not fit this task with the course rule on period language."
+ },
+ {
+  "lesson": 1,
+  "find": "The word “colored” is a period term, and slavery is named plainly. Do not assign students to speak as any people involved.",
+  "replace": "The first excerpt uses the period term “colored”. Students read it on the page and do not say it; in discussion everyone says “Black people” or “enslaved people”.",
+  "why": "Same fix in the slide notes."
+ },
+ {
+  "lesson": 1,
+  "find": "going into later in the course",
+  "replace": "going into the lessons ahead",
+  "all": true,
+  "why": "Garbled phrase."
+ },
+ {
+  "lesson": 1,
+  "find": "Counts toward the lesson exit tickets component (30% of the course grade).",
+  "replace": "Counts toward the lesson exit tickets component (30% of the course grade). Score it 0–3: 3 for every part correct, 2 for most parts correct, 1 for an attempt with a major gap, 0 if not handed in.",
+  "why": "Exit tickets had no scoring rule; this is the same 0–3 rule stated in the course policies, so eight tickets add up to the 30%."
+ },
+ {
+  "lesson": 1,
+  "find": "Example: a Georgia planter who fought as a private and owned $40,000 in taxable property had to swear the oath and also apply to Johnson in person.",
+  "replace": "Example: a Virginia planter who fought as a private and owned $30,000 in taxable property had to swear the oath and also apply to Johnson personally for a pardon.",
+  "why": "The study guide printed the graded exit-ticket case with its answer; now a parallel example. Also, applications were made to Johnson personally, usually in writing, not necessarily in person."
+ },
+ {
+  "lesson": 1,
+  "find": "Which of the four questions on the board (",
+  "replace": "Which of the four questions of 1865 (",
+  "why": "Classroom-only reference in a discussion prompt."
+ },
+ {
+  "lesson": 1,
+  "find": "In the first excerpt from Lincoln’s Second Inaugural, what did Lincoln identify as the war’s cause?",
+  "replace": "In the paragraph of his Second Inaugural that begins “One-eighth of the whole population were colored slaves,” what did Lincoln identify as the war’s cause?",
+  "why": "A quiz item should name the passage, not “the first excerpt” from a class handout."
+ },
+ {
+  "lesson": 1,
+  "find": "The excerpt says slavery was a powerful interest that everyone knew was the war’s cause.",
+  "replace": "Lincoln says the slaves “constituted a peculiar and powerful interest” and that all knew this interest “was somehow the cause of the war.”",
+  "why": "Explanation now cites Lincoln’s exact words."
+ },
+ {
+  "lesson": 2,
+  "find": "they read a Bureau agent's report",
+  "replace": "they read a report by the Bureau's commissioner",
+  "why": "The source is the commissioner’s report, not an agent’s."
+ },
+ {
+  "lesson": 2,
+  "find": "Segment 2 sorts them",
+  "replace": "The next segment sorts them",
+  "why": "Machine-sounding reference."
+ },
+ {
+  "lesson": 2,
+  "find": "Do not claim exact school or agent counts.",
+  "replace": "For scale: no more than about 900 agents served across the whole South at any one time.",
+  "why": "Generator instruction echoed as advice; replaced with the figure a teacher needs."
+ },
+ {
+  "lesson": 2,
+  "find": "Do not give exact school or agent counts.",
+  "replace": "For scale: no more than about 900 agents served across the whole South at any one time.",
+  "why": "Same fix in the slide notes."
+ },
+ {
+  "lesson": 2,
+  "find": "coastal land in South Carolina and Georgia",
+  "replace": "coastal land from South Carolina to northern Florida",
+  "all": true,
+  "why": "Special Field Order No. 15 reserved the coast from Charleston south to the St. Johns River in Florida."
+ },
+ {
+  "lesson": 2,
+  "find": "Name that the clause covers people “duly convicted” of a crime. Next time, the Black Codes will show how states used it, so only flag it now. Do not preview the Codes in detail. Handle the text as law, not as a scene to act out.",
+  "replace": "Point out that the clause covers only people “duly convicted” of a crime. Next time, the Black Codes will show how states used it, so only flag it now.",
+  "why": "Removes echoed generator instructions."
+ },
+ {
+  "lesson": 2,
+  "find": "Name that the clause covers people duly convicted of a crime. Next time, the Black Codes will show how states used it, so only flag it now and do not preview the Codes in detail. Treat the text as law, not as a scene to act out.",
+  "replace": "Point out that the clause covers only people duly convicted of a crime. Next time, the Black Codes will show how states used it, so only flag it now.",
+  "why": "Same fix in the slide notes."
+ },
+ {
+  "lesson": 2,
+  "find": "Hand out an excerpt of about 150 words from the Annual Report of the Commissioner of the Bureau of Refugees, Freedmen, and Abandoned Lands, by Maj. Gen. Oliver O. Howard, dated October 1866. Use the section where Howard describes how few agents the Bureau had and how much it relied on army officers and troops.",
+  "replace": "Hand out a passage of about 150 words from Maj. Gen. Oliver O. Howard’s annual report for 1866 as commissioner of the Bureau of Refugees, Freedmen, and Abandoned Lands. Choose a passage in which Howard reports on the officers and agents on duty and on the Bureau’s need for troops.",
+  "why": "The month could not be confirmed and the plan implied a named section; it now says honestly that the teacher chooses the passage."
+ },
+ {
+  "lesson": 2,
+  "find": "Prepare copies; Howard was commissioner, so say plainly that he reports for the Bureau’s agents. Questions and expected answers:\n1. How many agents did the Bureau have compared with the area it covered? Expect: identify the staffing evidence in the excerpt and explain why it suggests agents were spread thin.\n2. Who enforced its decisions? Expect: army officers and troops.\n3. What does that mean when troops leave? Expect: the Bureau’s power shrinks.\nCheck the excerpt supports these answers before use.",
+  "replace": "Prepare copies with the report’s title, author and year printed above the passage. Howard was commissioner, so say plainly that he reports for the Bureau and had reason to show its work well. Questions, with answers expected depending on the passage chosen:\n1. What does Howard report about the officers and agents the Bureau had? Expect: students point to the staffing detail in the passage and explain why it suggests agents were spread thin. For scale, no more than about 900 served across the South at one time.\n2. Who enforced its decisions? Expect: army officers and troops.\n3. What does that mean when troops leave? Expect: the Bureau’s power shrinks.\nIf the passage does not answer a question, give the answer yourself rather than asking students to find it.",
+  "why": "The key presumed the content of a passage left to the teacher; it is now marked as depending on the passage chosen."
+ },
+ {
+  "lesson": 2,
+  "find": "Read the excerpt from Howard’s October 1866 report",
+  "replace": "Read the passage from Howard’s 1866 annual report",
+  "why": "Matches the corrected source description."
+ },
+ {
+  "lesson": 2,
+  "find": "Hand out the excerpt of about 150 words from the Annual Report of the Commissioner of the Bureau of Refugees, Freedmen, and Abandoned Lands, by Maj. Gen. Oliver O. Howard, October 1866, from the section on how few agents the Bureau had and how much it relied on army officers and troops. Check beforehand that the excerpt supports the follow-up questions.",
+  "replace": "Hand out the passage of about 150 words from Maj. Gen. Oliver O. Howard’s annual report for 1866 as commissioner of the Bureau of Refugees, Freedmen, and Abandoned Lands, on the officers and agents on duty and the Bureau’s need for troops. The expected answers below depend on the passage chosen.",
+  "why": "Same fix in the slide notes."
+ },
+ {
+  "lesson": 2,
+  "find": "In his report of October 1866, Howard described how few agents the Bureau had and how much it relied on army officers and troops.",
+  "replace": "Howard’s annual report for 1866, which you read in class, shows how much the Bureau relied on army officers and troops.",
+  "why": "Removes an unconfirmed date and a claim about the report’s exact content."
+ },
+ {
+  "lesson": 2,
+  "find": "Howard’s report describes few Bureau agents and reliance on army officers and troops. Which conclusion best follows from that evidence?",
+  "replace": "The Freedmen’s Bureau had few agents and relied on army officers and troops to carry out its decisions. Which conclusion best follows from that evidence?",
+  "why": "The quiz item no longer depends on which passage of the report a class read."
+ },
+ {
+  "lesson": 2,
+  "find": "They answer in three or four sentences.",
+  "replace": "Question: Name three things the Freedmen’s Bureau did. Then explain what the 13th Amendment’s exception clause allowed, and give one reason the Bureau’s power was limited. Answer in three or four sentences.",
+  "why": "The exit-ticket question was missing from the plan step."
+ },
+ {
+  "lesson": 2,
+  "find": "Question: Name three things the Freedmen’s Bureau did. Then explain what the 13th Amendment’s exception clause allowed, and give one reason the Bureau’s power was limited. Expected: schools, labor contracts, land (any three of its work); slavery ended except as punishment for crime after due conviction; few agents or reliance on the army or Johnson returning land.",
+  "replace": "Expected: schools, labor contracts and land (accept other real Bureau work, such as food relief or medical care); involuntary servitude stayed legal as punishment for a crime after due conviction; few agents, reliance on the army, or Johnson returning land.",
+  "why": "Question moved to the description; expected answer made clear."
+ },
+ {
+  "lesson": 2,
+  "find": "Counts toward the lesson exit tickets component (30% of the course grade).",
+  "replace": "Counts toward the lesson exit tickets component (30% of the course grade). Score it 0–3: 3 for every part correct, 2 for most parts correct, 1 for an attempt with a major gap, 0 if not handed in.",
+  "why": "Exit tickets had no scoring rule; this is the same 0–3 rule stated in the course policies, so eight tickets add up to the 30%."
+ },
+ {
+  "lesson": 2,
+  "find": "Look for any three of schools, labor contracts and land; slavery ended except as punishment for crime after due conviction;",
+  "replace": "Look for schools, labor contracts and land (accept other real Bureau work, such as food relief or medical care); involuntary servitude stayed legal as punishment for a crime after due conviction;",
+  "why": "“Any three of” three items made no sense; matches the plan’s key."
+ },
+ {
+  "lesson": 2,
+  "find": "overrode his separate veto in July 1866",
+  "replace": "overrode his veto of that bill in July 1866",
+  "all": true,
+  "why": "“Separate veto” was unclear: Johnson vetoed the revised bill too, and Congress overrode that veto."
+ },
+ {
+  "lesson": 2,
+  "find": "shall exist within the United States.” Was",
+  "replace": "shall exist within the United States, or any place subject to their jurisdiction.” Was",
+  "why": "The quotation was closed with a period mid-sentence; now the full, exact text of Section 1."
+ },
+ {
+  "lesson": 2,
+  "find": "What do “duly convicted” require",
+  "replace": "What do the words “duly convicted” require",
+  "why": "Grammar."
+ },
+ {
+  "lesson": 2,
+  "find": "Example for your exit ticket: you can name few agents, reliance on the army, or Johnson returning land as one reason the Bureau’s power was limited.",
+  "replace": "Example: few agents, reliance on the army and Johnson’s return of land are each a reason the Bureau’s power was limited.",
+  "why": "The study guide should not coach the graded exit ticket by name."
+ },
+ {
+  "lesson": 3,
+  "find": "Period terms such as “freedmen” and “mulatto” appear in the texts: read them aloud once, say they are the legislature’s words, and do not ask students to repeat them.",
+  "replace": "The texts use period terms for race such as “negroes” and “mulattoes”. Follow the course rule: say they are the legislature’s words, skip them if you read a line aloud, and have students read them on the page without saying them. In discussion everyone says “Black people”.",
+  "why": "One rule for offensive period language, agreeing with the course policies."
+ },
+ {
+  "lesson": 3,
+  "find": "Period terms such as ‘freedmen’ and ‘mulatto’ appear in the texts. Read them aloud once, say they are the legislature’s words, and do not ask students to repeat them.",
+  "replace": "The texts use period terms for race such as “negroes” and “mulattoes”. Follow the course rule: say they are the legislature’s words, skip them if you read a line aloud, and have students read them on the page without saying them. In discussion everyone says “Black people”.",
+  "why": "Same fix in the slide notes."
+ },
+ {
+  "lesson": 3,
+  "find": "Avoid saying any adult without papers was a vagrant.",
+  "replace": "Be exact: the vagrancy act covered adults with no lawful employment or business, not every adult without papers.",
+  "all": true,
+  "why": "Echoed instruction turned into the point the teacher needs."
+ },
+ {
+  "lesson": 3,
+  "find": "Select and bracket three short passages: (A) federal law reaching into state authority, (B) the Southern states having no representatives in Congress, (C) citizenship granted at once to freed people. Mark clear start and end points and label each. Expected: A states’ power, B unrepresented South, C too fast. Over a series of readings, say Johnson’s arguments, not that students agree with them.",
+  "replace": "Mark three short passages. (A) The two sentences from “They interfere with the municipal legislation of the States” to “concentration of all legislative powers in the National Government”. (B) The sentence beginning “If, on the other hand, such persons are not citizens”. (C) The two sentences right after it, beginning “Four millions of them have just emerged from slavery into freedom”. Expected: A the bill takes over power that belongs to the states, B eleven states had no representatives in Congress, C people just out of slavery are being made citizens too fast. Passage B uses the period term “colored”; skip it when you read aloud, under the course rule. Say that these are Johnson’s arguments; students restate them and need not agree.",
+  "why": "Passages were left to the teacher while the key presumed their content; they are now named by their opening words (checked against the veto message). Also fixes a garbled sentence."
+ },
+ {
+  "lesson": 3,
+  "find": "going into later in the course",
+  "replace": "going into the lessons ahead",
+  "all": true,
+  "why": "Garbled phrase."
+ },
+ {
+  "lesson": 3,
+  "find": "Counts toward the lesson exit tickets component (30% of the course grade).",
+  "replace": "Counts toward the lesson exit tickets component (30% of the course grade). Score it 0–3: 3 for every part correct, 2 for most parts correct, 1 for an attempt with a major gap, 0 if not handed in.",
+  "why": "Exit tickets had no scoring rule; this is the same 0–3 rule stated in the course policies, so eight tickets add up to the 30%."
+ },
+ {
+  "lesson": 4,
+  "find": "A Black adult without a work contract is fined for vagrancy and hired out.",
+  "replace": "A Black adult with no lawful employment or business is fined for vagrancy and, unable to pay, is hired out.",
+  "why": "The lesson before says the vagrancy act covered adults with no lawful employment or business, not anyone without papers; this case contradicted it."
+ },
+ {
+  "lesson": 4,
+  "find": "vagrancy fine and hiring out of a Black adult without a work contract",
+  "replace": "vagrancy fine and hiring out of a Black adult with no lawful employment or business",
+  "why": "Same fix in the slide notes."
+ },
+ {
+  "lesson": 4,
+  "find": "fined a Black adult for vagrancy if he had no work contract, and then hired him out",
+  "replace": "fined a Black adult for vagrancy if he had no lawful employment or business, and hired him out if he could not pay",
+  "why": "Same fix in the study guide."
+ },
+ {
+  "lesson": 4,
+  "find": "the passage beginning “The future condition of the conquered power”. Questions and expected answers:\n1. Who does Stevens say should decide the terms for the South? Congress, not the president.",
+  "replace": "the passage that begins “The future condition of the conquered power” and ends “the only power that can act in the matter”. Questions and expected answers:\n1. Who does Stevens say should decide the terms for the South? Congress, not the president acting alone.",
+  "why": "Names where the passage ends, so the key matches what students read; Stevens says Congress is the only power that can act."
+ },
+ {
+  "lesson": 4,
+  "find": " Period words are the author’s; do not have students read them aloud.",
+  "replace": " Tell students the speech was given fifteen months before the first Reconstruction Act.",
+  "all": true,
+  "why": "The named passage has no offensive language, so the note was a stray instruction; the date gap is what students need, since the speech is read after the 1867 acts."
+ },
+ {
+  "lesson": 4,
+  "find": "Tennessee alone ratified in 1866",
+  "replace": "Tennessee was the only one to ratify in 1866",
+  "all": true,
+  "why": "Several Northern states also ratified in 1866; Tennessee was the only former Confederate state."
+ },
+ {
+  "lesson": 4,
+  "find": "A 1867 law",
+  "replace": "An 1867 law",
+  "why": "Grammar."
+ },
+ {
+  "lesson": 4,
+  "find": "Do not give answers on the slide.",
+  "replace": "Expected: a restriction applied only to Black people, such as the vagrancy fine or the weapons ban; a requirement (new constitution with Black men voting, or ratifying the 14th Amendment); a reason (Black Codes, veto override, or Johnson’s opposition).",
+  "why": "Echoed generator instruction; the notes now carry the expected answer like the other lessons."
+ },
+ {
+  "lesson": 4,
+  "find": "Counts toward the lesson exit tickets component (30% of the course grade).",
+  "replace": "Counts toward the lesson exit tickets component (30% of the course grade). Score it 0–3: 3 for every part correct, 2 for most parts correct, 1 for an attempt with a major gap, 0 if not handed in.",
+  "why": "Exit tickets had no scoring rule; this is the same 0–3 rule stated in the course policies, so eight tickets add up to the 30%."
+ },
+ {
+  "lesson": 4,
+  "find": "Say only that it is ungraded and prepares for the essay.",
+  "replace": "Say that it is ungraded and starts the evidence bank they will use for the essay.",
+  "why": "Echoed instruction; names the evidence bank that later lessons rely on."
+ },
+ {
+  "lesson": 4,
+  "find": "Say only that it is ungraded and prepares them for that essay, which counts for 50% of the course grade.",
+  "replace": "Say that it is ungraded and starts the evidence bank for that essay, which counts for 50% of the course grade.",
+  "why": "Same fix in the slide notes."
+ },
+ {
+  "lesson": 4,
+  "find": "Prepare evidence for your Document-based essay by collecting two details that could help answer whether Reconstruction failed. Use your own notes or materials you have at home.",
+  "replace": "Start an evidence bank for your document-based essay by collecting two details that could help you judge what Reconstruction changed and whether it failed. Use your class notes and the handouts from class so far.",
+  "why": "Later steps tell students to use their “evidence bank”, but this step never called it that; “materials you have at home” was vague."
+ },
+ {
+  "lesson": 4,
+  "find": "rejoin the Union. Note its source or section.",
+  "replace": "rejoin the Union. Write where it comes from, for example “14th Amendment, Section 1” or “class notes on the Reconstruction Acts”.",
+  "why": "“Its source or section” was unclear for a student working at home."
+ },
+ {
+  "lesson": 4,
+  "find": "President Johnson. Note its source or section.",
+  "replace": "President Johnson. Write where it comes from, for example “Stevens, speech of December 18, 1865”.",
+  "why": "Same."
+ },
+ {
+  "lesson": 4,
+  "find": "The Reconstruction Acts required states seeking readmission to write new constitutions that let Black men vote and to ratify the 14th Amendment.",
+  "replace": "The amendment itself set no such condition. The Reconstruction Acts required states seeking readmission to write new constitutions that let Black men vote and to ratify the 14th Amendment.",
+  "why": "The explanation did not say why the statement is false."
+ },
+ {
+  "lesson": 5,
+  "find": "who was elected to the Senate by the Mississippi legislature in 1870.",
+  "replace": "who was elected to the Senate by the Mississippi legislature in January 1870, a few weeks before the 15th Amendment was ratified.",
+  "why": "Revels was chosen before ratification; the lesson order implied the amendment came first"
+ },
+ {
+  "lesson": 5,
+  "find": "Prepare copies of Article X (Education) of the South Carolina Constitution of 1868: the few lines on a system of free public schools. Do not quote beyond the copy.",
+  "replace": "Prepare copies of two sections of Article X (Education) of the South Carolina Constitution of 1868: Section 3, which tells the legislature to set up a uniform system of free public schools across the state, and Section 10, which opens public schools and colleges to all children without regard to race or color.\nExpected notes: Article X made free public schools a duty of the state, written by a convention with a Black majority. The fact card shows a Black man seated in the Senate, chosen by Mississippi’s legislature.",
+  "why": "source was named only as 'the few lines'; say which sections and what they hold, give expected answers, drop echoed instruction"
+ },
+ {
+  "lesson": 5,
+  "find": "The seating debate included racist arguments. Summarize them, quote none, and never have students voice any senator.",
+  "replace": "Revels was elected before the 15th Amendment was ratified on February 3, 1870. Black men in Mississippi already voted under the Reconstruction Acts, so do not present his election as a result of the amendment.\nThe seating debate included racist arguments. Summarize them and quote none aloud; students do not speak as any senator.",
+  "why": "chronology of Revels and the 15th Amendment; align with course policy"
+ },
+ {
+  "lesson": 5,
+  "find": "Hiram Revels: elected to the Senate in 1870.",
+  "replace": "Hiram Revels: elected to the Senate in January 1870.",
+  "why": "date precision; before ratification"
+ },
+ {
+  "lesson": 5,
+  "find": "Pairs read the Article X excerpt from the South Carolina Constitution of 1868 (free public schools) and the Revels fact card.",
+  "replace": "Pairs read Sections 3 and 10 of Article X of the South Carolina Constitution of 1868 (free public schools, open to all children without regard to race or color) and the Revels fact card.",
+  "why": "name the source content on the slide notes"
+ },
+ {
+  "lesson": 5,
+  "find": "The seating debate included racist arguments: summarize them, quote none, and do not have students voice any senator. Do not quote beyond the Article X copy.",
+  "replace": "Revels was elected before the 15th Amendment was ratified on February 3, 1870; Black men in Mississippi already voted under the Reconstruction Acts. The seating debate included racist arguments: summarize them and quote none aloud; students do not speak as any senator.",
+  "why": "chronology; drop echoed generator instruction"
+ },
+ {
+  "lesson": 5,
+  "find": "Model the steps with a plainly hypothetical case. Suppose",
+  "replace": "Model the steps with an everyday case first. Suppose",
+  "why": "generator wording echoed"
+ },
+ {
+  "lesson": 5,
+  "find": "Model first with a hypothetical case: suppose",
+  "replace": "Model first with an everyday case: suppose",
+  "why": "generator wording echoed"
+ },
+ {
+  "lesson": 5,
+  "find": "suppose a hypothetical state makes every voter pay",
+  "replace": "suppose a state makes every voter pay",
+  "why": "'suppose a hypothetical' is redundant machine wording in the student guide"
+ },
+ {
+  "lesson": 5,
+  "find": "Counts toward the lesson exit tickets component (30% of the course grade). Expected:",
+  "replace": "Counts toward the lesson exit tickets component (30% of the course grade). Score out of 3, one point for each part. Expected:",
+  "why": "exit ticket had no scoring"
+ },
+ {
+  "lesson": 5,
+  "find": "which is 30% of the course grade. Expected:",
+  "replace": "which is 30% of the course grade. Score out of 3, one point for each part. Expected:",
+  "why": "exit ticket had no scoring"
+ },
+ {
+  "lesson": 5,
+  "find": "Prepare copies of the sheet and the three sources before class. Say only that it is ungraded and prepares for the essay.",
+  "replace": "Prepare copies of the sheet and the three sources before class. The step is ungraded: students add today’s sources to their evidence bank and write a tentative answer to the essay question.",
+  "why": "generator instruction echoed as advice; tell the teacher what the step is"
+ },
+ {
+  "lesson": 5,
+  "find": "Say only that it is ungraded and prepares them for the document-based essay",
+  "replace": "Tell students it is ungraded and prepares them for the document-based essay",
+  "why": "generator instruction echoed as advice"
+ },
+ {
+  "lesson": 5,
+  "find": "Use your evidence bank and the source copies from class to prepare a tentative answer to the essay question: Did Reconstruction fail? This step is ungraded. Bring your finished sheet to class.",
+  "replace": "This ungraded step prepares you for the document-based essay, which asks: Did Reconstruction fail? Use your evidence bank and the three sources handed out with this sheet: Section 1 of the 15th Amendment, Article X of the South Carolina Constitution of 1868, and the Hiram Revels fact card. Bring your finished sheet to class next time.",
+  "why": "take-home sheet referred to 'copies from class' without naming them"
+ },
+ {
+  "lesson": 5,
+  "find": "Sort your evidence into gains made during Reconstruction and limits or unmet rights.",
+  "replace": "Add two details to your evidence bank, each from a different one of the three sources, and note the source. Then sort all four details into gains made during Reconstruction and limits or unmet rights.",
+  "why": "the bank held only two details; make the step build on it with what students have"
+ },
+ {
+  "lesson": 6,
+  "find": "Each case is plainly hypothetical, built from patterns historians have documented.",
+  "replace": "The cases are invented, but each follows a pattern historians have documented.",
+  "why": "generator wording echoed",
+  "all": true
+ },
+ {
+  "lesson": 6,
+  "find": "Read aloud two short excerpts: Elias Hill, a Black Baptist minister from York County, South Carolina, and Nathan Bedford Forrest, a former Confederate general.",
+  "replace": "Hand out two short excerpts and say who each witness is: Elias Hill, a Black Baptist minister and teacher from York County, South Carolina, and Nathan Bedford Forrest, a former Confederate general.",
+  "why": "reading both aloud and then silently did not fit 12 minutes and conflicted with the policy on slurs"
+ },
+ {
+  "lesson": 6,
+  "find": "Prepare copies from the Report of the Joint Select Committee to Inquire into the Condition of Affairs in the Late Insurrectionary States (1872): (1) South Carolina testimony of Elias Hill, the passage where he describes the night Klansmen came to his house; (2) testimony of Nathan Bedford Forrest, June 1871, the passage where he is asked whether he belonged to the Klan. Trim each to a short passage. Do not quote beyond the copies.\nExpected: Hill, a victim who risked retaliation, wanted Congress to act.",
+  "replace": "Prepare copies from the testimony the committee took in 1871, printed in 1872 with the Report of the Joint Select Committee to Inquire into the Condition of Affairs in the Late Insurrectionary States: (1) Elias Hill, testimony at Yorkville, South Carolina, July 25, 1871, the passage where he describes the night of May 5, 1871, when Klansmen came to his house; (2) Nathan Bedford Forrest, testimony in Washington, June 27, 1871, the passage where he is asked whether he belonged to the Klan. Trim each to a short passage.\nExpected: Hill, who could not walk, was carried into his yard and beaten. He was a victim who risked retaliation and wanted Congress to act.",
+  "why": "testimony dates (1871) vs publication (1872); say what the passage holds so the key can be checked; drop echoed instruction"
+ },
+ {
+  "lesson": 6,
+  "find": "Content note: Hill’s account describes a beating. Read it aloud yourself, warn students first, allow anyone to read silently, and say any slurs in the copy as ‘the n-word’ or cut them.",
+  "replace": "Content note: Hill’s account describes a beating. Warn students before they read, and remind them that anyone may step out for a moment without asking. If any part is read aloud, slurs are skipped, not spoken.",
+  "why": "slur guidance did not match the course policy"
+ },
+ {
+  "lesson": 6,
+  "find": "Use copies from the Report of the Joint Select Committee to Inquire into the Condition of Affairs in the Late Insurrectionary States (1872), trimmed to short passages. Do not quote beyond the copies. Content note: Hill’s account describes a beating. Warn students first, read it aloud yourself, allow anyone to read silently, and say any slurs as ‘the n-word’ or cut them.",
+  "replace": "Hand out the two passages: Elias Hill at Yorkville, South Carolina, July 25, 1871, and Nathan Bedford Forrest in Washington, June 27, 1871. Both were printed in 1872 with the Report of the Joint Select Committee to Inquire into the Condition of Affairs in the Late Insurrectionary States. Content note: Hill’s account describes a beating. Warn students before they read, and remind them that anyone may step out for a moment without asking. If any part is read aloud, slurs are skipped, not spoken.",
+  "why": "same fixes on the slide notes: dates, policy on slurs, echoed instruction"
+ },
+ {
+  "lesson": 6,
+  "find": " Do not give numbers of indictments or convictions.",
+  "replace": "",
+  "why": "generator caution echoed as advice",
+  "all": true
+ },
+ {
+  "lesson": 6,
+  "find": "The Colfax killings of 1873 in Louisiana, which left dozens of Black men dead, can be named if students ask. Later in the course the class returns to how Reconstruction ended.",
+  "replace": "Name the Colfax killings of 1873 in Louisiana, which left dozens of Black men dead: the Cruikshank case grew out of them. Next time the class examines how Reconstruction ended.",
+  "why": "the next lesson relies on Colfax having been taught; 'later in the course' was vague"
+ },
+ {
+  "lesson": 6,
+  "find": "If students ask, name the Colfax killings of 1873 in Louisiana, which left dozens of Black men dead. Later in the course the class returns to how Reconstruction ended.",
+  "replace": "Name the Colfax killings of 1873 in Louisiana, which left dozens of Black men dead: the Cruikshank case grew out of them. Next time the class examines how Reconstruction ended.",
+  "why": "same, slide notes"
+ },
+ {
+  "lesson": 6,
+  "find": "Counts toward the lesson exit tickets component (30% of the course grade). Expected:",
+  "replace": "Counts toward the lesson exit tickets component (30% of the course grade). Score out of 3, one point for each part. Expected:",
+  "why": "exit ticket had no scoring"
+ },
+ {
+  "lesson": 6,
+  "find": "which is 30% of the course grade. Expected answers:",
+  "replace": "which is 30% of the course grade. Score out of 3, one point for each part. Expected answers:",
+  "why": "exit ticket had no scoring"
+ },
+ {
+  "lesson": 6,
+  "find": "Prepare copies of the sheet and the two witness excerpts before class. Say only that it is ungraded and prepares for the essay.",
+  "replace": "Prepare copies of the sheet and the two witness excerpts before class. The step is ungraded: students write a source note on one of the two witnesses.",
+  "why": "generator instruction echoed as advice"
+ },
+ {
+  "lesson": 6,
+  "find": "Say only that it is ungraded and prepares them for the document-based essay, which counts for 50% of the course grade. Do not spell out its tasks.",
+  "replace": "Tell students it is ungraded and prepares them for the document-based essay, which counts for 50% of the course grade, and that they should bring the finished sheet next time.",
+  "why": "generator instruction echoed as advice"
+ },
+ {
+  "lesson": 6,
+  "find": "This ungraded step prepares you for the Document-based essay. Use the Elias Hill and Nathan Bedford Forrest testimony copies from class, along with your evidence bank and tentative answer. Paraphrase; do not copy sentences from the testimony.",
+  "replace": "This ungraded step prepares you for the document-based essay. Use the copies of Elias Hill’s and Nathan Bedford Forrest’s 1871 testimony handed out with this sheet, along with your evidence bank and the tentative answer you wrote last time. Put the witness’s claim in your own words; if you quote a phrase, use quotation marks.",
+  "why": "classroom-only reference in a take-home sheet; quoting rule now matches the course policy"
+ },
+ {
+  "lesson": 6,
+  "find": "heard witnesses in a 1871 investigation",
+  "replace": "heard witnesses in an 1871 investigation",
+  "why": "grammar error"
+ },
+ {
+  "lesson": 7,
+  "find": "Display this plainly hypothetical case: it is 1873",
+  "replace": "Display this imagined case: it is 1873",
+  "why": "generator wording echoed"
+ },
+ {
+  "lesson": 7,
+  "find": "This is a plainly hypothetical case. Students write two sentences",
+  "replace": "Students write two sentences",
+  "why": "generator wording echoed"
+ },
+ {
+  "lesson": 7,
+  "find": " Do not stage a mock election.",
+  "replace": "",
+  "why": "generator caution echoed as advice",
+  "all": true
+ },
+ {
+  "lesson": 7,
+  "find": "Prepare copies of Rutherford B. Hayes, Inaugural Address (March 5, 1877): the passage on the South beginning “The sweeping revolution of the entire labor system”. Use only the printed lines. Expected: new president, speaking to the whole nation, aiming to calm sections and reassure the South.",
+  "replace": "Prepare copies of Rutherford B. Hayes, Inaugural Address (March 5, 1877): two paragraphs on the South, the one beginning “The sweeping revolution of the entire labor system” and the next, beginning “The evils which afflict the Southern States”. Expected: a new president speaking to the whole nation after a disputed election. He says the national government has a duty to protect the rights of the freed people, and in the same passage he promises to support “honest and efficient local self-government” in the Southern states. Purpose: to calm both sections and reassure the white South. The address does not mention troops; the withdrawal came in April.",
+  "why": "the one paragraph named did not support the expected answer; name the passage and what it says; drop echoed instruction"
+ },
+ {
+  "lesson": 7,
+  "find": "Pairs read the passage from Hayes’s Inaugural Address (March 5, 1877) beginning “The sweeping revolution of the entire labor system”. Use only the printed lines. Expected: new president, speaking to the whole nation, aiming to calm sections and reassure the South.",
+  "replace": "Pairs read two paragraphs from Hayes’s Inaugural Address (March 5, 1877), beginning “The sweeping revolution of the entire labor system” and “The evils which afflict the Southern States”. Expected: a new president speaking to the whole nation after a disputed election. He says the government must protect the rights of the freed people and promises to support “honest and efficient local self-government” in the South. Purpose: to calm both sections and reassure the white South.",
+  "why": "same, slide notes"
+ },
+ {
+  "lesson": 7,
+  "find": "He was a new president speaking to the whole nation, aiming to calm sections and reassure the South.",
+  "replace": "He was a new president speaking to the whole nation after a disputed election. He said the national government had a duty to protect the rights of the freed people, and he also promised to support local self-government in the Southern states. His purpose was to calm both sections and reassure the white South.",
+  "why": "study guide now says what the passage holds, which the take-home step needs"
+ },
+ {
+  "lesson": 7,
+  "find": "with two pieces of evidence and one question for the group",
+  "replace": "with two pieces of evidence, each from a document named on the card, and one question for the group",
+  "why": "seminar scoring depends on naming documents; preparation must ask for them"
+ },
+ {
+  "lesson": 7,
+  "find": "Seminar is graded and counts for 20% of the course grade; the card is ungraded. Expected:",
+  "replace": "Seminar is graded and counts for 20% of the course grade; the card is ungraded. Tell students how the seminar is scored: the top level goes to a speaker who names a document, says what it shows, and answers a classmate with specific evidence. Expected:",
+  "why": "students should know the scoring when they prepare, the lesson before"
+ },
+ {
+  "lesson": 7,
+  "find": "Tell students to bring the card next time. Do not assign sides.",
+  "replace": "Tell students to bring the card and their document copies next time. Do not assign sides.",
+  "why": "students need the documents in the seminar"
+ },
+ {
+  "lesson": 7,
+  "find": "Two pieces of evidence and one question for the group",
+  "replace": "Two pieces of evidence with documents named, one question",
+  "why": "match the card to the seminar scoring"
+ },
+ {
+  "lesson": 7,
+  "find": "Do not assign sides. Tell students to bring the card next time.",
+  "replace": "Do not assign sides. Tell students to bring the card and their document copies next time.",
+  "why": "students need the documents in the seminar"
+ },
+ {
+  "lesson": 7,
+  "find": "Counts toward the lesson exit tickets component (30% of the course grade). Expected:",
+  "replace": "Counts toward the lesson exit tickets component (30% of the course grade). Score out of 3, one point for each part. Expected:",
+  "why": "exit ticket had no scoring"
+ },
+ {
+  "lesson": 7,
+  "find": "which is 30% of the course grade. Expected:",
+  "replace": "which is 30% of the course grade. Score out of 3, one point for each part. Expected:",
+  "why": "exit ticket had no scoring"
+ },
+ {
+  "lesson": 7,
+  "find": "Prepare copies of the sheet, the election fact card and the Hayes passage before class. Say only that it is ungraded and prepares for the essay.",
+  "replace": "Prepare copies of the sheet, the election fact card and the Hayes passage before class. The step is ungraded: students write a short paragraph on the context of Hayes’s address.",
+  "why": "generator instruction echoed as advice"
+ },
+ {
+  "lesson": 7,
+  "find": "Say only that it is ungraded and prepares for the document-based essay",
+  "replace": "Tell students it is ungraded and prepares them for the document-based essay",
+  "why": "generator instruction echoed as advice"
+ },
+ {
+  "lesson": 7,
+  "find": "and he made promises of Southern appointments and federal aid",
+  "replace": "and his allies promised a Southern cabinet member and federal aid to Southern railroads",
+  "why": "the promises were made by Hayes’s allies in informal talks, as the lesson says elsewhere"
+ },
+ {
+  "lesson": 7,
+  "find": "Hayes promised federal aid to Southern railroads.",
+  "replace": "Hayes’s allies promised federal aid to Southern railroads.",
+  "why": "attribution: informal promises made on Hayes’s behalf"
+ },
+ {
+  "lesson": 7,
+  "find": "Name one promise Hayes made as part of the Compromise of 1877.",
+  "replace": "Name one promise made to Southern Democrats in the Compromise of 1877.",
+  "why": "attribution: informal promises made on Hayes’s behalf"
+ },
+ {
+  "lesson": 7,
+  "find": "Hayes promised a Southern cabinet appointment or federal aid to Southern railroads.",
+  "replace": "A Southern cabinet member, federal aid to Southern railroads, or the withdrawal of the remaining federal troops from the statehouses in South Carolina and Louisiana.",
+  "why": "key should accept every term the lesson taught"
+ },
+ {
+  "lesson": 7,
+  "find": "The lesson identifies both Supreme Court decisions as limiting federal power. Cruikshank also ruled",
+  "replace": "Both decisions read the 14th Amendment narrowly, which limited federal power. Cruikshank ruled",
+  "why": "machine-sounding explanation"
+ },
+ {
+  "lesson": 7,
+  "find": "Think of the worker’s question from class: if you had just lost your job, rent and food would worry you far more than Southern voting.",
+  "replace": "Picture a Northern factory worker who has just lost a job in 1873: rent and food would worry that worker far more than Southern voting.",
+  "why": "classroom-only reference in the study guide"
+ },
+ {
+  "lesson": 7,
+  "find": "This ungraded step prepares you for the Document-based essay. Use the copy of Rutherford B. Hayes’s inaugural address and your own notes to explain the historical context around the address.",
+  "replace": "This ungraded step prepares you for the document-based essay. Use the two paragraphs from Rutherford B. Hayes’s inaugural address (March 5, 1877) and the election fact card handed out with this sheet, along with your own notes, to explain the historical context around the address.",
+  "why": "name what the student has in hand"
+ },
+ {
+  "lesson": 8,
+  "find": "Say a hypothetical claim, then answer it with counterevidence:",
+  "replace": "Say a claim, then answer it with counterevidence:",
+  "why": "generator wording echoed"
+ },
+ {
+  "lesson": 8,
+  "find": "Excellent: cites two or more documents by name and answers classmates with specifics. Good: cites documents, answers generally.",
+  "replace": "Levels, scored only on what a student says in the circle. Excellent: names a document, says what it shows, and answers a classmate with specific evidence. Good: names a document and says what it shows, but answers classmates in general terms or not at all.",
+  "why": "old top level needed several long turns each; a class of 28 has under a minute per student"
+ },
+ {
+  "lesson": 8,
+  "find": "Beginning: little evidence or no response to others. Students answer as themselves",
+  "replace": "Beginning: does not speak, even when invited. One turn of about 30 seconds can earn Excellent. Students answer as themselves",
+  "why": "levels now differ by something observable and reachable"
+ },
+ {
+  "lesson": 8,
+  "find": "Students take out last time’s position card and their evidence bank from earlier in the course. They reread the short excerpt from Hayes’s inaugural address used last time and mark a passage that supports or challenges their position.\nThey circle the two documents they will cite and write the claim each one supports.",
+  "replace": "Students take out last time’s position card, their evidence bank and their document copies.\nThey circle the two documents named on the card and write beside each the claim it supports.",
+  "why": "too much for five minutes; the card already names two documents"
+ },
+ {
+  "lesson": 8,
+  "find": "Suggested pairing: the Hayes address, Black Codes evidence, amendment text, Enforcement Acts material. Students who have no second document borrow from the evidence bank.",
+  "replace": "Documents students can name include the 14th or 15th Amendment, the Mississippi Black Code of 1865, Article X of South Carolina’s 1868 constitution, Elias Hill’s testimony and Hayes’s inaugural address. Students who have no second document take one from the evidence bank. Split the class evenly and pair each student with a partner in the other circle to track.",
+  "why": "'Black Codes evidence' and 'Enforcement Acts material' are not documents the class read; set up the tracking pairs"
+ },
+ {
+  "lesson": 8,
+  "find": "Outer-ring students tally each cited document and each counterevidence response, and note one question to ask in round two.",
+  "replace": "Each outer-ring student tracks one partner in the inner ring: a tally mark each time the partner names a document and each time the partner answers a classmate with evidence. They also note one question to ask in round two.",
+  "why": "tallying a whole circle is not usable; one partner each is"
+ },
+ {
+  "lesson": 8,
+  "find": "Score each speaker on the rubric levels without commenting aloud.",
+  "replace": "Keep a class list with two columns: D for naming a document and saying what it shows, R for answering a classmate with specific evidence. Tick as students speak and do not comment aloud. After class, D and R make Excellent, D alone Good, speaking with no tick Developing, silence Beginning; the partners’ tracking sheets back up your ticks. With about 14 students in the circle each has under a minute, so ask for turns of about 30 seconds, and in the last three minutes call on anyone who has not spoken.",
+  "why": "teacher had no usable way to score 14 speakers live"
+ },
+ {
+  "lesson": 8,
+  "find": "Handle violence in sources factually, never read slurs aloud, and no one role-plays victims or perpetrators.",
+  "replace": "Handle violence in sources factually. Slurs are not said aloud, anyone may step out for a moment without asking, and no one role-plays victims or perpetrators.",
+  "why": "match the course policy"
+ },
+ {
+  "lesson": 8,
+  "find": "Keep scoring on the same rubric levels.",
+  "replace": "Keep ticking the same two columns, and collect the tracking sheets when the round ends.",
+  "why": "consistent tracking method"
+ },
+ {
+  "lesson": 8,
+  "find": "Excellent: two or more documents named, specific answers",
+  "replace": "Excellent: names a document, answers a classmate with evidence",
+  "why": "reachable levels"
+ },
+ {
+  "lesson": 8,
+  "find": "Good: documents cited, general answers",
+  "replace": "Good: names a document, answers in general terms",
+  "why": "reachable levels"
+ },
+ {
+  "lesson": 8,
+  "find": "Developing: opinion with thin evidence",
+  "replace": "Developing: opinion, no document named",
+  "why": "levels now differ by something observable (plan notes and slide)",
+  "all": true
+ },
+ {
+  "lesson": 8,
+  "find": "Beginning: little evidence, no response to others",
+  "replace": "Beginning: does not speak, even when invited",
+  "why": "levels now differ by something observable"
+ },
+ {
+  "lesson": 8,
+  "find": "You will score each speaker on these levels without commenting aloud.",
+  "replace": "One turn of about 30 seconds can earn Excellent. You tick a class list as students speak and do not comment aloud.",
+  "why": "consistent tracking method"
+ },
+ {
+  "lesson": 8,
+  "find": "Violence in the sources is handled factually, and no slurs are read aloud.",
+  "replace": "Violence in the sources is handled factually, slurs are not said aloud, and anyone may step out for a moment without asking.",
+  "why": "match the course policy"
+ },
+ {
+  "lesson": 8,
+  "find": "Claim: a later start helps students",
+  "replace": "A later start helps students",
+  "why": "slide gave the labels students are asked to work out"
+ },
+ {
+  "lesson": 8,
+  "find": "Evidence: a survey finds most sleep under eight hours",
+  "replace": "A survey finds most students sleep under eight hours",
+  "why": "slide gave the labels students are asked to work out"
+ },
+ {
+  "lesson": 8,
+  "find": "Counterevidence: a transport report finds bus service would be lost",
+  "replace": "A transport report finds bus service would be lost",
+  "why": "slide gave the labels students are asked to work out"
+ },
+ {
+  "lesson": 8,
+  "find": "Say the hypothetical claim, then answer it.",
+  "replace": "Say the claim, then answer it.",
+  "why": "generator wording echoed"
+ },
+ {
+  "lesson": 8,
+  "find": "All of this is hypothetical and is only a model of the move.",
+  "replace": "The survey and the report are invented; they only model the move.",
+  "why": "generator wording echoed"
+ },
+ {
+  "lesson": 8,
+  "find": "Reread the Hayes excerpt; mark one passage",
+  "replace": "Put your document copies on your desk",
+  "why": "match the shortened preparation"
+ },
+ {
+  "lesson": 8,
+  "find": "Circle two documents you will cite",
+  "replace": "Circle the two documents on your card",
+  "why": "match the shortened preparation"
+ },
+ {
+  "lesson": 8,
+  "find": "Suggested pairing: the Hayes address, Black Codes evidence, amendment text, Enforcement Acts material. A student with no second document borrows one from the evidence bank.",
+  "replace": "Documents students can name include the 14th or 15th Amendment, the Mississippi Black Code of 1865, Article X of South Carolina’s 1868 constitution, Elias Hill’s testimony and Hayes’s inaugural address. A student with no second document takes one from the evidence bank.",
+  "why": "name documents the class actually read"
+ },
+ {
+  "lesson": 8,
+  "find": "Then split the class into circles A and B.",
+  "replace": "Then split the class evenly into circles A and B and pair each student with a tracking partner in the other circle.",
+  "why": "tracking method"
+ },
+ {
+  "lesson": 8,
+  "find": "Outer ring: tally documents and responses",
+  "replace": "Outer ring: tally your partner’s documents and responses",
+  "why": "tracking method"
+ },
+ {
+  "lesson": 8,
+  "find": "Outer-ring students tally each cited document and each counterevidence response, and note one question for round two.",
+  "replace": "Each outer-ring student tracks one inner-ring partner: a tally mark for each document named and each answer to a classmate with evidence, plus one question for round two.",
+  "why": "tracking method"
+ },
+ {
+  "lesson": 8,
+  "find": "Collect the sheets before the bell.",
+  "replace": "Students copy the thesis onto their position card so they keep it for the essay. Collect the half sheets before the bell.",
+  "why": "the thesis was handed in the same day the essay that starts from it was set"
+ },
+ {
+  "lesson": 8,
+  "find": "Counts toward the lesson exit tickets component (30% of the course grade). Expected:",
+  "replace": "Counts toward the lesson exit tickets component (30% of the course grade). Score out of 3: a thesis that takes a position (1), two documents named (1), a classmate’s point addressed (1). Expected:",
+  "why": "exit ticket had no scoring"
+ },
+ {
+  "lesson": 8,
+  "find": "Students write on a half sheet and hand it in before the bell. This counts toward the lesson exit tickets component, which is 30% of the course grade.",
+  "replace": "Students write on a half sheet, copy the thesis onto their position card to keep for the essay, and hand the half sheet in before the bell. This counts toward the lesson exit tickets component, which is 30% of the course grade. Score out of 3: a thesis that takes a position, two documents named, a classmate’s point addressed.",
+  "why": "scoring; students keep their thesis"
+ },
+ {
+  "lesson": 8,
+  "find": "Tell students this graded assignment counts toward the Document-based essay, which is 50% of the course grade.\nTell them to read the sheet tonight and bring questions on the due date the sheet gives.",
+  "replace": "Tell students the essay is 50% of the course grade and is due at the start of class one week from today, on paper or through the class site. Write the date on the board.\nTell them to read the sheet tonight and bring questions to the next class.",
+  "why": "no due date was given, and questions were to be brought on the due date"
+ },
+ {
+  "lesson": 8,
+  "find": "Prepare copies of the assignment sheet and the document packet before class. Give them out after the exit tickets are collected. Do not go through the tasks aloud; the sheet carries them.",
+  "replace": "Prepare copies of the assignment sheet, the rubric and the document packet before class. The packet holds a clean copy of every document listed on the sheet. Give them out after the exit tickets are collected. Remind students that late essays lose 5% a day.",
+  "why": "say what the packet is; drop echoed instruction; match the late policy"
+ },
+ {
+  "lesson": 8,
+  "find": "Bring questions on the due date it gives",
+  "replace": "Due at the start of class one week from today",
+  "why": "due date"
+ },
+ {
+  "lesson": 8,
+  "find": "Tell students this graded assignment counts toward the Document-based essay, which is 50% of the course grade. Do not go through the tasks aloud; the sheet carries them.",
+  "replace": "Tell students the essay is 50% of the course grade and is due at the start of class one week from today, on paper or through the class site; late essays lose 5% a day. Write the date on the board.",
+  "why": "due date and policy; drop echoed instruction"
+ },
+ {
+  "lesson": 8,
+  "find": "Write an 800–1,000-word essay explaining how Reconstruction changed the United States between 1865 and 1877 and how far those changes endured. Develop a clear thesis that addresses constitutional change, Black rights and political participation, and the limits or resistance Reconstruction faced. Use evidence from at least four documents in the course packet, including at least two primary sources. Identify each document by name, explain how its evidence supports your argument, and address relevant counterevidence. This graded assignment counts toward Document-based essay, which is 50% of the course grade.",
+  "replace": "Write an 800–1,000-word essay that answers the question: Did Reconstruction fail? Say what standard you are judging it by, and take a position in a thesis that includes a qualification. Use evidence from at least four documents in the packet. Name each document when you use it, explain what its evidence shows, and answer the strongest counterevidence to your position. Put quoted words in quotation marks and name the document they come from.\n\nThe packet holds the documents read in this unit: Abraham Lincoln, Second Inaugural Address (1865); Oliver O. Howard, Annual Report of the Commissioner of the Bureau of Refugees, Freedmen, and Abandoned Lands (1866); the 13th Amendment; Laws of Mississippi, 1865 (the Black Code excerpts); the Civil Rights Act of 1866, Section 1; Andrew Johnson, Veto of the Civil Rights Bill (1866); Thaddeus Stevens, speech to the House of Representatives (December 18, 1865); the 14th Amendment, Section 1; the 15th Amendment; Constitution of South Carolina (1868), Article X; Elias Hill and Nathan Bedford Forrest, testimony to the Joint Select Committee of Congress (1871); Rutherford B. Hayes, Inaugural Address (1877).\n\nThe essay is due at the start of class one week after the seminar, on paper or through the class site. Late essays lose 5% a day. It counts for 50% of the course grade.",
+  "why": "the essay asked a different question from the one every step and the seminar prepared; no document list; no due date; every packet document is a primary source, so 'at least two primary sources' meant nothing"
+ },
+ {
+  "lesson": 8,
+  "find": "Review the course documents and select at least four that help answer the prompt, including at least two primary sources.",
+  "replace": "Reread the packet and choose at least four documents that help you answer the question. Your evidence bank, witness source note and context paragraph already cover several of them.",
+  "why": "same number of documents everywhere; build on the earlier steps"
+ },
+ {
+  "lesson": 8,
+  "find": "Draft a thesis that makes a specific claim about Reconstruction’s changes and their limits.",
+  "replace": "Start from the revised thesis you wrote after the seminar. Check that it takes a position, names the standard you are judging by, and includes a qualification.",
+  "why": "the thesis was already drafted and revised; the step now builds on it"
+ },
+ {
+  "lesson": 8,
+  "find": "Address counterevidence by explaining how it qualifies or complicates your argument.",
+  "replace": "Answer the strongest counterevidence: concede what it gets right, then explain how it qualifies your argument.",
+  "why": "use the seminar’s concede-and-qualify move"
+ },
+ {
+  "lesson": 8,
+  "find": "Presents a precise thesis and sustains a well-reasoned argument about change and limits.",
+  "replace": "Thesis answers whether Reconstruction failed, names the standard used to judge it, and includes a qualification. Every paragraph supports it.",
+  "why": "rubric levels differed only by adjectives and did not match the question"
+ },
+ {
+  "lesson": 8,
+  "find": "Presents a clear thesis and mostly consistent reasoning about change and limits.",
+  "replace": "Thesis takes a clear position on whether Reconstruction failed, but the standard or the qualification is missing. Most paragraphs support it.",
+  "why": "rubric levels now differ by something observable"
+ },
+ {
+  "lesson": 8,
+  "find": "Presents a broad or uneven thesis; reasoning is only partly connected to the prompt.",
+  "replace": "Thesis restates the question or lists topics without taking a position. Paragraphs describe events more than they argue.",
+  "why": "rubric levels now differ by something observable"
+ },
+ {
+  "lesson": 8,
+  "find": "Presents no clear thesis or gives claims with little reasoning.",
+  "replace": "No thesis, or claims that do not connect to the question.",
+  "why": "rubric levels now differ by something observable"
+ },
+ {
+  "lesson": 8,
+  "find": "Uses at least four relevant documents, including two primary sources, names them, and explains their evidence accurately.",
+  "replace": "Uses four or more packet documents, names each one, and explains accurately what each shows.",
+  "why": "same number of documents in plan, assignment and rubric"
+ },
+ {
+  "lesson": 8,
+  "find": "Uses the required documents and generally explains how their evidence supports the argument.",
+  "replace": "Uses four packet documents and names them, but one or two are quoted or summarized without explaining what they show.",
+  "why": "rubric levels now differ by something observable"
+ },
+ {
+  "lesson": 8,
+  "find": "Uses too few documents or relies on evidence with limited explanation or some inaccuracies.",
+  "replace": "Uses two or three packet documents, or uses four with errors about what they say.",
+  "why": "rubric levels now differ by something observable"
+ },
+ {
+  "lesson": 8,
+  "find": "Uses little relevant document evidence or misrepresents the documents.",
+  "replace": "Uses one packet document or none, or misrepresents the documents.",
+  "why": "rubric levels now differ by something observable"
+ },
+ {
+  "lesson": 8,
+  "find": "Accurately connects evidence to historical context and addresses counterevidence with a thoughtful qualification.",
+  "replace": "Places evidence in its historical context, says what a document cannot show, and answers the strongest counterevidence by conceding and qualifying.",
+  "why": "rubric levels now differ by something observable"
+ },
+ {
+  "lesson": 8,
+  "find": "Connects most evidence to the argument and addresses relevant counterevidence.",
+  "replace": "Links most evidence to the thesis and answers one piece of counterevidence, but does not qualify the thesis.",
+  "why": "rubric levels now differ by something observable"
+ },
+ {
+  "lesson": 8,
+  "find": "Makes limited connections between evidence and claims; counterevidence is mentioned but weakly addressed.",
+  "replace": "Mentions counterevidence but does not answer it. Links between evidence and claims are often missing.",
+  "why": "rubric levels now differ by something observable"
+ },
+ {
+  "lesson": 8,
+  "find": "Offers little historical reasoning and does not address counterevidence.",
+  "replace": "Does not mention counterevidence. Evidence is listed without explanation.",
+  "why": "rubric levels now differ by something observable"
+ },
+ {
+  "lesson": 8,
+  "find": "The Freedmen’s Bureau records and Hayes’s inaugural address",
+  "replace": "Howard’s Freedmen’s Bureau report and Hayes’s inaugural address",
+  "why": "name the document the class read"
+ },
+ {
+  "lesson": 8,
+  "find": "Concede the amendments remained, then cite Hayes’s inaugural address and evidence of troop withdrawal and Redeemer control.",
+  "replace": "Concede the amendments remained, then cite Elias Hill’s testimony on Klan violence and the evidence of troop withdrawal and Redeemer control.",
+  "why": "Hayes’s inaugural address does not show troop withdrawal"
+ },
+ {
+  "lesson": 8,
+  "find": "A claim about Reconstruction is well supported if it accurately describes an amendment, even when it names no document.",
+  "replace": "In the seminar and the essay, saying “the sources show” counts as citing a document.",
+  "why": "the old statement was arguable: describing an amendment accurately is using a document"
+ },
+ {
+  "lesson": 8,
+  "find": "A strong historical argument names specific documents and uses their evidence to support or qualify a claim.",
+  "replace": "A citation names the specific document, such as Section 1 of the 14th Amendment or Elias Hill’s testimony, and says what its evidence shows.",
+  "why": "explanation for the rewritten item"
+ },
+ {
+  "lesson": 8,
+  "find": "The Enforcement Acts material shows that the federal government acted against Ku Klux Klan violence. That violence is counterevidence to the claim that the 15th Amendment meant Black men faced no barriers to political power.",
+  "replace": "Elias Hill’s 1871 testimony to Congress describes Klansmen beating him at his home in York County, South Carolina. Violence like this against Black leaders and voters is counterevidence to the claim that the 15th Amendment meant Black men faced no barriers to political power.",
+  "why": "'Enforcement Acts material' is not a document the class read"
+ },
+ {
+  "lesson": 8,
+  "find": "Example: the Hayes inaugural address could be used for the first view, because it is tied to the end of federal troop support.",
+  "replace": "Example: Elias Hill’s testimony could be used for the first view, because it shows the violence that kept Black Southerners from using their rights.",
+  "why": "Hayes’s address does not mention troops"
+ },
+ {
+  "lesson": 8,
+  "find": "The Enforcement Acts material shows Congress tried to act, but the Hayes address shows troops were leaving.",
+  "replace": "Elias Hill’s testimony shows Klansmen beating a Black minister in 1871, and Hayes’s inaugural address shows a president promising the South local self-government.",
+  "why": "the model sentence cited a non-document and misdescribed Hayes’s address"
+ },
+ {
+  "lesson": 8,
+  "find": "Examples are the Hayes inaugural address, Black Codes evidence, the text of an amendment, or Enforcement Acts material.",
+  "replace": "Examples are Hayes’s inaugural address, the Mississippi Black Code of 1865, Section 1 of the 14th Amendment, or Elias Hill’s testimony.",
+  "why": "name documents the class actually read"
+ },
+ {
+  "lesson": 8,
+  "find": "Excellent means citing two or more documents by name and answering classmates with specifics. Good means citing documents but answering only in general terms. Developing is opinion with thin evidence. Beginning is little evidence or no response to others.",
+  "replace": "You are scored on what you say in the circle. Excellent means naming a document, saying what it shows, and answering a classmate with specific evidence. Good means naming a document but answering classmates only in general terms. Developing is opinion with no document named. Beginning is not speaking, even when invited. One turn of about 30 seconds can earn Excellent.",
+  "why": "match the new seminar levels"
+ }
+]

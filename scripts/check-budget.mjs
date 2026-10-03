@@ -10,7 +10,7 @@ const KB = 1024;
 // The first load's CSS blocks the first paint: it once carried 31 KB of font rules for a face no page needed.
 // The sample courses and the changelog's pictures are content, fetched only when opened: each has its own budget,
 // apart from the app's.
-const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 3.5 * KB * KB, dist: 10 * KB * KB, samples: 2 * KB * KB, changelog: 4 * KB * KB };
+const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 3.5 * KB * KB, dist: 10 * KB * KB, samples: 3 * KB * KB, changelog: 4 * KB * KB };
 
 function walk(dir) {
   return readdirSync(dir).flatMap((name) => {
