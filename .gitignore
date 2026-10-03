@@ -10,3 +10,4 @@ apps/web/qa
 .claude/worktrees/
 apps/web/live-results
 dist-e2e
+apps/web/scripts/.samples-log.jsonl

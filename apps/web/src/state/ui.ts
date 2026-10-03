@@ -7,6 +7,8 @@ interface UiState {
   commandOpen: boolean;
   /** When set, the connect-a-model dialog is open and runs this once connected. */
   connectThen: (() => void) | null;
+  /** The sample courses to choose from are on screen. */
+  samplesOpen: boolean;
   saveState: 'idle' | 'saving' | 'saved' | 'error';
   /** Another tab changed or deleted the open course; saving here is paused until the teacher chooses. */
   conflict: 'changed' | 'deleted' | null;
@@ -15,6 +17,7 @@ interface UiState {
   setCommandOpen: (open: boolean) => void;
   requireModel: (then: () => void) => void;
   closeConnect: () => void;
+  setSamplesOpen: (open: boolean) => void;
   setSaveState: (s: UiState['saveState']) => void;
   setConflict: (c: UiState['conflict']) => void;
 }
@@ -23,6 +26,7 @@ export const useUi = create<UiState>((set, get) => ({
   drawer: null,
   commandOpen: false,
   connectThen: null,
+  samplesOpen: false,
   saveState: 'idle',
   conflict: null,
   openDrawer: (drawer) => set({ drawer }),
@@ -30,6 +34,7 @@ export const useUi = create<UiState>((set, get) => ({
   setCommandOpen: (commandOpen) => set({ commandOpen }),
   requireModel: (then) => set({ connectThen: then }),
   closeConnect: () => set({ connectThen: null }),
+  setSamplesOpen: (samplesOpen) => set({ samplesOpen }),
   setSaveState: (saveState) => set({ saveState }),
   setConflict: (conflict) => set({ conflict }),
 }));

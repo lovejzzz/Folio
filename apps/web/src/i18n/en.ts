@@ -154,7 +154,7 @@ export const en = {
         'Research methods, master’s seminar, 12 weeks',
       ],
     },
-    sample: 'Or open the sample course',
+    sample: 'Or open a sample course',
     emptyBrief: 'Describe what you want to teach, or attach a file, first.',
     sourcesHint: 'Folio writes best from the sources themselves, and quotes only what you attach.',
     attachSources: 'Attach them',
@@ -586,6 +586,15 @@ export const en = {
       tooLarge: 'This backup file is too large to open.',
     } satisfies Record<CourseFormatCode, string>,
   },
+  samples: {
+    title: 'Open a sample course',
+    lede: 'Three finished courses Folio wrote, one for each stage. Open one to look around, change anything and export it. It is your copy, kept on this device.',
+    elementary: 'Elementary school',
+    middle: 'Middle school',
+    university: 'University',
+    opening: 'Opening…',
+    failed: 'The sample course could not be opened. Check your connection and try again.',
+  },
   connect: {
     title: 'Connect an AI',
     lede: 'Folio uses an AI to write your course. Setting it up takes a minute.',
@@ -595,7 +604,7 @@ export const en = {
     step2Folio: 'Sign in',
     step3: 'Check it works',
     connectAndContinue: 'Connect and continue',
-    orSample: 'Just looking? Open the sample course instead.',
+    orSample: 'Just looking? Open a sample course instead.',
   },
   conflict: {
     changed: 'This course was changed in another tab or window. Saving here is paused so neither copy is lost.',

@@ -1,4 +1,5 @@
 import { expect, test } from './fixtures';
+import { chooseSample } from './helpers';
 
 test('on a phone the map is a list of lessons and the sheet fits the screen', async ({ page }) => {
   await page.goto('/');
@@ -6,7 +7,7 @@ test('on a phone the map is a list of lessons and the sheet fits the screen', as
   const width = page.viewportSize()!.width;
   const pageWidth = () => page.evaluate(() => document.documentElement.scrollWidth);
   expect(await pageWidth()).toBeLessThanOrEqual(width);
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
   await page.getByRole('link', { name: /Center and spread/ }).click();
   await expect(page.getByRole('textbox', { name: 'Title of lesson 3' })).toBeVisible();
@@ -19,7 +20,7 @@ test('on a phone the map is a list of lessons and the sheet fits the screen', as
 test('no screen is wider than a phone', async ({ page }) => {
   const width = page.viewportSize()!.width;
   await page.goto('/');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
   const base = page.url().replace(/\/map$/, '');
   for (const path of ['/m/syllabus', '/m/map', '/m/plan', '/m/slides', '/m/quiz', '/m/assignments', '/m/rubrics', '/m/study', '/m/faq', '/m/discussions']) {
@@ -37,7 +38,7 @@ test('no screen is wider than a phone', async ({ page }) => {
 
 test('on a phone the slide editor steps from slide to slide, and on into the next lesson', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
   await page.goto(page.url().replace(/\/map$/, '/m/slides'));
   const title = page.getByRole('textbox', { name: 'Slide title' });
@@ -60,7 +61,7 @@ test('on a phone the slide editor steps from slide to slide, and on into the nex
 
 test('on a phone a rubric stacks its levels instead of scrolling sideways', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
   await page.goto(page.url().replace(/\/map$/, '/m/rubrics'));
   await expect(page.getByRole('table')).toHaveCount(0);
@@ -69,7 +70,7 @@ test('on a phone a rubric stacks its levels instead of scrolling sideways', asyn
 
 test('on a phone a stacked rubric can lose a criterion and change what a level is worth', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
   await page.getByRole('link', { name: /Center and spread/ }).click();
   const rubric = page.locator('#m-rubrics');
@@ -91,7 +92,7 @@ test('on a phone a stacked rubric can lose a criterion and change what a level i
 
 test('on a phone the overview and every material are reached from More', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
   await page.getByRole('button', { name: 'More' }).click();
   await page.getByRole('menuitem', { name: 'Quiz & exam bank' }).click();
@@ -122,7 +123,7 @@ test('on a phone a tall dialog fits the screen and scrolls inside itself', async
 
 test('on a phone the selection toolbar stays on screen for a word at the edge', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await page.getByRole('link', { name: /Asking questions with data/ }).first().click();
   const summary = page.getByRole('textbox', { name: 'Summary of lesson 1' });
   await summary.click({ position: { x: 4, y: 8 } });
@@ -138,7 +139,7 @@ test('on a phone the selection toolbar stays on screen for a word at the edge', 
 
 test('on a touch screen the buttons that appear on hover are always shown', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
   await page.goto(page.url().replace(/\/map$/, '/m/faq'));
   const remove = page.getByRole('button', { name: 'Remove question' }).first();
@@ -147,7 +148,7 @@ test('on a touch screen the buttons that appear on hover are always shown', asyn
 
 test('on a phone a study guide point can be removed', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
   await page.goto(page.url().replace(/\/map$/, '/m/study'));
   const remove = page.getByRole('button', { name: /^Remove: / }).first();
@@ -159,7 +160,7 @@ test('on a phone a study guide point can be removed', async ({ page }) => {
 
 test('on a touch screen no editable text is smaller than 16px, so iOS never zooms into it', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
   const base = page.url().replace(/\/map$/, '');
   const smallest = () =>

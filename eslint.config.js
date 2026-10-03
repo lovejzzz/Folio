@@ -68,7 +68,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/**', 'packages/*/scripts/**'],
+    files: ['scripts/**', 'packages/*/scripts/**', 'apps/web/scripts/**'],
     rules: { 'no-console': 'off' },
   },
   {

@@ -1,31 +1,38 @@
 import type { useNavigate } from '@tanstack/react-router';
+import { newId, parseCourse } from '@folio/core';
 import { createSession, loadSession } from '../state/session';
+import type { SampleName } from './samples';
 
-const KEY = 'folio.sampleId';
+const key = (name: SampleName) => `folio.sample.${name}`;
 
-function remembered(): string | null {
+function remembered(name: SampleName): string | null {
   try {
-    return localStorage.getItem(KEY);
+    return localStorage.getItem(key(name));
   } catch {
     return null;
   }
 }
 
-/** Open the bundled sample course, reusing the copy on this device if there is one. */
-export async function openSample(navigate: ReturnType<typeof useNavigate>): Promise<void> {
-  const id = remembered();
+/**
+ * Open a sample course, reusing the copy on this device if there is one. A first opening makes the teacher's
+ * own copy: a new course, dated now, theirs to change.
+ */
+export async function openSample(navigate: ReturnType<typeof useNavigate>, name: SampleName): Promise<void> {
+  const id = remembered(name);
   // The copy on this device opens with its undo history.
   const existing = id ? await loadSession(id) : null;
   let courseId: string;
   if (existing) {
     courseId = existing.getState().id;
   } else {
-    const { sampleCourse } = await import('@folio/core/sample');
-    const course = sampleCourse();
+    const response = await fetch(`/samples/${name}.json`);
+    if (!response.ok) throw new Error(`sample ${name}: ${response.status}`);
+    const now = new Date().toISOString();
+    const course = { ...parseCourse(await response.json()), id: newId('c'), createdAt: now, updatedAt: now };
     await createSession(course);
     courseId = course.id;
     try {
-      localStorage.setItem(KEY, course.id);
+      localStorage.setItem(key(name), course.id);
     } catch {
       /* storage unavailable */
     }

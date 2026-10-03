@@ -1,12 +1,10 @@
 import { createInference, type ProviderId } from '@folio/ai';
 import { Button, Dialog } from '@folio/ui';
-import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useT } from '../i18n';
 import { errorMessage } from '../state/model';
 import { modelSettings, usePrefs } from '../state/prefs';
 import { useUi } from '../state/ui';
-import { openSample } from '../lib/sample';
 import { ProviderChoice, ProviderFields, missingSetup } from './ProviderFields';
 import { z } from 'zod';
 import { settingsText } from '../i18n/settingsText';
@@ -54,7 +52,6 @@ function useConnect(provider: ProviderId, then: (() => void) | null, close: () =
 /** A three-step guided setup: choose a provider, paste a key, check it works. */
 export function ConnectDialog() {
   const t = useT();
-  const navigate = useNavigate();
   const then = useUi((s) => s.connectThen);
   const close = useUi((s) => s.closeConnect);
   const [provider, setProvider] = useState<ProviderId>(() => usePrefs.getState().provider ?? 'folio');
@@ -89,7 +86,7 @@ export function ConnectDialog() {
           type="button"
           onClick={() => {
             close();
-            void openSample(navigate);
+            useUi.getState().setSamplesOpen(true);
           }}
           className="mt-5 w-full rounded-control py-1 text-center font-ui text-13 text-ink-2 underline-offset-4 outline-none hover:text-ink hover:underline focus-visible:ring-2 focus-visible:ring-accent"
         >

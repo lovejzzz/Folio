@@ -1,9 +1,20 @@
+import { sampleCourse } from '@folio/core/sample';
 import { expect, type Page } from '@playwright/test';
 
-/** Open the bundled sample course and wait for its map. */
+/** The statistics course the tests are written against, served in place of whichever sample is chosen. */
+const STATISTICS = JSON.stringify(sampleCourse());
+
+/** Choose a sample course from the home page or the connect dialog, as a teacher would. */
+export async function chooseSample(page: Page): Promise<void> {
+  await page.route('**/samples/*.json', (route) => route.fulfill({ contentType: 'application/json', body: STATISTICS }));
+  await page.getByRole('button', { name: 'Or open a sample course' }).click();
+  await page.getByRole('dialog', { name: 'Open a sample course' }).getByRole('button', { name: /^University/ }).click();
+}
+
+/** Open the sample course and wait for its map. */
 export async function openSample(page: Page): Promise<void> {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await expect(page.getByRole('grid', { name: 'Lessons and materials' })).toBeVisible();
 }
 

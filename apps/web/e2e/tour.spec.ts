@@ -1,5 +1,6 @@
 import { test, type Page } from '@playwright/test';
 import { fakeAnthropic } from './fakeModel';
+import { chooseSample } from './helpers';
 
 /**
  * A screenshot tour of every screen for design review. Runs only when
@@ -60,7 +61,7 @@ test('tour, dark', async ({ page }) => {
 
 test('tour, sample course', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await page.getByRole('grid').waitFor();
   const base = page.url().replace(/\/map$/, '');
   for (const kind of ['syllabus', 'map', 'quiz', 'plan', 'rubrics', 'discussions']) {
@@ -79,7 +80,7 @@ test('tour, phone', async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   await page.goto('/');
   await shot(page, 'phone-home');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await page.getByText('Open a lesson to review it.').waitFor();
   await shot(page, 'phone-map');
   await page.getByRole('link', { name: /Picturing a distribution/ }).click();
@@ -98,7 +99,7 @@ test('tour, readme', async ({ browser }) => {
   await page.goto('/');
   await page.getByLabel('Describe your course').fill('A four-lesson introduction to statistics for grade 11. Real data from our school, lots of practice, one short quiz a lesson.');
   await shot(page, 'readme-home');
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await page.getByRole('grid').waitFor();
   await shot(page, 'readme-map');
   const base = page.url().replace(/\/map$/, '');
@@ -110,7 +111,7 @@ test('tour, readme', async ({ browser }) => {
   await shot(page, 'readme-slides');
   const dark = await make('dark');
   await dark.goto('/');
-  await dark.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(dark);
   await dark.getByRole('grid').waitFor();
   await dark.goto(dark.url().replace(/\/map$/, '/m/quiz'));
   await dark.getByRole('button', { name: /^Show (answer|why)$/ }).first().click();

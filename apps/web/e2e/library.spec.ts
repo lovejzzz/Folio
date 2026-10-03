@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from './fixtures';
 import { fakeAnthropic } from './fakeModel';
-import { openSample, retype, withKey } from './helpers';
+import { openSample, retype, withKey, chooseSample } from './helpers';
 
 test('opening a backup of a course that is already here adds a copy and changes nothing', async ({ page }) => {
   await openSample(page);
@@ -55,7 +55,7 @@ test('opening another course during a build stops it, and says so', async ({ pag
   await page.getByRole('button', { name: 'Write 3 lessons' }).click();
   await expect(page.getByText(/Writing lesson/)).toBeVisible();
   await page.getByRole('link', { name: 'Home' }).first().click();
-  await page.getByRole('button', { name: 'Or open the sample course' }).click();
+  await chooseSample(page);
   await expect(page.getByText(/Writing “How plants make food” stopped when another course was opened/)).toBeVisible();
   const calls = model.calls.length;
   await page.waitForTimeout(2000);

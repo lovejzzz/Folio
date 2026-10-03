@@ -1,9 +1,10 @@
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { useT } from '../../i18n';
 import { loadGuesses, setBrief, useDraft } from '../../state/draft';
+import { useUi } from '../../state/ui';
 import { BriefComposer } from './BriefComposer';
 import { examplesForThisVisit } from './examples';
 
@@ -29,7 +30,6 @@ const footerLink = 'rounded-control px-1 font-ui text-13 text-ink-2 underline-of
 
 function Examples() {
   const t = useT();
-  const navigate = useNavigate();
   const set = useDraft((s) => s.set);
   const [examples] = useState(() => examplesForThisVisit(t.home.examples));
   return (
@@ -61,7 +61,7 @@ function Examples() {
       </div>
       <button
         type="button"
-        onClick={() => void import('../../lib/sample').then((m) => m.openSample(navigate))}
+        onClick={() => useUi.getState().setSamplesOpen(true)}
         className="rounded-control px-1 text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent"
       >
         {t.home.sample}

@@ -12,6 +12,7 @@ import { useUi } from '../state/ui';
 /** Loaded only when a model needs connecting, so the first page stays small. */
 const ConnectDialog = lazy(() => import('../components/ConnectDialog').then((m) => ({ default: m.ConnectDialog })));
 /** Loaded only when someone has just signed in with courses already in this browser. */
+const SampleChooser = lazy(() => import('../components/SampleChooser').then((m) => ({ default: m.SampleChooser })));
 const OfferDialog = lazy(() => import('../components/OfferDialog').then((m) => ({ default: m.OfferDialog })));
 
 function usePrintInLight(theme: string): void {
@@ -31,6 +32,7 @@ export function RootLayout() {
   const t = useT();
   const theme = usePrefs((s) => s.theme);
   const connecting = useUi((s) => s.connectThen !== null);
+  const choosingSample = useUi((s) => s.samplesOpen);
   const offering = useAccount((s) => s.offer.length > 0);
   const textSize = usePrefs((s) => s.textSize);
   useEffect(() => applyTheme(theme), [theme]);
@@ -56,6 +58,11 @@ export function RootLayout() {
       {connecting && (
         <Suspense fallback={null}>
           <ConnectDialog />
+        </Suspense>
+      )}
+      {choosingSample && (
+        <Suspense fallback={null}>
+          <SampleChooser />
         </Suspense>
       )}
       {offering && (
