@@ -2,6 +2,7 @@ import { filledTexts, isBlankPoint, isBlankSegment, isBlankTerm, statedObjective
 import { lessonSessions, sessionIndex } from '../course';
 import type { Lesson } from '../schema';
 import type { Block } from '../semantic';
+import { projectPage } from './pageView';
 import { field, lessonHeading, lessonsIn, nonEmpty, questionBlock, shownQuestions, type Ctx } from './shared';
 
 const terms = (lesson: Lesson) => lesson.vocabulary.filter((v) => !isBlankTerm(v)).map(({ term, definition }) => ({ term, definition }));
@@ -28,6 +29,7 @@ export function projectPlan(ctx: Ctx): Block[] {
       blocks.push({ t: 'heading', level: 3, text: l.keyIdeas });
       blocks.push({ t: 'list', ordered: false, items: keyIdeas });
     }
+    if (lesson.page.length) blocks.push(...projectPage(ctx, lesson));
     const segments = lesson.segments.filter((s) => !isBlankSegment(s));
     const sessions = lessonSessions(course);
     // A lesson that meets more than once gets a table per session, under its name and length.

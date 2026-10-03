@@ -3,6 +3,7 @@ import { orderedLessons } from './course';
 import type { Flag } from './flags';
 import { hashValue } from './ids';
 import { sectionFor, type GeneratedKind, type MaterialKind } from './materials';
+import { pageText } from './page';
 import type { Basis, Course, Lesson } from './schema';
 
 /**
@@ -51,7 +52,8 @@ function inputHash(course: Course, lesson: Lesson, key: BasisKey): string {
     case 'audience':
       return hashValue([course.audience.level, course.audience.subject, course.language]);
     case 'plan':
-      return hashValue([filledTexts(lesson.keyIdeas), lesson.segments.filter((s) => !isBlankSegment(s)).map((s) => [s.title, s.description])]);
+      // A module page is hashed only when there is one, so courses saved before pages existed stay up to date.
+      return hashValue([filledTexts(lesson.keyIdeas), lesson.segments.filter((s) => !isBlankSegment(s)).map((s) => [s.title, s.description]), ...(lesson.page?.length ? [pageText(lesson.page)] : [])]);
     case 'sources':
       return hashValue(course.sourceOrder.map((id) => [id, course.sources[id]?.text.length ?? 0]));
   }

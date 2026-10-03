@@ -85,6 +85,20 @@ const en = {
   continued: (title: string) => `${title} (continued)`,
   points: (n: number) => (n === 1 ? '1 pt' : `${n} pts`),
   general: 'General',
+  module: {
+    thisWeek: 'This week',
+    due: 'Due',
+    picture: 'Picture',
+    video: (minutes: number) => (minutes ? `Video, ${minutes} min` : 'Video'),
+    file: 'File',
+    transcript: 'Transcript',
+    callouts: { checkpoint: 'Checkpoint', stuck: 'If it did not work', why: 'Why this works', tip: 'Tip', warning: 'Careful', version: 'Version' },
+    kit: 'For the instructor',
+    announcement: 'Announcement to post',
+    watchFor: 'What to watch for',
+    feedback: 'Feedback to adapt',
+    atRisk: 'Who to contact',
+  },
 };
 
 export type DocLabels = typeof en;
@@ -166,6 +180,20 @@ const zh: DocLabels = {
   continued: (title: string) => `${title}（续）`,
   points: (n) => `${n} 分`,
   general: '通用',
+  module: {
+    thisWeek: '本周任务',
+    due: '截止',
+    picture: '图片',
+    video: (minutes) => (minutes ? `视频（${minutes} 分钟）` : '视频'),
+    file: '文件',
+    transcript: '文字稿',
+    callouts: { checkpoint: '检查点', stuck: '如果没有成功', why: '为什么这样可行', tip: '提示', warning: '注意', version: '版本' },
+    kit: '教师用',
+    announcement: '本周公告',
+    watchFor: '需要留意',
+    feedback: '反馈参考',
+    atRisk: '需要联系的学生',
+  },
 };
 
 export function docLabels(language: Language): DocLabels {

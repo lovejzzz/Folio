@@ -3,6 +3,7 @@ import { emptyLesson } from './course';
 import type { Flag } from './flags';
 import type { GeneratedKind, MaterialKind } from './materials';
 import { computeBasis } from './ripple';
+import type { CoursePage, Facilitation, Online, PageBlock } from './page';
 import type {
   Course,
   CourseStatus,
@@ -31,12 +32,12 @@ import type {
 type Fields<T, K extends keyof T> = Partial<Pick<T, K>>;
 
 export type LessonFields = Fields<Lesson, 'title' | 'summary' | 'objectiveIds' | 'readings' | 'suggestedReadings' | 'homework'>;
-export type PlanFields = Fields<Lesson, 'segments' | 'keyIdeas' | 'vocabulary'>;
+export type PlanFields = Fields<Lesson, 'segments' | 'keyIdeas' | 'vocabulary' | 'page' | 'facilitation'>;
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 export type TaskFields = Partial<DistributiveOmit<Task, 'id' | 'kind' | 'lessonId'>>;
 
 export interface SectionContent {
-  plan: { segments: Segment[]; keyIdeas: string[]; vocabulary: Term[] };
+  plan: { segments: Segment[]; keyIdeas: string[]; vocabulary: Term[]; page?: PageBlock[]; facilitation?: Facilitation };
   slides: { slides: Slide[] };
   study: { overview: string; points: StudyPoint[] };
 }
@@ -51,6 +52,7 @@ export type CommandMap = {
     status?: CourseStatus;
     audience?: Partial<Course['audience']>;
     shape?: Partial<Course['shape']>;
+    online?: Partial<Online>;
   };
   'objective.add': { objective: Objective; lessonId: string | null };
   'objective.update': { objectiveId: string; text: string };
@@ -83,6 +85,8 @@ export type CommandMap = {
   'faq.update': { faqId: string; question?: string; answer?: string };
   'faq.remove': { faqId: string };
   'material.set': { kind: MaterialKind; enabled: boolean };
+  /** The pages that belong to no week, written when an online course is built. */
+  'pages.set': { pages: CoursePage[] };
   'source.add': { source: Source };
   'source.remove': { sourceId: string };
   /** The teacher's own syllabus is this source, or none. */
@@ -141,6 +145,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     if (p.status !== undefined) draft.status = p.status;
     if (p.audience) Object.assign(draft.audience, p.audience);
     if (p.shape) Object.assign(draft.shape, p.shape);
+    if (p.online && draft.online) Object.assign(draft.online, p.online);
   },
   'objective.add': (draft, p) => {
     draft.objectives[p.objective.id] = { ...p.objective };
@@ -219,6 +224,8 @@ const handlers: { [K in CommandType]: Handler<K> } = {
       lesson.segments = p.content.segments;
       lesson.keyIdeas = p.content.keyIdeas;
       lesson.vocabulary = p.content.vocabulary;
+      lesson.page = p.content.page ?? [];
+      lesson.facilitation = p.content.facilitation;
     } else if (p.kind === 'slides') {
       lesson.slides = p.content.slides;
     } else {
@@ -231,6 +238,8 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     if (p.segments !== undefined) lesson.segments = p.segments;
     if (p.keyIdeas !== undefined) lesson.keyIdeas = p.keyIdeas;
     if (p.vocabulary !== undefined) lesson.vocabulary = p.vocabulary;
+    if (p.page !== undefined) lesson.page = p.page;
+    if (p.facilitation !== undefined) lesson.facilitation = p.facilitation;
     markEdited(lesson, 'plan');
   },
   'slides.update': (draft, p) => {
@@ -328,6 +337,9 @@ const handlers: { [K in CommandType]: Handler<K> } = {
   },
   'material.set': (draft, p) => {
     draft.materials[p.kind].enabled = p.enabled;
+  },
+  'pages.set': (draft, p) => {
+    draft.pages = p.pages;
   },
   'source.add': (draft, p) => {
     draft.sources[p.source.id] = p.source;

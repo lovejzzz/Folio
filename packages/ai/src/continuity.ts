@@ -1,4 +1,5 @@
 import { orderedLessons, type Course, type Lesson } from '@folio/core';
+import { moduleDigest, moduleSummary } from './online';
 
 /**
  * What one lesson's materials owe the lessons around it. Each lesson is written in its own call, and a lesson
@@ -30,11 +31,11 @@ function lessonDigest(lesson: Lesson, course: Course): string {
 
 /** The planned lessons before this one, nearest last, within the budget. */
 function digests(course: Course, lesson: Lesson, budget: number): string {
-  const before = orderedLessons(course).slice(0, course.lessonOrder.indexOf(lesson.id)).filter((l) => l.segments.length);
+  const before = orderedLessons(course).slice(0, course.lessonOrder.indexOf(lesson.id)).filter((l) => l.segments.length || l.page?.length);
   const kept: string[] = [];
   let used = 0;
   for (const l of before.reverse()) {
-    const digest = lessonDigest(l, course);
+    const digest = l.page?.length ? moduleDigest(l) : lessonDigest(l, course);
     if (used + digest.length > budget) break;
     kept.unshift(digest);
     used += digest.length;
@@ -177,6 +178,7 @@ export function nextReading(course: Course, lesson: Lesson): string {
  * misconceptions to watch for, and a study guide written without them stated one of those misconceptions as fact.
  */
 export function planSummary(lesson: Lesson): string {
+  if (lesson.page?.length) return moduleSummary(lesson);
   if (!lesson.segments.length) return '';
   const ideas = lesson.keyIdeas.map((k) => `- ${k}`).join('\n');
   const flow = lesson.segments

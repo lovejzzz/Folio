@@ -1,0 +1,292 @@
+/*
+ * The module page of an online course: what a student reads and follows alone. Each kind of block has its own
+ * look, so the page can be scanned: numbered steps, checkpoints, things that went wrong, code, pictures.
+ */
+@layer components {
+  .mod {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .mod-lead {
+    font-size: var(--text-18);
+    line-height: var(--text-18--line-height);
+  }
+
+  /* The week at a glance: everything to do, how long, and by when. */
+  .mod-checklist {
+    border: 1px solid var(--folio-rule);
+    border-radius: 12px;
+    background: var(--folio-paper);
+    font-family: var(--font-ui);
+    overflow: hidden;
+  }
+  .mod-checklist-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--folio-well);
+    border-bottom: 1px solid var(--folio-rule);
+    font-size: var(--text-13);
+    color: var(--folio-ink-2);
+  }
+  .mod-checklist-head strong {
+    font-size: var(--text-14);
+    color: var(--folio-ink);
+  }
+  .mod-checklist li {
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-top: 1px solid var(--folio-rule);
+    font-size: var(--text-14);
+    line-height: var(--text-14--line-height);
+  }
+  .mod-checklist li:first-child {
+    border-top: 0;
+  }
+  .mod-checklist svg {
+    margin-top: 0.1rem;
+    color: var(--folio-accent);
+  }
+  .mod-checklist-meta {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    color: var(--folio-ink-2);
+    font-size: var(--text-13);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .mod-due {
+    padding: 0 0.45rem;
+    border-radius: 999px;
+    background: var(--folio-accent-tint);
+    color: var(--folio-accent);
+    font-weight: 600;
+  }
+
+  /* A part: one thing the student gets done, under a number and its name. */
+  .mod-part {
+    display: grid;
+    gap: 1.1rem;
+    margin-top: 1.75rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--folio-rule);
+  }
+  .mod-kicker {
+    font-family: var(--font-ui);
+    font-size: var(--text-12);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--folio-accent);
+  }
+  .mod-part-title {
+    font-family: var(--font-display);
+    font-size: var(--text-28);
+    line-height: var(--text-28--line-height);
+    margin-top: 0.15rem;
+  }
+  .mod-h3 {
+    font-family: var(--font-ui);
+    font-size: var(--text-16);
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+  .mod ul.mod-list {
+    list-style: disc;
+    padding-left: 1.4rem;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  /* Steps: one action each, numbered through the part. */
+  .mod-steps {
+    display: grid;
+    gap: 0.85rem;
+  }
+  .mod-steps > li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+  }
+  .mod-step-n {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-top: 0.05rem;
+    border-radius: 999px;
+    background: var(--folio-accent-tint);
+    color: var(--folio-accent);
+    font-family: var(--font-ui);
+    font-size: var(--text-13);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  /* A button, menu or field, named as the screen shows it. */
+  .folio-label {
+    font-family: var(--font-ui);
+    font-size: 0.92em;
+    font-weight: 650;
+  }
+
+  .mod-callout {
+    --tone: var(--folio-accent);
+    display: grid;
+    gap: 0.3rem;
+    padding: 0.8rem 1rem;
+    border-left: 3px solid var(--tone);
+    border-radius: 4px 10px 10px 4px;
+    background: color-mix(in oklab, var(--tone) 8%, var(--folio-paper));
+  }
+  .mod-callout[data-kind='checkpoint'] {
+    --tone: var(--folio-good);
+  }
+  .mod-callout[data-kind='stuck'] {
+    --tone: var(--folio-attention);
+  }
+  .mod-callout[data-kind='warning'] {
+    --tone: var(--folio-critical);
+  }
+  .mod-callout[data-kind='version'] {
+    --tone: var(--folio-field);
+  }
+  .mod-callout-head {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-ui);
+    font-size: var(--text-13);
+    font-weight: 700;
+    color: var(--tone);
+  }
+  .mod-callout-body {
+    font-size: var(--text-16);
+    line-height: var(--text-16--line-height);
+    white-space: pre-line;
+  }
+
+  .mod-code {
+    border: 1px solid var(--folio-rule);
+    border-radius: 10px;
+    background: var(--folio-well);
+    overflow: hidden;
+  }
+  .mod-code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.3rem 0.4rem 0.3rem 0.9rem;
+    border-bottom: 1px solid var(--folio-rule);
+    font-family: var(--font-ui);
+    font-size: var(--text-12);
+    color: var(--folio-ink-2);
+  }
+  .mod-code pre {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: var(--text-14);
+    line-height: 1.6;
+    font-variant-ligatures: none;
+    tab-size: 4;
+  }
+
+  .mod-figure {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .mod-figure :is(img, video) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: var(--folio-shadow-sheet);
+    background: var(--folio-well);
+  }
+  .mod-figure figcaption,
+  .mod-transcript {
+    font-family: var(--font-ui);
+    font-size: var(--text-13);
+    line-height: var(--text-13--line-height);
+    color: var(--folio-ink-2);
+  }
+  .mod-transcript p {
+    margin-top: 0.4rem;
+    white-space: pre-line;
+  }
+  /* A picture or clip not made yet: it says what it must show. */
+  .mod-slot {
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    border: 1px dashed var(--folio-rule-strong);
+    border-radius: 10px;
+    background: var(--folio-well);
+    font-family: var(--font-ui);
+    font-size: var(--text-13);
+    line-height: var(--text-13--line-height);
+    color: var(--folio-ink-2);
+  }
+  .mod-slot strong {
+    display: block;
+    color: var(--folio-ink);
+  }
+
+  .mod-file {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--folio-rule);
+    border-radius: 10px;
+    font-family: var(--font-ui);
+    font-size: var(--text-14);
+  }
+  .mod-file-role {
+    margin-left: auto;
+    font-size: var(--text-12);
+    color: var(--folio-ink-2);
+    text-transform: capitalize;
+  }
+
+  .mod-terms {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .mod-terms dt {
+    font-weight: 600;
+  }
+
+  /* The instructor's part of the week: on the teacher's page only. */
+  .mod-kit {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1.1rem 1.25rem;
+    border-radius: 12px;
+    background: var(--folio-well);
+    font-family: var(--font-ui);
+    font-size: var(--text-14);
+    line-height: var(--text-14--line-height);
+  }
+  .mod-kit h4 {
+    font-size: var(--text-13);
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .mod-kit ul {
+    list-style: disc;
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.3rem;
+  }
+}

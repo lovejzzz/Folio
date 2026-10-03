@@ -30,7 +30,8 @@ export function typesetDraft<T>(value: T, language: string): T {
   const walk = (v: unknown, key?: string): unknown => {
     if (typeof v === 'string') return key === 'expression' ? v : smartQuotes(v);
     if (Array.isArray(v)) return v.map((x) => walk(x));
-    if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x, k)]));
+    // A block of code is kept as typed: curly quotes do not compile.
+    if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, (v as { type?: unknown }).type === 'code' && k === 'text' ? x : walk(x, k)]));
     return v;
   };
   return walk(value) as T;

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { FlagSchema } from './flags';
 import { MATERIAL_KINDS, GENERATED_KINDS } from './materials';
+import { CoursePageSchema, DeliverySchema, FacilitationSchema, OnlineSchema, PageBlockSchema } from './page';
 
 /**
  * The course document: the single source of truth. Every entity has a
@@ -121,6 +122,10 @@ export const LessonSchema = z.object({
   vocabulary: z.array(TermSchema),
   slides: z.array(SlideSchema),
   study: z.object({ overview: text, points: z.array(StudyPointSchema) }),
+  /** An online course's module page for the student: what the plan is in a course with no set meeting time. */
+  page: z.array(PageBlockSchema).default([]),
+  /** The instructor's kit for the week, in an online course. */
+  facilitation: FacilitationSchema.optional(),
   /** Order of this lesson's tasks (questions, assignments, discussions). */
   taskIds: z.array(id),
   faqIds: z.array(id),
@@ -300,6 +305,12 @@ export const CourseSchema = z.object({
     /** Two or more when each lesson meets more than once (a lecture, then a seminar); empty when it meets once. */
     sessions: z.array(SessionSchema).default([]),
   }),
+  /** How the course meets. Courses saved before online ones existed are taught in a room. */
+  delivery: DeliverySchema.default('inperson'),
+  /** What the online format commits the teacher to; absent in a course taught in a room. */
+  online: OnlineSchema.optional(),
+  /** Pages that belong to no week: Start here and the like. */
+  pages: z.array(CoursePageSchema).default([]),
   policies: text,
   /** How the course is graded, as the teacher stated it. Empty when not stated. */
   grading: z.array(GradeItemSchema).default([]),

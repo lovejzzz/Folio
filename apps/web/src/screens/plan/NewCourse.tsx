@@ -49,6 +49,7 @@ function requestFromDraft(): NewCourseRequest | null {
     language: d.language,
     locale: typeof navigator === 'undefined' ? '' : navigator.language,
     materials: d.materials.length ? d.materials : MATERIAL_KINDS,
+    ...(d.delivery !== 'inperson' ? { delivery: d.delivery } : {}),
     sources: d.files,
   };
 }
@@ -77,7 +78,7 @@ function useClarify(usages: Usage[]): [Phase, (p: Phase) => void] {
     if (started.current || !req || !inference) return;
     started.current = true;
     const defaultLessons = useDraft.getState().lessons;
-    clarifyCourse(inference, { brief: req.brief, sources: req.sources, language: req.language, locale: req.locale, level: req.level, lessonCount: req.lessonCount, defaultLessons, sessions: req.sessions })
+    clarifyCourse(inference, { brief: req.brief, sources: req.sources, language: req.language, locale: req.locale, level: req.level, lessonCount: req.lessonCount, defaultLessons, sessions: req.sessions, delivery: req.delivery })
       .then((read) => setPhase(read.questions.length ? { kind: 'asking', read } : { kind: 'drafting', req: withAnswers(req, read, []) }))
       .catch(() => setPhase({ kind: 'drafting', req: withAnswers(req, null, []) }));
   }, [usages]);

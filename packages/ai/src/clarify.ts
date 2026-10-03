@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SHAPE_LIMITS, type Language, type Session } from '@folio/core';
+import { SHAPE_LIMITS, type Delivery, type Language, type Session } from '@folio/core';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
 import { filesBlock } from './files';
@@ -44,6 +44,8 @@ export interface ClarifyRequest {
   defaultLessons: number;
   /** The meetings of each lesson, when the brief names more than one (a lecture and a lab). */
   sessions?: Session[];
+  /** How the course meets; in a room when not said. */
+  delivery?: Delivery;
 }
 
 /** What a question was, and what the teacher chose or wrote. */
@@ -71,6 +73,7 @@ export function clarifyPrompt(req: ClarifyRequest): string {
     'A file that ends "the rest of this source is not shown" was too long to show whole: do not take what you see of it for all of it. Report what you can read from the brief and files: "lessonCount", the number of lessons they set (one lesson for each class meeting on the schedule; when the schedule gives weeks, one per week unless it says how many times the class meets each week), or null when they do not say; "minutesPerLesson", or null; "level", or empty; and "syllabus", the title of the attached file that is the syllabus of this course (its schedule, grading and policies), as written after "##", or empty when none is.',
     'Then ask the teacher only what would change the course in a way they would care about and that cannot be read from what they gave. Good questions: how many lessons or how long each is, when that is needed and not stated; who the students are; what must be covered or left out; how the course is assessed; a part of a syllabus that is unclear, contradictory or missing, such as a week with no topic, a project with no description or readings with no schedule. Never ask about what is already stated or what the teacher chose above, and never about what Folio decides well itself: activities, wording, slide design, question formats, or which examples, cases, claims or texts to use when the teacher has not said they have particular ones in mind. The exception is material the whole course runs on and the brief does not name, such as the case for each session of a case course, a set text or a dataset: ask which they will use, with "Folio writes short ones from public information" among the answers. Ask the class size when students present or are assessed one person or team at a time. If a sensible teacher would answer "you decide", do not ask. For a single lesson or a short unit, ask about grading only when the brief or files bring it up.',
     lessonCountLine(req),
+    req.delivery === 'online-async' ? 'The course is taught online with no set meeting time: each lesson is one week\'s module students work through alone. Report "minutesPerLesson" as null, and never ask how long or how often the class meets. What matters instead, when the brief does not say: what students need installed or bought, and what they hand in.' : '',
     `Folio plans at most ${SHAPE_LIMITS.lessons.max} lessons in one course. When the course meets more often than that, such as daily for a school year, ask how to fit it, with answers such as one lesson a week, one unit or one term; never offer more than ${SHAPE_LIMITS.lessons.max} lessons.`,
     'Ask nothing when the brief and files already say enough to plan a good course: for a clear brief that is the right answer. When the brief already gives who the students are, how many lessons and how long, and what the course covers, ask at most one question, and only one whose answer would change several lessons. Otherwise usually ask one to four questions; ask more, up to eight, only when the course is genuinely unclear. Put the question whose answer changes the course most first.',
     'Write each question as one short sentence of under 20 words, naming the unit, week or topic it is about. Give three answers written for this course: distinct, concrete, each under 12 words, the most likely first. Do not add "Other" or "Not sure": the teacher can always write their own answer.',

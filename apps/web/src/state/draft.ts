@@ -1,4 +1,4 @@
-import { CORE_SET, MATERIAL_KINDS, type Language, type MaterialKind } from '@folio/core';
+import { CORE_SET, MATERIAL_KINDS, type Delivery, type Language, type MaterialKind } from '@folio/core';
 import { create } from 'zustand';
 
 /** The new-course brief, kept while the outline is drafted. */
@@ -10,7 +10,9 @@ interface Draft {
   lessonsFromFiles: boolean;
   language: Language;
   /** Chips the teacher set by hand stop following the text. */
-  pinned: { level: boolean; lessons: boolean };
+  /** In a room, or online with no set meeting time: a week's module page in place of a lesson plan. */
+  delivery: Delivery;
+  pinned: { level: boolean; lessons: boolean; delivery?: boolean };
   files: { title: string; text: string }[];
   materials: MaterialKind[];
   set: (patch: Partial<Omit<Draft, 'set'>>) => void;
@@ -23,7 +25,8 @@ const initial = {
   lessons: 4,
   lessonsFromFiles: false,
   language: 'en' as Language,
-  pinned: { level: false, lessons: false },
+  delivery: 'inperson' as Delivery,
+  pinned: { level: false, lessons: false } as Draft['pinned'],
   files: [],
   materials: [...MATERIAL_KINDS],
 };
@@ -71,6 +74,7 @@ function follow(g: Guesses): void {
     patch.lessonsFromFiles = !n && files.length > 0;
   }
   if (!pinned.level) patch.level = g.guessLevel(brief) ?? '';
+  if (!pinned.delivery) patch.delivery = g.guessDelivery(brief);
   set(patch);
 }
 

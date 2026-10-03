@@ -6,6 +6,7 @@ import {
   lessonFaq,
   lessonObjectives,
   lessonQuestions,
+  pageMinutes,
   sectionFor,
   staleReasons,
   itemFlags,
@@ -34,6 +35,8 @@ export function cellMetric(course: Course, lesson: Lesson, kind: MaterialKind, t
       return readings ? t.map.readings(readings) : t.map.scheduled;
     }
     case 'plan':
+      // A week of an online course is counted in hours of student work.
+      if (lesson.page.length) return t.module.hours(Math.round(pageMinutes(lesson.page) / 60));
       return t.common.minutes(lesson.segments.reduce((a, s) => a + s.minutes, 0));
     case 'slides':
       return t.common.slides(lesson.slides.length);

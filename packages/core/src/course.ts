@@ -14,6 +14,7 @@ import {
   type Session,
   type Task,
 } from './schema';
+import type { Delivery, Online } from './page';
 
 export interface NewCourseInput {
   title: string;
@@ -27,6 +28,8 @@ export interface NewCourseInput {
   sessions?: Session[];
   quizSize?: number;
   materials?: readonly MaterialKind[];
+  delivery?: Delivery;
+  online?: Online;
 }
 
 /** The meetings of each lesson: the sessions when there are several, else one class of the lesson's length. */
@@ -53,6 +56,7 @@ export function emptyLesson(idValue: string, title: string, summary = ''): Lesso
     vocabulary: [],
     slides: [],
     study: { overview: '', points: [] },
+    page: [],
     taskIds: [],
     faqIds: [],
     gen: {},
@@ -80,6 +84,9 @@ export function createCourse(input: NewCourseInput, now = new Date().toISOString
     locale: input.locale ?? '',
     audience: { level: input.level ?? '', subject: input.subject ?? '' },
     shape: { minutesPerLesson: input.minutesPerLesson ?? 50, quizSize: input.quizSize ?? 5, sessions: input.sessions ?? [] },
+    delivery: input.delivery ?? 'inperson',
+    ...(input.online ? { online: input.online } : {}),
+    pages: [],
     policies: '',
     grading: [],
     objectives: {},

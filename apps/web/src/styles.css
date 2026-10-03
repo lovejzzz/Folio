@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '@folio/ui/tokens.css';
+@import './module.css';
 
 @source '../../../packages/ui/src';
 

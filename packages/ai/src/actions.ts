@@ -3,7 +3,8 @@ import type { Inference } from './inference';
 import { runJob } from './jobs';
 import { typesetDraft } from './typeset';
 import { checkOperations, type SkippedOperation } from './planCheck';
-import { coursePlanPrompt, systemPrompt, textActionPrompt, type TextAction, type WritingLanguage } from './prompts';
+import { coursePlanPrompt, textActionPrompt, type TextAction } from './actionPrompts';
+import { systemPrompt, type WritingLanguage } from './prompts';
 import { CoursePlanDraft, ExplanationDraft, TextDraft, type PlanOperation } from './schemas';
 
 export type { TextAction };

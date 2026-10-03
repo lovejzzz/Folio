@@ -21,7 +21,9 @@ export type MaterialKind = (typeof MATERIAL_KINDS)[number];
 const NOT_FOR_DOCTORAL: readonly string[] = ['slides', 'quiz', 'study', 'faq'];
 
 /** The materials a new course starts with, by its level: a teacher can still turn any on or off. */
-export function materialsForLevel(level: string): MaterialKind[] {
+export function materialsForLevel(level: string, delivery = 'inperson'): MaterialKind[] {
+  // No room, no deck: a course with no set meeting time teaches on its module pages.
+  if (delivery === 'online-async') return MATERIAL_KINDS.filter((k) => k !== 'slides');
   return /doctoral|ph\.?d/i.test(level) ? MATERIAL_KINDS.filter((k) => !NOT_FOR_DOCTORAL.includes(k)) : [...MATERIAL_KINDS];
 }
 

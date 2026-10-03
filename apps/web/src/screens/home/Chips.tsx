@@ -1,3 +1,4 @@
+import type { Delivery } from '@folio/core';
 import { cx } from '@folio/ui';
 import { ChevronDown } from 'lucide-react';
 import { lazy, Suspense, type ReactNode } from 'react';
@@ -49,6 +50,18 @@ export function LevelChip() {
     >
       <LevelMenu />
     </Suspense>
+  );
+}
+
+/** In a room, or online on the students' own time: the second is written for the student, a page a week. */
+export function DeliveryChip() {
+  const t = useT();
+  const { delivery, set, pinned } = useDraft();
+  return (
+    <Chip label={t.home.delivery} value={delivery} onChange={(v) => set({ delivery: v as Delivery, pinned: { ...pinned, delivery: true } })}>
+      <option value="inperson">{t.home.deliveries.inperson}</option>
+      <option value="online-async">{t.home.deliveries['online-async']}</option>
+    </Chip>
   );
 }
 

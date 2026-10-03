@@ -1,7 +1,8 @@
-import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
+import { filledTexts, hasModulePages, lessonSessions, orderedLessons, statedObjectives, type Course, type Delivery, type Language, type Lesson, type Online, type Session, type SessionKind } from '@folio/core';
 import { courseSoFar, dueWords, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
 import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
+import { ONLINE_ASKS, moduleAsk, onlineBackground, onlineHomeworkLine } from './online';
 
 /**
  * Prompt templates. Each has a version so evaluation results can be tied to
@@ -52,6 +53,8 @@ export interface OutlineInput {
   sources: { title: string; text: string }[];
   /** The title of the file that is the course's own syllabus: shown whole first, when it fits. */
   syllabus?: string;
+  delivery?: Delivery;
+  online?: Online;
 }
 
 const SESSION_NAMES: Record<SessionKind, string> = { class: 'class', lecture: 'lecture', seminar: 'seminar', lab: 'lab session', problems: 'problem session' };
@@ -168,7 +171,7 @@ export function courseBackground(course: Course): string {
     `Course: ${course.title}${audience ? ` (${audience})` : ''}`,
     course.summary ? `About the course: ${course.summary}` : '',
     `Lessons:\n${all}`,
-    sessionsLine(course),
+    hasModulePages(course) ? onlineBackground(course) : sessionsLine(course),
     isHigherEducation(course.audience.level) ? UNIVERSITY_TEACHING : '',
     briefLine(course),
     // The teacher's rules reach every writer: late days and integrity appeared in one assignment of five.
@@ -195,7 +198,7 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     // only that, they quoted other lessons' titles at students instead.
     `This is the lesson "${lesson.title}". ${lesson.summary} Refer to other lessons as "last time" (only the lesson just before), "earlier in the course", "next time" or "later in the course", never by title or number.`,
     objectives ? `Its objectives:\n${objectives}` : '',
-    homeworkLine(course, lesson),
+    hasModulePages(course) ? onlineHomeworkLine(course, lesson) : homeworkLine(course, lesson),
     readings ? `Students read before this lesson:\n${readings}` : proposed ? `No reading is assigned yet. Proposed, for the teacher to confirm (plan from these, naming them in full):\n${proposed}` : '',
   ]
     .filter(Boolean)
@@ -317,6 +320,16 @@ function slidesFor(course: Course): string {
   return `The slides are for the ${SESSION_NAMES[shown[0]!.kind]}; the other sessions run without them.`;
 }
 
+/** What a week of an online course asks for: the page in place of the plan, and the other materials as a student alone uses them. */
+function onlineAsk(course: Course, lesson: Lesson, kind: SectionPromptKind): string {
+  if (kind === 'plan') return moduleAsk(course, lesson);
+  if (kind === 'discussions') return ONLINE_ASKS.discussions;
+  if (kind === 'faq') return ONLINE_ASKS.faq;
+  if (kind === 'slides') return asks.slides(course, lesson);
+  if (kind === 'assignments' && (lesson.homework.kind === 'test' || lesson.homework.kind === 'step')) return asks.assignments(course, lesson);
+  return `${asks[kind](course, lesson)} ${ONLINE_ASKS[kind]}`;
+}
+
 /** The per-call part of a section request; the course itself goes in courseBackground. */
 export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromptKind): string {
   const parts = [lessonContext(course, lesson)];
@@ -336,7 +349,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
           'Base this on the teacher\'s sources where they apply, and refer to a source by its title, never by a passage number.',
     );
   }
-  parts.push(asks[kind](course, lesson));
+  parts.push(hasModulePages(course) ? onlineAsk(course, lesson, kind) : asks[kind](course, lesson));
   return parts.filter(Boolean).join('\n\n');
 }
 
@@ -355,45 +368,3 @@ export const SECTION_EFFORT: Record<SectionPromptKind, Effort> = {
   discussions: 'low',
   faq: 'low',
 };
-
-export type TextAction = 'rewrite' | 'simplify' | 'harder' | 'easier' | 'translate' | 'explain';
-
-const actionAsks: Record<TextAction, (language: WritingLanguage) => string> = {
-  rewrite: () => 'Rewrite the selected text so it reads more clearly. Keep its meaning and length.',
-  simplify: () => 'Rewrite the selected text in simpler words for younger or less confident readers. Keep it accurate, and no longer than it is now.',
-  harder: () => 'Rewrite the selected text so it is more challenging, for students who need stretch: more precise terms and a sharper demand, not more sentences.',
-  easier: () => 'Rewrite the selected text so it is easier, with more support, for students who find this hard.',
-  translate: (language) =>
-    language === 'en' ? 'Translate the selected text into Spanish.' : 'Translate the selected text into English.',
-  explain: () => 'Explain the selected text for the teacher in two or three sentences, under 70 words in all: what it means and why it matters here.',
-};
-
-export function textActionPrompt(action: TextAction, selection: string, context: string, language: WritingLanguage): string {
-  return [
-    `Context: ${context}`,
-    `Selected text: """${selection}"""`,
-    actionAsks[action](language),
-    action === 'explain' || action === 'translate'
-      ? ''
-      : 'Keep the form of the selection: a title stays a title, a one-line summary stays about one line, a list item stays one item. Keep its spelling conventions (British or American) and its tone.',
-    // Worded for the JSON answer: "return only the text" made DeepSeek's JSON mode answer with blank space.
-    action === 'explain' ? 'Put the explanation in "text".' : 'Put only the replacement text in "text", with no quotation marks around it.',
-  ]
-    .filter(Boolean)
-    .join('\n\n');
-}
-
-export function coursePlanPrompt(course: Course, request: string): string {
-  const { lessons: lessonLimit, quizSize: quiz, minutesPerLesson: minutes } = SHAPE_LIMITS;
-  const lessons = orderedLessons(course)
-    .map((l, i) => `${i + 1}. ${l.title}: ${statedObjectives(course, l).map((o) => o.text).join('; ')}`)
-    .join('\n');
-  return [
-    `Course: ${course.title} (${course.audience.level || 'no level set'}). Quiz size: ${course.shape.quizSize}. Minutes per lesson: ${course.shape.minutesPerLesson}.${course.shape.sessions.length > 1 ? ` Each lesson meets as ${sessionList(course.shape.sessions)}; setting the minutes replaces these sessions with one class, so do it only when asked for one length for the whole lesson.` : ''}`,
-    `Lessons:\n${lessons}`,
-    `The teacher asks: """${request.trim()}"""`,
-    `Limits: ${lessonLimit.min}–${lessonLimit.max} lessons, ${quiz.min}–${quiz.max} questions per quiz, ${minutes.min}–${minutes.max} minutes per lesson.`,
-    'Turn the request into the smallest list of operations that does it. Lesson numbers refer to the list above, before any change. If an existing lesson already covers what is asked, prefer changing it over adding a near-copy. Wording the teacher gives for a title or objective is used exactly as written, in whatever language, never translated or reworded.',
-    'The summary is one short sentence to the teacher saying exactly what will change, with the concrete values and lesson titles (for example: every lesson becomes 45 minutes; "Samples and bias" moves after "Picturing a distribution" because it already covers the topic). Never say "as requested" or "the new setting". The preview already lists each change, so the note is only for why the plan differs from the literal request (for example: "“Samples and bias” already covers sampling bias, so no new lesson is added."); leave it empty otherwise. Do not write in the first person or offer other help. If the request is not about the course structure, return no operations and say in one sentence that Folio can only change the course.',
-  ].join('\n\n');
-}

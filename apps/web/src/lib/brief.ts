@@ -1,4 +1,4 @@
-import type { Session, SessionKind } from '@folio/core';
+import type { Delivery, Session, SessionKind } from '@folio/core';
 
 /**
  * Pre-fill the three chips under the brief as the teacher types. These read
@@ -66,11 +66,14 @@ const times = (a: number | null, b: number | null): number | null => (a && b ? a
 // With "a week" after it, any class meeting counts: "two 90-minute case discussions a week" was read as one a week.
 const EN_MEETING = String.raw`(?:lessons?|sessions?|classes|class|periods?|lectures?|seminars?|workshops?|discussions?|meetings?|tutorials?|recitations?)\b`;
 
+// Weeks as a length of time, never a week that owns something: "one week's readings" was read as a course of one week.
+const EN_WEEKS = String.raw`weeks?\b(?!['’]s)`;
+
 /** "2 lessons a week for 6 weeks" → 12; "每周两节课，共六周" → 12; either way round. */
 function lessonsFromRate(text: string, anySize = false): number | null {
   return firstCount(text, [
-    [String.raw`${EN_COUNT}[\s-]+${EN_FILLER}${EN_MEETING}[\s-]+(?:a|per|each|every)[\s-]+week\b.*?\b(${EN_NUMBER})[\s-]+weeks?\b`, (m) => times(enNumber(m[1]!), enNumber(m[2]!))],
-    [String.raw`\b(${EN_NUMBER})[\s-]+weeks?\b.*?${EN_COUNT}[\s-]+${EN_FILLER}${EN_MEETING}[\s-]+(?:a|per|each|every)[\s-]+week\b`, (m) => times(enNumber(m[2]!), enNumber(m[1]!))],
+    [String.raw`${EN_COUNT}[\s-]+${EN_FILLER}${EN_MEETING}[\s-]+(?:a|per|each|every)[\s-]+week\b.*?\b(${EN_NUMBER})[\s-]+${EN_WEEKS}`, (m) => times(enNumber(m[1]!), enNumber(m[2]!))],
+    [String.raw`\b(${EN_NUMBER})[\s-]+${EN_WEEKS}.*?${EN_COUNT}[\s-]+${EN_FILLER}${EN_MEETING}[\s-]+(?:a|per|each|every)[\s-]+week\b`, (m) => times(enNumber(m[2]!), enNumber(m[1]!))],
     [String.raw`(?:每周|一周|每星期)(${ZH_NUMBER})\s*${ZH_LESSON}.*?(${ZH_NUMBER})\s*(?:周|个星期|星期)`, (m) => times(zhNumber(m[1]!), zhNumber(m[2]!))],
     [String.raw`${ZH_NOT_COUNT_BEFORE}(${ZH_NUMBER})\s*(?:周|个星期)[^每]{0,12}(?:每周|每星期)(${ZH_NUMBER})\s*${ZH_LESSON}`, (m) => times(zhNumber(m[2]!), zhNumber(m[1]!))],
   ], anySize);
@@ -97,9 +100,19 @@ function lessonsNamedPlainly(text: string): number | null {
 /** Only weeks: "over 3 weeks" is a weak hint of one lesson a week. */
 function lessonsFromWeeks(text: string): number | null {
   return firstCount(text, [
-    [String.raw`${EN_COUNT}[\s-]+weeks?\b`, (m) => enNumber(m[1]!)],
+    [String.raw`${EN_COUNT}[\s-]+${EN_WEEKS}`, (m) => enNumber(m[1]!)],
     [String.raw`${ZH_NOT_COUNT_BEFORE}(${ZH_NUMBER})\s*(?:周|个星期)`, (m) => zhNumber(m[1]!)],
   ]);
+}
+
+/**
+ * A brief that says its course is online with no set meeting time: "asynchronous", "self-paced online", "online,
+ * no live sessions". "Online" alone says too little: a live class on video is planned like one in a room.
+ */
+export function guessDelivery(text: string): Delivery {
+  const online = /\b(?:online|remote|distance|virtual|web-based)\b|在线|网络课|网课/i.test(text);
+  const noSetTime = /\basynchronous(?:ly)?\b|\basync\b|\bself-paced\b|\bno (?:live|set|scheduled) (?:sessions?|meetings?|class(?:es)?|times?)\b|异步/i.test(text);
+  return online && noSetTime ? 'online-async' : 'inperson';
 }
 
 /** How many lessons the brief asks for. A number named as lessons beats one named as weeks. */

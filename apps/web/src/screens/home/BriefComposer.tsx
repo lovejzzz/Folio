@@ -7,7 +7,7 @@ import { setBrief, setFiles, useDraft } from '../../state/draft';
 import { hasModel } from '../../state/prefs';
 import { toast } from '../../state/toasts';
 import { useUi } from '../../state/ui';
-import { LessonsChip, LevelChip } from './Chips';
+import { DeliveryChip, LessonsChip, LevelChip } from './Chips';
 import { asksForSources } from './sourceHint';
 
 /** Only for a teacher writing with Folio credits: loaded apart so the first page stays small. */
@@ -61,6 +61,7 @@ function ComposerBar({ onPick, onGo }: { onPick: () => void; onGo: () => void })
     <div className="flex flex-wrap items-center gap-2 border-t border-rule px-3 py-3 md:px-5">
       <LevelChip />
       <LessonsChip />
+      <DeliveryChip />
       <IconButton label={t.home.attach} onPress={onPick} className="size-10">
         <Paperclip size={20} strokeWidth={1.5} />
       </IconButton>

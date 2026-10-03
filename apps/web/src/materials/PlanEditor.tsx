@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { AddButton, EditableList } from './EditableList';
+import { ModulePage } from './ModulePage';
 import { addItem, leaveBlank } from './newItems';
 import { sectionLabel, useSectionEdit } from './useSectionEdit';
 
@@ -128,6 +129,8 @@ export function PlanEditor({ course, lesson }: { course: Course; lesson: Lesson 
   const t = useT();
   const save = useSectionEdit(course, lesson.id, 'plan');
   const setSegments = (segments: Segment[]) => save([cmd('plan.update', { lessonId: lesson.id, segments })]);
+  // A week of an online course is a page for the student, not a run of timed steps.
+  if (lesson.page.length) return <ModulePage course={course} lesson={lesson} />;
   return (
     <div className="space-y-8">
       <section>

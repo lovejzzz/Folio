@@ -51,6 +51,7 @@ export function runs(ctx: BlockCtx, text: string, style: RunStyle = {}): TextRun
           text: r.text + (r.accent ?? ''),
           font: fontFor(ctx.language, role),
           ...(r.code ? CODE_RUN(role, rest.size) : {}),
+          ...(r.bold ? { bold: true } : {}),
           ...(r.script === 'sub' ? { subScript: true } : r.script === 'sup' ? { superScript: true } : {}),
           ...(i && !j ? { break: 1 } : {}),
         }),

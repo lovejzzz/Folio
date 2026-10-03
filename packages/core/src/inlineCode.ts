@@ -9,6 +9,8 @@
 export interface TextRun {
   text: string;
   code: boolean;
+  /** A name as the screen shows it, typed as **Add Component**: a button, a menu, a field. */
+  bold?: true;
   /** Set only on a subscript or superscript run. */
   script?: 'sub' | 'sup';
   /** Set on a maths token (β̂, x̄, Σ): it takes the reading face, which has the Greek and sets hats on their letters. */
@@ -23,7 +25,9 @@ export interface TextRun {
   tall?: true;
 }
 
-const CODE = /`([^`\n]+)`/g;
+/** Code, or a name in bold: the two marks that wrap a run. */
+const WRAPPED = /`([^`\n]+)`|\*\*([^*\n]+)\*\*/g;
+const ANY_BOLD = /\*\*[^*\n]+\*\*/;
 // Not global: test() on a global pattern moves its lastIndex, and matchAll starts from there.
 const ANY_CODE = /`[^`\n]+`/;
 /** "_educ" after a lone letter (β̂_educ, x_ik); "^2" after a letter, digit or bracket (R^2, e^{0.092}). */
@@ -115,9 +119,10 @@ function scripts(text: string, from: number, to: number, out: Span[]): void {
 function spans(text: string): Span[] {
   const out: Span[] = [];
   let at = 0;
-  for (const m of text.matchAll(CODE)) {
+  for (const m of text.matchAll(WRAPPED)) {
     scripts(text, at, m.index, out);
-    out.push({ text: m[1]!, code: true, at: m.index, inner: m.index + 1, end: m.index + m[0].length });
+    if (m[2] !== undefined) out.push({ text: m[2], code: false, bold: true, at: m.index, inner: m.index + 2, end: m.index + m[0].length });
+    else out.push({ text: m[1]!, code: true, at: m.index, inner: m.index + 1, end: m.index + m[0].length });
     at = m.index + m[0].length;
   }
   scripts(text, at, text.length, out);
@@ -130,20 +135,20 @@ export function hasCode(text: string): boolean {
 
 /** Whether any of the text is drawn apart: code, a sub- or superscript, or a maths word. */
 export function hasMarks(text: string): boolean {
-  return ANY_CODE.test(text) || ANY_SCRIPT.test(text) || ANY_MATH.test(text);
+  return ANY_CODE.test(text) || ANY_BOLD.test(text) || ANY_SCRIPT.test(text) || ANY_MATH.test(text);
 }
 
 /** The text in runs, in order. Plain text comes back as one run. */
 export function textRuns(text: string): TextRun[] {
   const runs = spans(text).map(
-    ({ text: t, code, script, math, accent, tall }): TextRun => ({ text: t, code, ...(script ? { script } : {}), ...(math ? { math } : {}), ...(accent ? { accent } : {}), ...(tall ? { tall } : {}) }),
+    ({ text: t, code, bold, script, math, accent, tall }): TextRun => ({ text: t, code, ...(bold ? { bold } : {}), ...(script ? { script } : {}), ...(math ? { math } : {}), ...(accent ? { accent } : {}), ...(tall ? { tall } : {}) }),
   );
   return runs.length ? runs : [{ text: '', code: false }];
 }
 
 /** The text without the code marks: for speaker notes and other plain text. Sub- and superscripts keep theirs, which read as maths. */
 export function plainText(text: string): string {
-  return text.replace(CODE, '$1');
+  return text.replace(WRAPPED, (_, code?: string, bold?: string) => code ?? bold ?? '');
 }
 
 /**

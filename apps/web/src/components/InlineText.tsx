@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 const SPACING: Record<string, string> = { '\u0302': 'ˆ', '\u0303': '˜', '\u0304': '¯', '\u0307': '˙', '\u0308': '¨' };
 
 interface Shape {
-  tag: 'code' | 'sub' | 'sup' | 'span';
+  tag: 'code' | 'strong' | 'sub' | 'sup' | 'span';
   className: string;
   accent?: string;
 }
@@ -14,6 +14,7 @@ interface Shape {
 /** The element a run is drawn in, and its class; a plain run is bare text. */
 function shapeOf(r: TextRun): Shape | null {
   if (r.code) return { tag: 'code', className: 'folio-code' };
+  if (r.bold) return { tag: 'strong', className: 'folio-label' };
   if (r.script) return { tag: r.script, className: cx('folio-script', r.math && 'folio-math') };
   if (r.accent) return { tag: 'span', className: cx('folio-math folio-accent', r.tall && 'folio-accent-tall'), accent: SPACING[r.accent] ?? '' };
   if (r.math) return { tag: 'span', className: 'folio-math' };

@@ -10,7 +10,7 @@
 //   ... make-samples.ts --briefs <file.json> --out <dir> [names]
 // where the file is [{ "name", "brief", "attach"?: [absolute paths], "syllabus"?: title of the attached file that
 // is the syllabus, "policies"? }]; nothing is written again.
-import { MATERIAL_KINDS, CourseStore, cmd, orderedLessons, parseCourse, type Course, type GeneratedKind } from '@folio/core';
+import { MATERIAL_KINDS, CourseStore, OnlineSchema, cmd, orderedLessons, parseCourse, type Course, type Delivery, type GeneratedKind, type Online } from '@folio/core';
 import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, type BuildHost, type BuildTarget, type NewCourseRequest } from '@folio/ai';
 import { spawn } from 'node:child_process';
 import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
@@ -158,6 +158,8 @@ const POLICIES: Record<SampleName, string> = {
 const ATTACHED: Partial<Record<SampleName, string[]>> = { middle: ['article-for.md', 'article-against.md'], 'water-cycle': ['water-cycle-notes.md'] };
 
 interface Spec {
+  delivery?: Delivery;
+  online?: Partial<Online>;
   brief: string;
   attach: string[];
   policies: string;
@@ -167,7 +169,7 @@ interface Spec {
 /** A check-up's own briefs, when it gives a file of them. */
 const CHECKUP: Record<string, Spec> | null = option('--briefs')
   ? Object.fromEntries(
-      (JSON.parse(readFileSync(option('--briefs')!, 'utf8')) as (Partial<Spec> & { name: string; brief: string })[]).map((b) => [b.name, { brief: b.brief, attach: b.attach ?? [], policies: b.policies ?? '', syllabus: b.syllabus }]),
+      (JSON.parse(readFileSync(option('--briefs')!, 'utf8')) as (Partial<Spec> & { name: string; brief: string })[]).map((b) => [b.name, { brief: b.brief, attach: b.attach ?? [], policies: b.policies ?? '', syllabus: b.syllabus, delivery: b.delivery, online: b.online }]),
     )
   : null;
 
@@ -189,7 +191,7 @@ function attached(paths: string[]): { title: string; text: string }[] {
  * offers first, its most likely. The questions are kept beside the course, to be read as part of the check-up.
  */
 async function clarified(name: string, req: NewCourseRequest, spec: Spec): Promise<NewCourseRequest> {
-  const read = await clarifyCourse(inference, { brief: req.brief, sources: req.sources, language: req.language, locale: req.locale, level: req.level, lessonCount: req.lessonCount, defaultLessons: 4, sessions: req.sessions }).catch(() => null);
+  const read = await clarifyCourse(inference, { brief: req.brief, sources: req.sources, language: req.language, locale: req.locale, level: req.level, lessonCount: req.lessonCount, defaultLessons: 4, sessions: req.sessions, delivery: req.delivery }).catch(() => null);
   // The first answer that stands on its own: "I'll paste the list" promises something no one will then give.
   const answers = (read?.questions ?? []).map((q) => ({ question: q.question, answer: q.options.find((o) => !/^I(?:'|’)ll\b|^I will\b/i.test(o)) ?? q.options[0]! }));
   writeFileSync(join(OUT, `${name}.clarify.json`), JSON.stringify({ read, answers }, null, 1));
@@ -217,6 +219,7 @@ function requestFor(spec: Spec): NewCourseRequest {
     language: 'en',
     locale: 'en-US',
     materials: [...MATERIAL_KINDS],
+    ...(spec.delivery ? { delivery: spec.delivery, online: OnlineSchema.parse(spec.online ?? {}) } : {}),
     sources: attached(spec.attach),
   };
 }
@@ -286,7 +289,9 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
     }
     console.log(`${name}: outline "${store.getState().title}", ${orderedLessons(store.getState()).length} lessons`);
   }
-  for (let round = 0; round < 3 && missingTargets(store.getState()).length; round++) await build(name, store, missingTargets(store.getState()), failed);
+  // --lessons N writes only the first N lessons: a long course is tried a few weeks at a time, then carried on with --polish.
+  const first = option('--lessons') ? store.getState().lessonOrder.slice(0, Number(option('--lessons'))) : undefined;
+  for (let round = 0; round < 3 && missingTargets(store.getState(), first).length; round++) await build(name, store, missingTargets(store.getState(), first), failed);
   // A check-up keeps what a teacher would get: the review's notes stay, nothing is written again.
   for (let round = 0; round < 2 && !CHECKUP && flawed(store.getState()).length; round++) {
     console.log(`${name}: writing again ${flawed(store.getState()).length} parts`);
@@ -301,6 +306,6 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
 }
 
 const polishOnly = ARGS.includes('--polish');
-const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs'].includes(ARGS[i - 1] ?? ''));
+const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs', '--lessons'].includes(ARGS[i - 1] ?? ''));
 const asked = names.length ? names : Object.keys(CHECKUP ?? BRIEFS);
 await Promise.all(asked.map((name) => make(name, polishOnly)));

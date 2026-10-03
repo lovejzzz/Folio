@@ -81,6 +81,7 @@ function lineRuns(text: string, base: RunOptions, first: RunOptions = {}): PptxG
       ...base,
       ...(i === 0 ? first : {}),
       ...(r.code ? { fontFace: printFonts.mono, highlight: printPalette.well } : {}),
+      ...(r.bold ? { bold: true } : {}),
       ...(r.script === 'sub' ? { subscript: true } : r.script === 'sup' ? { superscript: true } : {}),
       ...(i === parts.length - 1 ? { breakLine: true } : {}),
     },

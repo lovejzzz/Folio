@@ -5,6 +5,7 @@ export * from './pricing';
 export * from './adapters';
 export * from './schemas';
 export * from './prompts';
+export * from './actionPrompts';
 export * from './jobs';
 export * from './sections';
 export * from './outline';

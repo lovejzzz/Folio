@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { SHAPE_LIMITS } from '@folio/core';
 import { en } from '../i18n/en';
-import { MAX_GUESSED_LESSONS, guessLessons, guessLevel, guessMinutes, guessQuizSize, guessSessions } from './brief';
+import { MAX_GUESSED_LESSONS, guessDelivery, guessLessons, guessLevel, guessMinutes, guessQuizSize, guessSessions } from './brief';
 
 describe('reading the brief for the chips', () => {
   it.each([
@@ -202,4 +202,20 @@ describe('guessSessions and guessLessons on briefs that misled them', () => {
     ['AP US History, full school year, 36 weeks, five 50-minute periods a week.', null],
     ['Two periods a week for 6 weeks', 12],
   ])('%s → %s lessons', (brief, n) => expect(guessLessons(brief)).toBe(n));
+});
+
+describe('weeks in a brief', () => {
+  it('never takes a week that owns something for the length of the course', () => {
+    expect(guessLessons("A 13-week seminar, one 3-hour meeting a week. Each student presents one week's readings.")).toBe(13);
+    expect(guessLessons('Two classes a week for six weeks; each week’s quiz is on Friday.')).toBe(12);
+  });
+});
+
+describe('how the course meets', () => {
+  it('reads a course with no set meeting time from the brief, and nothing from "online" alone', () => {
+    expect(guessDelivery('A 14-week asynchronous online course for undergraduates')).toBe('online-async');
+    expect(guessDelivery('Self-paced online course on statistics, no live sessions')).toBe('online-async');
+    expect(guessDelivery('Online course meeting on Zoom twice a week')).toBe('inperson');
+    expect(guessDelivery('Eight 50-minute lessons on ratios')).toBe('inperson');
+  });
 });

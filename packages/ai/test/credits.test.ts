@@ -31,7 +31,8 @@ describe('with Folio credits', () => {
     expect([0, 1, 2, 3].map(cap)).toEqual([FOLIO_OUTPUT_CAPS.folio_plan, FOLIO_OUTPUT_CAPS.folio_study, 32000, FOLIO_OUTPUT_CAPS.folio_plan_review]);
     // A job without its own cap keeps the adapter's.
     expect(cap(4)).toBe(16000);
-    expect(Math.max(...Object.values(FOLIO_OUTPUT_CAPS))).toBeLessThanOrEqual(12000);
+    // The longest is an online week's module page.
+    expect(Math.max(...Object.values(FOLIO_OUTPUT_CAPS))).toBeLessThanOrEqual(16000);
   });
 
   it('an answer cut off at its cap is written again with all the room there is, never kept incomplete', async () => {
