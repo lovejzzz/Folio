@@ -151,6 +151,20 @@ describe('steps toward one larger piece', () => {
   });
 });
 
+describe('a graded piece of the whole course', () => {
+  it('is written knowing what the lessons before it did', async () => {
+    const store = new CourseStore(smallCourse());
+    const [first, second] = orderedLessons(store.getState());
+    store.apply([cmd('lesson.homework', { lessonId: first!.id, homework: { kind: 'none', toward: '' } }), cmd('lesson.homework', { lessonId: second!.id, homework: { kind: 'assignment', toward: 'Final essay' } })], { label: { key: 'b' }, source: 'teacher' });
+    const planned = await generateSection(fakeInference(() => planDraft), store.getState(), first!.id, 'plan');
+    store.apply(planned.commands, { label: { key: 'b' }, source: 'ai' });
+    const prompt = sectionPrompt(store.getState(), store.getState().lessons[second!.id]!, 'assignments');
+    expect(prompt).toContain('The lessons before this one:');
+    expect(prompt).toContain('Leaf in the dark');
+    expect(prompt).toContain('asks for nothing the course never gave them');
+  });
+});
+
 describe('homework changed mid-build', () => {
   it('writes no assignment for a lesson set to no homework after the build began', async () => {
     const store = new CourseStore(smallCourse());

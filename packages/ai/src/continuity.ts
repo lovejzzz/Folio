@@ -26,19 +26,34 @@ function lessonDigest(lesson: Lesson): string {
   return [`"${lesson.title}"`, ideas && ` Key ideas:\n${ideas}`, terms && ` Terms: ${terms}`, flow && ` What students did:\n${flow}`].filter(Boolean).join('\n');
 }
 
-/** The lessons before this one that are already planned, nearest last, within the budget. */
-export function earlierLessons(course: Course, lesson: Lesson): string {
+/** The planned lessons before this one, nearest last, within the budget. */
+function digests(course: Course, lesson: Lesson, budget: number): string {
   const before = orderedLessons(course).slice(0, course.lessonOrder.indexOf(lesson.id)).filter((l) => l.segments.length);
   const kept: string[] = [];
   let used = 0;
   for (const l of before.reverse()) {
     const digest = lessonDigest(l);
-    if (used + digest.length > EARLIER_BUDGET) break;
+    if (used + digest.length > budget) break;
     kept.unshift(digest);
     used += digest.length;
   }
-  if (!kept.length) return '';
-  return `The lessons before this one, as already planned:\n${kept.join('\n\n')}\n\nThis lesson follows them: use the same names, terms, stages, examples and classroom setups, build on what they taught rather than teaching it again differently or presenting it as new, and when something they started goes on in this lesson (an experiment, a project, a class chart), continue it as they set it up and finish what they left for this lesson (a result to measure, work to hand back), on a realistic timeline for how often the class meets (seeds take days to sprout, paint hours to dry). Under vocabulary, list only the terms this lesson introduces: the terms above are already taught, and when this lesson uses them it keeps their meaning.`;
+  return kept.join('\n\n');
+}
+
+/**
+ * What a graded piece of the whole course can draw on. Shown only its own lesson, a final essay asked for
+ * "three named documents from the course packet" when no lesson had handed out a packet.
+ */
+export function courseSoFar(course: Course, lesson: Lesson): string {
+  const kept = digests(course, lesson, EARLIER_BUDGET / 2);
+  return kept ? `The lessons before this one:\n${kept}\n\nThe assignment draws on what students really did and were given in these lessons, named as the lessons name it, and asks for nothing the course never gave them.` : '';
+}
+
+/** The lessons before this one that are already planned, for the plan that follows them. */
+export function earlierLessons(course: Course, lesson: Lesson): string {
+  const kept = digests(course, lesson, EARLIER_BUDGET);
+  if (!kept) return '';
+  return `The lessons before this one, as already planned:\n${kept}\n\nThis lesson follows them: use the same names, terms, stages, examples and classroom setups, build on what they taught rather than teaching it again differently or presenting it as new, and when something they started goes on in this lesson (an experiment, a project, a class chart), continue it as they set it up and finish what they left for this lesson (a result to measure, work to hand back), on a realistic timeline for how often the class meets (seeds take days to sprout, paint hours to dry). Under vocabulary, list only the terms this lesson introduces: the terms above are already taught, and when this lesson uses them it keeps their meaning.`;
 }
 
 /**

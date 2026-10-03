@@ -1,5 +1,5 @@
 import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
-import { earlierLessons, earlierNotes, earlierSteps, homeworkLine, sharedComponent } from './continuity';
+import { courseSoFar, earlierLessons, earlierNotes, earlierSteps, homeworkLine, sharedComponent } from './continuity';
 import { trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 
@@ -327,6 +327,8 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     if (plan) parts.push(`${plan}\n\n${kind === 'quiz' || kind === 'assignments' ? FOLLOW_PLAN_NEW_ITEMS : FOLLOW_PLAN}`);
   }
   if (kind === 'plan') parts.push(earlierLessons(course, lesson), earlierNotes(lesson));
+  // A graded piece of its own, not one of a weekly run: it is written from the course, not from one lesson.
+  if (kind === 'assignments' && lesson.homework.kind === 'assignment' && lesson.homework.toward.trim() && !sharedComponent(course, lesson)) parts.push(courseSoFar(course, lesson));
   if ((kind === 'plan' || kind === 'quiz') && course.sourceOrder.length) {
     parts.push(
       kind === 'quiz'
