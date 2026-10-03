@@ -90,6 +90,47 @@ function outline(prompt: string) {
   };
 }
 
+const START_HERE = {
+  welcome: 'Welcome. In three weeks you will explain how a plant makes its food.',
+  firstSteps: ['Read this page', 'Introduce yourself in the forum'],
+  rhythm: [{ when: 'Monday', what: 'The week opens.' }, { when: 'Sunday night', what: 'Everything is due.' }],
+  need: [{ item: 'A notebook', detail: 'Any kind; nothing to buy.' }],
+  grading: [{ item: 'Lab notebook', how: 'Three entries, one a week, each a third of its share.' }],
+  help: 'Ask in the Q&A forum, and say what you tried.',
+  instructor: ['An announcement every Monday', 'Answers in the forum within one working day'],
+  toAdd: ['Your name and how to reach you', 'Your late-work policy'],
+};
+
+/** A week of an online course as the fake writes it: nine hours of work, steps with a picture, a checkpoint and a clip. */
+function modulePage(title: string) {
+  return {
+    keyIdeas: [`${title} starts with light energy.`, 'Chlorophyll absorbs red and blue light.'],
+    intro: `This week you find out about ${title.toLowerCase()}, and draw a leaf of your own.`,
+    checklist: [
+      { label: 'Read the page and follow the steps', activity: 'build', minutes: 240 },
+      { label: 'Take the self-check', activity: 'check', minutes: 60 },
+      { label: 'Post in the forum', activity: 'discuss', minutes: 60, due: 'Thursday' },
+      { label: 'Submit your diagram', activity: 'submit', minutes: 180, due: 'Sunday' },
+    ],
+    parts: [
+      {
+        title: 'Draw the leaf',
+        blocks: [
+          { type: 'text', text: 'A diagram shows where the light goes in.' },
+          { type: 'steps', items: ['Open your notebook to a **new page**.', 'Draw a leaf and label the stomata.'], shots: [{ step: 2, shows: 'A hand-drawn leaf with the stomata labelled', alt: 'A leaf drawn in pencil, with arrows to the stomata on its underside.' }] },
+          { type: 'video', kind: 'clip', shows: 'A leaf turning toward a lamp over a day, sped up', alt: 'The leaf turns slowly until it faces the lamp.', minutes: 0.3 },
+          { type: 'callout', kind: 'checkpoint', text: 'You should see a leaf with its stomata labelled on the underside. It went wrong if the labels point at the veins.' },
+          { type: 'code', kind: 'text', text: 'carbon dioxide + water -> glucose + oxygen' },
+        ],
+      },
+      { title: 'Try it yourself', blocks: [{ type: 'text', text: 'Draw a second leaf kept in the dark and say how it differs.' }] },
+    ],
+    wrapUp: 'You can now say where a plant takes in light. Next week: the chloroplast.',
+    vocabulary: [{ term: 'Chlorophyll', definition: 'The green pigment that absorbs light.' }],
+    facilitation: { announcement: 'Welcome to the week.', watchFor: ['Stomata drawn on top of the leaf', 'No labels'], feedback: ['Your labels are clear: now add the arrows.', 'Check which side the stomata are on.'], atRisk: 'Message anyone who has not posted by Thursday.' },
+  };
+}
+
 /** ⌘K plans. Some requests get steps that can't be done, as a real model sometimes proposes. */
 function coursePlan(prompt: string) {
   const request = prompt.match(/The teacher asks: """([^"]*)"""/)?.[1] ?? '';
@@ -112,6 +153,12 @@ function answerFor(body: Body): unknown {
   if (prompt.includes('A teacher attached this syllabus'))
     return { issues: [{ kind: 'error', where: 'Grading', problem: 'The weights add up to 90%, not 100%.', fix: 'Give the final exam 30%.' }] };
   if (prompt.includes('Plan exactly') || prompt.includes('Plan one lesson for each class meeting')) return outline(prompt);
+  // An online course's week: the page a student follows, its second read, and the course's Start here page.
+  if (prompt.includes('Read this page as the student will')) return { issues: [] };
+  if (prompt.includes('Write the "Start here" page')) return START_HERE;
+  if (prompt.includes("Write this week's module page")) return modulePage(title);
+  if (prompt.includes("week's discussion forum")) return { discussions: [{ prompt: 'Post a screenshot of your leaf diagram and say what surprised you.', followUps: ['What would you change?'] }] };
+  if (prompt.includes('"Stuck?" list')) return { entries: [{ question: 'My diagram will not upload. What do I do?', answer: 'Save it as a PNG and try again; then ask in the Q&A forum.' }] };
   if (prompt.includes('Write the lesson plan'))
     return {
       keyIdeas: [`${title} starts with light energy.`, 'Chlorophyll absorbs red and blue light.'],
