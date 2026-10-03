@@ -1,5 +1,84 @@
 [
   {
+    "version": "0.0.3",
+    "date": "October 3, 2026",
+    "title": "Seven sample courses, and courses with labs, code and languages",
+    "lede": "Four more sample courses to explore, and fixes from check-ups of a ratios unit, a Spanish course and a statistics course taught with R. Two of them were plain bugs that would have broken a real class.",
+    "sections": [
+      {
+        "heading": "Seven sample courses, by stage",
+        "body": "The sample chooser now groups courses by stage, with four new ones. Like the first three, each was written by Folio from a teacher’s brief, then read lesson by lesson and corrected.",
+        "bullets": [
+          "The water cycle, grade 5: five lessons built from a teacher’s own planning notes, with supports for struggling readers and a Spanish-speaking newcomer in every lesson.",
+          "Ratios and rates, grade 6: eight lessons with no homework, assessed by two in-class quizzes and a unit test with a full mark scheme.",
+          "Stoichiometry, grade 10: ten lessons with two labs, four problem sets with answer keys, and a unit test.",
+          "Reconstruction, 1865–1877, grade 11: eight lessons on named primary sources, a Socratic seminar and a document-based essay."
+        ],
+        "image": {
+          "src": "/changelog/0.0.3-chooser.webp",
+          "alt": "The sample chooser with seven courses under elementary, middle, high school and university",
+          "width": 1600,
+          "height": 1000
+        }
+      },
+      {
+        "heading": "A lab unit you could run",
+        "body": "The chemistry sample shows what the lab fixes add up to: quantities for a whole class, goggles, gloves and ventilation, a warning about the heat a reaction gives off, what to do for a splash in the eye, and how to dispose of the waste. The copper left to dry in one lesson is weighed in the next, and every problem set has new problems and an answer key.",
+        "image": {
+          "src": "/changelog/0.0.3-lab.webp",
+          "alt": "A chemistry lab lesson: predicting the limiting reactant before reacting aluminum with copper chloride",
+          "width": 1600,
+          "height": 1000
+        }
+      },
+      {
+        "heading": "History from the documents",
+        "body": "The Reconstruction sample names every source students read, down to the passage, and tells you to prepare copies. Its essay lists the documents the unit actually used, its seminar has scoring a whole class can reach, and every exit ticket has its question and a simple score. Painful material comes with guidance: slurs are never read aloud, and no one plays a victim or an attacker.",
+        "image": {
+          "src": "/changelog/0.0.3-history.webp",
+          "alt": "The map of the Reconstruction unit: eight lessons with plans, slides, study guides, quizzes and the essay",
+          "width": 1600,
+          "height": 1000
+        }
+      },
+      {
+        "heading": "Code stays code",
+        "body": "Folio tidies quotation marks into curly ones. It was doing that inside code too, so every line of R with text in it failed when a student pasted it. Code is now left exactly as written. In our statistics course, 607 pieces of code, none changed.",
+        "compare": {
+          "before": "`c(‘name1', ‘name2')`",
+          "after": "`c('name1', 'name2')`"
+        }
+      },
+      {
+        "heading": "“A lecture and a computer lab” is two meetings",
+        "body": "A brief that asked for “a 75-minute lecture and a 50-minute computer lab” each week got lectures only: the lab was missed because of the word “computer” in between. Folio now reads it as two meetings and plans both.",
+        "compare": {
+          "before": "Each week: one 75-minute lecture, with students somehow at computers.",
+          "after": "Each week: a 75-minute lecture and a 50-minute lab, each with its own plan."
+        }
+      },
+      {
+        "heading": "A language course speaks the language",
+        "body": "Discussion prompts in a Spanish course were English debates about Spanish. They now get students using the language at their level. A lesson that teaches many words can also list all of them, not just eight.",
+        "compare": {
+          "before": "“A friend says, ‘Using usted is old-fashioned. We should just use tú with everyone.’ Do you agree?”",
+          "after": "“Imagina que tu compañero te pregunta: ¿Cómo estás? Hoy no te sientes ni bien ni mal. ¿Dices Regular o Bien?”"
+        }
+      },
+      {
+        "heading": "Also in this release",
+        "bullets": [
+          "The class policies in your syllabus (late work, integrity, accommodations) are carried into the course.",
+          "A quiz or test has points for each question, enough time, and nothing left on the board that answers it.",
+          "A lesson’s graded quiz is the lesson’s own quiz, not a second set of questions.",
+          "The close of a lesson tells students what is coming next, including a quiz, and what to read.",
+          "A project due weeks after it is set asks for what the lessons up to then teach.",
+          "A weekly problem set repeats none of the last one’s problems."
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.0.2",
     "date": "October 3, 2026",
     "title": "A second read that changes the plan, and homework that is new work",
