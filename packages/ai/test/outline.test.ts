@@ -59,6 +59,9 @@ describe('the outline', () => {
     expect(first!.homework.due).toBe(second!.id);
     expect(sectionPrompt(course, first!, 'plan')).toContain('It is due at the start of the next lesson.');
     expect(sectionPrompt(course, second!, 'plan')).toContain(`Due at the start of this lesson: "Final essay" (set in "${first!.title}"). The plan collects it.`);
+    // A step is collected as a step, not as the piece it leads to.
+    const stepped = { ...course, lessons: { ...course.lessons, [first!.id]: { ...first!, homework: { ...first!.homework, kind: 'step' as const } } } };
+    expect(sectionPrompt(stepped, second!, 'plan')).toContain(`Due at the start of this lesson: the short step (set in "${first!.title}", an ungraded step).`);
     // A due lesson that isn't later is no due date at all.
     const back = courseFromOutline(req, OutlineDraft.parse({ ...draft, lessons: [{ ...draft.lessons[0], homeworkDue: 1 }, draft.lessons[1]] }));
     expect(orderedLessons(back)[0]!.homework.due).toBeUndefined();

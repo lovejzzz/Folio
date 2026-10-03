@@ -9,7 +9,7 @@ const KB = 1024;
 // when a PDF is dropped in, so the first load is unchanged; the budgets make room for it and no more.
 // The first load's CSS blocks the first paint: it once carried 31 KB of font rules for a face no page needed.
 // Total JS is everything a visitor could ever load, most of it on demand; the first load keeps its own, strict budget.
-// It was raised from 3.5 to 3.75 MB (v0.0.5) for tests, answer keys and due dates.
+// It was raised from 3.5 to 3.75 MB in version 0.0.5, for tests, answer keys and due dates.
 // The sample courses and the changelog's pictures are content, fetched only when opened: each has its own budget,
 // apart from the app's.
 const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 3.75 * KB * KB, dist: 10 * KB * KB, samples: 3 * KB * KB, changelog: 4 * KB * KB };

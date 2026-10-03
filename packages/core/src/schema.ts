@@ -40,7 +40,7 @@ export type Origin = z.infer<typeof OriginSchema>;
 export const ObjectiveSchema = z.object({ id, text });
 export type Objective = z.infer<typeof ObjectiveSchema>;
 
-export const SegmentKindSchema = z.enum(['warmup', 'teach', 'practice', 'discuss', 'check', 'close']);
+export const SegmentKindSchema = z.enum(['warmup', 'teach', 'practice', 'discuss', 'check', 'break', 'close']);
 export type SegmentKind = z.infer<typeof SegmentKindSchema>;
 
 /**

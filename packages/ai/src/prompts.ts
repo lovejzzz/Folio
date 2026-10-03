@@ -185,6 +185,8 @@ export function lessonContext(course: Course, lesson: Lesson): string {
   const objectives = statedObjectives(course, lesson)
     .map((o, i) => `${i + 1}. ${o.text}`)
     .join('\n');
+  // A brief that asks for readings and names only authors left most weeks of a doctoral seminar with nothing to read.
+  const proposed = filledTexts(lesson.suggestedReadings).map((r) => `- ${r}`).join('\n');
   const readings = filledTexts(lesson.readings)
     .map((r) => `- ${r}`)
     .join('\n');
@@ -194,7 +196,7 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     `This is the lesson "${lesson.title}". ${lesson.summary} Refer to other lessons as "last time" (only the lesson just before), "earlier in the course", "next time" or "later in the course", never by title or number.`,
     objectives ? `Its objectives:\n${objectives}` : '',
     homeworkLine(course, lesson),
-    readings ? `Students read before this lesson:\n${readings}` : '',
+    readings ? `Students read before this lesson:\n${readings}` : proposed ? `No reading is assigned yet. Proposed, for the teacher to confirm (plan from these, naming them in full):\n${proposed}` : '',
   ]
     .filter(Boolean)
     .join('\n\n');
@@ -252,7 +254,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
     [
       `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need (up to eight terms; in a course that teaches a language, every word and phrase the lesson teaches, each with its meaning). Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
       'Plan only what can really happen in the time, place and with the materials the lesson has. Whatever students are to see, make or finish in a segment has to be possible within that segment\'s minutes; when something takes longer, such as a process that needs hours or days to show a result, plan around it (start it earlier, use results prepared in advance, or come back to it later) and say how in the teacher notes. The slides, quiz and study guide are written from this plan and take everything in it as having happened.',
-      c.shape.minutesPerLesson >= 120 && !lessonSessions(c).length ? 'A meeting this long has a break of about ten minutes near its middle, as a segment of its own.' : '',
+      c.shape.minutesPerLesson >= 120 && lessonSessions(c).length < 2 ? 'A meeting this long has a break of about ten minutes near its middle, as a segment of kind "break".' : '',
       'What the brief says of particular students (a newcomer, heritage speakers, students who need support) shapes the plan where it matters, with something for their own learning; it is not repeated in every segment.',
       'In the teacher notes, give the safety precautions a careful teacher would take with what students handle, taste, heat, cut or mix (protective gear, ventilation, heat a reaction gives off, disposal, allergies, materials that must never be eaten); these are outside the word limit of the notes, and where nothing needs guarding against, nothing is said. Code the teacher demonstrates or hands out (worked code, starter code, tests) is written out in full in the notes, each line in its own backticks, also outside the word limit. Where the material is painful (violence, racism, abuse, the language of period sources), say how to handle it with care, and never have students play the people who suffered or inflicted it.',
       `A piece graded in the lesson is never modelled with the very case students then hand in. ${gradedPapers(c, lesson)} Nothing in these instructions is repeated in the plan as advice to the teacher.`,
@@ -300,7 +302,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
 /** The segments to write: one run for a lesson that meets once, a run per session otherwise. */
 function planRun(course: Course): string {
   const sessions = lessonSessions(course);
-  const kinds = 'warm-up, teaching, practice, discussion, check, close as fits';
+  const kinds = 'warm-up, teaching, practice, discussion, check, break, close as fits';
   if (sessions.length < 2) return `a sequence of segments (${kinds}) whose minutes add up to ${course.shape.minutesPerLesson}`;
   const each = sessions.map((s, i) => `${i + 1} for the ${SESSION_NAMES[s.kind]} (${s.minutes} minutes)`).join(', ');
   return `a sequence of segments (${kinds}) for each session in turn, with "session" set to ${each}; each session's minutes add up to its length`;

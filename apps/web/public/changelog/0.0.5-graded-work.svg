@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .tint { fill: #EDF0FC } .new { fill: #2B46C4 } .newt { fill: #FFFFFF } .rule { stroke: #CFC8B9 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .tint { fill: #23284A } .new { fill: #8FA3FF } .newt { fill: #11152E } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="360" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">THE GRADED WORK A LESSON CAN HOLD</text>
+
+  <g font-size="14">
+    <rect class="card" x="36" y="64" width="172" height="212" rx="14"/>
+    <text class="ink" x="54" y="96" font-size="16" font-weight="600">Assignment</text>
+    <text class="ink2" x="54" y="118" font-size="13">done outside class</text>
+    <line class="rule" x1="54" y1="132" x2="190" y2="132"/>
+    <text class="ink2" x="54" y="156">Instructions, steps</text>
+    <text class="ink2" x="54" y="178">Rubric</text>
+    <text class="acc" x="54" y="200" font-weight="600">Answer key</text>
+    <text class="acc" x="54" y="222" font-weight="600">Due lesson</text>
+
+    <rect class="card" x="220" y="64" width="172" height="212" rx="14"/>
+    <text class="ink" x="238" y="96" font-size="16" font-weight="600">A step</text>
+    <text class="ink2" x="238" y="118" font-size="13">toward a bigger piece</text>
+    <line class="rule" x1="238" y1="132" x2="374" y2="132"/>
+    <text class="ink2" x="238" y="156">Short, ungraded</text>
+    <text class="ink2" x="238" y="178">Builds on the last step</text>
+    <text class="acc" x="238" y="200" font-weight="600">Due lesson</text>
+
+    <rect class="tint" x="404" y="64" width="172" height="212" rx="14"/>
+    <rect class="new" x="514" y="76" width="48" height="20" rx="10"/><text class="newt" x="538" y="90" font-size="11" font-weight="700" text-anchor="middle">NEW</text>
+    <text class="ink" x="422" y="96" font-size="16" font-weight="600">Test</text>
+    <text class="ink2" x="422" y="118" font-size="13">quiz, test or exam</text>
+    <line class="rule" x1="422" y1="132" x2="558" y2="132"/>
+    <text class="ink2" x="422" y="156">A paper to print</text>
+    <text class="ink2" x="422" y="178">Points per question</text>
+    <text class="ink2" x="422" y="200">Answer key</text>
+    <text class="ink2" x="422" y="222">Time and conditions</text>
+    <text class="ink2" x="422" y="244">in the lesson plan</text>
+
+    <rect class="tint" x="588" y="64" width="176" height="212" rx="14"/>
+    <rect class="new" x="702" y="76" width="48" height="20" rx="10"/><text class="newt" x="726" y="90" font-size="11" font-weight="700" text-anchor="middle">NEW</text>
+    <text class="ink" x="606" y="96" font-size="16" font-weight="600">In class</text>
+    <text class="ink2" x="606" y="118" font-size="13">graded with a rubric</text>
+    <line class="rule" x1="606" y1="132" x2="746" y2="132"/>
+    <text class="ink2" x="606" y="156">Presentation, seminar,</text>
+    <text class="ink2" x="606" y="178">interview, studio work</text>
+    <text class="ink2" x="606" y="200">Rubric</text>
+    <text class="ink2" x="606" y="222">How to run and score</text>
+    <text class="ink2" x="606" y="244">it for a whole class</text>
+  </g>
+  <text class="ink2" x="400" y="318" font-size="13" text-anchor="middle">Answer keys and scoring notes are for the teacher: a student copy never carries them.</text>
+</svg>

@@ -130,14 +130,20 @@ export function dueWords(course: Course, lesson: Lesson): string {
   const due = lesson.homework.due ? course.lessons[lesson.homework.due] : undefined;
   const gap = due ? course.lessonOrder.indexOf(due.id) - course.lessonOrder.indexOf(lesson.id) : 0;
   if (!due || gap < 1) return '';
-  return gap === 1 ? 'It is due at the start of the next lesson.' : `It is due at the start of the lesson "${due.title}", ${gap} lessons from now.`;
+  // Said as a count, not a title: students were told to "submit it at the start of Research ethics and the IRB".
+  return gap === 1 ? 'It is due at the start of the next lesson.' : `It is due ${gap} lessons from now, at the start of that lesson (the one on "${due.title}"); students are told when in those words, never by the lesson's title.`;
 }
 
 export function homeworkLine(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   const collected = orderedLessons(course)
     .filter((l) => l.homework.due === lesson.id && l.id !== lesson.id)
-    .map((l) => (l.homework.toward.trim() ? `"${l.homework.toward.trim()}" (set in "${l.title}")` : `the work set in "${l.title}"`));
+    .map((l) => {
+      // By what was actually set: named by what it counts toward, a step's due day collected the whole paper.
+      const set = l.taskIds.map((id) => course.tasks[id]).find((t) => t?.kind === 'assignment');
+      const what = set?.kind === 'assignment' ? `"${set.title}"` : l.homework.kind === 'step' ? 'the short step' : `"${l.homework.toward.trim() || 'the assignment'}"`;
+      return `${what} (set in "${l.title}"${l.homework.kind === 'step' ? ', an ungraded step' : ''})`;
+    });
   // Set, due and collected were three guesses: one piece had two due dates and a close that said "give its due date".
   const due = collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan collects it.` : '';
   if (lesson.homework.kind === 'none') return `This lesson sets no homework.${due}`;
@@ -147,7 +153,7 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
   if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done and graded in class with a rubric written separately: the plan runs it, with time for every student, and writes no criteria.${due}`;
   const set = `which the plan has the teacher set before students leave, naming it and when it is due, without spelling out its tasks or naming files and handouts it may not have. ${dueWords(course, lesson)}`.trim();
   if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}${due}`;
-  return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}"` : ''}, ${set}${due}`;
+  return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}" (the plan calls it by that name, not one of its own)` : ''}, ${set}${due}`;
 }
 
 /**

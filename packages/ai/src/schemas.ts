@@ -60,7 +60,7 @@ export const PlanDraft = z.object({
   segments: z
     .array(
       z.object({
-        kind: z.enum(['warmup', 'teach', 'practice', 'discuss', 'check', 'close']),
+        kind: z.enum(['warmup', 'teach', 'practice', 'discuss', 'check', 'break', 'close']),
         session: z.number().int().min(1).default(1).describe('Which of the lesson\'s sessions it belongs to, counted from 1; always 1 when the lesson meets once'),
         title: line,
         minutes: z.number().int().min(1),

@@ -50,7 +50,7 @@ export function testAsk(lesson: Lesson): string {
 
 /** How university teaching differs from school, said once in the course background. */
 export const UNIVERSITY_TEACHING =
-  'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. A seminar runs on discussion of the reading: keep the instructor\'s exposition short and let students lead. Leave out school routines such as warm-up games, exit tickets or reading aloud in turn, unless the brief or syllabus asks for them.';
+  'This is university teaching for adult students: lectures, seminars and problem classes. Build sessions around close reading, argument, worked problems and student-led discussion, and pitch the vocabulary at the discipline. A seminar runs on discussion of the reading: keep the instructor\'s exposition short and let students lead. Leave out school routines such as warm-up games, exit tickets or reading aloud in turn, unless the brief or syllabus asks for them. A graduate or doctoral seminar is run by its students: a presentation of the reading, discussion they lead, the instructor\'s synthesis and pressure on the argument; no sorting tasks against a key, no recall questions, no vocabulary for beginners.';
 
 /**
  * Graded papers held in a lesson. A test is written out in the plan, since no other material holds it; a short

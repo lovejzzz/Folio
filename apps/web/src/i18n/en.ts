@@ -336,6 +336,7 @@ export const en = {
       practice: 'Practice',
       discuss: 'Discuss',
       check: 'Check',
+      break: 'Break',
       close: 'Close',
     },
     overview: 'Summary',
