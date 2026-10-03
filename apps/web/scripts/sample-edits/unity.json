@@ -642,6 +642,13 @@
  },
  {
   "lesson": 3,
+  "find": "6, 1, 5",
+  "replace": "8, 1, -8",
+  "all": true,
+  "why": "At 6, 1, 5 the graded cube touches the spot where week 4 puts the Ball."
+ },
+ {
+  "lesson": 3,
   "settle": "*",
   "why": "The page was followed in Unity: the code compiles, the three errors read as printed, and the numbers hold."
  },
@@ -785,6 +792,29 @@
   "find": "The Ball stays near the middle of the Game view wherever you drive it.",
   "replace": "The Ball stays near the middle of the Game view wherever you drive it. Right beside the near wall, the wall can hide the Ball for a moment: drive forward and it comes back into view.",
   "why": "Seen when following the page: the camera sits behind a wall taller than the Ball."
+ },
+ {
+  "lesson": 4,
+  "find": "different from 0, 6, -9. Save Arena.",
+  "replace": "different from 0, 6, -9. Save Arena. Later weeks work with your values; if you would rather go back, the page’s were Force 20, Linear Damping 1 and Offset 0, 6, -9.",
+  "why": "The graded build changes values the page set."
+ },
+ {
+  "lesson": 4,
+  "find": "Upload a screenshot showing the Game view and your settings, plus",
+  "replace": "Upload two screenshots, one of the Ball’s Inspector showing Force and Linear Damping and one of Main Camera’s showing Offset, plus",
+  "why": "The settings are on two objects, so one picture cannot show them."
+ },
+ {
+  "lesson": 4,
+  "find": "Upload a screenshot and a short screen recording to the LMS",
+  "replace": "Upload two screenshots of your settings and a short screen recording to the LMS",
+  "why": "As above."
+ },
+ {
+  "lesson": 4,
+  "settle": "*",
+  "why": "The page was followed step by step in Unity."
  },
  {
   "lesson": 5,
