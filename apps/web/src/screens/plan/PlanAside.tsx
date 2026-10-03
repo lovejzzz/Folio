@@ -9,6 +9,7 @@ import { readyToBuild, startBuild } from '../../state/build';
 import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
 import { CreditsNote } from './CreditsNote';
+import { OnlineShape } from './OnlineShape';
 import { Sessions } from './Sessions';
 
 /**
@@ -82,7 +83,9 @@ function Shape() {
     <div className="space-y-3">
       {/* The range always includes the real count, so the field never shows a number of lessons that isn't there. */}
       <NumberStepper label={t.plan.lessonsCount} minValue={Math.min(lessons.min, count)} maxValue={Math.max(lessons.max, count)} value={count} onChange={setCount} />
-      <Sessions />
+      {/* A course with no meetings has no meeting length: its weeks are counted in hours of student work. */}
+      {course.delivery !== 'online-async' && <Sessions />}
+      <OnlineShape />
       <NumberStepper label={t.plan.quizSize} minValue={quiz.min} maxValue={quiz.max} value={course.shape.quizSize} onChange={(v) => Number.isFinite(v) && shape({ quizSize: v })} />
     </div>
   );

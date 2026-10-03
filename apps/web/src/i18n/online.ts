@@ -12,4 +12,5 @@ export const onlineEn: Messages = {
   materialInline: { ...en.materialInline, plan: 'module page', quiz: 'self-check', discussions: 'forum prompt', study: 'recap', faq: 'Stuck? list' },
   common: { ...en.common, lesson: (n: number) => `Week ${n}`, lessons: (n: number) => (n === 1 ? '1 week' : `${n} weeks`) },
   map: { ...en.map, lessonColumn: 'Week' },
+  plan: { ...en.plan, lessonsCount: 'Weeks', quizSize: 'Questions per self-check' },
 };
