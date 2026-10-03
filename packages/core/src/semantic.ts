@@ -17,6 +17,8 @@ export type Block =
   | { t: 'table'; head: string[]; rows: string[][]; widths?: number[] }
   | { t: 'terms'; items: { term: string; definition: string }[] }
   | { t: 'note'; label: string; text: string }
+  /** A picture of a module page, once it is made. Print shows it; a Word file gives its caption and what it shows. */
+  | { t: 'image'; src: string; alt: string; caption: string }
   | {
       t: 'question';
       n: number;

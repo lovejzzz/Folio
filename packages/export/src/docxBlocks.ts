@@ -253,6 +253,9 @@ export function renderBlock(ctx: BlockCtx, block: Block): DocxChild[] {
       return terms(ctx, block.items);
     case 'note':
       return [...note(ctx, block.label, block.text), spacer()];
+    case 'image':
+      // In words: a Word file carries no picture of its own, so it says what the picture shows.
+      return [para(ctx, [block.caption, block.alt].filter(Boolean).join(': '), 'muted')];
     case 'question':
       return question(ctx, block);
     case 'slide':

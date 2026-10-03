@@ -21,12 +21,16 @@ function blockView(ctx: Ctx, b: PageBlock): Block[] {
       return [{ t: 'list', ordered: b.ordered, items: b.items }];
     case 'steps':
       // A picture that is not on the page is said in words: what a student who can't see it reads.
-      return [{ t: 'list', ordered: true, items: b.items.map((s) => (s.shot?.alt ? `${s.text}\n(${m.picture}: ${s.shot.alt})` : s.text)) }];
+      return [
+        { t: 'list', ordered: true, items: b.items.map((s) => (s.shot?.alt && !s.shot.src ? `${s.text}\n(${m.picture}: ${s.shot.alt})` : s.text)) },
+        ...b.items.flatMap((s, i) => (s.shot?.src ? [{ t: 'image' as const, src: s.shot.src, alt: s.shot.alt, caption: s.shot.caption || `${ctx.l.steps} ${i + 1}` }] : [])),
+      ];
     case 'callout':
       return [{ t: 'note', label: b.title ? `${m.callouts[b.kind]}: ${b.title}` : m.callouts[b.kind], text: b.text }];
     case 'code':
       return [{ t: 'para', text: codeLines(b.code) }];
     case 'image':
+      if (b.src) return [{ t: 'image', src: b.src, alt: b.alt, caption: b.caption }];
       return [{ t: 'para', tone: 'muted', text: `${m.picture}: ${b.alt || b.shows}${b.caption ? `\n${b.caption}` : ''}` }];
     case 'video':
       return [{ t: 'para', tone: 'muted', text: `${m.video(b.minutes)}: ${b.caption || b.shows}` }, ...(b.transcript.trim() ? [{ t: 'note' as const, label: m.transcript, text: b.transcript }] : [])];

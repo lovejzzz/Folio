@@ -187,6 +187,13 @@ function BlockView({ b, lang, top }: { b: Block; lang: string; top: number }) {
           <InlineText text={b.text} />
         </div>
       );
+    case 'image':
+      return (
+        <figure className="mod-figure avoid-break my-4">
+          <img src={b.src} alt={b.alt} loading="lazy" />
+          {b.caption && <figcaption>{b.caption}</figcaption>}
+        </figure>
+      );
     case 'question':
       return <QuestionBlock b={b} />;
     case 'slide':
