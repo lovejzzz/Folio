@@ -31,7 +31,8 @@
     font-size: var(--text-13);
     color: var(--folio-ink-2);
   }
-  .mod-checklist-head strong {
+  .mod-checklist-head h4 {
+    font-weight: 600;
     font-size: var(--text-14);
     color: var(--folio-ink);
   }
@@ -155,7 +156,7 @@
     --tone: var(--folio-critical);
   }
   .mod-callout[data-kind='version'] {
-    --tone: var(--folio-field);
+    --tone: var(--folio-ink-2);
   }
   .mod-callout-head {
     display: flex;
@@ -202,6 +203,22 @@
   .mod-figure {
     display: grid;
     gap: 0.5rem;
+  }
+  .mod-figure a {
+    display: block;
+    cursor: zoom-in;
+  }
+  .mod-objectives {
+    font-family: var(--font-ui);
+    font-size: var(--text-14);
+    line-height: var(--text-14--line-height);
+  }
+  .mod-objectives ul {
+    list-style: disc;
+    padding-left: 1.2rem;
+    margin-top: 0.3rem;
+    display: grid;
+    gap: 0.2rem;
   }
   .mod-figure :is(img, video) {
     display: block;

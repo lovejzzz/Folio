@@ -8,6 +8,7 @@ export * from './prompts';
 export * from './actionPrompts';
 export * from './jobs';
 export * from './sections';
+export * from './start';
 export * from './outline';
 export * from './clarify';
 export * from './syllabus';

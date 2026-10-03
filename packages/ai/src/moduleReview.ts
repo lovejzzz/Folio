@@ -33,9 +33,10 @@ type Block = ModuleDraft['parts'][number]['blocks'][number];
 
 function blockText(b: Block): string {
   const media = b.type === 'image' || b.type === 'video' || b.type === 'file';
-  const head = b.type === 'callout' || b.type === 'code' || b.type === 'file' ? `[${b.type}${b.kind ? `: ${b.kind}` : ''}] ${b.title}`.trim() : media ? `[${b.type}] shows: ${b.shows}` : '';
+  const head = b.type === 'callout' || b.type === 'code' ? `[${b.type}${b.kind ? `: ${b.kind}` : ''}] ${b.title}`.trim() : media ? `[${b.type}${b.kind ? `: ${b.kind}` : ''}] shows: ${b.shows}${b.alt ? ` | alt: ${b.alt}` : ''}` : '';
+  const shots = b.shots.map((s) => `  [picture under step ${s.step}] shows: ${s.shows} | alt: ${s.alt}`).join('\n');
   const items = b.items.map((item, i) => (b.type === 'steps' ? `${i + 1}. ${item}` : `- ${item}`)).join('\n');
-  return [head, b.text, items, b.transcript && `Transcript: ${b.transcript}`].filter(Boolean).join('\n');
+  return [head, b.text, items, shots, b.transcript && `Transcript: ${b.transcript}`].filter(Boolean).join('\n');
 }
 
 function moduleText(v: ModuleDraft): string {
@@ -59,7 +60,8 @@ export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraf
       'check that nothing is promised and not given (a file, a video, a reading, a setting), and that the week can be done in the hours the checklist gives it;',
       'and, when earlier weeks are given, check the page keeps to their names and continues the project as they left it.',
       'Kinds: "fact" (wrong content), "missing" (a step, explanation or thing the student needs is not there), "feasibility" (cannot be done as written), "consistency" (the page contradicts itself or earlier weeks), "level" (too much assumed of these students).',
-      'For each problem, say under "why" what is wrong and what the student would experience. When a change to a few words fixes it and you are sure, copy under "find" the exact words that are wrong, enough of them to appear only once in that part, and give under "replace" what should stand in their place; to add a missing step, find the step it belongs after and replace it with that step followed by the new one. Otherwise leave both empty.',
+      'For each problem, say under "why" what is wrong and what the student would experience. When a change to a few words fixes it and you are sure, copy under "find" the exact words that are wrong, enough of them to appear only once in that part, and give under "replace" what should stand in their place; to add what is missing (a step, a sentence of explanation, the fix in a troubleshooting note), write it yourself: find the sentence it belongs after and replace it with that sentence followed by the new words. Leave both empty only when the fix needs a decision that is the teacher\'s.',
+      'What the tool\'s screens are called and hold is settled by the teacher\'s sources when they say; where they are silent and you are not certain of the named version, do not correct the page from memory.',
       'The week\'s other materials (the self-check, the forum prompt, the graded work and its rubric, the "Stuck?" list, the recap) are written separately from this page: do not list them as missing. Pictures and videos are made after the page is written: judge what each is asked to show, not its absence.',
       'Do not list style preferences or things you would add, and give no links. Return an empty list if the page is sound.',
     ].join(' '),

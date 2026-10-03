@@ -23,8 +23,9 @@ import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
 import { assignments, base, continuedInClass, flagsAt, step, test, type SectionJob } from './workJobs';
 import { issuePlace, reviewPlan } from './review';
-import { moduleJob } from './online';
+import { FORUM_GRADING, moduleJob } from './online';
 import { reviewModule } from './moduleReview';
+import { startCommands } from './start';
 import { runJob, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
 import {
@@ -156,7 +157,12 @@ const quiz: SectionJob<QuizDraft> = {
 
 const discussions: SectionJob<DiscussionsDraft> = {
   schema: DiscussionsDraft,
-  tidy: tidyFollowUps,
+  // In an online course the forum is graded by one rule all term: added here, so every week states the same one.
+  tidy: (v, course) => {
+    const tidied = tidyFollowUps(v);
+    const rule = FORUM_GRADING[course.language] ?? FORUM_GRADING.en!;
+    return hasModulePages(course) ? { discussions: tidied.discussions.slice(0, 1).map((d) => ({ ...d, prompt: d.prompt.includes(rule) ? d.prompt : `${d.prompt.trim()}\n\n${rule}` })) } : tidied;
+  },
   toCommands: (v, problems, _course, lesson) => [
     cmd('tasks.fill', {
       lessonId: lesson.id,
@@ -267,6 +273,16 @@ const readPlan = (reviewer: Inference, course: Course, lesson: Lesson, signal?: 
   return { value: read.plan, fixes: read.issues.map((i) => i.why), notes: read.notes.map((n) => ({ code: 'reviewNote', values: { where: issuePlace(read.plan, n), text: n.why } })) };
 };
 
+/**
+ * The first week of an online course is written with the course's Start here page. Written or not, the week
+ * stands: a page that could not be had is asked for again the next time the first week is written.
+ */
+async function withStart(inference: Inference, course: Course, lesson: Lesson, signal: AbortSignal | undefined, page: Promise<SectionResult>): Promise<SectionResult> {
+  if (course.lessonOrder[0] !== lesson.id || course.pages.length) return page;
+  const [written, start] = await Promise.all([page, startCommands(inference, course, signal).catch(() => [])]);
+  return { ...written, commands: [...written.commands, ...start] };
+}
+
 /** Generate one lesson's section. Pure with respect to the course: returns commands, commits nothing. */
 export async function generateSection(
   inference: Inference,
@@ -306,7 +322,7 @@ export async function generateSection(
   };
   switch (kind) {
     case 'plan':
-      if (hasModulePages(course)) return run(moduleJob, reviewer ? (draft) => reviewed((d) => reviewModule(reviewer, course, lesson, d, signal), draft, options, rewriteWith(moduleJob)) : undefined);
+      if (hasModulePages(course)) return withStart(inference, course, lesson, signal, run(moduleJob, reviewer ? (draft) => reviewed((d) => reviewModule(reviewer, course, lesson, d, signal), draft, options, rewriteWith(moduleJob)) : undefined));
       return run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, course, lesson, signal), draft, options, rewriteWith(plan)) : undefined);
     case 'slides':
       return run(slides);

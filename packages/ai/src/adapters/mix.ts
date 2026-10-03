@@ -37,6 +37,7 @@ export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_plan_review: 8000,
   // A week's module page is several plans long; one cut off at this is written again with all the room there is.
   folio_module: 16000,
+  folio_start: 6000,
   folio_module_review: 12000,
   folio_syllabus_check: 10000,
   folio_slides: 10000,

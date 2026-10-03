@@ -87,6 +87,7 @@ const en = {
   general: 'General',
   module: {
     title: 'Weekly modules',
+    length: (weeks: number, hours: number) => `${weeks} ${weeks === 1 ? 'week' : 'weeks'} · about ${hours} hours a week, on your own time`,
     week: (n: number) => `Week ${n}`,
     thisWeek: 'This week',
     due: 'Due',
@@ -184,6 +185,7 @@ const zh: DocLabels = {
   general: '通用',
   module: {
     title: '每周模块',
+    length: (weeks, hours) => `${weeks} 周 · 每周约 ${hours} 小时，自定时间`,
     week: (n) => `第 ${n} 周`,
     thisWeek: '本周任务',
     due: '截止',

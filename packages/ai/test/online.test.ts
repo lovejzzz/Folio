@@ -25,7 +25,8 @@ const draft = (): ModuleDraft =>
           { type: 'text', text: 'A script tells an object what to do.' },
           { type: 'steps', items: ['In the **Project** window, right-click **Assets**.', 'Choose **Create > Scripting > MonoBehaviour Script**.'], shots: [{ step: 2, shows: 'The Create menu open on Scripting', alt: 'The Create menu with MonoBehaviour Script highlighted' }] },
           { type: 'code', kind: 'csharp', text: 'void Update()\n{\n    transform.Rotate(0f, 90f * Time.deltaTime, 0f); // "spin"\n}' },
-          { type: 'callout', kind: 'checkpoint', text: 'You should see the cube turning.' },
+          { type: 'video', kind: 'clip', shows: 'The Game view with the cube turning for five seconds', alt: 'The cube turns steadily about its upright axis.', minutes: 0.2 },
+          { type: 'callout', kind: 'checkpoint', title: 'Checkpoint', text: 'You should see the cube turning steadily in the Game view.', items: ['It went wrong if the cube stays still or the Console shows a red message.'] },
         ],
       },
       { title: 'Try it yourself', blocks: [{ type: 'text', text: 'Make it spin the other way.' }] },
@@ -53,7 +54,10 @@ describe('an online course with no set meeting time', () => {
 
   it('makes the page from the draft: the checklist, each part under its title, steps with their pictures as slots', () => {
     const page = modulePage(draft(), 'en');
-    expect(page.map((b) => b.type)).toEqual(['text', 'checklist', 'heading', 'text', 'steps', 'code', 'callout', 'heading', 'text', 'heading', 'text']);
+    expect(page.map((b) => b.type)).toEqual(['text', 'checklist', 'heading', 'text', 'steps', 'code', 'video', 'callout', 'heading', 'text', 'heading', 'text']);
+    // A callout keeps its text and its items, and loses a title that only repeats its kind.
+    expect(page.find((b) => b.type === 'callout')).toMatchObject({ title: '', text: 'You should see the cube turning steadily in the Game view.\n\nIt went wrong if the cube stays still or the Console shows a red message.' });
+    expect(page.find((b) => b.type === 'video')).toMatchObject({ clip: true });
     expect(pageMinutes(page)).toBe(180);
     const steps = page.find((b) => b.type === 'steps');
     expect(steps?.type === 'steps' && steps.items[1]?.shot).toMatchObject({ src: '', alt: 'The Create menu with MonoBehaviour Script highlighted' });
@@ -68,10 +72,17 @@ describe('an online course with no set meeting time', () => {
     const bare = draft();
     bare.parts[0]!.blocks.push({ ...bare.parts[0]!.blocks[0]!, type: 'image', alt: '', shows: '' }, { ...bare.parts[0]!.blocks[0]!, type: 'video', shows: 'The cube spinning', minutes: 9, transcript: '' });
     const found = JSON.stringify(checkModule(bare, c));
-    for (const text of ['Every image needs \\"alt\\"', 'needs its transcript', 'over six minutes']) expect(found).toContain(text);
+    for (const text of ['Every image needs \\"alt\\"', 'over six minutes']) expect(found).toContain(text);
+    const talk = draft();
+    talk.parts[0]!.blocks.push({ ...talk.parts[0]!.blocks[0]!, type: 'video', kind: 'talk', shows: 'The instructor', minutes: 3, transcript: '' });
+    expect(JSON.stringify(checkModule(talk, c))).not.toContain('needs its transcript');
+    const thin = draft();
+    thin.parts[0]!.blocks.push({ ...thin.parts[0]!.blocks[0]!, type: 'callout', kind: 'stuck', text: 'The cube does not turn.' });
+    expect(JSON.stringify(checkModule(thin, c))).toMatch(/1 checkpoint or stuck callouts say too little/);
     const unchecked = draft();
     unchecked.parts[1]!.blocks.push({ ...unchecked.parts[0]!.blocks[1]!, items: Array.from({ length: 7 }, (_, i) => `Step ${i}`), shots: [] });
     expect(JSON.stringify(checkModule(unchecked, c))).toMatch(/Try it yourself.*has 7 steps and no checkpoint/);
+    expect(JSON.stringify(checkModule(unchecked, c))).toMatch(/has 7 steps and 0 pictures/);
   });
 
   it('keeps code as typed, and sets a name the screen shows in bold', () => {
@@ -95,9 +106,17 @@ describe('an online course with no set meeting time', () => {
   it('writes the page in place of the plan, and reads it a second time as a student would', async () => {
     const c = online();
     const lesson = orderedLessons(c)[0]!;
-    const model = fakeInference((req) => (req.task === 'folio_module_review' ? { issues: [{ part: 1, kind: 'fact', why: 'Wrong menu', find: 'Scripting > ', replace: '' }] } : draft()));
+    const start = { welcome: 'Welcome.', firstSteps: ['Install Unity', 'Post an introduction'], rhythm: [{ when: 'Monday', what: 'The week opens' }, { when: 'Sunday', what: 'Work is due' }], need: [], grading: [], help: 'Ask in the Q&A forum.', instructor: ['An announcement every Monday', 'Answers within one working day'], toAdd: ['Your late-work policy'] };
+    const model = fakeInference((req) => (req.task === 'folio_module_review' ? { issues: [{ part: 1, kind: 'fact', why: 'Wrong menu', find: 'Scripting > ', replace: '' }] } : req.task === 'folio_start' ? start : draft()));
     const result = await generateSection(model, c, lesson.id, 'plan', undefined, { reviewer: model });
-    expect(model.calls.map((call) => call.task)).toEqual(['folio_module', 'folio_module_review']);
+    // The first week is written with the course's Start here page; the instructor's list is theirs alone.
+    expect(model.calls.map((call) => call.task).sort()).toEqual(['folio_module', 'folio_module_review', 'folio_start']);
+    const pages = result.commands.find((x) => x.type === 'pages.set');
+    expect(pages?.type === 'pages.set' && pages.payload.pages.map((p) => [p.title, p.audience])).toEqual([['Start here', 'student'], ['Before the course opens', 'teacher']]);
+    // In an online course the forum is graded by one rule, stated the same every week.
+    const forum = await generateSection(fakeInference(() => ({ discussions: [{ prompt: 'Share your cube.', followUps: ['What surprised you?'] }, { prompt: 'Second.', followUps: [] }] })), c, lesson.id, 'discussions');
+    const filled = forum.commands[0]!;
+    expect(filled.type === 'tasks.fill' && filled.payload.tasks.length === 1 && filled.payload.tasks[0]!.kind === 'discussion' && filled.payload.tasks[0]!.prompt).toMatch(/^Share your cube\.\n\nHow posts are graded, every week/);
     const fill = result.commands[0]!;
     expect(fill.type === 'section.fill' && fill.payload.kind === 'plan' && fill.payload.content.page?.some((b) => b.type === 'steps' && b.items[1]?.text === 'Choose **Create > MonoBehaviour Script**.')).toBe(true);
     expect(fill.type === 'section.fill' && fill.payload.kind === 'plan' && fill.payload.content.facilitation?.announcement).toBe('Welcome to week 3.');

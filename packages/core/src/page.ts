@@ -61,7 +61,7 @@ export const PageBlockSchema = z.discriminatedUnion('type', [
   /** Code to type or read, as it is: never typeset. */
   z.object({ id, type: z.literal('code'), language: text.default(''), code: text, caption: text.default('') }),
   z.object({ id, type: z.literal('image'), ...media }),
-  z.object({ id, type: z.literal('video'), ...media, poster: text.default(''), minutes: z.number().min(0).max(60).default(0), transcript: text.default('') }),
+  z.object({ id, type: z.literal('video'), ...media, poster: text.default(''), minutes: z.number().min(0).max(60).default(0), transcript: text.default(''), /** A short silent recording of the screen, shown for its motion: it has no words to transcribe. */ clip: z.boolean().default(false) }),
   z.object({ id, type: z.literal('file'), href: text.default(''), label: text, role: z.enum(['starter', 'checkpoint', 'solution', 'resource']).default('resource'), shows: text.default('') }),
   z.object({ id, type: z.literal('checklist'), items: z.array(ChecklistItemSchema) }),
   z.object({ id, type: z.literal('terms'), items: z.array(z.object({ term: text, meaning: text })) }),
@@ -79,7 +79,7 @@ export const FacilitationSchema = z.object({
 export type Facilitation = z.infer<typeof FacilitationSchema>;
 
 /** A page of the course that belongs to no week: Start here, how the course works, the schedule. */
-export const CoursePageSchema = z.object({ id, title: text, blocks: z.array(PageBlockSchema) });
+export const CoursePageSchema = z.object({ id, title: text, blocks: z.array(PageBlockSchema), /** 'teacher' for what only the instructor sees: what is left for them to add before the course opens. */ audience: z.enum(['student', 'teacher']).default('student') });
 export type CoursePage = z.infer<typeof CoursePageSchema>;
 
 export const isOnline = (course: { delivery?: Delivery }): boolean => (course.delivery ?? 'inperson') !== 'inperson';

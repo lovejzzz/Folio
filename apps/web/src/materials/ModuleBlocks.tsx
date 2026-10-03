@@ -25,7 +25,7 @@ export function Checklist({ block }: { block: Of<'checklist'> }) {
   return (
     <section className="mod-checklist avoid-break" aria-label={t.module.thisWeek}>
       <div className="mod-checklist-head">
-        <strong>{t.module.thisWeek}</strong>
+        <h4>{t.module.thisWeek}</h4>
         <span>{t.module.total(duration(Math.round(total / 30) * 30))}</span>
       </div>
       <ol>
@@ -48,7 +48,7 @@ export function Checklist({ block }: { block: Of<'checklist'> }) {
 }
 
 /** A picture or clip; before it is made, the place where it goes and what it must show. */
-export function Media({ kind, src, alt, caption, shows, poster, transcript, minutes }: { kind: 'image' | 'video'; src: string; alt: string; caption: string; shows: string; poster?: string; transcript?: string; minutes?: number }) {
+export function Media({ kind, src, alt, caption, shows, poster, transcript, minutes, clip }: { kind: 'image' | 'video'; src: string; alt: string; caption: string; shows: string; poster?: string; transcript?: string; minutes?: number; clip?: boolean }) {
   const t = useT();
   const Icon = kind === 'image' ? Image : Clapperboard;
   const script = transcript?.trim() ? (
@@ -63,8 +63,8 @@ export function Media({ kind, src, alt, caption, shows, poster, transcript, minu
         <Icon size={18} strokeWidth={1.5} aria-hidden />
         <div>
           <strong>
-            {kind === 'image' ? t.module.imageSlot : t.module.videoSlot}
-            {minutes ? ` · ${t.module.videoLength(minutes)}` : ''}
+            {kind === 'image' ? t.module.imageSlot : clip ? t.module.clipSlot : t.module.videoSlot}
+            {minutes && minutes >= 1 ? ` · ${t.module.videoLength(Math.round(minutes))}` : ''}
           </strong>
           {shows || alt}
           {script}
@@ -74,7 +74,15 @@ export function Media({ kind, src, alt, caption, shows, poster, transcript, minu
   }
   return (
     <figure className="mod-figure avoid-break">
-      {kind === 'image' ? <img src={src} alt={alt} loading="lazy" /> : <video src={src} poster={poster || undefined} controls preload="none" playsInline aria-label={alt || caption} />}
+      {kind === 'image' ? (
+        // The picture opens at full size: a whole window fitted to the column is too small to read.
+        <a href={src} target="_blank" rel="noreferrer" aria-label={t.module.enlarge(alt || caption)}>
+          <img src={src} alt={alt} loading="lazy" />
+        </a>
+      ) : (
+        <video src={src} poster={poster || undefined} controls preload="metadata" playsInline muted={clip} loop={clip} aria-label={alt || caption || t.module.videoSlot} />
+      )}
+      {clip && alt && <p className="sr-only">{alt}</p>}
       {caption && <figcaption>{caption}</figcaption>}
       {script}
     </figure>
@@ -107,7 +115,7 @@ export function Callout({ block, patch }: { block: Of<'callout'>; patch: Patch }
   const Icon = block.kind === 'stuck' ? CircleAlert : CALLOUT[block.kind];
   const label = t.module.callouts[block.kind];
   return (
-    <aside className="mod-callout avoid-break" data-kind={block.kind}>
+    <aside className="mod-callout avoid-break" data-kind={block.kind} aria-label={block.title ? `${label}: ${block.title}` : label}>
       <div className="mod-callout-head">
         <Icon size={15} strokeWidth={2} aria-hidden />
         {block.title ? `${label}: ${block.title}` : label}

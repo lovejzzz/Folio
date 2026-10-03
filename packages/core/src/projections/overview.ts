@@ -1,6 +1,8 @@
 import { filledTexts, isBlankObjective, isBlankQuestion, statedObjectives } from '../blank';
 import { lessonAssignments, lessonDiscussions, lessonNumber, lessonQuestions, orderedObjectives } from '../course';
 import type { Block } from '../semantic';
+import { hasModulePages } from '../page';
+import { pageBlocks } from './pageView';
 import { lessonsIn, nonEmpty, type Ctx } from './shared';
 
 /** Course map: how objectives, lessons and assessments line up. */
@@ -97,9 +99,14 @@ export function projectSyllabus(ctx: Ctx): Block[] {
   const sessions = course.shape.sessions;
   meta.push({
     label: l.length,
-    value: sessions.length > 1 ? l.lengthSessions(course.lessonOrder.length, sessions.map((s) => l.sessionPart(l.sessionKinds[s.kind], s.minutes))) : l.lengthValue(course.lessonOrder.length, course.shape.minutesPerLesson),
+    value: hasModulePages(course) ? l.module.length(course.lessonOrder.length, course.online?.hoursPerWeek ?? 9) : sessions.length > 1 ? l.lengthSessions(course.lessonOrder.length, sessions.map((s) => l.sessionPart(l.sessionKinds[s.kind], s.minutes))) : l.lengthValue(course.lessonOrder.length, course.shape.minutesPerLesson),
   });
   blocks.push({ t: 'meta', items: meta });
+  // An online course opens with its Start here page; what is left for the instructor to add is on their copy only.
+  for (const page of course.pages ?? []) {
+    if (page.audience === 'teacher' && !ctx.teacher) continue;
+    blocks.push({ t: 'heading', level: 2, text: page.title }, ...pageBlocks(ctx, page.blocks));
+  }
 
   const objectives = orderedObjectives(course).filter((o) => !isBlankObjective(o) && lessons.some((x) => x.objectiveIds.includes(o.id)));
   if (objectives.length) {

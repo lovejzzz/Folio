@@ -1,4 +1,4 @@
-import { cmd, type Course, type Facilitation, type Lesson, type PageBlock } from '@folio/core';
+import { cmd, statedObjectives, type Course, type Facilitation, type Lesson, type PageBlock } from '@folio/core';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { EditableList } from './EditableList';
@@ -63,7 +63,7 @@ function PartView({ part, n, patch }: { part: Part; n: number; patch: Patch }) {
   if (!part.heading) return <>{body}</>;
   const heading = part.heading;
   return (
-    <section className="mod-part" aria-labelledby={heading.id}>
+    <section className="mod-part" aria-label={`${t.module.part(n)}: ${heading.text}`}>
       <header>
         <p className="mod-kicker">{t.module.part(n)}</p>
         <EditableText as="h3" className="mod-part-title" value={heading.text} label={t.module.heading} required onCommit={(text) => patch({ ...heading, text })} />
@@ -112,9 +112,21 @@ function Kit({ course, lesson, kit }: { course: Course; lesson: Lesson; kit: Fac
 export function ModulePage({ course, lesson }: { course: Course; lesson: Lesson }) {
   const save = useSectionEdit(course, lesson.id, 'plan');
   const patch: Patch = (block) => save([cmd('plan.update', { lessonId: lesson.id, page: lesson.page.map((b) => (b.id === block.id ? block : b)) })]);
+  const t = useT();
   const parts = partsOf(lesson.page);
+  const objectives = statedObjectives(course, lesson);
   return (
     <div className="mod" lang={course.language}>
+      {objectives.length > 0 && (
+        <section className="mod-objectives" aria-label={t.module.objectives}>
+          <p className="mod-kicker">{t.module.objectives}</p>
+          <ul>
+            {objectives.map((o) => (
+              <li key={o.id}>{o.text}</li>
+            ))}
+          </ul>
+        </section>
+      )}
       {parts.map((part, i) => (
         <PartView key={part.heading?.id ?? 'lead'} part={part} n={i} patch={patch} />
       ))}

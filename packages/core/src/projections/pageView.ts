@@ -42,6 +42,11 @@ function blockView(ctx: Ctx, b: PageBlock): Block[] {
   }
 }
 
+/** Blocks that belong to no week (Start here), as a document. */
+export function pageBlocks(ctx: Ctx, blocks: readonly PageBlock[]): Block[] {
+  return blocks.flatMap((b) => (b.type === 'heading' && b.level === 2 ? [{ t: 'heading' as const, level: 3 as const, text: b.text }] : blockView(ctx, b)));
+}
+
 /** A week's module page as a document: the student's copy is the page; the teacher's adds the instructor's kit. */
 export function projectPage(ctx: Ctx, lesson: Lesson): Block[] {
   const blocks = lesson.page.flatMap((b) => (b.type === 'heading' && b.level === 2 ? [{ t: 'heading' as const, level: 3 as const, text: b.text }] : blockView(ctx, b)));
