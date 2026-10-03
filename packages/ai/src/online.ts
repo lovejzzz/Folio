@@ -1,6 +1,7 @@
 import { cmd, hasModulePages, newId, orderedLessons, pageMinutes, pageText, type Course, type Lesson, type PageBlock } from '@folio/core';
 import { z } from 'zod';
 import type { Problem } from './jobs';
+import { isMixedOnline, mixedAsk } from './live';
 import { flagsAt, type SectionJob } from './workJobs';
 
 /**
@@ -46,6 +47,10 @@ export const ModuleDraft = z.object({
     .array(z.object({ title: line.describe('Names what the student gets done in this part'), blocks: z.array(BlockDraft).min(1) }))
     .min(2)
     .max(10),
+  live: z
+    .array(z.object({ kind: z.enum(['warmup', 'teach', 'practice', 'discuss', 'check', 'break', 'close']), title: line, minutes: z.number().int().min(1), description: line, teacherNotes: z.string().default('') }))
+    .default([])
+    .describe('Only when the week has a live session: its run of show. Empty otherwise'),
   wrapUp: line.describe('What the student can now do, a question to check themselves against each objective, and what comes next week'),
   vocabulary: z.array(z.object({ term: line, definition: line })).max(12),
   facilitation: z.object({
@@ -134,6 +139,8 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
   const want = (course.online?.hoursPerWeek ?? 9) * 60;
   const got = v.checklist.reduce((n, c) => n + c.minutes, 0);
   if (Math.abs(got - want) > want * HOURS_SLACK) problems.push(issue(`The checklist adds up to ${got} minutes; the week is ${want} minutes of student work. Change the work or the estimates so they agree`));
+  const liveMinutes = v.live.reduce((n, s) => n + s.minutes, 0);
+  if (isMixedOnline(course) && liveMinutes !== (course.online?.liveMinutes || 75)) problems.push(issue(`The live session's segments add up to ${liveMinutes} minutes; the session is ${course.online?.liveMinutes || 75}`));
   const blocks = v.parts.flatMap((p) => p.blocks);
   if (blocks.some((b) => b.type === 'image' && !b.alt.trim())) problems.push(issue('Every image needs "alt": what a student who cannot see it needs to know'));
   if (blocks.some((b) => (b.type === 'image' || b.type === 'video') && !b.shows.trim())) problems.push(issue('Every image and video needs "shows": what it must show, for the person who makes it'));
@@ -166,7 +173,7 @@ export const moduleJob: SectionJob<ModuleDraft> = {
       flags: flagsAt(problems, null),
       content: {
         keyIdeas: v.keyIdeas,
-        segments: [],
+        segments: v.live.map((s) => ({ ...s, id: newId('x'), session: 0 })),
         vocabulary: v.vocabulary.map((t) => ({ ...t, id: newId('x') })),
         page: modulePage(v, course.language),
         facilitation: v.facilitation,
@@ -183,7 +190,9 @@ export function onlineBackground(course: Course): string {
     'This course is taught online with no set meeting time. Each lesson is one week\'s module: students work through it alone, when they can, and no teacher is present while they do. Everything is written to the student as "you", in a warm, plain voice, and must be enough on its own: a student who follows the page gets there without asking anyone.',
     `A week is about ${hours} hours of student work, everything counted. The week has one rhythm all term: a first forum post by Thursday, replies and all other work by Sunday night.`,
     'Say "this week", "last week" and "next week" where a course in a room says "this lesson" or "last time".',
-    'The instructor does not lecture: they post an announcement, answer in the forum, and give feedback on work. Nothing is collected, handed out or said aloud; work is submitted online, files are downloaded from the page.',
+    isMixedOnline(course)
+      ? `Each week also has one live session of ${course.online?.liveMinutes || 75} minutes in a video meeting, for what needs other people; everything a student can take in alone is on the page. Work is submitted online, files are downloaded from the page.`
+      : 'The instructor does not lecture: they post an announcement, answer in the forum, and give feedback on work. Nothing is collected, handed out or said aloud; work is submitted online, files are downloaded from the page.',
   ].join(' ');
 }
 
@@ -229,6 +238,7 @@ export function moduleAsk(course: Course, lesson: Lesson): string {
     `Under "checklist", everything the student does this week in order, each with the kind of activity, an honest estimate in minutes and the day it is due when it has a deadline. The estimates add up to about ${hours * 60} minutes. No item runs over 60 minutes: split it.${others ? ` It includes, by name, the other materials of the week, which are written separately from this page: ${others}.` : ''}`,
     'Under "parts", the teaching itself, in the order the student does it: two to eight parts, each a chunk a student can finish in one sitting, built from blocks. Explain ideas in short paragraphs with an example each; use a list only for things that are a list. Where a short video of the instructor explaining would help, give a "video" block with its full transcript (under six minutes, about 130 words a minute) and say under "shows" what is on screen; the page must still teach a student who only reads the transcript. Where students read something, name it exactly and say what to read it for. Every part says why the student is doing it.',
     HANDS_ON,
+    isMixedOnline(course) ? mixedAsk(course) : '',
     'Under "wrapUp", 80 to 120 words: what the student can now do, one question to test themselves on each objective, and a look ahead to next week.',
     'Under "vocabulary", the terms this week introduces, each in one plain sentence.',
     'Under "facilitation", the instructor\'s part of the week, never shown to students: the announcement to post on Monday (what the week is, the one thing to get right, the deadlines), what to watch for in the forum and in submitted work and what to do about it, comments to adapt when giving feedback, and whom to contact by midweek.',

@@ -139,3 +139,25 @@ describe('the outline of an online course', () => {
     expect(course.materials.plan.enabled).toBe(true);
   });
 });
+
+describe('a course taught live online, or with a live session beside its weekly page', () => {
+  it('plans a live session as a run of show, with what the platform has', () => {
+    const c: Course = { ...smallCourse(), delivery: 'online-sync', online: OnlineSchema.parse({ polls: false, classSize: 80 }) };
+    const lesson = orderedLessons(c)[0]!;
+    expect(courseBackground(c)).toMatch(/taught live online: every lesson is a video meeting/);
+    const ask = sectionPrompt(c, lesson, 'plan');
+    expect(ask).toMatch(/sequence of segments[\s\S]*run of show for a video meeting/);
+    expect(ask).toMatch(/chat, screen sharing, live captions, breakout rooms, a shared document; plan with nothing else/);
+    expect(ask).toMatch(/With about 80 students, use polls and chat in place of open discussion/);
+    expect(sectionPrompt(c, lesson, 'slides')).toMatch(/an instruction slide for every activity/);
+    expect(sectionPrompt(smallCourse(), lesson, 'plan')).not.toMatch(/run of show/);
+  });
+
+  it('writes the week\'s page and the live session together, the session timed against its length', () => {
+    const c: Course = { ...smallCourse(), delivery: 'online-mixed', online: OnlineSchema.parse({ hoursPerWeek: 3, liveSessions: 1, liveMinutes: 60 }) };
+    const lesson = orderedLessons(c)[0]!;
+    expect(sectionPrompt(c, lesson, 'plan')).toMatch(/one live session of 60 minutes[\s\S]*Under "live", plan that session/);
+    const live = [{ kind: 'warmup' as const, title: 'Arrival', minutes: 10, description: 'Answer in the chat.', teacherNotes: '' }, { kind: 'practice' as const, title: 'Pairs', minutes: 40, description: 'Debug in breakout rooms.', teacherNotes: '' }];
+    expect(JSON.stringify(checkModule({ ...draft(), live }, c))).toMatch(/add up to 50 minutes; the session is 60/);
+  });
+});

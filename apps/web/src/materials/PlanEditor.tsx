@@ -97,7 +97,7 @@ function SessionSegments({ course, lesson, session, save }: SegmentsProps) {
       {/* With several sessions, each opens on a band: the lecture and the seminar read as two parts, not one long list. */}
       <div className={cx('mb-1 flex items-baseline justify-between gap-4', sessions.length > 1 && 'rounded-control bg-well px-3 py-2')}>
         <h3 className={cx('font-ui font-semibold text-ink', sessions.length > 1 ? 'text-14' : 'text-13')}>
-          {sessions.length > 1 ? t.sessions.heading(t.sessions.kinds[meeting.kind], meeting.minutes) : t.lesson.segments}
+          {sessions.length > 1 ? t.sessions.heading(t.sessions.kinds[meeting.kind], meeting.minutes) : lesson.page.length ? t.module.liveSession : t.lesson.segments}
         </h3>
         <span className={cx('font-ui text-13 tabular', total === meeting.minutes ? 'text-ink-2' : 'text-attention')}>{t.lesson.minutesTotal(total, meeting.minutes)}</span>
       </div>
@@ -130,7 +130,15 @@ export function PlanEditor({ course, lesson }: { course: Course; lesson: Lesson 
   const save = useSectionEdit(course, lesson.id, 'plan');
   const setSegments = (segments: Segment[]) => save([cmd('plan.update', { lessonId: lesson.id, segments })]);
   // A week of an online course is a page for the student, not a run of timed steps.
-  if (lesson.page.length) return <ModulePage course={course} lesson={lesson} />;
+  if (lesson.page.length) {
+    return (
+      <div className="space-y-8">
+        <ModulePage course={course} lesson={lesson} />
+        {/* A week with a live session beside its page: the session's run of show, for the instructor. */}
+        {lesson.segments.length > 0 && <SessionSegments course={course} lesson={lesson} session={0} save={setSegments} />}
+      </div>
+    );
+  }
   return (
     <div className="space-y-8">
       <section>

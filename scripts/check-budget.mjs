@@ -12,7 +12,10 @@ const KB = 1024;
 // It was raised from 3.5 to 3.75 MB in version 0.0.5, for tests, answer keys and due dates.
 // The sample courses and the changelog's pictures are content, fetched only when opened: each has its own budget,
 // apart from the app's.
-const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 3.75 * KB * KB, dist: 10 * KB * KB, samples: 3 * KB * KB, changelog: 4 * KB * KB };
+const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 3.75 * KB * KB, dist: 10 * KB * KB, samples: 3 * KB * KB, changelog: 4 * KB * KB, media: 60 * KB * KB };
+// A sample course taught online carries its pictures and clips (public/samples/<name>/media): fetched one at a
+// time as a page is read, never with the course's text, and held to their own budget.
+const isMedia = (f) => /\/samples\/[^/]+\/media\//.test(f);
 
 function walk(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -30,7 +33,8 @@ const totalJs = files.filter((f) => f.endsWith('.js')).reduce((n, f) => n + stat
 const under = (dir) => (f) => f.startsWith(join(dist, `${dir}/`));
 const sizeOf = (list) => list.reduce((n, f) => n + statSync(f).size, 0);
 const distSize = sizeOf(files.filter((f) => !under('samples')(f) && !under('changelog')(f)));
-const samplesSize = sizeOf(files.filter(under('samples')));
+const samplesSize = sizeOf(files.filter((f) => under('samples')(f) && !isMedia(f)));
+const mediaSize = sizeOf(files.filter(isMedia));
 const changelogSize = sizeOf(files.filter(under('changelog')));
 
 const rows = [
@@ -40,6 +44,7 @@ const rows = [
   ['dist', distSize, budgets.dist],
   ['Sample courses', samplesSize, budgets.samples],
   ['Changelog', changelogSize, budgets.changelog],
+  ['Sample media', mediaSize, budgets.media],
 ];
 let failed = false;
 for (const [name, value, limit] of rows) {

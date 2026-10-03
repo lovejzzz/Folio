@@ -61,6 +61,8 @@ export function DeliveryChip() {
     <Chip label={t.home.delivery} value={delivery} onChange={(v) => set({ delivery: v as Delivery, pinned: { ...pinned, delivery: true } })}>
       <option value="inperson">{t.home.deliveries.inperson}</option>
       <option value="online-async">{t.home.deliveries['online-async']}</option>
+      <option value="online-sync">{t.home.deliveries['online-sync']}</option>
+      <option value="online-mixed">{t.home.deliveries['online-mixed']}</option>
     </Chip>
   );
 }

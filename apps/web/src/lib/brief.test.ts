@@ -212,10 +212,13 @@ describe('weeks in a brief', () => {
 });
 
 describe('how the course meets', () => {
-  it('reads a course with no set meeting time from the brief, and nothing from "online" alone', () => {
+  it('reads how an online course meets from the brief, and nothing from "online" alone', () => {
     expect(guessDelivery('A 14-week asynchronous online course for undergraduates')).toBe('online-async');
     expect(guessDelivery('Self-paced online course on statistics, no live sessions')).toBe('online-async');
-    expect(guessDelivery('Online course meeting on Zoom twice a week')).toBe('inperson');
+    expect(guessDelivery('Online course meeting on Zoom twice a week')).toBe('online-sync');
+    expect(guessDelivery('A synchronous online graduate seminar, one 150-minute session a week')).toBe('online-sync');
+    expect(guessDelivery('Online: an asynchronous module each week plus one live 75-minute session')).toBe('online-mixed');
+    expect(guessDelivery('An online course in statistics')).toBe('inperson');
     expect(guessDelivery('Eight 50-minute lessons on ratios')).toBe('inperson');
   });
 });

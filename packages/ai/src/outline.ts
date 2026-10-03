@@ -125,13 +125,14 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
     level: req.level || outline.level,
     subject: outline.subject,
     // A week with no meetings has no meeting length: its minutes are the week's hours of student work.
-    minutesPerLesson: weekly(req) ? Math.round((req.online?.hoursPerWeek ?? 9) * 60) : req.sessions && req.sessions.length > 1 ? req.sessions.reduce((a, s) => a + s.minutes, 0) : req.minutesPerLesson,
+    // With a live session beside the page, the lesson's minutes are that session's: its run of show is timed against them.
+    minutesPerLesson: req.delivery === 'online-mixed' ? req.online?.liveMinutes || req.minutesPerLesson || 75 : weekly(req) ? Math.round((req.online?.hoursPerWeek ?? 9) * 60) : req.sessions && req.sessions.length > 1 ? req.sessions.reduce((a, s) => a + s.minutes, 0) : req.minutesPerLesson,
     sessions: req.sessions && req.sessions.length > 1 ? req.sessions : [],
     quizSize: req.quizSize,
     // A teacher who chose nothing gets what the level calls for; the plan page turns any back on.
     materials: req.materials.length === MATERIAL_KINDS.length ? materialsForLevel(req.level || outline.level, req.delivery) : req.materials,
     delivery: req.delivery,
-    online: req.delivery && req.delivery !== 'inperson' ? OnlineSchema.parse(req.online ?? {}) : undefined,
+    online: req.delivery && req.delivery !== 'inperson' ? OnlineSchema.parse({ ...(req.delivery === 'online-mixed' ? { liveSessions: 1, liveMinutes: req.minutesPerLesson || 75 } : {}), ...req.online }) : undefined,
   });
   // One general textbook suggested for every lesson is noise: each work is suggested once, and never when assigned.
   // A reading is a list item, not a sentence: "Goldberger, A course in econometrics." loses its full stop.

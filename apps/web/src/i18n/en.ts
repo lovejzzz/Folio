@@ -121,7 +121,7 @@ export const en = {
     level: 'Level',
     levelAny: 'Any level',
     delivery: 'How the course meets',
-    deliveries: { inperson: 'In person', 'online-async': 'Online, own time' },
+    deliveries: { inperson: 'In person', 'online-async': 'Online, own time', 'online-sync': 'Online, live', 'online-mixed': 'Online, own time + live' },
     levelAnyGrade: (stage: string) => `Any grade in ${stage.toLowerCase()}`,
     lessonsChip: (n: number) => (n === 1 ? '1 lesson' : `${n} lessons`),
     lessonsFromSyllabus: 'Lessons from syllabus',
@@ -337,6 +337,7 @@ export const en = {
     heading: 'Heading',
     caption: 'Caption',
     addNote: 'Add a note',
+    liveSession: 'The live session',
   },
   lesson: {
     objectives: 'Objectives',

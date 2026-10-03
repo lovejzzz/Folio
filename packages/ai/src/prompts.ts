@@ -2,6 +2,7 @@ import { filledTexts, hasModulePages, lessonSessions, orderedLessons, statedObje
 import { courseSoFar, dueWords, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
 import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
+import { LIVE_ASKS, isLiveOnline, liveBackground, runOfShow } from './live';
 import { ONLINE_ASKS, moduleAsk, onlineBackground, onlineHomeworkLine } from './online';
 
 /**
@@ -172,6 +173,7 @@ export function courseBackground(course: Course): string {
     course.summary ? `About the course: ${course.summary}` : '',
     `Lessons:\n${all}`,
     hasModulePages(course) ? onlineBackground(course) : sessionsLine(course),
+    liveBackground(course),
     isHigherEducation(course.audience.level) ? UNIVERSITY_TEACHING : '',
     briefLine(course),
     // The teacher's rules reach every writer: late days and integrity appeared in one assignment of five.
@@ -350,6 +352,8 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     );
   }
   parts.push(hasModulePages(course) ? onlineAsk(course, lesson, kind) : asks[kind](course, lesson));
+  // Taught live online, a plan is a run of show, and the slides and prompts are for a screen and a breakout room.
+  if (isLiveOnline(course)) parts.push(kind === 'plan' ? runOfShow(course) : kind === 'slides' || kind === 'discussions' || kind === 'faq' ? LIVE_ASKS[kind] : '');
   return parts.filter(Boolean).join('\n\n');
 }
 

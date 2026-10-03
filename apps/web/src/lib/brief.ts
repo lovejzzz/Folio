@@ -106,13 +106,17 @@ function lessonsFromWeeks(text: string): number | null {
 }
 
 /**
- * A brief that says its course is online with no set meeting time: "asynchronous", "self-paced online", "online,
- * no live sessions". "Online" alone says too little: a live class on video is planned like one in a room.
+ * How a brief says its course meets, when it says: online with no set meeting time ("asynchronous", "self-paced",
+ * "no live sessions"), live online ("synchronous", "on Zoom", "live sessions"), or both. "Online" alone says too
+ * little to choose between them, and a course that names no format is taught in a room.
  */
 export function guessDelivery(text: string): Delivery {
-  const online = /\b(?:online|remote|distance|virtual|web-based)\b|在线|网络课|网课/i.test(text);
-  const noSetTime = /\basynchronous(?:ly)?\b|\basync\b|\bself-paced\b|\bno (?:live|set|scheduled) (?:sessions?|meetings?|class(?:es)?|times?)\b|异步/i.test(text);
-  return online && noSetTime ? 'online-async' : 'inperson';
+  const online = /\b(?:online|remote(?:ly)?|distance|virtual(?:ly)?|web-based|zoom|teams|video (?:call|meeting)s?)\b|在线|网络课|网课/i.test(text);
+  if (!online) return 'inperson';
+  const noLive = /\bno (?:live|set|scheduled|required) (?:sessions?|meetings?|class(?:es)?|times?)\b/i.test(text);
+  const ownTime = noLive || /\basynchronous(?:ly)?\b|\basync\b|\bself-paced\b|异步/i.test(text);
+  const live = !noLive && /\bsynchronous(?:ly)?\b|\blive\b|\bzoom\b|\bteams\b|\bvideo (?:call|meeting)s?\b|\bbichronous\b|同步|直播/i.test(text);
+  return ownTime && live ? 'online-mixed' : ownTime ? 'online-async' : live ? 'online-sync' : 'inperson';
 }
 
 /** How many lessons the brief asks for. A number named as lessons beats one named as weeks. */
