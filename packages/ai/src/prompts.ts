@@ -201,7 +201,8 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     `This is the lesson "${lesson.title}". ${lesson.summary} Refer to other lessons as "last time" (only the lesson just before), "earlier in the course", "next time" or "later in the course", never by title or number.`,
     objectives ? `Its objectives:\n${objectives}` : '',
     hasModulePages(course) ? onlineHomeworkLine(course, lesson) : homeworkLine(course, lesson),
-    readings ? `Students read before this lesson:\n${readings}` : proposed ? `No reading is assigned yet. Proposed, for the teacher to confirm (plan from these, naming them in full):\n${proposed}` : '',
+    // Called "proposed, for the teacher to confirm", the words came back in teacher notes and slide notes.
+    readings ? `Students read before this lesson:\n${readings}` : proposed ? `Students read before this lesson (plan from these, naming them in full):\n${proposed}` : '',
   ]
     .filter(Boolean)
     .join('\n\n');

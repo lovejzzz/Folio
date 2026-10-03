@@ -23,6 +23,7 @@ import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
 import { assignments, base, continuedInClass, flagsAt, step, test, type SectionJob } from './workJobs';
 import { issuePlace, reviewPlan } from './review';
+import { checkRunOfShow, isLiveOnline } from './live';
 import { FORUM_GRADING, moduleJob } from './online';
 import { reviewModule } from './moduleReview';
 import { startCommands } from './start';
@@ -64,11 +65,13 @@ function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flags:
 const plan: SectionJob<PlanDraft> = {
   schema: PlanDraft,
   tidy: (v, course, lesson) => newVocabulary(tidyLessonNames(tidyPlanSources(v), course, lesson), course, lesson),
-  check: (v, course) =>
-    checkSessionMinutes(
+  check: (v, course) => [
+    ...checkSessionMinutes(
       v.segments.map((s) => ({ session: s.session - 1, minutes: s.minutes })),
       lessonSessions(course),
-    ).map((flag) => ({ index: null, flag })),
+    ).map((flag): Problem => ({ index: null, flag })),
+    ...(isLiveOnline(course) ? checkRunOfShow(v.segments) : []),
+  ],
   toCommands: (v, problems, _course, lesson) => [
     cmd('section.fill', {
       lessonId: lesson.id,

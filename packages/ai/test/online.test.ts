@@ -2,6 +2,7 @@ import { OnlineSchema, hasModulePages, orderedLessons, pageMinutes, textRuns, ty
 import { describe, expect, it } from 'vitest';
 import { OutlineDraft, courseBackground, courseFromOutline, generateSection, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
 import { applyModuleReview } from '../src/moduleReview';
+import { checkRunOfShow } from '../src/live';
 import { ModuleDraft, checkModule, modulePage } from '../src/online';
 import { typesetDraft } from '../src/typeset';
 import { fakeInference, smallCourse } from './fake';
@@ -151,6 +152,14 @@ describe('a course taught live online, or with a live session beside its weekly 
     expect(ask).toMatch(/With about 80 students, use polls and chat in place of open discussion/);
     expect(sectionPrompt(c, lesson, 'slides')).toMatch(/an instruction slide for every activity/);
     expect(sectionPrompt(smallCourse(), lesson, 'plan')).not.toMatch(/run of show/);
+  });
+
+  it('holds a run of show to its limits: no long stretch of talk, breaks an hour apart at most', () => {
+    const seg = (kind: string, minutes: number) => ({ kind, title: kind, minutes });
+    expect(checkRunOfShow([seg('warmup', 10), seg('teach', 15), seg('practice', 30), seg('break', 10), seg('discuss', 60), seg('close', 10)])).toEqual([]);
+    const found = JSON.stringify(checkRunOfShow([seg('warmup', 8), seg('teach', 22), seg('practice', 24), seg('break', 10), seg('practice', 48), seg('discuss', 30), seg('close', 8)]));
+    expect(found).toMatch(/22 minutes of teaching/);
+    expect(found).toMatch(/without a break/);
   });
 
   it('writes the week\'s page and the live session together, the session timed against its length', () => {
