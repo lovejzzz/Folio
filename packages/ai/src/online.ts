@@ -2,6 +2,7 @@ import { cmd, hasModulePages, newId, orderedLessons, pageMinutes, pageText, type
 import { z } from 'zod';
 import type { Problem } from './jobs';
 import { isMixedOnline, mixedAsk } from './live';
+import { HANDS_ON } from './handsOn';
 import { flagsAt, otherPieces, type SectionJob } from './workJobs';
 
 /**
@@ -79,8 +80,12 @@ function calloutBlock(id: string, b: BlockDraft): PageBlock {
   return { id, type: 'callout', kind, title: echo ? '' : title, text: text.includes('\n\n') ? text : text.replace(/\n/g, '\n\n') };
 }
 
-function toBlock(b: BlockDraft): PageBlock {
+/** A value a student types is typed with the keyboard: a typographic minus before a digit does not parse in a number box. */
+const typed = (text: string) => text.replace(/\u2212(?=\d)/g, '-');
+
+function toBlock(raw: BlockDraft): PageBlock {
   const id = newId('x');
+  const b = { ...raw, text: raw.type === 'code' ? raw.text : typed(raw.text), items: raw.items.map(typed) };
   switch (b.type) {
     case 'heading':
       return { id, type: 'heading', level: 3, text: b.text };
@@ -144,6 +149,7 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
   const blocks = v.parts.flatMap((p) => p.blocks);
   if (blocks.some((b) => b.type === 'image' && !b.alt.trim())) problems.push(issue('Every image needs "alt": what a student who cannot see it needs to know'));
   if (blocks.some((b) => (b.type === 'image' || b.type === 'video') && !b.shows.trim())) problems.push(issue('Every image and video needs "shows": what it must show, for the person who makes it'));
+  if (blocks.some((b) => (b.type === 'image' || b.type === 'video') && !b.text.trim())) problems.push(issue('Every image and video needs its caption under "text": one line telling the student what to compare'));
   if (blocks.some((b) => b.type === 'video' && !isClip(b) && !b.transcript.trim())) problems.push(issue('Every video in which someone speaks needs its transcript'));
   if (blocks.some((b) => b.type === 'video' && isClip(b) && !b.alt.trim())) problems.push(issue('Every clip needs "alt": what happens in it, for a student who cannot see it'));
   if (blocks.some((b) => b.type === 'video' && b.minutes > 6)) problems.push(issue('No video runs over six minutes: split it'));
@@ -221,16 +227,6 @@ function mainPiece(course: Course, lesson: Lesson): string {
   }
 }
 
-/** Is the week mostly about using a tool or writing code? Then its parts are tutorials. */
-const HANDS_ON = [
-  'When the week teaches a tool, software or code, the parts are a tutorial the student follows on their own computer: each part is titled with what gets done ("Make the player move"), opens with one sentence of why, then gives numbered steps of one action each. A scene, file or object the student makes is given a name when it is made, and called by it afterwards. A step says where before what ("In the Hierarchy window, right-click…"), names every button, menu and field in bold exactly as the screen shows it (**Add Component**), gives menu paths with ">", and gives exact values. Every part ends with a "checkpoint" callout: what the student should now see, and what it looks like when it went wrong. After a part where things commonly fail, a "stuck" callout lists the two or three likely causes, with the exact error text when there is one, and the fix. A short "why" callout may explain what a step did; the steps themselves stay bare.',
-  'Code longer than one line goes in a block of type "code": the whole file when it is new, or the lines to add with a line of the file above and below them, exactly as typed, with comments a beginner can read. Explain new code after the block, line by line where it is the first time. Inline backticks are for names and single lines.',
-  'The page is rich in pictures: a beginner checks their screen against them. Ask for a screenshot ("shots" on a steps block, or an "image" block) wherever the thing to click is hard to find, a window or setting must look a certain way, or a result can be seen: usually two to four in a part, and one of the result at every checkpoint. Where something moves or runs (pressing Play, a drag, flying the view), ask for a "video" of kind "clip": a silent recording of the screen under a minute, with "alt" saying what happens in it; and open the week with a picture or clip of what will be built. Under "shows", write for the person who captures it: which one window, in what state, with which names and values visible, what to outline, and on which system when Windows and Mac differ. Under "alt", give what a student needs from the picture (the names and values in it), never "a screenshot of…". Never refer to a picture as if the student could not go on without it: the words carry the step.',
-  'Names of buttons, menus, fields and windows are taken from the teacher\'s sources when they give them, exactly, and never from memory where the two differ; what a new project or a window holds is described as the sources describe it. Never identify something by its colour alone ("the green arrow, which points up"), and give the menu or keyboard way beside a drag or a right-click where there is one. Anything done outside the tool itself (taking a screenshot, recording the screen, finding or zipping a folder) is given in full for Windows and for Mac the first time it is needed.',
-  'Name the exact version and template the page is written for in a "version" callout in the first part, with what to do when the student\'s differs. Give a "file" block for what the student starts from (starter) and for the project as it should stand at the end of the week (checkpoint), so one failure does not block the week.',
-  'After the guided parts, a part with a challenge the student does without steps: one a little beyond the tutorial and one further, marked optional, each stated as what the result does and tried out in your head against what the student has built, with a hint in a "tip" callout.',
-].join(' ');
-
 /** The ask for a week's module page. */
 export function moduleAsk(course: Course, lesson: Lesson): string {
   const hours = course.online?.hoursPerWeek ?? 9;
@@ -239,14 +235,14 @@ export function moduleAsk(course: Course, lesson: Lesson): string {
   return [
     'Write this week\'s module page: the page the student works through alone. It teaches; it is not a plan of what a teacher will do.',
     'Under "intro", 60 to 120 words: why this week matters, how it follows last week, and what the student will have made or be able to do by Sunday.',
-    `Under "checklist", everything the student does this week in order, each with the kind of activity, an honest estimate in minutes and the day it is due when it has a deadline. The estimates add up to about ${hours * 60} minutes. No item runs over 60 minutes: split it.${others ? ` It includes, by name, the other materials of the week, which are written separately from this page: ${others}.` : ''}`,
+    `Under "checklist", everything the student does this week in order, each with the kind of activity, an honest estimate in minutes for a student new to it, and the day it is due when it has a deadline. The week is planned as about ${hours * 60} minutes: when honest estimates fall short or run over, change the work, never the estimates. No item runs over 60 minutes: split it.${others ? ` It includes, by name, the other materials of the week, which are written separately from this page: ${others}.` : ''}`,
     'Under "parts", the teaching itself, in the order the student does it: two to eight parts, each a chunk a student can finish in one sitting, built from blocks. Explain ideas in short paragraphs with an example each; use a list only for things that are a list. Where a short video of the instructor explaining would help, give a "video" block with its full transcript (under six minutes, about 130 words a minute) and say under "shows" what is on screen; the page must still teach a student who only reads the transcript. Where students read something, name it exactly and say what to read it for. Every part says why the student is doing it.',
     HANDS_ON,
     isMixedOnline(course) ? mixedAsk(course) : '',
     'Under "wrapUp", 80 to 120 words: what the student can now do, one question to test themselves on each objective, and a look ahead to next week.',
     'Under "vocabulary", the terms this week introduces, each in one plain sentence.',
     'Under "facilitation", the instructor\'s part of the week, never shown to students: the announcement to post on Monday (what the week is, the one thing to get right, the deadlines), what to watch for in the forum and in submitted work and what to do about it, comments to adapt when giving feedback, and whom to contact by midweek.',
-    'The teacher\'s sources are for you: the page takes its facts and names from them without mentioning them, and sends students to a source only when it is among this week\'s readings. A term is explained in a sentence where it first appears. The graded work and the forum prompt are written separately and shown to the student with this page: the page names each once, in the checklist, with its deadline, and says nothing of what they ask, how they are submitted or how they are graded.',
+    'The teacher\'s sources are for you: the page takes its facts and names from them without mentioning them, and sends students to a source only when it is among this week\'s readings. A term is explained in a sentence where it first appears. The graded work and the forum prompt are written separately and shown to the student with this page: the page names each once, in the checklist, with its deadline, and says nothing of what they ask, how they are submitted or how they are graded; practice on the page is never called the submission.',
     'Never write a placeholder for the instructor to fill in, and never promise a file, link, video or reading that the page does not give as a block.',
   ].join(' ');
 }
@@ -279,7 +275,7 @@ export const ONLINE_ASKS = {
   discussions:
     'Write one prompt for the week\'s discussion forum, addressed to the students. It is open enough that no two posts can be the same: each student brings something of their own (what they made, a choice they took and why, where they got stuck). Say what the first post holds, due Thursday, and what the two replies do, due Sunday (for work that can be shared: try a classmate\'s, and say one thing that works and one to change). Do not say how posts are graded: Folio adds that, the same every week. Under "followUps", two or three things the instructor can ask in the thread to push it further.',
   assignments:
-    'Students do this alone and submit it online. Write "prompt" in three short paragraphs: why they are doing it, what to do, and how it is judged. Say exactly what to submit, in the form the grading or the brief gives (a screenshot, a short screen recording, a link), in any common file type, the same for Windows and Mac. It asks only for what the page has taught, the capture and upload included, and for a guided build it asks for something of the student\'s own on top (a change, an addition, a choice explained), so that no two submissions are alike. Say what help is allowed, AI tools included, as the class policies say; when they say nothing, ask students to note any help they used.',
+    'Students do this alone and submit it online. Write "prompt" in three short paragraphs: why they are doing it, what to do, and how it is judged. Say exactly what to submit, in the form the grading or the brief gives (a screenshot, a short screen recording, a link), in any common file type, the same for Windows and Mac. It asks only for what the page has taught, the capture and upload included, and for a guided build it asks for something of the student\'s own on top (a change, an addition, a choice explained), so that no two submissions are alike; it may build on the page\'s challenge, and puts nothing where the page already put something. What counts as complete, and every rubric criterion, is something the submitted file shows; when the work is graded complete or incomplete, say which rubric level is complete. Say what help is allowed, AI tools included, as the class policies say; when they say nothing, ask students to note any help they used.',
   faq: 'Write the week\'s "Stuck?" list: three to five problems students most often hit this week, each as the question they would ask, with what they see (the exact error text when there is one), and the fix in order. Add where to ask when the fix does not work: the course\'s Q&A forum.',
   study: 'This is the week\'s recap, the page a student rereads before next week or before a test: say what they can now do, not what the page covered.',
 } as const;
