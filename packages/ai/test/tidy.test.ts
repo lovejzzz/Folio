@@ -89,6 +89,12 @@ describe('plan sources and rubric bands', () => {
     expect(out.segments[0]!.description).toBe('Derive it.');
   });
 
+  it('drops a passage number inside a sentence and keeps the sentence', () => {
+    const seg = (teacherNotes: string) => ({ kind: 'teach' as const, title: 'T', minutes: 10, description: 'D.', teacherNotes });
+    const out = tidyPlanSources({ segments: [seg('The evidence is Torres’s report in passage [6] that students slept more.'), seg('Fact: an event in Torres’s article, passage [6]. It counts.')] });
+    expect(out.segments.map((s) => s.teacherNotes)).toEqual(['The evidence is Torres’s report that students slept more.', 'Fact: an event in Torres’s article. It counts.']);
+  });
+
   it('names a rubric level by its band, the points showing its floor', () => {
     const v = { title: 'T', prompt: 'P', steps: ['Do it'], rubric: { levels: [{ label: 'First (70+)', points: 70 }, { label: 'Upper second (60–69)', points: 60 }, { label: 'B', points: 80 }], criteria: [] } };
     expect(tidySteps(v as never).rubric.levels.map((l) => l.label)).toEqual(['First', 'Upper second', 'B']);

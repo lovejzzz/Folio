@@ -39,9 +39,11 @@ export function tidySteps(v: AssignmentDraft): AssignmentDraft {
 const REFS = String.raw`(?:passages?|sources?)\s*\[\d+\](?:\s*(?:,|and|&|–|-)\s*\[?\d+\]?)*`;
 const REF_IN_BRACKETS = new RegExp(String.raw`\s*\((?:see\s+)?${REFS}\)`, 'gi');
 const REF_SENTENCE = new RegExp(String.raw`(^|[.!?])[ \t]*(?:see\s+)?${REFS}\.?(?=\s|$)`, 'gim');
+/** "Torres's report in passage [6] that…", "her article, passage [6].": the pointer goes, the sentence stays. */
+const REF_INLINE = new RegExp(String.raw`(?:,\s*|\s+in\s+|\s+)${REFS}(?=[\s.,:;)]|$)`, 'gi');
 
 export function tidyPlanSources<T extends { segments: { description: string; teacherNotes: string }[] }>(v: T): T {
-  const strip = (text: string) => text.replace(REF_IN_BRACKETS, '').replace(REF_SENTENCE, '$1').trim();
+  const strip = (text: string) => text.replace(REF_IN_BRACKETS, '').replace(REF_SENTENCE, '$1').replace(REF_INLINE, '').trim();
   return { ...v, segments: v.segments.map((seg) => ({ ...seg, description: strip(seg.description), teacherNotes: strip(seg.teacherNotes) })) };
 }
 
