@@ -1,0 +1,192 @@
+[
+ {
+  "lesson": 1,
+  "slot": 1,
+  "src": "/samples/unity/media/w01-courtyard.webp",
+  "caption": "The finished Courtyard, as the Game view shows it."
+ },
+ {
+  "lesson": 1,
+  "slot": 3,
+  "drop": true,
+  "why": "A folder in Documents needs no picture, and the owner's own Documents folder is not for publishing."
+ },
+ {
+  "lesson": 1,
+  "slot": 4,
+  "src": "/samples/unity/media/w01-hub-licenses.webp",
+  "caption": "Unity Hub on a Mac: Settings, then Licenses. Your own license appears in the list below."
+ },
+ {
+  "lesson": 1,
+  "slot": 5,
+  "src": "/samples/unity/media/w01-hub-install-editor.webp",
+  "caption": "The Install Unity Editor list. Yours shows an Install button where this one says Installed."
+ },
+ {
+  "lesson": 1,
+  "slot": 6,
+  "src": "/samples/unity/media/w01-hub-installs.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 7,
+  "drop": true,
+  "why": "Visual Studio Code is not on the machine the pictures were made on."
+ },
+ {
+  "lesson": 1,
+  "slot": 8,
+  "drop": true,
+  "why": "Visual Studio Code is not on the machine the pictures were made on."
+ },
+ {
+  "lesson": 1,
+  "slot": 9,
+  "src": "/samples/unity/media/w01-hub-core.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 10,
+  "src": "/samples/unity/media/w01-hub-create.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 11,
+  "src": "/samples/unity/media/w01-editor-windows.webp",
+  "caption": "The Editor on a Mac, in the Default layout. On Windows the menus sit inside the window; everything else is the same."
+ },
+ {
+  "lesson": 1,
+  "slot": 12,
+  "src": "/samples/unity/media/w01-inspector-camera.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 13,
+  "src": "/samples/unity/media/w01-project-window.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 14,
+  "src": "/samples/unity/media/w01-navigate.mp4",
+  "poster": "/samples/unity/media/w01-navigate.poster.webp",
+  "caption": "Zooming in and out, then circling. It is shown in the finished Courtyard so there is something to look at; your scene is still empty."
+ },
+ {
+  "lesson": 1,
+  "slot": 15,
+  "src": "/samples/unity/media/w01-light.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 16,
+  "src": "/samples/unity/media/files/Courtyard_start.zip"
+ },
+ {
+  "lesson": 1,
+  "slot": 17,
+  "src": "/samples/unity/media/w01-inspector-ground.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 18,
+  "src": "/samples/unity/media/w01-inspector-tower.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 19,
+  "src": "/samples/unity/media/w01-editor-tower.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 20,
+  "src": "/samples/unity/media/w01-editor-all.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 21,
+  "src": "/samples/unity/media/w01-game-aspect.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 22,
+  "src": "/samples/unity/media/w01-inspector-camera-set.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 23,
+  "src": "/samples/unity/media/w01-courtyard.webp"
+ },
+ {
+  "lesson": 1,
+  "slot": 24,
+  "src": "/samples/unity/media/w01-play.mp4",
+  "poster": "/samples/unity/media/w01-play.poster.webp",
+  "caption": "Play is clicked, the button turns into a square while the game runs, and a second click stops it."
+ },
+ {
+  "lesson": 1,
+  "slot": 25,
+  "src": "/samples/unity/media/files/Courtyard_checkpoint.zip"
+ },
+ {
+  "lesson": 1,
+  "slot": 26,
+  "drop": true,
+  "why": "A Windows screen: the pictures were made on a Mac."
+ },
+ {
+  "lesson": 1,
+  "slot": 27,
+  "drop": true,
+  "why": "A Windows screen: the pictures were made on a Mac."
+ },
+ {
+  "lesson": 1,
+  "slot": 28,
+  "drop": true,
+  "why": "The Mac recording toolbar cannot be captured."
+ },
+ {
+  "lesson": 1,
+  "slot": 29,
+  "src": "/samples/unity/media/w01-editor-finished.webp",
+  "caption": "What your screenshot should show: the whole Editor, with the framed courtyard in the Game view."
+ },
+ {
+  "lesson": 1,
+  "find": "Type Courtyard as the name, keep the folder as Assets > Scenes, and click **Save**.",
+  "replace": "Type Courtyard as the name. Save it inside the Scenes folder: if the box shows Assets, open **Scenes** first (on a Mac, click the arrow beside **Where** to see the folders). Then click **Save**.",
+  "why": "Followed in Unity 6000.6.4f1 on a Mac: Save As opens on Assets, not Assets > Scenes."
+ },
+ {
+  "lesson": 1,
+  "find": "Type Ground and press Enter. The name is already in edit mode.",
+  "replace": "Type Ground and press Enter. The name is already in edit mode. A yellow note about the Plane’s Mesh Collider may show in the Inspector: it is harmless, so leave it.",
+  "why": "A new Plane shows a Mesh Collider warning with a View button; a beginner would stop at it."
+ },
+ {
+  "lesson": 1,
+  "find": "At the top left of the **Game** view, open the dropdown that sets its shape and choose **16:9 Aspect**.",
+  "replace": "In the bar along the top of the **Game** view, open the third dropdown, which reads **Free Aspect**, and choose **16:9 Aspect**.",
+  "why": "The aspect dropdown is the third control (Game, Display 1, Free Aspect)."
+ },
+ {
+  "lesson": 1,
+  "find": ", and some sky above the back wall.",
+  "replace": ", with plain background around it.",
+  "why": "The Game view shows a flat background here, not a visible sky."
+ },
+ {
+  "lesson": 1,
+  "find": "If the Editor is still tinted, you are still in Play mode: click **Play** once more.",
+  "replace": "If the Play button shows a square, you are still in Play mode: click it once more.",
+  "why": "In 6000.6 the Play button turns into a square while playing; the Editor does not tint noticeably."
+ },
+ {
+  "lesson": 1,
+  "settle": "*",
+  "why": "The page was followed step by step in Unity and corrected."
+ }
+]

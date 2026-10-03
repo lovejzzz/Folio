@@ -14,6 +14,7 @@ export const SAMPLES = {
   chemistry: { stage: 'high', title: 'Stoichiometry', detail: 'Grade 10 chemistry · 10 lessons, two labs' },
   reconstruction: { stage: 'high', title: 'Reconstruction, 1865–1877', detail: 'Grade 11 US history · 8 lessons, sources and an essay' },
   university: { stage: 'university', title: 'Introduction to ethics', detail: 'First-year university · a 14-week semester' },
+  unity: { stage: 'university', title: 'Game development with Unity', detail: 'Undergraduate, online on your own time · 14 weeks, with pictures and clips' },
 } as const satisfies Record<string, { stage: Stage; title: string; detail: string }>;
 
 export type SampleName = keyof typeof SAMPLES;

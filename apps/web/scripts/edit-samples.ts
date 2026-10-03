@@ -6,7 +6,7 @@
 // to questions) or, with no lesson given, anywhere in the course. An edit that finds nothing, or finds its words
 // more than once without "all", stops the run: the course has changed under it. Afterwards every section is
 // stamped as written from the course as it now stands, so a teacher's corrections don't mark it out of date.
-import { computeBasis, orderedLessons, parseCourse, type Course } from '@folio/core';
+import { computeBasis, orderedLessons, parseCourse, type Course, type PageBlock } from '@folio/core';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SAMPLE_NAMES, type SampleName } from '../src/lib/samples';
@@ -22,6 +22,16 @@ interface Edit {
   settle?: string;
   /** Instead of a replacement: rename every rubric's levels and set their points, as { "A": ["Exemplary", 4] }. */
   relabel?: Record<string, [string, number]>;
+  /**
+   * Instead of a replacement, in an online course's page: fill the nth picture, clip or file of the lesson (counted
+   * from 1 in page order, pictures under steps included) with the media made for it, or take the slot away with
+   * "drop" when it cannot be made (a screen of another operating system).
+   */
+  slot?: number;
+  src?: string;
+  poster?: string;
+  caption?: string;
+  drop?: boolean;
   /** Replace every occurrence, not just the one. */
   all?: boolean;
   /** Why, for whoever reads the file later. */
@@ -58,8 +68,30 @@ function visit(parent: Record<string | number, unknown>, key: string | number, v
 function settle(course: Course, lesson: number | undefined, where: string, name: string): void {
   const plan = orderedLessons(course)[(lesson ?? 0) - 1]?.gen.plan;
   const before = plan?.flags.length ?? 0;
+  // "*" settles every note and check on the page at once: used once a page has been followed and corrected by hand.
+  if (plan && where === '*') return void (plan.flags = []);
   if (plan) plan.flags = plan.flags.filter((f) => !(f.code === 'reviewNote' && f.values.where.includes(where)));
   if (!plan || plan.flags.length !== before - 1) throw new Error(`${name}: lesson ${lesson} has no single note at "${where}"`);
+}
+
+/** One place for a picture, clip or file on a page: how to fill it, and how to take it away. */
+interface Slot {
+  fill: (src: string, poster?: string, caption?: string) => void;
+  drop: () => void;
+}
+
+/** A lesson page's media slots, in page order. Dropping one leaves the others' numbers as they were for this run. */
+function slots(page: PageBlock[]): Slot[] {
+  const gone = new Set<string>();
+  const out: Slot[] = [];
+  for (const block of page) {
+    if (block.type === 'image' || block.type === 'video') out.push({ fill: (src, poster, caption) => Object.assign(block, { src }, block.type === 'video' && poster ? { poster } : {}, caption ? { caption } : {}), drop: () => void gone.add(block.id) });
+    if (block.type === 'file') out.push({ fill: (src) => void (block.href = src), drop: () => void gone.add(block.id) });
+    if (block.type === 'steps') for (const step of block.items) if (step.shot) out.push({ fill: (src, _poster, caption) => void Object.assign(step.shot!, { src }, caption ? { caption } : {}), drop: () => void delete step.shot });
+  }
+  // Removal happens at the end, so numbers stay stable while edits are applied.
+  out.push({ fill: () => {}, drop: () => void page.splice(0, page.length, ...page.filter((b) => !gone.has(b.id))) });
+  return out;
 }
 
 function editOne(name: SampleName): void {
@@ -68,7 +100,17 @@ function editOne(name: SampleName): void {
   const path = join(WEB, 'public/samples', `${name}.json`);
   const course = parseCourse(JSON.parse(readFileSync(FROM ? join(FROM, `${name}.json`) : path, 'utf8')));
   const edits = JSON.parse(readFileSync(file, 'utf8')) as Edit[];
+  const media = new Map<number, Slot[]>();
+  const slotsOf = (lesson: number) => media.get(lesson) ?? media.set(lesson, slots(orderedLessons(course)[lesson - 1]!.page)).get(lesson)!;
   for (const edit of edits) {
+    if (edit.slot !== undefined) {
+      const all = slotsOf(edit.lesson!);
+      const slot = all[edit.slot - 1];
+      if (!slot || edit.slot >= all.length) throw new Error(`${name}: lesson ${edit.lesson} has no media slot ${edit.slot}`);
+      if (edit.drop) slot.drop();
+      else slot.fill(edit.src!, edit.poster, edit.caption);
+      continue;
+    }
     if (edit.settle !== undefined) {
       settle(course, edit.lesson, edit.settle, name);
       continue;
@@ -82,6 +124,7 @@ function editOne(name: SampleName): void {
     if (found === 0 || (found > 1 && !edit.all)) throw new Error(`${name}: "${edit.find!.slice(0, 60)}" found ${found} times${edit.lesson ? ` in lesson ${edit.lesson}` : ''}`);
     for (const part of parts) walk(part, edit, true);
   }
+  for (const all of media.values()) all.at(-1)!.drop();
   const edited = parseCourse(course);
   for (const lesson of orderedLessons(edited))
     for (const [kind, meta] of Object.entries(lesson.gen)) if (meta) meta.basis = computeBasis(edited, lesson, kind as keyof typeof lesson.gen);
