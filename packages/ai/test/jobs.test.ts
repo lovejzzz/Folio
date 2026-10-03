@@ -175,7 +175,7 @@ describe('a test taken in class', () => {
       title: 'Unit test',
       instructions: 'You have 40 minutes. Show your work.',
       questions: [
-        { question: 'What gas do plants take in?', points: 2, answer: 'Carbon dioxide' },
+        { question: 'What gas do plants take in? (2 points)', points: 2, answer: 'Carbon dioxide (2 points)' },
         { question: 'Where is chlorophyll found? A leaf B root C stem D flower', points: 1, answer: 'A' },
         { question: 'Explain why a leaf kept in the dark loses its starch.', points: 5, answer: 'No light, so no photosynthesis; stored starch is used up.' },
       ],

@@ -80,6 +80,8 @@ export const step: SectionJob<StepDraft> = {
 };
 
 const pointsOf = (n: number) => (n === 1 ? '1 point' : `${n} points`);
+/** The text without the points a model wrote at its end: Folio adds them, and they stood there twice. */
+const withoutPoints = (text: string) => text.trim().replace(/(?:\s*\(\d+\s*(?:points?|pts?|marks?)\))+\s*$/i, '');
 
 /**
  * A test taken in class, kept as an assignment whose steps are its questions, each with its points, and whose
@@ -97,9 +99,9 @@ export const test: SectionJob<TestDraft> = {
       flags: [],
       title: v.title,
       prompt: v.instructions,
-      steps: v.questions.map((q) => `${q.question.trim()} (${pointsOf(q.points)})`),
+      steps: v.questions.map((q) => `${withoutPoints(q.question)} (${pointsOf(q.points)})`),
       rubricId: null,
-      answerKey: [...v.questions.map((q, i) => `${i + 1}. ${q.answer.trim()} (${pointsOf(q.points)})`), `Total: ${pointsOf(total)}`].join('\n'),
+      answerKey: [...v.questions.map((q, i) => `${i + 1}. ${withoutPoints(q.answer)} (${pointsOf(q.points)})`), `Total: ${pointsOf(total)}`].join('\n'),
     };
     return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: flagsAt(problems, null), tasks: [task], rubrics: [] })];
   },

@@ -266,7 +266,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
     const toward = lesson.homework.toward.trim();
     if (lesson.homework.kind === 'step')
       return `Write one short, ungraded step toward ${toward ? `"${toward}"` : 'the larger graded piece the course builds to'}, suited to where this lesson falls in the course: for example choosing a question, gathering evidence, an outline or a draft section. It should take students well under an hour, and be done at home: nothing in it needs a partner, a classmate or the classroom's materials, and young children can do it with someone at home. Give a title, what to do, and one to four steps (the page numbers them, so leave numbers out). ${earlierSteps(c, lesson)}`.trim();
-    if (lesson.homework.kind === 'test') return testAsk(lesson);
+    if (lesson.homework.kind === 'test') return [testAsk(lesson), sharedComponent(c, lesson)].filter(Boolean).join(' ');
     // One of a run (weekly sets) is about its lesson; a piece of its own (a paper, a project) is about the course.
     const own = sharedComponent(c, lesson)
       ? 'it is about what this lesson taught'
