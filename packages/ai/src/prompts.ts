@@ -1,5 +1,5 @@
 import { SHAPE_LIMITS, filledTexts, lessonSessions, orderedLessons, statedObjectives, type Course, type Language, type Lesson, type Session, type SessionKind } from '@folio/core';
-import { courseSoFar, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
+import { courseSoFar, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, sharedComponent } from './continuity';
 import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 
@@ -29,7 +29,7 @@ export function systemPrompt(language: WritingLanguage, locale = ''): string {
     'Write material a teacher could use tomorrow: specific to the subject, with real examples, real terms, real numbers and correct facts. Never write placeholders such as "Topic 1", "key concept" or "Session 1 topic"; name the actual content.',
     'Match the level of the students. Keep sentences short and concrete. Do not use emoji.',
     'If something in the brief is ambiguous, choose the most sensible specific interpretation and stay consistent with it.',
-    'Quote word for word only from the teacher\'s sources shown to you. Anything else, paraphrase and point to the chapter or section: never invent a quotation or a page number.',
+    'Quote word for word only from the teacher\'s sources shown to you. Anything else, paraphrase and point to the chapter or section: never invent a quotation or a page number. What a named textbook or well-known work teaches may be taught in your own words, with its chapter when you are sure of it; cite in the style the discipline uses (APA in education and the social sciences, for instance).',
     'Never present an invented statistic, study, event or case as real, even as an example of evidence. When an example needs evidence that the brief and sources don\'t give, use well-established facts you are sure of, or make the example plainly hypothetical ("Suppose a survey of our school found…"): said once, where the example is introduced, and never of real data.',
     'Write maths in Unicode with real subscripts and superscripts (β₀, xᵢ, x², σ̂², ≤, √), never LaTeX. Where Unicode has none, write _ or ^ and the rest as one word or in braces (β̂_educ, t_{n−k−1}, e^{0.092}): Folio sets them as sub- and superscripts.',
     'Put code, commands and function names in backticks, e.g. `lm(wage ~ educ, data = wage1)`, one line of code per pair. Use backticks for nothing else, and never fenced code blocks.',
@@ -147,6 +147,7 @@ function gradingLine(course: Course): string {
     // Told that every piece of work "says which one", a course named its final assessment in a dozen materials.
     'Anything the brief or the grading has happen in class, such as a student presentation, a debate or a test, needs a place in the lesson plans; an assignment that prepares for a graded component says which one, and other materials need not. State a component\'s share of the course grade only as the grading gives it; never infer one. Points within a quiz or test are another matter: the plan sets them.',
     scaleLine(course),
+    inClassPieces(course),
   ]
     .filter(Boolean)
     .join(' ');
@@ -249,13 +250,14 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
     [
       `Write the lesson plan: two to five key ideas, ${planRun(c)}, and the vocabulary students need (up to eight terms; in a course that teaches a language, every word and phrase the lesson teaches, each with its meaning). Each segment description says exactly what happens, with the example to use, in two to four short sentences, each on its own line. Put worked answers, expected responses and common mistakes in the teacher notes (under 60 words), not in the description.`,
       'Plan only what can really happen in the time, place and with the materials the lesson has. Whatever students are to see, make or finish in a segment has to be possible within that segment\'s minutes; when something takes longer, such as a process that needs hours or days to show a result, plan around it (start it earlier, use results prepared in advance, or come back to it later) and say how in the teacher notes. The slides, quiz and study guide are written from this plan and take everything in it as having happened.',
+      c.shape.minutesPerLesson >= 120 && !lessonSessions(c).length ? 'A meeting this long has a break of about ten minutes near its middle, as a segment of its own.' : '',
       'What the brief says of particular students (a newcomer, heritage speakers, students who need support) shapes the plan where it matters, with something for their own learning; it is not repeated in every segment.',
       'In the teacher notes, give the safety precautions a careful teacher would take with what students handle, taste, heat, cut or mix (protective gear, ventilation, heat a reaction gives off, disposal, allergies, materials that must never be eaten); these are outside the word limit of the notes. Where the material is painful (violence, racism, abuse, the language of period sources), say how to handle it with care, and never have students play the people who suffered or inflicted it.',
       `A piece graded in the lesson is never modelled with the very case students then hand in. ${gradedPapers(c, lesson)} Nothing in these instructions is repeated in the plan as advice to the teacher.`,
       'A text students read that is not among the teacher\'s sources is named exactly (author, title, and the section or passage to use, by its opening words when it has no number), so the teacher can find it, with a note to prepare copies; never just "an excerpt".',
       'When a segment uses another of the lesson\'s materials, such as the quiz, the slides or the assignment, say what students do with it, not what its questions or items will be: those are written separately, from this plan.',
-      'When a segment gives students a set of items to work on that no other material holds, such as statements to sort, scenarios to classify, cases to match or data to read, write every item out in the teacher notes, one per line with its expected answer, however many there are; the word limit is for the rest of the notes. Keep such a set to what fits the minutes, usually four to six items. Never describe items that are left for the teacher to write. The same holds for a single question, such as an exit ticket: no other material holds it, so its wording and expected answer are in the plan.',
-    ].join(' '),
+      'When a segment gives students a set of items to work on that no other material holds, such as statements to sort, scenarios to classify, cases to match or data to read, write every item out in the teacher notes, one per line with its expected answer, however many there are; the word limit is for the rest of the notes. Keep such a set to what fits the minutes, usually four to six items. Never describe items that are left for the teacher to write. The same holds for a single question, such as an exit ticket: no other material holds it, so its wording and expected answer are in the plan. And for any form, checklist, handout or model text a segment relies on: it is written out in the notes in full, never only named.',
+    ].filter(Boolean).join(' '),
   slides: (c) =>
     ['Write a slide deck of five to eight slides that follows the lesson plan. Start with a title slide. Keep bullets short (under ten words), at most five per slide, and put the detail in speaker notes. When the plan has students work from items "on the slide", the slide shows every item in full, even past the bullet limits. A slide shown while students work on a task, quiz or assessment gives its instructions and prompt, never the answers: those come on a later slide or in the notes.', slidesFor(c)].filter(Boolean).join(' '),
   study: () =>
