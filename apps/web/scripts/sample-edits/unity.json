@@ -433,6 +433,219 @@
   "why": "The page was followed step by step in Unity and corrected."
  },
  {
+  "lesson": 3,
+  "slot": 1,
+  "src": "/samples/unity/media/w03-preview.mp4",
+  "poster": "/samples/unity/media/w03-preview.poster.webp",
+  "caption": "Where this week ends: two cubes turning at different speeds, both run by one script you wrote."
+ },
+ {
+  "lesson": 3,
+  "slot": 2,
+  "drop": true,
+  "why": "Unity Hub lists the owner’s own projects."
+ },
+ {
+  "lesson": 3,
+  "slot": 3,
+  "src": "/samples/unity/media/w03-open.webp",
+  "caption": "OrbCollector open on the Arena scene, as you left it last week."
+ },
+ {
+  "lesson": 3,
+  "slot": 4,
+  "src": "/samples/unity/media/files/OrbCollector-week2-end.zip"
+ },
+ {
+  "lesson": 3,
+  "slot": 5,
+  "drop": true,
+  "why": "The same picture as the one under step 5."
+ },
+ {
+  "lesson": 3,
+  "slot": 7,
+  "src": "/samples/unity/media/w03-transform.webp",
+  "caption": "Pickup_Test’s Transform with Position -5, 1, 5."
+ },
+ {
+  "lesson": 3,
+  "slot": 8,
+  "src": "/samples/unity/media/w03-script-file.webp",
+  "caption": "The Scripts folder with Spinner in it."
+ },
+ {
+  "lesson": 3,
+  "slot": 9,
+  "src": "/samples/unity/media/w03-attached.webp",
+  "caption": "Spinner (Script) sits at the bottom of Pickup_Test’s components, just above the material."
+ },
+ {
+  "lesson": 3,
+  "slot": 10,
+  "drop": true,
+  "why": "Needs Visual Studio Code, which is not on the machine the pictures were made on."
+ },
+ {
+  "lesson": 3,
+  "slot": 11,
+  "src": "/samples/unity/media/w03-console-tab.webp",
+  "caption": "The Console tab, beside Project at the bottom of the Editor. It is empty until something writes to it."
+ },
+ {
+  "lesson": 3,
+  "slot": 12,
+  "src": "/samples/unity/media/w03-playing.webp",
+  "caption": "During Play: the yellow cube has turned part-way, and the Console holds the one line that Start wrote."
+ },
+ {
+  "lesson": 3,
+  "slot": 13,
+  "src": "/samples/unity/media/w03-spin.mp4",
+  "poster": "/samples/unity/media/w03-spin.poster.webp",
+  "caption": "Pickup_Test in the Game view at Speed 90."
+ },
+ {
+  "lesson": 3,
+  "slot": 14,
+  "src": "/samples/unity/media/w03-spinner-fields.webp",
+  "caption": "Your three public variables, as the Inspector shows them."
+ },
+ {
+  "lesson": 3,
+  "slot": 15,
+  "src": "/samples/unity/media/w03-message.webp",
+  "caption": "The Console after the change: one line, with your new message. Clear is the first button on the left."
+ },
+ {
+  "lesson": 3,
+  "slot": 16,
+  "src": "/samples/unity/media/w03-speeds.mp4",
+  "poster": "/samples/unity/media/w03-speeds.poster.webp",
+  "caption": "The same cube at three speeds. Only the number in the Inspector changed."
+ },
+ {
+  "lesson": 3,
+  "slot": 17,
+  "drop": true,
+  "why": "An open menu cannot be captured by the tool that made these pictures."
+ },
+ {
+  "lesson": 3,
+  "slot": 18,
+  "src": "/samples/unity/media/w03-two.webp",
+  "caption": "Pickup_Test and Pickup_Test_B near the back left corner, both in the Hierarchy."
+ },
+ {
+  "lesson": 3,
+  "slot": 19,
+  "src": "/samples/unity/media/w03-error-1.webp",
+  "caption": "The missing semicolon: file, line 17, column 45, code CS1002, and the sentence."
+ },
+ {
+  "lesson": 3,
+  "slot": 20,
+  "drop": true,
+  "why": "Needs Visual Studio Code."
+ },
+ {
+  "lesson": 3,
+  "slot": 21,
+  "src": "/samples/unity/media/w03-error-2.webp",
+  "caption": "The misspelled name: line 25, column 47, code CS0117."
+ },
+ {
+  "lesson": 3,
+  "slot": 22,
+  "src": "/samples/unity/media/w03-error-3.webp",
+  "caption": "The capital T: line 25, column 13, code CS0120."
+ },
+ {
+  "lesson": 3,
+  "slot": 23,
+  "drop": true,
+  "why": "The same view as the clip that opens the page."
+ },
+ {
+  "lesson": 3,
+  "slot": 24,
+  "drop": true,
+  "why": "A Windows screen; these pictures were made on a Mac."
+ },
+ {
+  "lesson": 3,
+  "slot": 25,
+  "drop": true,
+  "why": "A Windows screen; these pictures were made on a Mac."
+ },
+ {
+  "lesson": 3,
+  "slot": 26,
+  "drop": true,
+  "why": "The macOS recording toolbar is not part of Unity and was not captured."
+ },
+ {
+  "lesson": 3,
+  "slot": 27,
+  "src": "/samples/unity/media/w03-tumble.mp4",
+  "poster": "/samples/unity/media/w03-tumble.poster.webp",
+  "caption": "One result: Tumble Speed 45 on Pickup_Test_B and 0 on Pickup_Test. Tumble Speed shows in the Inspector under Speed."
+ },
+ {
+  "lesson": 3,
+  "slot": 28,
+  "src": "/samples/unity/media/files/OrbCollector-week3-end.zip"
+ },
+ {
+  "lesson": 3,
+  "find": "It should read SampleScene - OrbCollector - Windows, Mac, Linux - Unity 6.6 (6000.6.4f1). The scene name may differ if you saved your Arena under another name.",
+  "replace": "It should read Arena - OrbCollector - Windows, Mac, Linux - Unity 6.6 (6000.6.4f1). If it reads SampleScene instead, double-click **Arena** in the Scenes folder of the **Project** window.",
+  "why": "Week 2 saved the scene as Arena."
+ },
+ {
+  "lesson": 3,
+  "find": "standing to the left of the Arena",
+  "replace": "floating just above the floor near the back left corner of the Arena",
+  "why": "At -5, 1, 5 the cube is inside the arena, half a unit above the floor."
+ },
+ {
+  "lesson": 3,
+  "find": "You cannot find the cube in the Game view. That is fine for now: the Scene view shows everything, and you will watch the cube there. Click the Scene tab.",
+  "replace": "You cannot find the cube in the Game view. Check that its Position reads -5, 1, 5: it belongs near the back left corner of the Arena.",
+  "why": "The cube is in view of the camera."
+ },
+ {
+  "lesson": 3,
+  "find": "Watch Pickup_Test in the **Scene** view.",
+  "replace": "Watch Pickup_Test in the **Game** view.",
+  "why": "As above."
+ },
+ {
+  "lesson": 3,
+  "find": "before you can enter Play Mode!",
+  "replace": "before you can enter playmode!",
+  "why": "The message as Unity 6000.6 writes it.",
+  "all": true
+ },
+ {
+  "lesson": 3,
+  "find": "Click Pickup_Test in the **Hierarchy**, choose **Edit > Duplicate**, and type Pickup_Test_B as its name.",
+  "replace": "Click Pickup_Test in the **Hierarchy** and choose **Edit > Duplicate**. The copy is called Pickup_Test (1). Choose **Edit > Rename**, type Pickup_Test_B and press Enter.",
+  "why": "Duplicate does not start a rename."
+ },
+ {
+  "lesson": 3,
+  "find": "−",
+  "replace": "-",
+  "why": "A value a student types uses the keyboard hyphen.",
+  "all": true
+ },
+ {
+  "lesson": 3,
+  "settle": "*",
+  "why": "The page was followed in Unity: the code compiles, the three errors read as printed, and the numbers hold."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
