@@ -52,7 +52,8 @@ export function Media({ kind, src, alt, caption, shows, poster, transcript, minu
   const t = useT();
   const Icon = kind === 'image' ? Image : Clapperboard;
   const script = transcript?.trim() ? (
-    <details className="mod-transcript">
+    // Until the video is made, its transcript is the teaching: shown open, not behind a click.
+    <details className="mod-transcript" open={!src}>
       <summary>{t.module.transcript}</summary>
       <p>{transcript}</p>
     </details>
