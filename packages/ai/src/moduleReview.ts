@@ -44,7 +44,9 @@ function moduleText(v: ModuleDraft): string {
   const parts = v.parts.map((p, i) => `Part ${i + 1}: ${p.title}\n${p.blocks.map(blockText).join('\n')}`).join('\n\n');
   const total = v.checklist.reduce((n, c) => n + c.minutes, 0);
   // The total is given: a reviewer adding it up got 640 for 540, and noted a workload problem that was not there.
-  return [`Introduction: ${v.intro}`, `Checklist (${total} minutes in all):\n${checklist}`, parts, `Wrap-up: ${v.wrapUp}`].join('\n\n');
+  // The run of show is read too: unread, its "what is due" lines named work the page never set.
+  const live = v.live.length ? `Live session (${v.live.reduce((n, x) => n + x.minutes, 0)} minutes in all):\n${v.live.map((x) => `- ${x.title} (${x.kind}, ${x.minutes} min): ${x.description}${x.teacherNotes ? ` [Instructor: ${x.teacherNotes}]` : ''}`).join('\n')}` : '';
+  return [`Introduction: ${v.intro}`, `Checklist (${total} minutes in all):\n${checklist}`, parts, live, `Wrap-up: ${v.wrapUp}`].filter(Boolean).join('\n\n');
 }
 
 export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraft): string {

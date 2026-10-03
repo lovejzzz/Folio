@@ -183,4 +183,19 @@ describe('a course taught live online, or with a live session beside its weekly 
     const live = [{ kind: 'warmup' as const, title: 'Arrival', minutes: 10, description: 'Answer in the chat.', teacherNotes: '' }, { kind: 'practice' as const, title: 'Pairs', minutes: 40, description: 'Debug in breakout rooms.', teacherNotes: '' }];
     expect(JSON.stringify(checkModule({ ...draft(), live }, c))).toMatch(/add up to 50 minutes; the session is 60/);
   });
+
+  it('tells every writer of a week with a live session the same rules, and asks for one preparation post', () => {
+    const c: Course = { ...smallCourse(), delivery: 'online-mixed', online: OnlineSchema.parse({ hoursPerWeek: 3, liveSessions: 1, liveMinutes: 75, classSize: 60 }) };
+    const lesson = orderedLessons(c)[0]!;
+    const background = courseBackground(c);
+    expect(background).toMatch(/Cameras are invited, never required/);
+    expect(background).toMatch(/one forum post before the live session/);
+    expect(background).toMatch(/With about 60 students/);
+    const forum = sectionPrompt(c, lesson, 'discussions');
+    expect(forum).toMatch(/one preparation post, due the day before the live session, with no replies/);
+    expect(forum).not.toMatch(/two replies/);
+    expect(sectionPrompt(c, lesson, 'slides')).toMatch(/follow its run of show/);
+    // A session under 90 minutes is never held to a break.
+    expect(checkRunOfShow([{ kind: 'practice', title: 'Rooms', minutes: 40 }, { kind: 'discuss', title: 'Debrief', minutes: 35 }])).toEqual([]);
+  });
 });

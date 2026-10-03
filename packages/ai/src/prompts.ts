@@ -2,7 +2,7 @@ import { hasModulePages, lessonSessions, orderedLessons, statedObjectives, type 
 import { courseSoFar, dueWords, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, readBefore, sharedComponent } from './continuity';
 import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
-import { LIVE_ASKS, isLiveOnline, liveBackground, runOfShow } from './live';
+import { LIVE_ASKS, MIXED_ASKS, isLiveOnline, isMixedOnline, liveBackground, runOfShow } from './live';
 import { ONLINE_ASKS, moduleAsk, onlineBackground, onlineHomeworkLine } from './online';
 
 /**
@@ -328,12 +328,15 @@ function slidesFor(course: Course): string {
   return `The slides are for the ${SESSION_NAMES[shown[0]!.kind]}; the other sessions run without them.`;
 }
 
+const FOLLOW_UPS = 'Do not say how posts are graded: Folio adds that, the same every week. Under "followUps", two or three things the instructor can ask in the thread or in the session to push it further.';
+
 /** What a week of an online course asks for: the page in place of the plan, and the other materials as a student alone uses them. */
 function onlineAsk(course: Course, lesson: Lesson, kind: SectionPromptKind): string {
   if (kind === 'plan') return moduleAsk(course, lesson);
-  if (kind === 'discussions') return ONLINE_ASKS.discussions;
+  const mixed = isMixedOnline(course);
+  if (kind === 'discussions') return mixed ? `${ONLINE_ASKS.discussions.split(' Say what the first post holds')[0]} ${MIXED_ASKS.discussions} ${FOLLOW_UPS}` : ONLINE_ASKS.discussions;
   if (kind === 'faq') return ONLINE_ASKS.faq;
-  if (kind === 'slides') return asks.slides(course, lesson);
+  if (kind === 'slides') return mixed ? `${asks.slides(course, lesson)} ${LIVE_ASKS.slides} ${MIXED_ASKS.slides}` : asks.slides(course, lesson);
   if (kind === 'assignments' && (lesson.homework.kind === 'test' || lesson.homework.kind === 'step')) return asks.assignments(course, lesson);
   return `${asks[kind](course, lesson)} ${ONLINE_ASKS[kind]}`;
 }

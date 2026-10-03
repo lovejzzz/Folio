@@ -195,7 +195,7 @@ export function onlineBackground(course: Course): string {
   const hours = course.online?.hoursPerWeek ?? 9;
   return [
     'This course is taught online with no set meeting time. Each lesson is one week\'s module: students work through it alone, when they can, and no teacher is present while they do. Everything is written to the student as "you", in a warm, plain voice, and must be enough on its own: a student who follows the page gets there without asking anyone.',
-    `A week is about ${hours} hours of student work, everything counted. The week has one rhythm all term: a first forum post by Thursday, replies and all other work by Sunday night.`,
+    `A week is about ${hours} hours of student work, everything counted. The week has one rhythm all term: ${isMixedOnline(course) ? 'the page, the self-check and one forum post before the live session, and all other work by Sunday night' : 'a first forum post by Thursday, replies and all other work by Sunday night'}.`,
     'Say "this week", "last week" and "next week" where a course in a room says "this lesson" or "last time".',
     isMixedOnline(course)
       ? `Each week also has one live session of ${course.online?.liveMinutes || 75} minutes in a video meeting, for what needs other people; everything a student can take in alone is on the page. Work is submitted online, files are downloaded from the page.`
@@ -252,7 +252,9 @@ export function moduleAsk(course: Course, lesson: Lesson): string {
 export function moduleSummary(lesson: Lesson): string {
   if (!lesson.page?.length) return '';
   const ideas = lesson.keyIdeas.map((k) => `- ${k}`).join('\n');
-  return `The week's key ideas:\n${ideas}\n\nThe week's module page, as the student reads it:\n${pageText(lesson.page)}`;
+  // The slides and the forum prompt of a week with a live session are written from its run of show, which the page does not show.
+  const live = lesson.segments.length ? `\n\nThe week's live session, segment by segment:\n${lesson.segments.map((x) => `- ${x.title} (${x.kind}, ${x.minutes} min): ${x.description}`).join('\n')}` : '';
+  return `The week's key ideas:\n${ideas}\n\nThe week's module page, as the student reads it:\n${pageText(lesson.page)}${live}`;
 }
 
 const clip = (text: string, room: number) => (text.length > room ? `${text.slice(0, room)}…` : text);
@@ -291,7 +293,7 @@ export function onlineOutlineRules(hoursPerWeek: number): string {
     `This course is taught online with no set meeting time: each lesson is one week's module that students work through alone, about ${hoursPerWeek} hours a week. Title each lesson for what students make or learn that week.`,
     'The course opens by getting students set up (what to install, how the course works, introducing themselves) alongside a first small success, and ends with a week that brings the work together: a showcase or reflection, and what to learn next.',
     'When the course builds a skill, students make something every week, and a larger project of their own grows through the term in milestones; say in each summary what is made that week. Graded work is submitted online by Sunday night of its week: under "homeworkDue", give the lesson in whose week it is submitted, which for weekly work is the same lesson. A "test" is taken online within its week; "inclass" is a piece presented online (a recording, a post, a shared build) and graded with a rubric.',
-    'A discussion forum runs every week (a first post by Thursday, replies by Sunday); when the brief does not say how the course is graded, grade it by weekly work, forum participation and the project. Forum participation is graded from the weekly posts by the same criteria all term, which each week\'s prompt states: whatever was said above about participation, it is never a lesson\'s "homework". Every week\'s homework is what is made and submitted that week, the first week included. Each summary names what is made and the one thing submitted for a grade that week ("a screen recording of the ball rolling off the ramp"): the page and the graded work are written separately, and both follow the summary.',
+    'A discussion forum runs every week (a first post by Thursday, replies by Sunday); when the brief does not say how the course is graded, grade it by weekly work, forum participation and the project. A short quiz that prepares for a live session is the week\'s self-check, which Folio writes for every week: it is never a lesson\'s "test". Forum participation is graded from the weekly posts by the same criteria all term, which each week\'s prompt states: whatever was said above about participation, it is never a lesson\'s "homework". Every week\'s homework is what is made and submitted that week, the first week included. Each summary names what is made and the one thing submitted for a grade that week ("a screen recording of the ball rolling off the ramp"): the page and the graded work are written separately, and both follow the summary.',
   ].join(' ');
 }
 

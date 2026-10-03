@@ -24,7 +24,7 @@ import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
 import { assignments, base, continuedInClass, flagsAt, step, test, type SectionJob } from './workJobs';
 import { issuePlace, reviewPlan } from './review';
-import { checkRunOfShow, isLiveOnline } from './live';
+import { PREPARATION_GRADING, checkRunOfShow, isLiveOnline, isMixedOnline } from './live';
 import { FORUM_GRADING, moduleJob } from './online';
 import { reviewModule } from './moduleReview';
 import { startCommands } from './start';
@@ -164,7 +164,8 @@ const discussions: SectionJob<DiscussionsDraft> = {
   // In an online course the forum is graded by one rule all term: added here, so every week states the same one.
   tidy: (v, course) => {
     const tidied = tidyFollowUps(v);
-    const rule = FORUM_GRADING[course.language] ?? FORUM_GRADING.en!;
+    const rules = isMixedOnline(course) ? PREPARATION_GRADING : FORUM_GRADING;
+    const rule = rules[course.language] ?? rules.en!;
     return hasModulePages(course) ? { discussions: tidied.discussions.slice(0, 1).map((d) => ({ ...d, prompt: d.prompt.includes(rule) ? d.prompt : `${d.prompt.trim()}\n\n${rule}` })) } : tidied;
   },
   toCommands: (v, problems, _course, lesson) => [
