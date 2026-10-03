@@ -174,7 +174,8 @@ function attached(paths: string[]): { title: string; text: string }[] {
  */
 async function clarified(name: string, req: NewCourseRequest, spec: Spec): Promise<NewCourseRequest> {
   const read = await clarifyCourse(inference, { brief: req.brief, sources: req.sources, language: req.language, locale: req.locale, level: req.level, lessonCount: req.lessonCount, defaultLessons: 4, sessions: req.sessions }).catch(() => null);
-  const answers = (read?.questions ?? []).map((q) => ({ question: q.question, answer: q.options[0]! }));
+  // The first answer that stands on its own: "I'll paste the list" promises something no one will then give.
+  const answers = (read?.questions ?? []).map((q) => ({ question: q.question, answer: q.options.find((o) => !/^I(?:'|’)ll\b|^I will\b/i.test(o)) ?? q.options[0]! }));
   writeFileSync(join(OUT, `${name}.clarify.json`), JSON.stringify({ read, answers }, null, 1));
   const syllabus = (read ? read.syllabus : spec.syllabus) || undefined;
   return {
