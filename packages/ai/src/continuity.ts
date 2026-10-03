@@ -124,11 +124,20 @@ export function homeworkLine(lesson: Lesson): string {
   return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}"` : ''}, ${set}.`;
 }
 
-/** What students read before the next lesson: a plan not told it sent them home with "no further task". */
+/**
+ * What comes next, so the close can prepare students for it: a plan not told sent them home with "no further
+ * task" before a lesson that assumed the reading, and no quiz was ever announced the lesson before.
+ */
 export function nextReading(course: Course, lesson: Lesson): string {
   const next = orderedLessons(course)[course.lessonOrder.indexOf(lesson.id) + 1];
-  const readings = (next?.readings ?? []).map((r) => r.trim()).filter(Boolean);
-  return readings.length ? `Before the next lesson students read: ${readings.join('; ')}. The plan tells them so before they leave.` : '';
+  if (!next) return '';
+  const readings = next.readings.map((r) => r.trim()).filter(Boolean);
+  return [
+    next.summary.trim() ? `Next time: ${next.summary.trim()} The close tells students what to expect, and announces any quiz or test it holds.` : '',
+    readings.length ? `Before the next lesson students read: ${readings.join('; ')}. The plan tells them so before they leave.` : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 /**

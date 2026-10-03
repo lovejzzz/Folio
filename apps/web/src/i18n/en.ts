@@ -588,10 +588,8 @@ export const en = {
   },
   samples: {
     title: 'Open a sample course',
-    lede: 'Three finished courses Folio wrote, one for each stage. Open one to look around, change anything and export it. It is your copy, kept on this device.',
-    elementary: 'Elementary school',
-    middle: 'Middle school',
-    university: 'University',
+    lede: 'Finished courses Folio wrote, from grade 2 to university. Open one to look around, change anything and export it. It is your copy, kept on this device.',
+    stages: { elementary: 'Elementary school', middle: 'Middle school', high: 'High school', university: 'University' },
     opening: 'Opening…',
     failed: 'The sample course could not be opened. Check your connection and try again.',
   },

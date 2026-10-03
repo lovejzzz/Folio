@@ -191,7 +191,6 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     `This is the lesson "${lesson.title}". ${lesson.summary} Refer to other lessons as "last time" (only the lesson just before), "earlier in the course", "next time" or "later in the course", never by title or number.`,
     objectives ? `Its objectives:\n${objectives}` : '',
     homeworkLine(lesson),
-    nextReading(course, lesson),
     readings ? `Students read before this lesson:\n${readings}` : '',
   ]
     .filter(Boolean)
@@ -200,7 +199,7 @@ export function lessonContext(course: Course, lesson: Lesson): string {
 
 /** What a material built on the plan owes it: the plan is what the teacher has read and agreed to. */
 const FOLLOW_REST =
-  'Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception. When the lesson holds a graded test or exam, no other material of the lesson repeats its questions or gives their answers, whatever examples the plan uses; and where the lesson sets graded work, the materials help students do it without doing it for them.';
+  'Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception. When the lesson holds graded work done in class (a quiz, test, exam, interview or presentation), no other material of the lesson repeats its questions or gives their answers, whatever examples the plan uses; and where the lesson sets graded work, the materials help students do it without doing it for them.';
 const FOLLOW_PLAN = `Use the same examples, data and figures as the plan. ${FOLLOW_REST}`;
 /**
  * Work students do on their own is not the class practice copied out: told to use the plan's examples, graded
@@ -269,7 +268,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
       return `Write one short, ungraded step toward ${toward ? `"${toward}"` : 'the larger graded piece the course builds to'}, suited to where this lesson falls in the course: for example choosing a question, gathering evidence, an outline or a draft section. It should take students well under an hour, and be done at home: nothing in it needs a partner, a classmate or the classroom's materials, and young children can do it with someone at home. Give a title, what to do, and one to four steps (the page numbers them, so leave numbers out). ${earlierSteps(c, lesson)}`.trim();
     return [
       toward
-        ? `Write the assignment "${toward}" as the brief describes it, with its length and requirements, set in this lesson and drawing on the course so far; it is a piece of the whole course, so its topic and criteria come from the brief, not from this one lesson's topic: two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.`
+        ? `Write the assignment "${toward}" as the brief describes it, with its length and requirements, set in this lesson and drawing on the course so far; it is a piece of the whole course, so its topic and criteria come from the brief, not from this one lesson's topic, and any length the brief sets must be reachable with what the course has taught by now (say what fills it): two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.`
         : 'Write one assignment that lets students apply this lesson, with two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.',
       sharedComponent(c, lesson),
       rubricLevels(c),
@@ -314,7 +313,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     // Each job invents what the sources don't give; without the plan, a quiz and a plan gave one coefficient two standard errors.
     if (plan) parts.push(`${plan}\n\n${kind === 'quiz' || kind === 'assignments' ? FOLLOW_PLAN_NEW_ITEMS : FOLLOW_PLAN}`);
   }
-  if (kind === 'plan') parts.push(earlierLessons(course, lesson), earlierNotes(lesson));
+  if (kind === 'plan') parts.push(nextReading(course, lesson), earlierLessons(course, lesson), earlierNotes(lesson));
   // A graded piece of its own, not one of a weekly run: it is written from the course, not from one lesson.
   if (kind === 'assignments' && lesson.homework.kind === 'assignment' && lesson.homework.toward.trim() && !sharedComponent(course, lesson)) parts.push(courseSoFar(course, lesson));
   if ((kind === 'plan' || kind === 'quiz') && course.sourceOrder.length) {

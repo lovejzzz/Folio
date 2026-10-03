@@ -8,7 +8,7 @@ const STATISTICS = JSON.stringify(sampleCourse());
 export async function chooseSample(page: Page): Promise<void> {
   await page.route('**/samples/*.json', (route) => route.fulfill({ contentType: 'application/json', body: STATISTICS }));
   await page.getByRole('button', { name: 'Or open a sample course' }).click();
-  await page.getByRole('dialog', { name: 'Open a sample course' }).getByRole('button', { name: /^University/ }).click();
+  await page.getByRole('dialog', { name: 'Open a sample course' }).getByRole('button', { name: /^Introduction to ethics/ }).click();
 }
 
 /** Open the sample course and wait for its map. */
