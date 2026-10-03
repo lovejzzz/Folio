@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { Sep } from '../../components/Sep';
-import { cellState, courseKinds, lessonKinds, orderedLessons, type Lesson } from '@folio/core';
+import { cellState, courseKinds, hasModulePages, lessonKinds, orderedLessons, type Lesson } from '@folio/core';
 import { MaterialIcon, StatusMark, cx, tabBg, useMediaQuery } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
 import { usePageTitle } from '../../app/usePageTitle';
@@ -95,7 +95,7 @@ export function MapScreen() {
   const phone = useMediaQuery('(max-width: 767px)');
   usePageTitle(t.nav.map, course.title || t.common.untitled);
   const sessions = course.shape.sessions;
-  const length = sessions.length > 1 ? sessions.map((x) => t.sessions.part(t.sessions.kinds[x.kind], x.minutes)).join(' + ') : t.common.minutes(course.shape.minutesPerLesson);
+  const length = hasModulePages(course) ? t.module.weekly(course.online?.hoursPerWeek ?? 9) : sessions.length > 1 ? sessions.map((x) => t.sessions.part(t.sessions.kinds[x.kind], x.minutes)).join(' + ') : t.common.minutes(course.shape.minutesPerLesson);
   const meta = [course.audience.level, t.common.lessons(course.lessonOrder.length), length].filter(Boolean);
   return (
     <div className="px-4 pb-24 pt-8 md:px-8 md:pt-10">

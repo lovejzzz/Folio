@@ -74,6 +74,8 @@ export function cellPreview(course: Course, lesson: Lesson, kind: MaterialKind):
     case 'syllabus':
       return joined(lesson.readings);
     case 'plan':
+      // A week's page is known by its parts.
+      if (lesson.page.length) return joined(lesson.page.flatMap((b) => (b.type === 'heading' && b.level === 2 ? [b.text] : [])));
       return joined(lesson.segments.map((s) => s.title));
     case 'slides':
       // The first slide repeats the lesson title beside it.
@@ -128,6 +130,9 @@ export function livePreview(kind: MaterialKind, value: unknown, t: Messages): { 
   const joined = (texts: string[]) => texts.filter(Boolean).join(' · ');
   switch (kind) {
     case 'plan': {
+      // A week's page as it is written: its parts, by title.
+      const parts = list(value, 'parts');
+      if (parts.length) return { text: joined(parts.map((p) => text(p.title))), metric: '' };
       const segments = list(value, 'segments');
       const minutes = segments.reduce((a, s) => a + (typeof s.minutes === 'number' ? s.minutes : 0), 0);
       return { text: joined(segments.map((s) => text(s.title))), metric: minutes ? t.common.minutes(minutes) : '' };

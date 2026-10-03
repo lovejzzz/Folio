@@ -338,6 +338,7 @@ export const en = {
     caption: 'Caption',
     addNote: 'Add a note',
     liveSession: 'The live session',
+    weekly: (hours: number) => `online, about ${hours} hours a week`,
   },
   lesson: {
     objectives: 'Objectives',
