@@ -161,6 +161,8 @@ describe('guessSessions', () => {
     ['Four weeks, each a 50-minute lecture and a 50-minute seminar.', [{ kind: 'lecture', minutes: 50 }, { kind: 'seminar', minutes: 50 }]],
     ['A one-hour lecture and a two-hour lab every week', [{ kind: 'lecture', minutes: 60 }, { kind: 'lab', minutes: 120 }]],
     ['Weekly: 90 min lectures plus a 45-minute tutorial', [{ kind: 'lecture', minutes: 90 }, { kind: 'seminar', minutes: 45 }]],
+    ['a 12-week course, each week a 75-minute lecture and a 50-minute computer lab in R', [{ kind: 'lecture', minutes: 75 }, { kind: 'lab', minutes: 50 }]],
+    ['A 60-minute lecture and a 90-minute hands-on workshop each week', [{ kind: 'lecture', minutes: 60 }, { kind: 'problems', minutes: 90 }]],
     ['每周50分钟讲授加50分钟研讨', [{ kind: 'lecture', minutes: 50 }, { kind: 'seminar', minutes: 50 }]],
     ['每周一次90分钟的理论课和一次两小时的实验课', [{ kind: 'lecture', minutes: 90 }, { kind: 'lab', minutes: 120 }]],
   ])('%s', (brief, sessions) => expect(guessSessions(brief)).toEqual(sessions));

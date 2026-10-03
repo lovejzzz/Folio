@@ -212,7 +212,8 @@ const SESSION_WORDS: [RegExp, SessionKind][] = [
   [/^(?:class(?:es)?|课堂)$/i, 'class'],
 ];
 // "Two 50-minute lectures": an optional count, the length, the kind. "Discussion" alone is usually a part of a lesson, not a meeting.
-const EN_SESSION = /\b(?:(two|three|2|3)\s+)?(\d{1,3}|an?|one|two|three)[\s-]*(minutes?|mins?|hours?|hrs?)(?:[\s-]+long)?[\s-]+(lectures?|seminars?|tutorials?|discussion sections?|labs?|laborator(?:y|ies)|practicals?|problem class(?:es)?|recitations?|workshops?|class(?:es)?)\b/gi;
+// One describing word may come between: "a 50-minute computer lab" was read as no lab at all, and the course had none.
+const EN_SESSION = /\b(?:(two|three|2|3)\s+)?(\d{1,3}|an?|one|two|three)[\s-]*(minutes?|mins?|hours?|hrs?)(?:[\s-]+long)?[\s-]+(?:[a-z][\w-]*\s+)?(lectures?|seminars?|tutorials?|discussion sections?|labs?|laborator(?:y|ies)|practicals?|problem class(?:es)?|recitations?|workshops?|class(?:es)?)\b/gi;
 const ZH_SESSION = /(?:([两二三])(?:节|次))?(\d{1,3}|[一二两三四五六七八九十]{1,3})\s*(分钟|小时)\s*的?\s*(讲座|讲授|理论课|研讨课?|讨论课|实验课?|习题课|课堂)/g;
 
 /**
