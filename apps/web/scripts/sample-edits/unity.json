@@ -646,6 +646,147 @@
   "why": "The page was followed in Unity: the code compiles, the three errors read as printed, and the numbers hold."
  },
  {
+  "lesson": 4,
+  "slot": 1,
+  "src": "/samples/unity/media/w04-preview.mp4",
+  "poster": "/samples/unity/media/w04-preview.poster.webp",
+  "caption": "Where this week ends: the Ball goes where the keys send it, and the camera stays with it."
+ },
+ {
+  "lesson": 4,
+  "slot": 2,
+  "src": "/samples/unity/media/files/OrbCollector-week3-end.zip"
+ },
+ {
+  "lesson": 4,
+  "slot": 3,
+  "src": "/samples/unity/media/files/OrbCollector-week4-end.zip"
+ },
+ {
+  "lesson": 4,
+  "slot": 5,
+  "src": "/samples/unity/media/w04-hierarchy.webp",
+  "caption": "The Arena scene in the Hierarchy, with Ball selected."
+ },
+ {
+  "lesson": 4,
+  "slot": 6,
+  "src": "/samples/unity/media/w04-ball-position.webp",
+  "caption": "Ball’s Transform with Position 5, 1, 5."
+ },
+ {
+  "lesson": 4,
+  "slot": 7,
+  "src": "/samples/unity/media/w04-camera-transform.webp",
+  "caption": "Main Camera at 0, 10, -14, tilted down 35 degrees."
+ },
+ {
+  "lesson": 4,
+  "slot": 8,
+  "src": "/samples/unity/media/w04-rest.webp",
+  "caption": "The Ball at rest on open floor, right of the Ramp. Compare the whole view with yours."
+ },
+ {
+  "lesson": 4,
+  "slot": 9,
+  "src": "/samples/unity/media/w04-scripts-two.webp",
+  "caption": "BallController beside Spinner in the Scripts folder."
+ },
+ {
+  "lesson": 4,
+  "slot": 10,
+  "src": "/samples/unity/media/w04-ball-controller.webp",
+  "caption": "Ball Controller (Script) is the last component on the Ball. Three components above it are folded here to save room."
+ },
+ {
+  "lesson": 4,
+  "slot": 11,
+  "src": "/samples/unity/media/w04-console-w.webp",
+  "caption": "One line for each tap of W."
+ },
+ {
+  "lesson": 4,
+  "slot": 12,
+  "src": "/samples/unity/media/w04-force10.webp",
+  "caption": "Force reads 10, the value written in the code."
+ },
+ {
+  "lesson": 4,
+  "slot": 13,
+  "src": "/samples/unity/media/w04-push.mp4",
+  "poster": "/samples/unity/media/w04-push.poster.webp",
+  "caption": "Three pushes. Watch what the Ball does after each key is released."
+ },
+ {
+  "lesson": 4,
+  "slot": 14,
+  "src": "/samples/unity/media/w04-force20.webp",
+  "caption": "Force set to 20 in the Inspector."
+ },
+ {
+  "lesson": 4,
+  "slot": 15,
+  "src": "/samples/unity/media/w04-damping.webp",
+  "caption": "Linear Damping set to 1 in the Rigidbody section."
+ },
+ {
+  "lesson": 4,
+  "slot": 16,
+  "src": "/samples/unity/media/w04-tune.mp4",
+  "poster": "/samples/unity/media/w04-tune.poster.webp",
+  "caption": "A short push, then a diagonal one: the Ball now slows and stops."
+ },
+ {
+  "lesson": 4,
+  "slot": 17,
+  "src": "/samples/unity/media/w04-follow-empty.webp",
+  "caption": "Before the drag: Target reads None (Transform)."
+ },
+ {
+  "lesson": 4,
+  "slot": 18,
+  "src": "/samples/unity/media/w04-follow-target.webp",
+  "caption": "After the drag: Target reads Ball (Transform)."
+ },
+ {
+  "lesson": 4,
+  "slot": 19,
+  "src": "/samples/unity/media/w04-follow.mp4",
+  "poster": "/samples/unity/media/w04-follow.poster.webp",
+  "caption": "The Game view with the camera following. The drag itself is described in step 1 above."
+ },
+ {
+  "lesson": 4,
+  "slot": 20,
+  "src": "/samples/unity/media/w04-console-clean.webp",
+  "caption": "A clean Console after the playtest: all three counters at the right read 0."
+ },
+ {
+  "lesson": 4,
+  "slot": 21,
+  "src": "/samples/unity/media/w04-playtest.mp4",
+  "poster": "/samples/unity/media/w04-playtest.poster.webp",
+  "caption": "One playtest, about twenty seconds."
+ },
+ {
+  "lesson": 4,
+  "slot": 22,
+  "src": "/samples/unity/media/w04-scripts-three.webp",
+  "caption": "The three scripts you have written so far."
+ },
+ {
+  "lesson": 4,
+  "slot": 23,
+  "src": "/samples/unity/media/w04-saved.webp",
+  "caption": "After File > Save there is no asterisk after the scene’s name."
+ },
+ {
+  "lesson": 4,
+  "find": "The Ball stays near the middle of the Game view wherever you drive it.",
+  "replace": "The Ball stays near the middle of the Game view wherever you drive it. Right beside the near wall, the wall can hide the Ball for a moment: drive forward and it comes back into view.",
+  "why": "Seen when following the page: the camera sits behind a wall taller than the Ball."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
