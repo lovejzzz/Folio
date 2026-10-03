@@ -59,6 +59,7 @@ export const ModuleDraft = z.object({
     watchFor: z.array(line).min(2).max(6).describe('What students get wrong or stuck on this week, and what to do when the instructor sees it'),
     feedback: z.array(line).min(2).max(8).describe('Comments the instructor can adapt when giving feedback on this week\'s work'),
     atRisk: z.string().default('').describe('Who to contact this week and what to say: students who have not started, posted or submitted'),
+    leaves: z.array(line).max(24).default([]).describe('When students build something that carries on next week: what their project holds once this week is done, one thing per line with its exact name and the values a later week could rely on or trip over (each object and where it is, each file, each setting changed)'),
   }),
 });
 export type ModuleDraft = z.infer<typeof ModuleDraft>;
@@ -241,7 +242,7 @@ export function moduleAsk(course: Course, lesson: Lesson): string {
     isMixedOnline(course) ? mixedAsk(course) : '',
     'Under "wrapUp", 80 to 120 words: what the student can now do, one question to test themselves on each objective, and a look ahead to next week.',
     'Under "vocabulary", the terms this week introduces, each in one plain sentence.',
-    'Under "facilitation", the instructor\'s part of the week, never shown to students: the announcement to post on Monday (what the week is, the one thing to get right, the deadlines), what to watch for in the forum and in submitted work and what to do about it, comments to adapt when giving feedback, and whom to contact by midweek.',
+    'Under "facilitation", the instructor\'s part of the week, never shown to students: the announcement to post on Monday (what the week is, the one thing to get right, the deadlines), what to watch for in the forum and in submitted work and what to do about it, comments to adapt when giving feedback, whom to contact by midweek, and under "leaves" what a student\'s work holds at the end of the week.',
     'The teacher\'s sources are for you: the page takes its facts and names from them without mentioning them, and sends students to a source only when it is among this week\'s readings. A term is explained in a sentence where it first appears. The graded work and the forum prompt are written separately and shown to the student with this page: the page names each once, in the checklist, with its deadline, and says nothing of what they ask, how they are submitted or how they are graded; practice on the page is never called the submission.',
     'Never write a placeholder for the instructor to fill in, and never promise a file, link, video or reading that the page does not give as a block.',
   ].join(' ');
@@ -266,7 +267,11 @@ export function moduleDigest(lesson: Lesson): string {
     return [`  - ${b.text}: ${clip(body, 900)}`];
   });
   const terms = lesson.vocabulary.map((v) => v.term).join(', ');
-  return [`"${lesson.title}" (${Math.round(pageMinutes(page) / 60)} h)`, lesson.keyIdeas.length ? ` Key ideas:\n${lesson.keyIdeas.map((k) => `  - ${k}`).join('\n')}` : '', terms && ` Terms: ${terms}`, parts.length ? ` What students did:\n${parts.join('\n')}` : ''].filter(Boolean).join('\n');
+  // Whole, never clipped: a ball placed where an earlier week's ramp still stood could not be moved by any key.
+  const leaves = lesson.facilitation?.leaves ?? [];
+  return [`"${lesson.title}" (${Math.round(pageMinutes(page) / 60)} h)`, lesson.keyIdeas.length ? ` Key ideas:\n${lesson.keyIdeas.map((k) => `  - ${k}`).join('\n')}` : '', terms && ` Terms: ${terms}`, parts.length ? ` What students did:\n${parts.join('\n')}` : '', leaves.length ? ` What their work holds at the end of that week:\n${leaves.map((k) => `  - ${k}`).join('\n')}` : '']
+    .filter(Boolean)
+    .join('\n');
 }
 
 /** What the other materials of an online week are asked for, in place of what a room course asks. */

@@ -93,6 +93,13 @@ describe('an online course with no set meeting time', () => {
     expect(JSON.stringify(checkModule(v, online()))).toContain('caption');
   });
 
+  it('tells a later week, in full, what an earlier week left in the student\'s project', () => {
+    const c = online();
+    const [first, second] = orderedLessons(c);
+    const built: Course = { ...c, lessons: { ...c.lessons, [first!.id]: { ...first!, page: modulePage(draft(), 'en'), facilitation: { announcement: 'a', watchFor: [], feedback: [], atRisk: '', leaves: ['Ramp at 0, 2, -4, tilted 20 degrees', 'Ball at 0, 6, -7 with a Rigidbody'] } } } };
+    expect(sectionPrompt(built, built.lessons[second!.id]!, 'plan') + courseBackground(built)).toContain('Ramp at 0, 2, -4, tilted 20 degrees');
+  });
+
   it('keeps code as typed, and sets a name the screen shows in bold', () => {
     const set = typesetDraft(draft(), 'en');
     expect(set.parts[0]!.blocks[2]!.text).toContain('// "spin"');

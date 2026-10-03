@@ -75,6 +75,8 @@ export const FacilitationSchema = z.object({
   watchFor: z.array(text).default([]),
   feedback: z.array(text).default([]),
   atRisk: text.default(''),
+  /** What every student's work holds once the week is done: the next weeks are written against it. */
+  leaves: z.array(text).default([]),
 });
 export type Facilitation = z.infer<typeof FacilitationSchema>;
 
