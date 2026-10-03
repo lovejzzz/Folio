@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { orderedLessons } from '@folio/core';
+import { MATERIAL_KINDS, orderedLessons } from '@folio/core';
 import { OutlineDraft, courseFromOutline, groundedIn, lessonContext, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
 
 const req: NewCourseRequest = {
@@ -19,6 +19,18 @@ const lessons = [
 ];
 
 describe('the outline', () => {
+  it('starts a doctoral seminar without the materials it does not use, unless the teacher chose', () => {
+    const draft = OutlineDraft.parse({ title: 'Proseminar', summary: 'S.', subject: 'Sociology', level: 'Doctoral (PhD) seminar', lessons });
+    const on = (c: ReturnType<typeof courseFromOutline>) => MATERIAL_KINDS.filter((k) => c.materials[k].enabled);
+    const all = { ...req, materials: [...MATERIAL_KINDS] };
+    const doctoral = on(courseFromOutline(all, draft));
+    expect(doctoral).toContain('plan');
+    expect(doctoral).toContain('discussions');
+    for (const k of ['slides', 'quiz', 'study', 'faq'] as const) expect(doctoral).not.toContain(k);
+    expect(on(courseFromOutline({ ...all, level: 'Second-year undergraduate' }, draft))).toEqual([...MATERIAL_KINDS]);
+    expect(on(courseFromOutline({ ...req, materials: ['plan', 'quiz'] }, draft))).toEqual(MATERIAL_KINDS.filter((k) => k === 'plan' || k === 'quiz'));
+  });
+
   it('reads an outline from a model that leaves out readings and grading', () => {
     const draft = OutlineDraft.parse({ title: 'Political philosophy', summary: 'S.', subject: 'Philosophy', level: 'Undergraduate', lessons });
     expect(draft.grading).toEqual([]);

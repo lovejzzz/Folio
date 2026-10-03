@@ -1,5 +1,86 @@
 [
   {
+    "version": "0.0.5",
+    "date": "October 3, 2026",
+    "title": "Tests, presentations and answer keys: the graded work a real course runs on",
+    "lede": "Until now Folio knew two kinds of work: an assignment done at home, and a step toward one. A midterm, an oral interview or a seminar a student leads had nowhere to live, so a paper worth 30% of a grade was a line in a lesson plan. This release gives all of it a place, with what a teacher needs to hand it out and grade it.",
+    "sections": [
+      {
+        "heading": "Four kinds of graded work",
+        "body": "When Folio outlines a course it now decides, for each lesson, what is handed in or graded there: an assignment, a step toward a larger piece, a test taken in class, or work graded in class with a rubric. Every component of the grade is placed in a lesson, and you can change any of them from the lesson itself.",
+        "image": {
+          "src": "/changelog/0.0.5-graded-work.svg",
+          "alt": "Assignment, step, test and in-class work, with what each one carries. Tests and in-class work are new",
+          "width": 800,
+          "height": 360
+        }
+      },
+      {
+        "heading": "A test is a paper you can print",
+        "body": "A quiz, test or exam is written as the paper students are handed: the time allowed, what they may use, each question complete as printed, and the points it carries. It covers what the lessons taught in proportion to the time they took, with new cases and numbers. A final exam sat after the last class is written with the last lesson.",
+        "image": {
+          "src": "/changelog/0.0.5-paper.webp",
+          "alt": "A data structures midterm: two code fragments to analyze, each question with its points",
+          "width": 1600,
+          "height": 1000
+        },
+        "compare": {
+          "before": "“Midterm exam (25%)” in the syllabus, and a lesson plan that said “students sit the midterm”.",
+          "after": "A paper with points for every question, a full key with the working, and the lesson plan that runs it."
+        }
+      },
+      {
+        "heading": "Answer keys, for the teacher only",
+        "body": "Problem sets, labs and tests now come with an answer key: the answers with their working and what each point is for. The key is shown to you under the assignment and is never part of a student copy or a student export.",
+        "image": {
+          "src": "/changelog/0.0.5-key.webp",
+          "alt": "The answer key under a programming exercise, marked “For you only: never in a student copy”",
+          "width": 1600,
+          "height": 1000
+        }
+      },
+      {
+        "heading": "Work graded in class",
+        "body": "A presentation, a seminar a student leads, an oral interview or an essay written in class is now a piece of its own: what students prepare, a rubric, and how to run and score it for a whole class in the time you have. A piece that takes several days, or that students take turns at through the term, is written once and keeps one rubric.",
+        "image": {
+          "src": "/changelog/0.0.5-rubric.webp",
+          "alt": "A graduate research methods course: seminar leadership, graded in class with a rubric",
+          "width": 1600,
+          "height": 1000
+        }
+      },
+      {
+        "heading": "Due dates that agree",
+        "body": "Each assignment and step now has the lesson it is due at, set when the course is outlined. The lesson plan that sets the work, the assignment itself and the plan of the lesson that collects it all say the same thing.",
+        "compare": {
+          "before": "The plan said “due next week”, the assignment said “due Friday”, and the lesson two weeks on collected it.",
+          "after": "“Due at the start of lesson 4” on the assignment, and lesson 4 opens by collecting it."
+        }
+      },
+      {
+        "heading": "For colleges and graduate schools",
+        "bullets": [
+          "College rubrics in the United States and Canada use four levels (Exemplary, Proficient, Developing, Beginning) scored 4 to 1, so full marks can be earned.",
+          "Code is written out in full in the teacher’s notes, to run as it stands. In a data structures course we assembled and ran 62 blocks from the plans and both exam keys.",
+          "A graduate seminar is planned as a seminar: a student presents the reading and leads discussion, and the instructor presses on the argument. A doctoral seminar no longer starts with quizzes, slides, study guides and FAQs; turn any back on from the plan.",
+          "A case discussion is planned as a teaching note: the opening question, the discussion blocks in order, the board and the takeaway. When a brief promises cases and names none, Folio asks which you use, or writes short ones.",
+          "Class policies in your brief or syllabus (late work, attendance, integrity) are carried into the course in your words.",
+          "Readings are proposed for each lesson when you have not named them, marked as suggestions to check."
+        ]
+      },
+      {
+        "heading": "Also in this release",
+        "bullets": [
+          "A meeting of two hours or more has a break in its plan.",
+          "“Twice a week” in a brief is read as two meetings, and “a computer lab” as a session of its own.",
+          "Participation that carries part of the grade gets a rubric and a way to record it.",
+          "Code in a lesson is no longer set with ligatures: “//=” was drawn as a not-equals sign.",
+          "A plan’s close announces a quiz only when there is one, and an exam does not repeat the items of the review before it."
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.0.4",
     "date": "October 3, 2026",
     "title": "Eight lessons means eight, and a few rules pulled back into line",
