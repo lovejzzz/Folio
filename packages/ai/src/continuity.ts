@@ -139,7 +139,7 @@ export function dueWords(course: Course, lesson: Lesson): string {
   const gap = due ? course.lessonOrder.indexOf(due.id) - course.lessonOrder.indexOf(lesson.id) : 0;
   if (!due || gap < 1) return '';
   // Said as a count, not a title: students were told to "submit it at the start of Research ethics and the IRB".
-  return gap === 1 ? 'It is due at the start of the next lesson.' : `It is due ${gap} lessons from now, at the start of that lesson (the one on "${due.title}"); students are told when in those words, never by the lesson's title.`;
+  return gap === 1 ? 'It is due at the start of the next lesson.' : `It is due at the start of the lesson ${gap} lessons after this one, the one on "${due.title}": to students that lesson is named by what it covers, never by its title or a count of lessons.`;
 }
 
 export function homeworkLine(course: Course, lesson: Lesson): string {
