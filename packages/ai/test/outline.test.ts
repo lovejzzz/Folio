@@ -48,6 +48,13 @@ describe('the outline', () => {
     expect(new Set(course.grading.map((g) => g.id)).size).toBe(3);
   });
 
+  it('carries the teacher’s policies over from the brief or syllabus, and leaves them empty when none are stated', () => {
+    const base = { title: 'E', summary: 'S.', subject: 'Philosophy', level: 'University', lessons, grading: [] };
+    expect(courseFromOutline(req, OutlineDraft.parse({ ...base, policies: ' Late papers lose 10% a day.\n\nNo AI tools for graded work. ' })).policies).toBe('Late papers lose 10% a day.\n\nNo AI tools for graded work.');
+    expect(courseFromOutline(req, OutlineDraft.parse(base)).policies).toBe('');
+    expect(outlinePrompt({ ...req, sources: [] })).toContain('never write policies of your own');
+  });
+
   it('sets each lesson’s homework from the assessment plan, defaulting to an assignment', () => {
     const draft = OutlineDraft.parse({
       title: 'E', summary: 'S.', subject: 'Philosophy', level: 'University',
