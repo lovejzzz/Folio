@@ -86,6 +86,8 @@ const en = {
   points: (n: number) => (n === 1 ? '1 pt' : `${n} pts`),
   general: 'General',
   module: {
+    title: 'Weekly modules',
+    week: (n: number) => `Week ${n}`,
     thisWeek: 'This week',
     due: 'Due',
     picture: 'Picture',
@@ -181,6 +183,8 @@ const zh: DocLabels = {
   points: (n) => `${n} 分`,
   general: '通用',
   module: {
+    title: '每周模块',
+    week: (n) => `第 ${n} 周`,
     thisWeek: '本周任务',
     due: '截止',
     picture: '图片',
@@ -198,4 +202,11 @@ const zh: DocLabels = {
 
 export function docLabels(language: Language): DocLabels {
   return language === 'zh-CN' ? zh : en;
+}
+
+/** The words for one course: a course taught online on the students' own time counts weeks, and its plans are module pages. */
+export function courseLabels(course: { language: Language; delivery?: string }): DocLabels {
+  const l = docLabels(course.language);
+  if (course.delivery !== 'online-async' && course.delivery !== 'online-mixed') return l;
+  return { ...l, lesson: l.module.week, materials: { ...l.materials, plan: l.module.title } };
 }

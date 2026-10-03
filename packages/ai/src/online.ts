@@ -61,6 +61,18 @@ const CALLOUTS = ['checkpoint', 'stuck', 'why', 'tip', 'warning', 'version'] as 
 const ROLES = ['starter', 'checkpoint', 'solution', 'resource'] as const;
 const oneOf = <T extends string>(all: readonly T[], value: string, fallback: T): T => all.find((k) => k === value.trim().toLowerCase()) ?? fallback;
 
+/**
+ * A callout as the page shows it: its kind is its heading, so a title that only repeats the kind is dropped
+ * ("Checkpoint: Checkpoint"), and several problems on single lines are set apart as paragraphs.
+ */
+function calloutBlock(id: string, b: BlockDraft): PageBlock {
+  const kind = oneOf(CALLOUTS, b.kind, 'tip');
+  const text = b.text || b.items.join('\n');
+  const title = b.title.trim();
+  const echo = /^(checkpoint|stuck|if it did(?: not|n['’]t) work|why(?: this works)?|tip|warning|careful|version)$/i.test(title);
+  return { id, type: 'callout', kind, title: echo ? '' : title, text: text.includes('\n\n') ? text : text.replace(/\n/g, '\n\n') };
+}
+
 function toBlock(b: BlockDraft): PageBlock {
   const id = newId('x');
   switch (b.type) {
@@ -80,7 +92,7 @@ function toBlock(b: BlockDraft): PageBlock {
         }),
       };
     case 'callout':
-      return { id, type: 'callout', kind: oneOf(CALLOUTS, b.kind, 'tip'), title: b.title, text: b.text || b.items.join('\n') };
+      return calloutBlock(id, b);
     case 'code':
       return { id, type: 'code', language: b.kind.trim().toLowerCase(), code: b.text, caption: b.title };
     case 'image':
@@ -188,7 +200,7 @@ export function onlineHomeworkLine(course: Course, lesson: Lesson): string {
 const HANDS_ON = [
   'When the week teaches a tool, software or code, the parts are a tutorial the student follows on their own computer: each part is titled with what gets done ("Make the player move"), opens with one sentence of why, then gives numbered steps of one action each. A step says where before what ("In the Hierarchy window, right-click…"), names every button, menu and field in bold exactly as the screen shows it (**Add Component**), gives menu paths with ">", and gives exact values. Every part ends with a "checkpoint" callout: what the student should now see, and what it looks like when it went wrong. After a part where things commonly fail, a "stuck" callout lists the two or three likely causes, with the exact error text when there is one, and the fix. A short "why" callout may explain what a step did; the steps themselves stay bare.',
   'Code longer than one line goes in a block of type "code": the whole file when it is new, or the lines to add with a line of the file above and below them, exactly as typed, with comments a beginner can read. Explain new code after the block, line by line where it is the first time. Inline backticks are for names and single lines.',
-  'Ask for a screenshot ("shots" on a steps block, or an "image" block) where the thing to click is hard to find, where a window must look a certain way, or where a result is worth seeing; ask for a short "video" (under three minutes) where motion matters, such as the game running. Say under "shows" exactly what to capture, and never refer to a picture as if the student could not go on without it: the words carry the step.',
+  'The page is rich in pictures: a beginner checks their screen against them. Ask for a screenshot ("shots" on a steps block, or an "image" block) wherever the thing to click is hard to find, a window or setting must look a certain way, or a result can be seen: usually two to four in a part, and one of the result at every checkpoint. Ask for a short "video" (under three minutes) where motion matters, such as the game running, and open the week with a picture or clip of what will be built. Say under "shows" exactly what to capture, and never refer to a picture as if the student could not go on without it: the words carry the step.',
   'Name the exact version and template the page is written for in a "version" callout in the first part, with what to do when the student\'s differs. Give a "file" block for what the student starts from (starter) and for the project as it should stand at the end of the week (checkpoint), so one failure does not block the week.',
   'After the guided parts, a part with a challenge the student does without steps: one a little beyond the tutorial and one further, each stated as what the result does, with a hint in a "tip" callout.',
 ].join(' ');
@@ -237,7 +249,7 @@ export function moduleDigest(lesson: Lesson): string {
 export const ONLINE_ASKS = {
   quiz: 'This is the week\'s self-check: students take it alone, as often as they like, and it does not count toward the grade unless the grading says so. Under "explanation", say why the right answer is right and, for a choice question, why each wrong choice is wrong, so a student learns from a miss; point to the part of the page to go back to.',
   discussions:
-    'Write one prompt for the week\'s discussion forum, addressed to the students. It is open enough that no two posts can be the same: each student brings something of their own (what they made, a choice they took and why, where they got stuck). Say what the first post holds, due Thursday, and what the two replies do, due Sunday (for work that can be shared: try a classmate\'s, and say one thing that works and one to change). Under "followUps", two or three things the instructor can ask in the thread to push it further.',
+    'Write one prompt for the week\'s discussion forum, addressed to the students. It is open enough that no two posts can be the same: each student brings something of their own (what they made, a choice they took and why, where they got stuck). Say what the first post holds, due Thursday, and what the two replies do, due Sunday (for work that can be shared: try a classmate\'s, and say one thing that works and one to change). End the prompt with how posts are graded, in one sentence that is the same every week: on time, specific to the student\'s own work, and replies that help a classmate go further. Under "followUps", two or three things the instructor can ask in the thread to push it further.',
   assignments:
     'Students do this alone and submit it online. Write "prompt" in three short paragraphs: why they are doing it, what to do, and how it is judged. Say exactly what to submit and in what form (a file, a link, a screenshot, a short clip), and what help is allowed.',
   faq: 'Write the week\'s "Stuck?" list: three to five problems students most often hit this week, each as the question they would ask, with what they see (the exact error text when there is one), and the fix in order. Add where to ask when the fix does not work: the course\'s Q&A forum.',
@@ -250,7 +262,7 @@ export function onlineOutlineRules(hoursPerWeek: number): string {
     `This course is taught online with no set meeting time: each lesson is one week's module that students work through alone, about ${hoursPerWeek} hours a week. Title each lesson for what students make or learn that week.`,
     'The course opens by getting students set up (what to install, how the course works, introducing themselves) alongside a first small success, and ends with a week that brings the work together: a showcase or reflection, and what to learn next.',
     'When the course builds a skill, students make something every week, and a larger project of their own grows through the term in milestones; say in each summary what is made that week. Graded work is submitted online by Sunday night of its week: under "homeworkDue", give the lesson in whose week it is submitted, which for weekly work is the same lesson. A "test" is taken online within its week; "inclass" is a piece presented online (a recording, a post, a shared build) and graded with a rubric.',
-    'A discussion forum runs every week (a first post by Thursday, replies by Sunday); when the brief does not say how the course is graded, grade it by weekly work, forum participation and the project.',
+    'A discussion forum runs every week (a first post by Thursday, replies by Sunday); when the brief does not say how the course is graded, grade it by weekly work, forum participation and the project. Forum participation is graded from the weekly posts by the same criteria all term, which each week\'s prompt states: it is never a lesson\'s "homework". Every week\'s homework is what is made and submitted that week.',
   ].join(' ');
 }
 

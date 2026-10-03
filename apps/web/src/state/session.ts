@@ -1,6 +1,6 @@
-import { CourseStore, SCHEMA_VERSION, type Course } from '@folio/core';
+import { CourseStore, SCHEMA_VERSION, hasModulePages, type Course } from '@folio/core';
 import { useSyncExternalStore } from 'react';
-import { currentMessages } from '../i18n';
+import { currentMessages, setWeeklyCourse } from '../i18n';
 import { SaveConflictError, isQuotaError, loadCourse, loadCourseWithHistory, saveCourse, saveCourseIfUnchanged, versionOf } from './db';
 import { historyDelta, mergeHistory, sortRows, trackerFrom, type HistoryRow, type HistoryTracker } from './historySync';
 import { clearJournal, takeJournal, writeJournal } from './journal';
@@ -112,6 +112,7 @@ export function openSession(course: Course, rows: readonly HistoryRow[] = []): C
   };
   session.unsubscribe = store.subscribe(() => schedule(session));
   active = session;
+  setWeeklyCourse(hasModulePages(course));
   useUi.getState().setConflict(null);
   for (const l of listeners) l();
   return store;
@@ -123,6 +124,7 @@ export function closeSession(): void {
   session.unsubscribe();
   if (session.timer) void flush(session);
   active = null;
+  setWeeklyCourse(false);
   for (const l of listeners) l();
 }
 
@@ -135,6 +137,7 @@ export function dropSession(id?: string): void {
   session.unsubscribe();
   clearJournal(id);
   active = null;
+  setWeeklyCourse(false);
   for (const l of listeners) l();
 }
 

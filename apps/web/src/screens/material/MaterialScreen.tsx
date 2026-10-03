@@ -1,4 +1,4 @@
-import { cmd, docLabels, lessonQuestions, orderedLessons, project, type Course, type MaterialKind } from '@folio/core';
+import { cmd, courseLabels, docLabels, lessonQuestions, orderedLessons, project, type Course, type MaterialKind } from '@folio/core';
 import { BinderTab, Sheet } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { materialRoute } from '../../app/router';
@@ -125,7 +125,7 @@ export function MaterialScreen() {
       {kind !== 'map' && kind !== 'syllabus' && <Outline course={course} />}
       <div className="min-w-0 flex-1">
         <Sheet lang={course.language} className="folio-doc" orientation={kind === 'rubrics' ? 'landscape' : 'portrait'} running={<><span className="truncate">{course.title}</span><BinderTab kind={kind} size="sm" label={t.materials[kind]} /></>}>
-          <h1 className="mb-8 font-display text-48 leading-none text-ink">{docLabels(course.language).materials[kind]}</h1>
+          <h1 className="mb-8 font-display text-48 leading-none text-ink">{courseLabels(course).materials[kind]}</h1>
           {kind === 'map' || kind === 'syllabus' ? <CourseWide course={course} kind={kind} /> : <PerLesson course={course} kind={kind} />}
         </Sheet>
       </div>

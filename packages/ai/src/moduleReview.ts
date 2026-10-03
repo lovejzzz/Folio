@@ -41,7 +41,9 @@ function blockText(b: Block): string {
 function moduleText(v: ModuleDraft): string {
   const checklist = v.checklist.map((c) => `- ${c.label} (${c.activity}, ${c.minutes} min${c.due ? `, due ${c.due}` : ''})`).join('\n');
   const parts = v.parts.map((p, i) => `Part ${i + 1}: ${p.title}\n${p.blocks.map(blockText).join('\n')}`).join('\n\n');
-  return [`Introduction: ${v.intro}`, `Checklist:\n${checklist}`, parts, `Wrap-up: ${v.wrapUp}`].join('\n\n');
+  const total = v.checklist.reduce((n, c) => n + c.minutes, 0);
+  // The total is given: a reviewer adding it up got 640 for 540, and noted a workload problem that was not there.
+  return [`Introduction: ${v.intro}`, `Checklist (${total} minutes in all):\n${checklist}`, parts, `Wrap-up: ${v.wrapUp}`].join('\n\n');
 }
 
 export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraft): string {
@@ -59,7 +61,7 @@ export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraf
       'Kinds: "fact" (wrong content), "missing" (a step, explanation or thing the student needs is not there), "feasibility" (cannot be done as written), "consistency" (the page contradicts itself or earlier weeks), "level" (too much assumed of these students).',
       'For each problem, say under "why" what is wrong and what the student would experience. When a change to a few words fixes it and you are sure, copy under "find" the exact words that are wrong, enough of them to appear only once in that part, and give under "replace" what should stand in their place; to add a missing step, find the step it belongs after and replace it with that step followed by the new one. Otherwise leave both empty.',
       'The week\'s other materials (the self-check, the forum prompt, the graded work and its rubric, the "Stuck?" list, the recap) are written separately from this page: do not list them as missing. Pictures and videos are made after the page is written: judge what each is asked to show, not its absence.',
-      'Do not list style preferences or things you would add. Return an empty list if the page is sound.',
+      'Do not list style preferences or things you would add, and give no links. Return an empty list if the page is sound.',
     ].join(' '),
   ]
     .filter(Boolean)

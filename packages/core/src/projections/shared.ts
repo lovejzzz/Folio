@@ -1,6 +1,6 @@
 import { isBlankQuestion, withoutBlankChoices } from '../blank';
 import { answerText, lessonNumber, lessonQuestions, orderedLessons } from '../course';
-import { docLabels, type DocLabels } from '../docLabels';
+import { courseLabels, type DocLabels } from '../docLabels';
 import type { MaterialKind } from '../materials';
 import type { Course, Lesson, Question } from '../schema';
 import type { Block, ProjectOptions } from '../semantic';
@@ -14,7 +14,7 @@ export interface Ctx {
 }
 
 export function makeCtx(course: Course, kind: MaterialKind, opts: ProjectOptions): Ctx {
-  return { course, kind, opts, l: docLabels(course.language), teacher: opts.audience === 'teacher' };
+  return { course, kind, opts, l: courseLabels(course), teacher: opts.audience === 'teacher' };
 }
 
 export function lessonsIn(ctx: Ctx): Lesson[] {

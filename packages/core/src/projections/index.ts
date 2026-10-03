@@ -1,4 +1,4 @@
-import { docLabels } from '../docLabels';
+import { courseLabels } from '../docLabels';
 import type { MaterialKind } from '../materials';
 import type { Course } from '../schema';
 import type { Block, ProjectOptions, SemanticDoc } from '../semantic';
@@ -22,7 +22,7 @@ const projectors: Record<MaterialKind, (ctx: Ctx) => Block[]> = {
 
 /** project(course, kind, audience) → SemanticDoc. Pure: same input, same document. */
 export function project(course: Course, kind: MaterialKind, opts: ProjectOptions): SemanticDoc {
-  const l = docLabels(course.language);
+  const l = courseLabels(course);
   return {
     kind,
     title: l.materials[kind],

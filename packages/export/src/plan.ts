@@ -1,4 +1,4 @@
-import { docLabels, project, type Audience, type Course, type MaterialKind } from '@folio/core';
+import { courseLabels, project, type Audience, type Course, type MaterialKind } from '@folio/core';
 import { zipFiles } from './bundle';
 import { renderCsv } from './csv';
 import { renderDocx } from './docx';
@@ -42,7 +42,7 @@ interface Planned {
 }
 
 function audienceLabel(req: ExportRequest): string {
-  const l = docLabels(req.course.language);
+  const l = courseLabels(req.course);
   return req.audience === 'teacher' ? l.teacherCopy : l.studentCopy;
 }
 
@@ -51,13 +51,13 @@ function scopeName(req: ExportRequest): string {
   const [only, ...more] = req.lessonIds ?? [];
   const lesson = only && !more.length ? req.course.lessons[only] : undefined;
   if (!lesson) return '';
-  return `${docLabels(req.course.language).lesson(req.course.lessonOrder.indexOf(lesson.id) + 1)} · ${lesson.title}`;
+  return `${courseLabels(req.course).lesson(req.course.lessonOrder.indexOf(lesson.id) + 1)} · ${lesson.title}`;
 }
 
 /** "Syllabus", "Syllabus, Quiz & exam bank", or "Course materials" for longer picks. */
 function partName(req: ExportRequest): string {
   const x = exportLabels(req.course.language);
-  const names = req.kinds.map((k) => docLabels(req.course.language).materials[k]);
+  const names = req.kinds.map((k) => courseLabels(req.course).materials[k]);
   return names.length && names.length <= 3 ? names.join(x.join) : x.materials;
 }
 
@@ -74,7 +74,7 @@ function docxFile(req: ExportRequest, kinds: MaterialKind[], part: string): Plan
 }
 
 function pptxFile(req: ExportRequest): Planned {
-  const part = docLabels(req.course.language).materials.slides;
+  const part = courseLabels(req.course).materials.slides;
   return {
     name: slugFilename(req.course.title, part, audienceLabel(req), 'pptx', scopeName(req)),
     mime: MIME.pptx,
@@ -83,7 +83,7 @@ function pptxFile(req: ExportRequest): Planned {
 }
 
 function quizFile(req: ExportRequest, format: 'xlsx' | 'csv'): Planned {
-  const part = docLabels(req.course.language).materials.quiz;
+  const part = courseLabels(req.course).materials.quiz;
   return {
     name: slugFilename(req.course.title, part, audienceLabel(req), format, scopeName(req)),
     mime: MIME[format],
@@ -104,7 +104,7 @@ function folioFile(req: ExportRequest): Planned {
 
 /** Everything that goes inside the zip bundle. */
 function zipContents(req: ExportRequest): Planned[] {
-  const l = docLabels(req.course.language);
+  const l = courseLabels(req.course);
   const files = req.kinds.map((k) => docxFile(req, [k], l.materials[k]));
   if (req.kinds.includes('slides')) files.push(pptxFile(req));
   if (req.kinds.includes('quiz')) files.push(quizFile(req, 'csv'));
