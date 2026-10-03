@@ -1,6 +1,7 @@
 // The last pass on a sample course: a teacher's edits after reading it through, kept in
 // scripts/sample-edits/<name>.json so the published sample can be rebuilt from what Folio wrote.
-//   pnpm --filter @folio/web exec tsx scripts/edit-samples.ts [elementary|middle|university ...]
+//   pnpm --filter @folio/web exec tsx scripts/edit-samples.ts [--from <dir of the courses as generated>] [names ...]
+// Edits match the course as Folio wrote it, so keep that copy: with --from the sample is rebuilt from it.
 // Each edit replaces exact words, within one lesson (its plan, slides, study guide, tasks, rubrics and answers
 // to questions) or, with no lesson given, anywhere in the course. An edit that finds nothing, or finds its words
 // more than once without "all", stops the run: the course has changed under it. Afterwards every section is
@@ -8,7 +9,7 @@
 import { computeBasis, orderedLessons, parseCourse, type Course } from '@folio/core';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { SampleName } from '../src/lib/samples';
+import { SAMPLE_NAMES, type SampleName } from '../src/lib/samples';
 
 const WEB = new URL('..', import.meta.url).pathname;
 
@@ -19,6 +20,8 @@ interface Edit {
   replace?: string;
   /** Instead of a replacement: settle the plan review's note whose place contains these words, once fixed or judged wrong. */
   settle?: string;
+  /** Instead of a replacement: rename every rubric's levels and set their points, as { "A": ["Exemplary", 4] }. */
+  relabel?: Record<string, [string, number]>;
   /** Replace every occurrence, not just the one. */
   all?: boolean;
   /** Why, for whoever reads the file later. */
@@ -63,11 +66,15 @@ function editOne(name: SampleName): void {
   const file = join(WEB, 'scripts/sample-edits', `${name}.json`);
   if (!existsSync(file)) return;
   const path = join(WEB, 'public/samples', `${name}.json`);
-  const course = parseCourse(JSON.parse(readFileSync(path, 'utf8')));
+  const course = parseCourse(JSON.parse(readFileSync(FROM ? join(FROM, `${name}.json`) : path, 'utf8')));
   const edits = JSON.parse(readFileSync(file, 'utf8')) as Edit[];
   for (const edit of edits) {
     if (edit.settle !== undefined) {
       settle(course, edit.lesson, edit.settle, name);
+      continue;
+    }
+    if (edit.relabel) {
+      for (const rubric of Object.values(course.rubrics)) for (const level of rubric.levels) [level.label, level.points] = edit.relabel[level.label] ?? [level.label, level.points];
       continue;
     }
     const parts = scope(course, edit.lesson);
@@ -82,5 +89,8 @@ function editOne(name: SampleName): void {
   console.log(`${name}: ${edits.length} edits`);
 }
 
-const names = (process.argv.slice(2).length ? process.argv.slice(2) : ['elementary', 'middle', 'university']) as SampleName[];
+const ARGS = process.argv.slice(2);
+const FROM = ARGS.includes('--from') ? ARGS[ARGS.indexOf('--from') + 1] : undefined;
+const given = ARGS.filter((a, i) => a !== '--from' && ARGS[i - 1] !== '--from');
+const names = (given.length ? given : SAMPLE_NAMES) as SampleName[];
 for (const name of names) editOne(name);

@@ -929,5 +929,54 @@
   "replace": "chapter 6",
   "all": true,
   "why": "Social contract theory is chapter 6 of Rachels and Rachels (9th and 10th editions); chapter 11 is the ethics of care."
+ },
+ {
+  "relabel": {
+   "A": [
+    "Exemplary",
+    4
+   ],
+   "B": [
+    "Proficient",
+    3
+   ],
+   "C": [
+    "Developing",
+    2
+   ],
+   "D": [
+    "Beginning",
+    1
+   ]
+  },
+  "why": "North American colleges score rubrics on four performance levels, 4 to 1, so full marks can be earned (A 90 to D 60 capped flawless work at 90)."
+ },
+ {
+  "find": "Replying only “I disagree” earns a D.",
+  "replace": "Replying only “I disagree” scores Beginning.",
+  "why": "Matches the rubric levels."
+ },
+ {
+  "find": "treated as an A-level argument",
+  "replace": "treated as an Exemplary argument",
+  "why": "Matches the rubric levels."
+ },
+ {
+  "find": "tutor’s",
+  "replace": "instructor’s",
+  "all": true,
+  "why": "US usage."
+ },
+ {
+  "find": "tutor",
+  "replace": "instructor",
+  "all": true,
+  "why": "US usage."
+ },
+ {
+  "find": "Tutor",
+  "replace": "Instructor",
+  "all": true,
+  "why": "US usage."
  }
 ]
