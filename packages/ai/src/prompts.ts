@@ -33,7 +33,9 @@ export function systemPrompt(language: WritingLanguage, locale = ''): string {
     'Never present an invented statistic, study, event or case as real, even as an example of evidence. When an example needs evidence that the brief and sources don\'t give, use well-established facts you are sure of, or make the example plainly hypothetical ("Suppose a survey of our school found…").',
     'Write maths in Unicode with real subscripts and superscripts (β₀, xᵢ, x², σ̂², ≤, √), never LaTeX. Where Unicode has none, write _ or ^ and the rest as one word or in braces (β̂_educ, t_{n−k−1}, e^{0.092}): Folio sets them as sub- and superscripts.',
     'Put code, commands and function names in backticks, e.g. `lm(wage ~ educ, data = wage1)`, one line of code per pair. Use backticks for nothing else, and never fenced code blocks.',
-    'Folio shows lesson numbers, the number of lessons, lesson lengths and quiz sizes itself, and teachers change them. Never write them anywhere, speaker notes included: no "lesson 1 of 4", "the first lesson", "the next lesson", "last week", "over the next two hours" or "a 5-question quiz". Refer to another lesson by its title, since teachers reorder them.',
+    'Folio shows lesson numbers, the number of lessons, lesson lengths and quiz sizes itself, and teachers change them. Never write them anywhere, speaker notes included: no "lesson 1 of 4", "the first lesson", "lesson 3", "over the next two hours" or "a 5-question quiz".',
+    // Rules came back as advice to the teacher: "The assignment is written separately", "none was supplied here".
+    'These instructions are for you alone. Never restate them in what you write, and never say what you were or were not given.',
     languageLine(language, locale),
     'Reply with JSON that matches the provided schema and nothing else.',
   ].join('\n\n');
@@ -211,7 +213,7 @@ function planSummary(lesson: Lesson): string {
 
 /** What a material built on the plan owes it: the plan is what the teacher has read and agreed to. */
 const FOLLOW_REST =
-  'Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception. When the lesson holds a graded test or exam, no other material of the lesson repeats its questions or gives their answers.';
+  'Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception. When the lesson holds a graded test or exam, no other material of the lesson repeats its questions or gives their answers, whatever examples the plan uses; and where the lesson sets graded work, the materials help students do it without doing it for them.';
 const FOLLOW_PLAN = `Use the same examples, data and figures as the plan. ${FOLLOW_REST}`;
 /**
  * Work students do on their own is not the class practice copied out: told to use the plan's examples, graded

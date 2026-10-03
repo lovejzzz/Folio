@@ -10,9 +10,9 @@ import { orderedLessons, type Course, type Lesson } from '@folio/core';
 /** Room for the earlier lessons in a plan request: a long course keeps the nearest in full. */
 const EARLIER_BUDGET = 14000;
 
-const clipNote = (note: string) => {
+const clipNote = (note: string, room = 240) => {
   const flat = note.trim().replace(/\s+/g, ' ');
-  return flat.length > 240 ? `${flat.slice(0, 240)}…` : flat;
+  return flat.length > room ? `${flat.slice(0, room)}…` : flat;
 };
 
 function lessonDigest(lesson: Lesson, course: Course): string {
@@ -100,7 +100,9 @@ export function sharedComponent(course: Course, lesson: Lesson): string {
   const before = sharing[place - 2];
   const last = before?.taskIds.map((id) => course.tasks[id]).find((t) => t?.kind === 'assignment');
   if (!last || last.kind !== 'assignment') return told;
-  return `${told} The part before this one, "${last.title}", asked: ${last.prompt} Keep this part's length, format and demand in line with it.`;
+  // Its tasks too: told only the prompt, the fourth problem set repeated a problem from the third.
+  const tasks = clipNote(last.steps.join(' | '), 700);
+  return `${told} The part before this one, "${last.title}", asked: ${last.prompt}${tasks ? ` Its tasks: ${tasks}` : ''} Keep this part's length, format and demand in line with it, and repeat none of its tasks.`;
 }
 
 /**
