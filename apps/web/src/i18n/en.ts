@@ -233,6 +233,7 @@ export const en = {
     none: 'No homework in this lesson.',
     noRubric: 'A step toward a bigger piece has no rubric of its own.',
     testNoRubric: 'A test is marked with its answer key, not a rubric.',
+    testInline: 'test',
     noRubricShort: 'No rubric',
     set: 'Set homework',
     marked: 'How the course is graded',
