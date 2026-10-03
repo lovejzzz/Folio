@@ -1501,6 +1501,176 @@
   "why": "The page was followed in Unity and corrected."
  },
  {
+  "lesson": 9,
+  "slot": 1,
+  "src": "/samples/unity/media/w09-menu.mp4",
+  "poster": "/samples/unity/media/w09-menu.poster.webp",
+  "caption": "The menu, then Dodge. Recorded in the Editor’s Game view; your build looks the same in its own window."
+ },
+ {
+  "lesson": 9,
+  "slot": 2,
+  "src": "/samples/unity/media/files/Dodge-week8-end.zip",
+  "caption": "Dodge-week8-end.zip"
+ },
+ {
+  "lesson": 9,
+  "slot": 3,
+  "src": "/samples/unity/media/w09-open.webp"
+ },
+ {
+  "lesson": 9,
+  "slot": 4,
+  "drop": true,
+  "why": "An open dropdown was not captured."
+ },
+ {
+  "lesson": 9,
+  "slot": 5,
+  "drop": true,
+  "why": "Covered by the picture above."
+ },
+ {
+  "lesson": 9,
+  "slot": 6,
+  "drop": true,
+  "why": "The Color window was pictured in week 2."
+ },
+ {
+  "lesson": 9,
+  "slot": 7,
+  "drop": true,
+  "why": "The next picture shows the finished Canvas."
+ },
+ {
+  "lesson": 9,
+  "slot": 8,
+  "src": "/samples/unity/media/w09-menu-hierarchy.webp",
+  "caption": "The finished menu in the Hierarchy: Panel, TitleText, PlayButton and QuitButton under Canvas."
+ },
+ {
+  "lesson": 9,
+  "slot": 9,
+  "src": "/samples/unity/media/w09-menu.webp"
+ },
+ {
+  "lesson": 9,
+  "slot": 10,
+  "src": "/samples/unity/media/w09-onclick.webp",
+  "caption": "On Click () on PlayButton calls MenuController.PlayGame. Three components above Button are folded here to save room."
+ },
+ {
+  "lesson": 9,
+  "slot": 11,
+  "drop": true,
+  "why": "An open dropdown was not captured."
+ },
+ {
+  "lesson": 9,
+  "slot": 12,
+  "src": "/samples/unity/media/w09-quit-console.webp"
+ },
+ {
+  "lesson": 9,
+  "slot": 13,
+  "src": "/samples/unity/media/w09-scene-list.webp",
+  "caption": "Scene List in Build Profiles: MainMenu is 0 and SampleScene is 1, both ticked."
+ },
+ {
+  "lesson": 9,
+  "slot": 14,
+  "src": "/samples/unity/media/w09-platforms.webp",
+  "caption": "The Platform Browser, opened by Add Build Profile. Choose your own system under Desktop, then click Add Build Profile at the bottom right."
+ },
+ {
+  "lesson": 9,
+  "slot": 15,
+  "src": "/samples/unity/media/w09-profile.webp",
+  "caption": "The new profile, marked Active. Build is at the bottom of the window."
+ },
+ {
+  "lesson": 9,
+  "slot": 16,
+  "drop": true,
+  "why": "The built game runs outside Unity and was not recorded; the clip that opens the page shows the same thing in the Game view."
+ },
+ {
+  "lesson": 9,
+  "slot": 18,
+  "drop": true,
+  "why": "A Windows screen; these pictures were made on a Mac."
+ },
+ {
+  "lesson": 9,
+  "slot": 19,
+  "drop": true,
+  "why": "A student’s own notes cannot be pictured for them."
+ },
+ {
+  "lesson": 9,
+  "slot": 20,
+  "drop": true,
+  "why": "Depends on the student’s own playtest."
+ },
+ {
+  "lesson": 9,
+  "slot": 21,
+  "src": "/samples/unity/media/w09-slow.webp"
+ },
+ {
+  "lesson": 9,
+  "slot": 22,
+  "drop": true,
+  "why": "A twist is the student’s own."
+ },
+ {
+  "lesson": 9,
+  "slot": 23,
+  "src": "/samples/unity/media/files/Dodge-week9-end.zip",
+  "caption": "Dodge-week9-end.zip"
+ },
+ {
+  "lesson": 9,
+  "find": "In the scene list, click **Add Open Scenes**. **MainMenu** appears in the list.",
+  "replace": "Click **Scene List** at the top left of the window, then click **Add Open Scenes**. **MainMenu** appears in the list under **SampleScene**, which a new project already lists.",
+  "why": "In 6000.6 the scene list is its own entry in the Build Profiles window, and SampleScene is in it from the start."
+ },
+ {
+  "lesson": 9,
+  "find": "Choose **File > Build Profiles** again and click **Add Open Scenes**. **SampleScene** joins the list.",
+  "replace": "Choose **File > Build Profiles** again and click **Scene List**. If **SampleScene** is not in the list, click **Add Open Scenes**.",
+  "why": "As above."
+ },
+ {
+  "lesson": 9,
+  "find": "Choose **File > Build Profiles**. In the list of platforms, click **Windows** if you use Windows, or **macOS** if you use a Mac.",
+  "replace": "Choose **File > Build Profiles** and click **Add Build Profile** at the top left. In the window titled **Platform Browser**, under **Desktop**, click **Windows** if you use Windows or **macOS** if you use a Mac, then click **Add Build Profile** at the bottom right. The new profile appears under **Build Profiles** on the left, marked Active.",
+  "why": "Followed in 6000.6.4: there is no platform list until a build profile is added."
+ },
+ {
+  "lesson": 9,
+  "find": "Click **Build**. In the window that opens,",
+  "replace": "With your profile selected, click **Build** at the bottom of the window. In the window that opens,",
+  "why": "As above."
+ },
+ {
+  "lesson": 9,
+  "find": "Choose **File > Build Profiles**, click **Build**, choose your DodgeBuild folder",
+  "replace": "Choose **File > Build Profiles**, click your profile under **Build Profiles**, click **Build**, choose your DodgeBuild folder",
+  "why": "As above."
+ },
+ {
+  "lesson": 9,
+  "find": "On a Mac, double-click the `.app` file.",
+  "replace": "On a Mac, double-click the `.app` file. A Mac build can also leave a second folder whose name ends in BackUpThisFolder_ButDontShipItWithYourGame: leave it out of anything you share.",
+  "why": "Seen after the build made for this page: 77 MB, in under a minute."
+ },
+ {
+  "lesson": 9,
+  "settle": "*",
+  "why": "The page was followed in Unity, a Mac build was made and started, and the build steps were rewritten from what the window shows."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,

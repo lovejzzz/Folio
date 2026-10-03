@@ -15,7 +15,7 @@ Use these names exactly. They are what students see on screen.
 - Windows in the Default layout: Hierarchy (left), Scene and Game tabs (center), Inspector (right), Project and Console tabs (bottom). Reset with Window > Layouts > Default.
 
 ## Menus (top menu bar)
-- File: New Scene, Open Scene, Save, Save As..., Build Profiles, Build And Run. There is no "Build Settings" item: the build window is File > Build Profiles.
+- File: New Scene, Open Scene, Save, Save As..., Build Profiles, Build And Run. There is no "Build Settings". The Build Profiles window has "Scene List" at its top left (a new project already lists SampleScene; "Add Open Scenes" adds the open one) and no platform list until you click "Add Build Profile": the "Platform Browser" opens, with Windows, macOS and Linux under Desktop and an "Add Build Profile" button at the bottom right; the new profile is marked Active and "Build" is at the bottom. A Mac build also leaves a folder ending in "BackUpThisFolder_ButDontShipItWithYourGame".
 - Edit: Undo, Redo, Duplicate, Rename, Delete, Play Mode, Project Settings... On a Mac, preferences are Unity > Settings...; on Windows, Edit > Preferences...
 - GameObject: Create Empty, Create Empty Child, 2D Object, 3D Object, Visual Effects, Light, Audio, UI Toolkit, UI (Canvas), Camera.
 - GameObject > 3D Object: Cube, Sphere, Capsule, Cylinder, Plane, Quad, Text - TextMeshPro.
@@ -23,8 +23,7 @@ Use these names exactly. They are what students see on screen.
 - GameObject > Visual Effects: Particle System, Trail, Line. GameObject > Audio: Audio Source. GameObject > Light: Directional Light, Point Light, Spot Light.
 - Assets > Create: Folder, Material, MonoBehaviour Script, Scene, Scripting, Physics Material, Input Actions, Animation, 2D, TextMeshPro. A new script is Assets > Create > MonoBehaviour Script (also under Scripting > MonoBehaviour Script). A scene is Assets > Create > Scene > Scene; a prefab is made by dragging an object from the Hierarchy into the Project window.
 - Assets > Create > Animation: Animator Controller, Animation Clip. Window > Animation: Animation, Animator.
-- Component > Physics: Rigidbody, Box Collider, Sphere Collider, Capsule Collider, Mesh Collider. Component > Physics 2D: Rigidbody 2D, Box Collider 2D, Circle Collider 2D, Capsule Collider 2D, Composite Collider 2D.
-- Window: Layouts, General (Scene, Game, Inspector, Hierarchy, Project, Console), Animation, Audio, Package Management (Package Manager), Rendering, TextMeshPro.
+- Component > Physics 2D: Rigidbody 2D, Box Collider 2D, Circle Collider 2D, Capsule Collider 2D, Composite Collider 2D.
 
 ## Code (C#), compiled in this version
 - Input: new projects use the Input System package only. `Input.GetAxis`, `Input.GetKey` and the rest of the old Input class compile but throw InvalidOperationException when the game runs. Read keys with `Keyboard.current.aKey.isPressed`, `Keyboard.current.spaceKey.wasPressedThisFrame` (with `using UnityEngine.InputSystem;`), or use the project's own actions: `InputSystem.actions.FindAction("Move")` then `ReadValue<Vector2>()`. The template's InputSystem_Actions asset has a Player map with Move, Look, Attack, Interact, Crouch, Jump, Previous, Next, Sprint.
