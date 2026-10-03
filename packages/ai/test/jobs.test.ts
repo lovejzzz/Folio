@@ -189,6 +189,28 @@ describe('a test taken in class', () => {
   });
 });
 
+describe('a piece graded in class over two lessons', () => {
+  it('is written once: the second lesson takes the first one’s instructions and rubric as they stand', async () => {
+    const store = new CourseStore(smallCourse());
+    const [first, second] = orderedLessons(store.getState());
+    store.apply([first!, second!].map((l) => cmd('lesson.homework', { lessonId: l.id, homework: { kind: 'inclass', toward: 'Oral interview' } })), { label: { key: 'b' }, source: 'teacher' });
+    const inf = fakeInference(() => ({ title: 'Oral interview', prompt: 'Answer six questions.', steps: ['Greet', 'Answer'], answerKey: 'Pairs go in the posted order, four minutes each.', rubric: { levels: [{ label: 'Good', points: 2 }, { label: 'OK', points: 1 }, { label: 'Weak', points: 0 }], criteria: [{ name: 'Clarity', descriptors: ['x', 'y', 'z'] }, { name: 'Accuracy', descriptors: ['x', 'y', 'z'] }] } }));
+    const one = await generateSection(inf, store.getState(), first!.id, 'assignments');
+    expect(inf.calls[0]!.prompt).toContain('write it once and whole');
+    store.apply(one.commands, { label: { key: 'b' }, source: 'ai' });
+    const two = await generateSection(inf, store.getState(), second!.id, 'assignments');
+    expect(inf.calls).toHaveLength(1);
+    store.apply(two.commands, { label: { key: 'b' }, source: 'ai' });
+    const c = store.getState();
+    const [a, b] = [first!, second!].map((l) => c.tasks[c.lessons[l.id]!.taskIds.at(-1)!]!);
+    const told = (t: typeof a) => (t?.kind === 'assignment' ? [t.title, t.steps, t.answerKey] : null);
+    expect(told(b)).toEqual(told(a));
+    const rubrics = [a, b].map((t) => (t!.kind === 'assignment' ? c.rubrics[t.rubricId!]! : null));
+    expect(rubrics[0]!.id).not.toBe(rubrics[1]!.id);
+    expect(rubrics[1]!.criteria.map((k) => Object.values(k.descriptors))).toEqual(rubrics[0]!.criteria.map((k) => Object.values(k.descriptors)));
+  });
+});
+
 describe('homework changed mid-build', () => {
   it('writes no assignment for a lesson set to no homework after the build began', async () => {
     const store = new CourseStore(smallCourse());

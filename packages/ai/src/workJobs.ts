@@ -27,10 +27,15 @@ export const base = (lesson: Lesson) => ({ lessonId: lesson.id, sourceRefs: [], 
 export const assignments: SectionJob<AssignmentDraft> = {
   schema: AssignmentDraft,
   tidy: tidySteps,
-  check: (v) =>
-    v.rubric.criteria
+  check: (v, _course, lesson) => [
+    ...v.rubric.criteria
       .filter((c) => c.descriptors.length !== v.rubric.levels.length)
-      .map((c) => ({ index: null, flag: { code: 'criterionLevels', values: { criterion: c.name } } })),
+      .map((c): Problem => ({ index: null, flag: { code: 'criterionLevels', values: { criterion: c.name } } })),
+    // Work graded in class needs its running order: who goes when, what the others do, how it is scored in the time.
+    ...(lesson.homework.kind === 'inclass' && !v.answerKey.trim()
+      ? [{ index: null, flag: { code: 'schemaIssue' as const, values: { path: 'answerKey', issue: 'Say how the teacher runs and scores this for a whole class in the lesson' } } }]
+      : []),
+  ],
   toCommands: (v, problems, _course, lesson) => {
     const levels = v.rubric.levels.map((lv) => ({ id: newId('x'), label: lv.label, points: lv.points }));
     const rubric: Rubric = {
@@ -81,7 +86,7 @@ export const step: SectionJob<StepDraft> = {
 
 const pointsOf = (n: number) => (n === 1 ? '1 point' : `${n} points`);
 /** The text without the points a model wrote at its end: Folio adds them, and they stood there twice. */
-const withoutPoints = (text: string) => text.trim().replace(/(?:\s*\(\d+\s*(?:points?|pts?|marks?)\))+\s*$/i, '');
+const withoutPoints = (text: string, points: number) => text.trim().replace(new RegExp(String.raw`(?:\s*\(${points}\s*(?:points?|pts?|marks?)\))+\s*$`, 'i'), '');
 
 /**
  * A test taken in class, kept as an assignment whose steps are its questions, each with its points, and whose
@@ -99,10 +104,38 @@ export const test: SectionJob<TestDraft> = {
       flags: [],
       title: v.title,
       prompt: v.instructions,
-      steps: v.questions.map((q) => `${withoutPoints(q.question)} (${pointsOf(q.points)})`),
+      steps: v.questions.map((q) => `${withoutPoints(q.question, q.points)} (${pointsOf(q.points)})`),
       rubricId: null,
-      answerKey: [...v.questions.map((q, i) => `${i + 1}. ${withoutPoints(q.answer)} (${pointsOf(q.points)})`), `Total: ${pointsOf(total)}`].join('\n'),
+      answerKey: [...v.questions.map((q, i) => `${i + 1}. ${withoutPoints(q.answer, q.points)} (${pointsOf(q.points)})`), `Total: ${pointsOf(total)}`].join('\n'),
     };
     return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: flagsAt(problems, null), tasks: [task], rubrics: [] })];
   },
 };
+
+/**
+ * A piece graded in class over several lessons (an oral interview taken in two groups) is one piece: the later
+ * lessons take the first one's instructions, rubric and running notes as they stand. Written again for each
+ * lesson, the second day's students were scored on a different rubric for the same 40%.
+ */
+export function continuedInClass(course: Course, lesson: Lesson): Command[] | null {
+  const toward = lesson.homework.toward.trim();
+  if (lesson.homework.kind !== 'inclass' || !toward) return null;
+  const first = course.lessonOrder
+    .slice(0, course.lessonOrder.indexOf(lesson.id))
+    .map((id) => course.lessons[id])
+    .find((l) => l?.homework.kind === 'inclass' && l.homework.toward.trim() === toward);
+  const source = first?.taskIds.map((id) => course.tasks[id]).find((t) => t?.kind === 'assignment');
+  if (!source || source.kind !== 'assignment') return null;
+  const scale = source.rubricId ? course.rubrics[source.rubricId] : undefined;
+  const levelIds = new Map((scale?.levels ?? []).map((lv) => [lv.id, newId('x')]));
+  const rubric: Rubric | null = scale
+    ? {
+        id: newId('r'),
+        title: scale.title,
+        levels: scale.levels.map((lv) => ({ ...lv, id: levelIds.get(lv.id)! })),
+        criteria: scale.criteria.map((c) => ({ id: newId('x'), name: c.name, descriptors: Object.fromEntries(Object.entries(c.descriptors).map(([id, text]) => [levelIds.get(id) ?? id, text])) })),
+      }
+    : null;
+  const task: Task = { ...source, ...base(lesson), id: newId('t'), objectiveIds: [...lesson.objectiveIds], flags: [], rubricId: rubric?.id ?? null };
+  return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: [], tasks: [task], rubrics: rubric ? [rubric] : [] })];
+}

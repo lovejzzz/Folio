@@ -20,7 +20,7 @@ import {
 import { InferenceError, type Inference } from './inference';
 import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
-import { assignments, base, flagsAt, step, test, type SectionJob } from './workJobs';
+import { assignments, base, continuedInClass, flagsAt, step, test, type SectionJob } from './workJobs';
 import { issuePlace, reviewPlan } from './review';
 import { runJob, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
@@ -305,6 +305,10 @@ export async function generateSection(
     case 'assignments':
       if (lesson.homework.kind === 'none') return { commands: [], flagged: 0 };
       if (lesson.homework.kind === 'test') return run(test);
+      {
+        const continued = continuedInClass(course, lesson);
+        if (continued) return { commands: continued, flagged: 0 };
+      }
       return lesson.homework.kind === 'step' ? run(step) : run(assignments);
     case 'discussions':
       return run(discussions);

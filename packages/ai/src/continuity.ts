@@ -95,6 +95,7 @@ export function sharedComponent(course: Course, lesson: Lesson): string {
   const sharing = orderedLessons(course).filter((l) => l.homework.kind === lesson.homework.kind && l.homework.toward.trim() === toward);
   if (sharing.length < 2) return '';
   const place = sharing.findIndex((l) => l.id === lesson.id) + 1;
+  if (lesson.homework.kind === 'inclass') return `"${toward}" is taken over ${sharing.length} lessons, a group in each: write it once and whole, since the later lessons use it as it stands, with running notes that say who goes in which lesson.`;
   // Papers of one component (two quizzes) told only "cover the lessons so far" came out alike, title and half the questions.
   if (lesson.homework.kind === 'test') {
     const earlier = sharing[place - 2]?.taskIds.map((id) => course.tasks[id]).find((t) => t?.kind === 'assignment');
