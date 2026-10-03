@@ -1325,6 +1325,182 @@
   "why": "The page was followed in Unity: lose three lives, Game over, Restart, then twenty seconds unhit. SampleScene is in the build list of a new project, so Restart loads it."
  },
  {
+  "lesson": 8,
+  "slot": 1,
+  "src": "/samples/unity/media/w08-hit.mp4",
+  "poster": "/samples/unity/media/w08-hit.poster.webp",
+  "caption": "Where this week ends: every hit throws sparks (and plays a thud, which this silent clip cannot carry)."
+ },
+ {
+  "lesson": 8,
+  "slot": 3,
+  "src": "/samples/unity/media/files/Dodge-week7-end.zip"
+ },
+ {
+  "lesson": 8,
+  "slot": 4,
+  "src": "/samples/unity/media/files/dodge-sounds.zip"
+ },
+ {
+  "lesson": 8,
+  "slot": 5,
+  "src": "/samples/unity/media/w08-audio-folder.webp"
+ },
+ {
+  "lesson": 8,
+  "slot": 6,
+  "src": "/samples/unity/media/w08-clip-preview.webp",
+  "caption": "The clip in the Inspector. Its preview, with a play button, is at the very bottom."
+ },
+ {
+  "lesson": 8,
+  "slot": 7,
+  "drop": true,
+  "why": "Shown in the picture of Hit Feedback below."
+ },
+ {
+  "lesson": 8,
+  "slot": 8,
+  "drop": true,
+  "why": "The next picture shows the fields once filled."
+ },
+ {
+  "lesson": 8,
+  "slot": 9,
+  "src": "/samples/unity/media/w08-feedback.webp",
+  "caption": "Audio Source with Play On Awake unticked, and Hit Feedback (Script) with its two slots filled. Other components are folded here to save room."
+ },
+ {
+  "lesson": 8,
+  "slot": 10,
+  "drop": true,
+  "why": "A silent clip cannot show a sound."
+ },
+ {
+  "lesson": 8,
+  "slot": 11,
+  "src": "/samples/unity/media/w08-pitch.webp"
+ },
+ {
+  "lesson": 8,
+  "slot": 12,
+  "drop": true,
+  "why": "The same Audio Source as on the Player."
+ },
+ {
+  "lesson": 8,
+  "slot": 13,
+  "drop": true,
+  "why": "The next picture shows the fields once filled."
+ },
+ {
+  "lesson": 8,
+  "slot": 14,
+  "src": "/samples/unity/media/w08-over-sound.webp"
+ },
+ {
+  "lesson": 8,
+  "slot": 15,
+  "drop": true,
+  "why": "Not captured with Player unfolded."
+ },
+ {
+  "lesson": 8,
+  "slot": 16,
+  "src": "/samples/unity/media/w08-sparks.webp"
+ },
+ {
+  "lesson": 8,
+  "slot": 17,
+  "drop": true,
+  "why": "Emission and Shape are below the main section and did not fit one picture."
+ },
+ {
+  "lesson": 8,
+  "slot": 18,
+  "src": "/samples/unity/media/w08-wired.webp"
+ },
+ {
+  "lesson": 8,
+  "slot": 19,
+  "src": "/samples/unity/media/w08-burst.webp",
+  "caption": "The moment of a hit: about twenty orange sparks."
+ },
+ {
+  "lesson": 8,
+  "slot": 20,
+  "src": "/samples/unity/media/w08-volume.webp"
+ },
+ {
+  "lesson": 8,
+  "slot": 21,
+  "src": "/samples/unity/media/w08-count.webp"
+ },
+ {
+  "lesson": 8,
+  "slot": 22,
+  "drop": true,
+  "why": "Start Speed 8 was not captured."
+ },
+ {
+  "lesson": 8,
+  "slot": 23,
+  "src": "/samples/unity/media/files/Dodge-week8-end.zip"
+ },
+ {
+  "lesson": 8,
+  "find": "        manager.LoseLife();                        // then the life\n",
+  "replace": "        manager.LoseLife();                        // then the life\n        Destroy(other);                            // remove the hazard so it cannot hit again\n",
+  "why": "Run in Unity: without this line one hazard took all three lives, because it kept touching the Player. Last week’s script had it."
+ },
+ {
+  "lesson": 8,
+  "find": "It still ignores anything not tagged Hazard and then calls `LoseLife()`.",
+  "replace": "It still ignores anything not tagged Hazard, calls `LoseLife()` and removes the hazard, as last week’s did.",
+  "why": "As above."
+ },
+ {
+  "lesson": 8,
+  "find": "and move into a falling hazard with W, A, S and D.",
+  "replace": "and move into a falling hazard with W, A, S and D. Then click **Play** again to stop.",
+  "why": "The next part edits the scene, which Play would undo."
+ },
+ {
+  "lesson": 8,
+  "find": "Listen for the second thud to sound a little different from the first.",
+  "replace": "Listen for the second thud to sound a little different from the first. Then click **Play** again to stop.",
+  "why": "As above."
+ },
+ {
+  "lesson": 8,
+  "find": "and take all three hits.",
+  "replace": "and take all three hits. Then click **Play** again to stop.",
+  "why": "As above."
+ },
+ {
+  "lesson": 8,
+  "find": "and take a hit.",
+  "replace": "and take a hit. Then click **Play** again to stop.",
+  "why": "As above."
+ },
+ {
+  "lesson": 8,
+  "find": "Read Swink, S. (2008). Game feel: A game designer’s guide to virtual sensation. Morgan Kaufmann",
+  "replace": "Read chapter 1 of Swink, S. (2008). Game feel: A game designer’s guide to virtual sensation. Morgan Kaufmann",
+  "why": "A whole book cannot be read in the hour the checklist gives; chapter 1 defines game feel and its three building blocks."
+ },
+ {
+  "lesson": 8,
+  "find": "Your reading this week is Swink, S. (2008). Game feel: A game designer’s guide to virtual sensation. Morgan Kaufmann.",
+  "replace": "Your reading this week is chapter 1, Defining game feel, of Swink, S. (2008). Game feel: A game designer’s guide to virtual sensation. Morgan Kaufmann.",
+  "why": "As above."
+ },
+ {
+  "lesson": 8,
+  "settle": "*",
+  "why": "The page was followed in Unity and corrected."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
