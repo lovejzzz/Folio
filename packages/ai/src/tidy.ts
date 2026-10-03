@@ -113,7 +113,9 @@ export function tidySlides(v: SlidesDraft, language: Language): SlidesDraft {
   const { continued } = docLabels(language);
   return {
     slides: v.slides.flatMap((s) => {
-      if (s.bullets.length <= BULLETS_PER_SLIDE) return [s];
+      // A question with its lettered options is one thing to look at: split, the poll showed option A and hid B to D.
+      const options = s.bullets.filter((b) => /^\(?[A-Ea-e][.):]\s/.test(b.trim())).length >= 2;
+      if (s.bullets.length <= BULLETS_PER_SLIDE || options) return [s];
       const half = Math.ceil(s.bullets.length / 2);
       return [
         { ...s, bullets: s.bullets.slice(0, half) },

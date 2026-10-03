@@ -65,6 +65,11 @@ describe('tidySlides', () => {
     expect(v.slides.map((s) => [s.title, s.bullets.join('')])).toEqual([['Needs and wants', 'abc'], ['Needs and wants (continued)', 'def']]);
     expect(v.slides[1]!.notes).toBe('');
   });
+
+  it('keeps a question and its lettered options on one slide', () => {
+    const poll = { layout: 'bullets' as const, title: 'Poll', bullets: ['Which is an output?', 'A. Families enrolled', 'B. Fewer placements', 'C. Staff hired', 'D. Trust in the agency', 'Answer in the poll: 60 seconds'], notes: '' };
+    expect(tidySlides({ slides: [poll] }, 'en').slides).toHaveLength(1);
+  });
 });
 
 describe('fenced code', () => {
