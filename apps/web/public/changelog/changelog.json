@@ -1,5 +1,41 @@
 [
   {
+    "version": "0.0.4",
+    "date": "October 3, 2026",
+    "title": "Eight lessons means eight, and a few rules pulled back into line",
+    "lede": "A short release. Re-reading the courses written after 0.0.3 showed that some of the new rules pushed too far. One of them changed the number of lessons you asked for, which is ours to fix at once.",
+    "sections": [
+      {
+        "heading": "The number of lessons you ask for is the number you get",
+        "body": "In 0.0.3 we told Folio to give a unit test most of a lesson. For a unit of eight lessons graded by a test, it made room by adding a ninth. The lessons you ask for now come first: the test is placed within them.",
+        "compare": {
+          "before": "You asked for eight 50-minute lessons. Folio planned nine.",
+          "after": "You asked for eight 50-minute lessons. Folio plans eight, with the test in the last."
+        }
+      },
+      {
+        "heading": "A final exam is not forgotten",
+        "body": "Graded work is placed in lessons when the course is outlined. A final exam held in exam week, after the last class, belongs to no lesson, and a statistics course was written as if it had none. The last lesson now names the exam and reviews for it."
+      },
+      {
+        "heading": "“Hypothetical”, once",
+        "body": "Folio labels invented examples so no one takes them for real studies. It was labelling them over and over, 104 times in one course, and once called a real dataset hypothetical. Now an invented example is marked once, where it is introduced, and real data is never marked.",
+        "compare": {
+          "before": "“In this hypothetical study of a hypothetical sample…” on seven of eleven worksheets, and on R’s real sleep data.",
+          "after": "“Suppose a survey of our school found…”, said once."
+        }
+      },
+      {
+        "heading": "Also in this release",
+        "bullets": [
+          "When a lesson holds a graded quiz, the lesson’s own quiz is that quiz and covers what the plan says it covers.",
+          "In a beginners’ language course, discussion prompts give instructions in English and sentence frames in the language being learned, not whole prompts in a language students cannot yet read.",
+          "Plans no longer mention handouts or files that the course does not have."
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.0.3",
     "date": "October 3, 2026",
     "title": "Seven sample courses, and courses with labs, code and languages",
