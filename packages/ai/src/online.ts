@@ -182,15 +182,18 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
     }
   const thin = blocks.filter((b) => b.type === 'callout' && ['stuck', 'checkpoint'].includes(b.kind.trim().toLowerCase()) && [b.text, ...b.items].join(' ').trim().length < 80);
   if (thin.length) problems.push(issue(`${thin.length} checkpoint or stuck callouts say too little: a checkpoint says what the student should see and what wrong looks like; a stuck callout gives each likely cause with its fix`));
+  // Pictures and clips are owed where the steps are followed on a screen: a week that teaches a tool names its version or
+  // gives code. Held to them, the steps of a psychology week ("write three sentences") were each asked for a screenshot.
+  const onScreen = blocks.some((b) => b.type === 'code' || (b.type === 'callout' && b.kind.trim().toLowerCase() === 'version'));
   const pictures = (bs: typeof blocks) => bs.reduce((n, b) => n + (b.type === 'image' || b.type === 'video' ? 1 : 0) + b.shots.length, 0);
   for (const part of v.parts) {
     const steps = part.blocks.reduce((n, b) => n + (b.type === 'steps' ? b.items.length : 0), 0);
     const checked = part.blocks.some((b) => b.type === 'callout' && b.kind.trim().toLowerCase() === 'checkpoint');
     if (steps > 6 && !checked) problems.push(issue(`"${part.title}" has ${steps} steps and no checkpoint: say what the student should see`));
     // A beginner checks their screen against the page: a long run of steps with nothing to check against loses them.
-    if (steps >= 5 && pictures(part.blocks) < 2) problems.push(issue(`"${part.title}" has ${steps} steps and ${pictures(part.blocks) === 1 ? '1 picture' : 'no pictures'}: ask for a screenshot where the thing to click is hard to find and one of the result`));
+    if (onScreen && steps >= 5 && pictures(part.blocks) < 2) problems.push(issue(`"${part.title}" has ${steps} steps and ${pictures(part.blocks) === 1 ? '1 picture' : 'no pictures'}: ask for a screenshot where the thing to click is hard to find and one of the result`));
   }
-  if (blocks.some((b) => b.type === 'steps') && !blocks.some((b) => b.type === 'video' && isClip(b))) problems.push(issue('The week has steps to follow and no clip: ask for a short silent recording where something moves or runs'));
+  if (onScreen && blocks.some((b) => b.type === 'steps') && !blocks.some((b) => b.type === 'video' && isClip(b))) problems.push(issue('The week has steps to follow and no clip: ask for a short silent recording where something moves or runs'));
   return problems;
 }
 
