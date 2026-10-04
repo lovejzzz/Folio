@@ -1,6 +1,6 @@
 import { isLocalMedia, localMediaRef, type Course } from '@folio/core';
 import type { FolioMedia, MediaResolver, ResolvedMedia } from '@folio/export';
-import { mediaOf } from '../state/media';
+import { mediaAnywhere } from '../state/mediaSync';
 
 /**
  * Where an export gets a course's pictures, clips and files: from this device for what the teacher added, and
@@ -16,7 +16,7 @@ const WORD_BYTES = 1024 * 1024;
 
 async function read(courseId: string, ref: string): Promise<{ blob: Blob; name?: string } | null> {
   if (isLocalMedia(ref)) {
-    const row = await mediaOf(courseId, ref);
+    const row = await mediaAnywhere(courseId, ref);
     return row && { blob: row.blob, name: row.name };
   }
   // Only the site's own files: a course opened from a backup could name any address.

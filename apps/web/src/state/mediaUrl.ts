@@ -1,6 +1,7 @@
 import { isLocalMedia, localMediaId } from '@folio/core';
 import { useEffect, useState } from 'react';
 import { getMedia } from './media';
+import { fetchMedia } from './mediaSync';
 
 /**
  * Where a picture, clip or file can be loaded from. A path is its own address. Something kept on this device
@@ -28,7 +29,10 @@ function acquire(courseId: string, id: string): Held {
   let entry = held.get(key);
   if (!entry) {
     const made: Held = { users: 0, loaded: Promise.resolve({ state: 'missing' }) };
-    made.loaded = getMedia(courseId, id).then(
+    // Not on this device: the account may hold it, from the device it was added on.
+    made.loaded = getMedia(courseId, id)
+      .then((row) => row ?? fetchMedia(courseId, id))
+      .then(
       (row): MediaUrl => {
         // Everyone left while it was being read: there is no one to hold an address for.
         if (!row || held.get(key) !== made) return { state: 'missing' };

@@ -1,5 +1,23 @@
 [
  {
+  "version": "0.0.11",
+  "date": "October 4, 2026",
+  "title": "Your pictures on every device you sign in on",
+  "lede": "The last release let you put pictures, clips and files into a page, and kept them in the browser you added them in. They now go to your account as well.",
+  "sections": [
+   {
+    "heading": "Added once, there everywhere",
+    "body": "When you are signed in, each picture, clip or file you add to a course’s pages is sent to your account after the course itself. On another device, a page that names one fetches it when you open the page, and an export or a backup made there fetches whatever it still lacks. A file can be up to 95 MB and an account can hold 2 GB; anything larger stays in the browser it was added in, and a backup file still carries it. The files are private to your account, and deleting a course or the account deletes them. Nothing changes if you do not sign in: everything stays in your browser, as before.",
+    "image": {
+     "src": "/changelog/0.0.11-devices.svg",
+     "alt": "A picture added on this computer is sent once to your account and fetched by your other device when you open the page",
+     "width": 800,
+     "height": 300
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.10",
   "date": "October 4, 2026",
   "title": "What a review finds is put right where it stands",

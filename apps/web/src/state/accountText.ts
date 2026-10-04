@@ -21,6 +21,7 @@ export const accountText = {
   unavailable: 'Signing in isn’t available here.',
   tryAgain: 'Try again',
   backToFolio: 'Back to Folio',
+  mediaFull: 'Your account has no room for more pictures, clips and files (2 GB). New ones stay on this device; a backup file still carries them.',
   sessionEnded: 'You were signed out. Sign in again to keep your courses in your account.',
   // The courses already on this device.
   offerTitle: 'Add these courses to your account?',

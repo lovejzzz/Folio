@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .line { stroke: #2B46C4 } .soft { fill: #EDF0FC } .rule { stroke: #CFC8B9 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .line { stroke: #8FA3FF } .soft { fill: #23284A } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">A PICTURE ADDED ON ONE DEVICE</text>
+  <rect class="card" x="36" y="70" width="210" height="190" rx="14"/>
+  <text class="ink" x="56" y="102" font-size="16" font-weight="600">This computer</text>
+  <rect class="soft" x="56" y="120" width="170" height="92" rx="8"/>
+  <text class="ink2" x="68" y="146" font-size="12.5">Week 3, step 6</text>
+  <text class="acc" x="68" y="170" font-size="13" font-weight="600">the picture you added</text>
+  <text class="ink2" x="56" y="238" font-size="12.5">kept here, as before</text>
+  <rect class="card" x="295" y="70" width="210" height="190" rx="14"/>
+  <text class="ink" x="315" y="102" font-size="16" font-weight="600">Your account</text>
+  <text class="ink2" x="315" y="134" font-size="13">sent once, after the course</text>
+  <text class="ink2" x="315" y="158" font-size="13">private to you</text>
+  <text class="ink2" x="315" y="182" font-size="13">up to 95 MB a file</text>
+  <text class="ink2" x="315" y="206" font-size="13">gone when you delete</text>
+  <text class="ink2" x="315" y="226" font-size="13">the course or the account</text>
+  <rect class="card" x="554" y="70" width="210" height="190" rx="14"/>
+  <text class="ink" x="574" y="102" font-size="16" font-weight="600">Your other device</text>
+  <rect class="soft" x="574" y="120" width="170" height="92" rx="8"/>
+  <text class="ink2" x="586" y="146" font-size="12.5">Week 3, step 6</text>
+  <text class="acc" x="586" y="170" font-size="13" font-weight="600">fetched when you open</text>
+  <text class="acc" x="586" y="190" font-size="13" font-weight="600">the page</text>
+  <text class="ink2" x="574" y="238" font-size="12.5">then kept there too</text>
+  <line class="line" x1="250" y1="165" x2="290" y2="165" stroke-width="2"/><path class="acc" d="M290 165l-8-5v10z"/>
+  <line class="line" x1="509" y1="165" x2="549" y2="165" stroke-width="2"/><path class="acc" d="M549 165l-8-5v10z"/>
+</svg>

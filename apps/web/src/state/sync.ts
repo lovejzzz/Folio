@@ -4,6 +4,7 @@ import { currentMessages } from '../i18n';
 import { announce, useAccount, writeHint, type AccountUser, type SyncState } from './account';
 import { db, deleteCourse, loadCourse, loadCourseWithHistory, onCourseWrite, saveCourse, textsOf, versionOf, type SyncRow } from './db';
 import { forSending, sendTexts, wholeCopy } from './syncTexts';
+import { sendMedia } from './mediaSync';
 import type { HistoryRow } from './historySync';
 import { activeStore, dropSession, flushNow } from './session';
 import { toast } from './toasts';
@@ -174,6 +175,8 @@ function pushOne(id: string): Promise<void> {
     if (res.status === 409) return keepBoth(id, course);
     const { version } = (await res.json()) as { version: number };
     await db.sync.put({ ...row, version, synced: versionOf(course), sent: sending.needed });
+    // After the course, and never in its way: what its pages name is sent once each.
+    await sendMedia(course).catch(() => undefined);
   });
 }
 

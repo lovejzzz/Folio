@@ -1,7 +1,7 @@
 import { checkPicture, picturePlace, seesPictures, type Picture } from '@folio/ai';
 import { cmd, lessonNumber, type PageBlock } from '@folio/core';
 import { currentMessages } from '../i18n';
-import { mediaOf } from './media';
+import { mediaAnywhere } from './mediaSync';
 import { canReach, currentInference, errorMessage } from './model';
 import { activeStore } from './session';
 import { toast } from './toasts';
@@ -60,7 +60,7 @@ export async function checkPictureAt(lessonId: string, id: string): Promise<void
   const src = lesson ? srcOf(lesson.page, id) : '';
   if (!lesson || !place || !src) return;
   try {
-    const blob = (await mediaOf(course.id, src))?.blob ?? (await (await fetch(src)).blob());
+    const blob = (await mediaAnywhere(course.id, src))?.blob ?? (await (await fetch(src)).blob());
     const found = await checkPicture(inference, course, lesson, place, await forChecking(blob));
     // Written onto the page as it is now: the teacher may have gone on editing while the picture was looked at.
     const now = store.getState().lessons[lessonId];

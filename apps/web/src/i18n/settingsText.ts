@@ -43,7 +43,7 @@ export const settingsText = {
   textLarger: 'Larger',
   density: 'Overview cells',
   data: 'Your data',
-  dataLede: 'Courses are saved in this browser, and in your account if you sign in. Pictures, clips and files you add to a page stay in this browser only. Save a backup file to keep a copy of everything anywhere else.',
+  dataLede: 'Courses are saved in this browser, and in your account if you sign in. Pictures, clips and files you add to a page go to your account too, each up to 95 MB; a larger one stays in this browser. Save a backup file to keep a copy of everything anywhere else.',
   storage: (used: string) => `About ${used} used on this device.`,
   backupAllName: 'Folio courses.zip',
   notKept: 'This browser may clear courses from a site you haven’t visited in a while. Save a backup file now and then.',

@@ -20,8 +20,18 @@ export interface D1Database {
   batch(statements: D1PreparedStatement[]): Promise<D1Result[]>;
 }
 
+/** As much of an R2 bucket as Folio uses. */
+export interface R2Bucket {
+  put(key: string, value: ArrayBuffer, options?: { httpMetadata?: { contentType?: string }; customMetadata?: Record<string, string> }): Promise<unknown>;
+  get(key: string): Promise<{ body: ReadableStream; size: number; httpMetadata?: { contentType?: string }; customMetadata?: Record<string, string> } | null>;
+  list(options: { prefix: string; cursor?: string }): Promise<{ objects: { key: string; size: number }[]; truncated: boolean; cursor?: string }>;
+  delete(keys: string | string[]): Promise<void>;
+}
+
 export interface Env {
   DB: D1Database;
+  /** Where the pictures, clips and files teachers add to their pages are kept for their accounts. Unbound: they stay on the device. */
+  MEDIA?: R2Bucket;
   /** The OAuth client that signs teachers in; public, the same one the page uses. */
   VITE_GOOGLE_CLIENT_ID: string;
   /** Folio's own Anthropic key, a Cloudflare secret: calls paid with Folio credits use it. Unset: credits are off. */

@@ -51,6 +51,8 @@ export interface SyncRow {
   synced: string;
   /** The file texts the account holds for this course, as of the last send or fetch. */
   sent?: string[];
+  /** The pictures, clips and files the account holds for this course. */
+  media?: string[];
 }
 
 /**

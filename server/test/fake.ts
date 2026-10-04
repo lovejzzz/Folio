@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
-import type { D1Database, D1PreparedStatement, D1Result } from '../src/types';
+import type { D1Database, D1PreparedStatement, D1Result, R2Bucket } from '../src/types';
 
 type Value = string | number | bigint | null | Uint8Array;
 
@@ -48,4 +48,29 @@ export async function fakeGoogle(clientId: string) {
     return `${head}.${payload}.${b64url(new Uint8Array(sig))}`;
   }
   return { fetchImpl, token };
+}
+
+/** An R2 bucket in memory: objects by key, listed by prefix a page at a time. */
+export function fakeR2(pageSize = 2): R2Bucket & { keys: () => string[] } {
+  const objects = new Map<string, { data: ArrayBuffer; httpMetadata?: { contentType?: string }; customMetadata?: Record<string, string> }>();
+  return {
+    keys: () => [...objects.keys()].sort(),
+    async put(key, value, options) {
+      objects.set(key, { data: value, ...options });
+    },
+    async get(key) {
+      const found = objects.get(key);
+      return found ? { body: new Blob([found.data]).stream(), size: found.data.byteLength, httpMetadata: found.httpMetadata, customMetadata: found.customMetadata } : null;
+    },
+    async list({ prefix, cursor }) {
+      const all = [...objects.keys()].filter((k) => k.startsWith(prefix)).sort();
+      const from = cursor ? Number(cursor) : 0;
+      const page = all.slice(from, from + pageSize);
+      const more = from + pageSize < all.length;
+      return { objects: page.map((key) => ({ key, size: objects.get(key)!.data.byteLength })), truncated: more, ...(more ? { cursor: String(from + pageSize) } : {}) };
+    },
+    async delete(keys) {
+      for (const k of Array.isArray(keys) ? keys : [keys]) objects.delete(k);
+    },
+  };
 }

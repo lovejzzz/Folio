@@ -3,6 +3,7 @@ import { proxyMessages } from './ai';
 import { proxyChat } from './openai';
 import { checkout, PACKS, webhook } from './billing';
 import { grantFree, MILLI, schoolEmail, statement, forgetPastGrantCounts } from './credits';
+import { courseMedia, removeMedia } from './media';
 import { listCourses, MAX_COURSE_BYTES, MAX_SOURCE_BYTES, readCourse, readSource, removeAccount, removeCourse, writeCourse, writeSource, type CourseMeta } from './courses';
 import { SignInError, verifyIdToken } from './google';
 import { missingSchemaCached } from './schemaShape';
@@ -129,6 +130,7 @@ async function course(request: Request, env: Env, user: User, id: string): Promi
   }
   if (request.method === 'DELETE') {
     await removeCourse(env.DB, user.id, id);
+    await removeMedia(env.MEDIA, user.id, id);
     return json({ ok: true });
   }
   return problem(405, 'method');
@@ -190,7 +192,9 @@ export async function handle(request: Request, env: Env, fetchImpl?: typeof fetc
   if (path.join('/') === 'ai/openai/v1/chat/completions' && request.method === 'POST') return proxyChat(request, env, user, waitUntil, fetchImpl);
   if (path[0] === 'courses' && path.length === 2) return course(request, env, user, path[1]!);
   if (path[0] === 'courses' && path.length === 4 && path[2] === 'sources') return courseSource(request, env, user, path[1]!, path[3]!);
+  if (path[0] === 'courses' && (path.length === 3 || path.length === 4) && path[2] === 'media') return COURSE_ID.test(path[1]!) ? courseMedia(request, env, user, path[1]!, path[3]) : problem(400, 'bad-course-id');
   if (path[0] === 'account' && path.length === 1 && request.method === 'DELETE') {
+    await removeMedia(env.MEDIA, user.id);
     await removeAccount(env.DB, user.id);
     return json({ ok: true }, 200, { 'set-cookie': clearCookie() });
   }
