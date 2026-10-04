@@ -194,7 +194,8 @@ export function readBefore(lesson: Lesson): { works: string[]; proposed: boolean
 export function nextReading(course: Course, lesson: Lesson): string {
   const next = orderedLessons(course)[course.lessonOrder.indexOf(lesson.id) + 1];
   if (!next) return '';
-  const readings = readBefore(next).works;
+  // In an online course Folio's own suggestions are optional reading: no close sends students to a book they may not have.
+  const readings = hasModulePages(course) && readBefore(next).proposed ? [] : readBefore(next).works;
   return [
     // Told to announce a quiz "if it holds one", nine plans in thirteen announced that none was held: the test is named only when there is one.
     next.summary.trim() ? `Next time: ${next.summary.trim()} The close tells students what to expect${next.homework.kind === 'test' ? `, and announces the test it holds${next.homework.toward.trim() ? ` ("${next.homework.toward.trim()}")` : ''}` : ''}.` : '',

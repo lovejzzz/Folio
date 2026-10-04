@@ -200,7 +200,7 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     objectives ? `Its objectives:\n${objectives}` : '',
     hasModulePages(course) ? onlineHomeworkLine(course, lesson) : homeworkLine(course, lesson),
     // Called "proposed, for the teacher to confirm", the words came back in teacher notes and slide notes.
-    readings ? `Students read before this lesson${before.proposed ? ' (plan from these, naming them in full)' : ''}:\n${readings}` : '',
+    readings ? `${before.proposed && hasModulePages(course) ? 'Further reading Folio suggests, which students may not be able to get: the page may point to it, marked optional and outside the week\'s hours, and never depends on it' : `Students read before this lesson${before.proposed ? ' (plan from these, naming them in full)' : ''}`}:\n${readings}` : '',
   ]
     .filter(Boolean)
     .join('\n\n');

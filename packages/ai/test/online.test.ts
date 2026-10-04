@@ -113,6 +113,17 @@ describe('an online course with no set meeting time', () => {
     expect(checkModule(v, c)).toHaveLength(base);
   });
 
+  it('treats a reading Folio proposed as optional in an online week, and a file\'s label as a name', () => {
+    const c = online();
+    const [first, second] = orderedLessons(c);
+    const withBook = { ...c, lessons: { ...c.lessons, [second!.id]: { ...second!, readings: [], suggestedReadings: ['Swink, S. (2008). Game feel. Morgan Kaufmann'] } } } as Course;
+    expect(sectionPrompt(withBook, withBook.lessons[second!.id]!, 'plan')).toMatch(/Further reading Folio suggests[\s\S]*marked optional[\s\S]*Swink/);
+    expect(sectionPrompt(withBook, withBook.lessons[first!.id]!, 'plan')).not.toMatch(/Before the next lesson students read/);
+    const v = draft();
+    v.parts[0]!.blocks.push({ ...v.parts[0]!.blocks[0]!, type: 'file', text: 'The project as it should stand at the start of this week, with everything from last week in place and ready', shows: 'A project' });
+    expect(JSON.stringify(checkModule(v, c))).toContain('a name, not a sentence');
+  });
+
   it('keeps code as typed, and sets a name the screen shows in bold', () => {
     const set = typesetDraft(draft(), 'en');
     expect(set.parts[0]!.blocks[2]!.text).toContain('// "spin"');
