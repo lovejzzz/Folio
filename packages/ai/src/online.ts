@@ -177,7 +177,7 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
     for (const b of part.blocks) {
       if (b.type !== 'file') continue;
       const name = b.text.trim();
-      const wrong = !name ? 'has no file name: give it under "text"' : name.length > 60 ? 'is named by a sentence: "text" holds the file\'s name alone, and the sentence goes in a paragraph beside it' : !b.shows.trim() ? 'does not say what it holds: give that under "shows"' : '';
+      const wrong = !name ? 'has no file name: give it under "text"' : name.length > 60 ? 'is named by a sentence: "text" holds the file\'s name alone (Dodge-week6-start.zip), "shows" says what the file holds, and anything said to the student goes in a paragraph beside it' : !b.shows.trim() ? 'does not say what it holds: give that under "shows"' : '';
       if (wrong) problems.push(issue(`In "${part.title}", the file ${name ? `"${name.slice(0, 40)}"` : `(${b.shows.trim().slice(0, 40) || 'unnamed'})`} ${wrong}`));
     }
   const thin = blocks.filter((b) => b.type === 'callout' && ['stuck', 'checkpoint'].includes(b.kind.trim().toLowerCase()) && [b.text, ...b.items].join(' ').trim().length < 80);
