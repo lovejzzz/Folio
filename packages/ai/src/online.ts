@@ -1,4 +1,4 @@
-import { cmd, hasModulePages, newId, orderedLessons, pageMinutes, pageText, type Course, type Lesson, type PageBlock } from '@folio/core';
+import { cmd, hasModulePages, isOutsideHours, newId, orderedLessons, pageMinutes, pageText, type Course, type Lesson, type PageBlock } from '@folio/core';
 import { z } from 'zod';
 import type { Problem } from './jobs';
 import { isMixedOnline, mixedAsk } from './live';
@@ -161,7 +161,7 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
   const problems: Problem[] = [];
   const want = (course.online?.hoursPerWeek ?? 9) * 60;
   // Optional work is not owed: counted, it let a week reach its hours on a challenge nobody has to do.
-  const got = v.checklist.reduce((n, c) => n + (OPTIONAL.test(c.label) ? 0 : c.minutes), 0);
+  const got = v.checklist.reduce((n, c) => n + (isOutsideHours(c.label) ? 0 : c.minutes), 0);
   if (Math.abs(got - want) > want * HOURS_SLACK) problems.push(issue(`The checklist adds up to ${got} minutes; the week is ${want} minutes of student work. Change the work or the estimates so they agree`));
   const liveMinutes = v.live.reduce((n, s) => n + s.minutes, 0);
   if (isMixedOnline(course) && liveMinutes !== (course.online?.liveMinutes || 75)) problems.push(issue(`The live session's segments add up to ${liveMinutes} minutes; the session is ${course.online?.liveMinutes || 75}`));
@@ -184,7 +184,7 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
   if (thin.length) problems.push(issue(`${thin.length} checkpoint or stuck callouts say too little: a checkpoint says what the student should see and what wrong looks like; a stuck callout gives each likely cause with its fix`));
   // Pictures and clips are owed where the steps are followed on a screen: a week that teaches a tool names its version or
   // gives code. Held to them, the steps of a psychology week ("write three sentences") were each asked for a screenshot.
-  const onScreen = blocks.some((b) => b.type === 'code' || (b.type === 'callout' && b.kind.trim().toLowerCase() === 'version'));
+  const onScreen = blocks.some((b) => (b.type === 'code' && b.kind.trim()) || (b.type === 'callout' && b.kind.trim().toLowerCase() === 'version'));
   const pictures = (bs: typeof blocks) => bs.reduce((n, b) => n + (b.type === 'image' || b.type === 'video' ? 1 : 0) + b.shots.length, 0);
   for (const part of v.parts) {
     const steps = part.blocks.reduce((n, b) => n + (b.type === 'steps' ? b.items.length : 0), 0);
@@ -255,7 +255,8 @@ function mainPiece(course: Course, lesson: Lesson): string {
   const when = gap > 0 ? `by Sunday night ${gap === 1 ? 'of next week' : `${gap} weeks from now`}` : 'by Sunday night of this week';
   switch (lesson.homework.kind) {
     case 'none':
-      return 'This week sets no graded work.';
+      // Beside a quiz and a session graded every week, "no graded work" read as a week exempt from them.
+      return 'This week sets no graded assignment of its own; what the grading counts every week still counts.';
     case 'test':
       return `This week holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately with its questions, key and points: taken online, open book, in one sitting within the week. The page says when it opens and closes, how long it runs and what it covers, and writes no questions.`;
     case 'inclass':

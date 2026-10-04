@@ -1,4 +1,4 @@
-import type { PageBlock, Step } from '@folio/core';
+import { isOutsideHours, type PageBlock, type Step } from '@folio/core';
 import { IconButton } from '@folio/ui';
 import { BookOpen, Check, CircleAlert, CircleCheck, CirclePlay, Copy, Hammer, Info, Lightbulb, MessagesSquare, PencilLine, Tag, TriangleAlert, Upload, Wrench, type LucideIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -23,7 +23,7 @@ export function Checklist({ block }: { block: Of<'checklist'> }) {
   const t = useT();
   const duration = useDuration();
   // The week's hours are what is owed: optional work is outside them, and counted in it made a 6-hour week read as 7.
-  const total = block.items.reduce((n, i) => n + (/\boptional\b/i.test(i.label) ? 0 : i.minutes), 0);
+  const total = block.items.reduce((n, i) => n + (isOutsideHours(i.label) ? 0 : i.minutes), 0);
   return (
     <section className="mod-checklist avoid-break" aria-label={t.module.thisWeek}>
       <div className="mod-checklist-head">

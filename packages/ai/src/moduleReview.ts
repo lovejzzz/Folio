@@ -1,4 +1,4 @@
-import type { Course, Flag, Lesson } from '@folio/core';
+import { isOutsideHours, type Course, type Flag, type Lesson } from '@folio/core';
 import { z } from 'zod';
 import { earlierLessons } from './continuity';
 import type { Inference } from './inference';
@@ -47,10 +47,10 @@ function moduleText(v: ModuleDraft): string {
   const parts = v.parts.map((p, i) => `Part ${i + 1}: ${p.title}\n${p.blocks.map(blockText).join('\n')}`).join('\n\n');
   // The total is given: a reviewer adding it up got 640 for 540, and noted a workload problem that was not there.
   // Without what is optional, as the week is counted: given with it, the reviewer noted a total the page never states.
-  const total = v.checklist.reduce((n, c) => n + (/\boptional\b/i.test(c.label) ? 0 : c.minutes), 0);
+  const total = v.checklist.reduce((n, c) => n + (isOutsideHours(c.label) ? 0 : c.minutes), 0);
   // The run of show is read too: unread, its "what is due" lines named work the page never set.
   const live = v.live.length ? `Live session (${v.live.reduce((n, x) => n + x.minutes, 0)} minutes in all):\n${v.live.map((x) => `- ${x.title} (${x.kind}, ${x.minutes} min): ${x.description}${x.teacherNotes ? ` [Instructor: ${x.teacherNotes}]` : ''}`).join('\n')}` : '';
-  return [`Introduction: ${v.intro}`, `Checklist (${total} minutes in all, optional items not counted):\n${checklist}`, parts, live, `Wrap-up: ${v.wrapUp}`].filter(Boolean).join('\n\n');
+  return [`Introduction: ${v.intro}`, `Checklist (${total} minutes in all, not counting what is optional or done only in place of something missed):\n${checklist}`, parts, live, `Wrap-up: ${v.wrapUp}`].filter(Boolean).join('\n\n');
 }
 
 export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraft, since?: Since): string {
