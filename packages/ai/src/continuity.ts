@@ -1,4 +1,5 @@
 import { hasModulePages, lessonPieces, orderedLessons, type Course, type Lesson } from '@folio/core';
+import { filesSoFar } from './earlierFiles';
 import { moduleDigest, moduleSummary } from './online';
 import { otherPieces, workOf } from './workJobs';
 
@@ -62,7 +63,8 @@ export function earlierLessons(course: Course, lesson: Lesson): string {
   if (course.lessonOrder[0] === lesson.id) return 'This is the first lesson of the course: nothing has been read, set or chosen before it. It introduces the course, how it is assessed and what students need.';
   const kept = digests(course, lesson, EARLIER_BUDGET);
   if (!kept) return '';
-  return `The lessons before this one, as already planned:\n${kept}\n\nThis lesson follows them: use the same names, terms, stages, examples and classroom setups, build on what they taught rather than teaching it again differently or presenting it as new, and when something they started goes on in this lesson (an experiment, a project, a class chart), continue it as they set it up and finish what they left for this lesson (a result to measure, homework to collect or use, work to hand back), on a realistic timeline for how often the class meets (seeds take days to sprout, paint hours to dry). Under vocabulary, list only the terms this lesson introduces: the terms above are already taught, and when this lesson uses them it keeps their meaning.`;
+  const files = filesSoFar(course, lesson);
+  return `The lessons before this one, as already planned:\n${kept}\n\n${files ? `${files}\n\n` : ''}This lesson follows them: use the same names, terms, stages, examples and classroom setups, build on what they taught rather than teaching it again differently or presenting it as new, and when something they started goes on in this lesson (an experiment, a project, a class chart), continue it as they set it up and finish what they left for this lesson (a result to measure, homework to collect or use, work to hand back), on a realistic timeline for how often the class meets (seeds take days to sprout, paint hours to dry). Under vocabulary, list only the terms this lesson introduces: the terms above are already taught, and when this lesson uses them it keeps their meaning.`;
 }
 
 /**

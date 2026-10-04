@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .code { fill: #EDF0FC } .rule { stroke: #CFC8B9 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E } .code { fill: #23284A } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="330" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">WHAT WEEK 13 IS TOLD ABOUT WEEK 12</text>
+  <rect class="card" x="36" y="64" width="350" height="230" rx="14"/>
+  <text class="ink" x="56" y="96" font-size="16" font-weight="600">Before: a summary, in other words</text>
+  <text class="ink2" x="56" y="130" font-size="14">“A tuned Hazard color and Patrol Speed”</text>
+  <line class="rule" x1="56" y1="150" x2="366" y2="150"/>
+  <text class="ink2" x="56" y="180" font-size="13">Week 13 then wrote:</text>
+  <text class="bad" x="56" y="206" font-size="14" font-weight="600">“look at Patrol Speed”</text>
+  <text class="ink2" x="56" y="228" font-size="13">a field that does not exist</text>
+  <text class="bad" x="56" y="256" font-size="14" font-weight="600">“Move with the arrow keys”</text>
+  <text class="ink2" x="56" y="278" font-size="13">the game reads A, W, S and D</text>
+  <rect class="card" x="414" y="64" width="350" height="230" rx="14"/>
+  <text class="ink" x="434" y="96" font-size="16" font-weight="600">Now: the files themselves</text>
+  <rect class="code" x="434" y="112" width="310" height="74" rx="8"/>
+  <text class="ink" x="446" y="136" font-size="12.5" font-family="ui-monospace, Menlo, monospace">[SerializeField] float speed = 2f;</text>
+  <text class="ink" x="446" y="156" font-size="12.5" font-family="ui-monospace, Menlo, monospace">if (keyboard.aKey.isPressed) x -= 1f;</text>
+  <text class="ink2" x="446" y="176" font-size="12">Patrol.cs and the player script, as week 12 wrote them</text>
+  <text class="ink2" x="434" y="214" font-size="13">Week 13 now writes:</text>
+  <text class="acc" x="434" y="240" font-size="14" font-weight="600">“look at Speed, under Patrol”</text>
+  <text class="acc" x="434" y="268" font-size="14" font-weight="600">“Move with W, A, S and D”</text>
+</svg>

@@ -101,6 +101,10 @@ const en = {
     watchFor: 'What to watch for',
     feedback: 'Feedback to adapt',
     atRisk: 'Who to contact',
+    toMake: 'To make before the week opens',
+    toMakeLead: 'Each picture, recording and file this page asks for, in page order, with what it must show. Capture each one in the state its step leaves, before any later step, and check it against the step once it is made.',
+    where: (part: string, step: number) => (step ? `${part}, after step ${step}` : part),
+    clip: 'Screen recording',
   },
 };
 
@@ -199,6 +203,10 @@ const zh: DocLabels = {
     watchFor: '需要留意',
     feedback: '反馈参考',
     atRisk: '需要联系的学生',
+    toMake: '开课前需要制作',
+    toMakeLead: '本页要求的每张图片、每段录屏和每个文件，按页面顺序列出，并说明应展示的内容。请在对应步骤刚完成、后续步骤尚未进行时截取，做好后对照该步骤检查一遍。',
+    where: (part, step) => (step ? `${part}，第 ${step} 步之后` : part),
+    clip: '录屏',
   },
 };
 

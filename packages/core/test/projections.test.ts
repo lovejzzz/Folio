@@ -190,3 +190,23 @@ describe('suggested further reading', () => {
     expect(Object.values(parsed.lessons).every((l) => Array.isArray(l.suggestedReadings) && l.suggestedReadings.length === 0)).toBe(true);
   });
 });
+
+describe('a week\'s module page for the teacher', () => {
+  it('ends with what is still to be made, each with where it sits and what it must show; the student copy has no such list', () => {
+    const first = orderedLessons(course)[0]!;
+    const page = [
+      { id: 'x_h', type: 'heading' as const, level: 2 as const, text: 'Build the arena' },
+      { id: 'x_s', type: 'steps' as const, items: [{ id: 'x_1', text: 'Make a cube.' }, { id: 'x_2', text: 'Name it Floor.', shot: { src: '', alt: 'Floor selected', caption: '', shows: 'The Inspector with Floor selected.' } }] },
+      { id: 'x_i', type: 'image' as const, src: '/made.webp', alt: 'made', caption: '', shows: 'Already made.' },
+      { id: 'x_f', type: 'file' as const, href: '', label: 'Arena.zip', role: 'starter' as const, shows: 'The project as it starts.' },
+    ];
+    const kit = { announcement: 'Welcome.', watchFor: ['a', 'b'], feedback: ['c', 'd'], atRisk: '', leaves: [] };
+    const online = parseCourse({ ...course, lessons: { ...course.lessons, [first.id]: { ...first, page, facilitation: kit } } });
+    const teacher = JSON.stringify(project(online, 'plan', { audience: 'teacher', lessonIds: [first.id] }));
+    expect(teacher).toContain('To make before the week opens');
+    expect(teacher).toContain('Picture (Build the arena, after step 2): The Inspector with Floor selected.');
+    expect(teacher).toContain('File (Build the arena, after step 2): Arena.zip: The project as it starts.');
+    expect(teacher).not.toContain('Already made.');
+    expect(JSON.stringify(project(online, 'plan', { audience: 'student', lessonIds: [first.id] }))).not.toContain('To make before the week opens');
+  });
+});

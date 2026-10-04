@@ -1,5 +1,45 @@
 [
  {
+  "version": "0.0.9",
+  "date": "October 4, 2026",
+  "title": "Later weeks use the names earlier weeks gave",
+  "lede": "We followed a fourteen-week course by hand, step by step, and looked at every picture in it. Most of what went wrong was not in any one page: it was between pages. This release puts what we learned into how Folio writes, so the next course does not need the same hand.",
+  "sections": [
+   {
+    "heading": "The files a course has written are passed on whole",
+    "body": "In a course that teaches software, each week builds on the files of the weeks before. A later week used to be told about them in a summary, in the summary’s own words, and the words drifted: a setting called Speed came back as “Patrol Speed”, and a game moved with A, W, S and D was given a hint about the arrow keys. A later week is now shown the files themselves, as the last week to touch each one wrote it, and takes names, settings and keys from there. We wrote weeks 12 and 13 of the same course again to check: week 13 used week 12’s script names, settings and keys as its files have them.",
+    "image": {
+     "src": "/changelog/0.0.9-names.svg",
+     "alt": "Before, week 13 was told about week 12 in a summary and wrote names that did not exist; now it is shown the files and uses their names",
+     "width": 800,
+     "height": 330
+    }
+   },
+   {
+    "heading": "No error message quoted from memory",
+    "body": "Pages for software courses were asked to give “the exact error text”. Where the teacher’s sources did not have it, Folio wrote one from memory, and some were wrong: a message that never appears, or a rule about which line an error is reported on that is not true. A page now quotes a message only when your sources give it. Otherwise it tells the student what to look for and to read their own."
+   },
+   {
+    "heading": "A list of what is still to be made",
+    "body": "A weekly page asks for pictures, short recordings and files, each described for whoever makes it. Those descriptions were scattered through the page. The instructor’s copy of each week now ends with one list: every picture, recording and file still to be made, where it sits, and what it must show. Each picture is described in the state its own step leaves, before anything a later step adds, because a picture taken later shows things the student does not have yet."
+   },
+   {
+    "heading": "Work typed just before leaving is kept",
+    "body": "As a page closes, Folio keeps a copy of anything not yet saved. In one case it threw that copy away: when an earlier save was still on its way as you left. A lesson renamed a moment before closing the tab could come back with its old name. Fixed."
+   },
+   {
+    "heading": "A shorter About page",
+    "body": "About said who makes Folio twice and repeated the home page. It now says each thing once: what Folio is and for whom, the three steps of using it, who makes it and how to write to them.",
+    "image": {
+     "src": "/changelog/0.0.9-about.webp",
+     "alt": "The About page: a headline, three numbered steps, and a card naming the maker with an email address",
+     "width": 1600,
+     "height": 1000
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.8",
   "date": "October 4, 2026",
   "title": "A long page is no longer thrown away for one line too many",

@@ -60,7 +60,7 @@ export const ModuleDraft = z.object({
     watchFor: z.array(line).min(2).max(8).describe('What students get wrong or stuck on this week, and what to do when the instructor sees it'),
     feedback: z.array(line).min(2).max(10).describe('Comments the instructor can adapt when giving feedback on this week\'s work'),
     atRisk: z.string().default('').describe('Who to contact this week and what to say: students who have not started, posted or submitted'),
-    leaves: z.array(line).max(32).default([]).describe('When students build something that carries on next week: what their project holds once this week is done, one thing per line with its exact name and the values a later week could rely on or trip over (each object and where it is, each file, each setting changed)'),
+    leaves: z.array(line).max(32).default([]).describe('When students build something that carries on next week: what their project holds once this week is done, one thing per line, named exactly as the page names it and never reworded, with the values a later week could rely on or trip over (each object and where it is, each file, each setting changed and what it is called on screen, the keys or controls the student uses, and a made-up example the page used that a later week may come back to, with its facts)'),
   }),
 });
 export type ModuleDraft = z.infer<typeof ModuleDraft>;

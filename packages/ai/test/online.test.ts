@@ -1,7 +1,9 @@
 import { OnlineSchema, hasModulePages, orderedLessons, pageMinutes, textRuns, type Course } from '@folio/core';
+import type { Lesson } from '@folio/core';
 import { describe, expect, it } from 'vitest';
 import { OutlineDraft, courseBackground, courseFromOutline, generateSection, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
 import { applyModuleReview } from '../src/moduleReview';
+import { filesSoFar } from '../src/earlierFiles';
 import { pieceCounts, startPrompt } from '../src/start';
 import { checkRunOfShow } from '../src/live';
 import { ModuleDraft, checkModule, modulePage } from '../src/online';
@@ -298,5 +300,19 @@ describe('how a graded component is judged', () => {
     expect(courseBackground(graded)).toMatch(/Graded complete or incomplete: "Weekly builds"; complete means every criterion of its rubric at the second-highest level or above\. Every other component is scored/);
     expect(courseBackground(graded)).toMatch(/Pieces of one component count equally/);
     expect(courseBackground({ ...c, grading: [{ id: 'g_1', item: 'Weekly builds', weight: 100 }] })).not.toMatch(/complete or incomplete: "/);
+  });
+});
+
+describe('the files earlier weeks wrote', () => {
+  it('are shown whole to a later week, the last version of each, and lines added inside a file are not taken for the file', () => {
+    const c = online();
+    const [first, second] = orderedLessons(c) as [Lesson, Lesson];
+    const code = (caption: string, body: string) => ({ id: `x_${caption.length}${body.length}`, type: 'code' as const, language: 'csharp', code: body, caption });
+    const page = [code('Assets/Scripts/Patrol.cs', 'float speed = 2f; // old'), code('Assets/Scripts/Patrol.cs', '[SerializeField] float speed = 3f;'), code('Patrol.cs, inside Update', 'speed++;')];
+    const course = { ...c, lessons: { ...c.lessons, [first.id]: { ...first, page } } };
+    const shown = filesSoFar(course, second);
+    expect(shown).toMatch(/Patrol\.cs, as week 1 wrote it:\n\[SerializeField\] float speed = 3f;/);
+    expect(shown).not.toMatch(/2f|speed\+\+/);
+    expect(filesSoFar(course, first)).toBe('');
   });
 });
