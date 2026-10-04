@@ -355,7 +355,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
   if ((kind === 'plan' || kind === 'quiz') && course.sourceOrder.length) {
     parts.push(
       kind === 'quiz'
-        ? 'Base this on the teacher\'s sources where they apply. Where a question draws on a passage, give its number in "sourcePassage".'
+        ? 'Base this on the teacher\'s sources where they apply. Where a question draws on a passage, give its number in "sourcePassage" only: what students read names a source by its title, never by a passage number.'
         : // A plan has no field for it, and "Passage [2]" in a note means nothing to the teacher.
           'Base this on the teacher\'s sources where they apply, and refer to a source by its title, never by a passage number.',
     );

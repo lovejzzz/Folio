@@ -4464,5 +4464,247 @@
   "media": "w01-courtyard.webp",
   "nth": 2,
   "caption": "The whole Courtyard fits in the 16:9 Game view, with nothing cut off."
+ },
+ {
+  "lesson": 10,
+  "find": "Hero’s picture faces right. Pressing A should turn Hero to face left",
+  "replace": "This week’s graded Weekly builds submission needs this change, so do not skip it. Hero’s picture faces right. Pressing A should turn Hero to face left",
+  "why": "The graded work requires the facing change, but the page presents it only as a challenge.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "They show you the tools and where files land, and you make nothing of them yet.",
+  "replace": "They show you the tools and where the files land. You do not submit them: you record again for the graded submission after the facing challenge in Part 8.",
+  "why": "The phrase 'you make nothing of them yet' is unclear and hides that a second recording is needed for the graded work.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "On a Mac you record with the built-in screen tools.",
+  "replace": "On a Mac you record with the built-in screen tools. The first list of steps below is for Windows. The second list, which starts with Shift+Command+5, is for a Mac: follow only the list for your system.",
+  "why": "The Windows and Mac step lists follow each other with no label, so a Mac student starts with Windows Settings steps.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "If you get lost, the HopCheckpoint project from last part has the working file to compare with.",
+  "replace": "If you get lost, the HopCheckpoint project from Part 6 has HeroController as it was before these challenges, so you can go back to a version that works.",
+  "why": "The checkpoint is in Part 6, not the last part, and it does not contain the challenge solutions.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "set the y speed to half of itself, then clear the flag.",
+  "replace": "halve the y speed, then clear the flag. C# does not let you change `rb.linearVelocity.y` on its own, so set `rb.linearVelocity` to a new Vector2 that keeps x and uses half of y, the way the jump code sets y to 0.",
+  "why": "Assigning to rb.linearVelocity.y directly is a compile error, which is what a beginner would try from this hint.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "the way the Rigidbody 2D is stored. Read it with",
+  "replace": "the way the Rigidbody 2D is stored. Get it with",
+  "why": "GetComponent fetches the component; 'read' is the wrong verb here.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "Paint using the world grid, rather than the middle of the window.",
+  "replace": "Count cells from the world origin, not from the middle of the Scene window.",
+  "why": "The original sentence does not say what to do.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "Use these coordinates for the layout described below.",
+  "replace": "Do not paint yet: the numbered steps after the list choose the tile and the tool. The list below describes the same layout in words. In it, the middle line means the world x-axis when it counts rows and the world y-axis when it counts tiles left or right.",
+  "why": "The box gives paint instructions before the tool steps and the list uses 'middle line' for two different axes without saying so.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "Each platform sits one empty row higher than the one before it, so its top is two tiles above the top before it.",
+  "replace": "Each platform is two rows higher than the one before it, with one empty row between, so its top is two tiles above the previous top.",
+  "why": "The original wording is hard to parse.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "Order in Layer 1 draws Hero in front of the tiles.",
+  "replace": "Order in Layer 1 draws Hero in front of the tiles. The Player tag is a label on Hero: next week’s coins use it to tell Hero from anything else that touches them.",
+  "why": "Step 5 sets the Player tag but nothing on the page says why.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "You should now have a project named Hop opened in the Universal 2D template",
+  "replace": "You should now have a project named Hop made from the Universal 2D template",
+  "why": "A project is made from a template, not opened in one.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "The Editor says 3D, or the Hierarchy has a Directional Light and no Global Light 2D",
+  "replace": "The Hierarchy has a Directional Light and no Global Light 2D",
+  "why": "Nothing in the Editor 'says 3D'; the Hierarchy is the test a student can actually make.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "check that the Editor version reads 6000.6.4f1, or another 6000.6 version.",
+  "replace": "check that the Editor version reads 6000.6.4f1. If it does not, follow the version note above first.",
+  "why": "The version note just above says to install 6000.6.4f1 if the Editor shows anything else.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "Review Part 2, “Make tiles and paint your level.” The 2D tilemap and Tile Palette tools are also listed in the instructor’s version notes, passage 9.",
+  "replace": "Review Part 2, “Make tiles and paint your level.”",
+  "why": "Students cannot see the instructor’s version notes.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "Review Part 4, “Add Hero with a Rigidbody 2D and a collider.” The 2D physics component names are listed in the instructor’s version notes, passage 9.",
+  "replace": "Review Part 4, “Add Hero with a Rigidbody 2D and a collider.”",
+  "why": "Students cannot see the instructor’s version notes.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "Review Part 5, “Make Hero run.” The version note about the old Input class is in passage 6; passage 9 confirms the project’s Move action works in 2D.",
+  "replace": "Review Part 5, “Make Hero run.”",
+  "why": "Passage numbers refer to a source document students cannot see.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "The reading is in your checklist and is due Sunday night.",
+  "replace": "The reading is optional: next week’s page gives you everything you need to write your proposal.",
+  "why": "The course says book chapters are optional and week 11 calls this chapter optional, so it cannot be due.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "Reading for next week: Schell, The art of game design, Chapter 7 (see the reading note in Part 8)",
+  "replace": "Optional reading for next week: Schell, The art of game design, Chapter 7 (see the reading note in Part 8)",
+  "why": "The checklist should mark the library book chapter as optional, as the course outline and week 11 do.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "animate Hop, add collectibles and a following camera, and write the proposal for your own game. Read Schell, Chapter 7, before then.",
+  "replace": "animate Hop, add collectibles and a following camera, and write the proposal for your own game. If your library has Schell, Chapter 7 is useful background for the proposal.",
+  "why": "The wrap-up presents an optional reading as required.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "Level must be on the Ground layer with Merge turned on, or Hero will not jump.",
+  "replace": "Level must be on the Ground layer, or Hero will not jump.",
+  "why": "Merge does not affect whether Hero can jump; only the layer does.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "find": "If a classmate has shared a build you can run, or a clear description of one, try it in your own head or in your own Hop project.",
+  "replace": "Look at the screenshot or description each classmate shared. If they changed a number, try the same value in your own Hop project.",
+  "why": "Nobody shares a runnable build this week, and 'try it in your own head' is not something a student can do.",
+  "review": true
+ },
+ {
+  "lesson": 10,
+  "media": "w10-import.webp",
+  "caption": "The import settings for the three sprites: Sprite Mode Single, Pixels Per Unit 32, Filter Mode Point (no filter), Compression None.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "find": "If a picture still shows a small arrow on its thumbnail, it is still Multiple: select it and set Single again.",
+  "replace": "To check a picture, click it and read Sprite Mode in the Inspector. If it reads Multiple, set Single and click Apply.",
+  "why": "Every sprite picture has the small arrow on its thumbnail, in Single mode too, so the arrow is not a usable test.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "find": "Pictures show a small arrow or have names ending in _0: Sprite Mode is still Multiple.",
+  "replace": "A picture opens to show a sprite with a name ending in _0: Sprite Mode is still Multiple.",
+  "why": "The arrow appears for Single sprites as well; only the _0 name signals Multiple.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "find": "and watch the coins spin. Click",
+  "replace": "and watch the coins spin. You see four: the fifth is above and to the right of the Game view until the camera follows Hero later on this page. Click",
+  "why": "The fifth coin at 9, 5.5 lies outside the fixed camera view, so a student counts four and thinks one is lost.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "find": "All five spin in Play and none is buried in a tile.",
+  "replace": "The four you can see in the Game view spin in Play, and in the Scene view none of the five is buried in a tile.",
+  "why": "Only four coins are inside the Game view before the camera follows.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "find": "Check the four keyframes sit at 0:00, 0:06, 0:12 and 0:18.",
+  "replace": "Check the four keyframes sit at 0:00, 0:06, 0:12 and 0:18. If they are bunched together, drag them apart as you did for Hero_Run.",
+  "why": "The step says what to check but not what to do when the check fails.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "find": "the label redraws as “Coins: 1\", and",
+  "replace": "the label redraws as Coins: 1, and",
+  "why": "The quotation marks do not match.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "find": "It moves toward Hero’s current position, so it never lags a frame behind.",
+  "replace": "It aims at where Hero is in this frame, not where Hero was in the frame before.",
+  "why": "The page also says smoothing adds a following delay, so 'never lags' contradicts it.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "find": "Move every Must that is new and too big for an evening of tutorial work down to Should, until five or fewer Musts remain.",
+  "replace": "For every Must that is new and too big to learn and test in one evening, make it simpler or change the core loop so the game works without it, then move it down to Should. Repeat until five or fewer Musts remain.",
+  "why": "A Must is defined as something the loop cannot work without, so it can only move down after the loop is changed, as the video says.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "find": "and move any new Must that is too big for an evening of tutorial work down to Should.",
+  "replace": "and simplify any new Must that is too big to learn and test in one evening, or change the loop so it can move down to Should.",
+  "why": "Keeps the recap in line with the video and the corrected step.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "find": "Optional challenge: send Hero back to the start after a fall (not counted in the week)",
+  "replace": "Optional challenge: send Hero back to the start after a fall",
+  "why": "The checklist total of 560 minutes does include these 20 minutes.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "find": "Optional, outside the week’s hours. Make Hero return to the start when it falls off the level.",
+  "replace": "Optional. Make Hero return to the start when it falls off the level.",
+  "why": "The checklist counts this challenge in the week’s total.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-coin.webp",
+  "caption": "Compare your Coin: Order in Layer 1, Is Trigger ticked, Radius 0.4. A trigger can be touched but does not block Hero.",
+  "review": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-coins-placed.webp",
+  "caption": "Three of the five coins, seen with the camera beside Hero: each floats clear of the tiles. Your own Game view shows a wider part of the level at this point.",
+  "review": true
  }
 ]
