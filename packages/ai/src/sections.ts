@@ -25,7 +25,7 @@ import { newVocabulary } from './continuity';
 import { assignments, base, continuedInClass, flagsAt, step, test, type SectionJob } from './workJobs';
 import { issuePlace, reviewPlan } from './review';
 import { PREPARATION_GRADING, checkRunOfShow, isLiveOnline, isMixedOnline } from './live';
-import { FORUM_GRADING, moduleJob } from './online';
+import { FORUM_GRADING, checkModule, moduleJob } from './online';
 import { reviewModule } from './moduleReview';
 import { startCommands } from './start';
 import { runJob, type Problem } from './jobs';
@@ -252,16 +252,19 @@ type Rewrite<T> = (notes: ReviewNote[]) => Promise<T>;
  * on the flawed plan and repeated it. So a plan left with notes is written once more, told what they are, and
  * read again; the version with fewer notes is kept, so the rewrite can only help.
  */
-async function reviewed<T>(read: Read<T>, draft: T, options: SectionOptions, rewrite?: Rewrite<T>): Promise<{ value: T; problems: Problem[] }> {
+async function reviewed<T>(read: Read<T>, draft: T, options: SectionOptions, rewrite?: Rewrite<T>, check?: (value: T) => Problem[]): Promise<{ value: T; problems: Problem[] }> {
   const stopped = (error: unknown) => error instanceof InferenceError && error.kind === 'aborted';
   try {
     options.onProgress?.({ type: 'checking' });
     let first = await read(draft);
-    if (first.notes.length && rewrite) {
-      const again = await rewrite(first.notes)
+    // What the checks find goes to the same rewrite as the reader's notes: a page was written twice over for a missing caption, then a third time for the review.
+    const checks = (value: T): ReviewNote[] => (check?.(value) ?? []).flatMap((p) => (p.flag.code === 'schemaIssue' ? [{ code: 'reviewNote' as const, values: { where: 'The page', text: String(p.flag.values.issue) } }] : []));
+    const found = checks(first.value);
+    if ((first.notes.length || found.length) && rewrite) {
+      const again = await rewrite([...first.notes, ...found])
         .then(read)
         .catch((error: unknown) => (stopped(error) ? Promise.reject(error) : null));
-      if (again && again.notes.length < first.notes.length) first = again;
+      if (again && again.notes.length + checks(again.value).length < first.notes.length + found.length) first = again;
     }
     options.onProgress?.({ type: 'reviewed', fixes: first.fixes, notes: first.notes.length });
     return { value: first.value, problems: first.notes.map((flag) => ({ index: null, flag })) };
@@ -339,6 +342,7 @@ export async function generateSection(
       schema: job.schema,
       tidy: job.tidy ? (v) => job.tidy!(v, course, of) : undefined,
       check: job.check ? (v) => job.check!(v, course, of) : undefined,
+      repair: !(revise && kind === 'plan' && hasModulePages(course)),
       signal,
       onText: partials(options.onProgress),
     });
@@ -353,11 +357,11 @@ export async function generateSection(
   const rewriteWith = <T>(job: SectionJob<T>): Rewrite<T> => async (notes) => {
     const noted = { ...lesson, gen: { ...lesson.gen, plan: { basis: {}, at: '', edited: false, ...lesson.gen.plan, flags: notes } } };
     const spec = { task: planTask('plan'), system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: sectionPrompt(course, noted, 'plan'), effort: SECTION_EFFORT.plan, schema: job.schema, signal };
-    return (await runJob(inference, { ...spec, tidy: job.tidy ? (v) => job.tidy!(v, course, lesson) : undefined, check: job.check ? (v) => job.check!(v, course, lesson) : undefined })).value;
+    return (await runJob(inference, { ...spec, repair: !hasModulePages(course), tidy: job.tidy ? (v) => job.tidy!(v, course, lesson) : undefined, check: job.check ? (v) => job.check!(v, course, lesson) : undefined })).value;
   };
   switch (kind) {
     case 'plan':
-      if (hasModulePages(course)) return withStart(inference, course, lesson, signal, run(moduleJob, reviewer ? (draft) => reviewed((d) => reviewModule(reviewer, course, lesson, d, signal), draft, options, rewriteWith(moduleJob)) : undefined));
+      if (hasModulePages(course)) return withStart(inference, course, lesson, signal, run(moduleJob, reviewer ? (draft) => reviewed((d) => reviewModule(reviewer, course, lesson, d, signal), draft, options, rewriteWith(moduleJob), (v) => checkModule(v, course)) : undefined));
       return run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, course, lesson, signal), draft, options, rewriteWith(plan)) : undefined);
     case 'slides':
       return run(slides);

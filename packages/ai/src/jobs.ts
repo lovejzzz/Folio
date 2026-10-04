@@ -27,6 +27,8 @@ export interface JobSpec<T> {
   /** Fix what can be fixed without asking again (e.g. drop a question too many), before the check. */
   tidy?: (value: T) => T;
   check?: (value: T) => Problem[];
+  /** False when what the check finds is put right by a later step (a review and rewrite): then a usable answer is not asked for twice. */
+  repair?: boolean;
   signal?: AbortSignal;
   /** The answer's text so far, as it streams in: the repair call's too, which starts again from nothing. */
   onText?: (soFar: string) => void;
@@ -90,6 +92,7 @@ export async function runJob<T>(inference: Inference, spec: JobSpec<T>): Promise
   if (first.value !== undefined && first.problems.length === 0) {
     return { value: first.value, problems: [], repaired: false };
   }
+  if (first.value !== undefined && spec.repair === false) return { value: first.value, problems: shown(first.problems), repaired: false };
   let second: Attempt<T>;
   try {
     second = await attempt(inference, request, repairPrompt(spec.prompt, first.raw, first.problems), spec);

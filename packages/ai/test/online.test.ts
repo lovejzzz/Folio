@@ -124,6 +124,20 @@ describe('an online course with no set meeting time', () => {
     expect(JSON.stringify(checkModule(v, c))).toContain('a name, not a sentence');
   });
 
+  it('sends what the checks find to the one rewrite, and does not ask for the page twice first', async () => {
+    const c = online();
+    const second = orderedLessons(c)[1]!;
+    const bare = draft();
+    bare.parts[0]!.blocks.push({ ...bare.parts[0]!.blocks[0]!, type: 'image', text: '', alt: 'The cube', shows: 'The cube' });
+    let asked = 0;
+    const model = fakeInference((r) => (r.task === 'folio_module_review' ? { issues: [] } : asked++ === 0 ? bare : draft()));
+    const result = await generateSection(model, c, second.id, 'plan', undefined, { reviewer: model });
+    expect(model.calls.filter((call) => call.task === 'folio_module')).toHaveLength(2);
+    expect(model.calls.filter((call) => call.task === 'folio_module')[1]!.prompt).toMatch(/Every image and video needs its caption/);
+    const fill = result.commands[0]!;
+    expect(fill.type === 'section.fill' && fill.payload.flags).toEqual([]);
+  });
+
   it('writes Start here again from the weeks when the last week is written', async () => {
     const c = online();
     const all = orderedLessons(c);
