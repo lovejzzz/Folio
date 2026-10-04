@@ -31,6 +31,18 @@ describe('the copy of unsaved work kept as the page closes', () => {
     expect(back.course.sourceOrder).toEqual(edited.sourceOrder);
   });
 
+  it('is kept when the save that was on its way as the page left has landed', () => {
+    const saved = createCourse({ title: 'Ecology' });
+    const landing: Course = { ...saved, title: 'Ecology II', revision: saved.revision + 1 };
+    const typed: Course = { ...landing, title: 'Ecology III', revision: landing.revision + 1 };
+    // The tab had saved `saved`, was writing `landing`, and held `typed` when it closed.
+    writeJournal(typed, versionOf(saved), [], {}, versionOf(landing));
+    expect(takeJournal(landing)?.course.title).toBe('Ecology III');
+    // And when that save never landed, the copy still fits the version the tab had saved.
+    writeJournal(typed, versionOf(saved), [], {}, versionOf(landing));
+    expect(takeJournal(saved)?.course.title).toBe('Ecology III');
+  });
+
   it('is dropped when it was built on another version than the one saved', () => {
     const saved = createCourse({ title: 'Ecology' });
     writeJournal({ ...saved, title: 'Later' }, 'some other version');

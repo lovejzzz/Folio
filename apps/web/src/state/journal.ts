@@ -12,6 +12,8 @@ const key = (id: string) => `folio.unsaved.${id}`;
 interface Entry {
   /** The saved version this work was built on. */
   base: string;
+  /** The version a save still on its way was writing when the page left: the stored copy is one or the other. */
+  pending?: string;
   /** The course, without the text of sources unchanged since that version: they are taken from it again. */
   course: Course;
   /** Those sources, by ID. A long PDF's text would otherwise fill localStorage, and the copy wouldn't fit. */
@@ -25,11 +27,11 @@ export interface Unsaved {
   history: HistoryEntry[];
 }
 
-export function writeJournal(course: Course, base: string, history: HistoryEntry[] = [], saved: Course['sources'] = {}): void {
+export function writeJournal(course: Course, base: string, history: HistoryEntry[] = [], saved: Course['sources'] = {}, pending?: string): void {
   const kept = Object.keys(course.sources).filter((id) => course.sources[id] === saved[id]);
   const sources = Object.fromEntries(Object.entries(course.sources).filter(([id]) => !kept.includes(id)));
   try {
-    localStorage.setItem(key(course.id), JSON.stringify({ base, course: { ...course, sources }, kept, history } satisfies Entry));
+    localStorage.setItem(key(course.id), JSON.stringify({ base, ...(pending ? { pending } : {}), course: { ...course, sources }, kept, history } satisfies Entry));
   } catch {
     /* storage full or blocked: the IndexedDB save is still on its way */
   }
@@ -43,7 +45,11 @@ export function clearJournal(id: string): void {
   }
 }
 
-/** Unsaved work for this course, if it was built on exactly the saved version. */
+/**
+ * Unsaved work for this course, if it was built on the saved version: the one the tab had saved, or the one a save
+ * was writing as the page left. Without the second, a rename typed while an earlier save was still on its way was
+ * dropped on the next load, because that save landed and the copy no longer matched.
+ */
 export function takeJournal(saved: Course): Unsaved | null {
   const id = saved.id;
   let raw: string | null;
@@ -56,7 +62,7 @@ export function takeJournal(saved: Course): Unsaved | null {
   clearJournal(id);
   try {
     const entry = JSON.parse(raw) as Entry;
-    if (entry.base !== versionOf(saved)) return null;
+    if (entry.base !== versionOf(saved) && entry.pending !== versionOf(saved)) return null;
     const kept = Object.fromEntries((entry.kept ?? []).flatMap((s) => (saved.sources[s] ? [[s, saved.sources[s]]] : [])));
     const course = { ...entry.course, sources: { ...kept, ...entry.course.sources } };
     return { course: parseCourse(course), history: Array.isArray(entry.history) ? entry.history : [] };

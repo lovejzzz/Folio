@@ -42,6 +42,8 @@ interface Session {
   saving: Promise<void>;
   /** Set while replacing the course with another tab's copy, so that isn't saved back. */
   quiet: boolean;
+  /** The version a save is writing right now, until it lands or fails. */
+  writing: string | null;
   /** Which history entries are on disk, so a save writes only what changed. */
   history: HistoryTracker;
 }
@@ -58,6 +60,7 @@ async function save(session: Session): Promise<void> {
   const course = session.store.getState();
   const { write, next } = historyDelta(course.id, session.store.getHistory(), session.history, SCHEMA_VERSION);
   try {
+    session.writing = versionOf(course);
     await saveCourseIfUnchanged(course, session.savedVersion, write);
     session.savedVersion = versionOf(course);
     session.savedSources = course.sources;
@@ -71,6 +74,8 @@ async function save(session: Session): Promise<void> {
     const t = currentMessages();
     // One toast however many saves fail while the teacher keeps typing.
     toast({ key: 'save-error', message: isQuotaError(error) ? t.errors.storageFull : t.errors.saveFailed, tone: 'critical', duration: 0 });
+  } finally {
+    session.writing = null;
   }
 }
 
@@ -108,6 +113,7 @@ export function openSession(course: Course, rows: readonly HistoryRow[] = []): C
     savedSources: course.sources,
     saving: Promise.resolve(),
     quiet: false,
+    writing: null,
     history: trackerFrom(sorted),
   };
   session.unsubscribe = store.subscribe(() => schedule(session));
@@ -232,7 +238,7 @@ function onLeave(commitFocused: boolean): void {
   if (!session || !dirty(session) || useUi.getState().conflict) return;
   const course = session.store.getState();
   const { write } = historyDelta(course.id, session.store.getHistory(), session.history, SCHEMA_VERSION);
-  writeJournal(course, session.savedVersion, write.put.map((row) => row.entry), session.savedSources);
+  writeJournal(course, session.savedVersion, write.put.map((row) => row.entry), session.savedSources, session.writing ?? undefined);
   void flush(session);
 }
 
