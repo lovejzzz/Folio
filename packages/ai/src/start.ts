@@ -58,12 +58,15 @@ export function startPages(v: StartDraft, course: Course, written: 'outline' | '
   ];
 }
 
-/** How many graded pieces the outline sets toward each grading item: counted here, because a model miscounts fourteen weeks. */
+/** How many graded pieces the outline sets toward each grading item, and in which weeks: counted here, because a model miscounts fourteen weeks. */
 export function pieceCounts(course: Course): string {
-  const counts = new Map<string, number>();
-  for (const lesson of orderedLessons(course)) for (const p of lessonPieces(lesson)) if (p.toward.trim() && !p.standing && p.kind !== 'step') counts.set(p.toward.trim(), (counts.get(p.toward.trim()) ?? 0) + 1);
-  if (!counts.size) return '';
-  return ` Pieces set across the course: ${[...counts].map(([item, n]) => `"${item}" ${n}`).join(', ')}. Use these counts.`;
+  // With the weeks that set them: told only "3", the page put a piece in a week that sets none.
+  const weeks = new Map<string, number[]>();
+  orderedLessons(course).forEach((lesson, i) => {
+    for (const p of lessonPieces(lesson)) if (p.toward.trim() && !p.standing && p.kind !== 'step') weeks.set(p.toward.trim(), [...(weeks.get(p.toward.trim()) ?? []), i + 1]);
+  });
+  if (!weeks.size) return '';
+  return ` Pieces set across the course: ${[...weeks].map(([item, at]) => `"${item}" ${at.length} (week${at.length > 1 ? 's' : ''} ${at.join(', ')})`).join(', ')}. Use these counts and weeks.`;
 }
 
 /** The written weeks in brief, for a Start here page that must match them: each week's checklist and what its files and videos ask of the instructor. */

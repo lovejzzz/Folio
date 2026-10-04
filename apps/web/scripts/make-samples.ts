@@ -271,7 +271,12 @@ async function build(name: string, store: CourseStore, targets: BuildTarget[], f
       // Kept as it grows: a long course cut short is carried on with --polish, not started again.
       writeFileSync(join(OUT, `${name}.json`), JSON.stringify({ ...store.getState(), status: 'building' }));
     },
-    onEvent: (event) => void (event.type === 'error' && failed.push(`${event.target.kind}: ${event.error.message}`)),
+    onEvent: (event) => {
+      if (event.type !== 'error') return;
+      failed.push(`${event.target.kind}: ${event.error.message}`);
+      // Said at once: a week that fails while later weeks go on is otherwise unseen until the run ends.
+      console.log(`${name}: ${event.target.kind} failed: ${event.error.message.split('\n')[0]!.slice(0, 600)}`);
+    },
     signal: new AbortController().signal,
   };
   const summary = await runBuild(host, targets);

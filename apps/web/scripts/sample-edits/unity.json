@@ -2085,6 +2085,277 @@
   "why": "The page was followed in Unity with art drawn for it; the clips, the controller, the coins and the camera were built and run."
  },
  {
+  "lesson": 11,
+  "media": "w11-two-coins.webp",
+  "alt": "Game view in Play: the label at the top left reads Coins: 3 and two coins are still on their platforms."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-coins-placed.webp",
+  "alt": "Game view before Play: Hero on the floor with a coin beside it, and a coin above each platform in view."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-hierarchy.webp",
+  "alt": "Hierarchy listing Main Camera, Global Light 2D, Grid, Hero, Canvas with CoinsText, EventSystem, GameManager, and Coin, Coin (1), Coin (2), Coin (3), Coin (4) in blue.",
+  "caption": "Compare with your Hierarchy: five coins, all in blue because they come from the prefab."
+ },
+ {
+  "lesson": 12,
+  "slot": 1,
+  "src": "/samples/unity/media/w12-preview.mp4",
+  "poster": "/samples/unity/media/w12-preview.poster.webp"
+ },
+ {
+  "lesson": 12,
+  "slot": 3,
+  "drop": true,
+  "why": "The finished example plan is pictured below."
+ },
+ {
+  "lesson": 12,
+  "slot": 4,
+  "src": "/samples/unity/media/w12-plan.webp"
+ },
+ {
+  "lesson": 12,
+  "slot": 5,
+  "src": "/samples/unity/media/files/PrototypeStarter.zip"
+ },
+ {
+  "lesson": 12,
+  "slot": 6,
+  "src": "/samples/unity/media/w01-hub-core.webp",
+  "caption": "The New project screen as in week 1: Core in the dropdown, then your template."
+ },
+ {
+  "lesson": 12,
+  "slot": 7,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 8,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 9,
+  "src": "/samples/unity/media/w01-game-aspect.webp",
+  "caption": "The aspect dropdown in the Game view toolbar, as in week 1."
+ },
+ {
+  "lesson": 12,
+  "slot": 10,
+  "src": "/samples/unity/media/w12-status.webp"
+ },
+ {
+  "lesson": 12,
+  "slot": 11,
+  "src": "/samples/unity/media/w12-game.webp",
+  "caption": "Prototype Game on Game, with Status Text holding StatusText. Here the Player slot is already filled; yours stays empty until your route’s steps fill it."
+ },
+ {
+  "lesson": 12,
+  "slot": 12,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 13,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 14,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 15,
+  "src": "/samples/unity/media/w12-a-level.webp",
+  "caption": "Route A in Play, with the pickups and the hazard from the next part already in place: compare the walls, the capsule’s place and the camera view."
+ },
+ {
+  "lesson": 12,
+  "slot": 16,
+  "drop": true,
+  "why": "The picture of the finished level below shows the four walls."
+ },
+ {
+  "lesson": 12,
+  "slot": 17,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 18,
+  "src": "/samples/unity/media/w12-b-level.webp",
+  "caption": "Route B with the pickups and the hazard from the next part already in place: compare the gray walls and the circle’s place."
+ },
+ {
+  "lesson": 12,
+  "slot": 19,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 20,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 21,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 22,
+  "src": "/samples/unity/media/w12-c-level.webp",
+  "caption": "Route C with the pickups and the hazard from the next part already in place: compare the ground, the two platforms and the player’s place at the left."
+ },
+ {
+  "lesson": 12,
+  "slot": 23,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 24,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 25,
+  "src": "/samples/unity/media/w12-hazard.webp"
+ },
+ {
+  "lesson": 12,
+  "slot": 26,
+  "src": "/samples/unity/media/w12-lost.mp4",
+  "poster": "/samples/unity/media/w12-lost.poster.webp"
+ },
+ {
+  "lesson": 12,
+  "slot": 27,
+  "src": "/samples/unity/media/w12-left.webp",
+  "caption": "Route A with Leave Limit at 9: the capsule reached the south wall and the round was lost."
+ },
+ {
+  "lesson": 12,
+  "slot": 28,
+  "src": "/samples/unity/media/files/PrototypeFinished.zip"
+ },
+ {
+  "lesson": 12,
+  "slot": 29,
+  "src": "/samples/unity/media/w12-win.webp"
+ },
+ {
+  "lesson": 12,
+  "slot": 30,
+  "src": "/samples/unity/media/w12-bug1.webp"
+ },
+ {
+  "lesson": 12,
+  "slot": 31,
+  "src": "/samples/unity/media/w12-bug2.webp",
+  "caption": "The entry before you click it: the second line already names the method and the line."
+ },
+ {
+  "lesson": 12,
+  "slot": 32,
+  "src": "/samples/unity/media/w12-bug3.webp"
+ },
+ {
+  "lesson": 12,
+  "slot": 33,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 34,
+  "src": "/samples/unity/media/w02-color-window.webp",
+  "caption": "The Color window, as in week 2. Type your value into Hexadecimal."
+ },
+ {
+  "lesson": 12,
+  "slot": 35,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 12,
+  "slot": 36,
+  "src": "/samples/unity/media/w12-routes.mp4",
+  "poster": "/samples/unity/media/w12-routes.poster.webp",
+  "caption": "Routes B and C played through, before any color is added: compare a full round with your own."
+ },
+ {
+  "lesson": 12,
+  "find": "to 0, 4.5, 0 and **Scale** to 18, 1, 1.",
+  "replace": "to 0, 4.5, 0 and **Scale** to 18, 1, 1. In **Sprite Renderer**, click the color box beside **Color**, type 808080 into **Hexadecimal**, press Enter and close the **Color** window. The three copies you make next keep this gray.",
+  "why": "Built in Unity: white walls fill the top of the Game view, and the white label Score: 0 / 5 could not be read on them."
+ },
+ {
+  "lesson": 12,
+  "find": "Everything is white for now, so tell objects apart by shape and name. You will add color later this week.",
+  "replace": "Almost everything is white for now, so tell objects apart by shape and name. Route B’s walls are gray so that the white label at the top can be read. You will add color later this week.",
+  "why": "Follows from the gray walls."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-b-level.webp",
+  "alt": "Game view: a gray frame of four walls around a dark blue field, a white circle near the bottom, five small white circles and a white square inside, and Score: 0 / 5 at the top left."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-c-level.webp",
+  "alt": "Game view: a long white ground along the bottom, two short platforms above it, a white square at the left end, five small circles and a second square on the ground, and Score: 0 / 5 at the top left."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-a-level.webp",
+  "alt": "Game view from above and behind: a gray floor inside four low walls, a capsule near the front, five small spheres and a cube on the floor, and Score: 1 / 5 at the top left."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-bug3.webp",
+  "alt": "Console listing five entries, AddPoint: score is now 1 of 6 through AddPoint: score is now 5 of 6."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-routes.mp4",
+  "alt": "Two rounds in the Game view. Route B: a circle collects five dots inside gray walls while a square slides across the middle, the label reads You win!, and R resets it. Route C: a square jumps onto two platforms, drops behind the sliding square, jumps over it, collects the fifth dot and wins."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-hazard.webp",
+  "alt": "Inspector for Hazard: Tag Hazard, Box Collider with Is Trigger ticked, and Patrol with Direction 1, 0, 0, Distance 5 and Speed 3."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-left.webp",
+  "alt": "Game view with the label You left the level. Press R to try again. and the capsule against the near wall."
+ },
+ {
+  "lesson": 12,
+  "settle": "*",
+  "why": "All three routes were built in Unity from the page and played to a win, a loss by the hazard, a loss by leaving the level and a restart; the three planted bugs were reproduced."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
@@ -3547,57 +3818,9 @@
   "review": true
  },
  {
-  "find": "You submit one build in each weekly module: a short screen recording and a screenshot, uploaded online.",
-  "replace": "You submit a weekly build in ten of the fourteen weeks (weeks 1 to 8, 10 and 13): a short screen recording and one or two screenshots, sometimes with a short note, uploaded online. In week 9 the Dodge game takes its place, and in weeks 11, 12 and 14 a part of your final project does.",
-  "why": "Start here said every week has a weekly build; four weeks do not.",
-  "review": true
- },
- {
-  "find": "Submit your weekly build online: a short screen recording of your game running and a screenshot. All other work for the week is due by then too.",
-  "replace": "Submit the week’s graded work online. In most weeks that is your weekly build: a short screen recording of your game running and a screenshot or two. All other work for the week is due by then too.",
-  "why": "Not every week's graded work is a weekly build.",
-  "review": true
- },
- {
   "find": "Work is uploaded to the LMS and graded complete or incomplete.",
   "replace": "Weekly builds are uploaded to the LMS and graded complete or incomplete. The Dodge game and the final project are scored with rubrics.",
   "why": "Two graded pieces are scored with rubrics, not complete or incomplete.",
-  "review": true
- },
- {
-  "find": "One piece. You finish the Dodge game in the weeks of the second game and add a change of your own, such as a new hazard, a new rule or a different look. It makes up 15% of the course grade.",
-  "replace": "One piece, due Sunday night of week 9 and scored with a rubric. You finish Dodge with a start menu and a build a classmate can run, watch someone play it, and add one change of your own to how it plays, such as a new hazard or a new rule. It makes up 15% of the course grade.",
-  "why": "The row gave no week or rubric and offered a change of look, which week 9 does not count as a twist.",
-  "review": true
- },
- {
-  "find": "One piece: the game you design, build, playtest and share yourself in the last weeks of the course. Its brief and rubric are written in the module Showcase, reflection and next steps. It makes up 30% of the course grade.",
-  "replace": "The game you design, build, playtest and share yourself, in three parts: a proposal in week 11, a playable prototype in week 12, and the final build with a showcase post in week 14. The full brief and rubric are in the module Showcase, reflection and next steps; read them when you start your proposal. It makes up 30% of the course grade.",
-  "why": "The outline grades a proposal and a prototype toward the final project, so it is not one piece.",
-  "review": true
- },
- {
-  "find": "Reply to at least some of your classmates’ posts with something useful, such as a tip, an answer to a question or a kind and specific comment.",
-  "replace": "Reply to two classmates’ posts with something useful, such as a tip, an answer to a question or a kind and specific comment. Do the week’s challenge and the self-check quiz; the quiz is practice with instant feedback and does not count toward your grade. If something breaks, the week’s Stuck? list is the first place to look, and the recap is what to reread before the next week.",
-  "why": "Every week grades two replies, and Start here left out the quiz, challenge, Stuck? list and recap.",
-  "review": true
- },
- {
-  "find": "These posts and replies, across all the weekly modules, make up 15% of the course grade.",
-  "replace": "Full marks need a first post by Thursday and two helpful replies by Sunday; late or one-line posts earn half. These posts and replies, across all the weekly modules, make up 15% of the course grade.",
-  "why": "States the forum grading rule every week uses.",
-  "review": true
- },
- {
-  "find": "You will use it each week to record your build running. Cost: free.",
-  "replace": "You will use it each week to record your build running. In week 8 the recording should carry the game’s sound if your recorder can do that. Cost: free. Three more things come later in the course. From week 8 your games make sound, so you need speakers or headphones. In week 9 you share your game through a download link, for example the OneDrive or Google Drive of your school account, and you need one person to play it, a classmate or anyone at home. There are no books to buy: a few weeks suggest a chapter from a book your library may have, and these are optional.",
-  "why": "What you need missed sound, a place to share a file, a playtester and the status of the books; rows cannot be added, so the last row carries them.",
-  "review": true
- },
- {
-  "find": "The link to the course Q&A forum and the name of the introductions thread.",
-  "replace": "The link to the course Q&A forum and the name of the introductions thread. Open a forum thread for each week, and in week 9 a thread where students find a playtest partner on the same kind of computer. Record the short talk for each week, or tell students the transcript on the page replaces it. Create an assignment in the LMS for each weekly build, for Dodge game with your own twist (week 9) and for the three parts of the final project, and paste in each brief and rubric. Decide where students upload builds to share them, and tell students to run only builds from this course. Check whether your library has the optional chapters (Hocking, Swink); the Nystrom chapter is free online. Say how complete or incomplete and the rubric levels become points.",
-  "why": "The instructor page listed only policy text; list items cannot be added, so the last item carries the other preparation tasks.",
   "review": true
  },
  {
@@ -3627,24 +3850,6 @@
   "replace": "The Console shows `NullReferenceException` pointing at `GameManager.UpdateLivesText`, or `UnassignedReferenceException: The variable gameOverPanel of GameManager has not been assigned`. What do I do?",
   "why": "As measured.",
   "late": true
- },
- {
-  "find": "open the maker’s system requirements page for Unity 6.6 and compare it with your computer",
-  "replace": "open Unity’s system requirements page for Unity 6.6 (it is in the Unity Manual at docs.unity3d.com; search the web for Unity 6.6 system requirements) and compare it with your computer",
-  "why": "Says whose page it is and where to find it, since no link is given.",
-  "review14": true
- },
- {
-  "find": "check the maker’s system requirements page for Unity 6.6 and for Visual Studio Code",
-  "replace": "check the system requirements pages for Unity 6.6 (in the Unity Manual at docs.unity3d.com) and for Visual Studio Code (at code.visualstudio.com/docs)",
-  "why": "Says where the two requirements pages are, since no link is given.",
-  "review14": true
- },
- {
-  "find": "Create a free Unity account, then install Unity Hub from the Unity website.",
-  "replace": "Create a free Unity account, then install Unity Hub from the Unity website. The Week 1 page gives every step for this and for the next two items, so you can do them from there.",
-  "why": "The start page lists the installs without steps; this points a beginner to where the steps are.",
-  "review14": true
  },
  {
   "lesson": 1,
@@ -4444,22 +4649,6 @@
   "alt": "The Game view from the fixed camera, labeled Force 20, Linear Damping 1: the Ball is pushed right and coasts to a stop near the side wall, then is pushed diagonally toward the far wall and stops again."
  },
  {
-  "lesson": 11,
-  "media": "w11-two-coins.webp",
-  "alt": "Game view in Play: the label at the top left reads Coins: 3 and two coins are still on their platforms."
- },
- {
-  "lesson": 11,
-  "media": "w11-coins-placed.webp",
-  "alt": "Game view before Play: Hero on the floor with a coin beside it, and a coin above each platform in view."
- },
- {
-  "lesson": 11,
-  "media": "w11-hierarchy.webp",
-  "alt": "Hierarchy listing Main Camera, Global Light 2D, Grid, Hero, Canvas with CoinsText, EventSystem, GameManager, and Coin, Coin (1), Coin (2), Coin (3), Coin (4) in blue.",
-  "caption": "Compare with your Hierarchy: five coins, all in blue because they come from the prefab."
- },
- {
   "lesson": 1,
   "media": "w01-courtyard.webp",
   "nth": 2,
@@ -4706,5 +4895,17 @@
   "media": "w11-coins-placed.webp",
   "caption": "Three of the five coins, seen with the camera beside Hero: each floats clear of the tiles. Your own Game view shows a wider part of the level at this point.",
   "review": true
+ },
+ {
+  "find": "This is your own game, made in three pieces across weeks 12 to 14: a prototype, a playtested and polished version, and the showcase with your reflection.",
+  "replace": "This is your own game, made in three pieces: a proposal in week 11, a playable prototype in week 12, and the showcase with your reflection in week 14. In week 13 you playtest and polish it as a weekly build.",
+  "why": "The course sets the three pieces in weeks 11, 12 and 14; week 13 is a weekly build.",
+  "start": true
+ },
+ {
+  "find": "Swink’s Game feel (week 8) and Fullerton on playtesting (week 13, optional).",
+  "replace": "Swink’s Game feel (week 8), Schell’s The art of game design (week 11) and Fullerton’s Game design workshop (week 13). All are optional: every page teaches what the week needs.",
+  "why": "Week 11 names Schell, and the weeks treat every book as optional.",
+  "start": true
  }
 ]

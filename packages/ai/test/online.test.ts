@@ -2,7 +2,7 @@ import { OnlineSchema, hasModulePages, orderedLessons, pageMinutes, textRuns, ty
 import { describe, expect, it } from 'vitest';
 import { OutlineDraft, courseBackground, courseFromOutline, generateSection, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
 import { applyModuleReview } from '../src/moduleReview';
-import { startPrompt } from '../src/start';
+import { pieceCounts, startPrompt } from '../src/start';
 import { checkRunOfShow } from '../src/live';
 import { ModuleDraft, checkModule, modulePage } from '../src/online';
 import { typesetDraft } from '../src/typeset';
@@ -258,5 +258,14 @@ describe('a course taught live online, or with a live session beside its weekly 
     expect(startPrompt(c)).not.toMatch(/first forum post by Thursday/);
     // A session under 90 minutes is never held to a break.
     expect(checkRunOfShow([{ kind: 'practice', title: 'Rooms', minutes: 40 }, { kind: 'discuss', title: 'Debrief', minutes: 35 }])).toEqual([]);
+  });
+});
+
+describe('the Start here page', () => {
+  it('is told which weeks set each graded piece, not only how many', () => {
+    const c = online();
+    const lessons = orderedLessons(c).map((l, i) => ({ ...l, homework: { ...l.homework, kind: i === 0 ? ('assignment' as const) : ('none' as const), toward: i === 0 ? 'Project' : '' } }));
+    const course = { ...c, lessons: Object.fromEntries(lessons.map((l) => [l.id, l])) };
+    expect(pieceCounts(course)).toMatch(/"Project" 1 \(week 1\)\. Use these counts and weeks\./);
   });
 });
