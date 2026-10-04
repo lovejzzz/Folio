@@ -1145,9 +1145,8 @@
  {
   "lesson": 6,
   "slot": 22,
-  "src": "/samples/unity/media/w06-spawn.mp4",
-  "poster": "/samples/unity/media/w06-spawn.poster.webp",
-  "caption": "About twenty seconds of play: the gap between hazards shrinks as you watch."
+  "drop": true,
+  "why": "The clip that stood here was recorded after the cleanup script was added, so its hazards vanished where the step says they stay."
  },
  {
   "lesson": 6,
@@ -6690,13 +6689,6 @@
  },
  {
   "lesson": 6,
-  "media": "w06-spawn.mp4",
-  "caption": "About twenty seconds of play: the gap between hazards shrinks as you watch. This clip was recorded with the cleanup from Part 6, so its hazards vanish after 6 seconds. Yours stay where they land for now.",
-  "alt": "The Game view, labeled One hazard every 2 seconds at first, then quicker; each lives 6 seconds: orange spheres drop onto the Floor at random spots around the blue Player, arriving more and more often, and each one disappears a few seconds after landing.",
-  "audit": true
- },
- {
-  "lesson": 6,
   "media": "w06-piling.webp",
   "alt": "Play mode. The Hierarchy lists SampleScene* with Main Camera, Directional Light, Global Volume, Floor, Player and Spawner, then eleven Hazard(Clone) entries. In the Game view, orange spheres lie on the Floor around the blue Player and one more is still falling.",
   "audit": true
@@ -6916,5 +6908,40 @@
   "retake": true,
   "caption": "Hero Controller holds Move Speed 6, Jump Force 12 and FeetCheck in Feet Check.",
   "alt": "Inspector for Hero: Rigidbody 2D, Box Collider 2D, and Hero Controller (Script) with Move Speed 6, Jump Force 12 and Feet Check set to FeetCheck (Transform)."
+ },
+ {
+  "lesson": 6,
+  "media": "w06-floor.webp",
+  "retake": true,
+  "caption": "Floor’s Transform: Position 0, -0.5, 0 and Scale 14, 1, 14.",
+  "alt": "Inspector for Floor: Position 0, -0.5, 0, Rotation 0, 0, 0 and Scale 14, 1, 14."
+ },
+ {
+  "lesson": 6,
+  "media": "w06-copy.webp",
+  "retake": true,
+  "caption": "A copy in the scene after the prefab’s Scale was changed: it reads 1, 1, 1 too.",
+  "alt": "The Transform of a Hazard copy: Position -3, 6, 0, Rotation 0, 0, 0 and Scale 1, 1, 1."
+ },
+ {
+  "lesson": 6,
+  "media": "w06-new.webp",
+  "retake": true,
+  "caption": "The new project’s Hierarchy: SampleScene with Main Camera, Directional Light and Global Volume.",
+  "alt": "Hierarchy listing SampleScene, Main Camera, Directional Light and Global Volume."
+ },
+ {
+  "lesson": 7,
+  "media": "w07-lives2.webp",
+  "retake": true,
+  "caption": "After one hit the text reads Lives: 2.",
+  "alt": "Game view in Play: Lives: 2 at the top left, the blue Player on the floor and three orange hazards around it."
+ },
+ {
+  "lesson": 8,
+  "media": "w08-audio-folder.webp",
+  "retake": true,
+  "caption": "Compare: your Audio folder holds hit and gameover.",
+  "alt": "Project window, Assets > Audio, holding two audio clips named gameover and hit."
  }
 ]
