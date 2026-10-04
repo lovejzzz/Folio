@@ -35,7 +35,8 @@ test('a course taught online on the students\u2019 own time is written as a page
   await expect(page.getByText('Clip to add')).toBeVisible();
   await expect(page.getByRole('complementary', { name: 'Checkpoint' })).toContainText('stomata labelled on the underside');
   await expect(page.getByRole('button', { name: 'Copy' })).toBeVisible();
-  // The forum is graded by one rule, stated the same every week; the instructor has a kit of their own.
-  await expect(page.getByText(/How posts are graded, every week/)).toBeVisible();
+  // The forum's marking rule is stated only where posts carry a share of the grade, and this course grades none; the instructor has a kit of their own.
+  await expect(page.getByText('Post a screenshot of your leaf diagram and say what surprised you.')).toBeVisible();
+  await expect(page.getByText(/How posts are graded, every week/)).toHaveCount(0);
   await expect(page.getByText('Students never see this part.')).toBeVisible();
 });

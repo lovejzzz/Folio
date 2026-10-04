@@ -1,5 +1,69 @@
 [
  {
+  "version": "0.0.10",
+  "date": "October 4, 2026",
+  "title": "What a review finds is put right where it stands",
+  "lede": "We listed what was wrong with how Folio writes a course, then worked through the list and wrote six courses again to see what held: a doctoral seminar, a grade 8 writing unit, and four online courses. This release is what came of it, including two faults of our own that the check-ups turned up.",
+  "sections": [
+   {
+    "heading": "Problems are mended, not written around",
+    "body": "Every lesson plan and weekly page is read a second time by another model before anything is built on it. Where that reading found problems it could not fix in a few words, Folio used to write the whole page again and keep whichever version had fewer. The new page lost the problems it was told of and brought its own, so about as many reached you as before. Now only the parts at fault are written again, and the reviewer reads them again, told what the first reading found. Over 34 weekly pages of three online courses, the first reading left 259 notes and 67 were left at the end. That is not none: a reviewer reading a page again usually finds something new, and some of what stays is yours to decide.",
+    "image": {
+     "src": "/changelog/0.0.10-mend.svg",
+     "alt": "Before, every part of a page was written again when a review found problems; now only the parts at fault are written again and read again. Across 34 pages, 259 notes became 67",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "Each note can be fixed, or settled, on its own",
+    "body": "Notes on a plan used to stand as one paragraph with one button that cleared them all. Each now has its own line, with two choices: “It’s fine”, or “Fix it”, which writes again the part the note is about and leaves the rest of the page, and its pictures, as they are. When a note turns on a choice that is yours (should two things be due the same night?), Folio says so and asks; type what you have decided and it fixes the page to match. A course with notes still on it now says how many on its card in the library, where it used to look finished.",
+    "image": {
+     "src": "/changelog/0.0.10-notes.webp",
+     "alt": "A lesson plan with two notes from its review, each with its own Fix it and It’s fine",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Weeks are no longer written one at a time",
+    "body": "A week is written from the weeks before it, so that it uses their names and carries on their work. Each used to wait for the one before to be written, checked and corrected. A week now starts from the one before as first written, while that one is still being checked, and its own check reads the corrected version. A fourteen-week online course that took about three hours to write took about an hour and forty minutes on the same machine, with other courses being written beside it; a thirteen-meeting doctoral seminar took sixteen minutes. We read the courses for places where a week contradicts the one before because of this, and found few; they are noted where found, not hidden."
+   },
+   {
+    "heading": "Pictures, clips and files go into the page",
+    "body": "A weekly page for a software course asks for screenshots, short recordings and files, and says what each must show. Until now there was nowhere to put them. Each place now takes a file: pick it, drop it on the place, or paste a screenshot. A picture gets a caption and a description for students who cannot see it, both yours to edit. Pictures go into the Word file, everything goes into the zip in a media folder, and a backup file carries them. They are kept in this browser only for now: signing in does not yet carry them to your other devices, and the page says so where it matters.",
+    "image": {
+     "src": "/changelog/0.0.10-add.webp",
+     "alt": "Two places for screenshots on a weekly page, each saying what the picture must show, with an Add picture button, and a file to attach",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "A picture can be looked at beside its step",
+    "body": "A review that reads a page’s words cannot see its pictures. When we followed a course by hand, the pictures were where the mistakes hid: a window from a later step, a setting cut off at the edge. “Check” shows the picture to a model together with the steps that lead to it, and lists where the two disagree, and anything in the picture that names a person or an account. We tried it on twenty pictures from that course, ten in their own places and ten swapped for another: all ten swapped ones were named. Of the ten in the right place, five came back clean and the rest with notes that were true of them, such as an outline that had been asked for and not drawn.",
+    "image": {
+     "src": "/changelog/0.0.10-slot.webp",
+     "alt": "A screenshot of an Inspector with a note under it: the caption speaks of a setting that the picture cuts off",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "What Folio could not check is listed for you",
+    "body": "When a page teaches software, the names of menus and buttons change from one version to the next, and Folio writes from what you gave it and, past that, from memory. We tested whether it could look the names up instead: a model with only the tool’s own documentation got 129 of 244 facts right that we had checked in the tool itself, 13 wrong, and had nothing on the rest. That is not good enough to state as fact, so Folio does not do it. Instead, each week’s instructor notes now list what the page states without a source of yours to go by, for you to try before the week opens; and when a brief names software without a version, Folio asks which."
+   },
+   {
+    "heading": "Two faults of ours, found and fixed",
+    "body": "Since version 0.0.7 Folio has recorded, for each graded component, whether it is scored or graded complete or incomplete. Writing courses again for this release, we found it had marked nearly every component as complete or incomplete, a 60% seminar paper among them, and told every page so. The question it was asked could be read two ways. It is now asked in words that cannot, and believed only when your brief speaks of completion itself. If you made a course since October 4, look at the grading table on its syllabus and set each component as you mean it. The second: a week’s total hours counted optional reading and make-up work, so a nine-hour week read as ten."
+   },
+   {
+    "heading": "Smaller things",
+    "body": "Later lessons see more of what earlier ones said: the two lessons just before are shown at length, and those further back in brief where they used to be left out. Lines added to a file after it was first written are passed on with it. A weekly task set in the same words every week is written for an online week as that week’s work, not as something handed in at the start of a class. Two different pieces of one component done in class are each written, where the second used to be a copy of the first. A test covers only what was taught before it is sat. An exit ticket in a live session has one standing place. Screenshots are asked for where steps are followed on a screen, not under every list of steps. The grading table shows how many pieces a component has and what each is worth."
+   }
+  ]
+ },
+ {
   "version": "0.0.9",
   "date": "October 4, 2026",
   "title": "Later weeks use the names earlier weeks gave",
