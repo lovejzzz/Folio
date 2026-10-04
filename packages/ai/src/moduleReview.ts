@@ -35,6 +35,8 @@ type Block = ModuleDraft['parts'][number]['blocks'][number];
 function blockText(b: Block): string {
   const media = b.type === 'image' || b.type === 'video' || b.type === 'file';
   const head = b.type === 'callout' || b.type === 'code' ? `[${b.type}${b.kind ? `: ${b.kind}` : ''}] ${b.title}`.trim() : media ? `[${b.type}${b.kind ? `: ${b.kind}` : ''}] shows: ${b.shows}${b.alt ? ` | alt: ${b.alt}` : ''}` : '';
+  // A file with its name on its own line was read as a download with no name.
+  if (b.type === 'file') return `[file to download${b.kind ? `, ${b.kind}` : ''}] ${b.text} (holds: ${b.shows})`;
   const shots = b.shots.map((s) => `  [picture under step ${s.step}] shows: ${s.shows} | alt: ${s.alt}`).join('\n');
   const items = b.items.map((item, i) => (b.type === 'steps' ? `${i + 1}. ${item}` : `- ${item}`)).join('\n');
   return [head, b.text, items, shots, b.transcript && `Transcript: ${b.transcript}`].filter(Boolean).join('\n');

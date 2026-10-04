@@ -144,17 +144,22 @@ export async function mendPlan(inference: Inference, course: Course, lesson: Les
 
 /** What a second reading is told of the first, so it reads what changed and not the whole text afresh. */
 export interface Since {
+  /** What was open, the reader's notes first; the last `checks` of them came from Folio's own checks of the page's form. */
   notes: ReviewNote[];
+  checks?: number;
   changed: string[];
   left: Left[];
 }
 
 export function sinceText(since: Since | undefined, unit: string): string {
   if (!since) return '';
-  const mistaken = since.left.filter((l) => l.reason === 'mistaken' && since.notes[l.note - 1]);
-  const teacher = since.left.filter((l) => l.reason === 'teacher' && since.notes[l.note - 1]);
+  // Folio checks the form again itself: told of it, a reader took to reviewing fields it cannot see.
+  const read = since.notes.slice(0, since.notes.length - (since.checks ?? 0));
+  if (!read.length) return `This text was read once already, and since then these were written again: ${since.changed.join(', ') || 'nothing'}. Read them in full, as below, and list only problems in what was written again.`;
+  const mistaken = since.left.filter((l) => l.reason === 'mistaken' && read[l.note - 1]);
+  const teacher = since.left.filter((l) => l.reason === 'teacher' && read[l.note - 1]);
   return [
-    `This text was read once already and corrected. The first reading found:\n${numbered(since.notes)}`,
+    `This text was read once already and corrected. The first reading found:\n${numbered(read)}`,
     `Written again since: ${since.changed.join(', ') || 'nothing'}.`,
     mistaken.length ? `The writer left these as they were, as mistaken:\n${mistaken.map((l) => `${l.note}. ${l.why}`).join('\n')}` : '',
     teacher.length ? `Kept as notes for the teacher to decide, not to be listed again: ${teacher.map((l) => l.note).join(', ')}.` : '',

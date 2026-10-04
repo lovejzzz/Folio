@@ -50,7 +50,7 @@ export async function reviewed<T>(read: Read<T>, draft: T, onProgress: ((progres
     for (let round = 0; round < ROUNDS && mend; round++) {
       const open = [...state.notes, ...checks(state.value)];
       if (!open.length) break;
-      const next = await mendOnce(read, mend, state, open).catch((error: unknown) => (stopped(error) ? Promise.reject(error) : null));
+      const next = await mendOnce(read, mend, state, open, open.length - state.notes.length).catch((error: unknown) => (stopped(error) ? Promise.reject(error) : null));
       // Kept unless it leaves more to put right than it found: what it was told of is fixed, and what the next
       // reading finds in the parts written again is found for the first time as often as it is new.
       const kept = next !== null && count(next.state) <= count(state);
@@ -70,10 +70,10 @@ export async function reviewed<T>(read: Read<T>, draft: T, onProgress: ((progres
 }
 
 /** One round: the parts at fault written again, then read again by a reader told what the first reading found. */
-async function mendOnce<T>(read: Read<T>, mend: Mend<T>, state: State<T>, open: ReviewNote[]): Promise<{ state: State<T>; fixes: string[]; changed: string[] } | null> {
+async function mendOnce<T>(read: Read<T>, mend: Mend<T>, state: State<T>, open: ReviewNote[], checks: number): Promise<{ state: State<T>; fixes: string[]; changed: string[] } | null> {
   const mended = await mend(state.value, open);
   if (!mended.changed.length && !mended.left.length) return null;
-  const again = await read(mended.value, { notes: open, changed: mended.changed, left: mended.left });
+  const again = await read(mended.value, { notes: open, checks, changed: mended.changed, left: mended.left });
   // A problem that is the teacher's to decide stays as a note, with the question the writer put.
   const asked = mended.left.flatMap((l) => {
     const note = l.reason === 'teacher' ? state.notes[l.note - 1] : undefined;

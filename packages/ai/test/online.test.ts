@@ -123,7 +123,7 @@ describe('an online course with no set meeting time', () => {
     expect(sectionPrompt(withBook, withBook.lessons[first!.id]!, 'plan')).not.toMatch(/Before the next lesson students read/);
     const v = draft();
     v.parts[0]!.blocks.push({ ...v.parts[0]!.blocks[0]!, type: 'file', text: 'The project as it should stand at the start of this week, with everything from last week in place and ready', shows: 'A project' });
-    expect(JSON.stringify(checkModule(v, c))).toContain('a name, not a sentence');
+    expect(JSON.stringify(checkModule(v, c))).toContain('is named by a sentence');
   });
 
   it('sends what the checks find to a mend of the part at fault, and does not ask for the page again', async () => {
@@ -136,7 +136,9 @@ describe('an online course with no set meeting time', () => {
     const result = await generateSection(model, c, second.id, 'plan', undefined, { reviewer: model });
     expect(model.calls.map((call) => call.task)).toEqual(['folio_module', 'folio_module_review', 'folio_module_mend', 'folio_module_review']);
     expect(model.calls[2]!.prompt).toMatch(/Every image and video needs its caption/);
-    expect(model.calls[3]!.prompt).toContain('Written again since: Part 1.');
+    expect(model.calls[3]!.prompt).toContain('since then these were written again: Part 1.');
+    // What Folio's own checks found is not the reader's to check again.
+    expect(model.calls[3]!.prompt).not.toContain('needs its caption');
     const fill = result.commands[0]!;
     expect(fill.type === 'section.fill' && fill.payload.flags).toEqual([]);
   });
