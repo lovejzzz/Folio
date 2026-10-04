@@ -1864,7 +1864,8 @@
  {
   "lesson": 11,
   "slot": 2,
-  "src": "/samples/unity/media/w11-open.webp"
+  "drop": true,
+  "why": "The step lists the objects; no picture of the project at this point was kept."
  },
  {
   "lesson": 11,
@@ -4441,5 +4442,27 @@
   "lesson": 4,
   "media": "w04-tune.mp4",
   "alt": "The Game view from the fixed camera, labeled Force 20, Linear Damping 1: the Ball is pushed right and coasts to a stop near the side wall, then is pushed diagonally toward the far wall and stops again."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-two-coins.webp",
+  "alt": "Game view in Play: the label at the top left reads Coins: 3 and two coins are still on their platforms."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-coins-placed.webp",
+  "alt": "Game view before Play: Hero on the floor with a coin beside it, and a coin above each platform in view."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-hierarchy.webp",
+  "alt": "Hierarchy listing Main Camera, Global Light 2D, Grid, Hero, Canvas with CoinsText, EventSystem, GameManager, and Coin, Coin (1), Coin (2), Coin (3), Coin (4) in blue.",
+  "caption": "Compare with your Hierarchy: five coins, all in blue because they come from the prefab."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-courtyard.webp",
+  "nth": 2,
+  "caption": "The whole Courtyard fits in the 16:9 Game view, with nothing cut off."
  }
 ]
