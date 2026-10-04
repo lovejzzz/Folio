@@ -4,6 +4,7 @@ import { proxyChat } from './openai';
 import { checkout, PACKS, webhook } from './billing';
 import { grantFree, MILLI, schoolEmail, statement, forgetPastGrantCounts } from './credits';
 import { courseMedia, removeMedia } from './media';
+import { isOwner, stats } from './stats';
 import { listCourses, MAX_COURSE_BYTES, MAX_SOURCE_BYTES, readCourse, readSource, removeAccount, removeCourse, writeCourse, writeSource, type CourseMeta } from './courses';
 import { SignInError, verifyIdToken } from './google';
 import { missingSchemaCached } from './schemaShape';
@@ -185,6 +186,8 @@ export async function handle(request: Request, env: Env, fetchImpl?: typeof fetc
   if (!user) return problem(401, 'signed-out');
   if (path[0] === 'courses' && path.length === 1 && request.method === 'GET') return json({ courses: await listCourses(env.DB, user.id) });
   if (path[0] === 'credits' && path.length === 1 && request.method === 'GET') return credits(env, user);
+  // The running totals, for the account that runs Folio; to anyone else there is no such page.
+  if (path.join('/') === 'admin/stats' && request.method === 'GET') return (await isOwner(user)) ? json(await stats(env)) : problem(404, 'not-found');
   if (path.join('/') === 'billing/checkout' && request.method === 'POST') return checkout(request, env, user, fetchImpl);
   // Anthropic's Messages API, as the page's SDK calls it with Folio credits ("…/api/ai/v1/messages?beta=true").
   if (path.join('/') === 'ai/v1/messages' && request.method === 'POST') return proxyMessages(request, env, user, waitUntil, fetchImpl);

@@ -13,6 +13,13 @@ const STEPS = [
   { n: '3', title: 'Make it yours', body: 'Change any word in place, then take it to Word, PowerPoint, PDF or Google Docs.' },
 ];
 
+/** What a teacher should know before relying on it: said plainly, once. */
+const KNOW = [
+  'Folio writes in English, for schools and universities in the United States and Canada: grades, credits and semesters as they are used there.',
+  'What it writes is a draft for you to read before you teach it. Each plan is checked by a second model, and what that check could not settle is left as a note for you.',
+  'For a course that teaches software, attach your notes on the version your students use. Folio lists what it wrote without them, for you to try first.',
+];
+
 const LINK = 'rounded-control text-ink-2 underline-offset-4 outline-none hover:text-ink hover:underline focus-visible:ring-2 focus-visible:ring-accent';
 
 /** What Folio is, who makes it and how to reach them: said once each. Linked from the home page. */
@@ -40,6 +47,20 @@ export function About() {
             </li>
           ))}
         </ol>
+
+        <section className="mt-10" aria-labelledby="about-know">
+          <h2 id="about-know" className="font-ui text-13 font-medium uppercase tracking-wide text-ink-2">
+            Good to know
+          </h2>
+          <ul className="mt-3 grid gap-3 font-reading text-16 leading-7 text-ink-2">
+            {KNOW.map((line) => (
+              <li key={line} className="flex gap-3">
+                <span aria-hidden className="mt-3 size-1.5 shrink-0 rounded-full bg-accent" />
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         <section className="mt-10 rounded-sheet bg-well p-6">
           <h2 className="font-ui text-13 font-medium uppercase tracking-wide text-ink-2">Made by</h2>

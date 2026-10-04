@@ -11,7 +11,7 @@
 // where the file is [{ "name", "brief", "attach"?: [absolute paths], "syllabus"?: title of the attached file that
 // is the syllabus, "policies"? }]; nothing is written again.
 import { MATERIAL_KINDS, CourseStore, OnlineSchema, cmd, orderedLessons, parseCourse, type Course, type Delivery, type GeneratedKind, type Online } from '@folio/core';
-import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, type BuildHost, type BuildTarget, type NewCourseRequest } from '@folio/ai';
+import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
 import { spawn } from 'node:child_process';
 import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -259,7 +259,32 @@ function noteFlags(name: string, course: Course): void {
   }
 }
 
-const inference = createInference({ provider: 'folio', apiKey: '', model: 'claude-sonnet-5-5', baseUrl: 'https://folio.local/api/ai' }, cliFetch);
+/**
+ * --paid sends the same requests to the providers themselves, with the experiment keys kept in the Keychain (read
+ * from the local key page, never printed), so that what a course costs is counted from the tokens each call reports.
+ */
+const PAID = ARGS.includes('--paid');
+const keyOf = async (name: string) => (await (await fetch(`http://127.0.0.1:8799/key/${name}`, { headers: { 'x-experiment': '1' } })).text()).trim();
+const KEYS = PAID ? { anthropic: await keyOf('anthropic'), openai: await keyOf('openai') } : null;
+const paidFetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+  const url = String(input instanceof Request ? input.url : input);
+  const openai = url.includes('/openai/v1/chat/completions');
+  const headers = new Headers(init?.headers);
+  headers.delete('x-folio');
+  if (openai) headers.set('authorization', `Bearer ${KEYS!.openai}`);
+  else headers.set('x-api-key', KEYS!.anthropic);
+  const started = Date.now();
+  const res = await fetch(openai ? 'https://api.openai.com/v1/chat/completions' : url.replace('https://folio.local/api/ai', 'https://api.anthropic.com'), { ...init, headers });
+  appendFileSync(LOG, `${JSON.stringify({ at: new Date().toISOString(), paid: true, model: (JSON.parse(String(init?.body)) as { model?: string }).model, ms: Date.now() - started, status: res.status })}\n`);
+  return res;
+}) as typeof fetch;
+/** Every call's tokens, as its provider reported them, by the job that made it. */
+const USED: (Usage & { task: string })[] = [];
+let task = '';
+
+const made = createInference({ provider: 'folio', apiKey: '', model: 'claude-sonnet-5-5', baseUrl: 'https://folio.local/api/ai' }, PAID ? paidFetch : cliFetch, (u) => USED.push({ ...u, task }));
+// Which job a call belongs to is known when it is asked for: calls overlap, so the name is taken then, not when the answer comes.
+const inference: typeof made = { ...made, complete: (request) => ((task = request.task), made.complete(request)) };
 
 async function build(name: string, store: CourseStore, targets: BuildTarget[], failed: string[]): Promise<number> {
   const host: BuildHost = {
@@ -328,3 +353,10 @@ const polishOnly = ARGS.includes('--polish');
 const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs', '--lessons'].includes(ARGS[i - 1] ?? ''));
 const asked = names.length ? names : Object.keys(CHECKUP ?? BRIEFS);
 await Promise.all(asked.map((name) => make(name, polishOnly)));
+if (PAID) {
+  const by = new Map<string, Usage[]>();
+  for (const u of USED) by.set(u.task, [...(by.get(u.task) ?? []), u]);
+  const row = (name: string, list: Usage[]) => `${name.padEnd(24)} ${String(list.length).padStart(4)} calls  in ${String(list.reduce((n, u) => n + u.input + u.cacheRead + u.cacheWrite, 0)).padStart(8)}  out ${String(list.reduce((n, u) => n + u.output, 0)).padStart(7)}  $${costOf(list, null).usd.toFixed(3)}`;
+  console.log([...by].sort((a, b) => costOf(b[1], null).usd - costOf(a[1], null).usd).map(([name, list]) => row(name, list)).join('\n'));
+  console.log(row('TOTAL', USED));
+}

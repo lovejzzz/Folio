@@ -84,3 +84,21 @@ describe('a course’s pictures, clips and files in the account', () => {
     expect((await send(cookie, 'c_1', 'm_1.webp')).status).toBe(501);
   });
 });
+
+describe('the running totals', () => {
+  it('are shown to the account that runs Folio and to no one else, and name nobody', async () => {
+    const owner = await call('session', { method: 'POST', cookie: 'folio_signin=n-1', body: JSON.stringify({ idToken: await google.token({ sub: 'g-owner', email: 'XingPicture@gmail.com' }) }) });
+    const ownerCookie = owner.headers.get('set-cookie')!.split(';')[0]!;
+    const other = await signIn('g-teacher');
+    await send(other, 'c_1', 'm_1.webp');
+    expect((await call('admin/stats', { cookie: other })).status).toBe(404);
+    expect((await call('admin/stats')).status).toBe(401);
+    const res = await call('admin/stats', { cookie: ownerCookie });
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { accounts: { all: number; week: number }; media: { files: number; bytes: number }; days: { day: string; counts: Record<string, number> }[] };
+    expect(body.accounts).toEqual({ all: 2, week: 2 });
+    expect(body.media).toEqual({ files: 1, bytes: 10 });
+    expect(body.days[0]!.counts.sign_in).toBe(2);
+    expect(JSON.stringify(body)).not.toMatch(/g-teacher|example\.edu|gmail/i);
+  });
+});
