@@ -160,7 +160,8 @@ export function FileRow({ block }: { block: Of<'file'> }) {
     </>
   );
   return block.href ? (
-    <a className="mod-file" href={block.href} download>
+    // Saved under the name the page calls it by, when that is a file name: the steps say "unzip HopStart.zip".
+    <a className="mod-file" href={block.href} download={/\.\w{2,5}$/.test(block.label.trim()) ? block.label.trim() : true}>
       {body}
     </a>
   ) : (
