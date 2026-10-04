@@ -2599,8 +2599,8 @@
  {
   "lesson": 14,
   "slot": 8,
-  "drop": true,
-  "why": "The Project Settings window was not captured at a readable size."
+  "src": "/samples/unity/media/w14-player.webp",
+  "caption": "Project Settings > Player: Company Name and Product Name are the first two boxes. Here they read Sam and MoonHopper."
  },
  {
   "lesson": 14,
@@ -6969,5 +6969,18 @@
   "media": "w01-editor-all.webp",
   "retake": true,
   "caption": "All eleven objects of the Courtyard are in the Hierarchy, from Main Camera to Guard."
+ },
+ {
+  "lesson": 5,
+  "media": "w05-rotator.webp",
+  "retake": true,
+  "caption": "Rotator (Script) on Pickup, with Spin set to 45, 90, 45.",
+  "alt": "The Rotator (Script) component in the Inspector: Script Rotator, and Spin X 45, Y 90, Z 45."
+ },
+ {
+  "lesson": 14,
+  "media": "w14-player.webp",
+  "retake": true,
+  "alt": "The Project Settings window with Player chosen in the list on the left: Company Name Sam, Product Name MoonHopper, Version 0.1.0."
  }
 ]
