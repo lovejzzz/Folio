@@ -2671,6 +2671,202 @@
   "why": "Seen in Unity on a Mac: the build window is a save panel that needs a name."
  },
  {
+  "lesson": 1,
+  "slot": 2,
+  "src": "/samples/unity/media/w01-talk.mp4",
+  "poster": "/samples/unity/media/w01-talk.poster.webp",
+  "caption": "Watch this first: the week in a few minutes. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 2,
+  "slot": 2,
+  "src": "/samples/unity/media/w02-talk.mp4",
+  "poster": "/samples/unity/media/w02-talk.poster.webp",
+  "caption": "Watch this first: the week in a few minutes. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 3,
+  "slot": 6,
+  "src": "/samples/unity/media/w03-talk.mp4",
+  "poster": "/samples/unity/media/w03-talk.poster.webp",
+  "caption": "Watch this first: the week in a few minutes. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 4,
+  "slot": 4,
+  "src": "/samples/unity/media/w04-talk.mp4",
+  "poster": "/samples/unity/media/w04-talk.poster.webp",
+  "caption": "Watch this first: read in Update, push in FixedUpdate, follow in LateUpdate. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 5,
+  "slot": 14,
+  "src": "/samples/unity/media/w05-talk.mp4",
+  "poster": "/samples/unity/media/w05-talk.poster.webp",
+  "caption": "Watch first: how Unity tells your script that the Ball touched something. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 6,
+  "slot": 15,
+  "src": "/samples/unity/media/w06-talk.mp4",
+  "poster": "/samples/unity/media/w06-talk.poster.webp",
+  "caption": "Watch for the four words: prefab, Instantiate, interval and Destroy. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 7,
+  "slot": 2,
+  "src": "/samples/unity/media/w07-talk.mp4",
+  "poster": "/samples/unity/media/w07-talk.poster.webp",
+  "caption": "Watch this first. It explains the ideas behind the week’s code, and the written explanation follows in Part 3. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 8,
+  "slot": 2,
+  "src": "/samples/unity/media/w08-talk.mp4",
+  "poster": "/samples/unity/media/w08-talk.poster.webp",
+  "caption": "The instructor explains game feel and this week’s plan. The transcript holds everything in it. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 9,
+  "slot": 17,
+  "src": "/samples/unity/media/w09-talk.mp4",
+  "poster": "/samples/unity/media/w09-talk.poster.webp",
+  "caption": "Compare with how you run your own playtest: you watch, you stay quiet, you write. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 10,
+  "slot": 10,
+  "src": "/samples/unity/media/w10-talk.mp4",
+  "poster": "/samples/unity/media/w10-talk.poster.webp",
+  "caption": "Watch this first: it names every piece you use in this part. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 11,
+  "slot": 31,
+  "src": "/samples/unity/media/w11-talk.mp4",
+  "poster": "/samples/unity/media/w11-talk.poster.webp",
+  "caption": "Watch once, then use the steps below with your own idea. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 12,
+  "slot": 2,
+  "src": "/samples/unity/media/w12-talk.mp4",
+  "poster": "/samples/unity/media/w12-talk.poster.webp",
+  "caption": "Watch this first; the page repeats everything you need if you only read the transcript. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 13,
+  "slot": 2,
+  "src": "/samples/unity/media/w13-talk.mp4",
+  "poster": "/samples/unity/media/w13-talk.poster.webp",
+  "caption": "Watch this first. It explains how to watch a playtest and how to sort what you see. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 14,
+  "slot": 2,
+  "src": "/samples/unity/media/w14-talk.mp4",
+  "poster": "/samples/unity/media/w14-talk.poster.webp",
+  "caption": "The week in about two minutes: four jobs, in order. The voice is a computer’s, reading the script below; your instructor may replace it with their own recording.",
+  "talk": true
+ },
+ {
+  "lesson": 1,
+  "media": "w01-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 2,
+  "media": "w02-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 3,
+  "media": "w03-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 4,
+  "media": "w04-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 5,
+  "media": "w05-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 6,
+  "media": "w06-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 7,
+  "media": "w07-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 8,
+  "media": "w08-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 9,
+  "media": "w09-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 10,
+  "media": "w10-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 12,
+  "media": "w12-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 13,
+  "media": "w13-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
+  "lesson": 14,
+  "media": "w14-talk.mp4",
+  "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
+  "talk": true
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
