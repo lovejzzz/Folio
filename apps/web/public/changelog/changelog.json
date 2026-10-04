@@ -1,5 +1,51 @@
 [
  {
+  "version": "0.0.7",
+  "date": "October 4, 2026",
+  "title": "One way to say how work is graded, and a sample you can watch",
+  "lede": "A review of the Unity sample as a whole course found the same piece of work described two ways: scored by its rubric on one page, complete or incomplete on three others. Each page had been written well and none agreed. This release makes how work is graded a fact of the course, and finishes the sample with a talk for every week.",
+  "sections": [
+   {
+    "heading": "Scored, or complete or incomplete: said once",
+    "body": "When Folio outlines a course it now records, for each graded component, whether its work is scored or is graded complete or incomplete, as your brief says. Every page, assignment and rubric is told the same thing, along with what complete means (every rubric criterion at the second-highest level or above) and that the pieces of one component count equally unless you say otherwise. You can switch a component on the grading table of the syllabus.",
+    "image": {
+     "src": "/changelog/0.0.7-grading.webp",
+     "alt": "The grading table of the Unity sample: under each component, whether it is scored or complete or incomplete",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "A lesson that fails holds back the ones after it",
+    "body": "Folio writes each lesson from what the lessons before it hold. When one lesson could not be written, the build used to carry on, and week 13 was written without knowing week 12. Now the later lessons wait with it, and Resume writes them in order."
+   },
+   {
+    "heading": "Optional means no deadline",
+    "body": "An optional reading used to keep “due Sunday night” on the week’s checklist, which read as required. Anything a page marks optional now has no due day."
+   },
+   {
+    "heading": "The Unity sample: a talk for every week",
+    "body": "Each week of the sample opens with a short talk. They were scripts waiting for an instructor; now each is a video of two or three minutes whose slides show the words being spoken, read by a computer voice. The caption says so, and your own recording replaces it. Students who cannot watch still have the transcript.",
+    "image": {
+     "src": "/changelog/0.0.7-talk.webp",
+     "alt": "Week 3 of the Unity sample: the talk as a video, with its caption and transcript below",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Code shown where an editor could not be photographed",
+    "body": "Three steps asked for a picture of a script open in an editor. They now show the file itself, with line numbers and the line the step is about marked, and say that it is drawn for the page. The sample’s release build was also made for real: it finished without errors and its folder holds what the page says it will.",
+    "image": {
+     "src": "/changelog/0.0.7-card.webp",
+     "alt": "Week 3 of the Unity sample: line 17 of the script with its semicolon missing, drawn with line numbers",
+     "width": 1600,
+     "height": 1000
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.6",
   "date": "October 4, 2026",
   "title": "Online courses: a page students follow alone, a live session that runs itself, or both",

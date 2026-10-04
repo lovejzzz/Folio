@@ -483,8 +483,9 @@
  {
   "lesson": 3,
   "slot": 10,
-  "drop": true,
-  "why": "Needs Visual Studio Code, which is not on the machine the pictures were made on."
+  "src": "/samples/unity/media/w03-new-script.webp",
+  "caption": "A new script as Unity makes it, drawn for this page: your editor’s colors will differ. The class line is marked.",
+  "why": "Drawn from the file itself, since no editor could be photographed."
  },
  {
   "lesson": 3,
@@ -545,8 +546,9 @@
  {
   "lesson": 3,
   "slot": 20,
-  "drop": true,
-  "why": "Needs Visual Studio Code."
+  "src": "/samples/unity/media/w03-missing-semicolon.webp",
+  "caption": "Line 17 with its semicolon missing, drawn for this page: the cursor sits where the semicolon belongs.",
+  "why": "Drawn from the file itself, since no editor could be photographed."
  },
  {
   "lesson": 3,
@@ -899,8 +901,9 @@
  {
   "lesson": 5,
   "slot": 15,
-  "drop": true,
-  "why": "Needs Visual Studio Code."
+  "src": "/samples/unity/media/w05-ontrigger.webp",
+  "caption": "The end of BallController.cs after this step, drawn for this page: the new method sits between the end of FixedUpdate and the final brace.",
+  "why": "Drawn from the file itself, since no editor could be photographed."
  },
  {
   "lesson": 5,
@@ -2865,6 +2868,21 @@
   "media": "w14-talk.mp4",
   "alt": "A talk of a few minutes: slides show the words being spoken, a few sentences at a time, with the week’s title above them.",
   "talk": true
+ },
+ {
+  "lesson": 3,
+  "media": "w03-new-script.webp",
+  "alt": "A file named Spinner.cs with line numbers: using UnityEngine, the line public class Spinner : MonoBehaviour marked, and empty Start and Update blocks, each with a comment above it."
+ },
+ {
+  "lesson": 3,
+  "media": "w03-missing-semicolon.webp",
+  "alt": "Lines 12 to 19 of Spinner.cs: line 17, Debug.Log(message + gameObject.name), is marked and has no semicolon at its end."
+ },
+ {
+  "lesson": 5,
+  "media": "w05-ontrigger.webp",
+  "alt": "The last lines of BallController.cs: the end of FixedUpdate, then the method OnTriggerEnter with its line marked, then the closing brace of the class."
  },
  {
   "find": "centred",
