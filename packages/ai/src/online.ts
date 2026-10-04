@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { Problem } from './jobs';
 import { isMixedOnline, mixedAsk } from './live';
 import { HANDS_ON } from './handsOn';
-import { flagsAt, otherPieces, type SectionJob } from './workJobs';
+import { flagsAt, otherPieces, workOf, type SectionJob } from './workJobs';
 
 /**
  * Online courses with no set meeting time. The week's "plan" is a module page written for the student, who
@@ -64,7 +64,7 @@ export const ModuleDraft = z.object({
       .array(line)
       .max(12)
       .default([])
-      .describe('When the week teaches a tool: what the page tells students about its screens (a menu path, a button or field\'s name, a default value, what a click does) that the teacher\'s sources do not give and you are not certain of for the version named. Each as the page says it, with the part it is in, so the teacher can try it before the week opens; the ones a student would be stopped by come first. Empty when the sources give them all'),
+      .describe('What the page states as fact that the teacher\'s sources do not give and you are not certain of: in a week that teaches a tool, what its screens show for the version named (a menu path, a button or field\'s name, a default value, what a click does); in any week, a figure, a standard, a procedure or what a named work says. Each as the page says it, with the part it is in, so the teacher can check it before the week opens; the ones a student would be stopped or misled by come first. Only facts: never a reminder to make a picture, to set something up or to decide something. Empty when there is none'),
     leaves: z.array(line).max(32).default([]).describe('When students build something that carries on next week: what their project holds once this week is done, one thing per line, named exactly as the page names it and never reworded, with the values a later week could rely on or trip over (each object and where it is, each file, each setting changed and what it is called on screen, the keys or controls the student uses, and a made-up example the page used that a later week may come back to, with its facts)'),
   }),
 });
@@ -238,7 +238,12 @@ export function onlineHomeworkLine(course: Course, lesson: Lesson): string {
   // What earlier weeks set and this week collects belongs in this week's checklist: untold, a log due Sunday was on no list.
   const due = orderedLessons(course)
     .filter((l) => l.id !== lesson.id)
-    .flatMap((l) => [l.homework, ...(l.also ?? [])].filter((p) => p.kind !== 'none' && p.due === lesson.id).map((p) => `"${p.toward.trim() || 'the assignment'}" (set in "${l.title}")`));
+    .flatMap((l) => [l.homework, ...(l.also ?? [])].filter((p) => p.kind !== 'none' && p.due === lesson.id).map((p) => {
+      // By what was set, and whether it is a step: named by the component it leads to, a topic note became "submit the Recommendation report" seven weeks early.
+      const set = workOf(course, l, p.toward.trim());
+      const what = set?.kind === 'assignment' ? `"${set.title}"` : `"${p.toward.trim() || 'the assignment'}"`;
+      return `${what} (${p.kind === 'step' ? `an ungraded step toward "${p.toward.trim()}", ` : ''}set in "${l.title}")`;
+    }));
   return `${mainPiece(course, lesson)}${otherPieces(lesson)}${due.length ? ` Due by Sunday night of this week from earlier weeks: ${due.join('; ')}. The checklist lists it.` : ''}`;
 }
 
@@ -276,7 +281,7 @@ export function moduleAsk(course: Course, lesson: Lesson): string {
     isMixedOnline(course) ? mixedAsk(course) : '',
     'Under "wrapUp", 80 to 120 words: what the student can now do, one question to test themselves on each objective, and a look ahead to next week.',
     'Under "vocabulary", the terms this week introduces, each in one plain sentence.',
-    'Under "facilitation", the instructor\'s part of the week, never shown to students: the announcement to post on Monday (what the week is, the one thing to get right, the deadlines), what to watch for in the forum and in submitted work and what to do about it, comments to adapt when giving feedback, whom to contact by midweek, under "leaves" what a student\'s work holds at the end of the week, and under "toCheck" what the page says of the tool\'s screens without a source to go by.',
+    'Under "facilitation", the instructor\'s part of the week, never shown to students: the announcement to post on Monday (what the week is, the one thing to get right, the deadlines), what to watch for in the forum and in submitted work and what to do about it, comments to adapt when giving feedback, whom to contact by midweek, under "leaves" what a student\'s work holds at the end of the week, and under "toCheck" what the page states as fact without a source to go by.',
     'The teacher\'s sources are for you: the page takes its facts and names from them without mentioning them, and sends students to a source only when it is among this week\'s readings. A term is explained in a sentence where it first appears. The graded work and the forum prompt are written separately and shown to the student with this page: the page names each once, in the checklist, with its deadline (the checklist lists no other submission than the work this week is told it sets), and says nothing of what they ask, how they are submitted or how they are graded; practice on the page is never called the submission.',
     'Never write a placeholder for the instructor to fill in, and never promise a file, link, video or reading that the page does not give as a block.',
   ].join(' ');
@@ -314,7 +319,7 @@ export function moduleDigest(lesson: Lesson, course?: Course): string {
 
 /** What the other materials of an online week are asked for, in place of what a room course asks. */
 export const ONLINE_ASKS = {
-  quiz: 'This is the week\'s self-check: students take it alone, as often as they like, and it does not count toward the grade unless the grading says so. Under "explanation", say why the right answer is right and, for a choice question, why each wrong choice is wrong, so a student learns from a miss; point to the part of the page to go back to, by its title, and never to a source or passage number the student cannot see.',
+  quiz: 'This is the week\'s self-check: students take it alone, as often as they like, and it does not count toward the grade unless the grading says so. Under "explanation", say why the right answer is right and, for a choice question, why each wrong choice is wrong, naming a choice by its own words and never by its place ("the third"), since the choices are shuffled, so a student learns from a miss; point to the part of the page to go back to, by its title, and never to a source or passage number the student cannot see.',
   discussions:
     'Write one prompt for the week\'s discussion forum, addressed to the students. It is open enough that no two posts can be the same: each student brings something of their own (what they made, a choice they took and why, where they got stuck). Say what the first post holds, due Thursday, and what the two replies do, due Sunday (respond to what the post shows, its picture or clip: say one thing that works and one to change; ask students to download or run a classmate\'s work only when the page had them share a build). Do not say how posts are graded: Folio adds that, the same every week. Under "followUps", two or three things the instructor can ask in the thread to push it further.',
   assignments:

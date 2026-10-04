@@ -168,6 +168,9 @@ const discussions: SectionJob<DiscussionsDraft> = {
     const tidied = tidyFollowUps(v);
     const rules = isMixedOnline(course) ? PREPARATION_GRADING : FORUM_GRADING;
     const rule = rules[course.language] ?? rules.en!;
+    // Said only where posts carry a share of the grade: in a course graded by drafts and a report, "full marks" for posts promised marks that exist nowhere.
+    const graded = !course.grading.length || course.grading.some((g) => /forum|discussion|participat|post|engagement|prepar|讨论|参与/i.test(g.item));
+    if (hasModulePages(course) && !graded) return { discussions: tidied.discussions.slice(0, 1) };
     return hasModulePages(course) ? { discussions: tidied.discussions.slice(0, 1).map((d) => ({ ...d, prompt: d.prompt.includes(rule) ? d.prompt : `${d.prompt.trim()}\n\n${rule}` })) } : tidied;
   },
   toCommands: (v, problems, _course, lesson) => [

@@ -22,7 +22,8 @@ function useDuration(): (minutes: number) => string {
 export function Checklist({ block }: { block: Of<'checklist'> }) {
   const t = useT();
   const duration = useDuration();
-  const total = block.items.reduce((n, i) => n + i.minutes, 0);
+  // The week's hours are what is owed: optional work is outside them, and counted in it made a 6-hour week read as 7.
+  const total = block.items.reduce((n, i) => n + (/\boptional\b/i.test(i.label) ? 0 : i.minutes), 0);
   return (
     <section className="mod-checklist avoid-break" aria-label={t.module.thisWeek}>
       <div className="mod-checklist-head">

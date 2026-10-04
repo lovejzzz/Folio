@@ -9,7 +9,7 @@ import type { Question } from '@folio/core';
 
 const LAST = /^(all|none|both|neither) of (the )?(above|these)$|^以上(都|均|皆)?(是|不是|正确|错误|都对|都不对)?$/i;
 /** "option B", "(C)", "the fourth option", "选项A": text that points at a choice by its place, so the order must stay. */
-const BY_LETTER = /\b(option|choice|answer)\s+[A-F]\b|\([A-F]\)|选项\s*[A-F]|[A-F]\s*项|\b(first|second|third|fourth|fifth|last)\s+(option|choice|answer)\b|第[一二三四五]个?(选项|答案)/i;
+const BY_LETTER = /\b(option|choice|answer)\s+[A-F]\b|\([A-F]\)|选项\s*[A-F]|[A-F]\s*项|\b(first|second|third|fourth|fifth|last)\s+(option|choice|answer)\b|\bthe (first|second|third|fourth)\s+(is|are|was|checks|says|gives|names|shows|confuses|describes|leaves|omits|mixes|proposes|ignores|treats|only)\b|第[一二三四五]个?(选项|答案)/i;
 const NUMBER = /^[-−]?\d+(?:[.,]\d+)?\s*[%a-z°]*$/i;
 
 function shuffled<T>(items: T[], random: () => number): T[] {
