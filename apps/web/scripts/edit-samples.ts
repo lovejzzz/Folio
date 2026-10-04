@@ -159,11 +159,11 @@ function editOne(name: SampleName): void {
     for (const part of parts) walk(part, edit, true);
   }
   for (const all of media.values()) all.at(-1)!.drop();
+  // As the pipeline now does when it makes a page: what a student may skip has no deadline.
+  for (const lesson of orderedLessons(course)) for (const block of lesson.page) if (block.type === 'checklist') for (const item of block.items) if (/\boptional\b/i.test(item.label)) item.due = '';
   const edited = parseCourse(course);
   for (const lesson of orderedLessons(edited))
     for (const [kind, meta] of Object.entries(lesson.gen)) if (meta) meta.basis = computeBasis(edited, lesson, kind as keyof typeof lesson.gen);
-  // As the pipeline now does when it makes a page: what a student may skip has no deadline.
-  for (const lesson of orderedLessons(course)) for (const block of lesson.page) if (block.type === 'checklist') for (const item of block.items) if (/\boptional\b/i.test(item.label)) item.due = '';
   writeFileSync(path, JSON.stringify(edited));
   console.log(`${name}: ${edits.length} edits`);
 }
