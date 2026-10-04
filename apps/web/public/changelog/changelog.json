@@ -1,366 +1,432 @@
 [
-  {
-    "version": "0.0.5",
-    "date": "October 3, 2026",
-    "title": "Tests, presentations and answer keys: the graded work a real course runs on",
-    "lede": "Until now Folio knew two kinds of work: an assignment done at home, and a step toward one. A midterm, an oral interview or a seminar a student leads had nowhere to live, so a paper worth 30% of a grade was a line in a lesson plan. This release gives all of it a place, with what a teacher needs to hand it out and grade it.",
-    "sections": [
-      {
-        "heading": "Four kinds of graded work",
-        "body": "When Folio outlines a course it now decides, for each lesson, what is handed in or graded there: an assignment, a step toward a larger piece, a test taken in class, or work graded in class with a rubric. Every component of the grade is placed in a lesson, and you can change any of them from the lesson itself.",
-        "image": {
-          "src": "/changelog/0.0.5-graded-work.svg",
-          "alt": "Assignment, step, test and in-class work, with what each one carries. Tests and in-class work are new",
-          "width": 800,
-          "height": 360
-        }
-      },
-      {
-        "heading": "A test is a paper you can print",
-        "body": "A quiz, test or exam is written as the paper students are handed: the time allowed, what they may use, each question complete as printed, and the points it carries. It covers what the lessons taught in proportion to the time they took, with new cases and numbers. A final exam sat after the last class is written with the last lesson.",
-        "image": {
-          "src": "/changelog/0.0.5-paper.webp",
-          "alt": "A data structures midterm: two code fragments to analyze, each question with its points",
-          "width": 1600,
-          "height": 1000
-        },
-        "compare": {
-          "before": "“Midterm exam (25%)” in the syllabus, and a lesson plan that said “students sit the midterm”.",
-          "after": "A paper with points for every question, a full key with the working, and the lesson plan that runs it."
-        }
-      },
-      {
-        "heading": "Answer keys, for the teacher only",
-        "body": "Problem sets, labs and tests now come with an answer key: the answers with their working and what each point is for. The key is shown to you under the assignment and is never part of a student copy or a student export.",
-        "image": {
-          "src": "/changelog/0.0.5-key.webp",
-          "alt": "The answer key under a programming exercise, marked “For you only: never in a student copy”",
-          "width": 1600,
-          "height": 1000
-        }
-      },
-      {
-        "heading": "Work graded in class",
-        "body": "A presentation, a seminar a student leads, an oral interview or an essay written in class is now a piece of its own: what students prepare, a rubric, and how to run and score it for a whole class in the time you have. A piece that takes several days, or that students take turns at through the term, is written once and keeps one rubric.",
-        "image": {
-          "src": "/changelog/0.0.5-rubric.webp",
-          "alt": "A graduate research methods course: seminar leadership, graded in class with a rubric",
-          "width": 1600,
-          "height": 1000
-        }
-      },
-      {
-        "heading": "Due dates that agree",
-        "body": "Each assignment and step now has the lesson it is due at, set when the course is outlined. The lesson plan that sets the work, the assignment itself and the plan of the lesson that collects it all say the same thing.",
-        "compare": {
-          "before": "The plan said “due next week”, the assignment said “due Friday”, and the lesson two weeks on collected it.",
-          "after": "“Due at the start of lesson 4” on the assignment, and lesson 4 opens by collecting it."
-        }
-      },
-      {
-        "heading": "For colleges and graduate schools",
-        "bullets": [
-          "College rubrics in the United States and Canada use four levels (Exemplary, Proficient, Developing, Beginning) scored 4 to 1, so full marks can be earned.",
-          "Code is written out in full in the teacher’s notes, to run as it stands. In a data structures course we assembled and ran 62 blocks from the plans and both exam keys.",
-          "A graduate seminar is planned as a seminar: a student presents the reading and leads discussion, and the instructor presses on the argument. A doctoral seminar no longer starts with quizzes, slides, study guides and FAQs; turn any back on from the plan.",
-          "A case discussion is planned as a teaching note: the opening question, the discussion blocks in order, the board and the takeaway. When a brief promises cases and names none, Folio asks which you use, or writes short ones.",
-          "Class policies in your brief or syllabus (late work, attendance, integrity) are carried into the course in your words.",
-          "Readings are proposed for each lesson when you have not named them, marked as suggestions to check."
-        ]
-      },
-      {
-        "heading": "Also in this release",
-        "bullets": [
-          "A meeting of two hours or more has a break in its plan.",
-          "“Twice a week” in a brief is read as two meetings, and “a computer lab” as a session of its own.",
-          "Participation that carries part of the grade gets a rubric and a way to record it.",
-          "Code in a lesson is no longer set with ligatures: “//=” was drawn as a not-equals sign.",
-          "A plan’s close announces a quiz only when there is one, and an exam does not repeat the items of the review before it."
-        ]
-      }
+ {
+  "version": "0.0.6",
+  "date": "October 4, 2026",
+  "title": "Online courses: a page students follow alone, a live session that runs itself, or both",
+  "lede": "A course taught online is not a classroom course on a screen. With no meetings, the week has to teach by itself; in a video meeting, nothing happens unless the plan names the tool. Folio now asks how the course is taught and writes it that way.",
+  "sections": [
+   {
+    "heading": "Say how the course is taught",
+    "body": "Beside the level and the number of lessons there is now a choice: in person, online in your own time, online live, or both. Folio also reads it from the brief (“asynchronous”, “on Zoom”, “one live session a week”). Each one is planned, written and checked by its own rules, which came from a review of what online course standards ask for.",
+    "image": {
+     "src": "/changelog/0.0.6-delivery.svg",
+     "alt": "In person, own time, live, and both, with what Folio writes for each. The three online ways are new",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "A weekly page that teaches without you",
+    "body": "For a course with no set meeting time, each lesson is a week’s module page written to the student: why the week matters, a checklist with honest minutes and due days, the teaching in parts a student can finish in a sitting, checkpoints that say what they should now see, a “Stuck?” box with the likely causes, a self-check quiz, one forum prompt, and a wrap-up. Software courses become step-by-step tutorials with code blocks, and every picture and clip the page needs is specified for whoever makes it, with text for a student who cannot see it.",
+    "image": {
+     "src": "/changelog/0.0.6-checklist.webp",
+     "alt": "Week 4 of the Unity sample: the checklist of the week with minutes for each item and the days things are due",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Steps, code, pictures and files",
+    "body": "A week that teaches software is a tutorial: numbered steps with the exact names on screen, the code to type with each line explained, a picture after the step it belongs to, a checkpoint that says what you should now see, and the project files to download when something will not work. Each week is told what earlier weeks left in the student’s project, so week 5 does not put a ball where week 4 built a ramp.",
+    "image": {
+     "src": "/changelog/0.0.6-module.webp",
+     "alt": "Week 2 of the Unity sample: numbered steps with a picture of the Inspector after the step that sets its values",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Start here, and what only you can add",
+    "body": "Before week 1 students get a Start here page: what to do first, how a week runs, what to install, how the grade is made, where to ask. What only you can supply (your name and hours, late work, what help and AI tools are allowed, accommodations) is listed for you alone and never invented."
+   },
+   {
+    "heading": "A live session is a run of show",
+    "body": "For a course taught in video meetings, the plan names the tool for every step: the prompt to paste in the chat on arrival, each poll with its options and what to do when most get it wrong, breakout task cards with roles and where the group writes, an exit ticket, and a fallback that needs only chat. No stretch of talk runs past fifteen minutes, long sessions get a break, and cameras are invited, never graded.",
+    "image": {
+     "src": "/changelog/0.0.6-live.webp",
+     "alt": "A live session plan: an arrival prompt for the chat, with the instructor’s notes and a fallback",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "A sample you can open: fourteen weeks of Unity",
+    "body": "The new sample is an undergraduate course in game development for complete beginners, taught online in students’ own time. Every week was followed step by step in Unity 6.6 on a real machine: the code was compiled, the error messages checked word for word, and the pictures, clips and project files were made from that run. Week 12 was built three times, once for each route a student can take. Following it found things no reader could: a ball placed where an earlier week’s ramp still stood, white walls that hid a white score label, sparks too small to see from the camera. Then reviewers read it as a beginner would and as a department chair would. Where a mistake came from how Folio writes, the fix went into Folio, not only into the sample.",
+    "image": {
+     "src": "/changelog/0.0.6-routes.webp",
+     "alt": "Week 12 of the Unity sample: the steps for one route, with a picture of the level as it should look",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "More than one piece of graded work in a lesson",
+    "body": "A real syllabus sets a weekly response paper, a presentation and a term paper in the same week. A lesson can now hold several pieces, each with its own instructions, rubric and due lesson, and a standing piece (the same task every week) is written once and referred to after that."
+   }
+  ]
+ },
+ {
+  "version": "0.0.5",
+  "date": "October 3, 2026",
+  "title": "Tests, presentations and answer keys: the graded work a real course runs on",
+  "lede": "Until now Folio knew two kinds of work: an assignment done at home, and a step toward one. A midterm, an oral interview or a seminar a student leads had nowhere to live, so a paper worth 30% of a grade was a line in a lesson plan. This release gives all of it a place, with what a teacher needs to hand it out and grade it.",
+  "sections": [
+   {
+    "heading": "Four kinds of graded work",
+    "body": "When Folio outlines a course it now decides, for each lesson, what is handed in or graded there: an assignment, a step toward a larger piece, a test taken in class, or work graded in class with a rubric. Every component of the grade is placed in a lesson, and you can change any of them from the lesson itself.",
+    "image": {
+     "src": "/changelog/0.0.5-graded-work.svg",
+     "alt": "Assignment, step, test and in-class work, with what each one carries. Tests and in-class work are new",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "A test is a paper you can print",
+    "body": "A quiz, test or exam is written as the paper students are handed: the time allowed, what they may use, each question complete as printed, and the points it carries. It covers what the lessons taught in proportion to the time they took, with new cases and numbers. A final exam sat after the last class is written with the last lesson.",
+    "image": {
+     "src": "/changelog/0.0.5-paper.webp",
+     "alt": "A data structures midterm: two code fragments to analyze, each question with its points",
+     "width": 1600,
+     "height": 1000
+    },
+    "compare": {
+     "before": "“Midterm exam (25%)” in the syllabus, and a lesson plan that said “students sit the midterm”.",
+     "after": "A paper with points for every question, a full key with the working, and the lesson plan that runs it."
+    }
+   },
+   {
+    "heading": "Answer keys, for the teacher only",
+    "body": "Problem sets, labs and tests now come with an answer key: the answers with their working and what each point is for. The key is shown to you under the assignment and is never part of a student copy or a student export.",
+    "image": {
+     "src": "/changelog/0.0.5-key.webp",
+     "alt": "The answer key under a programming exercise, marked “For you only: never in a student copy”",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Work graded in class",
+    "body": "A presentation, a seminar a student leads, an oral interview or an essay written in class is now a piece of its own: what students prepare, a rubric, and how to run and score it for a whole class in the time you have. A piece that takes several days, or that students take turns at through the term, is written once and keeps one rubric.",
+    "image": {
+     "src": "/changelog/0.0.5-rubric.webp",
+     "alt": "A graduate research methods course: seminar leadership, graded in class with a rubric",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Due dates that agree",
+    "body": "Each assignment and step now has the lesson it is due at, set when the course is outlined. The lesson plan that sets the work, the assignment itself and the plan of the lesson that collects it all say the same thing.",
+    "compare": {
+     "before": "The plan said “due next week”, the assignment said “due Friday”, and the lesson two weeks on collected it.",
+     "after": "“Due at the start of lesson 4” on the assignment, and lesson 4 opens by collecting it."
+    }
+   },
+   {
+    "heading": "For colleges and graduate schools",
+    "bullets": [
+     "College rubrics in the United States and Canada use four levels (Exemplary, Proficient, Developing, Beginning) scored 4 to 1, so full marks can be earned.",
+     "Code is written out in full in the teacher’s notes, to run as it stands. In a data structures course we assembled and ran 62 blocks from the plans and both exam keys.",
+     "A graduate seminar is planned as a seminar: a student presents the reading and leads discussion, and the instructor presses on the argument. A doctoral seminar no longer starts with quizzes, slides, study guides and FAQs; turn any back on from the plan.",
+     "A case discussion is planned as a teaching note: the opening question, the discussion blocks in order, the board and the takeaway. When a brief promises cases and names none, Folio asks which you use, or writes short ones.",
+     "Class policies in your brief or syllabus (late work, attendance, integrity) are carried into the course in your words.",
+     "Readings are proposed for each lesson when you have not named them, marked as suggestions to check."
     ]
-  },
-  {
-    "version": "0.0.4",
-    "date": "October 3, 2026",
-    "title": "Eight lessons means eight, and a few rules pulled back into line",
-    "lede": "A short release. Re-reading the courses written after 0.0.3 showed that some of the new rules pushed too far. One of them changed the number of lessons you asked for, which is ours to fix at once.",
-    "sections": [
-      {
-        "heading": "The number of lessons you ask for is the number you get",
-        "body": "In 0.0.3 we told Folio to give a unit test most of a lesson. For a unit of eight lessons graded by a test, it made room by adding a ninth. The lessons you ask for now come first: the test is placed within them.",
-        "compare": {
-          "before": "You asked for eight 50-minute lessons. Folio planned nine.",
-          "after": "You asked for eight 50-minute lessons. Folio plans eight, with the test in the last."
-        }
-      },
-      {
-        "heading": "A final exam is not forgotten",
-        "body": "Graded work is placed in lessons when the course is outlined. A final exam held in exam week, after the last class, belongs to no lesson, and a statistics course was written as if it had none. The last lesson now names the exam and reviews for it."
-      },
-      {
-        "heading": "“Hypothetical”, once",
-        "body": "Folio labels invented examples so no one takes them for real studies. It was labelling them over and over, 104 times in one course, and once called a real dataset hypothetical. Now an invented example is marked once, where it is introduced, and real data is never marked.",
-        "compare": {
-          "before": "“In this hypothetical study of a hypothetical sample…” on seven of eleven worksheets, and on R’s real sleep data.",
-          "after": "“Suppose a survey of our school found…”, said once."
-        }
-      },
-      {
-        "heading": "Also in this release",
-        "bullets": [
-          "When a lesson holds a graded quiz, the lesson’s own quiz is that quiz and covers what the plan says it covers.",
-          "In a beginners’ language course, discussion prompts give instructions in English and sentence frames in the language being learned, not whole prompts in a language students cannot yet read.",
-          "Plans no longer mention handouts or files that the course does not have."
-        ]
-      }
+   },
+   {
+    "heading": "Also in this release",
+    "bullets": [
+     "A meeting of two hours or more has a break in its plan.",
+     "“Twice a week” in a brief is read as two meetings, and “a computer lab” as a session of its own.",
+     "Participation that carries part of the grade gets a rubric and a way to record it.",
+     "Code in a lesson is no longer set with ligatures: “//=” was drawn as a not-equals sign.",
+     "A plan’s close announces a quiz only when there is one, and an exam does not repeat the items of the review before it."
     ]
-  },
-  {
-    "version": "0.0.3",
-    "date": "October 3, 2026",
-    "title": "Seven sample courses, and courses with labs, code and languages",
-    "lede": "Four more sample courses to explore, and fixes from check-ups of a ratios unit, a Spanish course and a statistics course taught with R. Two of them were plain bugs that would have broken a real class.",
-    "sections": [
-      {
-        "heading": "Seven sample courses, by stage",
-        "body": "The sample chooser now groups courses by stage, with four new ones. Like the first three, each was written by Folio from a teacher’s brief, then read lesson by lesson and corrected.",
-        "bullets": [
-          "The water cycle, grade 5: five lessons built from a teacher’s own planning notes, with supports for struggling readers and a Spanish-speaking newcomer in every lesson.",
-          "Ratios and rates, grade 6: eight lessons with no homework, assessed by two in-class quizzes and a unit test with a full mark scheme.",
-          "Stoichiometry, grade 10: ten lessons with two labs, four problem sets with answer keys, and a unit test.",
-          "Reconstruction, 1865–1877, grade 11: eight lessons on named primary sources, a Socratic seminar and a document-based essay."
-        ],
-        "image": {
-          "src": "/changelog/0.0.3-chooser.webp",
-          "alt": "The sample chooser with seven courses under elementary, middle, high school and university",
-          "width": 1600,
-          "height": 1000
-        }
-      },
-      {
-        "heading": "A lab unit you could run",
-        "body": "The chemistry sample shows what the lab fixes add up to: quantities for a whole class, goggles, gloves and ventilation, a warning about the heat a reaction gives off, what to do for a splash in the eye, and how to dispose of the waste. The copper left to dry in one lesson is weighed in the next, and every problem set has new problems and an answer key.",
-        "image": {
-          "src": "/changelog/0.0.3-lab.webp",
-          "alt": "A chemistry lab lesson: predicting the limiting reactant before reacting aluminum with copper chloride",
-          "width": 1600,
-          "height": 1000
-        }
-      },
-      {
-        "heading": "History from the documents",
-        "body": "The Reconstruction sample names every source students read, down to the passage, and tells you to prepare copies. Its essay lists the documents the unit actually used, its seminar has scoring a whole class can reach, and every exit ticket has its question and a simple score. Painful material comes with guidance: slurs are never read aloud, and no one plays a victim or an attacker.",
-        "image": {
-          "src": "/changelog/0.0.3-history.webp",
-          "alt": "The map of the Reconstruction unit: eight lessons with plans, slides, study guides, quizzes and the essay",
-          "width": 1600,
-          "height": 1000
-        }
-      },
-      {
-        "heading": "Code stays code",
-        "body": "Folio tidies quotation marks into curly ones. It was doing that inside code too, so every line of R with text in it failed when a student pasted it. Code is now left exactly as written. In our statistics course, 607 pieces of code, none changed.",
-        "compare": {
-          "before": "`c(‘name1', ‘name2')`",
-          "after": "`c('name1', 'name2')`"
-        }
-      },
-      {
-        "heading": "“A lecture and a computer lab” is two meetings",
-        "body": "A brief that asked for “a 75-minute lecture and a 50-minute computer lab” each week got lectures only: the lab was missed because of the word “computer” in between. Folio now reads it as two meetings and plans both.",
-        "compare": {
-          "before": "Each week: one 75-minute lecture, with students somehow at computers.",
-          "after": "Each week: a 75-minute lecture and a 50-minute lab, each with its own plan."
-        }
-      },
-      {
-        "heading": "A language course speaks the language",
-        "body": "Discussion prompts in a Spanish course were English debates about Spanish. They now get students using the language at their level. A lesson that teaches many words can also list all of them, not just eight.",
-        "compare": {
-          "before": "“A friend says, ‘Using usted is old-fashioned. We should just use tú with everyone.’ Do you agree?”",
-          "after": "“Imagina que tu compañero te pregunta: ¿Cómo estás? Hoy no te sientes ni bien ni mal. ¿Dices Regular o Bien?”"
-        }
-      },
-      {
-        "heading": "Also in this release",
-        "bullets": [
-          "The class policies in your syllabus (late work, integrity, accommodations) are carried into the course.",
-          "A quiz or test has points for each question, enough time, and nothing left on the board that answers it.",
-          "A lesson’s graded quiz is the lesson’s own quiz, not a second set of questions.",
-          "The close of a lesson tells students what is coming next, including a quiz, and what to read.",
-          "A project due weeks after it is set asks for what the lessons up to then teach.",
-          "A weekly problem set repeats none of the last one’s problems."
-        ]
-      }
+   }
+  ]
+ },
+ {
+  "version": "0.0.4",
+  "date": "October 3, 2026",
+  "title": "Eight lessons means eight, and a few rules pulled back into line",
+  "lede": "A short release. Re-reading the courses written after 0.0.3 showed that some of the new rules pushed too far. One of them changed the number of lessons you asked for, which is ours to fix at once.",
+  "sections": [
+   {
+    "heading": "The number of lessons you ask for is the number you get",
+    "body": "In 0.0.3 we told Folio to give a unit test most of a lesson. For a unit of eight lessons graded by a test, it made room by adding a ninth. The lessons you ask for now come first: the test is placed within them.",
+    "compare": {
+     "before": "You asked for eight 50-minute lessons. Folio planned nine.",
+     "after": "You asked for eight 50-minute lessons. Folio plans eight, with the test in the last."
+    }
+   },
+   {
+    "heading": "A final exam is not forgotten",
+    "body": "Graded work is placed in lessons when the course is outlined. A final exam held in exam week, after the last class, belongs to no lesson, and a statistics course was written as if it had none. The last lesson now names the exam and reviews for it."
+   },
+   {
+    "heading": "“Hypothetical”, once",
+    "body": "Folio labels invented examples so no one takes them for real studies. It was labelling them over and over, 104 times in one course, and once called a real dataset hypothetical. Now an invented example is marked once, where it is introduced, and real data is never marked.",
+    "compare": {
+     "before": "“In this hypothetical study of a hypothetical sample…” on seven of eleven worksheets, and on R’s real sleep data.",
+     "after": "“Suppose a survey of our school found…”, said once."
+    }
+   },
+   {
+    "heading": "Also in this release",
+    "bullets": [
+     "When a lesson holds a graded quiz, the lesson’s own quiz is that quiz and covers what the plan says it covers.",
+     "In a beginners’ language course, discussion prompts give instructions in English and sentence frames in the language being learned, not whole prompts in a language students cannot yet read.",
+     "Plans no longer mention handouts or files that the course does not have."
     ]
-  },
-  {
-    "version": "0.0.2",
-    "date": "October 3, 2026",
-    "title": "A second read that changes the plan, and homework that is new work",
-    "lede": "We wrote six more courses overnight, from grade 3 fractions to a college psychology course built from a syllabus, and had each one read lesson by lesson the way its teacher would. These are the fixes that came out of it.",
-    "sections": [
-      {
-        "heading": "When the second read finds a problem, the plan is rewritten",
-        "body": "Every lesson plan gets a second read before anything is built on it. Small fixes were made on the spot, but anything bigger used to be left as a note for you, while the slides, quiz and study guide were built on the flawed plan and repeated it. Now a plan left with notes is written once more, told what the read found, and read again. Whichever version comes out cleaner is kept. In our chemistry and history courses, the notes left for the teacher went from four each to none.",
-        "image": {
-          "src": "/changelog/0.0.2-second-read.svg",
-          "alt": "Before, a review note stayed on an unchanged plan. Now the plan is rewritten with the note and read again",
-          "width": 800,
-          "height": 340
-        }
-      },
-      {
-        "heading": "Homework is new work, not the class examples again",
-        "body": "Problem sets and quiz questions were being told to use the plan’s examples, so graded homework repeated what the class had just worked through together, with the answers already on the board. Now they keep the lesson’s methods and facts but give students new problems.",
-        "compare": {
-          "before": "In class: “6.0 mol H₂ makes how many mol NH₃?” For homework: “find the moles of NH₃ made from 6.0 mol H₂.”",
-          "after": "For homework: “For 2Mg + O₂ → 2MgO, write the mole ratio of Mg to MgO. Use it to find the moles of MgO made from 3.60 mol Mg.”"
-        },
-        "image": {
-          "src": "/changelog/0.0.2-problems.webp",
-          "alt": "A grade 10 chemistry problem set on mole ratios with new problems",
-          "width": 1600,
-          "height": 1000
-        }
-      },
-      {
-        "heading": "Steps that build toward the big piece",
-        "body": "When several lessons set a step toward an essay or a paper, or a problem set every few days, each used to be written on its own. One course set the same step three lessons running. Now they are written in order, each knowing what the ones before asked, so steps build on each other and recurring work keeps one length and format. Homework also follows the rhythm you ask for: “twice a week” is twice a week, not every lesson.",
-        "image": {
-          "src": "/changelog/0.0.2-steps.svg",
-          "alt": "Before: the same step set three times. Now: an evidence log, a working claim, connecting evidence, then the essay",
-          "width": 800,
-          "height": 300
-        }
-      },
-      {
-        "heading": "Tests have a lesson, questions, answers and points",
-        "body": "A unit test worth half the grade used to be only “previewed” in the last lesson. Now graded work that happens in class is given a lesson when the course is outlined, and a lesson with a test writes its questions, answer key and points out in full, asks about new cases, and keeps them out of that lesson’s study guide and quiz. The same goes for an exit ticket: its question and expected answer are in the plan. (A printable test paper as its own material is still to come.)",
-        "image": {
-          "src": "/changelog/0.0.2-test.webp",
-          "alt": "The last lesson of a chemistry unit, now a 55-minute unit test with its rules and timing",
-          "width": 1600,
-          "height": 1000
-        }
-      },
-      {
-        "heading": "Care with hard material, and with what students handle",
-        "body": "Plans now say how to handle painful content, and never ask students to play the people who suffered or inflicted it. Lab plans cover what a careful teacher would: protective gear, ventilation, the heat a reaction gives off, and disposal.",
-        "compare": {
-          "before": "“You are a returning Confederate soldier or a newly freed person in Georgia. What is the first problem you must solve?”",
-          "after": "“Violence is the content. Warn students before you begin, give plain facts without graphic detail, and let anyone step out quietly. Never assign roles of victims or attackers.”"
-        }
-      },
-      {
-        "heading": "Lessons hand over to each other",
-        "body": "A plan now knows what homework its own lesson sets and sets it before students leave; the next lesson collects or uses it. It knows what students should read before the next lesson and tells them. Later lessons see how earlier ones set things up, down to the teacher notes, and finish what was left for them, like a lab result waiting to be measured. Work that runs over several days is started early enough when the course is outlined.",
-        "bullets": [
-          "Texts students read are named exactly, down to the passage, with a note to prepare copies; never just “an excerpt”.",
-          "A final essay asks only for what the course really gave students.",
-          "A paper for the whole course takes its topic from your brief, not from the lesson that happens to set it.",
-          "Slides show the items students work from, and hold back the answers until the reveal.",
-          "University courses say “instructor”, and keep any routine your syllabus asks for."
-        ]
-      }
+   }
+  ]
+ },
+ {
+  "version": "0.0.3",
+  "date": "October 3, 2026",
+  "title": "Seven sample courses, and courses with labs, code and languages",
+  "lede": "Four more sample courses to explore, and fixes from check-ups of a ratios unit, a Spanish course and a statistics course taught with R. Two of them were plain bugs that would have broken a real class.",
+  "sections": [
+   {
+    "heading": "Seven sample courses, by stage",
+    "body": "The sample chooser now groups courses by stage, with four new ones. Like the first three, each was written by Folio from a teacher’s brief, then read lesson by lesson and corrected.",
+    "bullets": [
+     "The water cycle, grade 5: five lessons built from a teacher’s own planning notes, with supports for struggling readers and a Spanish-speaking newcomer in every lesson.",
+     "Ratios and rates, grade 6: eight lessons with no homework, assessed by two in-class quizzes and a unit test with a full mark scheme.",
+     "Stoichiometry, grade 10: ten lessons with two labs, four problem sets with answer keys, and a unit test.",
+     "Reconstruction, 1865–1877, grade 11: eight lessons on named primary sources, a Socratic seminar and a document-based essay."
+    ],
+    "image": {
+     "src": "/changelog/0.0.3-chooser.webp",
+     "alt": "The sample chooser with seven courses under elementary, middle, high school and university",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "A lab unit you could run",
+    "body": "The chemistry sample shows what the lab fixes add up to: quantities for a whole class, goggles, gloves and ventilation, a warning about the heat a reaction gives off, what to do for a splash in the eye, and how to dispose of the waste. The copper left to dry in one lesson is weighed in the next, and every problem set has new problems and an answer key.",
+    "image": {
+     "src": "/changelog/0.0.3-lab.webp",
+     "alt": "A chemistry lab lesson: predicting the limiting reactant before reacting aluminum with copper chloride",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "History from the documents",
+    "body": "The Reconstruction sample names every source students read, down to the passage, and tells you to prepare copies. Its essay lists the documents the unit actually used, its seminar has scoring a whole class can reach, and every exit ticket has its question and a simple score. Painful material comes with guidance: slurs are never read aloud, and no one plays a victim or an attacker.",
+    "image": {
+     "src": "/changelog/0.0.3-history.webp",
+     "alt": "The map of the Reconstruction unit: eight lessons with plans, slides, study guides, quizzes and the essay",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Code stays code",
+    "body": "Folio tidies quotation marks into curly ones. It was doing that inside code too, so every line of R with text in it failed when a student pasted it. Code is now left exactly as written. In our statistics course, 607 pieces of code, none changed.",
+    "compare": {
+     "before": "`c(‘name1', ‘name2')`",
+     "after": "`c('name1', 'name2')`"
+    }
+   },
+   {
+    "heading": "“A lecture and a computer lab” is two meetings",
+    "body": "A brief that asked for “a 75-minute lecture and a 50-minute computer lab” each week got lectures only: the lab was missed because of the word “computer” in between. Folio now reads it as two meetings and plans both.",
+    "compare": {
+     "before": "Each week: one 75-minute lecture, with students somehow at computers.",
+     "after": "Each week: a 75-minute lecture and a 50-minute lab, each with its own plan."
+    }
+   },
+   {
+    "heading": "A language course speaks the language",
+    "body": "Discussion prompts in a Spanish course were English debates about Spanish. They now get students using the language at their level. A lesson that teaches many words can also list all of them, not just eight.",
+    "compare": {
+     "before": "“A friend says, ‘Using usted is old-fashioned. We should just use tú with everyone.’ Do you agree?”",
+     "after": "“Imagina que tu compañero te pregunta: ¿Cómo estás? Hoy no te sientes ni bien ni mal. ¿Dices Regular o Bien?”"
+    }
+   },
+   {
+    "heading": "Also in this release",
+    "bullets": [
+     "The class policies in your syllabus (late work, integrity, accommodations) are carried into the course.",
+     "A quiz or test has points for each question, enough time, and nothing left on the board that answers it.",
+     "A lesson’s graded quiz is the lesson’s own quiz, not a second set of questions.",
+     "The close of a lesson tells students what is coming next, including a quiz, and what to read.",
+     "A project due weeks after it is set asks for what the lessons up to then teach.",
+     "A weekly problem set repeats none of the last one’s problems."
     ]
-  },
-  {
-    "version": "0.0.1",
-    "date": "October 3, 2026",
-    "title": "Sample courses, and courses that hold together",
-    "lede": "Folio’s first numbered release. Three new sample courses to explore, and a round of improvements to how every course is written, found by building those samples to the standard of a teacher who has to teach them tomorrow.",
-    "sections": [
-      {
-        "heading": "Three sample courses, one for each stage",
-        "body": "“Or open a sample course” now lets you choose. Each one was written by Folio from a teacher’s brief, the same way your courses are, then read lesson by lesson and polished. Open one, change anything, export it: it is your own copy.",
-        "bullets": [
-          "Elementary: plant and animal life cycles, a ten-lesson grade 2 science unit with a bean garden students watch grow.",
-          "Middle school: writing argumentative essays, a fifteen-lesson grade 8 unit built on two opinion articles about later school start times.",
-          "University: introduction to ethics, a fourteen-week semester with a lecture and a seminar every week."
-        ],
-        "image": {
-          "src": "/changelog/0.0.1-chooser.webp",
-          "alt": "The sample chooser: elementary school, middle school and university",
-          "width": 1600,
-          "height": 1000
-        }
-      },
-      {
-        "heading": "A full course at a glance",
-        "body": "Each sample is the size a teacher there would plan: a unit for school, a whole semester for university, with every lesson’s plan, slides, study guide, quiz, assignment, rubric, discussion questions and answers to students’ questions.",
-        "image": {
-          "src": "/changelog/0.0.1-map.webp",
-          "alt": "The map of the fourteen-week ethics course, every lesson and its materials",
-          "width": 1600,
-          "height": 1000
-        }
-      },
-      {
-        "heading": "Lessons that remember each other",
-        "body": "Lesson plans used to be written side by side, each knowing only the others’ titles, so one lesson could give a bean plant five stages and the next only four. Now each plan is written knowing what the lessons before it taught: the same terms and stages, the same cases, and anything still under way, like seeds sprouting by the window, carried on as it was set up. Each lesson lists only the vocabulary it introduces.",
-        "image": {
-          "src": "/changelog/0.0.1-continuity.svg",
-          "alt": "Before: four lessons planned alone contradict each other. Now: each plan reads the ones before it",
-          "width": 800,
-          "height": 400
-        }
-      },
-      {
-        "heading": "Plans you can teach as written",
-        "body": "Every plan now reads the way an experienced teacher would want it before walking into class.",
-        "bullets": [
-          "Safety notes for anything students handle, taste, heat or cut, such as allergies or materials that must never be eaten.",
-          "Realistic timing for things that take days, counted against how often the class meets.",
-          "When a plan shows students how their work is scored, it uses the rubric’s own levels.",
-          "Slides shown during a test give its instructions only, never the answers.",
-          "Homework steps can be done at home, without a partner or classroom materials.",
-          "Other lessons are “last time” and “next time”, not quoted titles."
-        ],
-        "image": {
-          "src": "/changelog/0.0.1-lesson.webp",
-          "alt": "A grade 2 lesson plan with key ideas, timed segments and teacher notes",
-          "width": 1600,
-          "height": 1000
-        }
-      },
-      {
-        "heading": "Every material agrees with the plan",
-        "body": "Each plan gets a second read before anything is built on it. If the plan is written again, what that read found now goes into the rewrite, so the same mistake isn’t made twice. The reviewer also knows the slides, quiz and rubric are written separately, so it no longer asks for them inside the plan.",
-        "image": {
-          "src": "/changelog/0.0.1-pipeline.svg",
-          "alt": "Brief, outline, lesson plan, second read, and the materials written from the plan",
-          "width": 800,
-          "height": 330
-        }
-      },
-      {
-        "heading": "Your files, cited by name",
-        "body": "When you attach articles or notes, Folio now refers to them by title or author, the way you would with students, never by internal passage numbers.",
-        "compare": {
-          "before": "The evidence is Torres’s report in passage [6] that students slept more.",
-          "after": "The evidence is Torres’s report that Seattle students slept a little more than half an hour longer on school nights."
-        }
-      },
-      {
-        "heading": "Assessment that adds up",
-        "body": "When one graded piece is built across several lessons, each lesson now writes its own part, with its own title, instead of each claiming the whole grade. And when a course has weekly work as well as larger papers, every paper is set in a lesson, so none goes missing.",
-        "compare": {
-          "before": "Life cycle drawing and labeling check (“worth 100% of the course grade”) · Life cycle drawing and labeling check",
-          "after": "Life cycle drawing and labeling check: bean plant stage · Life cycle drawing and labeling check: butterfly and frog"
-        }
-      },
-      {
-        "heading": "How we find what to fix",
-        "body": "These improvements came from a new routine. We write real courses from teachers’ briefs, from grade 2 to university, check every part, and read each lesson as the teacher who would teach it. For every problem we ask why Folio wrote it and whether it would happen in another course. If it would, we fix the cause, so every teacher’s course gets better, not just the one we read.",
-        "image": {
-          "src": "/changelog/0.0.1-quality-loop.svg",
-          "alt": "The quality routine: write real courses, check, read as a teacher, ask why, fix the cause, verify",
-          "width": 800,
-          "height": 420
-        }
-      }
+   }
+  ]
+ },
+ {
+  "version": "0.0.2",
+  "date": "October 3, 2026",
+  "title": "A second read that changes the plan, and homework that is new work",
+  "lede": "We wrote six more courses overnight, from grade 3 fractions to a college psychology course built from a syllabus, and had each one read lesson by lesson the way its teacher would. These are the fixes that came out of it.",
+  "sections": [
+   {
+    "heading": "When the second read finds a problem, the plan is rewritten",
+    "body": "Every lesson plan gets a second read before anything is built on it. Small fixes were made on the spot, but anything bigger used to be left as a note for you, while the slides, quiz and study guide were built on the flawed plan and repeated it. Now a plan left with notes is written once more, told what the read found, and read again. Whichever version comes out cleaner is kept. In our chemistry and history courses, the notes left for the teacher went from four each to none.",
+    "image": {
+     "src": "/changelog/0.0.2-second-read.svg",
+     "alt": "Before, a review note stayed on an unchanged plan. Now the plan is rewritten with the note and read again",
+     "width": 800,
+     "height": 340
+    }
+   },
+   {
+    "heading": "Homework is new work, not the class examples again",
+    "body": "Problem sets and quiz questions were being told to use the plan’s examples, so graded homework repeated what the class had just worked through together, with the answers already on the board. Now they keep the lesson’s methods and facts but give students new problems.",
+    "compare": {
+     "before": "In class: “6.0 mol H₂ makes how many mol NH₃?” For homework: “find the moles of NH₃ made from 6.0 mol H₂.”",
+     "after": "For homework: “For 2Mg + O₂ → 2MgO, write the mole ratio of Mg to MgO. Use it to find the moles of MgO made from 3.60 mol Mg.”"
+    },
+    "image": {
+     "src": "/changelog/0.0.2-problems.webp",
+     "alt": "A grade 10 chemistry problem set on mole ratios with new problems",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Steps that build toward the big piece",
+    "body": "When several lessons set a step toward an essay or a paper, or a problem set every few days, each used to be written on its own. One course set the same step three lessons running. Now they are written in order, each knowing what the ones before asked, so steps build on each other and recurring work keeps one length and format. Homework also follows the rhythm you ask for: “twice a week” is twice a week, not every lesson.",
+    "image": {
+     "src": "/changelog/0.0.2-steps.svg",
+     "alt": "Before: the same step set three times. Now: an evidence log, a working claim, connecting evidence, then the essay",
+     "width": 800,
+     "height": 300
+    }
+   },
+   {
+    "heading": "Tests have a lesson, questions, answers and points",
+    "body": "A unit test worth half the grade used to be only “previewed” in the last lesson. Now graded work that happens in class is given a lesson when the course is outlined, and a lesson with a test writes its questions, answer key and points out in full, asks about new cases, and keeps them out of that lesson’s study guide and quiz. The same goes for an exit ticket: its question and expected answer are in the plan. (A printable test paper as its own material is still to come.)",
+    "image": {
+     "src": "/changelog/0.0.2-test.webp",
+     "alt": "The last lesson of a chemistry unit, now a 55-minute unit test with its rules and timing",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Care with hard material, and with what students handle",
+    "body": "Plans now say how to handle painful content, and never ask students to play the people who suffered or inflicted it. Lab plans cover what a careful teacher would: protective gear, ventilation, the heat a reaction gives off, and disposal.",
+    "compare": {
+     "before": "“You are a returning Confederate soldier or a newly freed person in Georgia. What is the first problem you must solve?”",
+     "after": "“Violence is the content. Warn students before you begin, give plain facts without graphic detail, and let anyone step out quietly. Never assign roles of victims or attackers.”"
+    }
+   },
+   {
+    "heading": "Lessons hand over to each other",
+    "body": "A plan now knows what homework its own lesson sets and sets it before students leave; the next lesson collects or uses it. It knows what students should read before the next lesson and tells them. Later lessons see how earlier ones set things up, down to the teacher notes, and finish what was left for them, like a lab result waiting to be measured. Work that runs over several days is started early enough when the course is outlined.",
+    "bullets": [
+     "Texts students read are named exactly, down to the passage, with a note to prepare copies; never just “an excerpt”.",
+     "A final essay asks only for what the course really gave students.",
+     "A paper for the whole course takes its topic from your brief, not from the lesson that happens to set it.",
+     "Slides show the items students work from, and hold back the answers until the reveal.",
+     "University courses say “instructor”, and keep any routine your syllabus asks for."
     ]
-  }
+   }
+  ]
+ },
+ {
+  "version": "0.0.1",
+  "date": "October 3, 2026",
+  "title": "Sample courses, and courses that hold together",
+  "lede": "Folio’s first numbered release. Three new sample courses to explore, and a round of improvements to how every course is written, found by building those samples to the standard of a teacher who has to teach them tomorrow.",
+  "sections": [
+   {
+    "heading": "Three sample courses, one for each stage",
+    "body": "“Or open a sample course” now lets you choose. Each one was written by Folio from a teacher’s brief, the same way your courses are, then read lesson by lesson and polished. Open one, change anything, export it: it is your own copy.",
+    "bullets": [
+     "Elementary: plant and animal life cycles, a ten-lesson grade 2 science unit with a bean garden students watch grow.",
+     "Middle school: writing argumentative essays, a fifteen-lesson grade 8 unit built on two opinion articles about later school start times.",
+     "University: introduction to ethics, a fourteen-week semester with a lecture and a seminar every week."
+    ],
+    "image": {
+     "src": "/changelog/0.0.1-chooser.webp",
+     "alt": "The sample chooser: elementary school, middle school and university",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "A full course at a glance",
+    "body": "Each sample is the size a teacher there would plan: a unit for school, a whole semester for university, with every lesson’s plan, slides, study guide, quiz, assignment, rubric, discussion questions and answers to students’ questions.",
+    "image": {
+     "src": "/changelog/0.0.1-map.webp",
+     "alt": "The map of the fourteen-week ethics course, every lesson and its materials",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Lessons that remember each other",
+    "body": "Lesson plans used to be written side by side, each knowing only the others’ titles, so one lesson could give a bean plant five stages and the next only four. Now each plan is written knowing what the lessons before it taught: the same terms and stages, the same cases, and anything still under way, like seeds sprouting by the window, carried on as it was set up. Each lesson lists only the vocabulary it introduces.",
+    "image": {
+     "src": "/changelog/0.0.1-continuity.svg",
+     "alt": "Before: four lessons planned alone contradict each other. Now: each plan reads the ones before it",
+     "width": 800,
+     "height": 400
+    }
+   },
+   {
+    "heading": "Plans you can teach as written",
+    "body": "Every plan now reads the way an experienced teacher would want it before walking into class.",
+    "bullets": [
+     "Safety notes for anything students handle, taste, heat or cut, such as allergies or materials that must never be eaten.",
+     "Realistic timing for things that take days, counted against how often the class meets.",
+     "When a plan shows students how their work is scored, it uses the rubric’s own levels.",
+     "Slides shown during a test give its instructions only, never the answers.",
+     "Homework steps can be done at home, without a partner or classroom materials.",
+     "Other lessons are “last time” and “next time”, not quoted titles."
+    ],
+    "image": {
+     "src": "/changelog/0.0.1-lesson.webp",
+     "alt": "A grade 2 lesson plan with key ideas, timed segments and teacher notes",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Every material agrees with the plan",
+    "body": "Each plan gets a second read before anything is built on it. If the plan is written again, what that read found now goes into the rewrite, so the same mistake isn’t made twice. The reviewer also knows the slides, quiz and rubric are written separately, so it no longer asks for them inside the plan.",
+    "image": {
+     "src": "/changelog/0.0.1-pipeline.svg",
+     "alt": "Brief, outline, lesson plan, second read, and the materials written from the plan",
+     "width": 800,
+     "height": 330
+    }
+   },
+   {
+    "heading": "Your files, cited by name",
+    "body": "When you attach articles or notes, Folio now refers to them by title or author, the way you would with students, never by internal passage numbers.",
+    "compare": {
+     "before": "The evidence is Torres’s report in passage [6] that students slept more.",
+     "after": "The evidence is Torres’s report that Seattle students slept a little more than half an hour longer on school nights."
+    }
+   },
+   {
+    "heading": "Assessment that adds up",
+    "body": "When one graded piece is built across several lessons, each lesson now writes its own part, with its own title, instead of each claiming the whole grade. And when a course has weekly work as well as larger papers, every paper is set in a lesson, so none goes missing.",
+    "compare": {
+     "before": "Life cycle drawing and labeling check (“worth 100% of the course grade”) · Life cycle drawing and labeling check",
+     "after": "Life cycle drawing and labeling check: bean plant stage · Life cycle drawing and labeling check: butterfly and frog"
+    }
+   },
+   {
+    "heading": "How we find what to fix",
+    "body": "These improvements came from a new routine. We write real courses from teachers’ briefs, from grade 2 to university, check every part, and read each lesson as the teacher who would teach it. For every problem we ask why Folio wrote it and whether it would happen in another course. If it would, we fix the cause, so every teacher’s course gets better, not just the one we read.",
+    "image": {
+     "src": "/changelog/0.0.1-quality-loop.svg",
+     "alt": "The quality routine: write real courses, check, read as a teacher, ask why, fix the cause, verify",
+     "width": 800,
+     "height": 420
+    }
+   }
+  ]
+ }
 ]

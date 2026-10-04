@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .tint { fill: #EDF0FC } .new { fill: #2B46C4 } .newt { fill: #FFFFFF } .rule { stroke: #CFC8B9 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .tint { fill: #23284A } .new { fill: #8FA3FF } .newt { fill: #11152E } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="360" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">FOUR WAYS A COURSE CAN BE TAUGHT</text>
+  <g font-size="14">
+    <rect class="card" x="36" y="64" width="172" height="232" rx="14"/>
+    <text class="ink" x="54" y="96" font-size="16" font-weight="600">In person</text>
+    <text class="ink2" x="54" y="118" font-size="13">a room, a teacher</text>
+    <line class="rule" x1="54" y1="132" x2="190" y2="132"/>
+    <text class="ink2" x="54" y="156">Lesson plan</text>
+    <text class="ink2" x="54" y="178">Slides</text>
+    <text class="ink2" x="54" y="200">Quiz, homework</text>
+    <text class="ink2" x="54" y="222">Discussion prompts</text>
+
+    <rect class="card" x="220" y="64" width="172" height="232" rx="14"/>
+    <rect class="new" x="318" y="76" width="58" height="22" rx="11"/><text class="newt" x="347" y="91" font-size="12" font-weight="600" text-anchor="middle">New</text>
+    <text class="ink" x="238" y="96" font-size="16" font-weight="600">Own time</text>
+    <text class="ink2" x="238" y="118" font-size="13">online, no meetings</text>
+    <line class="rule" x1="238" y1="132" x2="374" y2="132"/>
+    <text class="acc" x="238" y="156" font-weight="600">Weekly module page</text>
+    <text class="acc" x="238" y="178" font-weight="600">Checklist with hours</text>
+    <text class="acc" x="238" y="200" font-weight="600">Self-check, forum</text>
+    <text class="acc" x="238" y="222" font-weight="600">Start here page</text>
+    <text class="acc" x="238" y="244" font-weight="600">Instructor's kit</text>
+
+    <rect class="card" x="404" y="64" width="172" height="232" rx="14"/>
+    <rect class="new" x="502" y="76" width="58" height="22" rx="11"/><text class="newt" x="531" y="91" font-size="12" font-weight="600" text-anchor="middle">New</text>
+    <text class="ink" x="422" y="96" font-size="16" font-weight="600">Live</text>
+    <text class="ink2" x="422" y="118" font-size="13">online, video meetings</text>
+    <line class="rule" x1="422" y1="132" x2="558" y2="132"/>
+    <text class="acc" x="422" y="156" font-weight="600">Run of show</text>
+    <text class="acc" x="422" y="178" font-weight="600">Polls, written out</text>
+    <text class="acc" x="422" y="200" font-weight="600">Breakout task cards</text>
+    <text class="acc" x="422" y="222" font-weight="600">Exit ticket</text>
+    <text class="acc" x="422" y="244" font-weight="600">A fallback each step</text>
+
+    <rect class="card" x="588" y="64" width="176" height="232" rx="14"/>
+    <rect class="new" x="690" y="76" width="58" height="22" rx="11"/><text class="newt" x="719" y="91" font-size="12" font-weight="600" text-anchor="middle">New</text>
+    <text class="ink" x="606" y="96" font-size="16" font-weight="600">Both</text>
+    <text class="ink2" x="606" y="118" font-size="13">a page and a session</text>
+    <line class="rule" x1="606" y1="132" x2="746" y2="132"/>
+    <text class="acc" x="606" y="156" font-weight="600">Before the session</text>
+    <text class="acc" x="606" y="178" font-weight="600">In the session</text>
+    <text class="acc" x="606" y="200" font-weight="600">After it</text>
+    <text class="acc" x="606" y="222" font-weight="600">If you miss it</text>
+  </g>
+  <text class="ink2" x="36" y="330" font-size="13">The same brief, written differently for the way it will be taught.</text>
+</svg>
