@@ -55,8 +55,9 @@ Use these names exactly. They are what students see on screen.
 - The first time a TextMeshPro object is added (GameObject > UI (Canvas) > Text - TextMeshPro), a window titled "TMP Importer" opens: click "Import TMP Essentials", then "Import Anyway" in the box titled "Unofficial Unity source" that follows, wait, and close the window. Once per project; it can leave two red layout lines in the Console (Clear removes them).
 - Adding the first UI object also adds a Canvas (components: Canvas, Canvas Scaler, Graphic Raycaster) and an EventSystem (components: Event System, Input System UI Input Module). The text object is named "Text (TMP)" and sits under Canvas; its component is "TextMeshPro - Text (UI)", and in code its type is TMP_Text (using TMPro;).
 - A particle system is GameObject > Visual Effects > Particle System (there is no "Effects" menu). An audio source is GameObject > Audio > Audio Source, or Add Component > Audio Source.
-- A prefab is made by dragging an object from the Hierarchy into a folder in the Project window; Assets > Create has only "Prefab Variant" at its top level (Assets > Create > Scene > Prefab makes an empty one).
-- Built-in tags: Untagged, Respawn, Finish, EditorOnly, MainCamera, Player, GameController. Others are added with the Tag dropdown > Add Tag...
+- A prefab is made by dragging an object from the Hierarchy into a folder in the Project window.
+- A UI object made from the menu bar lands directly under the Canvas, whatever is selected: to put it inside a panel, drag it onto the panel in the Hierarchy.
+- Tags other than the built-in ones (Player, MainCamera, Finish...) are added with the Tag dropdown > Add Tag...
 - If a script uses an API marked for automatic update (rb.velocity, rb.drag), a box titled "Script Updating Consent" asks whether to update the files: with the code on these pages it does not appear; a student who pasted old code should choose "No" and fix the line by hand.
 
 ## 2D (the Universal 2D template), checked in this version
