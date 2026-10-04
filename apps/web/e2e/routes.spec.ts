@@ -61,8 +61,9 @@ test('the home page keeps to the new course: courses are in the library, and Abo
   const footer = (await page.getByRole('contentinfo').boundingBox())!;
   expect(footer.y + footer.height).toBeGreaterThan(page.viewportSize()!.height - 8);
   await page.getByRole('contentinfo').getByRole('link', { name: 'About' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'About Folio' })).toBeVisible();
-  await expect(page.getByText(/made by Tian Xing, its founder/)).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'A whole course, written to fit together.' })).toBeVisible();
+  // Who makes it is said once, with one way to write to them.
+  await expect(page.getByText('Tian Xing')).toHaveCount(1);
   await expect(page.getByRole('link', { name: 'xingpicture@gmail.com' })).toHaveAttribute('href', 'mailto:xingpicture@gmail.com');
   await expect(page).toHaveTitle('About Folio · Folio');
 });
