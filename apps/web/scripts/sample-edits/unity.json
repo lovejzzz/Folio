@@ -31,14 +31,16 @@
  {
   "lesson": 1,
   "slot": 7,
-  "drop": true,
-  "why": "Visual Studio Code is not on the machine the pictures were made on."
+  "src": "/samples/unity/media/w01-vsc-search.webp",
+  "caption": "The Extensions view with Unity typed in the search box: the first result, published by Microsoft, is the one to install.",
+  "why": "Photographed in Visual Studio Code on a Mac."
  },
  {
   "lesson": 1,
   "slot": 8,
-  "drop": true,
-  "why": "Visual Studio Code is not on the machine the pictures were made on."
+  "src": "/samples/unity/media/w01-vsc-installed.webp",
+  "caption": "After the install: Unity is in the installed list, with the extensions it brings along (C#, C# Dev Kit and .NET Install Tool).",
+  "why": "Photographed in Visual Studio Code on a Mac."
  },
  {
   "lesson": 1,
@@ -484,8 +486,8 @@
   "lesson": 3,
   "slot": 10,
   "src": "/samples/unity/media/w03-new-script.webp",
-  "caption": "A new script as Unity makes it, drawn for this page: your editor’s colors will differ. The class line is marked.",
-  "why": "Drawn from the file itself, since no editor could be photographed."
+  "caption": "The new script as it opens in Visual Studio Code. The class line is line 4.",
+  "why": "Photographed in Visual Studio Code on a Mac."
  },
  {
   "lesson": 3,
@@ -547,8 +549,8 @@
   "lesson": 3,
   "slot": 20,
   "src": "/samples/unity/media/w03-missing-semicolon.webp",
-  "caption": "Line 17 with its semicolon missing, drawn for this page: the cursor sits where the semicolon belongs.",
-  "why": "Drawn from the file itself, since no editor could be photographed."
+  "caption": "Visual Studio Code with the cursor on line 17, where the semicolon is missing.",
+  "why": "Photographed in Visual Studio Code on a Mac."
  },
  {
   "lesson": 3,
@@ -902,8 +904,8 @@
   "lesson": 5,
   "slot": 15,
   "src": "/samples/unity/media/w05-ontrigger.webp",
-  "caption": "The end of BallController.cs after this step, drawn for this page: the new method sits between the end of FixedUpdate and the final brace.",
-  "why": "Drawn from the file itself, since no editor could be photographed."
+  "caption": "The end of BallController.cs in Visual Studio Code after this step: the new method sits between the end of FixedUpdate and the final brace.",
+  "why": "Photographed in Visual Studio Code on a Mac."
  },
  {
   "lesson": 5,
@@ -2893,19 +2895,29 @@
   "talk": true
  },
  {
+  "lesson": 1,
+  "media": "w01-vsc-search.webp",
+  "alt": "Visual Studio Code, Extensions view, with Unity in the search box: the first result is Unity by Microsoft with an Install button."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-vsc-installed.webp",
+  "alt": "Visual Studio Code, Extensions view showing installed extensions: .NET Install Tool, C#, C# Dev Kit and Unity, with the Unity extension’s page open beside the list."
+ },
+ {
   "lesson": 3,
   "media": "w03-new-script.webp",
-  "alt": "A file named Spinner.cs with line numbers: using UnityEngine, the line public class Spinner : MonoBehaviour marked, and empty Start and Update blocks, each with a comment above it."
+  "alt": "Visual Studio Code with Spinner.cs open: using UnityEngine on line 1, public class Spinner : MonoBehaviour on line 4, and empty Start and Update blocks, each with a comment above it."
  },
  {
   "lesson": 3,
   "media": "w03-missing-semicolon.webp",
-  "alt": "Lines 12 to 19 of Spinner.cs: line 17, Debug.Log(message + gameObject.name), is marked and has no semicolon at its end."
+  "alt": "Visual Studio Code with Spinner.cs open and line 17 current: Debug.Log(message + gameObject.name) with no semicolon at its end."
  },
  {
   "lesson": 5,
   "media": "w05-ontrigger.webp",
-  "alt": "The last lines of BallController.cs: the end of FixedUpdate, then the method OnTriggerEnter with its line marked, then the closing brace of the class."
+  "alt": "Visual Studio Code with BallController.cs open at its end: the end of FixedUpdate, the method OnTriggerEnter starting on line 68, and the closing brace of the class."
  },
  {
   "find": "centred",
@@ -6355,5 +6367,33 @@
    "Weekly builds": "complete"
   },
   "why": "The brief grades weekly builds complete or incomplete; the other components are scored."
+ },
+ {
+  "lesson": 13,
+  "find": "and choose **Compress to ZIP file**.",
+  "replace": "and choose **Compress to**, then **ZIP File** (on an older Windows 11 the item reads **Compress to ZIP file**).",
+  "why": "Checked against current Windows 11 (24H2): the item is Compress to, with ZIP File inside it; older Windows 11 shows Compress to ZIP file.",
+  "win": true
+ },
+ {
+  "lesson": 14,
+  "find": "right-click the folder and choose Compress to ZIP file.",
+  "replace": "right-click the folder and choose Compress to, then ZIP File (on an older Windows 11 the item reads Compress to ZIP file).",
+  "why": "Checked against current Windows 11 (24H2): the item is Compress to, with ZIP File inside it; older Windows 11 shows Compress to ZIP file.",
+  "win": true
+ },
+ {
+  "lesson": 5,
+  "find": "then click Stop; the clip is saved for you.",
+  "replace": "then click Stop; the clip is saved for you in Videos > Screen Recordings.",
+  "why": "Checked against Microsoft’s Snipping Tool guide: recordings are saved to the Screen Recordings folder inside Videos.",
+  "win": true
+ },
+ {
+  "lesson": 10,
+  "find": "On Windows they are in Videos > Captures and Pictures > Screenshots;",
+  "replace": "On Windows, Game Bar puts both in Videos > Captures; Snipping Tool puts recordings in Videos > Screen Recordings and screenshots in Pictures > Screenshots;",
+  "why": "Checked against Microsoft’s guides: each tool saves to its own folder.",
+  "win": true
  }
 ]

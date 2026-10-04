@@ -1,5 +1,27 @@
 [
  {
+  "version": "0.0.9",
+  "date": "October 4, 2026",
+  "title": "The Unity sample: the editor students write code in, and Windows checked",
+  "lede": "The last pictures missing from the Unity sample were of Visual Studio Code, and its Windows instructions had never been checked against Windows as it is today. Both are done.",
+  "sections": [
+   {
+    "heading": "Visual Studio Code, photographed",
+    "body": "Week 1 now shows the Extensions view with Unity searched and the Microsoft extension at the top, and the list after the install, which confirmed the page’s own step: the Install button becomes Uninstall. Weeks 3 and 5 show the scripts open in the editor, at the line each step is about, in place of the drawings that stood in for them.",
+    "image": {
+     "src": "/changelog/0.0.9-vscode.webp",
+     "alt": "Week 1 of the Unity sample: Visual Studio Code’s Extensions view with Unity searched and the Microsoft extension first",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "Windows steps checked against current Windows",
+    "body": "No Windows computer was at hand, so every Windows instruction in the sample was read against Microsoft’s and Unity’s own documentation. Two were out of date: on current Windows 11 a folder is zipped with Compress to, then ZIP File, and Snipping Tool saves its recordings in Videos, in Screen Recordings. The Game Bar shortcuts, where captures are saved, the SmartScreen steps and the files a Windows build produces all matched."
+   }
+  ]
+ },
+ {
   "version": "0.0.8",
   "date": "October 4, 2026",
   "title": "The sample’s game, built and run for real",
