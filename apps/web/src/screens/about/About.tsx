@@ -22,6 +22,24 @@ const KNOW = [
 
 const LINK = 'rounded-control text-ink-2 underline-offset-4 outline-none hover:text-ink hover:underline focus-visible:ring-2 focus-visible:ring-accent';
 
+function GoodToKnow() {
+  return (
+    <section className="mt-10" aria-labelledby="about-know">
+      <h2 id="about-know" className="font-ui text-13 font-medium uppercase tracking-wide text-ink-2">
+        Good to know
+      </h2>
+      <ul className="mt-3 grid gap-3 font-reading text-16 leading-7 text-ink-2">
+        {KNOW.map((line) => (
+          <li key={line} className="flex gap-3">
+            <span aria-hidden className="mt-3 size-1.5 shrink-0 rounded-full bg-accent" />
+            <span>{line}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 /** What Folio is, who makes it and how to reach them: said once each. Linked from the home page. */
 export function About() {
   const t = useT();
@@ -48,19 +66,7 @@ export function About() {
           ))}
         </ol>
 
-        <section className="mt-10" aria-labelledby="about-know">
-          <h2 id="about-know" className="font-ui text-13 font-medium uppercase tracking-wide text-ink-2">
-            Good to know
-          </h2>
-          <ul className="mt-3 grid gap-3 font-reading text-16 leading-7 text-ink-2">
-            {KNOW.map((line) => (
-              <li key={line} className="flex gap-3">
-                <span aria-hidden className="mt-3 size-1.5 shrink-0 rounded-full bg-accent" />
-                <span>{line}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <GoodToKnow />
 
         <section className="mt-10 rounded-sheet bg-well p-6">
           <h2 className="font-ui text-13 font-medium uppercase tracking-wide text-ink-2">Made by</h2>
