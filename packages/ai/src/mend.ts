@@ -165,7 +165,7 @@ export function sinceText(since: Since | undefined, unit: string): string {
     `Written again since: ${since.changed.join(', ') || 'nothing'}.`,
     mistaken.length ? `The writer left these as they were, as mistaken:\n${mistaken.map((l) => `${l.note}. ${l.why}`).join('\n')}` : '',
     teacher.length ? `Kept as notes for the teacher to decide, not to be listed again: ${teacher.map((l) => l.note).join(', ')}.` : '',
-    `Read what was written again in full, as below, and check each problem of the first reading. List only: a problem of the first reading that is still there; one the writer called mistaken when the writer's reason does not hold; and a problem in what was written again. A ${unit} that was not written again and had no problem is not read again.`,
+    `Read what was written again in full, as below, and check each problem of the first reading. List only: a problem of the first reading that is still there; one the writer called mistaken when the writer's reason does not hold; a problem in what was written again; and a place where what was written again no longer agrees with the rest (a key idea, a note, an answer or a later ${unit} that still says the old thing). A ${unit} that was not written again and had no problem is not read again.`,
   ]
     .filter(Boolean)
     .join('\n');

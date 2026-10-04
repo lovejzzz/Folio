@@ -217,6 +217,20 @@ describe('a test taken in class', () => {
   });
 });
 
+describe('two pieces of one component, each done in class', () => {
+  it('are each written, the second told what the first asked', async () => {
+    const store = new CourseStore(smallCourse());
+    const [first, second] = orderedLessons(store.getState());
+    store.apply([first!, second!].map((l) => cmd('lesson.homework', { lessonId: l.id, homework: { kind: 'inclass', toward: 'Organizer and drafts', standing: false } })), { label: { key: 'b' }, source: 'teacher' });
+    const inf = fakeInference((_req, call) => ({ title: call === 1 ? 'Organizer' : 'Draft', prompt: 'Do it in class.', steps: ['One', 'Two'], answerKey: 'Run it in the block.', rubric: { levels: [{ label: 'Good', points: 2 }, { label: 'OK', points: 1 }, { label: 'Weak', points: 0 }], criteria: [{ name: 'Clarity', descriptors: ['x', 'y', 'z'] }, { name: 'Accuracy', descriptors: ['x', 'y', 'z'] }] } }));
+    store.apply((await generateSection(inf, store.getState(), first!.id, 'assignments')).commands, { label: { key: 'b' }, source: 'ai' });
+    store.apply((await generateSection(inf, store.getState(), second!.id, 'assignments')).commands, { label: { key: 'b' }, source: 'ai' });
+    expect(inf.calls).toHaveLength(2);
+    expect(inf.calls[0]!.prompt).not.toContain('write it once and whole');
+    expect(inf.calls[1]!.prompt).toContain('The part before this one, "Organizer", asked');
+  });
+});
+
 describe('a piece graded in class over two lessons', () => {
   it('is written once: the second lesson takes the first one’s instructions and rubric as they stand', async () => {
     const store = new CourseStore(smallCourse());

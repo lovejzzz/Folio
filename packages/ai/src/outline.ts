@@ -120,12 +120,12 @@ export { sameTitle };
  * as a lesson number, and resolved to that lesson once all have their ids.
  */
 function piecesOf(draft: OutlineDraft['lessons'][number], i: number, counts: (toward: string) => string, dueAt: [Homework, number][]): Pick<Lesson, 'homework' | 'also'> {
-  const homework: Homework = { kind: draft.homework, toward: draft.homework === 'none' ? '' : counts(draft.homeworkToward), ...(draft.homeworkStanding && draft.homework !== 'none' ? { standing: true } : {}) };
+  const homework: Homework = { kind: draft.homework, toward: draft.homework === 'none' ? '' : counts(draft.homeworkToward), ...(draft.homeworkStanding && draft.homework !== 'none' ? { standing: true } : draft.homework === 'inclass' ? { standing: false } : {}) };
   const later = (kind: string, due: number | null) => (kind === 'assignment' || kind === 'step') && due !== null && due > i + 1;
   if (later(draft.homework, draft.homeworkDue)) dueAt.push([homework, draft.homeworkDue!]);
   const also: Homework[] = [];
   for (const p of draft.also) {
-    const piece: Homework = { kind: p.kind, toward: counts(p.toward), ...(p.standing ? { standing: true } : {}) };
+    const piece: Homework = { kind: p.kind, toward: counts(p.toward), ...(p.standing ? { standing: true } : p.kind === 'inclass' ? { standing: false } : {}) };
     // The same component twice in one lesson is one piece: the second is dropped.
     if ([homework, ...also].some((o) => o.kind === piece.kind && o.toward === piece.toward)) continue;
     also.push(piece);

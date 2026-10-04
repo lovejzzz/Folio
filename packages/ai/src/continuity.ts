@@ -23,13 +23,13 @@ const clipNote = (note: string, room = 240) => {
   return flat.length > room ? `${flat.slice(0, room)}…` : flat;
 };
 
-function lessonDigest(lesson: Lesson, course: Course): string {
+function lessonDigest(lesson: Lesson, course: Course, notes = 240): string {
   const ideas = lesson.keyIdeas.map((k) => `  - ${k}`).join('\n');
   const terms = lesson.vocabulary.map((v) => v.term).join(', ');
   // Whole descriptions, and the start of the notes: a later lesson used a floor number line it couldn't see was
   // marked only in fourths, from notes the digest left out.
   const flow = lesson.segments
-    .map((s) => `  - ${s.title}: ${s.description.replace(/\n+/g, ' ')}${s.teacherNotes.trim() ? ` (Notes: ${clipNote(s.teacherNotes)})` : ''}`)
+    .map((s) => `  - ${s.title}: ${s.description.replace(/\n+/g, ' ')}${s.teacherNotes.trim() ? ` (Notes: ${clipNote(s.teacherNotes, notes)})` : ''}`)
     .join('\n');
   // The homework too: no plan set, collected or used the homework the lesson before had given.
   const homework = lesson.taskIds.map((id) => course.tasks[id]).flatMap((t) => (t?.kind === 'assignment' ? [`"${t.title}": ${clipNote(t.prompt)}`] : []))[0];
@@ -42,6 +42,9 @@ function briefDigest(lesson: Lesson): string {
   const terms = lesson.vocabulary.map((v) => v.term).join(', ');
   return [`"${lesson.title}"`, lesson.keyIdeas.length ? ` Key ideas: ${lesson.keyIdeas.join(' ')}` : '', terms && ` Terms: ${terms}`, did.length ? ` What students did: ${did.join('; ')}` : ''].filter(Boolean).join('\n');
 }
+
+/** How much of a segment's notes the two lessons just before are shown. */
+const NEAR_NOTES = 1600;
 
 /** Room for the lessons further back, each in brief. */
 const BRIEF_BUDGET = 6000;
@@ -57,7 +60,9 @@ function digests(course: Course, lesson: Lesson, budget: number): string {
   let whole = before.length;
   for (; whole > 0; whole--) {
     const l = before[whole - 1]!;
-    const digest = l.page?.length ? moduleDigest(l, course) : lessonDigest(l, course);
+    // The two lessons just before are shown their notes at length: a model text lives there, and cut at 240 characters
+    // it was written again, differently, in each of four lessons.
+    const digest = l.page?.length ? moduleDigest(l, course) : lessonDigest(l, course, before.length - whole < 2 ? NEAR_NOTES : 240);
     if (used + digest.length > budget) break;
     kept.unshift(digest);
     used += digest.length;
@@ -132,7 +137,7 @@ export function sharedComponent(course: Course, lesson: Lesson): string {
   const sharing = orderedLessons(course).filter((l) => holds(l, lesson.homework.kind, toward));
   if (sharing.length < 2) return '';
   const place = sharing.findIndex((l) => l.id === lesson.id) + 1;
-  if (lesson.homework.kind === 'inclass') return `"${toward}" is taken over ${sharing.length} lessons, a group in each: write it once and whole, since the later lessons use it as it stands, with running notes that say who goes in which lesson.`;
+  if (lesson.homework.kind === 'inclass' && lesson.homework.standing !== false) return `"${toward}" is taken over ${sharing.length} lessons, a group in each: write it once and whole, since the later lessons use it as it stands, with running notes that say who goes in which lesson.`;
   // Papers of one component (two quizzes) told only "cover the lessons so far" came out alike, title and half the questions.
   if (lesson.homework.kind === 'test') {
     const earlier = workOf(course, sharing[place - 2], toward);
