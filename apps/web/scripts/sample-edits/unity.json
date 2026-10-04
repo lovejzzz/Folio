@@ -2390,8 +2390,9 @@
  {
   "lesson": 13,
   "slot": 7,
-  "drop": true,
-  "why": "The built game looks the same as the Game view; no picture of it was kept."
+  "src": "/samples/unity/media/w13-built.webp",
+  "caption": "The built game running on its own, outside the Editor (a picture taken by the game itself, on a Mac). The hint at the bottom is the one you add later on this page.",
+  "why": "Captured from a real build of the Route A game."
  },
  {
   "lesson": 13,
@@ -2418,7 +2419,7 @@
   "lesson": 13,
   "slot": 12,
   "src": "/samples/unity/media/w13-hint-game.webp",
-  "caption": "Route A in the first seconds of a round: the hint and the status label are both readable."
+  "caption": "Route A in the first seconds of a round, in the built game: the hint and the status label are both readable."
  },
  {
   "lesson": 13,
@@ -2486,7 +2487,7 @@
  {
   "lesson": 13,
   "find": "then move **Pos Y** closer to 0.",
-  "replace": "then move **Pos Y** closer to 0. If the hint sits on a white object and cannot be read, change **Pos Y** until it is over the background.",
+  "replace": "then check that the anchor preset is bottom center and **Pos Y** is 80. If the hint sits on a white object and cannot be read, raise **Pos Y** until it is over the background.",
   "why": "Checked in Unity while building this week on Routes A and C."
  },
  {
@@ -2651,6 +2652,28 @@
   "replace": "click **Select Folder** on Windows. On a Mac, type MyGame into the **Save As** box, choose that folder beside **Where**, and click **Save**.",
   "all": true,
   "why": "Seen in Unity on a Mac: the build window is a save panel that needs a name."
+ },
+ {
+  "lesson": 13,
+  "find": "In **Rect Transform**, set **Pos X** to 0, **Pos Y** to -180, **Width** to 700 and **Height** to 100.",
+  "replace": "In **Rect Transform**, click the anchor preset square at the top left and choose the bottom-center preset. Then set **Pos X** to 0, **Pos Y** to 80, **Width** to 700 and **Height** to 100.",
+  "why": "Built in Unity and run as a real build at 1280 by 720: 180 below the middle put the hint on top of the player. Held to the bottom of the screen it stays clear at any window size."
+ },
+ {
+  "lesson": 13,
+  "media": "w13-hint.webp",
+  "alt": "Inspector for HintText: the anchor preset reads center and bottom, Pos X 0, Pos Y 80, Width 700, Height 100, and Font Size 28.",
+  "caption": "Compare the anchor preset and the four values in your Inspector."
+ },
+ {
+  "lesson": 13,
+  "media": "w13-built.webp",
+  "alt": "The built game: the walled floor seen from above and behind, Score: 0 / 5 at the top left, and the hint in two lines at the bottom."
+ },
+ {
+  "lesson": 13,
+  "media": "w13-hint-game.webp",
+  "alt": "The game in the first seconds of a round: the hint in two lines at the bottom of the view, below the player, and Score: 0 / 5 at the top left."
  },
  {
   "lesson": 14,

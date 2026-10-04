@@ -1,5 +1,27 @@
 [
  {
+  "version": "0.0.8",
+  "date": "October 4, 2026",
+  "title": "The sample’s game, built and run for real",
+  "lede": "Two things were still untested in the Unity sample: the game as a build, running outside the editor, and why one week once failed to be written. Both are settled, and the first found one more mistake on a page.",
+  "sections": [
+   {
+    "heading": "A real build, photographed from inside",
+    "body": "The week 14 game was built for macOS and run on its own. A small test script took a picture from inside the running game and then pressed Esc the way a player would: the game closed, as the page promises. The picture showed something the editor never had. At the size of a real window, the hint from week 13 sat on top of the player. The hint is now held to the bottom of the screen, in the page, its pictures and the project files, so it stays clear at any window size.",
+    "image": {
+     "src": "/changelog/0.0.8-built.webp",
+     "alt": "Week 13 of the Unity sample: a picture of the built game running on its own, with the hint at the bottom of the screen",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "A long page is no longer thrown away for one line too many",
+    "body": "A weekly page for an online course could have at most sixteen items on its checklist. Ten of the sample’s fourteen weeks have exactly sixteen, and a page that came back with seventeen was rejected whole, after minutes of writing. That is the likely reason week 12 once failed three times in a row. The limits on the checklist, the parts and the instructor’s lists are looser now; what Folio asks for has not changed."
+   }
+  ]
+ },
+ {
   "version": "0.0.7",
   "date": "October 4, 2026",
   "title": "One way to say how work is graded, and a sample you can watch",
