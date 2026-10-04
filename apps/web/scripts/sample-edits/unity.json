@@ -3370,5 +3370,33 @@
   "replace": "The link to the course Q&A forum and the name of the introductions thread. Open a forum thread for each week, and in week 9 a thread where students find a playtest partner on the same kind of computer. Record the short talk for each week, or tell students the transcript on the page replaces it. Create an assignment in the LMS for each weekly build, for Dodge game with your own twist (week 9) and for the three parts of the final project, and paste in each brief and rubric. Decide where students upload builds to share them, and tell students to run only builds from this course. Check whether your library has the optional chapters (Hocking, Swink); the Nystrom chapter is free online. Say how complete or incomplete and the rubric levels become points.",
   "why": "The instructor page listed only policy text; list items cannot be added, so the last item carries the other preparation tasks.",
   "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "UnassignedReferenceException: The variable livesText of GameManager has not been assigned. Stop Play,",
+  "replace": "NullReferenceException: Object reference not set to an instance of an object, pointing at GameManager.UpdateLivesText. Stop Play,",
+  "why": "Measured in Unity: an empty TextMeshPro slot gives NullReferenceException; an empty GameObject slot gives UnassignedReferenceException.",
+  "late": true
+ },
+ {
+  "lesson": 7,
+  "find": "UnassignedReferenceException for livesText or gameOverPanel",
+  "replace": "NullReferenceException at UpdateLivesText (Lives Text is empty) or UnassignedReferenceException for gameOverPanel",
+  "why": "Measured in Unity: an empty TextMeshPro slot gives NullReferenceException; an empty GameObject slot gives UnassignedReferenceException.",
+  "late": true
+ },
+ {
+  "lesson": 7,
+  "find": "UnassignedReferenceException: The variable timerText of GameManager has not been assigned.",
+  "replace": "NullReferenceException pointing at the line that sets the timer text.",
+  "why": "Measured in Unity: an empty TextMeshPro slot gives NullReferenceException; an empty GameObject slot gives UnassignedReferenceException.",
+  "late": true
+ },
+ {
+  "lesson": 7,
+  "find": "The Console shows `UnassignedReferenceException: The variable livesText of GameManager has not been assigned`, or the same message naming `gameOverPanel`. What do I do?",
+  "replace": "The Console shows `NullReferenceException` pointing at `GameManager.UpdateLivesText`, or `UnassignedReferenceException: The variable gameOverPanel of GameManager has not been assigned`. What do I do?",
+  "why": "As measured.",
+  "late": true
  }
 ]
