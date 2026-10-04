@@ -43,23 +43,24 @@ export const ModuleDraft = z.object({
       }),
     )
     .min(4)
-    .max(16),
+    // Looser than the page should be: ten of fourteen weeks of one course sat exactly at 16, and one line more threw away a whole page.
+    .max(24),
   parts: z
     .array(z.object({ title: line.describe('Names what the student gets done in this part'), blocks: z.array(BlockDraft).min(1) }))
     .min(2)
-    .max(10),
+    .max(12),
   live: z
     .array(z.object({ kind: z.enum(['warmup', 'teach', 'practice', 'discuss', 'check', 'break', 'close']), title: line, minutes: z.number().int().min(1), description: line, teacherNotes: z.string().default('') }))
     .default([])
     .describe('Only when the week has a live session: its run of show. Empty otherwise'),
   wrapUp: line.describe('What the student can now do, a question to check themselves against each objective, and what comes next week'),
-  vocabulary: z.array(z.object({ term: line, definition: line })).max(12),
+  vocabulary: z.array(z.object({ term: line, definition: line })).max(16),
   facilitation: z.object({
     announcement: line.describe('The announcement the instructor posts at the start of the week, ready to send'),
-    watchFor: z.array(line).min(2).max(6).describe('What students get wrong or stuck on this week, and what to do when the instructor sees it'),
-    feedback: z.array(line).min(2).max(8).describe('Comments the instructor can adapt when giving feedback on this week\'s work'),
+    watchFor: z.array(line).min(2).max(8).describe('What students get wrong or stuck on this week, and what to do when the instructor sees it'),
+    feedback: z.array(line).min(2).max(10).describe('Comments the instructor can adapt when giving feedback on this week\'s work'),
     atRisk: z.string().default('').describe('Who to contact this week and what to say: students who have not started, posted or submitted'),
-    leaves: z.array(line).max(24).default([]).describe('When students build something that carries on next week: what their project holds once this week is done, one thing per line with its exact name and the values a later week could rely on or trip over (each object and where it is, each file, each setting changed)'),
+    leaves: z.array(line).max(32).default([]).describe('When students build something that carries on next week: what their project holds once this week is done, one thing per line with its exact name and the values a later week could rely on or trip over (each object and where it is, each file, each setting changed)'),
   }),
 });
 export type ModuleDraft = z.infer<typeof ModuleDraft>;
