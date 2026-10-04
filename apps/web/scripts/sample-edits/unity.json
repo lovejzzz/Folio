@@ -2165,14 +2165,14 @@
  {
   "lesson": 12,
   "slot": 12,
-  "drop": true,
-  "why": "Not captured."
+  "src": "/samples/unity/media/w12-floor.webp",
+  "caption": "Floor’s Transform. The yellow note under Mesh Collider is about a future version of Unity: leave it."
  },
  {
   "lesson": 12,
   "slot": 13,
-  "drop": true,
-  "why": "Not captured."
+  "src": "/samples/unity/media/w12-arena.webp",
+  "caption": "The floor and its four walls in the Scene view. The spheres, the red cube and the capsule come later on this page."
  },
  {
   "lesson": 12,
@@ -2189,8 +2189,8 @@
  {
   "lesson": 12,
   "slot": 16,
-  "drop": true,
-  "why": "The picture of the finished level below shows the four walls."
+  "src": "/samples/unity/media/w12-b-level.webp",
+  "caption": "Route B in the Game view: four gray walls around the field. The circles and the square inside come later on this page."
  },
  {
   "lesson": 12,
@@ -2201,8 +2201,9 @@
  {
   "lesson": 12,
   "slot": 18,
-  "src": "/samples/unity/media/w12-b-level.webp",
-  "caption": "Route B with the pickups and the hazard from the next part already in place: compare the gray walls and the circle’s place."
+  "src": "/samples/unity/media/w12-b-round.mp4",
+  "poster": "/samples/unity/media/w12-b-round.poster.webp",
+  "caption": "Route B played through once the pickups and the hazard are in: compare the walls and the circle’s start with yours."
  },
  {
   "lesson": 12,
@@ -2225,8 +2226,9 @@
  {
   "lesson": 12,
   "slot": 22,
-  "src": "/samples/unity/media/w12-c-level.webp",
-  "caption": "Route C with the pickups and the hazard from the next part already in place: compare the ground, the two platforms and the player’s place at the left."
+  "src": "/samples/unity/media/w12-c-round.mp4",
+  "poster": "/samples/unity/media/w12-c-round.poster.webp",
+  "caption": "Route C played through once the pickups and the hazard are in: compare the ground, the platforms and the square’s start with yours."
  },
  {
   "lesson": 12,
@@ -2237,8 +2239,8 @@
  {
   "lesson": 12,
   "slot": 24,
-  "drop": true,
-  "why": "Not captured."
+  "src": "/samples/unity/media/w12-pickups.webp",
+  "caption": "Five pickups in the Hierarchy, the first named Pickup and the copies Pickup (1) to Pickup (4)."
  },
  {
   "lesson": 12,
@@ -2286,8 +2288,8 @@
  {
   "lesson": 12,
   "slot": 33,
-  "drop": true,
-  "why": "Not captured."
+  "src": "/samples/unity/media/w12-material.webp",
+  "caption": "Route A: the HazardRed material. The color box is the one beside Base Map."
  },
  {
   "lesson": 12,
@@ -2298,15 +2300,14 @@
  {
   "lesson": 12,
   "slot": 35,
-  "drop": true,
-  "why": "Not captured."
+  "src": "/samples/unity/media/w12-hazard-fast.webp",
+  "caption": "Route A after this step: Hazard wears HazardRed, and Speed in Patrol is 4, one more than before."
  },
  {
   "lesson": 12,
   "slot": 36,
-  "src": "/samples/unity/media/w12-routes.mp4",
-  "poster": "/samples/unity/media/w12-routes.poster.webp",
-  "caption": "Routes B and C played through, before any color is added: compare a full round with your own."
+  "src": "/samples/unity/media/w12-red.webp",
+  "caption": "Route A after this part: a red hazard, the score, and the controls label under it."
  },
  {
   "lesson": 12,
@@ -2322,13 +2323,54 @@
  },
  {
   "lesson": 12,
-  "media": "w12-b-level.webp",
-  "alt": "Game view: a gray frame of four walls around a dark blue field, a white circle near the bottom, five small white circles and a white square inside, and Score: 0 / 5 at the top left."
+  "find": "In the **Inspector**, set **Transform > Position** to 0, 0, 0 and **Scale** to 2, 1, 2.",
+  "replace": "In the **Inspector**, set **Transform > Position** to 0, 0, 0 and **Scale** to 2, 1, 2. Under **Mesh Collider** a yellow note says the Plane mesh is missing pre-baked collision data. It is about a future version of Unity and changes nothing now: leave it.",
+  "why": "Seen in Unity 6000.6: every Plane shows this note, and the page said nothing about it."
  },
  {
   "lesson": 12,
-  "media": "w12-c-level.webp",
-  "alt": "Game view: a long white ground along the bottom, two short platforms above it, a white square at the left end, five small circles and a second square on the ground, and Score: 0 / 5 at the top left."
+  "media": "w12-floor.webp",
+  "alt": "Inspector for Floor: Position 0, 0, 0, Scale 2, 1, 2, a Mesh Collider with a yellow note about pre-baked collision data, and a Mesh Renderer."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-arena.webp",
+  "alt": "Scene view from above one corner: a gray floor inside four low walls, with a capsule, five small spheres and a red cube on it."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-b-level.webp",
+  "alt": "Game view: a gray frame of four walls around a dark blue field, with a white circle, five small circles and a white square inside, and Score: 0 / 5 at the top left."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-b-round.mp4",
+  "alt": "Route B in Play: a circle collects five dots inside gray walls while a square slides across the middle; the label reads You win!, and R resets it."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-c-round.mp4",
+  "alt": "Route C in Play: a square jumps onto two platforms, drops behind the sliding square, jumps over it, collects the fifth dot and wins."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-pickups.webp",
+  "alt": "Hierarchy: SampleScene with Main Camera, Directional Light, Global Volume, Canvas, EventSystem, Game, Floor, four walls, Player, Pickup, Pickup (1) to Pickup (4), and Hazard."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-material.webp",
+  "alt": "Inspector for the material HazardRed: shader Universal Render Pipeline/Lit, and under Surface Inputs a red color box beside Base Map."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-hazard-fast.webp",
+  "alt": "Inspector for Hazard: Tag Hazard, Box Collider with Is Trigger ticked, Patrol with Direction 1, 0, 0, Distance 5 and Speed 4, and the material HazardRed."
+ },
+ {
+  "lesson": 12,
+  "media": "w12-red.webp",
+  "alt": "Game view in Play: the walled floor with a red cube, Score: 1 / 5 at the top left, and under it the lines A, W, S, D: move and Collect every pickup. Avoid the red hazard. Press R to restart at any time."
  },
  {
   "lesson": 12,
@@ -2339,11 +2381,6 @@
   "lesson": 12,
   "media": "w12-bug3.webp",
   "alt": "Console listing five entries, AddPoint: score is now 1 of 6 through AddPoint: score is now 5 of 6."
- },
- {
-  "lesson": 12,
-  "media": "w12-routes.mp4",
-  "alt": "Two rounds in the Game view. Route B: a circle collects five dots inside gray walls while a square slides across the middle, the label reads You win!, and R resets it. Route C: a square jumps onto two platforms, drops behind the sliding square, jumps over it, collects the fifth dot and wins."
  },
  {
   "lesson": 12,
@@ -5691,13 +5728,6 @@
  },
  {
   "lesson": 12,
-  "media": "w12-c-level.webp",
-  "alt": "Game view: a long white ground along the bottom, two short platforms above it, a white square at the left end, a second square on the ground, five small circles (three just above the ground and one above each platform), and Score: 0 / 5 at the top left.",
-  "why": "The alt puts all five circles on the ground; two of them float above the platforms.",
-  "review": true
- },
- {
-  "lesson": 12,
   "media": "w12-bug1.webp",
   "caption": "If you pasted the code, the entry names line 48, the line you broke. If you typed it, your line number may differ; the file and the message should match.",
   "alt": "Console error entry: Assets/Scripts/PrototypeGame.cs(48,16): error CS1002: ; expected.",
@@ -6395,5 +6425,414 @@
   "replace": "On Windows, Game Bar puts both in Videos > Captures; Snipping Tool puts recordings in Videos > Screen Recordings and screenshots in Pictures > Screenshots;",
   "why": "Checked against Microsoft’s guides: each tool saves to its own folder.",
   "win": true
+ },
+ {
+  "lesson": 3,
+  "media": "w03-attached.webp",
+  "caption": "Spinner (Script) sits at the bottom of Pickup_Test's components, just above the material. Yours shows only the Script row for now; Speed, Is Spinning and Message appear after you write the code in the next part.",
+  "alt": "Pickup_Test Inspector with Position -5, 1, 5, then Cube (Mesh Filter), Box Collider and Mesh Renderer, and at the bottom Spinner (Script) outlined, above M_Ramp (Material). This picture was taken after the code was written, so the outlined section also shows Script Spinner, Speed 90, Is Spinning ticked and Message Spinner started on; a newly attached script shows only the Script row.",
+  "audit": true
+ },
+ {
+  "lesson": 2,
+  "media": "w01-hub-create.webp",
+  "caption": "The New project screen from week 1, where the Project name box reads Courtyard. This time you type OrbCollector there in step 7, then click Create project in step 9.",
+  "alt": "Unity Hub New project screen with Core chosen and Universal 3D selected. In the right panel the Project name box is outlined and reads Courtyard, from week 1; this week it should read OrbCollector. Below it are the Location box (blurred), Use AI Assistant and Use Unity CLI unticked, and the Create project button outlined at the bottom right.",
+  "audit": true
+ },
+ {
+  "lesson": 1,
+  "media": "w01-editor-all.webp",
+  "caption": "All eleven entries are in the Hierarchy, from Main Camera down to Guard. This Scene view looks from behind the walls, so left and right are swapped and the ball is hidden behind the tower.",
+  "alt": "The Editor with Courtyard in the title bar. The Hierarchy lists Courtyard with Main Camera, Directional Light, Global Volume, Ground, Tower, Wall_Back, Wall_Left, Crate_A, Crate_B, Ball and Guard; an outline marks the list down to Crate_B. The Scene view shows the courtyard seen from beyond the corner where the two walls meet, so the crates appear on the left and the capsule on the right of the tower, and the ball is hidden behind the tower. The Inspector is empty.",
+  "audit": true
+ },
+ {
+  "lesson": 1,
+  "media": "w01-light.webp",
+  "caption": "What step 5 of the tour shows: with Directional Light selected, Position reads 0, 3, 0 and Rotation reads 50, -30, 0.",
+  "alt": "The Editor with the title SampleScene - Courtyard and Directional Light outlined in the Hierarchy under SampleScene. The Inspector shows its Transform with Position 0, 3, 0 and Rotation 50, -30, 0 outlined and labeled Position and Rotation, above a Light section with General and Emission open: Type Directional, Mode Realtime, Light Appearance Filter and Temperature, Intensity 2.",
+  "audit": true
+ },
+ {
+  "lesson": 2,
+  "media": "w02-ramp-ball.webp",
+  "caption": "The Scene view once step 6 is done, seen from the side: Ball, placed and colored, hangs above the high end of the ramp. Ramp is the selected object here; in yours Ball is selected.",
+  "alt": "The Hierarchy lists Arena with Main Camera, Directional Light, Global Volume, Floor, Wall_North, Wall_South, Wall_East, Wall_West, Ramp and Ball. The Scene view, looking from the side, shows the yellow Ramp sloping down from upper left to lower right over the slate floor, with the move arrows at its center because Ramp is selected, and the red-orange Ball, outlined and labeled Ball, hanging in the air above the ramp's high end.",
+  "audit": true
+ },
+ {
+  "lesson": 2,
+  "media": "w02-material-inspector.webp",
+  "caption": "M_Floor in the Inspector: the color box beside Base Map, and Smoothness below it. The box is already slate here; yours is white until you finish step 6.",
+  "alt": "The Inspector for M_Floor (Material) with shader Universal Render Pipeline/Lit. Under Surface Inputs, the Base Map row is outlined and its color box is dark slate; below it are Metallic Map 0, Smoothness 0.5 (outlined), Normal Map, Height Map and Occlusion Map. A slate preview sphere labeled M_Floor is at the bottom.",
+  "audit": true
+ },
+ {
+  "lesson": 2,
+  "media": "w02-floor-transform.webp",
+  "caption": "Floor's Transform after step 4, with Position and Scale both typed in.",
+  "audit": true
+ },
+ {
+  "lesson": 2,
+  "media": "w02-light-emission.webp",
+  "alt": "The Inspector for Directional Light: Transform with Position 0, 3, 0 and Rotation 50, -30, 0, then the Light component. In its Emission section, Light Appearance set to Color and the Color box below it, filled orange, are outlined; under them Intensity reads 2 and Indirect Multiplier 1.",
+  "audit": true
+ },
+ {
+  "lesson": 2,
+  "media": "w02-ball-rigidbody.webp",
+  "alt": "Ball Inspector from the top: Transform with Position 0, 6, -7, Rotation 0, 0, 0 and Scale 1, 1, 1, then Sphere (Mesh Filter), Sphere Collider ticked, Mesh Renderer ticked, and the new Rigidbody section outlined at the bottom with Mass 1, Linear Damping 0, Angular Damping 0.05, Automatic Center Of Mass, Automatic Tensor and Use Gravity ticked, and Is Kinematic unticked.",
+  "audit": true
+ },
+ {
+  "lesson": 1,
+  "media": "w01-hub-installs.webp",
+  "caption": "Installs once the download has finished: one row, Unity 6.6 (6000.6.4f1), and no progress bar. The Android and iOS labels and the project count are from the author's computer; yours may differ.",
+  "alt": "The Installs screen of Unity Hub with one row under UNITY 6: Unity 6.6 (6000.6.4f1), outlined and labeled The version, marked Silicon and Supported, 1 project, with the install location in Applications below it, module labels Android, macOS and iOS, a Manage button and no progress bar. The Install Editor button is at the top right.",
+  "audit": true
+ },
+ {
+  "lesson": 1,
+  "media": "w01-hub-licenses.webp",
+  "caption": "Unity Hub on a Mac: Settings, then Licenses, with Add license at the top right. Your own license appears in the list below. Ignore the update banner if you see one.",
+  "alt": "Unity Hub Settings on a Mac with Licenses selected in the list at the left, above Projects, Installs, Templates and other entries. A blue banner at the top says a Hub update is available. In the Licenses panel one license entry is blurred, and the Add license button is outlined at the top right, beside Refresh.",
+  "audit": true
+ },
+ {
+  "lesson": 1,
+  "media": "w01-vsc-installed.webp",
+  "alt": "Visual Studio Code, Extensions view showing installed extensions: .NET Install Tool, C#, C# Dev Kit and Unity, each published by Microsoft, with Unity selected. The Unity extension's page is open beside the list and shows Disable and Uninstall buttons where Install used to be.",
+  "audit": true
+ },
+ {
+  "lesson": 1,
+  "media": "w01-editor-windows.webp",
+  "alt": "The Unity Editor with the title SampleScene - Courtyard - Windows, Mac, Linux - Unity 6.6 (6000.6.4f1). Four outlined areas are labeled: Hierarchy at the left, listing SampleScene, Main Camera, Directional Light and Global Volume; Scene and Game tabs in the center, with an Asset Store tab beside them and an empty Scene view; Inspector at the right, empty; and Project and Console tabs along the bottom, with the Assets folder open.",
+  "audit": true
+ },
+ {
+  "lesson": 1,
+  "media": "w01-editor-tower.webp",
+  "alt": "The Editor with Courtyard in the title bar. The Hierarchy lists Courtyard, marked with an asterisk because it is not saved yet, with Main Camera, Directional Light, Global Volume, Ground and Tower; Ground and Tower are outlined. The Scene view shows a flat square ground with a tall cylinder standing at its center, selected. The Inspector shows Tower with Position 0, 3, 0, Rotation 0, 0, 0 and Scale 2, 3, 2.",
+  "audit": true
+ },
+ {
+  "lesson": 1,
+  "media": "w01-game-aspect.webp",
+  "alt": "The Game view toolbar with the third dropdown open. Below two tick-box rows, Low Resolution Aspect Ratios and VSync (Game view only), it lists Free Aspect, 16:9 Aspect, 16:10 Aspect, Full HD (1920x1080), WXGA (1366x768), QHD (2560x1440) and 4K UHD (3840x2160), with 16:9 Aspect ticked and outlined.",
+  "audit": true
+ },
+ {
+  "lesson": 3,
+  "media": "w03-new-script.webp",
+  "caption": "The new script as it opens in Visual Studio Code. The class line is line 4. The folder name at the left is your project's, OrbCollector, not the one shown here.",
+  "alt": "Visual Studio Code with Spinner.cs open, in a folder named new in this picture. Line 1 reads using UnityEngine; line 4 reads public class Spinner : MonoBehaviour; an empty Start block is on lines 7 to 10 and an empty Update block on lines 13 to 16, each with a comment above it.",
+  "audit": true
+ },
+ {
+  "lesson": 3,
+  "media": "w03-missing-semicolon.webp",
+  "alt": "Visual Studio Code with Spinner.cs open, in a folder named bug in this picture, showing lines 3 to 25 of the file as typed. Line 17 is the current line and reads Debug.Log(message + gameObject.name) with no semicolon at its end.",
+  "audit": true
+ },
+ {
+  "lesson": 3,
+  "media": "w03-playing.webp",
+  "caption": "During Play: the yellow cube has turned part-way, and the Console holds the one entry that Start wrote. Each entry begins with the time and has a second line saying where it came from.",
+  "alt": "The Hierarchy lists the Arena objects with Pickup_Test selected at the bottom. The Game view during Play shows the yellow cube Pickup_Test, outlined and turned part-way, near the back left corner, and the Ball resting at the far wall. The Console has one entry, outlined and labeled Written once, by Start: a time in brackets, then Spinner started on Pickup_Test, with UnityEngine.Debug:Log (object) on the line below. The message counter reads 1.",
+  "audit": true
+ },
+ {
+  "lesson": 3,
+  "media": "w03-message.webp",
+  "alt": "Console with the Clear button outlined at the top left and one entry: a time in brackets, then Pickup ready on Pickup_Test, with UnityEngine.Debug:Log (object) on the line below. The message counter at the right reads 1; warnings and errors read 0.",
+  "audit": true
+ },
+ {
+  "lesson": 3,
+  "media": "w03-error-1.webp",
+  "alt": "Console with one red error entry: a time in brackets, then Assets/Scripts/Spinner.cs(17,45): error CS1002: ; expected. The error counter at the right reads 1.",
+  "audit": true
+ },
+ {
+  "lesson": 3,
+  "media": "w03-error-2.webp",
+  "alt": "Console with one red error entry: a time in brackets, then Assets/Scripts/Spinner.cs(25,47): error CS0117: 'Time' does not contain a definition for 'deltatime'. The error counter at the right reads 1.",
+  "audit": true
+ },
+ {
+  "lesson": 3,
+  "media": "w03-error-3.webp",
+  "alt": "Console with one red error entry: a time in brackets, then Assets/Scripts/Spinner.cs(25,13): error CS0120: An object reference is required for the non-static field, method, or property 'Transform.Rotate(float, float, float)', cut off at the right edge of the picture. The error counter at the right reads 1.",
+  "audit": true
+ },
+ {
+  "lesson": 4,
+  "media": "w04-hierarchy.webp",
+  "caption": "The Arena scene in the Hierarchy, with Ball outlined. When you click it, its row turns blue.",
+  "audit": true
+ },
+ {
+  "lesson": 4,
+  "media": "w04-scripts-three.webp",
+  "alt": "Project window showing Assets > Scripts with three scripts outlined together: BallController, CameraFollow and Spinner. CameraFollow, the newest, is the selected row.",
+  "audit": true
+ },
+ {
+  "lesson": 4,
+  "media": "w04-console-w.webp",
+  "alt": "Console scrolled to its newest lines: four W was pressed lines in view, each followed by UnityEngine.Debug:Log (object), and the top of a fifth at the bottom edge. The two Spinner lines are above, out of view. The counters at the right read 7 messages, 0 warnings and 0 errors.",
+  "audit": true
+ },
+ {
+  "lesson": 5,
+  "media": "w05-start.webp",
+  "alt": "Game view from behind and above the Ball: the red Ball at rest on the Floor in the middle of the picture, the far wall and the right-hand wall behind it, and a corner of the yellow Ramp at the lower left. There are no cubes.",
+  "audit": true
+ },
+ {
+  "lesson": 5,
+  "media": "w05-through.mp4",
+  "caption": "With Is Trigger ticked, the Ball rolls into the Pickup instead of bumping off it.",
+  "alt": "The Game view, labeled Is Trigger ticked: the Ball rolls back toward the yellow Pickup cube beside the Ramp, goes into it without being pushed away, and comes to rest overlapping the cube.",
+  "audit": true
+ },
+ {
+  "lesson": 5,
+  "media": "w05-rotator.webp",
+  "caption": "The whole Inspector for Pickup. Rotator (Script) is the last component, with Spin 45, 90, 45 outlined.",
+  "alt": "Inspector for Pickup with Tag Pickup, Position -4, 1, -4, Scale 0.6, 0.6, 0.6, Box Collider with Is Trigger ticked, Mesh Renderer unfolded, and at the bottom Rotator (Script) with Spin X 45, Y 90, Z 45 outlined, above the PickupYellow material.",
+  "audit": true
+ },
+ {
+  "lesson": 5,
+  "media": "w05-ontrigger.webp",
+  "caption": "The end of BallController.cs in Visual Studio Code after this step: the new method sits between the end of FixedUpdate and the final brace. Your line numbers will be lower, and your folder is named OrbCollector.",
+  "alt": "Visual Studio Code with BallController.cs open at its end. FixedUpdate ends with rb.AddForce(moveInput * force); and a closing brace. Below it are a comment and the new method void OnTriggerEnter(Collider other), which holds if (other.CompareTag(\"Pickup\")), Debug.Log(\"Touched a pickup\"); and Destroy(other.gameObject);. The closing brace of the class is at the bottom edge. The line numbers shown run from 57 to 77.",
+  "audit": true
+ },
+ {
+  "lesson": 5,
+  "media": "w05-score-fields.webp",
+  "alt": "Inspector for Ball. Ball Controller (Script) shows Force 20, then Score 0 and Total Pickups 8, which are outlined.",
+  "audit": true
+ },
+ {
+  "lesson": 5,
+  "media": "w05-score-console.webp",
+  "alt": "Console scrolled to its last lines: Score: 5, Score: 6, Score: 7, Score: 8 and then You win!. The earlier lines, Score: 1 to Score: 4, are above, out of view. The counters read 9 messages, 0 warnings and 0 errors.",
+  "audit": true
+ },
+ {
+  "lesson": 5,
+  "media": "w05-scoretext.webp",
+  "alt": "Inspector for ScoreText. Rect Transform shows the anchor preset reading top and left, with Pos X 220, Pos Y -40, Pos Z 0, Width 400 and Height 60 outlined. Below, TextMeshPro - Text (UI) shows Score: 0 / 8 in the Text Input box and Font Size 36.",
+  "audit": true
+ },
+ {
+  "lesson": 5,
+  "media": "w05-wired.webp",
+  "alt": "Inspector for Ball. Ball Controller (Script) shows Force 20, Score 0, Total Pickups 8, then two outlined fields: Score Text reading ScoreText (Text Mesh Pro UGUI) and Win Text reading WinText (Text Mesh Pro UGUI).",
+  "audit": true
+ },
+ {
+  "lesson": 5,
+  "media": "w05-saved.webp",
+  "caption": "Saved: no asterisk after Arena at the top of the Hierarchy. Canvas and its two texts are further down, below the edge of this picture.",
+  "alt": "Hierarchy with Arena at the top and no asterisk after it, listing Main Camera, Directional Light, Global Volume, Floor, Wall_North, Wall_South, Wall_East, Wall_West, Ramp, Ball, Pickup and Pickup (1) through Pickup (7). The list continues below the edge of the picture.",
+  "audit": true
+ },
+ {
+  "lesson": 6,
+  "media": "w01-hub-create.webp",
+  "alt": "Unity Hub New project screen from week 1. The dropdown reads Core and the Universal 3D template is selected. In the panel on the right, the Project name box is outlined and reads Courtyard, the week 1 name; yours is Dodge. The Unity organization and Location boxes are blurred. Create project is outlined at the bottom right.",
+  "audit": true
+ },
+ {
+  "lesson": 6,
+  "media": "w06-preview.mp4",
+  "alt": "The Game view of Dodge: orange Hazard spheres drop at random spots onto the gray Floor while the blue Player capsule moves between them. Hazards arrive more and more often, and each one vanishes a few seconds after it lands.",
+  "audit": true
+ },
+ {
+  "lesson": 6,
+  "media": "w06-scripts-folder.webp",
+  "alt": "Project window. The folder list shows Assets with Scenes, Scripts, Settings and TutorialInfo. Scripts is selected, and the right side shows Assets > Scripts holding one script, PlayerMover.",
+  "audit": true
+ },
+ {
+  "lesson": 6,
+  "media": "w06-constraints.webp",
+  "caption": "Constraints opened on the Rigidbody, with Freeze Rotation X, Y and Z ticked. This picture was taken a few steps later, so Player Mover (Script) is already below it.",
+  "alt": "Inspector for Player with Position 0, 1, 0 and Scale 1, 1, 1. In the Rigidbody, Constraints is open: Freeze Position X, Y and Z are not ticked, and Freeze Rotation X, Y and Z are ticked and outlined. Below are Player Mover (Script) with Speed 6 and the PlayerBlue material.",
+  "audit": true
+ },
+ {
+  "lesson": 6,
+  "media": "w06-mover.webp",
+  "alt": "Inspector for Player. Below the Rigidbody, Player Mover (Script) shows Script PlayerMover and Speed 6, with the PlayerBlue material under it.",
+  "audit": true
+ },
+ {
+  "lesson": 6,
+  "media": "w06-hazard.webp",
+  "alt": "Inspector for Hazard with Position 0, 6, 0 and Scale 0.8, 0.8, 0.8, then Sphere (Mesh Filter), Sphere Collider with Is Trigger not ticked, Mesh Renderer, and a Rigidbody at the bottom with Mass 1 and Use Gravity ticked.",
+  "audit": true
+ },
+ {
+  "lesson": 6,
+  "media": "w06-clean.webp",
+  "caption": "Back to five objects in the Hierarchy. The prefab stays in the Prefabs folder, which is not in this picture.",
+  "alt": "Hierarchy listing SampleScene with Main Camera, Directional Light, Global Volume, Floor and Player, and no Hazard. Beside it, the Game view at 16:9 Aspect shows the blue Player standing on the empty Floor.",
+  "audit": true
+ },
+ {
+  "lesson": 6,
+  "media": "w06-spawn.mp4",
+  "caption": "About twenty seconds of play: the gap between hazards shrinks as you watch. This clip was recorded with the cleanup from Part 6, so its hazards vanish after 6 seconds. Yours stay where they land for now.",
+  "alt": "The Game view, labeled One hazard every 2 seconds at first, then quicker; each lives 6 seconds: orange spheres drop onto the Floor at random spots around the blue Player, arriving more and more often, and each one disappears a few seconds after landing.",
+  "audit": true
+ },
+ {
+  "lesson": 6,
+  "media": "w06-piling.webp",
+  "alt": "Play mode. The Hierarchy lists SampleScene* with Main Camera, Directional Light, Global Volume, Floor, Player and Spawner, then eleven Hazard(Clone) entries. In the Game view, orange spheres lie on the Floor around the blue Player and one more is still falling.",
+  "audit": true
+ },
+ {
+  "lesson": 6,
+  "media": "w06-twenty.webp",
+  "alt": "Play mode. The Hierarchy lists SampleScene with Main Camera, Directional Light, Global Volume, Floor, Player and Spawner, then six Hazard(Clone) entries. In the Game view, five orange spheres lie on the Floor around the blue Player; the sixth is out of view.",
+  "audit": true
+ },
+ {
+  "lesson": 7,
+  "media": "w07-title.webp",
+  "caption": "Compare the version in your title bar. The last word in angle brackets, <Metal> here, depends on your computer.",
+  "alt": "Editor title bar on a Mac: SampleScene - Dodge - Windows, Mac, Linux - Unity 6.6 (6000.6.4f1) <Metal>.",
+  "audit": true
+ },
+ {
+  "lesson": 7,
+  "media": "w07-play.webp",
+  "alt": "Game view in Play: the blue Player capsule on the gray Floor, with three orange hazard spheres that have landed around it.",
+  "audit": true
+ },
+ {
+  "lesson": 7,
+  "media": "w07-panel.webp",
+  "alt": "Game view in Edit mode: a dark see-through panel over the whole view, the words Game over in large white text in the middle, a white Restart button below them, and a dimmed Lives: 3 in the top-left corner. The Player capsule shows through behind the words.",
+  "audit": true
+ },
+ {
+  "lesson": 7,
+  "media": "w07-over.webp",
+  "caption": "At Lives: 0 the panel appears. No hazard happens to be in view in this picture; any hazards on your screen stop where they are.",
+  "alt": "Game view in Play at game over: a dimmed Lives: 0 in the top-left corner, the words Game over and a Restart button on the dark panel, and the Player capsule behind them. No hazards are in view.",
+  "audit": true
+ },
+ {
+  "lesson": 8,
+  "media": "w08-clip-preview.webp",
+  "caption": "The clip in the Inspector. Its preview is at the very bottom: the play button is the triangle at the right end of the bar labeled hit.",
+  "alt": "Inspector titled Hit (Audio Clip) Import Settings. At the bottom, a bar labeled hit has a triangle play button at its right end, above an orange waveform and the line hit, Vorbis, 44100 Hz, Mono, 00:00.220.",
+  "audit": true
+ },
+ {
+  "lesson": 8,
+  "media": "w08-sparks.webp",
+  "caption": "Compare your main section values. Start Color is already orange here; you set it in the next step. Rotation X -90 is Unity's default for a new Particle System, so leave it.",
+  "alt": "Inspector for Sparks: Position 0, 0, 0 and Rotation X -90. Particle System main section: Looping unticked, Start Lifetime 0.5, Start Speed 4, Start Size 0.15, Start Color orange, Simulation Space World, Play On Awake unticked.",
+  "audit": true
+ },
+ {
+  "lesson": 9,
+  "media": "w09-open.webp",
+  "caption": "Compare your Hierarchy: Player holds Sparks, and GameManager is there. The Game view shows the Game over panel because Play is off, which is normal.",
+  "alt": "Hierarchy of SampleScene: Main Camera, Directional Light, Global Volume, Floor, Player containing Sparks, Spawner, Canvas containing LivesText and GameOverPanel (which holds GameOverText and RestartButton), EventSystem and GameManager. Beside it, the Game view at 16:9 Aspect shows the Game over panel with a Restart button and a dimmed Lives: 3.",
+  "audit": true
+ },
+ {
+  "lesson": 9,
+  "media": "w09-menu-hierarchy.webp",
+  "alt": "Hierarchy of MainMenu: Main Camera, Directional Light, Canvas holding Panel, TitleText, PlayButton and QuitButton (QuitButton is selected), then EventSystem. MenuController, at the bottom, is added in the next part.",
+  "audit": true
+ },
+ {
+  "lesson": 9,
+  "media": "w09-onclick.webp",
+  "caption": "This is PlayButton after the next step: On Click () calls MenuController.PlayGame. Until you choose it, the dropdown reads No Function. Three components above Button are folded here to save room.",
+  "alt": "Inspector for PlayButton with Rect Transform, Canvas Renderer and Image folded. In Button, the On Click () list has one entry: Runtime Only, MenuController (Menu Controller) in the object field, and MenuController.PlayGame in the function dropdown.",
+  "audit": true
+ },
+ {
+  "lesson": 9,
+  "media": "w09-scene-list.webp",
+  "caption": "Scene List in Build Profiles: Scenes/MainMenu is 0 and Scenes/SampleScene is 1, both ticked.",
+  "alt": "Build Profiles window with Scene List selected at the top left and, below it, the words No build profiles in your project. The list on the right has two ticked rows: Scenes/MainMenu numbered 0 and Scenes/SampleScene numbered 1. An Add Open Scenes button is under the list.",
+  "audit": true
+ },
+ {
+  "lesson": 9,
+  "media": "w09-platforms.webp",
+  "caption": "The Platform Browser, opened by Add Build Profile. Choose your own system under Desktop, then click Add Build Profile at the bottom right. This picture is from a Mac, so macOS is selected and Windows looks dimmed.",
+  "alt": "Platform Browser window. On the left, groups named Mobile, Desktop, XR, Web and Console. Under Desktop, macOS is selected with a blue border, and Windows and Linux beside it are dimmed. On the right, the heading macOS, a Name box that reads macOS, and an Add Build Profile button at the bottom right.",
+  "audit": true
+ },
+ {
+  "lesson": 9,
+  "media": "w09-profile.webp",
+  "caption": "The new profile from step 7, marked Active. Build is at the bottom of the window. You can ignore the two notices that have Dismiss buttons.",
+  "alt": "Build Profiles window: on the left, under Build Profiles, a macOS profile with a green Active label. On the right, the heading macOS Build Profile, two notices with Dismiss buttons, and Platform Settings. Along the bottom, the buttons Cloud Build, Build, and Build And Run.",
+  "audit": true
+ },
+ {
+  "lesson": 10,
+  "media": "w10-new.webp",
+  "caption": "Your new project should look like this, with the Hierarchy on the left. This picture was taken a few steps later, so the Game tab is already open and reads 16:9 Aspect.",
+  "alt": "Left part of the Editor window, titled SampleScene - Hop. The Hierarchy lists SampleScene with Main Camera, which is selected, and Global Light 2D. Beside it the Game tab is open, set to 16:9 Aspect, showing an empty dark blue view. The Inspector is outside the picture.",
+  "audit": true
+ },
+ {
+  "lesson": 10,
+  "media": "w10-import.webp",
+  "caption": "The import settings after Apply, shown here with only Hero selected: Sprite Mode Single, Pixels Per Unit 32, Filter Mode Point (no filter), Compression None. Grass and Dirt should read the same.",
+  "alt": "Inspector titled Hero (Texture 2D) Import Settings: Texture Type Sprite (2D and UI), Sprite Mode Single, Pixels Per Unit 32, Filter Mode Point (no filter), Compression None. The preview at the bottom shows Hero, 32x32.",
+  "audit": true
+ },
+ {
+  "lesson": 10,
+  "media": "w10-sprites.webp",
+  "alt": "Project window showing Assets > Sprites as a list: Dirt, Grass and Hero, each with a small picture. Hero and the Sprites folder are ringed in yellow. The folder tree on the left shows Scenes, Scripts, Settings and Sprites.",
+  "audit": true
+ },
+ {
+  "lesson": 10,
+  "media": "w10-palette.webp",
+  "caption": "Your palette holds two tiles: Grass and Dirt. The Active Tilemap box in this picture reads Tilemap; in your project it reads Level, and you check it in the steps below.",
+  "alt": "Tile Palette window. The Active Tilemap box near the top reads Tilemap, the palette dropdown reads HopPalette, and the grid below holds two tiles side by side: Grass on the left and Dirt on the right.",
+  "audit": true
+ },
+ {
+  "lesson": 10,
+  "media": "w10-floor.webp",
+  "alt": "Scene view with a floor two rows tall running across the whole picture: dirt at the bottom, grass on top. The floor has an orange outline because Level is selected, and the red and green move arrows sit just above it.",
+  "audit": true
+ },
+ {
+  "lesson": 10,
+  "media": "w10-hero.webp",
+  "caption": "Gravity Scale is 3. Constraints is folded in this picture: open it to see Freeze Rotation Z ticked. The Box Collider 2D at the bottom is added in the next step.",
+  "alt": "Inspector for Hero: Tag Player, Position -7, -2, 0. Sprite Renderer with Sprite Hero and Order in Layer 1. Rigidbody 2D with Body Type Dynamic, Mass 1 and Gravity Scale 3; its Constraints section is folded. A Box Collider 2D follows below.",
+  "audit": true
+ },
+ {
+  "lesson": 1,
+  "media": "w01-vsc-installed.webp",
+  "caption": "After the install: Unity is in the installed list, with the extensions it brings along (.NET Install Tool, C# and C# Dev Kit).",
+  "alt": "The Extensions view of Visual Studio Code showing installed extensions: .NET Install Tool, C#, C# Dev Kit and Unity, each by Microsoft.",
+  "audit": true
  }
 ]
