@@ -1,6 +1,6 @@
 import { hasModulePages, lessonSessions, orderedLessons, statedObjectives, type Course, type Delivery, type Language, type Lesson, type Online, type Session, type SessionKind } from '@folio/core';
 import { courseSoFar, dueWords, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, nextReading, readBefore, sharedComponent } from './continuity';
-import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, testAsk, trueFalseOrder, universityRubric } from './scales';
+import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, judgedLine, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 import { LIVE_ASKS, MIXED_ASKS, isLiveOnline, isMixedOnline, liveBackground, runOfShow } from './live';
 import { ONLINE_ASKS, moduleAsk, onlineBackground, onlineHomeworkLine } from './online';
@@ -148,6 +148,7 @@ function gradingLine(course: Course): string {
   const items = course.grading.map((g) => (g.weight ? `${g.item} (${g.weight}%)` : g.item)).join(', ');
   return [
     items ? `The course is graded by: ${items}.` : '',
+    judgedLine(course),
     // Told that every piece of work "says which one", a course named its final assessment in a dozen materials.
     'Anything the brief or the grading has happen in class, such as a student presentation, a debate or a test, needs a place in the lesson plans; an assignment that prepares for a graded component says which one, and other materials need not. State a component\'s share of the course grade only as the grading gives it; never infer one. Points within a quiz or test are another matter: the plan sets them.',
     scaleLine(course),

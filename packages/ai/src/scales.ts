@@ -67,3 +67,24 @@ export function gradedPapers(course: Course, lesson: Lesson): string {
   if (lesson.homework.kind === 'test') return `The test or quiz this lesson holds has its own paper: the plan gives it its time (most of the lesson for a unit test or exam; ten to twenty minutes for a short quiz, which tests earlier lessons and not what this lesson has just taught), says what it covers, how the room is set and what students may use, and writes no questions. ${NOTHING_SHOWN}`;
   return course.materials.quiz.enabled ? QUIZ_IS_MATERIAL : QUIZ_IN_PLAN;
 }
+
+/**
+ * How each component is judged, as one fact for every writer: left to each, a project was "scored by its rubric" on one
+ * page and "complete or incomplete" on three others, and "complete" meant two different things across the weeks.
+ */
+export function judgedLine(course: Course): string {
+  if (!course.grading.length) return '';
+  const complete = course.grading.filter((g) => g.judged === 'complete').map((g) => `"${g.item}"`);
+  // A course outlined before components carried this says nothing about it, rather than contradict its brief.
+  const known = course.grading.some((g) => g.judged);
+  return [
+    !known
+      ? ''
+      : complete.length
+        ? `Graded complete or incomplete: ${complete.join(', ')}; complete means every criterion of its rubric at the second-highest level or above. Every other component is scored by its points or its rubric's levels, and is never called complete or incomplete.`
+        : 'Every component is scored by its points or its rubric\'s levels; none is graded complete or incomplete.',
+    'Pieces of one component count equally toward it unless the brief says otherwise. Say all of this the same way wherever graded work is described.',
+  ]
+    .filter(Boolean)
+    .join(' ');
+}

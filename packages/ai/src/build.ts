@@ -95,9 +95,13 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
   // finished and be wrong. They stay missing, for Resume to write once the plan is.
   const failedPlans = new Map<string, InferenceError>();
   const dropUnplanned = (): void => {
+    // Later plans go with it too: each is written from what the lessons before it hold, and one written past a gap
+    // (week 13 without week 12) is wrong in ways nobody sees. Resume writes them in order.
+    const first = Math.min(...[...failedPlans.keys()].map(position));
+    for (const t of pending) if (t.kind === 'plan' && position(t.lessonId) > first && !failedPlans.has(t.lessonId)) failedPlans.set(t.lessonId, failedPlans.values().next().value!);
     for (let i = pending.length - 1; i >= 0; i--) {
       const t = pending[i]!;
-      const error = BUILT_ON_PLAN.has(t.kind) ? failedPlans.get(t.lessonId) : undefined;
+      const error = BUILT_ON_PLAN.has(t.kind) || t.kind === 'plan' ? failedPlans.get(t.lessonId) : undefined;
       if (!error) continue;
       pending.splice(i, 1);
       summary.failed += 1;

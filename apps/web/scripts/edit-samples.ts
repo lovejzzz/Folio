@@ -37,6 +37,8 @@ interface Edit {
   alt?: string;
   /** Which placement, when the page shows that file more than once (1 is the first). */
   nth?: number;
+  /** How each graded component is judged, by its name: what the outline now records, for a sample outlined before it did. */
+  judged?: Record<string, 'levels' | 'complete'>;
   /** Replace every occurrence, not just the one. */
   all?: boolean;
   /** Why, for whoever reads the file later. */
@@ -139,6 +141,10 @@ function editOne(name: SampleName): void {
       Object.assign(one, edit.caption !== undefined ? { caption: edit.caption } : {}, edit.alt !== undefined ? { alt: edit.alt } : {});
       continue;
     }
+    if (edit.judged !== undefined) {
+      for (const g of course.grading) g.judged = edit.judged[g.item] ?? 'levels';
+      continue;
+    }
     if (edit.settle !== undefined) {
       settle(course, edit.lesson, edit.settle, name);
       continue;
@@ -156,6 +162,8 @@ function editOne(name: SampleName): void {
   const edited = parseCourse(course);
   for (const lesson of orderedLessons(edited))
     for (const [kind, meta] of Object.entries(lesson.gen)) if (meta) meta.basis = computeBasis(edited, lesson, kind as keyof typeof lesson.gen);
+  // As the pipeline now does when it makes a page: what a student may skip has no deadline.
+  for (const lesson of orderedLessons(course)) for (const block of lesson.page) if (block.type === 'checklist') for (const item of block.items) if (/\boptional\b/i.test(item.label)) item.due = '';
   writeFileSync(path, JSON.stringify(edited));
   console.log(`${name}: ${edits.length} edits`);
 }

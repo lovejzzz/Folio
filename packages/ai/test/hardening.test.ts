@@ -28,7 +28,7 @@ import { fakeInference, planDraft, smallCourse } from './fake';
 const count = (text: string, part: string) => text.split(part).length - 1;
 
 describe('a lesson plan that fails', () => {
-  it('holds back what is written from it, so Resume writes those parts once the plan is', async () => {
+  it('holds back what is written from it and the lessons after it, so Resume writes them in order', async () => {
     const store = new CourseStore(smallCourse());
     const [first, second] = store.getState().lessonOrder as [string, string];
     const asked: string[] = [];
@@ -44,14 +44,15 @@ describe('a lesson plan that fails', () => {
       { inference, getCourse: store.getState, commit: (_t, c) => store.apply(c, { label: { key: 'b' }, source: 'ai', undoable: false }), onEvent: (e) => void (e.type === 'error' && errors.push(e.target)), signal: new AbortController().signal },
       targets,
     );
-    // Lesson 1: only its plan was asked for. Lesson 2's plan was written, so its other parts were asked for.
-    expect(asked.filter((t) => t === 'folio_plan')).toHaveLength(2);
-    expect(asked.filter((t) => t !== 'folio_plan')).toHaveLength(6);
+    // Lesson 1: only its plan was asked for. Lesson 2's plan would be written from lesson 1's, so it waits too.
+    expect(asked.filter((t) => t === 'folio_plan')).toHaveLength(1);
+    expect(asked.filter((t) => t !== 'folio_plan')).toHaveLength(0);
     expect(errors.filter((t) => t.lessonId === first)).toHaveLength(7);
+    expect(errors.filter((t) => t.lessonId === second)).toHaveLength(7);
     expect(summary.fatal).toBeNull();
-    expect(summary.failed).toBe(13);
-    expect(missingTargets(store.getState()).filter((t) => t.lessonId === first)).toHaveLength(7);
-    expect(store.getState().lessons[second]!.gen.plan).toBeTruthy();
+    expect(summary.failed).toBe(14);
+    expect(missingTargets(store.getState())).toHaveLength(14);
+    expect(store.getState().lessons[second]!.gen.plan).toBeFalsy();
   });
 });
 

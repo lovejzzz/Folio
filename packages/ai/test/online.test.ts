@@ -281,3 +281,22 @@ describe('a file block named by a sentence', () => {
     expect(page[at + 1]).toMatchObject({ type: 'text', text: sentence });
   });
 });
+
+describe('an optional item on the checklist', () => {
+  it('has no due day', () => {
+    const d = draft();
+    const page = modulePage({ ...d, checklist: [{ ...d.checklist[0]!, label: 'Optional reading for next week', due: 'Sunday night' }, ...d.checklist.slice(1)] }, 'en');
+    const list = page.find((b) => b.type === 'checklist');
+    expect(list?.type === 'checklist' && list.items[0]!.due).toBe('');
+  });
+});
+
+describe('how a graded component is judged', () => {
+  it('is one fact every writer is given, and says nothing for a course outlined before it was recorded', () => {
+    const c = online();
+    const graded = { ...c, grading: [{ id: 'g_1', item: 'Weekly builds', weight: 40, judged: 'complete' as const }, { id: 'g_2', item: 'Final project', weight: 60, judged: 'levels' as const }] };
+    expect(courseBackground(graded)).toMatch(/Graded complete or incomplete: "Weekly builds"; complete means every criterion of its rubric at the second-highest level or above\. Every other component is scored/);
+    expect(courseBackground(graded)).toMatch(/Pieces of one component count equally/);
+    expect(courseBackground({ ...c, grading: [{ id: 'g_1', item: 'Weekly builds', weight: 100 }] })).not.toMatch(/complete or incomplete: "/);
+  });
+});

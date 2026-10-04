@@ -187,7 +187,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   }
   // The teacher's own policies, carried over: a syllabus's late and integrity rules were left on the file.
   course.policies = (outline.policies ?? '').trim();
-  course.grading = graded.map((g) => ({ id: newId('g'), item: g.item.trim(), weight: whole ? 100 : (g.weight ?? 0) }));
+  course.grading = graded.map((g) => ({ id: newId('g'), item: g.item.trim(), weight: whole ? 100 : (g.weight ?? 0), judged: g.complete ? ('complete' as const) : ('levels' as const) }));
   for (const s of req.sources) {
     const source = createSource(s.title, s.text, 'file');
     course.sources[source.id] = source;

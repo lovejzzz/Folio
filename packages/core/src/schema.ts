@@ -280,7 +280,8 @@ export type Override = z.infer<typeof OverrideSchema>;
 
 /** One component of the course grade, e.g. "Midterm exam" at 30%. */
 /** A weight of 0 is one the brief didn't state: the component is shown without a share until the teacher gives one. */
-export const GradeItemSchema = z.object({ id, item: text, weight: z.number().min(0).max(100) });
+/** "complete" when its pieces are graded complete or incomplete; otherwise they are scored (points, rubric levels). One fact, so every page says the same. */
+export const GradeItemSchema = z.object({ id, item: text, weight: z.number().min(0).max(100), judged: z.enum(['levels', 'complete']).optional() });
 export type GradeItem = z.infer<typeof GradeItemSchema>;
 
 export const CourseStatusSchema = z.enum(['planning', 'building', 'ready']);

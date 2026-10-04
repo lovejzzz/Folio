@@ -5472,7 +5472,7 @@
  },
  {
   "find": "In week 13 you playtest and polish it as a weekly build. Together they make up 30% of your course grade.",
-  "replace": "Together the three pieces make up 30% of your course grade. In week 13 you playtest and polish the game, and that work counts as a weekly build, not toward the 30%.",
+  "replace": "Together the three pieces make up 30% of your course grade, and they count equally. In week 13 you playtest and polish the game, and that work counts as a weekly build, not toward the 30%.",
   "why": "'Together they' read as if the week 13 weekly build were part of the 30%.",
   "review": true,
   "course": true
@@ -5703,7 +5703,7 @@
  },
  {
   "find": "arrange how students find a classmate to swap builds with in week 9 and where playtesters come from in week 13.",
-  "replace": "arrange how students find a classmate to swap builds with in week 9 and where playtesters come from in week 13. Decide how the three pieces of the Final game project (the proposal in week 11, the prototype in week 12, the showcase in week 14) share its 30%, and tell students.",
+  "replace": "arrange how students find a classmate to swap builds with in week 9 and where playtesters come from in week 13. The student’s page says the three pieces of the Final game project (the proposal in week 11, the prototype in week 12, the showcase in week 14) count equally toward its 30%: confirm or change that.",
   "why": "Nothing says how the 30% is shared, and that is the instructor’s to decide.",
   "review": true,
   "course": true
@@ -6112,5 +6112,11 @@
   "media": "w14-demo.mp4",
   "caption": "MoonHopper is the example name this page uses for a finished game. This is one round of it: pickups, sparks and a win. Your own demo, later this week, also shows a loss and a restart.",
   "review": true
+ },
+ {
+  "judged": {
+   "Weekly builds": "complete"
+  },
+  "why": "The brief grades weekly builds complete or incomplete; the other components are scored."
  }
 ]

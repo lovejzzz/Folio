@@ -63,6 +63,15 @@ function Row({ course, item, i }: { course: Course; item: GradeItem; i: number }
             <X size={13} strokeWidth={1.5} />
           </IconButton>
         </span>
+        {/* One fact for every page Folio writes: this component's work is scored, or it is complete or incomplete. */}
+        <button
+          type="button"
+          aria-label={t.tasks.gradeJudgedOf(name)}
+          className="no-print mt-0.5 block text-12 font-normal text-ink-2 underline decoration-rule-strong underline-offset-2 hover:text-ink"
+          onClick={() => set({ judged: item.judged === 'complete' ? 'levels' : 'complete' })}
+        >
+          {item.judged === 'complete' ? t.tasks.gradeComplete : t.tasks.gradeScored}
+        </button>
       </td>
       <td className="border-b border-rule px-2 py-2.5 text-right text-ink-2">
         <InlineNumber

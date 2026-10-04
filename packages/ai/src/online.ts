@@ -81,6 +81,9 @@ function calloutBlock(id: string, b: BlockDraft): PageBlock {
   return { id, type: 'callout', kind, title: echo ? '' : title, text: text.includes('\n\n') ? text : text.replace(/\n/g, '\n\n') };
 }
 
+/** A checklist item the student may skip, by how its label says so. */
+const OPTIONAL = /\boptional\b/i;
+
 /** A value a student types is typed with the keyboard: a typographic minus before a digit does not parse in a number box. */
 const typed = (text: string) => text.replace(/\u2212(?=\d)/g, '-');
 
@@ -134,7 +137,8 @@ const WRAP_UP: Record<string, string> = { en: 'Wrap-up', 'zh-CN': '本周小结'
 export function modulePage(v: ModuleDraft, language: string): PageBlock[] {
   return [
     { id: newId('x'), type: 'text', text: v.intro },
-    { id: newId('x'), type: 'checklist', items: v.checklist.map((c) => ({ id: newId('x'), ...c })) },
+    // What a student may skip has no deadline: an optional reading "due Sunday night" read as required.
+    { id: newId('x'), type: 'checklist', items: v.checklist.map((c) => ({ id: newId('x'), ...c, due: OPTIONAL.test(c.label) ? '' : c.due })) },
     ...v.parts.flatMap((p): PageBlock[] => [{ id: newId('x'), type: 'heading', level: 2, text: p.title }, ...p.blocks.flatMap(pageBlocks)]),
     { id: newId('x'), type: 'heading', level: 2, text: WRAP_UP[language] ?? WRAP_UP.en! },
     { id: newId('x'), type: 'text', text: v.wrapUp },
@@ -151,7 +155,7 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
   const problems: Problem[] = [];
   const want = (course.online?.hoursPerWeek ?? 9) * 60;
   // Optional work is not owed: counted, it let a week reach its hours on a challenge nobody has to do.
-  const got = v.checklist.reduce((n, c) => n + (/\boptional\b/i.test(c.label) ? 0 : c.minutes), 0);
+  const got = v.checklist.reduce((n, c) => n + (OPTIONAL.test(c.label) ? 0 : c.minutes), 0);
   if (Math.abs(got - want) > want * HOURS_SLACK) problems.push(issue(`The checklist adds up to ${got} minutes; the week is ${want} minutes of student work. Change the work or the estimates so they agree`));
   const liveMinutes = v.live.reduce((n, s) => n + s.minutes, 0);
   if (isMixedOnline(course) && liveMinutes !== (course.online?.liveMinutes || 75)) problems.push(issue(`The live session's segments add up to ${liveMinutes} minutes; the session is ${course.online?.liveMinutes || 75}`));

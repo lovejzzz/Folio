@@ -60,6 +60,7 @@ export const OutlineDraft = z.object({
       z.object({
         item: line.describe('A graded component, e.g. "Problem sets" or "Final exam"'),
         weight: z.number().min(0).max(100).nullable().default(null).describe('Its share of the final grade, in percent; null when the brief gives none'),
+        complete: z.boolean().default(false).describe('True only when the brief says this component is graded complete or incomplete (pass or fail, credit for doing it); false when it is scored'),
       }),
     )
     .default([])
