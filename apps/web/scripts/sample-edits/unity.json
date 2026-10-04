@@ -1856,6 +1856,234 @@
   "why": "The page was followed in Unity with sprites drawn for it; the route over the three platforms was run with timed keys."
  },
  {
+  "lesson": 11,
+  "slot": 1,
+  "src": "/samples/unity/media/w11-preview.mp4",
+  "poster": "/samples/unity/media/w11-preview.poster.webp"
+ },
+ {
+  "lesson": 11,
+  "slot": 2,
+  "src": "/samples/unity/media/w11-open.webp"
+ },
+ {
+  "lesson": 11,
+  "slot": 3,
+  "src": "/samples/unity/media/files/Hop-week10-end.zip"
+ },
+ {
+  "lesson": 11,
+  "slot": 4,
+  "src": "/samples/unity/media/files/HopAnimationArt.zip"
+ },
+ {
+  "lesson": 11,
+  "slot": 5,
+  "src": "/samples/unity/media/w11-import.webp"
+ },
+ {
+  "lesson": 11,
+  "slot": 6,
+  "src": "/samples/unity/media/w11-art.webp"
+ },
+ {
+  "lesson": 11,
+  "slot": 7,
+  "drop": true,
+  "why": "The Animation window was not captured at a readable size."
+ },
+ {
+  "lesson": 11,
+  "slot": 8,
+  "drop": true,
+  "why": "As above."
+ },
+ {
+  "lesson": 11,
+  "slot": 9,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 11,
+  "slot": 10,
+  "drop": true,
+  "why": "Not recorded: the steps describe the drag."
+ },
+ {
+  "lesson": 11,
+  "slot": 11,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 11,
+  "slot": 12,
+  "drop": true,
+  "why": "The finished diagram is pictured below."
+ },
+ {
+  "lesson": 11,
+  "slot": 13,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 11,
+  "slot": 14,
+  "src": "/samples/unity/media/w11-animator.webp"
+ },
+ {
+  "lesson": 11,
+  "slot": 15,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 11,
+  "slot": 16,
+  "drop": true,
+  "why": "The clip in the camera part shows Hero idle, running and jumping."
+ },
+ {
+  "lesson": 11,
+  "slot": 17,
+  "drop": true,
+  "why": "Not captured in Play."
+ },
+ {
+  "lesson": 11,
+  "slot": 18,
+  "src": "/samples/unity/media/w11-coin.webp"
+ },
+ {
+  "lesson": 11,
+  "slot": 19,
+  "drop": true,
+  "why": "The Animation window was not captured at a readable size."
+ },
+ {
+  "lesson": 11,
+  "slot": 20,
+  "src": "/samples/unity/media/w11-coins-placed.webp",
+  "caption": "The five coins as the Game view shows them before Play: none sits inside a tile."
+ },
+ {
+  "lesson": 11,
+  "slot": 21,
+  "src": "/samples/unity/media/w11-hierarchy.webp"
+ },
+ {
+  "lesson": 11,
+  "slot": 22,
+  "src": "/samples/unity/media/w07-importer.webp"
+ },
+ {
+  "lesson": 11,
+  "slot": 23,
+  "drop": true,
+  "why": "The open anchor presets grid was not captured."
+ },
+ {
+  "lesson": 11,
+  "slot": 24,
+  "src": "/samples/unity/media/w11-manager.webp"
+ },
+ {
+  "lesson": 11,
+  "slot": 25,
+  "drop": true,
+  "why": "The clip in the camera part shows the coins being collected."
+ },
+ {
+  "lesson": 11,
+  "slot": 26,
+  "src": "/samples/unity/media/w11-two-coins.webp",
+  "caption": "After three coins: the label reads Coins: 3."
+ },
+ {
+  "lesson": 11,
+  "slot": 27,
+  "src": "/samples/unity/media/w11-camera.webp"
+ },
+ {
+  "lesson": 11,
+  "slot": 28,
+  "src": "/samples/unity/media/w11-coins.mp4",
+  "poster": "/samples/unity/media/w11-coins.poster.webp"
+ },
+ {
+  "lesson": 11,
+  "slot": 29,
+  "drop": true,
+  "why": "Shown by the clip above."
+ },
+ {
+  "lesson": 11,
+  "slot": 30,
+  "src": "/samples/unity/media/files/Hop-week11-end.zip"
+ },
+ {
+  "lesson": 11,
+  "slot": 32,
+  "drop": true,
+  "why": "A student’s own notes cannot be pictured for them."
+ },
+ {
+  "lesson": 11,
+  "slot": 33,
+  "drop": true,
+  "why": "A student’s own notes cannot be pictured for them."
+ },
+ {
+  "lesson": 11,
+  "slot": 34,
+  "drop": true,
+  "why": "A student’s own notes cannot be pictured for them."
+ },
+ {
+  "lesson": 11,
+  "find": "eleven",
+  "replace": "ten",
+  "why": "The art file holds ten pictures.",
+  "all": true
+ },
+ {
+  "lesson": 11,
+  "find": "-4, -1, 0",
+  "replace": "-6, -2.5, 0",
+  "why": "Tried in Unity: with the page’s positions three coins sat half inside tiles and one could not be reached; these five are collected in one run."
+ },
+ {
+  "lesson": 11,
+  "find": "-1, 0, 0",
+  "replace": "-2.5, -0.5, 0",
+  "why": "Tried in Unity: with the page’s positions three coins sat half inside tiles and one could not be reached; these five are collected in one run."
+ },
+ {
+  "lesson": 11,
+  "find": "2, 1, 0",
+  "replace": "1.5, 1.5, 0",
+  "why": "Tried in Unity: with the page’s positions three coins sat half inside tiles and one could not be reached; these five are collected in one run."
+ },
+ {
+  "lesson": 11,
+  "find": "5, 2, 0",
+  "replace": "5.5, 3.5, 0",
+  "why": "Tried in Unity: with the page’s positions three coins sat half inside tiles and one could not be reached; these five are collected in one run."
+ },
+ {
+  "lesson": 11,
+  "find": "8, 3, 0",
+  "replace": "9, 5.5, 0",
+  "why": "Tried in Unity: with the page’s positions three coins sat half inside tiles and one could not be reached; these five are collected in one run."
+ },
+ {
+  "lesson": 11,
+  "settle": "*",
+  "why": "The page was followed in Unity with art drawn for it; the clips, the controller, the coins and the camera were built and run."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
@@ -4047,5 +4275,171 @@
   "replace": "If it does not, click Add Component, type Rigidbody and choose Rigidbody, not Rigidbody 2D.",
   "why": "Uses the way of adding a component that the course taught.",
   "review14": true
+ },
+ {
+  "lesson": 1,
+  "media": "w01-hub-installs.webp",
+  "caption": "Installs once the download has finished: one row, Unity 6.6 (6000.6.4f1), and no progress bar.",
+  "alt": "The Installs screen of Unity Hub with one row under UNITY 6: Unity 6.6 (6000.6.4f1), marked Silicon and Supported, 1 project, with a Manage button and no progress bar. The Install Editor button is at the top right."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-hub-core.webp",
+  "caption": "The dropdown beside the search box, open, with Core outlined."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-hub-create.webp",
+  "caption": "Check that Project name reads Courtyard, then find Create project at the bottom right."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-inspector-camera.webp",
+  "caption": "Main Camera in the Inspector: find the name box, Tag, Layer and the three Transform rows."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-project-window.webp",
+  "caption": "The Assets folder of a new project holds these five items."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-light.webp",
+  "caption": "Step 5: with Directional Light selected, check Position 0, 3, 0 and Rotation 50, -30, 0.",
+  "alt": "The Editor with Directional Light highlighted in the Hierarchy under SampleScene, and the Inspector showing its Transform with Position 0, 3, 0 and Rotation 50, -30, 0 outlined, above a Light section with General and Emission open."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-inspector-ground.webp",
+  "caption": "Ground: Scale reads 2, 1, 2 and every other box reads 0."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-inspector-tower.webp",
+  "caption": "Tower: Position Y reads 3 and Scale reads 2, 3, 2."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-editor-tower.webp",
+  "caption": "The tower stands on the ground, neither floating nor sunk, and Ground and Tower are in the Hierarchy.",
+  "alt": "The Editor with Courtyard in the title bar. The Hierarchy lists Main Camera, Directional Light, Global Volume, Ground and Tower, with Ground and Tower outlined. The Scene view shows a flat square ground with a tall cylinder standing at its center, and the Inspector shows Tower at Position 0, 3, 0 and Scale 2, 3, 2."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-editor-all.webp",
+  "caption": "All eleven entries are in the Hierarchy; this Scene view looks from behind the walls, so left and right are swapped."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-game-aspect.webp",
+  "caption": "The aspect dropdown in the Game view, with 16:9 Aspect chosen.",
+  "alt": "The Game view toolbar with the third dropdown open, listing Free Aspect, 16:9 Aspect, 16:10 Aspect, Full HD, WXGA, QHD and 4K UHD, with 16:9 Aspect ticked and outlined."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-inspector-camera-set.webp",
+  "caption": "Main Camera: Position 0, 16, -16, Rotation 45, 0, 0 and Field of View 60.",
+  "alt": "The Main Camera Inspector with Position 0, 16, -16, Rotation 45, 0, 0 and Scale 1, 1, 1 outlined in the Transform, and in the Camera section Field of View 60 outlined, with Physical Camera unticked."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-hub-licenses.webp",
+  "alt": "Unity Hub Settings on a Mac with Licenses selected in the list at the left, one license entry in the panel (blurred here), and the Add license button outlined at the top right."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-play.mp4",
+  "alt": "The Game view of the Courtyard at 16:9 Aspect. Play is clicked and its button turns into a blue square, the courtyard stays still for about ten seconds, and a second click turns the button back to a triangle."
+ },
+ {
+  "lesson": 2,
+  "media": "w01-hub-create.webp",
+  "alt": "Unity Hub New project screen with Core chosen and Universal 3D selected. The right panel shows the Project name box (it reads Courtyard here, from week 1), the Location box and the Create project button."
+ },
+ {
+  "lesson": 2,
+  "media": "w02-editor-new.webp",
+  "alt": "The Editor with the title Arena - OrbCollector - Windows, Mac, Linux - Unity 6.6 (6000.6.4f1) outlined. The Hierarchy lists Arena with Main Camera, Directional Light and Global Volume, the Game view shows an empty sky and ground, and the Project window shows Assets > Scenes holding Arena, outlined, and SampleScene."
+ },
+ {
+  "lesson": 2,
+  "media": "w02-light-orange.webp",
+  "alt": "Game view of the Arena under the Directional Light set to FF8A1F: the slate floor looks brown and the gray-blue walls look pinkish orange."
+ },
+ {
+  "lesson": 2,
+  "media": "w02-ball-rigidbody.webp",
+  "alt": "Ball Inspector from the top: Transform with Position 0, 6, -7, Sphere (Mesh Filter), Sphere Collider, Mesh Renderer, and the new Rigidbody outlined at the bottom with Mass 1, Linear Damping 0, Angular Damping 0.05 and Use Gravity ticked."
+ },
+ {
+  "lesson": 2,
+  "media": "w02-rolling.webp",
+  "caption": "Rolling down the ramp, about two seconds after pressing Play.",
+  "alt": "Game view during Play: the red-orange Ball on the yellow Ramp, most of the way down toward the far wall, in the lit Arena."
+ },
+ {
+  "lesson": 2,
+  "media": "w02-two-balls.webp",
+  "alt": "Game view during Play: two red-orange balls, Ball and Ball_Heavy, side by side on the yellow ramp, level with each other."
+ },
+ {
+  "lesson": 3,
+  "media": "w03-open.webp",
+  "alt": "The Editor with the title Arena - OrbCollector - Windows, Mac, Linux - Unity 6.6 (6000.6.4f1) outlined. The Hierarchy lists Arena with Main Camera, Directional Light, Global Volume, Floor, Wall_North, Wall_South, Wall_East, Wall_West, Ramp and Ball, and the Game view shows the slate arena with the yellow ramp and the red-orange ball above it."
+ },
+ {
+  "lesson": 3,
+  "media": "w03-attached.webp",
+  "alt": "Pickup_Test Inspector with Position -5, 1, 5, then Cube (Mesh Filter), Box Collider and Mesh Renderer, and at the bottom Spinner (Script) outlined, with Script Spinner, Speed 90, Is Spinning ticked and Message Spinner started on, above M_Ramp (Material)."
+ },
+ {
+  "lesson": 3,
+  "media": "w03-console-tab.webp",
+  "alt": "The Console tab outlined beside the Project tab. The Console is empty, with Clear, Collapse, Error Pause and Editor buttons at the left and three counters reading 0 at the right."
+ },
+ {
+  "lesson": 3,
+  "media": "w03-message.webp",
+  "alt": "Console with the Clear button outlined at the top left and one line reading Pickup ready on Pickup_Test."
+ },
+ {
+  "lesson": 3,
+  "media": "w03-error-2.webp",
+  "alt": "Console error Assets/Scripts/Spinner.cs(25,47): error CS0117: ‘Time’ does not contain a definition for ‘deltatime’"
+ },
+ {
+  "lesson": 3,
+  "media": "w03-error-3.webp",
+  "alt": "Console error Assets/Scripts/Spinner.cs(25,13): error CS0120: An object reference is required for the non-static field, method, or property ‘Transform.Rotate’, cut off at the right edge"
+ },
+ {
+  "lesson": 4,
+  "media": "w04-hierarchy.webp",
+  "alt": "Hierarchy listing Arena with Main Camera, Directional Light, Global Volume, Floor, Wall_North, Wall_South, Wall_East, Wall_West, Ramp, Ball, Pickup_Test and Pickup_Test_B, with Ball outlined."
+ },
+ {
+  "lesson": 4,
+  "media": "w04-rest.webp",
+  "alt": "Game view of the Arena from the camera at 0, 10, -14: the Ball resting on the floor at the right near the far wall, the Ramp in the middle, and the two Pickup_Test cubes at the far left. The side walls run out of the picture and the near corners are not in view."
+ },
+ {
+  "lesson": 4,
+  "media": "w04-ball-controller.webp",
+  "alt": "Inspector for Ball with Position 5, 1, 5, Sphere (Mesh Filter), then Sphere Collider, Mesh Renderer and Rigidbody folded to their headings, and Ball Controller (Script) outlined at the bottom."
+ },
+ {
+  "lesson": 4,
+  "media": "w04-console-w.webp",
+  "alt": "Console with four W was pressed lines in view and more below, a message counter reading 7, and the warning and error counters reading 0."
+ },
+ {
+  "lesson": 4,
+  "media": "w04-push.mp4",
+  "alt": "The Game view from the fixed camera, labeled Force 10, no damping: the Ball is pushed right along the floor to the side wall, then pushed back toward the Ramp, and it keeps rolling after each key is released."
+ },
+ {
+  "lesson": 4,
+  "media": "w04-tune.mp4",
+  "alt": "The Game view from the fixed camera, labeled Force 20, Linear Damping 1: the Ball is pushed right and coasts to a stop near the side wall, then is pushed diagonally toward the far wall and stops again."
  }
 ]
