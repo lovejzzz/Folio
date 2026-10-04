@@ -1423,8 +1423,9 @@
  {
   "lesson": 8,
   "slot": 19,
-  "src": "/samples/unity/media/w08-burst.webp",
-  "caption": "The moment of a hit: about twenty orange sparks."
+  "src": "/samples/unity/media/w08-hit.mp4",
+  "caption": "A hit: the burst of orange sparks, then one life fewer.",
+  "poster": "/samples/unity/media/w08-hit.poster.webp"
  },
  {
   "lesson": 8,
@@ -1671,6 +1672,190 @@
   "why": "The page was followed in Unity, a Mac build was made and started, and the build steps were rewritten from what the window shows."
  },
  {
+  "lesson": 10,
+  "slot": 1,
+  "src": "/samples/unity/media/w10-preview.mp4",
+  "poster": "/samples/unity/media/w10-preview.poster.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 2,
+  "drop": true,
+  "why": "The New project screen was pictured in week 1."
+ },
+ {
+  "lesson": 10,
+  "slot": 3,
+  "src": "/samples/unity/media/w10-new.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 4,
+  "drop": true,
+  "why": "An open dropdown was not captured."
+ },
+ {
+  "lesson": 10,
+  "slot": 5,
+  "src": "/samples/unity/media/w10-camera.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 6,
+  "drop": true,
+  "why": "Shown in the picture of the Sprites folder below."
+ },
+ {
+  "lesson": 10,
+  "slot": 7,
+  "src": "/samples/unity/media/files/HopSprites.zip"
+ },
+ {
+  "lesson": 10,
+  "slot": 8,
+  "src": "/samples/unity/media/w10-import.webp",
+  "caption": "The import settings for Hero: Sprite Mode Single, Pixels Per Unit 32, Filter Mode Point (no filter), Compression None."
+ },
+ {
+  "lesson": 10,
+  "slot": 9,
+  "src": "/samples/unity/media/w10-sprites.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 11,
+  "src": "/samples/unity/media/w10-grid.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 12,
+  "src": "/samples/unity/media/w10-palette.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 13,
+  "src": "/samples/unity/media/w10-floor.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 14,
+  "src": "/samples/unity/media/w10-level.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 15,
+  "drop": true,
+  "why": "The Layers list could not be pictured open."
+ },
+ {
+  "lesson": 10,
+  "slot": 16,
+  "src": "/samples/unity/media/w10-collider1.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 17,
+  "src": "/samples/unity/media/w10-collider2.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 18,
+  "src": "/samples/unity/media/w10-hero.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 19,
+  "drop": true,
+  "why": "Shown in the picture above."
+ },
+ {
+  "lesson": 10,
+  "slot": 20,
+  "src": "/samples/unity/media/w10-landed.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 21,
+  "drop": true,
+  "why": "The picture in the jump part shows the same component with all its fields."
+ },
+ {
+  "lesson": 10,
+  "slot": 22,
+  "src": "/samples/unity/media/w10-run.mp4",
+  "poster": "/samples/unity/media/w10-run.poster.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 23,
+  "src": "/samples/unity/media/w10-controller.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 24,
+  "drop": true,
+  "why": "The wire rectangle is too thin to show in a picture of this size."
+ },
+ {
+  "lesson": 10,
+  "slot": 25,
+  "src": "/samples/unity/media/w10-route.mp4",
+  "poster": "/samples/unity/media/w10-route.poster.webp"
+ },
+ {
+  "lesson": 10,
+  "slot": 26,
+  "src": "/samples/unity/media/files/Hop-week10-end.zip"
+ },
+ {
+  "lesson": 10,
+  "slot": 27,
+  "drop": true,
+  "why": "A Windows screen; these pictures were made on a Mac."
+ },
+ {
+  "lesson": 10,
+  "slot": 28,
+  "drop": true,
+  "why": "The macOS recording toolbar is not part of Unity and was not captured."
+ },
+ {
+  "lesson": 10,
+  "find": "In the **Inspector**, check that **Texture Type** reads Sprite (2D and UI).",
+  "replace": "In the **Inspector**, check that **Texture Type** reads Sprite (2D and UI), and set **Sprite Mode** to **Single**.",
+  "why": "In a 2D project a picture imports as Sprite Mode Multiple, which names the sprite Hero_0 and trims it."
+ },
+ {
+  "lesson": 10,
+  "find": "        moveAction = InputSystem.actions.FindAction(\"Move\");\n",
+  "replace": "        // Switch the project’s input actions on. Some project templates leave them off.\n        InputSystem.actions.Enable();\n        moveAction = InputSystem.actions.FindAction(\"Move\");\n",
+  "why": "Run in Unity: in the project made from the 2D template the actions were off in Play and Hero did not move; with this line Hero runs and jumps.",
+  "all": true
+ },
+ {
+  "lesson": 10,
+  "find": "At the top of the screen, check that the Editor version reads 6000.6.4f1.",
+  "replace": "@@swap@@",
+  "why": "The version selector is on the New project screen."
+ },
+ {
+  "lesson": 10,
+  "find": "Click **New project**.",
+  "replace": "At the top of the screen, check that the Editor version reads 6000.6.4f1, or another 6000.6 version.",
+  "why": "As above: the two steps change places."
+ },
+ {
+  "lesson": 10,
+  "find": "@@swap@@",
+  "replace": "Click **New project**.",
+  "why": "As above."
+ },
+ {
+  "lesson": 10,
+  "settle": "*",
+  "why": "The page was followed in Unity with sprites drawn for it; the route over the three platforms was run with timed keys."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
@@ -1739,5 +1924,1451 @@
   "all": true,
   "spelling": true,
   "why": "The course is en-US."
+ },
+ {
+  "lesson": 3,
+  "find": "Read in Hocking, J. (2022). Unity in Action (3rd ed.). Manning: the first-script section",
+  "replace": "Optional reading, if your library has the book: Hocking, J. (2022). Unity in Action (3rd ed.). Manning: the first-script section",
+  "why": "The book is a suggested reading and is not free, so the checklist marks it optional.",
+  "review": true
+ },
+ {
+  "lesson": 3,
+  "find": "Reading for this part: Hocking, J. (2022). Unity in Action (3rd ed.). Manning. Find the chapter where Hocking writes a first script that makes a cube rotate, using the book’s contents page. Read it to see how he attaches a script to an object and how he uses Update, and compare it with what you did.",
+  "replace": "Optional reading for this part, if your library has the book: Hocking, J. (2022). Unity in Action (3rd ed.). Manning. The book is not free and you do not need it to finish the week. If you have it, find the chapter where Hocking writes a first script that makes a cube rotate, using the book’s contents page. Read it to see how he attaches a script to an object and how he uses Update, and compare it with what you did.",
+  "why": "Says plainly that the suggested book is optional and not needed to finish the week.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Choose **Edit > Delete**. Leave Spinner where it is.",
+  "replace": "Choose **Edit > Delete**. The Spinner script from week 3 stays in **Assets > Scripts**; you do not use it this week.",
+  "why": "Spinner is a script asset, not an object in the Hierarchy.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "the Hierarchy holds your Floor, walls, Ramp, Ball and Spinner but no Pickup_Test objects",
+  "replace": "the Hierarchy holds your Floor, four walls, Ramp and Ball but no Pickup_Test objects",
+  "why": "The checkpoint listed Spinner as a Hierarchy object, which a student cannot find.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "If a copy sits inside a wall, the Ramp or the Spinner, change its X and Z a little.",
+  "replace": "If a copy sits inside a wall or the Ramp, change its X and Z a little.",
+  "why": "Same Spinner slip: there is no Spinner object in the scene.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "The Pickup_Test and Pickup_Test_B objects deleted, with Spinner still in place",
+  "replace": "The Pickup_Test and Pickup_Test_B objects deleted, with the Spinner script still in Assets > Scripts",
+  "why": "Kit list repeated the Spinner-as-object slip.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Hierarchy listing Arena, Main Camera, Directional Light, Global Volume, Floor, walls, Ramp, Ball and Spinner, with no Pickup_Test objects.",
+  "replace": "Hierarchy under Arena: Main Camera, Directional Light, Global Volume, Floor, Wall_North, Wall_South, Wall_East, Wall_West, Ramp and Ball, with no Pickup_Test objects. This picture was taken a few steps later, so it also lists the Pickup you make in the next part.",
+  "why": "Alt text now describes what the picture shows.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "The Arena scene once the two test pickups are deleted.",
+  "replace": "The Arena scene once the two test pickups are deleted (the Pickup at the bottom comes in the next part).",
+  "why": "The picture already shows the Pickup made later; the caption says so.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "TMP Importer window with the Import TMP Essentials button.",
+  "replace": "Box titled Unofficial Unity source. It lists TMP Essential Resources by UnityTechnologies and has two buttons, Cancel and Import Anyway; Import Anyway is outlined.",
+  "why": "Alt text described a different window from the one in the picture.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Click **Play**, click once inside the **Game** view, and roll the Ball through the Pickup.",
+  "replace": "Click **Play** and click once inside the **Game** view. The Pickup is behind the Ball and to its left, outside the picture: hold S and A until it comes into view, then roll the Ball through it.",
+  "why": "The Pickup is out of the camera's view when Play starts; the step now says which keys bring it into view.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Click **Play** and watch the Pickup in the **Game** view. Click **Play** again to stop.",
+  "replace": "Click **Play**, click once inside the **Game** view, and hold S and A to roll the Ball back toward the Pickup until you can see it. Watch it turn, then click **Play** again to stop.",
+  "why": "The Pickup is out of view at the start of Play.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "It is also your first script that changes an object on every frame without any key press.",
+  "replace": "You wrote a script like this in week 3: Spinner turned a cube around one axis. Rotator is a shorter version that turns around all three axes at once, and it brings back Time.deltaTime, which you need again for timers in Dodge.",
+  "why": "Week 3's Spinner already did this, so 'first' was false.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "        rb.AddForce(moveInput * force);\n    }\n\n    // Unity calls this once when the Ball enters a trigger collider",
+  "replace": "        rb.AddForce(moveInput * force);   // already in your file\n    }                                     // already in your file: the end of FixedUpdate\n\n    // Unity calls this once when the Ball enters a trigger collider",
+  "why": "Marks the context lines so a beginner does not paste them twice.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "            Destroy(other.gameObject);\n        }\n    }\n}",
+  "replace": "            Destroy(other.gameObject);\n        }\n    }\n}   // already in your file: the end of the class",
+  "why": "Marks the class's closing brace as already present.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "It is the second-to-last } in the file.",
+  "replace": "It is usually the second-to-last } in the file. If you added code in last week’s challenges, your AddForce line may look different: that is fine.",
+  "why": "Students who did last week's challenges have a different file.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Press Enter twice, then type or paste the new method from the code block below. Keep the final } of the file below it.",
+  "replace": "Press Enter twice, then type or paste the new method from the code block below. Lines marked already in your file only show where the new code goes: do not type them again. Keep the final } of the file below it.",
+  "why": "The warning not to copy context lines now comes before the block.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "    private Vector3 moveInput;\n\n    // How many pickups the Ball has collected so far",
+  "replace": "    private Vector3 moveInput;   // already in your file\n\n    // How many pickups the Ball has collected so far",
+  "why": "Marks a context line in the code block.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "    public int totalPickups = 8;\n\n    void Start()",
+  "replace": "    public int totalPickups = 8;\n\n    void Start()   // already in your file",
+  "why": "Marks a context line in the code block.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "    public int totalPickups = 8;\n\n    // The two text objects on screen.",
+  "replace": "    public int totalPickups = 8;   // already in your file\n\n    // The two text objects on screen.",
+  "why": "Marks a context line in the code block.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "    public TMP_Text winText;\n\n    void Start()",
+  "replace": "    public TMP_Text winText;\n\n    void Start()   // already in your file",
+  "why": "Marks a context line in the code block.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "        rb = GetComponent<Rigidbody>();\n        // Hide the win message and show the starting score",
+  "replace": "        rb = GetComponent<Rigidbody>();   // already in your file\n        // Hide the win message and show the starting score",
+  "why": "Marks a context line in the code block.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Challenges: a trap and an optional timer",
+  "replace": "Challenges: a trap (graded as this week’s build) and an optional timer",
+  "why": "The checklist never said the Trap challenge is the graded build.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Weekly builds: submit your Orb Collector",
+  "replace": "Weekly builds: record and submit Orb Collector with the Trap from the first challenge",
+  "why": "A student could record the plain game and be graded incomplete.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Challenge: a trap",
+  "replace": "Challenge: a trap (this is the build you submit)",
+  "why": "The heading now says this challenge is the graded build.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": " Try it on paper: if you have collected 3 pickups, the text reads Score: 3 / 8 and then Score: 2 / 8 after the Trap.",
+  "replace": "\n\nTry it on paper: if you have collected 3 pickups, the text reads Score: 3 / 8 and then Score: 2 / 8 after the Trap.",
+  "why": "Splits a 190-word challenge paragraph so the specification is easy to find.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": " Track collected pickups separately so the Trap cannot prevent a win. In BallController, add `private int pickupsCollected = 0;` beside the score variable. Inside the Pickup branch, add `pickupsCollected = pickupsCollected + 1;` immediately after the score increases. Change the win condition to `if (pickupsCollected >= totalPickups)`. The Trap changes score only.",
+  "replace": "\n\nTrack collected pickups separately so the Trap cannot prevent a win. The Trap changes score only.",
+  "why": "Takes the solution code out of the challenge body; it moves to the Hint.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "and set `scoreText.text` the same way as for a pickup.",
+  "replace": "and set `scoreText.text` the same way as for a pickup. To keep the win within reach, add `private int pickupsCollected = 0;` beside the score variable in BallController. Inside the Pickup branch, add `pickupsCollected = pickupsCollected + 1;` immediately after the score increases. Change the win condition to `if (pickupsCollected >= totalPickups)`.",
+  "why": "The solution lines belong in the Hint box, not in the challenge body.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "and a short screen recording showing the score stay at 0 when the Trap is touched first, then showing the score drop by 1 and You win! appear after all eight pickups are collected.",
+  "replace": "and one screen recording of about a minute that covers two runs without stopping the recorder. Run 1: touch the Trap first; the score stays at 0. Click Play to stop and Play to start again. Run 2: collect one Pickup, touch the Trap, collect the other seven; the score drops by 1 and You win! appears. Two separate recordings are also accepted.",
+  "why": "The evidence needs two Play runs; the step now says how to record them.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Read the Object Pool chapter of Nystrom (2014), Game programming patterns, ready for next time",
+  "replace": "Optional: look ahead at next week’s optional reading, the Object Pool chapter of Nystrom (2014), Game programming patterns. Next week’s page gives the link and questions to guide you",
+  "why": "The reading belongs to week 6 and is optional; this item cannot be deleted by a text edit, so it is marked optional.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Before next time, read the Object Pool chapter of Nystrom (2014), Game programming patterns, to see why games reuse objects instead of creating and destroying them again and again.",
+  "replace": "Next week has an optional reading, the Object Pool chapter of Nystrom (2014), Game programming patterns; next week’s page gives the link and questions to guide you.",
+  "why": "The reading was counted in two weeks; it now sits in week 6 only, as optional.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Before next time, read the Object Pool chapter of Nystrom (2014), Game programming patterns, and submit your Weekly builds work by Sunday night.",
+  "replace": "Submit your Weekly builds work by Sunday night.",
+  "why": "Recap no longer assigns next week's reading.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Replies, the weekly build and all other work are due Sunday night. Before next time, read the Object Pool chapter of Nystrom (2014), Game programming patterns.",
+  "replace": "Replies, the weekly build and all other work are due Sunday night.",
+  "why": "Announcement no longer assigns next week's reading.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "In **Rect Transform**, click the square anchor box at the top left and choose the top-left preset.",
+  "replace": "In **Rect Transform**, click the square anchor presets button at the top left of the component. In the grid that opens, click the preset in the row marked top and the column marked left.",
+  "why": "Names the unlabeled button and the grid cell, as week 7 does.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Under **Alignment**, click the button that centers the text across.",
+  "replace": "Under **Alignment**, click the horizontal center button, the second one in the first group of icons.",
+  "why": "Says which alignment icon to click.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Saved: no asterisk after Arena, and an empty Console.",
+  "replace": "Saved: no asterisk after Arena at the top of the Hierarchy.",
+  "why": "The picture shows the Hierarchy only, with no Console.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Download or open one classmate’s build if they shared it, or follow the steps they describe, and play it.",
+  "replace": "Watch a classmate’s clip or study their screenshot. If they describe a change, try it in your own project.",
+  "why": "Students cannot make or share a build until week 9.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "(c) something you tried in the Trap or timer challenges, with the lines of code you changed.",
+  "replace": "(c) something you tried in the timer challenge, with the lines of code you changed, or what you found hard about the Trap (describe it; post your Trap code after Sunday).",
+  "why": "The first post should not invite the graded Trap code before its deadline.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "who has not posted in the forum or whose Console shows red text, and anyone who reports the Ball not collecting pickups",
+  "replace": "who has not posted in the forum, and anyone who reports red text in the Console or the Ball not collecting pickups",
+  "why": "An instructor of an online course cannot see a student's Console.",
+  "review": true
+ },
+ {
+  "lesson": 5,
+  "find": "Point them to Keyboard.current and linearVelocity from earlier in the course.",
+  "replace": "Point them to Keyboard.current from week 4, and tell them rb.velocity is now called linearVelocity.",
+  "why": "linearVelocity was not taught in weeks 1 to 5.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Start the Dodge project and build the arena",
+  "replace": "Part 1: Start the Dodge project and build the arena",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Part 1: Part 1: ",
+  "replace": "Part 1: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Add a player you can move",
+  "replace": "Part 2: Add a player you can move",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Part 2: Part 2: ",
+  "replace": "Part 2: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Learn the idea: read about reusing objects and watch how spawning works",
+  "replace": "Part 3: Learn the idea: read about reusing objects and watch how spawning works",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Make a hazard and turn it into a prefab",
+  "replace": "Part 4: Make a hazard and turn it into a prefab",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Part 4: Part 4: ",
+  "replace": "Part 4: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Spawn hazards with Instantiate and a timer",
+  "replace": "Part 5: Spawn hazards with Instantiate and a timer",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Part 5: Part 5: ",
+  "replace": "Part 5: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Destroy hazards you no longer need",
+  "replace": "Part 6: Destroy hazards you no longer need",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Part 6: Part 6: ",
+  "replace": "Part 6: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Playtest, save a checkpoint and practice a screenshot and a recording",
+  "replace": "Part 7: Playtest, save a checkpoint and practice a screenshot and a recording",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Part 7: Part 7: ",
+  "replace": "Part 7: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Challenges",
+  "replace": "Part 8: Challenges",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Part 8: Part 8: ",
+  "replace": "Part 8: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Read the Object Pool chapter of Nystrom, R. (2014). Game programming patterns. Genever Benning, for the three things listed in Part 3",
+  "replace": "Optional reading, free online: the Object Pool chapter of Nystrom, R. (2014). Game programming patterns. Genever Benning, for the three things listed in Part 3",
+  "why": "The chapter is a suggested reading, so the checklist marks it optional and says it is free.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Read the Object Pool chapter of Nystrom, R. (2014). Game programming patterns. Genever Benning. The pattern is an alternative to creating and destroying objects over and over. As you read, look for three things and write a sentence for each in your own words:",
+  "replace": "Optional reading: the Object Pool chapter of Nystrom, R. (2014). Game programming patterns. Genever Benning. It is free to read at gameprogrammingpatterns.com/object-pool.html. Its code samples are in C++, a different language from yours: skip the code and read the prose. You do not need the chapter to finish the week, because the video below gives the idea you use. The pattern is an alternative to creating and destroying objects over and over. If you read it, look for three things and write a sentence for each in your own words:",
+  "why": "Gives the free link, warns about the C++ code and makes the suggested reading optional.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "You have read the chapter, written one sentence for each of the three questions, and you can say in your own words what a prefab, Instantiate, an interval and Destroy each do.",
+  "replace": "You can say in your own words what a prefab, Instantiate, an interval and Destroy each do. If you read the optional chapter, you have also written one sentence for each of the three questions.",
+  "why": "The checkpoint no longer depends on the optional reading.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "You also read why Nystrom (2014) offers object pools as another way to handle objects a game makes and frees often.",
+  "replace": "You also met the object pool, which Nystrom (2014) offers as another way to handle objects a game makes and frees often.",
+  "why": "The recap no longer assumes the optional chapter was read.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Now connect this to your reading. Nystrom describes an object pool",
+  "replace": "Now connect this to the optional reading. Nystrom describes an object pool",
+  "why": "The transcript calls the reading optional.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Download or recreate a classmate’s idea if it can be shared, try it in your own project, and tell them",
+  "replace": "Recreate a classmate’s idea in your own project if you can, for example by typing their values into your Spawner, and tell them",
+  "why": "Students have nothing to download until builds are taught in week 9.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Capture a screenshot that shows your Hazard prefab and the relevant Inspector setting, along with the Game view.",
+  "replace": "Capture a screenshot of the whole Editor with Spawner selected in the Hierarchy and the Prefabs folder open in the Project window, so it shows the Hazard prefab, Hazard in the Hazard Prefab box of Hazard Spawner (Script), your changed value if it is on the Spawner, and the Game view. If your change was Lifetime, add a second screenshot with the Hazard prefab selected, showing Hazard Lifetime (Script).",
+  "why": "The rubric asks for the spawner field, which the old step did not put in the screenshot.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Use the prefab and spawning ideas from this week to make your Dodge game visibly your own.",
+  "replace": "Use the prefab and spawning ideas from this week to make your Dodge game visibly your own. Your instructor grades this work complete or incomplete: Proficient or Exemplary on every rubric criterion is complete; otherwise it is incomplete.",
+  "why": "The brief never said what counts as complete.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "change the Hazard prefab’s material color to a color you choose.",
+  "replace": "change the Hazard prefab’s material color to a color you choose (click HazardOrange in Assets and change the color beside Base Map, as you did when you made it).",
+  "why": "Says where the color is changed.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Weekly builds: this week’s Dodge build (a separate assignment; it is listed with the other materials for this week and counts toward Weekly builds)",
+  "replace": "Weekly builds: give your hazards a new color and change one spawner or lifetime value, then upload a screenshot and a recording (do it after Part 7)",
+  "why": "The checklist label now tells the student what the graded build is.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Hierarchy in Play mode with about three Hazard(Clone) entries below Spawner",
+  "replace": "Hierarchy in Play mode with six Hazard(Clone) entries below Spawner, and six orange spheres around the Player in the Game view.",
+  "why": "Alt text now matches the picture.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "About twenty seconds in, with the cleanup: six Hazard(Clone) entries, the oldest about to go.",
+  "replace": "A little after twenty seconds, with the cleanup: six Hazard(Clone) entries, the oldest about to go. Your count may be five or six.",
+  "why": "Caption now agrees with the step, which says about five.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Before the cleanup script: after fifteen seconds, ten hazards and none has left.",
+  "replace": "Before the cleanup script: after about fifteen seconds, eleven hazards and none has left.",
+  "why": "The picture shows eleven hazards.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Play mode with Hazard(Clone) entries in the Hierarchy and Interval below 2 on Hazard Spawner",
+  "replace": "Play mode with eleven Hazard(Clone) entries listed under Spawner in the Hierarchy and the orange spheres lying on the Floor around the Player.",
+  "why": "Alt text described an Inspector that is not in the picture.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "The old Input class does not work in this version.",
+  "replace": "The old Input class does not work in this version. Three things are new. `[SerializeField]` in front of a private variable makes it show in the Inspector (that is why Player Mover has a Speed box) while other scripts still cannot change it. The two bars `||` mean or: the line runs if either key is held. A `Vector2` is a pair of numbers, x and y, like a Vector3 without z.",
+  "why": "The code used [SerializeField], || and Vector2 without explaining them.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "It is public so you can watch it change in the Inspector while the game runs.",
+  "replace": "It shows in the Inspector, so you can watch it change while the game runs. It is public, like the variables in Orb Collector; the other settings use `[SerializeField] private`, which shows them in the Inspector too.",
+  "why": "The reason given for public was wrong: a serialized private field also shows in the Inspector.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "using ideas from earlier in the course: read the keyboard with Keyboard.current and set the Rigidbody’s linearVelocity.",
+  "replace": "using one idea from earlier in the course, reading the keyboard with Keyboard.current, and one new idea: instead of pushing with a force, you set the Rigidbody’s linearVelocity, its speed and direction, directly, so the Player stops the moment you let go.",
+  "why": "linearVelocity is new this week, not from earlier in the course.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Hazards need something to chase.",
+  "replace": "Hazards need someone to fall on.",
+  "why": "Hazards fall at random spots; they do not chase.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "The value that means no rotation, used when a new copy should keep the facing of its prefab.",
+  "replace": "The value that means no rotation, used when a new copy should not be turned at all.",
+  "why": "Quaternion.identity does not keep the prefab's rotation.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "A prefab’s color is changed in the Project window. One instance has a custom position, but its color was not changed. What happens to that instance?",
+  "replace": "The Scale of a prefab is changed in the Project window. One instance in the scene has its own Position, and its Scale was never changed on that instance. What happens to that instance?",
+  "why": "Color lives in the material, so the override rule did not apply to the old question.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Its color updates, and its custom position stays.",
+  "replace": "Its Scale updates, and its own Position stays.",
+  "why": "Choice reworded for the Scale version of the question.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Its color stays, and its custom position resets.",
+  "replace": "Its Scale stays, and its Position resets.",
+  "why": "Choice reworded for the Scale version of the question.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Its color and custom position both update.",
+  "replace": "Its Scale and Position both update.",
+  "why": "Choice reworded for the Scale version of the question.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Its color and custom position both stay.",
+  "replace": "Its Scale and Position both stay.",
+  "why": "Choice reworded for the Scale version of the question.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "The instance keeps its custom position. The second choice reverses which value updates. The third incorrectly says a custom position updates too. The fourth incorrectly says the unchanged color stays as it was.",
+  "replace": "The instance keeps its own Position. The second choice reverses which value updates. The third incorrectly says the instance’s own Position updates too. The fourth incorrectly says the unchanged Scale stays as it was.",
+  "why": "Explanation reworded for the Scale version of the question.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "In the **Project** window, drag **Hazard** from the **Hierarchy** onto the **Prefabs** folder in the folder list.",
+  "replace": "Drag **Hazard** from the **Hierarchy** onto the **Prefabs** folder in the folder list of the **Project** window. In the Hierarchy, Hazard’s name and cube icon turn blue: it is now linked to a prefab.",
+  "why": "Clearer word order for the drag, and names the visible sign of success.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "Unity Hub New project screen with Core chosen and Universal 3D selected",
+  "replace": "Unity Hub New project screen from week 1, with Core chosen and Universal 3D selected. The project name shown is the week 1 name; yours is Dodge.",
+  "why": "The reused picture shows a different project name.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "check that Hazard Spawner (Script) is listed in the Inspector.\n\nA yellow warning about FindFirstObjectByType: that call is not in this code. If you pasted it from elsewhere, use FindAnyObjectByType instead.",
+  "replace": "check that Hazard Spawner (Script) is listed in the Inspector.",
+  "why": "The Stuck box answered a warning the week's code cannot produce.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "After one spawn, what is the new interval?",
+  "replace": "After one spawn, what is the new interval, in seconds?",
+  "why": "The unit moves into the question so the answer can be a bare number.",
+  "review": true
+ },
+ {
+  "lesson": 6,
+  "find": "1.08 seconds",
+  "replace": "1.08",
+  "why": "A numeric answer with a unit may be marked wrong.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Get Dodge ready and see the plan",
+  "replace": "Part 1: Get Dodge ready and see the plan",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Show the lives on screen",
+  "replace": "Part 2: Show the lives on screen",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Part 2: Part 2: ",
+  "replace": "Part 2: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Write the GameManager methods",
+  "replace": "Part 3: Write the GameManager methods",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Part 3: Part 3: ",
+  "replace": "Part 3: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Make a hit cost a life",
+  "replace": "Part 4: Make a hit cost a life",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Part 4: Part 4: ",
+  "replace": "Part 4: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Build the game over screen and Restart button",
+  "replace": "Part 5: Build the game over screen and Restart button",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Part 5: Part 5: ",
+  "replace": "Part 5: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Playtest the whole loop and save",
+  "replace": "Part 6: Playtest the whole loop and save",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Part 6: Part 6: ",
+  "replace": "Part 6: ",
+  "why": "Removes the doubled prefix the previous edit leaves in strings that already had it.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Challenges",
+  "replace": "Part 7: Challenges",
+  "why": "Headings now carry the Part numbers the page and checklist refer to.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Part 1: Get Dodge ready and check the version",
+  "replace": "Part 1: Get Dodge ready and see the plan",
+  "why": "Checklist name now equals the heading.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Review Part 5: Build the game over screen and Restart button. Unity’s version notes confirm that the Canvas and EventSystem are added with the first UI object (Instructor’s version notes: Unity 6.6, passage 8).",
+  "replace": "Review Part 5: Build the game over screen and Restart button.",
+  "why": "The explanation cited an instructor-only document.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Playtest the whole loop and save. Unity’s version notes give the supported `SceneManager.LoadScene(...)` API (Instructor’s version notes: Unity 6.6, passage 6).",
+  "replace": "Playtest the whole loop and save.",
+  "why": "The explanation cited an instructor-only document.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Before then, read Swink, S. (2008). Game feel: A game designer’s guide to virtual sensation. Morgan Kaufmann, and look for what makes a control feel responsive.",
+  "replace": "Next week has an optional reading: chapter 1, Defining game feel, of Swink, S. (2008). Game feel: A game designer’s guide to virtual sensation. Morgan Kaufmann. The book is not free and you do not need it; next week’s page says what to look for if your library has it.",
+  "why": "The wrap-up assigned a whole commercial book with no chapter or access; it is next week's optional reading.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Replies, the weekly build and the quiz are due Sunday night. Before next week, read Swink (2008), Game feel.",
+  "replace": "Replies, the weekly build and the quiz are due Sunday night.",
+  "why": "The announcement no longer assigns the book.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "A hit detector on the Player needs to tell the GameManager that a hazard hit. Which method declaration lets the Player script call that method by name?",
+  "replace": "A hit detector on the Player needs to tell the GameManager that a hazard hit. The method changes the lives and gives nothing back. Which declaration fits?",
+  "why": "A distractor was also right for the question as asked.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Screenshots show GameManager.Restart () in the button’s On Click list; both screenshots and the recording are uploaded, and the saved scene is restored to three starting lives.",
+  "replace": "Screenshots show GameManager.Restart in the button’s On Click list, large enough to read, with the game over screen in the Game view; both screenshots and the recording are uploaded.",
+  "why": "The rubric graded a restored value that no uploaded file can show.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Screenshots show GameManager.Restart () in the button’s On Click list;",
+  "replace": "Screenshots show GameManager.Restart in the button’s On Click list;",
+  "why": "The Inspector row reads GameManager.Restart.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "but the button assignment or saved starting value is not clearly shown.",
+  "replace": "but the button assignment is not clearly shown.",
+  "why": "No upload shows the saved starting value.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "do not show the button setup or saved starting value.",
+  "replace": "do not show the button setup.",
+  "why": "No upload shows the saved starting value.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "showing GameManager.Restart () in its On Click list",
+  "replace": "showing GameManager.Restart in its On Click () list (scroll the Inspector down to it)",
+  "why": "Quotes the row as the Inspector shows it and says where to find it.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "You wrote LoseLife() once and two different things call it, the Player and, through GameOver, the screen. What would have gone wrong if you had copied the life-losing code into each place instead?",
+  "replace": "PlayerHit calls LoseLife() by name and never touches the lives or the text itself. What would have gone wrong if PlayerHit had kept its own count of lives and changed the text directly, and you then added a second kind of hazard with its own script?",
+  "why": "The follow-up described the call direction wrongly.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Students write their own methods (LoseLife, GameOver and Restart)",
+  "replace": "You write your own methods (LoseLife, GameOver and Restart)",
+  "why": "The announcement is posted to students and should address them as you.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "look at **Interval**: it has started again from 2.",
+  "replace": "look at **Interval**: it has started again from its saved starting value (2, unless you changed it for last week’s build).",
+  "why": "Last week's graded build may have changed the starting Interval.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "The Game view reads 16:9 Aspect and the Console is empty.",
+  "replace": "The Game view reads 16:9 Aspect and the Console is empty. Your hazards may have the color and spawner values you chose for last week’s build; keep them.",
+  "why": "Tells students their own values from last week's build are fine.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Hazards that miss still fall and vanish as before.",
+  "replace": "Hazards that miss still fall and vanish as before. A hazard lying on the Floor still counts: walk into it and you lose a life.",
+  "why": "A hazard on the Floor also costs a life, which could look like a bug.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Dodge for about 20 seconds without being hit. The text stays Lives: 3.",
+  "replace": "Dodge for about 20 seconds without touching any hazard, falling or lying on the Floor. The text stays Lives: 3.",
+  "why": "Hazards lying on the Floor also take a life.",
+  "review": true
+ },
+ {
+  "lesson": 7,
+  "find": "Click the text box, select everything in it and type Lives: 3",
+  "replace": "Click the **Text Input** box, select everything in it and type Lives: 3",
+  "why": "Uses the same name for the box as week 5.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "Read chapter 1 of Swink, S. (2008). Game feel: A game designer’s guide to virtual sensation. Morgan Kaufmann",
+  "replace": "Optional reading, if your library has the book: chapter 1 of Swink, S. (2008). Game feel: A game designer’s guide to virtual sensation. Morgan Kaufmann",
+  "why": "A commercial book chapter was a required item with no way to get it; it is now marked optional.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "Your reading this week is chapter 1, Defining game feel, of Swink, S. (2008). Game feel: A game designer’s guide to virtual sensation. Morgan Kaufmann. Read it for what makes a control feel responsive, and for what the author means by polish. Keep both ideas in mind as you tune Dodge later in the week.",
+  "replace": "Optional reading, if your library has it: chapter 1, Defining game feel, of Swink, S. (2008). Game feel: A game designer’s guide to virtual sensation. Morgan Kaufmann. The book is not free and you do not need it to finish the week: the video and its transcript below give the two ideas you will use, fast feedback and polish.",
+  "why": "The page now says the reading is optional and that the video covers the ideas needed.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "Steve Swink wrote the book on it, and it is this week’s reading.",
+  "replace": "Steve Swink wrote the book on it, and its first chapter is this week’s optional reading.",
+  "why": "The transcript calls the reading optional.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "When you read Swink (2008), Game feel: A game designer’s guide to virtual sensation, you looked at two ideas: what makes a control feel responsive, and what the author means by polish.",
+  "replace": "Swink (2008), in Game feel: A game designer’s guide to virtual sensation, raises two ideas: what makes a control feel responsive, and what the author means by polish.",
+  "why": "The recap no longer assumes the optional book was read.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "Swink (2008) argues that polish is a large part of how a game feels to play.",
+  "replace": "Swink (2008), this week’s optional reading, argues that polish is a large part of how a game feels to play.",
+  "why": "The forum prompt no longer reads as if everyone read the book.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "Through the hit Audio Source after setting its pitch to 1.",
+  "replace": "Through the hit Audio Source, straight after the thud, with nothing else changed.",
+  "why": "The old distractor would in fact work, so it was arguably right.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "Record a fresh run with audio on that shows hazard hits, the thud and colored sparks, and the falling game-over tone.",
+  "replace": "Record a fresh run that shows hazard hits with colored sparks and the game over panel, with sound if your recorder can capture it. On Windows the Game Bar records the game’s sound. The Mac’s built-in recorder does not: turn its microphone on and play through your speakers, or say in your note that the recording is silent. Your screenshots of the filled Hit Clip and Game Over Clip slots then count as the sound evidence.",
+  "why": "The Mac's built-in recorder does not capture game sound, so a Mac student could not meet the brief.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "The recording shows the hit sounds, colored sparks, and game-over tone.",
+  "replace": "The recording shows colored sparks on hits and the game over panel; the hit sound and game-over tone are heard in the recording or shown by filled slots in the screenshots.",
+  "why": "Proficient no longer depends on a recorder that can capture sound.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "If the sound stays unchanged across those runs, check the values and saved script below.",
+  "replace": "If the sound stays unchanged across those runs, check the values and saved script below. If you cannot hear the sound, check by eye: during Play, click **Player** and watch **Pitch** on its **Audio Source** change after each hit.",
+  "why": "Gives a check by eye for a step that was checked by ear only.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "right-click dodge-feel-starter.zip, choose Extract All...",
+  "replace": "right-click Dodge-week7-end.zip in Downloads, choose Extract All...",
+  "why": "The download is named Dodge-week7-end.zip, not the name the page gave.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "pick the unzipped dodge-feel-starter folder",
+  "replace": "pick the Dodge-week7-end folder (the one that holds Assets, Packages and ProjectSettings)",
+  "why": "Names the folder the zip really makes.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "dodge-feel-starter.zip",
+  "replace": "Dodge-week7-end.zip",
+  "why": "Link label and text now use the real file name.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "right-click dodge-feel-checkpoint.zip, choose Extract All...",
+  "replace": "right-click Dodge-week8-end.zip in Downloads, choose Extract All...",
+  "why": "The download is named Dodge-week8-end.zip.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "pick the unzipped dodge-feel-checkpoint folder",
+  "replace": "pick the Dodge-week8-end folder (the one that holds Assets, Packages and ProjectSettings)",
+  "why": "Names the folder the zip really makes.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "dodge-feel-checkpoint.zip",
+  "replace": "Dodge-week8-end.zip",
+  "why": "Link label now uses the real file name.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "First, give the five values you ended with: Hit Volume, Pitch Min, Pitch Max, Spark Count and Sparks Start Speed.",
+  "replace": "First, give the values you have so far for Hit Volume, Pitch Min, Pitch Max, Spark Count and Sparks Start Speed. If you have not reached the tuning part yet, say how far you are and what the hit sounds and looks like now.",
+  "why": "The Thursday post asked for values a student only has after the whole build.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "open a classmate’s Dodge if they shared it, or read their values and try them in your own project",
+  "replace": "read a classmate’s values and try them in your own project",
+  "why": "Sharing a build is not taught until week 9.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "You will make Dodge’s hits easier to hear and see, then use a playtest to make one feel choice of your own.",
+  "replace": "You will make Dodge’s hits easier to hear and see, then tune one value and pick one spark color of your own.",
+  "why": "Week 8 has no playtest; the word is introduced in week 9.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "Hit Feedback (Script): Hit Source Player (Audio Source), Hit Clip hit, Hit Volume 1.",
+  "replace": "Inspector for Player: Audio Source with Play On Awake unticked, and below it Hit Feedback (Script) with Hit Source Player (Audio Source), Hit Clip hit and Hit Volume 1.",
+  "why": "Alt text now covers the Audio Source the caption points at.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "Judge particles only in Dodge, never in the preview, because the Game view is what a player sees.",
+  "replace": "Judge particles only by playing Dodge in the Game view, not from the small Particles panel that appears in the Scene view when Sparks is selected, because the Game view is what a player sees.",
+  "why": "Says what 'the preview' is.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "Drag **Player** from the **Hierarchy** onto the **Hit Source** field. This puts the Player’s Audio Source in the slot.",
+  "replace": "Drag **Player** from the **Hierarchy** onto the **Hit Source** field. This puts the Player’s Audio Source in the slot. If dragging is hard, click the small circle at the right of the field and double-click **Player** in the list; this works for every slot this week.",
+  "why": "Gives the non-drag route for students who cannot drag.",
+  "review": true
+ },
+ {
+  "lesson": 8,
+  "find": "Silent hits: the Hit Source or Hit Clip slot is empty, Play On Awake is unticked but Mute Audio is on in the Game view, or the computer volume is low.",
+  "replace": "Silent hits: the Hit Source or Hit Clip slot is empty, Mute Audio is on in the Game view, or the computer volume is low.",
+  "why": "Play On Awake unticked is the correct setting, not a cause of silence.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Weekly build: screen recording and screenshot",
+  "replace": "Record the built game and take the two screenshots for Dodge game with your own twist (there is no separate weekly build this week)",
+  "why": "There is no weekly build in week 9; the item cannot be deleted by a text edit, so it now names real work for the graded piece.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Your replies, the self-check quiz, the weekly build recording and screenshot, and Dodge game with your own twist are due Sunday night.",
+  "replace": "Your replies, the self-check quiz and Dodge game with your own twist are due Sunday night. There is no separate weekly build this week: the Dodge game takes its place.",
+  "why": "The announcement named a weekly build that does not exist.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "A screen recording and a screenshot uploaded for the weekly build, and the Dodge game with your own twist uploaded",
+  "replace": "The Dodge game with your own twist uploaded: the build link, a recording of the built game and two screenshots",
+  "why": "Kit list named a weekly build that does not exist.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Build files only run on the system they were made on",
+  "replace": "Build files only run on the system they were made for",
+  "why": "A build runs on the system it was made for, not made on.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Menu names on this page are for 6.6, so another version may differ in small ways. Tell the forum what you see and carry on with the nearest match.",
+  "replace": "If it is not a 6000.6 version, install Unity 6.6 from Installs and open Dodge with that Editor: the menus and code on this page are checked for Unity 6.6 only.",
+  "why": "Gives the same version advice as week 8; Build Profiles does not exist in older versions.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Dodge as it should stand at the end of last week: sounds, sparks and tuned values included. Use it only if your own Dodge will not open or is missing something. Unzip it into a new folder named DodgeStarter in your Documents folder, next to your own Dodge folder and never over it. To open it, start Unity Hub, click Projects, open the Add dropdown, choose Add project from disk, and pick the unzipped DodgeStarter folder. Then click it in the list to open it.",
+  "replace": "Dodge-week8-end.zip",
+  "why": "The link text was a whole paragraph; it is now the real file name, and the instructions move to the Stuck? box.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Dodge is broken and you cannot see why: unzip DodgeStarter.zip as described above and carry on from that project.",
+  "replace": "Dodge is broken and you cannot see why: download Dodge-week8-end.zip above. It is Dodge as it should stand at the end of last week, with sounds, sparks and tuned values included. Use it only if your own Dodge will not open or is missing something. Unzip it into your Documents folder, next to your own Dodge folder and never over it. To open it, start Unity Hub, click Projects, open the Add dropdown, choose Add project from disk, and pick the Dodge-week8-end folder that holds Assets, Packages and ProjectSettings. Then click it in the list and carry on from that project.",
+  "why": "Uses the real file and folder names and holds the unzip steps that were in the link text.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Send a short message offering the DodgeStarter file",
+  "replace": "Send a short message offering the Dodge-week8-end.zip starter",
+  "why": "Kit now uses the real file name.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "In the toolbar at the top of the **Game** view, click the third control, which reads **Free Aspect**, and choose **16:9 Aspect**. Each project keeps its own choice.",
+  "replace": "In the toolbar at the top of the **Game** view, check that the third control reads **16:9 Aspect**, as you set it in week 6. If it reads **Free Aspect**, click it and choose **16:9 Aspect**.",
+  "why": "Dodge has been at 16:9 since week 6, so the control does not read Free Aspect.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Hierarchy with Panel, TitleText, PlayButton and QuitButton; QuitButton Pos Y -130",
+  "replace": "Hierarchy of MainMenu: Canvas holds Panel, TitleText, PlayButton and QuitButton, with QuitButton selected. MenuController, at the bottom, is added in the next part.",
+  "why": "Alt text claimed a value the picture does not show.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "The finished menu in the Hierarchy: Panel, TitleText, PlayButton and QuitButton under Canvas.",
+  "replace": "The finished menu in the Hierarchy: Panel, TitleText, PlayButton and QuitButton under Canvas. Ignore MenuController for now; you make it in the next part.",
+  "why": "The picture already shows an object made in the next part.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "On Click list for PlayButton with the MenuController object in the object field",
+  "replace": "Inspector for PlayButton: the On Click () list has one entry, with MenuController in the object field and MenuController.PlayGame in the function dropdown.",
+  "why": "Alt text now describes what the picture shows.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Click **Play**, then click the **Quit** button in the **Game** view.",
+  "replace": "Click the Editor’s **Play** button at the top, then click the menu’s **Quit** button in the **Game** view.",
+  "why": "Tells the Editor's Play button apart from the menu's buttons.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Close the window. Open **MainMenu**, click **Play**, then click **Play** in the **Game** view. Dodge should start. Play to game over, then click **Play** again to stop.",
+  "replace": "Close the window. Open **MainMenu**, click the Editor’s **Play** button at the top, then click the menu’s **Play** button in the **Game** view. Dodge should start. Play to game over, then click the Editor’s **Play** button again to stop.",
+  "why": "Play meant two different buttons in one step.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Build Profiles window with the platform selected and the Build button",
+  "replace": "Platform Browser window: under Desktop, macOS is selected, with Windows and Linux beside it; the Name box reads macOS and the Add Build Profile button is at the bottom right.",
+  "why": "Alt text described a different window from the picture.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "DodgeBuild folder holding the built game file",
+  "replace": "Build Profiles window: a macOS profile marked Active in the list on the left, and at the bottom the buttons Cloud Build, Build, and Build And Run.",
+  "why": "Alt text described a different picture.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "On Windows, double-click the `.exe` file.",
+  "replace": "On Windows, double-click the application that has your project’s name and the Unity icon (its full name ends in .exe, which Windows may hide). Do not open UnityCrashHandler64.",
+  "why": "A Windows build folder holds two programs and Windows hides .exe by default.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "A Mac build can also leave a second folder whose name ends in BackUpThisFolder_ButDontShipItWithYourGame: leave it out of anything you share.",
+  "replace": "A build can also leave a second folder whose name ends in DoNotShip or BackUpThisFolder_ButDontShipItWithYourGame. Drag that folder out of DodgeBuild into Documents, so it is not in the zip you share.",
+  "why": "The page said to leave the folder out and then to zip the whole folder that contains it.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Windows shows a blue box titled Windows protected your PC, or a Mac says it cannot check the app: this is your own game, so on Windows click More info then Run anyway, and on a Mac right-click the app, choose Open, then click Open.",
+  "replace": "A classmate’s build shows a blue box titled Windows protected your PC, or a Mac says it could not verify the app: follow the playtest part below, which says when it is safe and which buttons to click. Your own build, made on your own computer, opens without this warning.",
+  "why": "The warning appears on a downloaded build, not on your own; the safe way through now sits in the playtest step.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "If nobody answers, a friend or family member with the same kind of computer works as well.",
+  "replace": "Post by Tuesday in the week’s forum thread, and say Windows or Mac. If nobody has answered by Wednesday, ask a friend or family member: someone in the same room can play on your computer, so their own computer does not matter.",
+  "why": "Gives a day to pair up by and a fallback that needs no matching computer.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "right-click the **DodgeBuild** folder, choose **Send to**, then **Compressed (zipped) folder**, and type Dodge_YourName",
+  "replace": "right-click the **DodgeBuild** folder and choose **Compress to**, then **ZIP File** (on Windows 10, choose **Send to**, then **Compressed (zipped) folder**), and type Dodge_YourName",
+  "why": "Windows 11's right-click menu has Compress to, not Send to.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Upload the zip to a file-sharing service you already use, and set the link so that anyone with the link can download. Send the link to your classmate or friend.",
+  "replace": "Upload the zip to a file-sharing service, such as the OneDrive or Google Drive that comes with your school account, and set the link so that anyone with the link can download. Send the link to your classmate or friend. You can switch the link off once the course has graded your game.",
+  "why": "Names a service a beginner is likely to have and says when the link can come down.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Download your classmate’s zip. On Windows, right-click it, choose **Extract All**, and click **Extract**. On a Mac, double-click it. Open the new folder and run the game as you did in the build part.",
+  "replace": "Download your classmate’s zip. Only run builds that classmates posted in this course’s forum. On Windows, right-click the zip, choose **Extract All**, and click **Extract**. On a Mac, double-click it. Open the new folder and start the game as you did in the build part. Because the game came from the internet and is not signed, your computer warns you the first time. On Windows, in the blue box titled Windows protected your PC, click **More info**, then **Run anyway**. On a Mac, click **Done** in the warning, open **System Settings > Privacy & Security**, scroll down to the line that names the game, click **Open Anyway** and confirm. On an older Mac, right-click the app, choose **Open**, then click **Open**. If a school or work computer will not let you, do not force it: skip playing their build and say so in your notes.",
+  "why": "Says whose builds to trust and how to get past the operating system warning on Windows and Mac.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Open a new plain text file named PlaytestNotes. Whenever this page asks you to underline a problem, type [FIX] at the start of its line instead. Later references to your underlined problem mean that marked line. Write three headings: What went wrong, What went well, What they said.",
+  "replace": "Open a new plain text file named PlaytestNotes (Notepad on Windows, TextEdit on a Mac). Write three headings: What went wrong, What went well, What they said.",
+  "why": "Removes a note about how to read the page; later steps now say [FIX] directly.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Play your classmate’s Dodge for ten minutes without reading anything about it first.",
+  "replace": "Play your classmate’s Dodge for ten minutes without reading anything about it first. If your playtester is not a classmate, play any build a classmate posted in the forum for your system; if there is none, skip this step and say so in your notes.",
+  "why": "A student whose playtester is not a classmate had no build to play.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Read the notes and underline the one problem that cost them the most. That is your fix for the next part.",
+  "replace": "Read the notes and type [FIX] at the start of the one problem that cost them the most. That is your fix for the next part.",
+  "why": "Plain text cannot be underlined.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "You have a PlaytestNotes file with something under every heading from both playtests, and one problem underlined.",
+  "replace": "You have a PlaytestNotes file with something under every heading from both playtests, and one problem marked [FIX].",
+  "why": "Plain text cannot be underlined.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "A PlaytestNotes file with three headings from two playtests and one problem underlined",
+  "replace": "A PlaytestNotes file with three headings from two playtests and one problem marked [FIX]",
+  "why": "Kit list matches the page's [FIX] mark.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Nobody can play yours this week: ask a friend to play over a video call with screen sharing, and watch their face and hands the same way.",
+  "replace": "Nobody can sit at your computer this week: send your zip to a friend with the same kind of computer, and ask them to share their screen on a video call while they play, so you can watch and stay silent. If you have nobody at all, write to your instructor before Friday so they can pair you or play it themselves.",
+  "why": "The fallback did not say who runs the game, and there was no last resort.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Under your underlined problem, write one line: what the player saw, and the smallest change that could help.",
+  "replace": "Under your [FIX] problem, write one line: what the player saw, and the smallest change that could help.",
+  "why": "Plain text cannot be underlined.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "For example, hazards that fall too fast at the start could mean lowering the starting speed on your spawner, and a lives text that nobody noticed could mean a bigger **Font Size**.",
+  "replace": "For example, hazards that come too thick at the start could mean a larger **Interval** on your **Spawner**, and a lives text that nobody noticed could mean a bigger **Font Size**.",
+  "why": "The Spawner has no starting speed field; its fields are Interval, Min Interval and Speed Up.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "The guided twist is slow focus: hold Left Shift and time runs at half speed, so the player gets a moment to dodge. After adding it, open MainMenu and add a Text - TextMeshPro object under Canvas named ControlsText. Set Pos X to 0, Pos Y to -280, Width to 1000 and Height to 120. Set Font Size to 36 and Center and Middle alignment. In Text Input, enter Hold Left Shift for slow focus. Add your existing movement controls and any control your own twist introduces. Save MainMenu. It is a small script that changes `Time.timeScale`, the speed of time in the game. A value of 1 is normal and 0.5 is half speed. Everything that uses `Time.deltaTime` slows with it, including the hazards.",
+  "replace": "The guided twist is slow focus: hold Left Shift and time runs at half speed, so the player gets a moment to dodge. It is a small script that changes `Time.timeScale`, the speed of time in the game. A value of 1 is normal and 0.5 is half speed. Everything that uses `Time.deltaTime` slows with it, including the hazards and the Player.",
+  "why": "A build task was buried in this paragraph and cut the explanation in two; the task moves after the script explanation.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "and it makes sure time never stays slow.",
+  "replace": "and it makes sure time never stays slow.\n\nNow tell the player about the new key. Open **MainMenu** from the **Scenes** folder and choose **GameObject > UI (Canvas) > Text - TextMeshPro**. Type ControlsText and press Enter. Set **Pos X** to 0, **Pos Y** to -280, **Width** to 1000, **Height** to 120 and **Font Size** to 36, and click the Center and Middle alignment buttons. In **Text Input** type: Move with W, A, S and D. Hold Left Shift for slow focus. Later, add any key your own twist uses. Choose **File > Save**, then open **SampleScene** again.",
+  "why": "The ControlsText task now comes after slow focus is built, written as instructions.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "In PlaytestNotes, write one sentence: My twist is ___ because I saw ___. If you cannot finish the sentence from something you saw, pick a different twist.",
+  "replace": "Slow focus was practice and does not count as your twist. Your twist may grow out of the fix you made above, but it must change how Dodge plays, not only one number that was wrong. In PlaytestNotes, write one sentence: My twist is ___ because I saw ___. If you cannot finish the sentence from something you saw, pick a different twist.",
+  "why": "The page never said slow focus does not count, or how a twist differs from the fix.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "change how fast hazards fall once your score passes a number",
+  "replace": "make hazards come faster by lowering **Min Interval** or **Speed Up** on the Spawner",
+  "why": "Dodge has no score and no fall-speed value.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Run the new build once to check the menu still works.",
+  "replace": "Run the new build once to check the menu still works and your twist is in it. Then zip the DodgeBuild folder again, as you did when you shared it, and replace the file behind your shared link: this new zip is the one you hand in. Record the built game, not the Editor: start it from DodgeBuild and record the menu, a click on Play, your twist in action, a game over, Restart and Quit. Take two screenshots: the Scene List in **File > Build Profiles** with MainMenu at 0 and SampleScene at 1, and your PlaytestNotes showing the moment you saw and your twist sentence. Then open the brief for Dodge game with your own twist and hand in the link, the recording and the two screenshots.",
+  "why": "The page never had the student re-zip the final build or make the recording and screenshots the brief requires.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Dodge as it should stand at the end of this week: MainMenu, SampleScene, MenuController, the scene list set, and the SlowFocus twist added. Use it only if your own project is stuck. Unzip it into a new folder named DodgeFinished in your Documents folder, next to your own Dodge folder and never over it. To open it, start Unity Hub, click Projects, open the Add dropdown, choose Add project from disk, and pick the DodgeFinished folder. Then click it in the list to open it.",
+  "replace": "Dodge-week9-end.zip",
+  "why": "The link text was a whole paragraph; it is now the real file name, and the instructions move to the checkpoint below it.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "or if the new build still shows the old game.",
+  "replace": "or if the new build still shows the old game. If your own project is stuck, use Dodge-week9-end.zip above: it is Dodge as it should stand at the end of this week, with MainMenu, SampleScene, MenuController, the scene list set, and slow focus added. Unzip it into your Documents folder, next to your own Dodge folder and never over it. To open it, start Unity Hub, click Projects, open the Add dropdown, choose Add project from disk, and pick the Dodge-week9-end folder that holds Assets, Packages and ProjectSettings.",
+  "why": "Holds the checkpoint file's description and unzip steps, with the real folder name.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Pressing Left Shift throws a NullReferenceException in the Console: no keyboard was found. Click inside the Game view first, so it has focus, and try again.",
+  "replace": "Left Shift does nothing: click inside the Game view first, so it has focus, and hold the key again. Check too that the SlowFocus script sits on the SlowFocus object in SampleScene.",
+  "why": "The page's code cannot throw this error; the real symptom is that Shift does nothing.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "If Pressing Left Shift throws a NullReferenceException: no keyboard was found. Click inside the Game view first, so it has focus, and press the key again.",
+  "replace": "If Left Shift does nothing and nothing is red: click inside the Game view first, so it has focus, and hold the key again.",
+  "why": "The Stuck? list named an error the code cannot produce.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Challenge: Escape returns to the menu",
+  "replace": "Optional challenge: Escape returns to the menu",
+  "why": "Marks the Escape challenge optional so the week's required minutes are honest.",
+  "all": true,
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Hint for the challenge",
+  "replace": "Hint for the Escape challenge",
+  "why": "Both challenges are now optional, so the hint names its challenge.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Hint for the optional challenge",
+  "replace": "Hint for the focus challenge",
+  "why": "Both challenges are now optional, so the hint names its challenge.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "For the optional challenge, a 3-second hold drains the meter",
+  "replace": "For the focus challenge, a 3-second hold drains the meter",
+  "why": "Both challenges are now optional, so the checkpoint names the one it means.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "as you did for the space key earlier",
+  "replace": "as you read keys in week 4",
+  "why": "No week reads the space key.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Second, why does a Windows build not run on a Mac, and what do you send to a playtester on the other system?",
+  "replace": "Second, why does a Windows build not run on a Mac, and what do you do when your classmate uses the other system?",
+  "why": "The page's answer is to find a playtester on your own kind of computer.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Your own twist could be a faster hazard after a set score",
+  "replace": "Your own twist could be hazards that come faster",
+  "why": "Dodge has no score.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Build for macOS and share the complete build folder.",
+  "replace": "Find a playtester who uses Windows and share the complete build folder.",
+  "why": "The keyed answer was an action the page never teaches and that does not work for these students.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "A Windows build does not run on a Mac. Build for the classmate’s system and share the build folder so they have the files needed to run it. Renaming the executable or adding scenes does not change the build’s platform. Review “Add your scenes to the build and make it” and “Share your build and playtest.”",
+  "replace": "A Windows build does not run on a Mac, so the page has you find a playtester on your own kind of computer and share the whole build folder. Opening the `.exe` in Unity, renaming it or adding scenes does not change the system the build was made for. Review “Share your build and playtest.”",
+  "why": "Explanation now matches what the page tells the student to do.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Arena does not need to be first; the menu should be first so the build opens there. Review “Make the Play and Quit buttons work.”",
+  "replace": "Arena does not need to be first; the menu should be first so the build opens there. Review “Add your scenes to the build and make it.”",
+  "why": "The scene list is taught in the build part, not the buttons part.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "A useful twist makes one small gameplay change",
+  "replace": "A useful fix or twist makes one small gameplay change",
+  "why": "The model answer is a one-value fix, which the page separates from a twist.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Include a screenshot or a short clip if you can, and say why you made the choice you did, not only what you made.",
+  "replace": "Include the download link to your build and say whether it is for Windows or Mac. Add a screenshot or a short clip if you can, and say why you made the choice you did, not only what you made.",
+  "why": "Replies ask classmates to run the build, so the first post must carry the link and the system.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Build and scene flow",
+  "replace": "Finished game and scene flow",
+  "why": "The criterion now covers whether the finished Dodge still works.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "The submitted build opens at MainMenu, Play starts Dodge, and the scene-list screenshot shows both scenes in the correct order.",
+  "replace": "The recording of the built game shows it opening at MainMenu, Play starting a fresh Dodge in which lives, sound, sparks, game over and Restart all still work, and Quit closing the game; the screenshot shows MainMenu as 0 and SampleScene as 1, both ticked.",
+  "why": "Exemplary now differs from Proficient and rests on the recording, so the grader need not run the build.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "The build opens at MainMenu and Play starts Dodge; the screenshot shows both scenes included.",
+  "replace": "The recording of the built game shows it opening at MainMenu and Play starting a Dodge that can be played to game over; the screenshot shows both scenes ticked with MainMenu first.",
+  "why": "Proficient rests on the recording, so the grader need not run the build.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "The build link, recording, and both screenshots are present, clear, and let a classmate verify the game and the reason for the twist.",
+  "replace": "The build link opens for the grader, and the recording and both screenshots are clear enough to check the game and the reason for the twist without running the build.",
+  "why": "The grader, not a classmate, checks the work.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "a distinct, working twist",
+  "replace": "a working twist that changes how Dodge plays and is not slow focus",
+  "why": "Says what makes a twist count.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "Plan about 40 minutes for this graded submission, due Sunday night through the LMS.",
+  "replace": "Plan about 40 minutes for this graded submission, due Sunday night through the LMS. The three rubric criteria count equally toward the 15%.",
+  "why": "Nothing said how the rubric becomes 15% of the grade.",
+  "review": true
+ },
+ {
+  "lesson": 9,
+  "find": "a short screen recording of the built game showing the menu, gameplay, and your twist,",
+  "replace": "a short screen recording of the built game showing the menu, a click on Play, your twist in action, a game over, Restart and Quit,",
+  "why": "The reworded rubric reads the game's flow from the recording, so the brief asks for it.",
+  "review": true
+ },
+ {
+  "find": "You submit one build in each weekly module: a short screen recording and a screenshot, uploaded online.",
+  "replace": "You submit a weekly build in ten of the fourteen weeks (weeks 1 to 8, 10 and 13): a short screen recording and one or two screenshots, sometimes with a short note, uploaded online. In week 9 the Dodge game takes its place, and in weeks 11, 12 and 14 a part of your final project does.",
+  "why": "Start here said every week has a weekly build; four weeks do not.",
+  "review": true
+ },
+ {
+  "find": "Submit your weekly build online: a short screen recording of your game running and a screenshot. All other work for the week is due by then too.",
+  "replace": "Submit the week’s graded work online. In most weeks that is your weekly build: a short screen recording of your game running and a screenshot or two. All other work for the week is due by then too.",
+  "why": "Not every week's graded work is a weekly build.",
+  "review": true
+ },
+ {
+  "find": "Work is uploaded to the LMS and graded complete or incomplete.",
+  "replace": "Weekly builds are uploaded to the LMS and graded complete or incomplete. The Dodge game and the final project are scored with rubrics.",
+  "why": "Two graded pieces are scored with rubrics, not complete or incomplete.",
+  "review": true
+ },
+ {
+  "find": "One piece. You finish the Dodge game in the weeks of the second game and add a change of your own, such as a new hazard, a new rule or a different look. It makes up 15% of the course grade.",
+  "replace": "One piece, due Sunday night of week 9 and scored with a rubric. You finish Dodge with a start menu and a build a classmate can run, watch someone play it, and add one change of your own to how it plays, such as a new hazard or a new rule. It makes up 15% of the course grade.",
+  "why": "The row gave no week or rubric and offered a change of look, which week 9 does not count as a twist.",
+  "review": true
+ },
+ {
+  "find": "One piece: the game you design, build, playtest and share yourself in the last weeks of the course. Its brief and rubric are written in the module Showcase, reflection and next steps. It makes up 30% of the course grade.",
+  "replace": "The game you design, build, playtest and share yourself, in three parts: a proposal in week 11, a playable prototype in week 12, and the final build with a showcase post in week 14. The full brief and rubric are in the module Showcase, reflection and next steps; read them when you start your proposal. It makes up 30% of the course grade.",
+  "why": "The outline grades a proposal and a prototype toward the final project, so it is not one piece.",
+  "review": true
+ },
+ {
+  "find": "Reply to at least some of your classmates’ posts with something useful, such as a tip, an answer to a question or a kind and specific comment.",
+  "replace": "Reply to two classmates’ posts with something useful, such as a tip, an answer to a question or a kind and specific comment. Do the week’s challenge and the self-check quiz; the quiz is practice with instant feedback and does not count toward your grade. If something breaks, the week’s Stuck? list is the first place to look, and the recap is what to reread before the next week.",
+  "why": "Every week grades two replies, and Start here left out the quiz, challenge, Stuck? list and recap.",
+  "review": true
+ },
+ {
+  "find": "These posts and replies, across all the weekly modules, make up 15% of the course grade.",
+  "replace": "Full marks need a first post by Thursday and two helpful replies by Sunday; late or one-line posts earn half. These posts and replies, across all the weekly modules, make up 15% of the course grade.",
+  "why": "States the forum grading rule every week uses.",
+  "review": true
+ },
+ {
+  "find": "You will use it each week to record your build running. Cost: free.",
+  "replace": "You will use it each week to record your build running. In week 8 the recording should carry the game’s sound if your recorder can do that. Cost: free. Three more things come later in the course. From week 8 your games make sound, so you need speakers or headphones. In week 9 you share your game through a download link, for example the OneDrive or Google Drive of your school account, and you need one person to play it, a classmate or anyone at home. There are no books to buy: a few weeks suggest a chapter from a book your library may have, and these are optional.",
+  "why": "What you need missed sound, a place to share a file, a playtester and the status of the books; rows cannot be added, so the last row carries them.",
+  "review": true
+ },
+ {
+  "find": "The link to the course Q&A forum and the name of the introductions thread.",
+  "replace": "The link to the course Q&A forum and the name of the introductions thread. Open a forum thread for each week, and in week 9 a thread where students find a playtest partner on the same kind of computer. Record the short talk for each week, or tell students the transcript on the page replaces it. Create an assignment in the LMS for each weekly build, for Dodge game with your own twist (week 9) and for the three parts of the final project, and paste in each brief and rubric. Decide where students upload builds to share them, and tell students to run only builds from this course. Check whether your library has the optional chapters (Hocking, Swink); the Nystrom chapter is free online. Say how complete or incomplete and the rubric levels become points.",
+  "why": "The instructor page listed only policy text; list items cannot be added, so the last item carries the other preparation tasks.",
+  "review": true
  }
 ]

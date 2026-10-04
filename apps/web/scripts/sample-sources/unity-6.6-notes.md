@@ -21,7 +21,6 @@ Use these names exactly. They are what students see on screen.
 - GameObject > UI (Canvas): Image, Text - TextMeshPro, Panel, Button - TextMeshPro, Toggle, Slider, Canvas, Event System. The menu is named "UI (Canvas)", not "UI".
 - GameObject > Visual Effects: Particle System, Trail, Line. GameObject > Audio: Audio Source. GameObject > Light: Directional Light, Point Light, Spot Light.
 - Assets > Create: Folder, Material, MonoBehaviour Script, Scene, Scripting, Physics Material, Input Actions, Animation, 2D, TextMeshPro. A new script is Assets > Create > MonoBehaviour Script (also under Scripting > MonoBehaviour Script). A scene is Assets > Create > Scene > Scene; a prefab is made by dragging an object from the Hierarchy into the Project window.
-- Assets > Create > Animation: Animator Controller, Animation Clip. Window > Animation: Animation, Animator.
 - Component > Physics 2D: Rigidbody 2D, Box Collider 2D, Circle Collider 2D, Capsule Collider 2D, Composite Collider 2D.
 
 ## Code (C#), compiled in this version
@@ -34,7 +33,6 @@ Use these names exactly. They are what students see on screen.
 ## The Inspector, as it reads in this version
 - A new object made from the GameObject menu appears where the Scene view is looking, not at the origin: its Position is some uneven number. Students type 0, 0, 0 into Position (or use the three-dot menu on Transform > Reset) before the page gives positions.
 - After creating an object or asset its name is in edit mode: type the name and press Enter.
-- Every object: name box, Static, Tag, Layer; then Transform with Position, Rotation, Scale (X, Y, Z each).
 - A primitive's Inspector reads, in order: Transform, "Cube (Mesh Filter)" (or "Sphere (Mesh Filter)"), its collider (Box Collider, Sphere Collider), Mesh Renderer, then the material, "Lit (Material)", grayed out because the default material cannot be edited, and the Add Component button.
 - Sphere Collider: Edit Collider, Is Trigger, Provides Contacts, Material (shows "None (Physics Material)"), Center, Radius, Layer Overrides.
 - Add Component opens a small search box: type the name and press Enter. Typing "Rigidbody" lists Rigidbody and Rigidbody 2D.
@@ -62,9 +60,9 @@ Use these names exactly. They are what students see on screen.
 
 ## 2D (the Universal 2D template), checked in this version
 - A project made from Universal 2D opens SampleScene with Main Camera (orthographic, Size 5, a dark blue background) and Global Light 2D. A window titled "2D URP Project" may open over the Editor: close it. Assets holds Scenes and Settings; InputSystem_Actions is in Assets/Settings, and InputSystem.actions.FindAction("Move") and FindAction("Jump") work as in the 3D project.
+- In a project made from Universal 2D the project's input actions are NOT switched on when Play starts (in Universal 3D they are): every script that uses InputSystem.actions calls InputSystem.actions.Enable(); in Start before FindAction, or nothing moves. A picture dragged into a 2D project imports with Sprite Mode "Multiple" (the sprite is then named Hero_0 and trimmed): set Sprite Mode to "Single" with Pixels Per Unit.
 - GameObject > 2D Object: Sprites (Square, Circle, Capsule, Triangle, 9-Sliced, Hexagon Flat Top, Hexagon Point Top, Isometric Diamond), Physics (Dynamic Sprite, Static Sprite), Tilemap (Rectangular, Hexagonal Flat Top, Hexagonal Point Top, Isometric, Isometric Z as Y), Sprite Shape, Sprite Mask. These 2D menus exist only in a 2D project: the 3D project has no Sprites or Tilemap entries.
 - GameObject > 2D Object > Tilemap > Rectangular adds a Grid with a child Tilemap (components: Tilemap, Tilemap Renderer). The palette is Window > 2D > Tile Palette. Assets > Create > 2D: Sprites (the same shapes), Tile Palette > Rectangular, Tiles > Rule Tile, Sprite Atlas.
 - Component > Physics 2D: Rigidbody 2D, Box Collider 2D, Circle Collider 2D, Capsule Collider 2D, Polygon Collider 2D, Edge Collider 2D, Composite Collider 2D. Component > Tilemap: Tilemap Collider 2D.
 - To merge a tilemap's colliders: add Composite Collider 2D to the Tilemap (this adds a Rigidbody 2D: set its Body Type to Static), then on Tilemap Collider 2D set "Composite Operation" to Merge. There is no "Used By Composite" checkbox in this version.
 - Code that compiles without warnings: rb.linearVelocity = new Vector2(x, rb.linearVelocity.y); rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse); rb.linearDamping; OnTriggerEnter2D(Collider2D other); OnCollisionEnter2D(Collision2D collision); Physics2D.OverlapCircle(point, radius, LayerMask.GetMask("Ground")); Physics2D.Raycast; GetComponent<SpriteRenderer>().flipX; animator.SetBool("isRunning", true); jumpAction.WasPressedThisFrame(); Keyboard.current.spaceKey.wasPressedThisFrame. Rigidbody2D.velocity and Rigidbody2D.drag are marked obsolete.
-- No layer named Ground exists until it is added (Layer dropdown > Add Layer...).
