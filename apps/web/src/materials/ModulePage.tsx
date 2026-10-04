@@ -2,7 +2,8 @@ import { cmd, statedObjectives, type Course, type Facilitation, type Lesson, typ
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { EditableList } from './EditableList';
-import { Callout, Checklist, CodeBlock, FileRow, Media, Steps, Terms, type Patch } from './ModuleBlocks';
+import { FileRow, Media } from './MediaSlot';
+import { Callout, Checklist, CodeBlock, Steps, Terms, type Patch } from './ModuleBlocks';
 import { useSectionEdit } from './useSectionEdit';
 
 interface Part {
@@ -21,7 +22,7 @@ function partsOf(page: PageBlock[]): Part[] {
 }
 
 /** One block, drawn as its kind; `step` is the number its first step takes. */
-function Block({ block, step, patch, lead }: { block: PageBlock; step: number; patch: Patch; lead: boolean }) {
+function Block({ block, step, patch, lead, courseId, lessonId }: { block: PageBlock; step: number; patch: Patch; lead: boolean; courseId: string; lessonId: string }) {
   const t = useT();
   switch (block.type) {
     case 'heading':
@@ -37,17 +38,17 @@ function Block({ block, step, patch, lead }: { block: PageBlock; step: number; p
         </ul>
       );
     case 'steps':
-      return <Steps block={block} start={step} patch={patch} />;
+      return <Steps block={block} start={step} patch={patch} courseId={courseId} lessonId={lessonId} />;
     case 'callout':
       return <Callout block={block} patch={patch} />;
     case 'code':
       return <CodeBlock block={block} />;
     case 'image':
-      return <Media kind="image" {...block} />;
+      return <Media kind="image" media={block} courseId={courseId} at={{ lessonId, id: block.id }} onChange={(next) => patch({ ...block, ...next })} />;
     case 'video':
-      return <Media kind="video" {...block} />;
+      return <Media kind="video" media={block} courseId={courseId} onChange={(next) => patch({ ...block, ...next })} />;
     case 'file':
-      return <FileRow block={block} />;
+      return <FileRow block={block} courseId={courseId} onChange={(next) => patch({ ...block, ...next })} />;
     case 'checklist':
       return <Checklist block={block} />;
     case 'terms':
@@ -55,11 +56,11 @@ function Block({ block, step, patch, lead }: { block: PageBlock; step: number; p
   }
 }
 
-function PartView({ part, n, patch }: { part: Part; n: number; patch: Patch }) {
+function PartView({ part, n, patch, courseId, lessonId }: { part: Part; n: number; patch: Patch; courseId: string; lessonId: string }) {
   const t = useT();
   // Steps are numbered through the part, across the pictures and notes between them.
   const before = (i: number) => part.blocks.slice(0, i).reduce((n, b) => n + (b.type === 'steps' ? b.items.length : 0), 0);
-  const body = part.blocks.map((block, i) => <Block key={block.id} block={block} step={before(i) + 1} patch={patch} lead={!part.heading && block.type === 'text'} />);
+  const body = part.blocks.map((block, i) => <Block key={block.id} block={block} step={before(i) + 1} patch={patch} courseId={courseId} lessonId={lessonId} lead={!part.heading && block.type === 'text'} />);
   if (!part.heading) return <>{body}</>;
   const heading = part.heading;
   return (
@@ -135,7 +136,7 @@ export function ModulePage({ course, lesson }: { course: Course; lesson: Lesson 
         </section>
       )}
       {parts.map((part, i) => (
-        <PartView key={part.heading?.id ?? 'lead'} part={part} n={i} patch={patch} />
+        <PartView key={part.heading?.id ?? 'lead'} part={part} n={i} patch={patch} courseId={course.id} lessonId={lesson.id} />
       ))}
       {lesson.facilitation && <Kit course={course} lesson={lesson} kit={lesson.facilitation} />}
     </div>

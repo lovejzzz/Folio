@@ -145,7 +145,7 @@ function trackProgress(target: BuildTarget, progress: SectionProgress): void {
   const key = targetKey(target);
   if (progress.type === 'partial') showPartial(key, progress.value);
   else if (progress.type === 'checking') checkingRow(key);
-  else reviewedRow(key, progress.fixes, progress.notes);
+  else if (progress.type === 'reviewed') reviewedRow(key, progress.fixes, progress.notes);
 }
 
 /** Run the build; anything no part of it expected ends it, and it can be started again. */

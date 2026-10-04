@@ -128,7 +128,7 @@ function toBlock(raw: BlockDraft): PageBlock {
 }
 
 /** A file named by a sentence (a rewrite moved its instructions into the name): the sentence becomes the paragraph under an unnamed file. */
-function pageBlocks(raw: BlockDraft): PageBlock[] {
+export function pageBlocks(raw: BlockDraft): PageBlock[] {
   const block = toBlock(raw);
   if (block.type !== 'file' || block.label.trim().length <= 60) return [block];
   return [{ ...block, label: '', shows: block.shows || block.label }, { id: newId('x'), type: 'text', text: block.label }];
@@ -137,7 +137,7 @@ function pageBlocks(raw: BlockDraft): PageBlock[] {
 /** A silent recording of the screen, as against the instructor talking. */
 const isClip = (b: BlockDraft) => b.type === 'video' && (b.kind.trim().toLowerCase() === 'clip' || !b.transcript.trim());
 
-const WRAP_UP: Record<string, string> = { en: 'Wrap-up', 'zh-CN': '本周小结' };
+export const WRAP_UP: Record<string, string> = { en: 'Wrap-up', 'zh-CN': '本周小结' };
 
 /** The page a student sees, from the draft: the introduction, the week's checklist, each part under its title, the wrap-up. */
 export function modulePage(v: ModuleDraft, language: string): PageBlock[] {
@@ -181,7 +181,7 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
     const checked = part.blocks.some((b) => b.type === 'callout' && b.kind.trim().toLowerCase() === 'checkpoint');
     if (steps > 6 && !checked) problems.push(issue(`"${part.title}" has ${steps} steps and no checkpoint: say what the student should see`));
     // A beginner checks their screen against the page: a long run of steps with nothing to check against loses them.
-    if (steps >= 5 && pictures(part.blocks) < 2) problems.push(issue(`"${part.title}" has ${steps} steps and ${pictures(part.blocks)} pictures: ask for a screenshot where the thing to click is hard to find and one of the result`));
+    if (steps >= 5 && pictures(part.blocks) < 2) problems.push(issue(`"${part.title}" has ${steps} steps and ${pictures(part.blocks) === 1 ? '1 picture' : 'no pictures'}: ask for a screenshot where the thing to click is hard to find and one of the result`));
   }
   if (blocks.some((b) => b.type === 'steps') && !blocks.some((b) => b.type === 'video' && isClip(b))) problems.push(issue('The week has steps to follow and no clip: ask for a short silent recording where something moves or runs'));
   return problems;
@@ -190,6 +190,8 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
 /** The job that writes a week's module page in place of a lesson plan. */
 export const moduleJob: SectionJob<ModuleDraft> = {
   schema: ModuleDraft,
+  // A week with no live session has no run of show: one written anyway (the forum's deadlines, as "segments") was read as a meeting.
+  tidy: (v, course) => (isMixedOnline(course) || !v.live.length ? v : { ...v, live: [] }),
   check: (v, course) => checkModule(v, course),
   toCommands: (v, problems, course, lesson) => [
     cmd('section.fill', {

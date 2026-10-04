@@ -11,6 +11,18 @@ describe('ripple', () => {
     expect(cellState(course, lesson, 'quiz')).toBe('ready');
   });
 
+  it('settles one note of several, or all of them', () => {
+    const course = sampleCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const note = (text: string) => ({ code: 'reviewNote' as const, values: { where: 'Segment 1', text } });
+    const flagged = { ...course, lessons: { ...course.lessons, [lesson.id]: { ...lesson, gen: { ...lesson.gen, plan: { ...lesson.gen.plan!, flags: [note('a'), note('b'), note('c')] } } } } };
+    const store = new CourseStore(parseCourse(flagged));
+    store.apply([cmd('review.resolve', { lessonId: lesson.id, kind: 'plan', itemId: null, index: 1 })], { label: { key: 't' }, source: 'teacher' });
+    expect(attentionItems(store.getState())[0]!.flags.map((f) => ('values' in f ? (f.values as { text: string }).text : ''))).toEqual(['a', 'c']);
+    store.apply([cmd('review.resolve', { lessonId: lesson.id, kind: 'plan', itemId: null })], { label: { key: 't' }, source: 'teacher' });
+    expect(attentionItems(store.getState())).toEqual([]);
+  });
+
   it('marks dependent sections out of date when an objective changes', () => {
     const store = new CourseStore(sampleCourse());
     const lesson = orderedLessons(store.getState())[1]!;

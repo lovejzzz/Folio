@@ -1,5 +1,5 @@
 import type { ExportFile, ExportRequest } from '@folio/export';
-import { wrap, type Remote } from 'comlink';
+import { proxy, transfer, wrap, type Remote } from 'comlink';
 import type { ExportResult, ExportWorkerApi } from '../workers/export.worker';
 import { exportFailure } from './exportErrors';
 
@@ -10,15 +10,25 @@ function remote(): Remote<ExportWorkerApi> {
   return worker;
 }
 
-/** Make an export file in the worker; fall back to the main thread if workers are unavailable. */
+/**
+ * Make an export file in the worker; fall back to the main thread if workers are unavailable. The course's
+ * pictures and files are read here, on the page, and handed to the worker as it asks for each.
+ */
 export async function makeExport(req: ExportRequest): Promise<ExportFile> {
+  const { mediaResolver } = await import('./exportMedia');
+  const media = mediaResolver(req.course.id);
   let result: ExportResult;
   try {
-    result = await remote().exportCourse(req);
+    // Moved, not copied: a clip is large, and the page has no further use for these bytes.
+    const moved: typeof media = async (ref, use) => {
+      const found = await media(ref, use);
+      return found && transfer(found, [found.bytes.buffer]);
+    };
+    result = await remote().exportCourse(req, proxy(moved));
   } catch {
     // The worker couldn't run at all: make the file here instead.
     const { exportCourse } = await import('@folio/export');
-    return exportCourse(req);
+    return exportCourse(req, { media });
   }
   if (result.ok) return result.file;
   throw exportFailure(result.code, result.message);

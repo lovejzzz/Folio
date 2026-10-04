@@ -33,6 +33,15 @@ describe('text a file can’t carry', () => {
     expect(brokenParts(await renderDocx(docs, { courseTitle: course.title }))).toEqual([]);
   });
 
+  it('leaves a Word file with pictures well formed, whatever their descriptions hold', async () => {
+    const doc = project(sampleCourse(), 'faq', { audience: 'student' });
+    const blocks = [...doc.blocks, { t: 'image' as const, src: 'media:m_1.png', alt: `"Quoted" & <tagged> ${BAD}`, caption: 'A & B' }];
+    const media = async () => ({ bytes: new Uint8Array([1, 2, 3]), type: 'image/png', width: 400, height: 300 });
+    const file = await renderDocx([{ ...doc, blocks }], { courseTitle: 'Stats', media });
+    expect(brokenParts(file)).toEqual([]);
+    expect(strFromU8(unzipSync(file)['word/document.xml']!)).toContain('<pic:pic ');
+  });
+
   it('never reaches a slide deck, in a slide’s title, its bullets or its notes', async () => {
     const doc = project(sampleCourse(), 'slides', { audience: 'teacher' });
     const blocks = doc.blocks.map((b) => (b.t === 'slide' ? { ...b, title: `${b.title} ${BAD}`, bullets: [...b.bullets, BAD], notes: `Notes ${BAD}` } : b));

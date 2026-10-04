@@ -1,4 +1,4 @@
-import { enabledKinds, parseCourse, type Course, type CourseStatus, type Language, type MaterialKind } from '@folio/core';
+import { attentionItems, enabledKinds, parseCourse, type Course, type CourseStatus, type Language, type MaterialKind } from '@folio/core';
 import Dexie, { type Table } from 'dexie';
 import { currentMessages } from '../i18n';
 import { upgradeToSeparateTexts } from './dbUpgrade';
@@ -20,6 +20,8 @@ export interface CourseSummary {
   language: Language;
   lessonCount: number;
   kinds: MaterialKind[];
+  /** How many parts carry a note for the teacher: a course is not finished while it has some. Absent on a summary written before this was kept. */
+  toCheck?: number;
 }
 
 export interface CourseRow {
@@ -51,6 +53,24 @@ export interface SyncRow {
   sent?: string[];
 }
 
+/**
+ * A picture, clip or file the teacher added to a page, for one course. The course holds only `media:<id>`; the
+ * bytes stay here, on this device, and are not sent to the account.
+ */
+export interface MediaRow {
+  /** `${courseId}:${id}` */
+  key: string;
+  courseId: string;
+  id: string;
+  /** The name the file had when it was added. */
+  name: string;
+  type: string;
+  bytes: number;
+  blob: Blob;
+  /** When it was added, in milliseconds: one just added is never cleared away as unused. */
+  at: number;
+}
+
 class FolioDb extends Dexie {
   summaries!: Table<CourseSummary, string>;
   courses!: Table<CourseRow, string>;
@@ -58,6 +78,7 @@ class FolioDb extends Dexie {
   /** Undo history, one row per entry, written in the same transaction as its course. */
   history!: Table<HistoryRow, string>;
   sync!: Table<SyncRow, string>;
+  media!: Table<MediaRow, string>;
   constructor() {
     super('folio');
     this.version(1).stores({ courses: 'id, updatedAt' });
@@ -66,6 +87,7 @@ class FolioDb extends Dexie {
     this.version(4)
       .stores({ summaries: 'id, updatedAt', courses: 'id', sources: 'key, courseId', history: 'key, courseId', sync: 'id, account' })
       .upgrade(upgradeToSeparateTexts);
+    this.version(5).stores({ media: 'key, courseId' });
   }
 }
 
@@ -101,6 +123,7 @@ export function summaryOf(course: Course): CourseSummary {
     language: course.language,
     lessonCount: course.lessonOrder.length,
     kinds: enabledKinds(course),
+    toCheck: attentionItems(course).length,
   };
 }
 
@@ -244,11 +267,13 @@ export async function listCourses(): Promise<CourseSummary[]> {
 
 /** Delete a course here; `forget` removes only this device's copy (signing out), leaving the account's. */
 export async function deleteCourse(id: string, { forget = false }: { forget?: boolean } = {}): Promise<void> {
-  await db.transaction('rw', PARTS(), async () => {
+  await db.transaction('rw', [...PARTS(), db.media], async () => {
     await db.summaries.delete(id);
     await db.courses.delete(id);
     await db.sources.where('courseId').equals(id).delete();
     await db.history.where('courseId').equals(id).delete();
+    // The account holds no pictures: forgetting this device's copy keeps them, for when the course comes back.
+    if (!forget) await db.media.where('courseId').equals(id).delete();
   });
   told({ type: forget ? 'forgotten' : 'deleted', id });
 }

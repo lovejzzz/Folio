@@ -12,12 +12,13 @@ import { useAccount } from '../../state/account';
 import { download } from '../../lib/exporter';
 import { useCourseList } from '../../state/courseList';
 import { deleteCourse, isQuotaError, loadCourse, saveCourse, type CourseSummary } from '../../state/db';
+import { copyCourseMedia, restoreMedia } from '../../state/media';
 import { toast } from '../../state/toasts';
 import { dropSession } from '../../state/session';
 
 async function saveFolio(course: Course): Promise<void> {
-  const { writeFolio, slugFilename, MIME } = await import('@folio/export');
-  download({ name: slugFilename(course.title, '', '', 'folio'), mime: MIME.folio, bytes: writeFolio(course) });
+  const [{ writeFolio, slugFilename, MIME }, { backupMedia }] = await Promise.all([import('@folio/export'), import('../../lib/exportMedia')]);
+  download({ name: slugFilename(course.title, '', '', 'folio'), mime: MIME.folio, bytes: writeFolio(course, undefined, await backupMedia(course)) });
 }
 
 function CardMenu({ course, onChanged, onDelete }: { course: CourseSummary; onChanged: () => void; onDelete: () => void }) {
@@ -26,7 +27,10 @@ function CardMenu({ course, onChanged, onDelete }: { course: CourseSummary; onCh
     const full = await loadCourse(course.id);
     if (!full) return;
     const now = new Date().toISOString();
-    await saveCourse({ ...full, id: newId('c'), title: t.library.copyOf(full.title), createdAt: now, updatedAt: now });
+    const copy = { ...full, id: newId('c'), title: t.library.copyOf(full.title), createdAt: now, updatedAt: now };
+    // The pictures first: a copy that opens before they are there would show empty places.
+    await copyCourseMedia(full.id, copy.id);
+    await saveCourse(copy);
     onChanged();
   };
   return (
@@ -55,10 +59,11 @@ function Header() {
   const file = useRef<HTMLInputElement>(null);
   const open = async (f: File) => {
     try {
-      const { readFolio } = await import('@folio/export');
-      const read = readFolio(new Uint8Array(await f.arrayBuffer()));
+      const { readFolioFile } = await import('@folio/export');
+      const { course: read, media } = readFolioFile(new Uint8Array(await f.arrayBuffer()));
       // Opening a backup never replaces a course already here: it arrives as a copy.
       const course = (await loadCourse(read.id)) ? { ...read, id: newId('c'), title: t.library.copyOf(read.title) } : read;
+      for (const m of media) await restoreMedia(course.id, m);
       await saveCourse(course);
       toast({ message: t.library.imported(course.title) });
       await navigate({ to: '/c/$courseId/map', params: { courseId: course.id } });

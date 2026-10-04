@@ -20,7 +20,8 @@ export function sheetsFor(lessons: number): number {
 /** A course as a stack of paper: its size shows in how many sheets lie under it, never in colour. */
 export function CourseCard({ course, menu }: { course: CourseSummary; menu?: ReactNode }) {
   const t = useT();
-  const status = course.status === 'planning' ? t.library.planning : course.status === 'building' ? t.library.building : null;
+  // A written course with notes still on it says so: without this it looked finished from here.
+  const status = course.status === 'planning' ? t.library.planning : course.status === 'building' ? t.library.building : course.toCheck ? t.library.toCheck(course.toCheck) : null;
   const to = course.status === 'planning' ? '/c/$courseId/plan' : '/c/$courseId/map';
   const sheets = SHEETS.slice(0, sheetsFor(course.lessonCount)).reverse();
   return (

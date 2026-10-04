@@ -38,7 +38,14 @@ export type ActivityKind = z.infer<typeof ActivityKindSchema>;
  * A picture or clip. `src` is empty until the media is made: the block is then a slot, and `shows` says exactly
  * what the picture must show so the teacher (or Folio) can make it. `alt` is what a student who can't see it reads.
  */
-const media = { src: text.default(''), alt: text.default(''), caption: text.default(''), shows: text.default('') };
+const media = {
+  src: text.default(''),
+  alt: text.default(''),
+  caption: text.default(''),
+  shows: text.default(''),
+  /** What looking at the picture beside its step found: where the two disagree, and personal details readable in it. Gone once the picture is replaced. */
+  check: z.object({ problems: z.array(text).default([]), personal: z.array(text).default([]) }).optional(),
+};
 
 export const StepSchema = z.object({
   id,
@@ -114,6 +121,30 @@ export function pageMedia(page: readonly PageBlock[]): PageMedia[] {
     return [];
   });
 }
+
+/**
+ * A picture, clip or file the teacher added on this device is not in the course: the course holds `media:<id>`
+ * and the device holds the bytes. A path (a sample course's `/samples/…`) is the file itself and needs neither.
+ */
+const LOCAL_MEDIA = 'media:';
+export const isLocalMedia = (ref: string): boolean => ref.startsWith(LOCAL_MEDIA) && ref.length > LOCAL_MEDIA.length;
+export const localMediaId = (ref: string): string | null => (isLocalMedia(ref) ? ref.slice(LOCAL_MEDIA.length) : null);
+export const localMediaRef = (id: string): string => `${LOCAL_MEDIA}${id}`;
+
+/** Every reference a page makes to something kept on the device, once each: pictures, step shots, videos, their posters, files. */
+export function pageMediaRefs(page: readonly PageBlock[]): string[] {
+  const refs = page.flatMap((b): string[] => {
+    if (b.type === 'image') return [b.src];
+    if (b.type === 'video') return [b.src, b.poster];
+    if (b.type === 'file') return [b.href];
+    if (b.type === 'steps') return b.items.map((s) => s.shot?.src ?? '');
+    return [];
+  });
+  return [...new Set(refs.filter(isLocalMedia))];
+}
+
+/** "HopStart.zip": a label that is the file's own name, which a download or an export keeps. */
+export const isFileName = (label: string): boolean => /\.\w{2,5}$/.test(label.trim());
 
 /** The page as plain text, for digests and for hashing: what a student reads, in order. */
 export function pageText(page: readonly PageBlock[]): string {

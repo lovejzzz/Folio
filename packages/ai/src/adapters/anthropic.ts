@@ -37,12 +37,14 @@ function requestBody(model: string, request: CompletionRequest) {
     messages: [
       {
         role: 'user' as const,
-        content: request.context
-          ? [
-              { type: 'text' as const, text: request.context, cache_control: { type: 'ephemeral' as const } },
-              { type: 'text' as const, text: request.prompt },
-            ]
-          : request.prompt,
+        content:
+          request.context || request.images?.length
+            ? [
+                ...(request.context ? [{ type: 'text' as const, text: request.context, cache_control: { type: 'ephemeral' as const } }] : []),
+                ...(request.images ?? []).map((p) => ({ type: 'image' as const, source: { type: 'base64' as const, media_type: p.type as 'image/png', data: p.data } })),
+                { type: 'text' as const, text: request.prompt },
+              ]
+            : request.prompt,
       },
     ],
     output_config: {

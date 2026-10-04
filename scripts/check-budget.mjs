@@ -9,10 +9,11 @@ const KB = 1024;
 // when a PDF is dropped in, so the first load is unchanged; the budgets make room for it and no more.
 // The first load's CSS blocks the first paint: it once carried 31 KB of font rules for a face no page needed.
 // Total JS is everything a visitor could ever load, most of it on demand; the first load keeps its own, strict budget.
-// It was raised from 3.5 to 3.75 MB in version 0.0.5, for tests, answer keys and due dates.
+// It was raised from 3.5 to 3.75 MB in version 0.0.5, for tests, answer keys and due dates, and to 3.9 MB when
+// teachers could add pictures to a page and have them looked at: all of it loaded on demand.
 // The sample courses and the changelog's pictures are content, fetched only when opened: each has its own budget,
 // apart from the app's.
-const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 3.75 * KB * KB, dist: 10 * KB * KB, samples: 3 * KB * KB, changelog: 4 * KB * KB, media: 60 * KB * KB };
+const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 3.9 * KB * KB, dist: 10 * KB * KB, samples: 3 * KB * KB, changelog: 4 * KB * KB, media: 60 * KB * KB };
 // A sample course taught online carries its pictures and clips (public/samples/<name>/media): fetched one at a
 // time as a page is read, never with the course's text, and held to their own budget.
 const isMedia = (f) => /\/samples\/[^/]+\/media\//.test(f);

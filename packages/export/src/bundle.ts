@@ -1,7 +1,7 @@
 import { zipSync, type Zippable } from 'fflate';
 
-/** Formats that are zip archives already; deflating them again only costs time. */
-const STORED = /\.(docx|pptx|xlsx|folio|zip|png|jpe?g)$/i;
+/** Formats that are packed already (archives, pictures, video); deflating them again only costs time. */
+const STORED = /\.(docx|pptx|xlsx|folio|zip|png|jpe?g|webp|gif|mp4|m4v|webm|mov)$/i;
 
 function uniqueName(name: string, taken: Set<string>): string {
   if (!taken.has(name)) return name;

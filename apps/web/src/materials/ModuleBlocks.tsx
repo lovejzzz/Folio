@@ -1,9 +1,10 @@
 import type { PageBlock, Step } from '@folio/core';
 import { IconButton } from '@folio/ui';
-import { BookOpen, Check, CircleAlert, CircleCheck, CirclePlay, Clapperboard, Copy, Download, Hammer, Image, Info, Lightbulb, MessagesSquare, PencilLine, Tag, TriangleAlert, Upload, Wrench, type LucideIcon } from 'lucide-react';
+import { BookOpen, Check, CircleAlert, CircleCheck, CirclePlay, Copy, Hammer, Info, Lightbulb, MessagesSquare, PencilLine, Tag, TriangleAlert, Upload, Wrench, type LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
+import { Media } from './MediaSlot';
 
 type Of<T extends PageBlock['type']> = Extract<PageBlock, { type: T }>;
 /** Change one block: the page saves the whole list. */
@@ -47,51 +48,8 @@ export function Checklist({ block }: { block: Of<'checklist'> }) {
   );
 }
 
-/** A picture or clip; before it is made, the place where it goes and what it must show. */
-export function Media({ kind, src, alt, caption, shows, poster, transcript, minutes, clip }: { kind: 'image' | 'video'; src: string; alt: string; caption: string; shows: string; poster?: string; transcript?: string; minutes?: number; clip?: boolean }) {
-  const t = useT();
-  const Icon = kind === 'image' ? Image : Clapperboard;
-  const script = transcript?.trim() ? (
-    // Until the video is made, its transcript is the teaching: shown open, not behind a click.
-    <details className="mod-transcript" open={!src}>
-      <summary>{t.module.transcript}</summary>
-      <p>{transcript}</p>
-    </details>
-  ) : null;
-  if (!src) {
-    return (
-      <div className="mod-slot" data-slot={kind}>
-        <Icon size={18} strokeWidth={1.5} aria-hidden />
-        <div>
-          <strong>
-            {kind === 'image' ? t.module.imageSlot : clip ? t.module.clipSlot : t.module.videoSlot}
-            {minutes && minutes >= 1 ? ` · ${t.module.videoLength(Math.round(minutes))}` : ''}
-          </strong>
-          {shows || alt}
-          {script}
-        </div>
-      </div>
-    );
-  }
-  return (
-    <figure className="mod-figure avoid-break">
-      {kind === 'image' ? (
-        // The picture opens at full size: a whole window fitted to the column is too small to read.
-        <a href={src} target="_blank" rel="noreferrer" aria-label={t.module.enlarge(alt || caption)}>
-          <img src={src} alt={alt} loading="lazy" />
-        </a>
-      ) : (
-        <video src={src} poster={poster || undefined} controls preload="metadata" playsInline muted={clip} loop={clip} aria-label={alt || caption || t.module.videoSlot} />
-      )}
-      {clip && alt && <p className="sr-only">{alt}</p>}
-      {caption && <figcaption>{caption}</figcaption>}
-      {script}
-    </figure>
-  );
-}
-
 /** Numbered actions; `start` carries the count on through a part. */
-export function Steps({ block, start, patch }: { block: Of<'steps'>; start: number; patch: Patch }) {
+export function Steps({ block, start, patch, courseId, lessonId }: { block: Of<'steps'>; start: number; patch: Patch; courseId: string; lessonId: string }) {
   const t = useT();
   const set = (step: Step) => patch({ ...block, items: block.items.map((s) => (s.id === step.id ? step : s)) });
   return (
@@ -103,7 +61,7 @@ export function Steps({ block, start, patch }: { block: Of<'steps'>; start: numb
           </span>
           <div className="grid gap-3">
             <EditableText as="p" multiline value={step.text} label={t.module.stepText(start + i)} onCommit={(text) => set({ ...step, text })} />
-            {step.shot && <Media kind="image" {...step.shot} />}
+            {step.shot && <Media kind="image" media={step.shot} courseId={courseId} at={{ lessonId, id: step.id }} onChange={(next) => step.shot && set({ ...step, shot: { ...step.shot, ...next } })} />}
           </div>
         </li>
       ))}
@@ -147,27 +105,6 @@ export function CodeBlock({ block }: { block: Of<'code'> }) {
         <code>{block.code}</code>
       </pre>
     </figure>
-  );
-}
-
-export function FileRow({ block }: { block: Of<'file'> }) {
-  const t = useT();
-  const body = (
-    <>
-      <Download size={16} strokeWidth={1.5} aria-hidden />
-      <span>{block.label}</span>
-      <span className="mod-file-role">{block.href ? t.module.fileRoles[block.role] : t.module.fileSlot}</span>
-    </>
-  );
-  return block.href ? (
-    // Saved under the name the page calls it by, when that is a file name: the steps say "unzip HopStart.zip".
-    <a className="mod-file" href={block.href} download={/\.\w{2,5}$/.test(block.label.trim()) ? block.label.trim() : true}>
-      {body}
-    </a>
-  ) : (
-    <div className="mod-file" data-slot="file" title={block.shows}>
-      {body}
-    </div>
   );
 }
 

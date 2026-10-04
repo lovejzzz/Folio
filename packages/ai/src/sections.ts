@@ -219,7 +219,9 @@ export type SectionProgress =
   | { type: 'partial'; value: unknown }
   | { type: 'checking' }
   /** What the plan's review changed, one reason per fix, and how many problems it left for the teacher. */
-  | { type: 'reviewed'; fixes: string[]; notes: number };
+  | { type: 'reviewed'; fixes: string[]; notes: number }
+  /** One round of mending what the review found. */
+  | { type: 'mended'; open: string[]; changed: string[]; found: string[]; kept: boolean };
 
 export interface SectionOptions {
   /** Reads a freshly written lesson plan and corrects it before anything is built on it. */
@@ -239,6 +241,8 @@ function partials(onProgress: ((progress: SectionProgress) => void) | undefined)
     if (value && typeof value === 'object') onProgress({ type: 'partial', value });
   };
 }
+
+const pageNote = (p: Problem): Problem => (p.flag.code === 'schemaIssue' && p.flag.values.path === 'module' ? { index: p.index, flag: { code: 'reviewNote', values: { where: 'The page', text: String(p.flag.values.issue) } } } : p);
 
 /** A revision of a section before it is saved, with any problems it leaves for the teacher. */
 type Revision<T> = (value: T) => Promise<{ value: T; problems: Problem[] }>;
@@ -318,7 +322,9 @@ export async function generateSection(
     const { value, problems } = revise ? await revise(result.value) : { value: result.value, problems: [] };
     // The checks are of the text that is kept: a rewritten plan carried the first draft's flags and none of its own.
     const checked = value !== result.value && job.check ? job.check(value, course, of) : result.problems;
-    const all = [...checked, ...problems];
+    // What a page's checks still find is said to the teacher in the check's own words, as a note they can have fixed:
+    // as "came back in the wrong shape" it told them nothing.
+    const all = [...checked.map(pageNote), ...problems];
     return { commands: job.toCommands(typesetDraft(value, course.language), all, course, of), flagged: all.length };
   };
   const { reviewer } = options;

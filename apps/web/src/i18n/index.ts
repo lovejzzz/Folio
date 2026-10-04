@@ -40,6 +40,11 @@ export function relativeTime(iso: string, now = Date.now()): string {
   return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+/** One sentence for one "needs a look" note. */
+export function flagLine(flag: Flag, t: Messages): string {
+  return (t.flags[flag.code] as (v: unknown) => string)('values' in flag ? flag.values : {});
+}
+
 /** "Needs a look" notes, one sentence per flag. */
 export function flagText(flags: readonly Flag[], t: Messages): string {
   return flags.map((flag) => (t.flags[flag.code] as (v: unknown) => string)('values' in flag ? flag.values : {})).join(t.common.sentenceGap);

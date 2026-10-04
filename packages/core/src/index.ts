@@ -2,6 +2,7 @@ export * from './materials';
 export * from './limits';
 export * from './schema';
 export * from './page';
+export * from './mediaNames';
 export * from './ids';
 export * from './course';
 export * from './blank';

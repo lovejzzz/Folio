@@ -2,7 +2,7 @@ import { attentionItems, cmd, isMaterialKind, lessonNumber, staleItems, type Att
 import { BinderTab, Button, StatusMark } from '@folio/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useState, type ReactNode } from 'react';
-import { flagText, relativeTime, useT, type Messages } from '../../i18n';
+import { flagLine, flagText, relativeTime, useT, type Messages } from '../../i18n';
 import { retryCell, startBuild, useBuild } from '../../state/build';
 import { edit, undo } from '../../state/edit';
 import { keepAll, keepMine, updateSection, updateSections, useProposals } from '../../state/proposals';
@@ -51,7 +51,15 @@ function AttentionRow({ item }: { item: AttentionItem }) {
   return (
     <li className="rounded-control bg-well p-3">
       <ItemHead lessonId={item.lessonId} kind={item.kind} n={lessonNumber(course, item.lessonId)} />
-      <p className="mt-2 font-ui text-13 leading-5 text-ink">{flagText(item.flags, t)}</p>
+      {item.flags.length > 1 ? (
+        <ul className="mt-2 grid list-disc gap-1 pl-4 font-ui text-13 leading-5 text-ink">
+          {item.flags.map((flag, i) => (
+            <li key={i}>{flagLine(flag, t)}</li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 font-ui text-13 leading-5 text-ink">{flagText(item.flags, t)}</p>
+      )}
       <div className="mt-3 flex gap-1.5">
         <Button size="sm" onPress={() => void navigate({ to: '/c/$courseId/lesson/$lessonId', params: { courseId: course.id, lessonId: item.lessonId }, search: { m: item.kind } })}>
           {t.changes.open}

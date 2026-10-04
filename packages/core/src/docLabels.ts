@@ -107,6 +107,7 @@ const en = {
     toMakeLead: 'Each picture, recording and file this page asks for, in page order, with what it must show. Capture each one in the state its step leaves, before any later step, and check it against the step once it is made.',
     where: (part: string, step: number) => (step ? `${part}, after step ${step}` : part),
     clip: 'Screen recording',
+    withFile: (text: string, name: string) => `${text} (file: ${name})`,
   },
 };
 
@@ -211,6 +212,7 @@ const zh: DocLabels = {
     toMakeLead: '本页要求的每张图片、每段录屏和每个文件，按页面顺序列出，并说明应展示的内容。请在对应步骤刚完成、后续步骤尚未进行时截取，做好后对照该步骤检查一遍。',
     where: (part, step) => (step ? `${part}，第 ${step} 步之后` : part),
     clip: '录屏',
+    withFile: (text, name) => `${text}（文件：${name}）`,
   },
 };
 

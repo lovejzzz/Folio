@@ -142,6 +142,17 @@ function coursePlan(prompt: string) {
   return { summary: 'As asked.', operations };
 }
 
+/**
+ * Putting right what a review found. The fake's exit ticket never says which two questions it asks: that is the
+ * teacher's to decide, so the note is left with the question until the teacher has answered it.
+ */
+function mend(prompt: string) {
+  if (prompt.includes('The teacher has decided:'))
+    return { segments: [{ number: 4, kind: 'check', title: 'Exit ticket', minutes: 8, description: 'Two questions on the board: what does a plant take in, and what does it make?', teacherNotes: '' }], left: [] };
+  if (prompt.includes('never given')) return { segments: [], left: [{ note: 1, reason: 'teacher', why: 'Which two questions should the exit ticket ask?' }] };
+  return { segments: [], left: [] };
+}
+
 function answerFor(body: Body): unknown {
   const system = typeof body.system === 'string' ? body.system : (body.system ?? []).map((b) => b.text).join('\n');
   const prompt = [system, ...body.messages.map((m) => m.content)].join('\n');
@@ -149,6 +160,8 @@ function answerFor(body: Body): unknown {
   if (prompt.includes('Return {"ok": true}')) return { ok: true };
   // The plan review: a plan written by the fake has nothing wrong with it.
   if (prompt.includes('Check this plan the way')) return { issues: [] };
+  // Asked before the plan itself: a mend's request quotes the plan's.
+  if (prompt.includes('found these problems')) return mend(prompt);
   if (prompt.includes('Before Folio plans this course')) return clarify(prompt);
   if (prompt.includes('A teacher attached this syllabus'))
     return { issues: [{ kind: 'error', where: 'Grading', problem: 'The weights add up to 90%, not 100%.', fix: 'Give the final exam 30%.' }] };

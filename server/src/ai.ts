@@ -21,6 +21,9 @@ const error = (status: number, type: string, message: string) =>
  */
 const FIELDS = ['model', 'max_tokens', 'system', 'messages', 'stream', 'output_config'] as const;
 
+/** A picture's data inside a request. */
+const PICTURE = /"data":"[A-Za-z0-9+/=]{2000,}"/g;
+
 type Body = Partial<Record<(typeof FIELDS)[number], unknown>>;
 
 interface Checked {
@@ -46,7 +49,10 @@ function checked(raw: string): Checked | Response {
   const maxTokens = typeof body.max_tokens === 'number' ? body.max_tokens : 0;
   if (!PRICES[model] || !model.startsWith('claude-')) return error(400, 'invalid_request_error', 'That model is not available with Folio credits.');
   if (maxTokens < 1 || maxTokens > MAX_OUTPUT) return error(400, 'invalid_request_error', 'The answer asked for is too long.');
-  return { body, model, maxTokens, size: raw.length };
+  // A picture costs by its size on screen, about 1,600 tokens at most, not by the length of its data: counted
+  // by its length, one screenshot held more credits than a small balance has.
+  const pictures = raw.match(PICTURE)?.length ?? 0;
+  return { body, model, maxTokens, size: raw.replace(PICTURE, '').length + pictures * 4800 };
 }
 
 /** Tokens, as the answer reports them: once in full (JSON), or growing through a stream. */

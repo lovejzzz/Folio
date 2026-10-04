@@ -1,5 +1,5 @@
-/** Short, stable, prefixed IDs: `l_3f9a1c2e` for a lesson, `q_…` for a task. */
-export type IdPrefix = 'c' | 'l' | 'o' | 't' | 'r' | 'f' | 's' | 'p' | 'x' | 'g';
+/** Short, stable, prefixed IDs: `l_3f9a1c2e` for a lesson, `q_…` for a task, `m_…` for a picture or file kept on the device. */
+export type IdPrefix = 'c' | 'l' | 'o' | 't' | 'r' | 'f' | 's' | 'p' | 'x' | 'g' | 'm';
 
 export function newId(prefix: IdPrefix): string {
   const bytes = new Uint8Array(6);

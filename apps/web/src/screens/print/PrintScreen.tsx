@@ -4,6 +4,7 @@ import { Printer } from 'lucide-react';
 import { useEffect } from 'react';
 import { printRoute } from '../../app/router';
 import { DocView } from '../../components/DocView';
+import { picturesReady } from '../../lib/picturesReady';
 import { pinTheme } from '../../state/prefs';
 import { useCourse } from '../../state/session';
 import { exportText } from '../../i18n/exportText';
@@ -24,7 +25,8 @@ export function PrintScreen() {
   useEffect(() => {
     document.title = `${course.title} · ${audience === 'teacher' ? l.teacherCopy : l.studentCopy}`;
     let cancelled = false;
-    void document.fonts.ready.then(() => {
+    // Pictures load as they come into view, and print comes before any scrolling: each is waited for first.
+    void Promise.all([document.fonts.ready, picturesReady(document.getElementById('main'))]).then(() => {
       if (!cancelled) setTimeout(() => window.print(), 300);
     });
     return () => {
@@ -49,7 +51,7 @@ export function PrintScreen() {
         </header>
         {kinds.map((kind, i) => (
           <section key={kind} className={cx(i > 0 && 'print-break mt-16', kind === 'rubrics' && 'print-landscape')}>
-            <DocView doc={project(course, kind, { audience, ...(lessons ? { lessonIds: lessons } : {}) })} />
+            <DocView doc={project(course, kind, { audience, ...(lessons ? { lessonIds: lessons } : {}) })} courseId={course.id} />
           </section>
         ))}
       </main>

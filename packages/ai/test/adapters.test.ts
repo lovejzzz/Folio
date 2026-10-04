@@ -63,6 +63,18 @@ describe('anthropic adapter', () => {
     expect(body.output_config.effort).toBe('low');
   });
 
+  it('shows the model a picture ahead of the words about it', async () => {
+    const { fn, seen } = mockFetch(200, anthropicMessage('{"title":"x"}'));
+    await createInference(settings('anthropic'), fn).complete({ ...req, images: [{ type: 'image/webp', data: 'AAAA' }] });
+    expect(JSON.parse(String(seen[0]!.init.body)).messages[0].content).toEqual([
+      { type: 'image', source: { type: 'base64', media_type: 'image/webp', data: 'AAAA' } },
+      { type: 'text', text: 'hello' },
+    ]);
+    const openai = mockFetch(200, { choices: [{ message: { content: '{"title":"x"}' }, finish_reason: 'stop' }] });
+    await createInference(settings('openai'), openai.fn).complete({ ...req, images: [{ type: 'image/png', data: 'BBBB' }] });
+    expect(JSON.parse(String(openai.seen[0]!.init.body)).messages.at(-1).content[0]).toEqual({ type: 'image_url', image_url: { url: 'data:image/png;base64,BBBB' } });
+  });
+
   it('reports refusals and bad keys plainly', async () => {
     await expect(createInference(settings('anthropic'), mockFetch(200, anthropicMessage('', 'refusal')).fn).complete(req)).rejects.toMatchObject({ kind: 'refused' });
     const bad = mockFetch(401, { type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } });

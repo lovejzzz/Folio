@@ -15,4 +15,6 @@ export * from './syllabus';
 export * from './actions';
 export * from './planCheck';
 export * from './build';
+export * from './pictureCheck';
+export * from './fixNote';
 export * from './partial';

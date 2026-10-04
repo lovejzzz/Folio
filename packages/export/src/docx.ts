@@ -5,11 +5,15 @@ import { printPalette } from '@folio/ui/tokens';
 import { renderBlock, runs, type BlockCtx, type DocxChild } from './docxBlocks';
 import { MARGIN, SIZE, contentWidth, documentStyles, fontFor, numbering, pageSize } from './docxTheme';
 import { exportLabels } from './labels';
+import { placePictures, type PlacedPicture } from './docxImages';
+import { resolvePictures, type MediaResolver, type ResolvedMedia } from './media';
 import { ExportError } from './errors';
 import { cleanDoc } from './xml';
 
 export interface DocxOptions {
   courseTitle: string;
+  /** Turns a picture's reference into its bytes. Without it, pictures are said in words. */
+  media?: MediaResolver;
 }
 
 /** Page breaks at either end of a material would only leave blank pages. */
@@ -39,8 +43,14 @@ function footer(doc: SemanticDoc, courseTitle: string): Footer {
   });
 }
 
+/** The pictures a file may show, and those it has placed so far. */
+interface Pictures {
+  images: ReadonlyMap<string, ResolvedMedia>;
+  placed: PlacedPicture[];
+}
+
 /** One material as its own section, so it starts on a fresh page with its own footer. */
-function section(doc: SemanticDoc, courseTitle: string, lists: { count: number }): ISectionOptions {
+function section(doc: SemanticDoc, courseTitle: string, lists: { count: number }, pictures: Pictures): ISectionOptions {
   const l = docLabels(doc.language);
   const ctx: BlockCtx = {
     language: doc.language,
@@ -49,6 +59,7 @@ function section(doc: SemanticDoc, courseTitle: string, lists: { count: number }
     width: contentWidth(doc.language),
     lists,
     lesson: '',
+    ...pictures,
   };
   const copy = doc.audience === 'teacher' ? l.teacherCopy : l.studentCopy;
   const children: DocxChild[] = [
@@ -82,14 +93,15 @@ export async function renderDocx(docs: SemanticDoc[], opts: DocxOptions): Promis
   const first = docs[0];
   if (!first) throw new ExportError('noMaterials', 'Choose at least one material to export.');
   const lists = { count: 0 };
+  const pictures: Pictures = { images: await resolvePictures(docs, opts.media), placed: [] };
   const document = new Document({
     title: courseTitle,
     creator: 'Folio',
     styles: documentStyles(first.language),
     numbering: numbering(),
-    sections: docs.map((doc) => section(doc, courseTitle, lists)),
+    sections: docs.map((doc) => section(doc, courseTitle, lists, pictures)),
   });
-  return tidyForPages(new Uint8Array(await Packer.toArrayBuffer(document)));
+  return tidyForPages(new Uint8Array(await Packer.toArrayBuffer(document)), pictures.placed);
 }
 
 const NORMAL = '<w:style w:type="paragraph" w:styleId="Normal">';
@@ -102,8 +114,9 @@ const SECTION_BREAK = '<w:p><w:pPr><w:sectPr>';
  *   the style of the heading before it: body text came out bold and large.
  * - The paragraph that ends each material is a hairline. At full height it spilled onto a page of its own
  *   whenever a material filled its last page, leaving a blank page.
+ * The pictures go in here too, while the file is open (see docxImages).
  */
-export function tidyForPages(file: Uint8Array): Uint8Array {
+export function tidyForPages(file: Uint8Array, pictures: readonly PlacedPicture[] = []): Uint8Array {
   const parts = unzipSync(file);
   const styles = parts['word/styles.xml'];
   const document = parts['word/document.xml'];
@@ -112,5 +125,6 @@ export function tidyForPages(file: Uint8Array): Uint8Array {
   parts['word/document.xml'] = strToU8(
     strFromU8(document).replaceAll(SECTION_BREAK, '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr><w:sectPr>'),
   );
+  placePictures(parts, pictures);
   return zipSync(parts as Zippable, { level: 6 });
 }

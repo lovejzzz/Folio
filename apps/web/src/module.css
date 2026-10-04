@@ -258,6 +258,80 @@
     color: var(--folio-ink);
   }
 
+  /* Adding, replacing and removing what a place holds: the teacher's controls, never printed. */
+  .mod-slot-note {
+    margin-top: 0.35rem;
+    color: var(--folio-attention);
+  }
+  .mod-media-add {
+    display: grid;
+    justify-items: start;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+  }
+  .mod-media-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  /* What looking at a picture beside its step found: the teacher's alone. */
+  .mod-media-check,
+  .mod-media-checked {
+    font-family: var(--font-ui);
+    font-size: var(--text-13);
+    line-height: var(--text-13--line-height);
+  }
+  .mod-media-checked {
+    color: var(--folio-ink-2);
+  }
+  .mod-media-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    background: var(--folio-attention-tint);
+    color: var(--folio-attention);
+  }
+  .mod-media-check ul {
+    flex: 1;
+    display: grid;
+    gap: 0.3rem;
+  }
+  .mod-media-error {
+    font-family: var(--font-ui);
+    font-size: var(--text-13);
+    line-height: var(--text-13--line-height);
+    color: var(--folio-critical);
+  }
+  /* What a student who can't see the picture is given: the teacher's to write, under a small label. */
+  .mod-media-alt {
+    display: grid;
+    gap: 0.1rem;
+    font-family: var(--font-ui);
+    font-size: var(--text-13);
+    line-height: var(--text-13--line-height);
+    color: var(--folio-ink);
+  }
+  .mod-media-alt > span:first-child {
+    font-size: var(--text-12);
+    color: var(--folio-ink-2);
+  }
+  /* Holds the picture's place while it is read from this device. */
+  .mod-media-wait {
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+    background: var(--folio-well);
+  }
+  .mod-file-row {
+    display: grid;
+    justify-items: start;
+    gap: 0.4rem;
+  }
+  .mod-file-row > .mod-file {
+    width: 100%;
+  }
+
   .mod-file {
     display: flex;
     align-items: center;

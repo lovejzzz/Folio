@@ -1,4 +1,4 @@
-import { cmd, newId, type Course, type GradeItem, type Label } from '@folio/core';
+import { cmd, componentPieces, newId, type Course, type GradeItem, type Label } from '@folio/core';
 import { IconButton, InlineNumber, cx } from '@folio/ui';
 import { X } from 'lucide-react';
 import { EditableText } from '../../components/editing/EditableText';
@@ -38,6 +38,7 @@ export function AddGradeItem({ course }: { course: Course }) {
 function Row({ course, item, i }: { course: Course; item: GradeItem; i: number }) {
   const t = useT();
   const name = item.item || t.tasks.gradeItemOf(i + 1);
+  const pieces = componentPieces(course).get(item.item.trim())?.length ?? 0;
   const set = (fields: Partial<GradeItem>) => save(course.grading.map((g) => (g.id === item.id ? { ...g, ...fields } : g)));
   return (
     <tr
@@ -72,6 +73,8 @@ function Row({ course, item, i }: { course: Course; item: GradeItem; i: number }
         >
           {item.judged === 'complete' ? t.tasks.gradeComplete : t.tasks.gradeScored}
         </button>
+        {/* What Folio told every writer: the pieces of one component count equally. Shown, so a teacher who means otherwise sees it. */}
+        {pieces > 1 && <span className="mt-0.5 block text-12 font-normal text-ink-2">{t.tasks.gradePieces(pieces, item.weight > 0 ? String(Math.round((item.weight / pieces) * 10) / 10) : '')}</span>}
       </td>
       <td className="border-b border-rule px-2 py-2.5 text-right text-ink-2">
         <InlineNumber

@@ -31,7 +31,7 @@ export function CompareDialog({ lessonId, kind, onClose }: { lessonId: string; k
           ]}
         />
         <div className={side === 'proposed' ? 'folio-proposed mt-4 max-h-96 overflow-y-auto rounded-control border border-rule p-5' : 'mt-4 max-h-96 overflow-y-auto rounded-control border border-rule p-5'}>
-          <DocView doc={doc} showTitle={false} />
+          <DocView doc={doc} showTitle={false} courseId={course.id} />
         </div>
         <div className="mt-5 flex justify-end gap-2">
           <Button variant="quiet" onPress={() => { keepMine(lessonId, kind); onClose(); }}>

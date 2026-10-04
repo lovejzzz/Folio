@@ -277,6 +277,10 @@ async function build(name: string, store: CourseStore, targets: BuildTarget[], f
       // Said at once: a week that fails while later weeks go on is otherwise unseen until the run ends.
       console.log(`${name}: ${event.target.kind} failed: ${event.error.message.split('\n')[0]!.slice(0, 600)}`);
     },
+    // Each round of mending, with what it was told and what the next reading found: how the notes that ship came to stay.
+    onProgress: (target, progress) => {
+      if (progress.type === 'mended') appendFileSync(LOG, `${JSON.stringify({ at: new Date().toISOString(), sample: name, lesson: store.getState().lessons[target.lessonId]?.title, ...progress })}\n`);
+    },
     signal: new AbortController().signal,
   };
   const summary = await runBuild(host, targets);

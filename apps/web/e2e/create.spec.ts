@@ -88,7 +88,9 @@ test('what the plan review can’t fix itself is left on the plan for the teache
   await page.route('https://api.anthropic.com/**', (route) => {
     const body = route.request().method() === 'POST' ? (route.request().postDataJSON() as { model?: string }) : null;
     if (body?.model !== 'claude-opus-5-5') return route.fallback();
-    const message = { id: 'msg_review', type: 'message', role: 'assistant', model: 'claude-opus-5-5', content: [{ type: 'text', text: JSON.stringify({ issues }) }], stop_reason: 'end_turn', stop_sequence: null, usage: { input_tokens: 10, output_tokens: 10 } };
+    // The second reading, of the plan as mended, finds nothing more.
+    const again = JSON.stringify(body).includes('read once already');
+    const message = { id: 'msg_review', type: 'message', role: 'assistant', model: 'claude-opus-5-5', content: [{ type: 'text', text: JSON.stringify({ issues: again ? [] : issues }) }], stop_reason: 'end_turn', stop_sequence: null, usage: { input_tokens: 10, output_tokens: 10 } };
     return route.fulfill({ status: 200, headers: { 'access-control-allow-origin': '*' }, json: message });
   });
   await withKey(page);
@@ -103,4 +105,15 @@ test('what the plan review can’t fix itself is left on the plan for the teache
   await expect(drawer.getByText('Segment 4, Exit ticket: The two questions are never given.')).toHaveCount(2);
   // The fix the review was sure of is made, and not listed.
   await expect(drawer.getByText('Say how the leaves are kept dark.')).toHaveCount(0);
+  // What is the teacher's to decide comes with the question, and is fixed once they have answered it.
+  await expect(drawer.getByText('Which two questions should the exit ticket ask?')).toHaveCount(2);
+  await drawer.getByRole('button', { name: 'Open' }).first().click();
+  await page.keyboard.press('Escape');
+  const note = page.getByRole('note').filter({ hasText: 'The two questions are never given.' });
+  await note.getByRole('button', { name: 'Fix it: note 1' }).click();
+  await expect(note.getByText('Yours to decide.')).toBeVisible();
+  await note.getByRole('textbox', { name: 'What you have decided, then Enter' }).fill('Ask what a plant takes in and what it makes.');
+  await page.keyboard.press('Enter');
+  await expect(page.getByText('what does a plant take in, and what does it make?')).toBeVisible();
+  await expect(note).toHaveCount(0);
 });

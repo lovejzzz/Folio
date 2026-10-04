@@ -68,7 +68,7 @@ function Preview({ choice }: { choice: ExportChoice }) {
   return (
     <div aria-hidden className="relative h-56 overflow-hidden rounded-control bg-paper shadow-sheet">
       <div className="pointer-events-none absolute left-0 top-0 origin-top-left p-12" style={{ width: '250%', transform: 'scale(0.4)' }}>
-        <DocView doc={doc} />
+        <DocView doc={doc} courseId={course.id} />
       </div>
       <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-paper to-transparent" />
     </div>

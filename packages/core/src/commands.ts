@@ -93,7 +93,8 @@ export type CommandMap = {
   'syllabus.own': { sourceId: string | null };
   'syllabus.checked': { issues: SyllabusIssue[]; checkedAt: string };
   'review.keep': { lessonId: string; kind: GeneratedKind };
-  'review.resolve': { lessonId: string; kind: GeneratedKind; itemId: string | null };
+  /** Settles what a check found on a section or one of its items: all of it, or the one note at `index`. */
+  'review.resolve': { lessonId: string; kind: GeneratedKind; itemId: string | null; index?: number };
   'override.set': { override: Override };
   'override.clear': { overrideId: string };
 };
@@ -368,14 +369,8 @@ const handlers: { [K in CommandType]: Handler<K> } = {
   },
   'review.resolve': (draft, p) => {
     const lesson = lessonOf(draft, p.lessonId);
-    if (p.itemId === null) {
-      const meta = lesson.gen[p.kind];
-      if (meta) meta.flags = [];
-    } else if (draft.tasks[p.itemId]) {
-      draft.tasks[p.itemId]!.flags = [];
-    } else if (draft.faq[p.itemId]) {
-      draft.faq[p.itemId]!.flags = [];
-    }
+    const holder = p.itemId === null ? lesson.gen[p.kind] : (draft.tasks[p.itemId] ?? draft.faq[p.itemId]);
+    if (holder) holder.flags = p.index === undefined ? [] : holder.flags.filter((_, i) => i !== p.index);
   },
   'override.set': (draft, p) => {
     const i = draft.overrides.findIndex(

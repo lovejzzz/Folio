@@ -18,6 +18,8 @@ import {
 import { textRuns, type Block, type DocLabels, type Language } from '@folio/core';
 import { printFonts, printPalette } from '@folio/ui/tokens';
 import { choiceLetter, type ExportLabels } from './labels';
+import { pictureMark, type PlacedPicture } from './docxImages';
+import { wordImageType, type ResolvedMedia } from './media';
 import { BULLETS, NUMBERS, SIZE, fontFor, hairline, type FontRole } from './docxTheme';
 
 export type DocxChild = Paragraph | Table;
@@ -32,6 +34,10 @@ export interface BlockCtx {
   lists: { count: number };
   /** The last lesson a slide belonged to, to add a heading when it changes. */
   lesson: string;
+  /** The pictures that could be read, by reference: the rest are said in words. */
+  images?: ReadonlyMap<string, ResolvedMedia>;
+  /** Each picture placed so far, in order: put into the file once it is made (see docxImages). */
+  placed?: PlacedPicture[];
 }
 
 type RunStyle = Omit<IRunOptions, 'text' | 'children' | 'break' | 'font'> & { role?: FontRole };
@@ -236,6 +242,30 @@ function answers(ctx: BlockCtx, title: string, items: { n: number; answer: strin
   ];
 }
 
+/** Word measures a page in twentieths of a point and a picture in pixels at 96 to the inch. */
+const TWIPS_PER_PIXEL = 15;
+/** A tall picture stops short of a full page, so its caption stays with it. */
+const MAX_HEIGHT_TO_WIDTH = 1.2;
+
+type Image = Extract<Block, { t: 'image' }>;
+
+/**
+ * The picture at the width of the text or its own, whichever is smaller, with its caption under it. One that
+ * could not be read is said in words: its caption and what it shows.
+ */
+function image(ctx: BlockCtx, block: Image): Paragraph[] {
+  const media = ctx.images?.get(block.src);
+  const type = media && wordImageType(media.type);
+  const words = [block.caption, block.alt].filter(Boolean).join(': ');
+  if (!media || !type || !ctx.placed) return [para(ctx, words, 'muted')];
+  const column = Math.floor(ctx.width / TWIPS_PER_PIXEL);
+  const scale = Math.min(1, column / media.width, (column * MAX_HEIGHT_TO_WIDTH) / media.height);
+  const mark = pictureMark(ctx.placed.length);
+  ctx.placed.push({ src: block.src, bytes: media.bytes, type, width: Math.round(media.width * scale), height: Math.round(media.height * scale), description: block.alt || block.caption });
+  const picture = new Paragraph({ keepNext: Boolean(block.caption), spacing: { before: 120, after: 80 }, children: [new TextRun(mark)] });
+  return block.caption ? [picture, para(ctx, block.caption, 'muted')] : [picture];
+}
+
 /** Word content for one semantic block. */
 export function renderBlock(ctx: BlockCtx, block: Block): DocxChild[] {
   switch (block.t) {
@@ -254,8 +284,7 @@ export function renderBlock(ctx: BlockCtx, block: Block): DocxChild[] {
     case 'note':
       return [...note(ctx, block.label, block.text), spacer()];
     case 'image':
-      // In words: a Word file carries no picture of its own, so it says what the picture shows.
-      return [para(ctx, [block.caption, block.alt].filter(Boolean).join(': '), 'muted')];
+      return image(ctx, block);
     case 'question':
       return question(ctx, block);
     case 'slide':

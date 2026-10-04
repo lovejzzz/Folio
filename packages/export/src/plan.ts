@@ -1,10 +1,11 @@
-import { courseLabels, project, type Audience, type Course, type MaterialKind } from '@folio/core';
+import { MEDIA_FOLDER, courseLabels, localMediaRef, mediaFileNames, pageMediaRefs, project, type Audience, type Course, type MaterialKind } from '@folio/core';
 import { zipFiles } from './bundle';
 import { renderCsv } from './csv';
 import { renderDocx } from './docx';
 import { slugFilename } from './filenames';
-import { writeFolio } from './folioFile';
+import { courseMediaIds, writeFolio, type FolioMedia } from './folioFile';
 import { exportLabels } from './labels';
+import type { MediaResolver } from './media';
 import { renderPptx } from './pptx';
 import { quizRows, renderXlsx } from './xlsx';
 import { ExportError } from './errors';
@@ -17,6 +18,12 @@ export interface ExportRequest {
   audience: Audience;
   lessonIds?: string[];
   format: ExportFormat;
+}
+
+/** What an export needs from whoever asks for it, beyond the course. */
+export interface ExportOptions {
+  /** Turns a reference to a picture, clip or file into its bytes. Without it, exports carry none. */
+  media?: MediaResolver;
 }
 
 export interface ExportFile {
@@ -65,11 +72,11 @@ function projectOne(req: ExportRequest, kind: MaterialKind) {
   return project(req.course, kind, { audience: req.audience, ...(req.lessonIds ? { lessonIds: req.lessonIds } : {}) });
 }
 
-function docxFile(req: ExportRequest, kinds: MaterialKind[], part: string): Planned {
+function docxFile(req: ExportRequest, kinds: MaterialKind[], part: string, opts: ExportOptions): Planned {
   return {
     name: slugFilename(req.course.title, part, audienceLabel(req), 'docx', scopeName(req)),
     mime: MIME.docx,
-    make: () => renderDocx(kinds.map((k) => projectOne(req, k)), { courseTitle: req.course.title }),
+    make: () => renderDocx(kinds.map((k) => projectOne(req, k)), { courseTitle: req.course.title, ...(opts.media ? { media: opts.media } : {}) }),
   };
 }
 
@@ -94,29 +101,57 @@ function quizFile(req: ExportRequest, format: 'xlsx' | 'csv'): Planned {
   };
 }
 
-function folioFile(req: ExportRequest): Planned {
+/** The pictures, clips and files a backup carries: all the course still uses that this device has. */
+async function folioMedia(course: Course, resolve: MediaResolver | undefined): Promise<FolioMedia[]> {
+  const out: FolioMedia[] = [];
+  if (!resolve) return out;
+  for (const id of courseMediaIds(course)) {
+    const found = await resolve(localMediaRef(id), 'file').catch(() => null);
+    if (found) out.push({ id, name: found.name ?? id, type: found.type, bytes: found.bytes });
+  }
+  return out;
+}
+
+function folioFile(req: ExportRequest, opts: ExportOptions): Planned {
   return {
     name: slugFilename(req.course.title, '', '', 'folio'),
     mime: MIME.folio,
-    make: async () => writeFolio(req.course),
+    make: async () => writeFolio(req.course, undefined, await folioMedia(req.course, opts.media)),
   };
 }
 
+/**
+ * The media folder of a zip: each picture, clip and file the exported weeks' pages use, under a name that says
+ * where it goes, for uploading to wherever the course is taught. Only with the pages themselves.
+ */
+function mediaFiles(req: ExportRequest, opts: ExportOptions): Planned[] {
+  if (!req.kinds.includes('plan')) return [];
+  const names = mediaFileNames(req.course);
+  const lessons = req.lessonIds ?? req.course.lessonOrder;
+  const refs = new Set(lessons.flatMap((id) => pageMediaRefs(req.course.lessons[id]?.page ?? [])));
+  return [...refs].flatMap((ref) => {
+    const name = names.get(ref);
+    if (!name) return [];
+    // One this device does not hold is left out: an empty file would pass for the real one.
+    return [{ name: `${MEDIA_FOLDER}/${name}`, mime: '', make: async () => (await opts.media?.(ref, 'file').catch(() => null))?.bytes ?? new Uint8Array() }];
+  });
+}
+
 /** Everything that goes inside the zip bundle. */
-function zipContents(req: ExportRequest): Planned[] {
+function zipContents(req: ExportRequest, opts: ExportOptions): Planned[] {
   const l = courseLabels(req.course);
-  const files = req.kinds.map((k) => docxFile(req, [k], l.materials[k]));
+  const files = req.kinds.map((k) => docxFile(req, [k], l.materials[k], opts));
   if (req.kinds.includes('slides')) files.push(pptxFile(req));
   if (req.kinds.includes('quiz')) files.push(quizFile(req, 'csv'));
   // A .folio is the whole course with every answer: only a whole-course teacher copy carries one.
-  if (req.audience === 'teacher' && !req.lessonIds) files.push(folioFile(req));
-  return files;
+  if (req.audience === 'teacher' && !req.lessonIds) files.push(folioFile(req, opts));
+  return [...files, ...mediaFiles(req, opts)];
 }
 
-function plan(req: ExportRequest): Planned {
+function plan(req: ExportRequest, opts: ExportOptions): Planned {
   switch (req.format) {
     case 'docx':
-      return docxFile(req, req.kinds, partName(req));
+      return docxFile(req, req.kinds, partName(req), opts);
     case 'pptx':
       return pptxFile(req);
     case 'xlsx':
@@ -124,15 +159,15 @@ function plan(req: ExportRequest): Planned {
       return quizFile(req, req.format);
     case 'folio':
       if (req.audience !== 'teacher') throw new ExportError('folioIsTeacherCopy', 'A Folio file holds the whole course with answers, so it is always a teacher copy.');
-      return folioFile(req);
+      return folioFile(req, opts);
     case 'zip': {
-      const contents = zipContents(req);
+      const contents = zipContents(req, opts);
       return {
         name: slugFilename(req.course.title, partName(req), audienceLabel(req), 'zip', scopeName(req)),
         mime: MIME.zip,
         make: async () => {
           const files = await Promise.all(contents.map(async (f) => ({ name: f.name, bytes: await f.make() })));
-          return zipFiles(files);
+          return zipFiles(files.filter((f) => f.bytes.length > 0));
         },
       };
     }
@@ -142,11 +177,12 @@ function plan(req: ExportRequest): Planned {
 /**
  * Produce the file for an export request. Word holds the chosen materials in
  * order; pptx is always the slide deck; xlsx and csv are the quiz bank; zip
- * bundles one file per material plus a .folio backup; folio is the course.
+ * bundles one file per material, a .folio backup and the pages' own pictures,
+ * clips and files; folio is the course with its media.
  */
-export async function exportCourse(req: ExportRequest): Promise<ExportFile> {
+export async function exportCourse(req: ExportRequest, opts: ExportOptions = {}): Promise<ExportFile> {
   if (req.format === 'docx' && !req.kinds.length) throw new ExportError('noMaterials', 'Choose at least one material to export.');
-  const planned = plan(req);
+  const planned = plan(req, opts);
   return { name: planned.name, mime: planned.mime, bytes: await planned.make() };
 }
 
@@ -156,7 +192,7 @@ export async function exportCourse(req: ExportRequest): Promise<ExportFile> {
  */
 export function describeExport(req: ExportRequest): { files: string[]; contents: string[] } {
   return {
-    files: [plan(req).name],
-    contents: req.format === 'zip' ? zipContents(req).map((f) => f.name) : [],
+    files: [plan(req, {}).name],
+    contents: req.format === 'zip' ? zipContents(req, {}).map((f) => f.name) : [],
   };
 }

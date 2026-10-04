@@ -43,6 +43,17 @@ export const DEFAULT_LOCAL_URL = 'http://localhost:11434/v1';
 /** How hard the model thinks before answering. Thinking is billed as output. */
 export type Effort = 'low' | 'medium' | 'high';
 
+/** A picture as a model is sent it. */
+export interface Picture {
+  /** Its media type: image/png, image/jpeg, image/webp or image/gif. */
+  type: string;
+  /** Its bytes, base64. */
+  data: string;
+}
+
+/** Providers whose models can be shown a picture. A model on the teacher's computer, or DeepSeek's, reads text only. */
+export const seesPictures = (provider: ProviderId): boolean => provider === 'folio' || provider === 'anthropic' || provider === 'openai' || provider === 'google';
+
 export interface CompletionRequest {
   /** Short name of the job, used as the schema name. */
   task: string;
@@ -56,6 +67,8 @@ export interface CompletionRequest {
   /** Defaults to medium. */
   effort?: Effort;
   schema: z.ZodType;
+  /** Pictures the prompt is about, as base64: only for a provider that can see them (see `seesPictures`). */
+  images?: readonly Picture[];
   signal?: AbortSignal;
   maxTokens?: number;
   /**

@@ -37,7 +37,7 @@ function liveRules(course: Course): string[] {
   return [
     tools(course),
     recorded,
-    'Cameras are invited, never required or graded. Participation is judged by what a student produces in the session (a poll answered, a line in the shared document, an exit ticket), by the same short scale every session. A student who misses a session watches the recording and answers that session\'s exit ticket within a week: every material that speaks of a missed session says exactly this.',
+    'Cameras are invited, never required or graded. Participation is judged by what a student produces in the session (a poll answered, a line in the shared document, an exit ticket), by the same short scale every session. An exit ticket is each student\'s own and answered in private, in the one place the instructor sets up for the term, which every session calls "the exit-ticket form": never in the chat, where answers show. A student who misses a session watches the recording and answers that session\'s exit ticket within a week: every material that speaks of a missed session says exactly this.',
     'Work due at a session is submitted online before it, early enough to be read: the plan never collects it, it uses it (the opening draws on what students wrote). Slides and documents are posted before the session.',
   ];
 }

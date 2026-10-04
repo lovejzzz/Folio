@@ -138,6 +138,19 @@ export function lessonPieces(lesson: Pick<Lesson, 'homework' | 'also'>): Homewor
   return [lesson.homework, ...(lesson.also ?? [])].filter((p) => p.kind !== 'none');
 }
 
+/**
+ * The lessons that set a piece of each graded component, by number: what "four problem sets" comes to in this course.
+ * A step toward a piece is not one, and a piece set again each week in the same words is counted each time.
+ */
+export function componentPieces(course: Pick<Course, 'lessonOrder' | 'lessons'>): Map<string, number[]> {
+  const at = new Map<string, number[]>();
+  course.lessonOrder.forEach((id, i) => {
+    const lesson = course.lessons[id];
+    for (const p of lesson ? lessonPieces(lesson) : []) if (p.toward.trim() && p.kind !== 'step') at.set(p.toward.trim(), [...(at.get(p.toward.trim()) ?? []), i + 1]);
+  });
+  return at;
+}
+
 /** The piece an assignment was written for: the one that names its component, else the lesson's main piece. */
 export function pieceOf(lesson: Pick<Lesson, 'homework' | 'also'>, assignment: Pick<Assignment, 'toward'>): Homework {
   const toward = (assignment.toward ?? '').trim();

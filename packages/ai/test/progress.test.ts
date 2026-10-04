@@ -46,14 +46,21 @@ describe('a section taking shape', () => {
     expect(JSON.stringify(result.commands)).toContain('Walk through 6CO2 + 6H2O.');
   });
 
-  it('keeps the plan as it was when a mend leaves no fewer notes', async () => {
+  it('keeps the plan as it was when a mend leaves more to put right than it found', async () => {
     const course = smallCourse();
     const lesson = orderedLessons(course)[0]!;
     const writer = fakeInference((req) => (req.task === 'folio_plan_mend' ? mended : planDraft));
-    const reviewer = fakeInference(() => ({ issues: [note('Still not possible in the time.')] }));
-    const result = await generateSection(writer, course, lesson.id, 'plan', undefined, { reviewer });
+    const seen: SectionProgress[] = [];
+    const reviewer = fakeInference((_req, call) => ({ issues: call === 1 ? [note('Not possible in the time.')] : [note('Still not possible.'), note('And the leaf is now the wrong one.')] }));
+    const result = await generateSection(writer, course, lesson.id, 'plan', undefined, { reviewer, onProgress: (p) => seen.push(p) });
     expect(result.flagged).toBe(1);
     expect(JSON.stringify(result.commands)).not.toContain('kept a week in the dark');
+    expect(seen.find((p) => p.type === 'mended')).toMatchObject({ changed: ['Segment 1'], kept: false, open: ['Segment 1, Leaf in the dark: Not possible in the time.'] });
+    // As many notes after as before: what it was told of is fixed, so the mended plan stands, with what the second reading found.
+    const even = fakeInference((_req, call) => ({ issues: [note(call === 1 ? 'Not possible in the time.' : 'The window leaf needs a label.')] }));
+    const kept = await generateSection(fakeInference((req) => (req.task === 'folio_plan_mend' ? mended : planDraft)), course, lesson.id, 'plan', undefined, { reviewer: even });
+    expect(JSON.stringify(kept.commands)).toContain('kept a week in the dark');
+    expect(JSON.stringify(kept.commands)).toContain('The window leaf needs a label.');
   });
 
   it('leaves the teacher a note only for what is theirs to decide, and drops one the reviewer agrees was mistaken', async () => {

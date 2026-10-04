@@ -1,14 +1,14 @@
-import { OnlineSchema, hasModulePages, orderedLessons, pageMinutes, textRuns, type Course } from '@folio/core';
+import { CourseStore, OnlineSchema, hasModulePages, orderedLessons, pageMinutes, textRuns, type Course } from '@folio/core';
 import type { Lesson } from '@folio/core';
 import { describe, expect, it } from 'vitest';
-import { OutlineDraft, courseBackground, courseFromOutline, generateSection, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
+import { OutlineDraft, checkPicture, fixNotes, courseBackground, courseFromOutline, generateSection, outlinePrompt, picturePlace, sectionPrompt, type NewCourseRequest } from '../src';
 import { applyModuleReview } from '../src/moduleReview';
 import { filesSoFar } from '../src/earlierFiles';
 import { pieceCounts, startPrompt } from '../src/start';
 import { checkRunOfShow } from '../src/live';
 import { ModuleDraft, checkModule, modulePage } from '../src/online';
 import { typesetDraft } from '../src/typeset';
-import { fakeInference, smallCourse } from './fake';
+import { fakeInference, planDraft, smallCourse } from './fake';
 
 const online = (): Course => ({ ...smallCourse(), delivery: 'online-async', online: OnlineSchema.parse({ hoursPerWeek: 3 }) });
 
@@ -86,7 +86,7 @@ describe('an online course with no set meeting time', () => {
     const unchecked = draft();
     unchecked.parts[1]!.blocks.push({ ...unchecked.parts[0]!.blocks[1]!, items: Array.from({ length: 7 }, (_, i) => `Step ${i}`), shots: [] });
     expect(JSON.stringify(checkModule(unchecked, c))).toMatch(/Try it yourself.*has 7 steps and no checkpoint/);
-    expect(JSON.stringify(checkModule(unchecked, c))).toMatch(/has 7 steps and 0 pictures/);
+    expect(JSON.stringify(checkModule(unchecked, c))).toMatch(/has 7 steps and no pictures/);
   });
 
   it('writes a value the student types with the keyboard hyphen, and asks for a caption under every picture', () => {
@@ -301,6 +301,81 @@ describe('how a graded component is judged', () => {
     expect(courseBackground(graded)).toMatch(/Graded complete or incomplete: "Weekly builds"; complete means every criterion of its rubric at the second-highest level or above\. Every other component is scored/);
     expect(courseBackground(graded)).toMatch(/Pieces of one component count equally/);
     expect(courseBackground({ ...c, grading: [{ id: 'g_1', item: 'Weekly builds', weight: 100 }] })).not.toMatch(/complete or incomplete: "/);
+  });
+});
+
+describe('a note fixed at the teacher\'s word', () => {
+  it('writes again only the part at fault, and keeps the other parts\' blocks and the pictures already made', async () => {
+    const c = online();
+    const first = orderedLessons(c)[0]!;
+    const v = draft();
+    v.parts[1]!.blocks.push({ ...v.parts[0]!.blocks[0]!, type: 'image', text: 'Compare the cube.', alt: 'The cube', shows: 'The cube after the challenge' });
+    const page = modulePage(v, 'en').map((b) => (b.type === 'image' ? { ...b, src: 'media:m_1' } : b.type === 'video' ? { ...b, src: 'media:m_2', poster: 'media:m_3' } : b));
+    const note = { code: 'reviewNote' as const, values: { where: `Part 2, ${v.parts[1]!.title}`, text: 'The challenge gives no hint.' } };
+    const kept = { code: 'reviewNote' as const, values: { where: 'Part 1', text: 'Another note.' } };
+    const built = { ...c, lessons: { ...c.lessons, [first.id]: { ...first, keyIdeas: v.keyIdeas, page, facilitation: { ...v.facilitation, toCheck: [] }, gen: { plan: { basis: {}, at: '', edited: false, flags: [note, kept] } } } } } as unknown as Course;
+    const again = { number: 2, title: v.parts[1]!.title, blocks: [...v.parts[1]!.blocks, { ...v.parts[0]!.blocks[0]!, type: 'callout', kind: 'tip', text: 'Start from the Rotate line and change one number.' }] };
+    const model = fakeInference(() => ({ parts: [again], left: [] }));
+    const fix = await fixNotes(model, built, first.id, [note], [kept], 'Give them a hint.');
+    expect(model.calls[0]!.task).toBe('folio_module_mend');
+    expect(model.calls[0]!.prompt).toContain('The challenge gives no hint. The teacher has decided: Give them a hint.');
+    const fill = fix.commands[0]!;
+    if (fill.type !== 'section.fill' || fill.payload.kind !== 'plan') throw new Error('no fill');
+    const now = fill.payload.content.page!;
+    expect(fill.payload.flags).toEqual([kept]);
+    // Part 1 is the very blocks it was; part 2 has its new hint and the picture made for it.
+    const cut = page.findIndex((b) => b.type === 'heading' && b.text === v.parts[1]!.title);
+    expect(now.slice(0, cut)).toEqual(page.slice(0, cut));
+    expect(now.some((b) => b.type === 'callout' && b.text.includes('change one number'))).toBe(true);
+    expect(now.filter((b) => b.type === 'image').map((b) => b.type === 'image' && b.src)).toEqual(['media:m_1']);
+    expect(now.at(-1)).toEqual(page.at(-1));
+  });
+
+  it('leaves the page alone and says why when the writer holds it is right', async () => {
+    const c = online();
+    const first = orderedLessons(c)[0]!;
+    const built = { ...c, lessons: { ...c.lessons, [first.id]: { ...first, page: modulePage(draft(), 'en') } } } as Course;
+    const note = { code: 'reviewNote' as const, values: { where: 'The page', text: 'The total is wrong.' } };
+    const fix = await fixNotes(fakeInference(() => ({ parts: [], left: [{ note: 1, reason: 'mistaken', why: 'The checklist adds up to 180.' }] })), built, first.id, [note], []);
+    expect(fix).toEqual({ commands: [], left: [{ note: 1, reason: 'mistaken', why: 'The checklist adds up to 180.' }] });
+  });
+
+  it('mends a lesson plan the same way, keeping the segments it did not touch', async () => {
+    const store = new CourseStore(smallCourse());
+    const first = orderedLessons(store.getState())[0]!;
+    store.apply((await generateSection(fakeInference(() => planDraft), store.getState(), first.id, 'plan')).commands, { label: { key: 'b' }, source: 'ai' });
+    const before = store.getState().lessons[first.id]!;
+    const note = { code: 'reviewNote' as const, values: { where: 'Segment 1, Leaf in the dark', text: 'The leaves need a week in the dark first.' } };
+    const fix = await fixNotes(fakeInference(() => ({ segments: [{ number: 1, ...planDraft.segments[0]!, description: 'Use leaves kept dark for a week.' }], left: [] })), store.getState(), first.id, [note], []);
+    store.apply(fix.commands, { label: { key: 'b' }, source: 'ai' });
+    const after = store.getState().lessons[first.id]!;
+    expect(after.segments[0]).toMatchObject({ id: before.segments[0]!.id, description: 'Use leaves kept dark for a week.' });
+    expect(after.segments.slice(1)).toEqual(before.segments.slice(1));
+    expect(after.gen.plan?.flags).toEqual([]);
+  });
+});
+
+describe('a picture looked at beside its step', () => {
+  it('is shown the part it is in and the steps up to its own, and no step after', async () => {
+    const c = online();
+    const lesson = orderedLessons(c)[0]!;
+    const shot = { src: '', alt: 'The Create menu', caption: 'Compare the menu.', shows: 'The Create menu with MonoBehaviour Script highlighted' };
+    const page = [
+      { id: 'x_h', type: 'heading' as const, level: 2 as const, text: 'Write a script' },
+      { id: 'x_t', type: 'text' as const, text: 'A script is a component you write.' },
+      { id: 'x_s', type: 'steps' as const, items: [{ id: 'x_1', text: 'Open the Assets menu.' }, { id: 'x_2', text: 'Choose Create > MonoBehaviour Script.', shot }, { id: 'x_3', text: 'Name it Spinner.' }] },
+    ];
+    const place = picturePlace(page, 'x_2')!;
+    expect(place).toMatchObject({ part: 'Write a script', shows: shot.shows, caption: shot.caption });
+    expect(place.before).toContain('A script is a component you write.');
+    expect(place.before).toContain('Choose Create > MonoBehaviour Script.');
+    expect(place.before).not.toContain('Name it Spinner.');
+    const model = fakeInference(() => ({ shows: 'The Create menu', problems: ['The picture shows "C# Script"; the step says "MonoBehaviour Script".'], personal: [] }));
+    const found = await checkPicture(model, c, lesson, place, { type: 'image/png', data: 'AAAA' });
+    expect(found.problems).toHaveLength(1);
+    expect(model.calls[0]!.images).toEqual([{ type: 'image/png', data: 'AAAA' }]);
+    expect(model.calls[0]!.prompt).toContain(`It is in the part "${place.part}"`);
+    expect(picturePlace(page, 'x_none')).toBeNull();
   });
 });
 

@@ -91,6 +91,15 @@ describe('calls paid with credits', () => {
     expect(await balanceOf(env.DB, 'g-123')).toBe(150 * MILLI - 4 * 2100);
   });
 
+  it('hold a picture at what a picture costs, not at the length of its data', async () => {
+    const cookie = await signIn();
+    await env.DB.prepare('UPDATE credits SET balance = ? WHERE user_id = ?').bind(20 * MILLI, 'g-123').run();
+    const picture = { type: 'image', source: { type: 'base64', media_type: 'image/webp', data: 'A'.repeat(600_000) } };
+    const res = await ask(cookie, { max_tokens: 3000, messages: [{ role: 'user', content: [picture, { type: 'text', text: 'Does it fit the step?' }] }] });
+    expect(res.status).toBe(200);
+    expect((sent[0]!.body.messages as { content: { type: string }[] }[])[0]!.content[0]!.type).toBe('image');
+  });
+
   it('go to Anthropic with Folio’s key, and cost their tokens times the markup', async () => {
     const cookie = await signIn();
     const res = await ask(cookie);

@@ -1,6 +1,7 @@
 import { spokenIn, type Block, type SemanticDoc } from '@folio/core';
 import { cx } from '@folio/ui';
 import { useT } from '../i18n';
+import { useMediaUrl } from '../state/mediaUrl';
 import { InlineText } from './InlineText';
 import { SlideCanvas } from '../materials/SlideCanvas';
 
@@ -161,7 +162,23 @@ function Answers({ b }: { b: B<'answers'> }) {
   );
 }
 
-function BlockView({ b, lang, top }: { b: Block; lang: string; top: number }) {
+/**
+ * A picture of a module page. One the teacher added is read from this device; where this device does not have
+ * it, the document says it in words, as a Word file does.
+ */
+function Picture({ b, courseId }: { b: B<'image'>; courseId: string | undefined }) {
+  const found = useMediaUrl(courseId, b.src);
+  if (found.state === 'loading') return <div className="mod-media-wait my-4" data-media-pending />;
+  if (!found.url) return <p className="my-3 font-ui text-14 text-ink-2">{[b.caption, b.alt].filter(Boolean).join(': ')}</p>;
+  return (
+    <figure className="mod-figure avoid-break my-4">
+      <img src={found.url} alt={b.alt} loading="lazy" />
+      {b.caption && <figcaption>{b.caption}</figcaption>}
+    </figure>
+  );
+}
+
+function BlockView({ b, lang, top, courseId }: { b: Block; lang: string; top: number; courseId: string | undefined }) {
   switch (b.t) {
     case 'heading':
       return <Heading b={b} top={top} />;
@@ -188,12 +205,7 @@ function BlockView({ b, lang, top }: { b: Block; lang: string; top: number }) {
         </div>
       );
     case 'image':
-      return (
-        <figure className="mod-figure avoid-break my-4">
-          <img src={b.src} alt={b.alt} loading="lazy" />
-          {b.caption && <figcaption>{b.caption}</figcaption>}
-        </figure>
-      );
+      return <Picture b={b} courseId={courseId} />;
     case 'question':
       return <QuestionBlock b={b} />;
     case 'slide':
@@ -205,14 +217,17 @@ function BlockView({ b, lang, top }: { b: Block; lang: string; top: number }) {
   }
 }
 
-/** A projected material, read-only: the same document every exporter receives. */
-export function DocView({ doc, showTitle = true }: { doc: SemanticDoc; showTitle?: boolean }) {
+/**
+ * A projected material, read-only: the same document every exporter receives. `courseId` is the course it was
+ * projected from, under which the pictures the teacher added are kept.
+ */
+export function DocView({ doc, showTitle = true, courseId }: { doc: SemanticDoc; showTitle?: boolean; courseId?: string }) {
   const top = Math.min(3, ...doc.blocks.map((b) => (b.t === 'heading' ? b.level : 3)));
   return (
     <div className="folio-doc" lang={doc.language}>
       {showTitle && <h1 className="mb-6 font-display text-48 leading-none text-ink">{doc.title}</h1>}
       {doc.blocks.map((b, i) => (
-        <BlockView key={i} b={b} lang={doc.language} top={top} />
+        <BlockView key={i} b={b} lang={doc.language} top={top} courseId={courseId} />
       ))}
     </div>
   );

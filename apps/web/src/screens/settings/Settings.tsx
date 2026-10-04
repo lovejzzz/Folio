@@ -120,6 +120,14 @@ function AppearanceSection() {
   );
 }
 
+/** One zip of every course on this device, each a backup file with the pictures, clips and files it holds. */
+async function saveAll(): Promise<void> {
+  const [{ writeFolio, zipFiles, slugFilename }, { backupMedia }] = await Promise.all([import('@folio/export'), import('../../lib/exportMedia')]);
+  const files: { name: string; bytes: Uint8Array }[] = [];
+  for (const c of await allCourses()) files.push({ name: slugFilename(c.title, '', '', 'folio'), bytes: writeFolio(c, undefined, await backupMedia(c)) });
+  download({ name: settingsText.backupAllName, mime: 'application/zip', bytes: zipFiles(files) });
+}
+
 function DataSection() {
   const t = useT();
   const signedIn = useAccount((s) => Boolean(s.user));
@@ -130,12 +138,6 @@ function DataSection() {
     void navigator.storage?.estimate?.().then((e) => setUsed(e.usage ? size(e.usage) : null));
     void storageKept().then(setKept);
   }, []);
-  const saveAll = async () => {
-    const { writeFolio, zipFiles, slugFilename } = await import('@folio/export');
-    const courses = await allCourses();
-    const files = courses.map((c) => ({ name: slugFilename(c.title, '', '', 'folio'), bytes: writeFolio(c) }));
-    download({ name: settingsText.backupAllName, mime: 'application/zip', bytes: zipFiles(files) });
-  };
   return (
     <Section title={settingsText.data} lede={settingsText.dataLede}>
       {used && <p className="mb-4 font-ui text-13 text-ink-2">{settingsText.storage(used)}</p>}

@@ -20,7 +20,7 @@ export function googleInference(settings: ModelSettings, fetchImpl: typeof fetch
       const body = {
         systemInstruction: { parts: [{ text: request.system }] },
         // The course and the teacher's files are material, in the teacher's turn, ahead of the ask.
-        contents: [{ role: 'user', parts: [...(request.context ? [{ text: request.context }] : []), { text: request.prompt }] }],
+        contents: [{ role: 'user', parts: [...(request.context ? [{ text: request.context }] : []), ...(request.images ?? []).map((p) => ({ inlineData: { mimeType: p.type, data: p.data } })), { text: request.prompt }] }],
         generationConfig: {
           responseMimeType: 'application/json',
           responseJsonSchema: z.toJSONSchema(request.schema),

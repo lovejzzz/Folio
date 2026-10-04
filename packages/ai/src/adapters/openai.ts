@@ -75,7 +75,7 @@ export function openaiInference(settings: ModelSettings, fetchImpl: typeof fetch
           // The course and the teacher's files are material, in the teacher's turn, ahead of the ask: the same
           // prefix on every call of a build, so it is still cached.
           ...(request.context ? [{ role: 'user', content: request.context }] : []),
-          { role: 'user', content: request.prompt },
+          { role: 'user', content: request.images?.length ? [...request.images.map((p) => ({ type: 'image_url', image_url: { url: `data:${p.type};base64,${p.data}` } })), { type: 'text', text: request.prompt }] : request.prompt },
         ],
         // DeepSeek stops at 4K output tokens unless asked for more, and its thinking counts against the cap:
         // a two-hour seminar plan thought for 7K tokens and was cut off at 8K. A runaway at 16K costs two cents.

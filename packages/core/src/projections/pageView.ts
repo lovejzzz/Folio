@@ -1,3 +1,4 @@
+import { MEDIA_FOLDER, mediaFileNames } from '../mediaNames';
 import type { Lesson } from '../schema';
 import type { PageBlock } from '../page';
 import type { Block } from '../semantic';
@@ -10,7 +11,21 @@ const codeLines = (code: string) =>
     .map((line) => (line.trim() ? `\`${line.replace(/`/g, "'")}\`` : ''))
     .join('\n');
 
-function blockView(ctx: Ctx, b: PageBlock): Block[] {
+/** The file each of the course's own clips and files is exported as, by its reference. */
+type Names = ReadonlyMap<string, string>;
+const NO_NAMES: Names = new Map();
+
+/** A recording can't be set on paper: its first frame stands for it, and the words say which file it is. */
+function videoView(ctx: Ctx, b: Extract<PageBlock, { type: 'video' }>, names: Names): Block[] {
+  const m = ctx.l.module;
+  const name = names.get(b.src);
+  const said = `${b.clip ? m.clip : m.video(b.minutes)}: ${b.caption || b.shows}`;
+  const text = name ? m.withFile(said, `${MEDIA_FOLDER}/${name}`) : said;
+  const shown: Block = b.src && b.poster ? { t: 'image', src: b.poster, alt: b.alt, caption: text } : { t: 'para', tone: 'muted', text: b.src ? text : `${m.video(b.minutes)}: ${b.caption || b.shows}` };
+  return [shown, ...(b.transcript.trim() ? [{ t: 'note' as const, label: m.transcript, text: b.transcript }] : [])];
+}
+
+function blockView(ctx: Ctx, b: PageBlock, names: Names): Block[] {
   const m = ctx.l.module;
   switch (b.type) {
     case 'heading':
@@ -34,9 +49,13 @@ function blockView(ctx: Ctx, b: PageBlock): Block[] {
       if (b.src) return [{ t: 'image', src: b.src, alt: b.alt, caption: b.caption }];
       return [{ t: 'para', tone: 'muted', text: `${m.picture}: ${b.alt || b.shows}${b.caption ? `\n${b.caption}` : ''}` }];
     case 'video':
-      return [{ t: 'para', tone: 'muted', text: `${m.video(b.minutes)}: ${b.caption || b.shows}` }, ...(b.transcript.trim() ? [{ t: 'note' as const, label: m.transcript, text: b.transcript }] : [])];
-    case 'file':
-      return [{ t: 'para', tone: 'muted', text: `${m.file}: ${b.label}` }];
+      return videoView(ctx, b, names);
+    case 'file': {
+      // Named when it goes out under another name than the page calls it by.
+      const name = names.get(b.href);
+      const text = `${m.file}: ${b.label}`;
+      return [{ t: 'para', tone: 'muted', text: name && name !== b.label.trim() ? m.withFile(text, `${MEDIA_FOLDER}/${name}`) : text }];
+    }
     case 'checklist':
       return [
         { t: 'heading', level: 3, text: m.thisWeek },
@@ -49,7 +68,7 @@ function blockView(ctx: Ctx, b: PageBlock): Block[] {
 
 /** Blocks that belong to no week (Start here), as a document. */
 export function pageBlocks(ctx: Ctx, blocks: readonly PageBlock[]): Block[] {
-  return blocks.flatMap((b) => (b.type === 'heading' && b.level === 2 ? [{ t: 'heading' as const, level: 3 as const, text: b.text }] : blockView(ctx, b)));
+  return blocks.flatMap((b) => (b.type === 'heading' && b.level === 2 ? [{ t: 'heading' as const, level: 3 as const, text: b.text }] : blockView(ctx, b, NO_NAMES)));
 }
 
 /**
@@ -77,7 +96,8 @@ function toMake(ctx: Ctx, page: readonly PageBlock[]): string[] {
 
 /** A week's module page as a document: the student's copy is the page; the teacher's adds the instructor's kit. */
 export function projectPage(ctx: Ctx, lesson: Lesson): Block[] {
-  const blocks = lesson.page.flatMap((b) => (b.type === 'heading' && b.level === 2 ? [{ t: 'heading' as const, level: 3 as const, text: b.text }] : blockView(ctx, b)));
+  const names = mediaFileNames(ctx.course);
+  const blocks = lesson.page.flatMap((b) => (b.type === 'heading' && b.level === 2 ? [{ t: 'heading' as const, level: 3 as const, text: b.text }] : blockView(ctx, b, names)));
   const kit = lesson.facilitation;
   if (!ctx.teacher || !kit) return blocks;
   const m = ctx.l.module;

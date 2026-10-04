@@ -162,6 +162,8 @@ export async function loadSession(id: string): Promise<CourseStore | null> {
     active.savedSources = saved.sources;
     void flush(active);
   }
+  // Pictures nothing can show again are cleared now, as the course opens: never while it is being changed.
+  void import('./media').then((m) => m.dropUnusedMedia(id, [store.getState(), store.exportHistory()])).catch(() => undefined);
   return store;
 }
 

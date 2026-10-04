@@ -10,11 +10,16 @@ export type Read<T> = (draft: T, since?: Since) => Promise<{ value: T; fixes: st
 /** Puts right what a reading found, changing only the parts at fault. */
 export type Mend<T> = (draft: T, notes: ReviewNote[]) => Promise<Mended<T>>;
 
-export type ReadProgress = { type: 'checking' } | { type: 'reviewed'; fixes: string[]; notes: number };
+export type ReadProgress =
+  | { type: 'checking' }
+  | { type: 'reviewed'; fixes: string[]; notes: number }
+  /** One round of mending: what was open, what was written again, what the next reading found, and whether the round was kept. */
+  | { type: 'mended'; open: string[]; changed: string[]; found: string[]; kept: boolean };
 
 /** A mend and the reading of it are two calls: twice at most, so a text that will not come right does not hold up what waits for it. */
 const ROUNDS = 2;
 
+const said = (note: ReviewNote) => `${note.values.where}: ${note.values.text}`;
 const stopped = (error: unknown) => error instanceof InferenceError && error.kind === 'aborted';
 
 interface State<T> {
@@ -46,8 +51,11 @@ export async function reviewed<T>(read: Read<T>, draft: T, onProgress: ((progres
       const open = [...state.notes, ...checks(state.value)];
       if (!open.length) break;
       const next = await mendOnce(read, mend, state, open).catch((error: unknown) => (stopped(error) ? Promise.reject(error) : null));
-      // A round that changed no words can do no harm: it only says whose a note is. One that did is kept when it leaves fewer.
-      if (!next || count(next.state) > count(state) || (next.rewrote && count(next.state) === count(state))) break;
+      // Kept unless it leaves more to put right than it found: what it was told of is fixed, and what the next
+      // reading finds in the parts written again is found for the first time as often as it is new.
+      const kept = next !== null && count(next.state) <= count(state);
+      if (next) onProgress?.({ type: 'mended', open: open.map(said), changed: next.changed, found: [...next.state.notes, ...checks(next.state.value)].map(said), kept });
+      if (!next || !kept) break;
       state = next.state;
       fixes.push(...next.fixes);
     }
@@ -62,7 +70,7 @@ export async function reviewed<T>(read: Read<T>, draft: T, onProgress: ((progres
 }
 
 /** One round: the parts at fault written again, then read again by a reader told what the first reading found. */
-async function mendOnce<T>(read: Read<T>, mend: Mend<T>, state: State<T>, open: ReviewNote[]): Promise<{ state: State<T>; fixes: string[]; rewrote: boolean } | null> {
+async function mendOnce<T>(read: Read<T>, mend: Mend<T>, state: State<T>, open: ReviewNote[]): Promise<{ state: State<T>; fixes: string[]; changed: string[] } | null> {
   const mended = await mend(state.value, open);
   if (!mended.changed.length && !mended.left.length) return null;
   const again = await read(mended.value, { notes: open, changed: mended.changed, left: mended.left });
@@ -71,5 +79,5 @@ async function mendOnce<T>(read: Read<T>, mend: Mend<T>, state: State<T>, open: 
     const note = l.reason === 'teacher' ? state.notes[l.note - 1] : undefined;
     return note ? [{ code: 'reviewNote' as const, values: { where: note.values.where, text: `${note.values.text} ${l.why}` } }] : [];
   });
-  return { state: { value: again.value, notes: again.notes, kept: [...state.kept, ...asked] }, fixes: again.fixes, rewrote: mended.changed.length > 0 };
+  return { state: { value: again.value, notes: again.notes, kept: [...state.kept, ...asked] }, fixes: again.fixes, changed: mended.changed };
 }
