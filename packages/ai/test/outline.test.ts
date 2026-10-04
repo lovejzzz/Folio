@@ -19,6 +19,17 @@ const lessons = [
 ];
 
 describe('the outline', () => {
+  it('grades a component on completion only when the brief says so in its own words', () => {
+    const grading = [{ item: 'Weekly drafts', weight: 40, scoring: 'completion' }, { item: 'Final paper', weight: 60, scoring: 'scored' }];
+    const draft = OutlineDraft.parse({ title: 'Writing', summary: 'S.', subject: 'Writing', level: 'Undergraduate', lessons, grading });
+    const judged = (brief: string) => courseFromOutline({ ...req, brief }, draft).grading.map((g) => g.judged);
+    expect(judged('Weekly drafts 40%, graded complete or incomplete; a final paper 60%.')).toEqual(['complete', 'levels']);
+    // A model that marks completion where the brief never speaks of it is not believed: "for complete beginners" is not a grading rule.
+    expect(judged('Writing for complete beginners. Weekly drafts 40%, a final paper 60%.')).toEqual(['levels', 'levels']);
+    // Left unsaid, a component is scored.
+    expect(OutlineDraft.parse({ title: 'W', summary: 'S.', subject: 'W', level: 'U', lessons, grading: [{ item: 'Exam', weight: 100 }] }).grading[0]!.scoring).toBe('scored');
+  });
+
   it('starts a doctoral seminar without the materials it does not use, unless the teacher chose', () => {
     const draft = OutlineDraft.parse({ title: 'Proseminar', summary: 'S.', subject: 'Sociology', level: 'Doctoral (PhD) seminar', lessons });
     const on = (c: ReturnType<typeof courseFromOutline>) => MATERIAL_KINDS.filter((k) => c.materials[k].enabled);

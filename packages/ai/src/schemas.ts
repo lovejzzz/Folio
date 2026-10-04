@@ -60,7 +60,11 @@ export const OutlineDraft = z.object({
       z.object({
         item: line.describe('A graded component, e.g. "Problem sets" or "Final exam"'),
         weight: z.number().min(0).max(100).nullable().default(null).describe('Its share of the final grade, in percent; null when the brief gives none'),
-        complete: z.boolean().default(false).describe('True only when the brief says this component is graded complete or incomplete (pass or fail, credit for doing it); false when it is scored'),
+        // Asked as a yes or no named "complete", it came back yes for every component of five courses in six: a 60% seminar paper graded on completion.
+        scoring: z
+          .enum(['scored', 'completion'])
+          .default('scored')
+          .describe('"completion" only when the brief or syllabus says in so many words that this component is graded complete or incomplete, pass or fail, or for credit on doing it. Otherwise "scored": by points or a rubric, as papers, projects, tests and exams are'),
       }),
     )
     .default([])

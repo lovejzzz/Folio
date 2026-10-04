@@ -135,6 +135,9 @@ function piecesOf(draft: OutlineDraft['lessons'][number], i: number, counts: (to
 }
 
 /** Turn an agreed outline into a course in the planning state. */
+/** How a brief says work is graded on being done, not on how well. */
+const COMPLETION = /\bincomplete\b|\bcompletion\b|\bpass(ed)?\s*(\/|or|-)\s*fail|\bcredit\s*(\/|or)\s*no[ -]credit|\bfor credit\b|\bungraded\b|完成/i;
+
 export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft): Course {
   const course = createCourse({
     title: outline.title,
@@ -187,7 +190,9 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   }
   // The teacher's own policies, carried over: a syllabus's late and integrity rules were left on the file.
   course.policies = (outline.policies ?? '').trim();
-  course.grading = graded.map((g) => ({ id: newId('g'), item: g.item.trim(), weight: whole ? 100 : (g.weight ?? 0), judged: g.complete ? ('complete' as const) : ('levels' as const) }));
+  // Held to the teacher's own words as well: no component is graded on completion in a course whose brief and files never speak of it.
+  const spoken = COMPLETION.test(`${req.brief}\n${req.sources.map((s) => s.text).join('\n')}`);
+  course.grading = graded.map((g) => ({ id: newId('g'), item: g.item.trim(), weight: whole ? 100 : (g.weight ?? 0), judged: g.scoring === 'completion' && spoken ? ('complete' as const) : ('levels' as const) }));
   for (const s of req.sources) {
     const source = createSource(s.title, s.text, 'file');
     course.sources[source.id] = source;

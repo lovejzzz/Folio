@@ -61,6 +61,8 @@ const numbered = (notes: ReviewNote[]) => notes.map((n, i) => `${i + 1}. ${n.val
 
 const HOW = [
   'Put each problem right where it stands, and change nothing else. A fix is the smallest one that makes the text true and doable as written: correct the step, the code, the number or the claim; add the step or the sentence that is missing; where more was promised than can be given, say less. What is not at fault stays word for word and in its order.',
+  // Corrected in one segment only, a fact stood uncorrected in a key idea and in the activity built on it.
+  'When what you correct (a fact, a name, a number, which text is read) is also said elsewhere in the text, in a key idea, another part, an answer or the vocabulary, correct it there too and give those as well: put right in one place and left standing in another, it is a new contradiction.',
   'Facts come from the teacher\'s sources and the earlier lessons, never from memory where they speak.',
   'Under "left", list by its number a problem you did not fix, for one of two reasons only: "teacher" when it turns on a choice about the course that is the teacher\'s alone (what counts toward a grade, which of two designs to teach), with the question to decide; "mistaken" when the text is right as it stands, with what shows it. Every other problem is fixed.',
 ].join(' ');
