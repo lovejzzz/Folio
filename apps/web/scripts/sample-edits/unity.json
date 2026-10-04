@@ -1895,20 +1895,20 @@
  {
   "lesson": 11,
   "slot": 7,
-  "drop": true,
-  "why": "The Animation window was not captured at a readable size."
+  "src": "/samples/unity/media/w11-anim-idle.webp",
+  "caption": "The Animation window with the clip Hero_Idle: one keyframe at the start."
  },
  {
   "lesson": 11,
   "slot": 8,
-  "drop": true,
-  "why": "As above."
+  "src": "/samples/unity/media/w11-anim-run.webp",
+  "caption": "Hero_Run in the Animation window: four keyframes, evenly apart."
  },
  {
   "lesson": 11,
   "slot": 9,
-  "drop": true,
-  "why": "Not captured."
+  "src": "/samples/unity/media/w11-loop.webp",
+  "caption": "The Inspector for the clip Hero_Run: Loop Time is ticked."
  },
  {
   "lesson": 11,
@@ -1919,8 +1919,8 @@
  {
   "lesson": 11,
   "slot": 11,
-  "drop": true,
-  "why": "Not captured."
+  "src": "/samples/unity/media/w11-animations.webp",
+  "caption": "Compare with your Animations folder. Coin and Coin_Spin arrive later on this page."
  },
  {
   "lesson": 11,
@@ -1942,14 +1942,14 @@
  {
   "lesson": 11,
   "slot": 15,
-  "drop": true,
-  "why": "Not captured."
+  "src": "/samples/unity/media/w11-hero-anim.webp",
+  "caption": "Hero now has an Animator, with Controller set to Hero, and Hero Animation."
  },
  {
   "lesson": 11,
   "slot": 16,
-  "drop": true,
-  "why": "The clip in the camera part shows Hero idle, running and jumping."
+  "src": "/samples/unity/media/w11-states.mp4",
+  "poster": "/samples/unity/media/w11-states.poster.webp"
  },
  {
   "lesson": 11,
@@ -1965,8 +1965,8 @@
  {
   "lesson": 11,
   "slot": 19,
-  "drop": true,
-  "why": "The Animation window was not captured at a readable size."
+  "src": "/samples/unity/media/w11-anim-coin.webp",
+  "caption": "Coin_Spin in the Animation window: four keyframes, evenly apart."
  },
  {
   "lesson": 11,
@@ -2021,8 +2021,8 @@
  {
   "lesson": 11,
   "slot": 29,
-  "drop": true,
-  "why": "Shown by the clip above."
+  "src": "/samples/unity/media/w11-midrun.webp",
+  "caption": "Compare with your Game view mid-run: Hero in the air between platforms, and the label at the top left."
  },
  {
   "lesson": 11,
@@ -2044,8 +2044,8 @@
  {
   "lesson": 11,
   "slot": 34,
-  "drop": true,
-  "why": "A student’s own notes cannot be pictured for them."
+  "src": "/samples/unity/media/w11-scope.webp",
+  "caption": "An example for a made-up game: compare the shape of your finished notes, not the content."
  },
  {
   "lesson": 11,
@@ -6834,5 +6834,87 @@
   "caption": "After the install: Unity is in the installed list, with the extensions it brings along (.NET Install Tool, C# and C# Dev Kit).",
   "alt": "The Extensions view of Visual Studio Code showing installed extensions: .NET Install Tool, C#, C# Dev Kit and Unity, each by Microsoft.",
   "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-anim-idle.webp",
+  "retake": true,
+  "alt": "Animation window, clip Hero_Idle: the row Hero : Sprite with one keyframe at frame 0."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-anim-run.webp",
+  "retake": true,
+  "alt": "Animation window, clip Hero_Run: the row Hero : Sprite with four keyframes at frames 0, 6, 12 and 18."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-loop.webp",
+  "retake": true,
+  "alt": "Inspector for Hero_Run (Animation Clip): Loop Time ticked, Loop Pose unticked."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-animations.webp",
+  "retake": true,
+  "alt": "Project window, Assets > Animations: Coin, Coin_Spin, Hero, Hero_Idle, Hero_Jump and Hero_Run."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-hero-anim.webp",
+  "retake": true,
+  "alt": "Inspector for Hero: Hero Controller with Move Speed 6, Jump Force 12 and Feet Check FeetCheck; Animator with Controller Hero; and Hero Animation."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-anim-coin.webp",
+  "retake": true,
+  "alt": "Animation window, clip Coin_Spin: the row Coin : Sprite with four keyframes at frames 0, 6, 12 and 18."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-midrun.webp",
+  "retake": true,
+  "alt": "Game view in Play: Hero in the air between two platforms, coins above the platforms, and Coins: 1 at the top left."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-scope.webp",
+  "retake": true,
+  "alt": "GameScope notes for Lantern Run: the loop sentence, four Musts each with the game it was built in, two Shoulds and three Coulds."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-states.mp4",
+  "retake": true,
+  "alt": "Hero stands still, runs right with a four-picture run, jumps with the jump picture, lands and runs back."
+ },
+ {
+  "lesson": 10,
+  "media": "w10-collider1.webp",
+  "retake": true,
+  "caption": "Before Merge: a line between every tile.",
+  "alt": "Scene view with Level selected: green collider lines around every tile of the floor and of the three platforms."
+ },
+ {
+  "lesson": 10,
+  "media": "w10-collider2.webp",
+  "retake": true,
+  "caption": "After Merge: one outline around the floor and one around each platform. Below, Composite Operation reads Merge and the Rigidbody 2D’s Body Type reads Static.",
+  "alt": "Scene view with one outline around the floor and one around each platform, and under it the Inspector: Tilemap Collider 2D with Composite Operation Merge, Rigidbody 2D with Body Type Static."
+ },
+ {
+  "lesson": 10,
+  "media": "w10-hero.webp",
+  "retake": true,
+  "caption": "Gravity Scale is 3, and under Constraints, Freeze Rotation Z is ticked.",
+  "alt": "Inspector for Hero: Tag Player, Position -7, -2, 0, and Rigidbody 2D with Body Type Dynamic, Gravity Scale 3 and Freeze Rotation Z ticked."
+ },
+ {
+  "lesson": 10,
+  "media": "w10-controller.webp",
+  "retake": true,
+  "caption": "Hero Controller holds Move Speed 6, Jump Force 12 and FeetCheck in Feet Check.",
+  "alt": "Inspector for Hero: Rigidbody 2D, Box Collider 2D, and Hero Controller (Script) with Move Speed 6, Jump Force 12 and Feet Check set to FeetCheck (Transform)."
  }
 ]
