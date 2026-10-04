@@ -13,7 +13,7 @@ import { flagsAt, otherPieces, type SectionJob } from './workJobs';
 
 const line = z.string().min(1);
 
-const BlockDraft = z.object({
+export const BlockDraft = z.object({
   type: z.enum(['heading', 'text', 'list', 'steps', 'callout', 'code', 'image', 'video', 'file', 'terms']),
   text: z.string().default('').describe('heading: its words. text: a paragraph. callout: its whole body. code: the code exactly as typed, with line breaks. image, video: the caption. file: its file name as students see it'),
   items: z.array(z.string()).default([]).describe('list: the items. steps: one action per item, unnumbered. terms: "term: meaning" per item'),
@@ -60,6 +60,11 @@ export const ModuleDraft = z.object({
     watchFor: z.array(line).min(2).max(8).describe('What students get wrong or stuck on this week, and what to do when the instructor sees it'),
     feedback: z.array(line).min(2).max(10).describe('Comments the instructor can adapt when giving feedback on this week\'s work'),
     atRisk: z.string().default('').describe('Who to contact this week and what to say: students who have not started, posted or submitted'),
+    toCheck: z
+      .array(line)
+      .max(12)
+      .default([])
+      .describe('When the week teaches a tool: what the page tells students about its screens (a menu path, a button or field\'s name, a default value, what a click does) that the teacher\'s sources do not give and you are not certain of for the version named. Each as the page says it, with the part it is in, so the teacher can try it before the week opens; the ones a student would be stopped by come first. Empty when the sources give them all'),
     leaves: z.array(line).max(32).default([]).describe('When students build something that carries on next week: what their project holds once this week is done, one thing per line, named exactly as the page names it and never reworded, with the values a later week could rely on or trip over (each object and where it is, each file, each setting changed and what it is called on screen, the keys or controls the student uses, and a made-up example the page used that a later week may come back to, with its facts)'),
   }),
 });
@@ -259,7 +264,7 @@ export function moduleAsk(course: Course, lesson: Lesson): string {
     isMixedOnline(course) ? mixedAsk(course) : '',
     'Under "wrapUp", 80 to 120 words: what the student can now do, one question to test themselves on each objective, and a look ahead to next week.',
     'Under "vocabulary", the terms this week introduces, each in one plain sentence.',
-    'Under "facilitation", the instructor\'s part of the week, never shown to students: the announcement to post on Monday (what the week is, the one thing to get right, the deadlines), what to watch for in the forum and in submitted work and what to do about it, comments to adapt when giving feedback, whom to contact by midweek, and under "leaves" what a student\'s work holds at the end of the week.',
+    'Under "facilitation", the instructor\'s part of the week, never shown to students: the announcement to post on Monday (what the week is, the one thing to get right, the deadlines), what to watch for in the forum and in submitted work and what to do about it, comments to adapt when giving feedback, whom to contact by midweek, under "leaves" what a student\'s work holds at the end of the week, and under "toCheck" what the page says of the tool\'s screens without a source to go by.',
     'The teacher\'s sources are for you: the page takes its facts and names from them without mentioning them, and sends students to a source only when it is among this week\'s readings. A term is explained in a sentence where it first appears. The graded work and the forum prompt are written separately and shown to the student with this page: the page names each once, in the checklist, with its deadline (the checklist lists no other submission than the work this week is told it sets), and says nothing of what they ask, how they are submitted or how they are graded; practice on the page is never called the submission.',
     'Never write a placeholder for the instructor to fill in, and never promise a file, link, video or reading that the page does not give as a block.',
   ].join(' ');

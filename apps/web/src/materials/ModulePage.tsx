@@ -98,6 +98,13 @@ function Kit({ course, lesson, kit }: { course: Course; lesson: Lesson; kit: Fac
         <h4>{t.module.feedback}</h4>
         <EditableList items={kit.feedback} label={t.module.feedback} addLabel={t.module.addNote} placeholder="…" lang={course.language} context={lesson.title} onChange={(feedback) => set({ feedback })} />
       </div>
+      {kit.toCheck.length > 0 && (
+        <div>
+          <h4>{t.module.toCheck}</h4>
+          <p className="text-ink-2">{t.module.toCheckNote}</p>
+          <EditableList items={kit.toCheck} label={t.module.toCheck} addLabel={t.module.addNote} placeholder="…" lang={course.language} context={lesson.title} onChange={(toCheck) => set({ toCheck })} />
+        </div>
+      )}
       {kit.atRisk && (
         <div>
           <h4>{t.module.atRisk}</h4>

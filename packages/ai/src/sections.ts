@@ -19,13 +19,15 @@ import {
   type Lesson,
   type Question,
 } from '@folio/core';
-import { InferenceError, type Inference } from './inference';
+import type { Inference } from './inference';
 import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
 import { assignments, base, continuedInClass, flagsAt, step, test, type SectionJob } from './workJobs';
 import { issuePlace, reviewPlan } from './review';
 import { PREPARATION_GRADING, checkRunOfShow, isLiveOnline, isMixedOnline } from './live';
-import { FORUM_GRADING, checkModule, moduleJob } from './online';
+import { FORUM_GRADING, checkModule, moduleJob, type ModuleDraft } from './online';
+import { mendModule, mendPlan } from './mend';
+import { reviewed, type Mend, type Read } from './secondRead';
 import { reviewModule } from './moduleReview';
 import { startCommands } from './start';
 import { runJob, type Problem } from './jobs';
@@ -223,6 +225,10 @@ export interface SectionOptions {
   /** Reads a freshly written lesson plan and corrects it before anything is built on it. */
   reviewer?: Inference;
   onProgress?: (progress: SectionProgress) => void;
+  /** Told the plan as first written, before its review: what the next lesson's plan can already be written from. */
+  onDraft?: (commands: Command[]) => void;
+  /** The course as it stands now, for the readings that come later: the lessons before this one may have been corrected since. */
+  latest?: () => Course;
 }
 
 /** The answer so far, read as JSON each time more of it arrives. */
@@ -237,47 +243,9 @@ function partials(onProgress: ((progress: SectionProgress) => void) | undefined)
 /** A revision of a section before it is saved, with any problems it leaves for the teacher. */
 type Revision<T> = (value: T) => Promise<{ value: T; problems: Problem[] }>;
 
-type ReviewNote = Extract<Flag, { code: 'reviewNote' }>;
-/** A second read: the draft with its sure fixes made, why each was made, and what is left as notes. */
-type Read<T> = (draft: T) => Promise<{ value: T; fixes: string[]; notes: ReviewNote[] }>;
-/** Writes the plan again, told what its review found. */
-type Rewrite<T> = (notes: ReviewNote[]) => Promise<T>;
-
-/**
- * The plan after its review, with what the review could not fix as notes for the teacher; or the plan as
- * written if the review can't be had: a failed second read must never cost the teacher the first. Stopping
- * still stops.
- *
- * Notes the review can't fix in a few words used to stay as notes while the slides, quiz and guide were built
- * on the flawed plan and repeated it. So a plan left with notes is written once more, told what they are, and
- * read again; the version with fewer notes is kept, so the rewrite can only help.
- */
-async function reviewed<T>(read: Read<T>, draft: T, options: SectionOptions, rewrite?: Rewrite<T>, check?: (value: T) => Problem[]): Promise<{ value: T; problems: Problem[] }> {
-  const stopped = (error: unknown) => error instanceof InferenceError && error.kind === 'aborted';
-  try {
-    options.onProgress?.({ type: 'checking' });
-    let first = await read(draft);
-    // What the checks find goes to the same rewrite as the reader's notes: a page was written twice over for a missing caption, then a third time for the review.
-    const checks = (value: T): ReviewNote[] => (check?.(value) ?? []).flatMap((p) => (p.flag.code === 'schemaIssue' ? [{ code: 'reviewNote' as const, values: { where: 'The page', text: String(p.flag.values.issue) } }] : []));
-    const found = checks(first.value);
-    if ((first.notes.length || found.length) && rewrite) {
-      const again = await rewrite([...first.notes, ...found])
-        .then(read)
-        .catch((error: unknown) => (stopped(error) ? Promise.reject(error) : null));
-      if (again && again.notes.length + checks(again.value).length < first.notes.length + found.length) first = again;
-    }
-    options.onProgress?.({ type: 'reviewed', fixes: first.fixes, notes: first.notes.length });
-    return { value: first.value, problems: first.notes.map((flag) => ({ index: null, flag })) };
-  } catch (error) {
-    if (stopped(error)) throw error;
-    // Kept as written, and marked: the teacher must know this plan had no second read.
-    return { value: draft, problems: [{ index: null, flag: { code: 'unreviewed' } }] };
-  }
-}
-
 /** The second read of a lesson plan, as `reviewed` takes it. */
-const readPlan = (reviewer: Inference, course: Course, lesson: Lesson, signal?: AbortSignal): Read<PlanDraft> => async (draft) => {
-  const read = await reviewPlan(reviewer, course, lesson, draft, { signal });
+const readPlan = (reviewer: Inference, course: () => Course, lesson: Lesson, signal?: AbortSignal): Read<PlanDraft> => async (draft, since) => {
+  const read = await reviewPlan(reviewer, course(), lesson, draft, { signal, since });
   return { value: read.plan, fixes: read.issues.map((i) => i.why), notes: read.notes.map((n) => ({ code: 'reviewNote', values: { where: issuePlace(read.plan, n), text: n.why } })) };
 };
 
@@ -346,6 +314,7 @@ export async function generateSection(
       signal,
       onText: partials(options.onProgress),
     });
+    if (revise) options.onDraft?.(job.toCommands(typesetDraft(result.value, course.language), result.problems, course, of));
     const { value, problems } = revise ? await revise(result.value) : { value: result.value, problems: [] };
     // The checks are of the text that is kept: a rewritten plan carried the first draft's flags and none of its own.
     const checked = value !== result.value && job.check ? job.check(value, course, of) : result.problems;
@@ -353,16 +322,17 @@ export async function generateSection(
     return { commands: job.toCommands(typesetDraft(value, course.language), all, course, of), flagged: all.length };
   };
   const { reviewer } = options;
-  // The plan once more, for a review that left notes: the same request, with the notes in it.
-  const rewriteWith = <T>(job: SectionJob<T>): Rewrite<T> => async (notes) => {
-    const noted = { ...lesson, gen: { ...lesson.gen, plan: { basis: {}, at: '', edited: false, ...lesson.gen.plan, flags: notes } } };
-    const spec = { task: planTask('plan'), system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: sectionPrompt(course, noted, 'plan'), effort: SECTION_EFFORT.plan, schema: job.schema, signal };
-    return (await runJob(inference, { ...spec, repair: !hasModulePages(course), tidy: job.tidy ? (v) => job.tidy!(v, course, lesson) : undefined, check: job.check ? (v) => job.check!(v, course, lesson) : undefined })).value;
+  // What a review leaves is put right where it stands, by the writer, and read again.
+  const now = () => options.latest?.() ?? course;
+  const mendPage: Mend<ModuleDraft> = (draft, notes) => mendModule(inference, now(), lesson, draft, notes, signal);
+  const mendLesson: Mend<PlanDraft> = async (draft, notes) => {
+    const mended = await mendPlan(inference, now(), lesson, draft, notes, signal);
+    return { ...mended, value: plan.tidy!(mended.value, course, lesson) };
   };
   switch (kind) {
     case 'plan':
-      if (hasModulePages(course)) return withStart(inference, course, lesson, signal, run(moduleJob, reviewer ? (draft) => reviewed((d) => reviewModule(reviewer, course, lesson, d, signal), draft, options, rewriteWith(moduleJob), (v) => checkModule(v, course)) : undefined));
-      return run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, course, lesson, signal), draft, options, rewriteWith(plan)) : undefined);
+      if (hasModulePages(course)) return withStart(inference, course, lesson, signal, run(moduleJob, reviewer ? (draft) => reviewed((d, since) => reviewModule(reviewer, now(), lesson, d, signal, since), draft, options.onProgress, mendPage, (v) => checkModule(v, course)) : undefined));
+      return run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson) : undefined);
     case 'slides':
       return run(slides);
     case 'study':

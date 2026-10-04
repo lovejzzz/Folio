@@ -99,7 +99,7 @@ describe('an online course with no set meeting time', () => {
   it('tells a later week, in full, what an earlier week left in the student\'s project', () => {
     const c = online();
     const [first, second] = orderedLessons(c);
-    const built: Course = { ...c, lessons: { ...c.lessons, [first!.id]: { ...first!, page: modulePage(draft(), 'en'), facilitation: { announcement: 'a', watchFor: [], feedback: [], atRisk: '', leaves: ['Ramp at 0, 2, -4, tilted 20 degrees', 'Ball at 0, 6, -7 with a Rigidbody'] } } } };
+    const built: Course = { ...c, lessons: { ...c.lessons, [first!.id]: { ...first!, page: modulePage(draft(), 'en'), facilitation: { announcement: 'a', watchFor: [], feedback: [], atRisk: '', toCheck: [], leaves: ['Ramp at 0, 2, -4, tilted 20 degrees', 'Ball at 0, 6, -7 with a Rigidbody'] } } } };
     expect(sectionPrompt(built, built.lessons[second!.id]!, 'plan') + courseBackground(built)).toContain('Ramp at 0, 2, -4, tilted 20 degrees');
   });
 
@@ -126,16 +126,17 @@ describe('an online course with no set meeting time', () => {
     expect(JSON.stringify(checkModule(v, c))).toContain('a name, not a sentence');
   });
 
-  it('sends what the checks find to the one rewrite, and does not ask for the page twice first', async () => {
+  it('sends what the checks find to a mend of the part at fault, and does not ask for the page again', async () => {
     const c = online();
     const second = orderedLessons(c)[1]!;
     const bare = draft();
     bare.parts[0]!.blocks.push({ ...bare.parts[0]!.blocks[0]!, type: 'image', text: '', alt: 'The cube', shows: 'The cube' });
-    let asked = 0;
-    const model = fakeInference((r) => (r.task === 'folio_module_review' ? { issues: [] } : asked++ === 0 ? bare : draft()));
+    const mend = { parts: [{ number: 1, ...draft().parts[0]! }], left: [] };
+    const model = fakeInference((r) => (r.task === 'folio_module_review' ? { issues: [] } : r.task === 'folio_module_mend' ? mend : bare));
     const result = await generateSection(model, c, second.id, 'plan', undefined, { reviewer: model });
-    expect(model.calls.filter((call) => call.task === 'folio_module')).toHaveLength(2);
-    expect(model.calls.filter((call) => call.task === 'folio_module')[1]!.prompt).toMatch(/Every image and video needs its caption/);
+    expect(model.calls.map((call) => call.task)).toEqual(['folio_module', 'folio_module_review', 'folio_module_mend', 'folio_module_review']);
+    expect(model.calls[2]!.prompt).toMatch(/Every image and video needs its caption/);
+    expect(model.calls[3]!.prompt).toContain('Written again since: Part 1.');
     const fill = result.commands[0]!;
     expect(fill.type === 'section.fill' && fill.payload.flags).toEqual([]);
   });
@@ -314,5 +315,19 @@ describe('the files earlier weeks wrote', () => {
     expect(shown).toMatch(/Patrol\.cs, as week 1 wrote it:\n\[SerializeField\] float speed = 3f;/);
     expect(shown).not.toMatch(/2f|speed\+\+/);
     expect(filesSoFar(course, first)).toBe('');
+  });
+
+  it('carry what a later block put into them, and weeks too far back to show whole are kept in brief', () => {
+    const c = online();
+    const [first, second] = orderedLessons(c) as [Lesson, Lesson];
+    const code = (caption: string, body: string) => ({ id: `x_${caption.length}${body.length}`, type: 'code' as const, language: 'csharp', code: body, caption });
+    const added = { ...c, lessons: { ...c.lessons, [first.id]: { ...first, page: [code('GameManager.cs', 'int lives = 3;'), code('New fields in GameManager.cs', 'bool gameEnded;')] } } };
+    expect(filesSoFar(added, second)).toMatch(/GameManager\.cs, as week 1 wrote it:\nint lives = 3;\nThen week 1 put in \("New fields in GameManager\.cs"\):\nbool gameEnded;/);
+    // A first week longer than the room for whole weeks is still told of: its ideas, terms and what students did.
+    const page = Array.from({ length: 40 }, (_, i) => [{ id: `x_h${i}`, type: 'heading' as const, level: 2 as const, text: `Part ${i}` }, { id: `x_t${i}`, type: 'text' as const, text: 'word '.repeat(300) }]).flat();
+    const far = { ...c, lessons: { ...c.lessons, [first.id]: { ...first, keyIdeas: ['A script is a component.'], page } } } as Course;
+    const prompt = sectionPrompt(far, far.lessons[second.id]!, 'plan');
+    expect(prompt).toMatch(/Further back, in brief:\n"[^"]+"\n Key ideas: A script is a component\.\n What students did: Part 0; Part 1;/);
+    expect(prompt).not.toContain('word word word');
   });
 });

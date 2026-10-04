@@ -29,26 +29,45 @@ describe('a section taking shape', () => {
 
   const note = (why: string) => ({ part: 'segment', number: 1, field: 'description', kind: 'feasibility', why, find: '', replace: '' });
 
-  it('is written once more when its review leaves notes, told what they are, and kept if it comes back cleaner', async () => {
+  const mended = { segments: [{ number: 1, ...planDraft.segments[0]!, description: 'Compare a leaf kept a week in the dark with one from the window.' }], left: [] };
+
+  it('is mended where its review leaves notes, and read again by a reviewer told what was found', async () => {
     const course = smallCourse();
     const lesson = orderedLessons(course)[0]!;
-    const writer = fakeInference((_req, call) => (call === 1 ? planDraft : { ...planDraft, keyIdeas: ['Rewritten', 'Plants make sugar from light'] }));
+    const writer = fakeInference((req) => (req.task === 'folio_plan_mend' ? mended : planDraft));
     const reviewer = fakeInference((_req, call) => ({ issues: call === 1 ? [note('The leaves need a week in the dark first.')] : [] }));
     const result = await generateSection(writer, course, lesson.id, 'plan', undefined, { reviewer });
-    expect(writer.calls).toHaveLength(2);
-    expect(writer.calls[1]!.prompt).toContain('The leaves need a week in the dark first.');
+    expect(writer.calls.map((c) => c.task)).toEqual(['folio_plan', 'folio_plan_mend']);
+    expect(writer.calls[1]!.prompt).toContain('1. Segment 1, Leaf in the dark: The leaves need a week in the dark first.');
+    expect(reviewer.calls[1]!.prompt).toMatch(/read once already[\s\S]*Written again since: Segment 1\./);
     expect(result.flagged).toBe(0);
-    expect(JSON.stringify(result.commands)).toContain('Rewritten');
+    // Only the segment at fault changed: the rest is the plan as first written.
+    expect(JSON.stringify(result.commands)).toContain('kept a week in the dark');
+    expect(JSON.stringify(result.commands)).toContain('Walk through 6CO2 + 6H2O.');
   });
 
-  it('keeps the first plan when the rewrite does no better', async () => {
+  it('keeps the plan as it was when a mend leaves no fewer notes', async () => {
     const course = smallCourse();
     const lesson = orderedLessons(course)[0]!;
-    const writer = fakeInference((_req, call) => (call === 1 ? planDraft : { ...planDraft, keyIdeas: ['Rewritten', 'Plants make sugar from light'] }));
+    const writer = fakeInference((req) => (req.task === 'folio_plan_mend' ? mended : planDraft));
     const reviewer = fakeInference(() => ({ issues: [note('Still not possible in the time.')] }));
     const result = await generateSection(writer, course, lesson.id, 'plan', undefined, { reviewer });
     expect(result.flagged).toBe(1);
-    expect(JSON.stringify(result.commands)).not.toContain('Rewritten');
+    expect(JSON.stringify(result.commands)).not.toContain('kept a week in the dark');
+  });
+
+  it('leaves the teacher a note only for what is theirs to decide, and drops one the reviewer agrees was mistaken', async () => {
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const left = (reason: string) => ({ segments: [], left: [{ note: 1, reason, why: 'Should the exit ticket count toward the grade?' }] });
+    const reviewer = () => fakeInference((_req, call) => ({ issues: call === 1 ? [note('The exit ticket is graded nowhere.')] : [] }));
+    const asked = await generateSection(fakeInference((req) => (req.task === 'folio_plan_mend' ? left('teacher') : planDraft)), course, lesson.id, 'plan', undefined, { reviewer: reviewer() });
+    expect(asked.flagged).toBe(1);
+    expect(JSON.stringify(asked.commands)).toContain('The exit ticket is graded nowhere. Should the exit ticket count toward the grade?');
+    const second = reviewer();
+    const dropped = await generateSection(fakeInference((req) => (req.task === 'folio_plan_mend' ? left('mistaken') : planDraft)), course, lesson.id, 'plan', undefined, { reviewer: second });
+    expect(second.calls[1]!.prompt).toContain('The writer left these as they were, as mistaken');
+    expect(dropped.flagged).toBe(0);
   });
 
   it('is not asked to stream when nobody is watching', async () => {

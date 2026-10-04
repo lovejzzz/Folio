@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { earlierLessons } from './continuity';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
+import { sinceText, type Since } from './mend';
 import type { ModuleDraft } from './online';
 import { courseBackground, lessonContext, systemPrompt } from './prompts';
 
@@ -49,10 +50,11 @@ function moduleText(v: ModuleDraft): string {
   return [`Introduction: ${v.intro}`, `Checklist (${total} minutes in all):\n${checklist}`, parts, live, `Wrap-up: ${v.wrapUp}`].filter(Boolean).join('\n\n');
 }
 
-export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraft): string {
+export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraft, since?: Since): string {
   return [
     lessonContext(course, lesson),
     earlierLessons(course, lesson),
+    sinceText(since, 'part'),
     `The module page to review:\n${moduleText(v)}`,
     [
       'Read this page as the student will: alone at home, with no one to ask, doing exactly what it says and nothing it does not say. Then read it again as an experienced teacher of the subject. List every problem that would stop, mislead or misinform a student:',
@@ -120,12 +122,12 @@ export function applyModuleReview(v: ModuleDraft, issues: ModuleIssue[]): { valu
 type ReviewNote = Extract<Flag, { code: 'reviewNote' }>;
 
 /** Review a freshly written page: small sure fixes are made, the rest come back as notes for a rewrite or the teacher. */
-export async function reviewModule(inference: Inference, course: Course, lesson: Lesson, v: ModuleDraft, signal?: AbortSignal): Promise<{ value: ModuleDraft; fixes: string[]; notes: ReviewNote[] }> {
+export async function reviewModule(inference: Inference, course: Course, lesson: Lesson, v: ModuleDraft, signal?: AbortSignal, since?: Since): Promise<{ value: ModuleDraft; fixes: string[]; notes: ReviewNote[] }> {
   const result = await runJob(inference, {
     task: 'folio_module_review',
     system: systemPrompt(course.language, course.locale),
     context: courseBackground(course),
-    prompt: moduleReviewPrompt(course, lesson, v),
+    prompt: moduleReviewPrompt(course, lesson, v, since),
     effort: 'medium',
     schema: ModuleReviewDraft,
     signal,

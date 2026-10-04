@@ -15,6 +15,8 @@ const holds = (l: Lesson, kind: string, toward: string) => lessonPieces(l).some(
 
 /** Room for the earlier lessons in a plan request: a long course keeps the nearest in full. */
 const EARLIER_BUDGET = 14000;
+/** A week's page is several plans long: at a plan's budget only the week just before was shown whole. */
+const EARLIER_PAGES_BUDGET = 26000;
 
 const clipNote = (note: string, room = 240) => {
   const flat = note.trim().replace(/\s+/g, ' ');
@@ -34,18 +36,41 @@ function lessonDigest(lesson: Lesson, course: Course): string {
   return [`"${lesson.title}"`, ideas && ` Key ideas:\n${ideas}`, terms && ` Terms: ${terms}`, flow && ` What students did:\n${flow}`, homework && ` Homework it set: ${homework}`].filter(Boolean).join('\n');
 }
 
-/** The planned lessons before this one, nearest last, within the budget. */
+/** A lesson too far back to show whole, in a few lines: what it taught, the terms it gave, and what students did in it, by title. */
+function briefDigest(lesson: Lesson): string {
+  const did = lesson.page?.length ? lesson.page.flatMap((b) => (b.type === 'heading' && b.level === 2 ? [b.text] : [])) : lesson.segments.map((s) => s.title);
+  const terms = lesson.vocabulary.map((v) => v.term).join(', ');
+  return [`"${lesson.title}"`, lesson.keyIdeas.length ? ` Key ideas: ${lesson.keyIdeas.join(' ')}` : '', terms && ` Terms: ${terms}`, did.length ? ` What students did: ${did.join('; ')}` : ''].filter(Boolean).join('\n');
+}
+
+/** Room for the lessons further back, each in brief. */
+const BRIEF_BUDGET = 6000;
+
+/**
+ * The planned lessons before this one, nearest last: the nearest whole, within the budget, and those further back
+ * in brief. Left out whole, they left a late lesson knowing nothing of what the early ones taught or named.
+ */
 function digests(course: Course, lesson: Lesson, budget: number): string {
   const before = orderedLessons(course).slice(0, course.lessonOrder.indexOf(lesson.id)).filter((l) => l.segments.length || l.page?.length);
   const kept: string[] = [];
   let used = 0;
-  for (const l of before.reverse()) {
+  let whole = before.length;
+  for (; whole > 0; whole--) {
+    const l = before[whole - 1]!;
     const digest = l.page?.length ? moduleDigest(l, course) : lessonDigest(l, course);
     if (used + digest.length > budget) break;
     kept.unshift(digest);
     used += digest.length;
   }
-  return kept.join('\n\n');
+  const brief: string[] = [];
+  let room = BRIEF_BUDGET;
+  for (const l of before.slice(0, whole).reverse()) {
+    const digest = briefDigest(l);
+    if (digest.length > room) break;
+    brief.unshift(digest);
+    room -= digest.length;
+  }
+  return [brief.length ? `Further back, in brief:\n${brief.join('\n')}` : '', ...kept].filter(Boolean).join('\n\n');
 }
 
 /**
@@ -61,7 +86,7 @@ export function courseSoFar(course: Course, lesson: Lesson): string {
 export function earlierLessons(course: Course, lesson: Lesson): string {
   // A first lesson planned as any other assumed two chapters read and a discussion leader chosen in advance.
   if (course.lessonOrder[0] === lesson.id) return 'This is the first lesson of the course: nothing has been read, set or chosen before it. It introduces the course, how it is assessed and what students need.';
-  const kept = digests(course, lesson, EARLIER_BUDGET);
+  const kept = digests(course, lesson, hasModulePages(course) ? EARLIER_PAGES_BUDGET : EARLIER_BUDGET);
   if (!kept) return '';
   const files = filesSoFar(course, lesson);
   return `The lessons before this one, as already planned:\n${kept}\n\n${files ? `${files}\n\n` : ''}This lesson follows them: use the same names, terms, stages, examples and classroom setups, build on what they taught rather than teaching it again differently or presenting it as new, and when something they started goes on in this lesson (an experiment, a project, a class chart), continue it as they set it up and finish what they left for this lesson (a result to measure, homework to collect or use, work to hand back), on a realistic timeline for how often the class meets (seeds take days to sprout, paint hours to dry). Under vocabulary, list only the terms this lesson introduces: the terms above are already taught, and when this lesson uses them it keeps their meaning.`;

@@ -115,6 +115,34 @@ describe('a plan written again after its review', () => {
   });
 });
 
+describe('plans in a build', () => {
+  it('are each written from the plan before as first written, without waiting for its check', async () => {
+    const store = new CourseStore(smallCourse());
+    const order: string[] = [];
+    let release = () => {};
+    const held = new Promise<void>((resolve) => (release = resolve));
+    const writer = fakeInference((req) => {
+      order.push(`write ${order.filter((o) => o.startsWith('write')).length + 1}`);
+      // The second plan is asked for while the first is still with its reviewer, and is shown the first.
+      if (order.filter((o) => o.startsWith('write')).length === 2) {
+        expect(req.prompt).toContain('Walk through 6CO2 + 6H2O.');
+        release();
+      }
+      return planDraft;
+    });
+    const reviewer = fakeInference(async (_req, call) => {
+      if (call === 1) await held;
+      order.push(`check ${call}`);
+      return { issues: [] };
+    });
+    const targets = missingTargets(store.getState()).filter((t) => t.kind === 'plan');
+    const summary = await runBuild({ inference: writer, reviewer, getCourse: store.getState, commit: (_t, c) => store.apply(c, { label: { key: 'b' }, source: 'ai', undoable: false }), signal: new AbortController().signal }, targets);
+    expect(summary.built).toBe(2);
+    expect(order.slice(0, 2)).toEqual(['write 1', 'write 2']);
+    expect(orderedLessons(store.getState()).every((l) => l.segments.length === 3)).toBe(true);
+  });
+});
+
 describe('parts of one graded piece', () => {
   it('are written in lesson order, each told what the part before asked', async () => {
     const store = new CourseStore(smallCourse());

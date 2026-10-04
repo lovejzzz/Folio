@@ -89,6 +89,7 @@ export function projectPage(ctx: Ctx, lesson: Lesson): Block[] {
     ...(kit.watchFor.length ? [{ t: 'note' as const, label: m.watchFor, text: kit.watchFor.map((w) => `• ${w}`).join('\n') }] : []),
     ...(kit.feedback.length ? [{ t: 'note' as const, label: m.feedback, text: kit.feedback.map((w) => `• ${w}`).join('\n') }] : []),
     ...(kit.atRisk ? [{ t: 'note' as const, label: m.atRisk, text: kit.atRisk }] : []),
+    ...(kit.toCheck.length ? [{ t: 'heading' as const, level: 3 as const, text: m.toCheck }, { t: 'para' as const, tone: 'muted' as const, text: m.toCheckLead }, { t: 'list' as const, ordered: false, items: kit.toCheck }] : []),
     ...(make.length ? [{ t: 'heading' as const, level: 3 as const, text: m.toMake }, { t: 'para' as const, tone: 'muted' as const, text: m.toMakeLead }, { t: 'list' as const, ordered: true, items: make }] : []),
   ];
 }

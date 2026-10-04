@@ -337,6 +337,8 @@ export const en = {
     watchFor: 'What to watch for',
     feedback: 'Feedback you can adapt',
     atRisk: 'Who to contact',
+    toCheck: 'To try on your own installation',
+    toCheckNote: 'Folio had no source of yours to go by for these, so they may not match your version. Try each before the week opens, and remove it once it holds.',
     blockText: 'Text',
     stepText: (n: number) => `Step ${n}`,
     heading: 'Heading',

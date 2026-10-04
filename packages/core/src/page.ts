@@ -77,6 +77,8 @@ export const FacilitationSchema = z.object({
   atRisk: text.default(''),
   /** What every student's work holds once the week is done: the next weeks are written against it. */
   leaves: z.array(text).default([]),
+  /** What the page says of a tool that no source of the teacher's gives: to be tried on the teacher's own installation. */
+  toCheck: z.array(text).default([]),
 });
 export type Facilitation = z.infer<typeof FacilitationSchema>;
 

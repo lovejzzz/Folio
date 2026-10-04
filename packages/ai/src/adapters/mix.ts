@@ -35,6 +35,9 @@ export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_clarify: 4000,
   folio_plan: 12000,
   folio_plan_review: 8000,
+  // A mend writes again only the parts at fault: seldom the whole, never more.
+  folio_plan_mend: 12000,
+  folio_module_mend: 16000,
   // A week's module page is several plans long; one cut off at this is written again with all the room there is.
   folio_module: 16000,
   folio_start: 6000,

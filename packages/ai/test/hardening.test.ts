@@ -56,6 +56,21 @@ describe('a lesson plan that fails', () => {
   });
 });
 
+describe('a part that could not be used', () => {
+  it('is asked for once more before it counts as failed', async () => {
+    const store = new CourseStore(smallCourse());
+    let plans = 0;
+    const inference = fakeInference((req) => {
+      if (req.task === 'folio_plan' && ++plans === 1) throw new InferenceError('invalid', 'The model returned something Folio could not use, twice.');
+      return planDraft;
+    });
+    const targets = missingTargets(store.getState()).filter((t) => t.kind === 'plan');
+    const summary = await runBuild({ inference, getCourse: store.getState, commit: (_t, c) => store.apply(c, { label: { key: 'b' }, source: 'ai', undoable: false }), signal: new AbortController().signal }, targets);
+    expect(summary).toMatchObject({ built: 2, failed: 0 });
+    expect(plans).toBe(3);
+  });
+});
+
 describe('a repair that cannot be asked for', () => {
   const schema = z.object({ n: z.number() });
   const check = () => [{ index: null, flag: { code: 'note' as const, values: { text: 'Could be better' } }, advisory: true }];

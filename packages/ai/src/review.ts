@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { Inference, ModelSettings, ProviderId } from './inference';
 import { runJob } from './jobs';
 import { earlierLessons } from './continuity';
+import { sinceText, type Since } from './mend';
 import { courseBackground, lessonContext, systemPrompt } from './prompts';
 import type { PlanDraft } from './schemas';
 
@@ -58,10 +59,11 @@ function planText(plan: PlanDraft): string {
   return [ideas, segments, vocabulary].filter(Boolean).join('\n\n');
 }
 
-export function planReviewPrompt(course: Course, lesson: Lesson, plan: PlanDraft): string {
+export function planReviewPrompt(course: Course, lesson: Lesson, plan: PlanDraft, since?: Since): string {
   return [
     lessonContext(course, lesson),
     earlierLessons(course, lesson),
+    sinceText(since, 'segment'),
     `The lesson plan to review:\n${planText(plan)}`,
     [
       'Check this plan the way an experienced teacher of this subject and level would before teaching it, and list every problem they would have to fix first. Go through it systematically:',
@@ -140,13 +142,13 @@ export async function reviewPlan(
   course: Course,
   lesson: Lesson,
   plan: PlanDraft,
-  options: { effort?: 'medium' | 'high'; signal?: AbortSignal } = {},
+  options: { effort?: 'medium' | 'high'; signal?: AbortSignal; since?: Since } = {},
 ): Promise<{ plan: PlanDraft; issues: PlanIssue[]; notes: PlanIssue[] }> {
   const result = await runJob(inference, {
     task: 'folio_plan_review',
     system: systemPrompt(course.language, course.locale),
     context: courseBackground(course),
-    prompt: planReviewPrompt(course, lesson, plan),
+    prompt: planReviewPrompt(course, lesson, plan, options.since),
     effort: options.effort ?? 'medium',
     schema: PlanReviewDraft,
     signal: options.signal,

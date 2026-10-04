@@ -1,4 +1,4 @@
-import { GENERATED_KINDS, lessonPieces, orderedLessons, setsWork, type Command, type Course, type GeneratedKind } from '@folio/core';
+import { CourseStore, GENERATED_KINDS, lessonPieces, orderedLessons, setsWork, type Command, type Course, type GeneratedKind } from '@folio/core';
 
 /** The lesson still exists and still asks for this section: the teacher may have changed its homework mid-build. */
 const stillWanted = (course: Course, t: BuildTarget) => {
@@ -60,6 +60,20 @@ export function missingTargets(course: Course, lessonIds?: readonly string[]): B
 
 // Out of credits stops the build too: every other part would fail the same way, and Resume carries on later.
 const FATAL = new Set(['auth', 'config', 'aborted', 'credits']);
+/** Failures that may not happen a second time: an answer that could not be used, a call that ran out of time. A busy provider has been asked again already. */
+const AGAIN = new Set(['invalid', 'network']);
+
+/**
+ * The course with the plans still being checked in it as first written. A plan is written from the lessons before
+ * it, and used to wait for each of them to be checked and corrected: fourteen weeks took three hours, one at a time.
+ * Now it is written from the one before as first written, and its own check reads that one as corrected.
+ */
+function withDrafts(course: Course, drafts: ReadonlyMap<string, Command[]>): Course {
+  if (!drafts.size) return course;
+  const store = new CourseStore(course);
+  for (const [lessonId, commands] of drafts) if (course.lessons[lessonId]) store.apply(commands, { label: { key: 'draft' }, source: 'ai', silent: true });
+  return store.getState();
+}
 
 /**
  * Run section jobs with a small concurrency limit, in lesson order, so the
@@ -83,10 +97,14 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
     return lesson ? lessonPieces(lesson).map((p) => `${p.kind}:${p.toward.trim()}`) : [];
   };
   const shares = (a: string, b: string) => pieces(a).some((key) => pieces(b).includes(key));
+  // Plans written and not yet checked, and something to wake the queue when one arrives.
+  const drafts = new Map<string, Command[]>();
+  let wake = () => {};
+  const drafted = (lessonId: string, commands: Command[]) => (drafts.set(lessonId, commands), wake());
   const blocked = (t: BuildTarget): boolean => {
     const queued = [...pending, ...[...running.keys()].map(parseKey)];
     const waiting = queued.filter((o) => o.kind === 'plan');
-    if (t.kind === 'plan') return waiting.some((o) => position(o.lessonId) < position(t.lessonId));
+    if (t.kind === 'plan') return waiting.some((o) => position(o.lessonId) < position(t.lessonId) && !drafts.has(o.lessonId));
     if (t.kind === 'assignments' && queued.some((o) => o.kind === 'assignments' && position(o.lessonId) < position(t.lessonId) && shares(o.lessonId, t.lessonId))) return true;
     return BUILT_ON_PLAN.has(t.kind) && waiting.some((o) => o.lessonId === t.lessonId);
   };
@@ -112,7 +130,9 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
   const start = (t: BuildTarget): void => {
     const key = targetKey(t);
     const failed = (error: InferenceError) => void (t.kind === 'plan' && failedPlans.set(t.lessonId, error));
-    running.set(key, runOne(host, t, summary, failed).finally(() => running.delete(key)));
+    const view = () => withDrafts(host.getCourse(), drafts);
+    const job = runOne(host, t, summary, failed, t.kind === 'plan' ? { view, drafted } : undefined);
+    running.set(key, job.finally(() => (running.delete(key), t.kind === 'plan' && drafts.delete(t.lessonId))));
   };
 
   while ((pending.length || running.size) && !summary.fatal) {
@@ -124,7 +144,7 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
       index = pending.findIndex((t) => !blocked(t));
     }
     if (running.size === 0) break;
-    await Promise.race(running.values());
+    await Promise.race([...running.values(), new Promise<void>((resolve) => (wake = resolve))]);
   }
   await Promise.allSettled(running.values());
   summary.stopped = host.signal.aborted || summary.fatal?.kind === 'aborted';
@@ -136,13 +156,22 @@ function parseKey(key: string): BuildTarget {
   return { lessonId, kind };
 }
 
-async function runOne(host: BuildHost, target: BuildTarget, summary: BuildSummary, failed: (error: InferenceError) => void): Promise<void> {
-  const course = host.getCourse();
+/** What a plan's job needs beside the rest: the course with the plans before it as first written, and where to say its own is. */
+interface Pipeline {
+  view: () => Course;
+  drafted: (lessonId: string, commands: Command[]) => void;
+}
+
+async function runOne(host: BuildHost, target: BuildTarget, summary: BuildSummary, failed: (error: InferenceError) => void, pipeline?: Pipeline): Promise<void> {
+  const course = pipeline?.view() ?? host.getCourse();
   if (!stillWanted(course, target) || summary.fatal) return;
   host.onEvent?.({ type: 'start', target });
   try {
     const onProgress = host.onProgress ? (progress: SectionProgress) => host.onProgress!(target, progress) : undefined;
-    const result = await generateSection(host.inference, course, target.lessonId, target.kind, host.signal, { reviewer: host.reviewer, onProgress });
+    const options = { reviewer: host.reviewer, onProgress, latest: pipeline?.view, onDraft: pipeline ? (commands: Command[]) => pipeline.drafted(target.lessonId, commands) : undefined };
+    // Asked once more before it counts as failed: a part that fails holds back what is written from it, and most failures do not happen twice.
+    const write = () => generateSection(host.inference, course, target.lessonId, target.kind, host.signal, options);
+    const result = await write().catch((error: unknown) => (error instanceof InferenceError && AGAIN.has(error.kind) && !host.signal.aborted ? write() : Promise.reject(error)));
     if (host.signal.aborted) throw new InferenceError('aborted', 'Stopped.');
     if (!stillWanted(host.getCourse(), target)) return;
     host.commit(target, result.commands);
