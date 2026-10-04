@@ -97,7 +97,16 @@ function slots(page: PageBlock[]): Slot[] {
         drop: () => void gone.add(block.id),
       });
     // A file the page left unnamed takes its name from the edit's caption.
-    if (block.type === 'file') out.push({ fill: (src, _poster, caption) => void Object.assign(block, { href: src }, caption && !block.label.trim() ? { label: caption } : {}), drop: () => void gone.add(block.id) });
+    // A file the page named with a sentence takes the caption as its name; the sentence stays as the paragraph under it.
+    if (block.type === 'file')
+      out.push({
+        fill: (src, _poster, caption) => {
+          const sentence = caption && block.label.trim().length > 60 ? block.label : '';
+          Object.assign(block, { href: src }, caption && (sentence || !block.label.trim()) ? { label: caption } : {});
+          if (sentence) page.splice(page.indexOf(block) + 1, 0, { id: `${block.id}t`, type: 'text', text: sentence });
+        },
+        drop: () => void gone.add(block.id),
+      });
     if (block.type === 'steps') for (const step of block.items) if (step.shot) out.push({ fill: (src, _poster, caption) => void Object.assign(step.shot!, { src }, caption ? { caption } : {}), drop: () => void delete step.shot });
   }
   // Removal happens at the end, so numbers stay stable while edits are applied.

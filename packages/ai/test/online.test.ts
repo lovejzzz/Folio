@@ -269,3 +269,15 @@ describe('the Start here page', () => {
     expect(pieceCounts(course)).toMatch(/"Project" 1 \(week 1\)\. Use these counts and weeks\./);
   });
 });
+
+describe('a file block named by a sentence', () => {
+  it('becomes an unnamed file with the sentence as the paragraph under it', () => {
+    const d = draft();
+    const sentence = 'Use this only if your own project will not open. Unzip it into Documents, never inside a project folder.';
+    const file = { ...d.parts[0]!.blocks[0]!, type: 'file' as const, text: sentence, kind: 'starter', shows: '' };
+    const page = modulePage({ ...d, parts: [{ ...d.parts[0]!, blocks: [file] }, ...d.parts.slice(1)] }, 'en');
+    const at = page.findIndex((b) => b.type === 'file');
+    expect(page[at]).toMatchObject({ type: 'file', label: '', role: 'starter', shows: sentence });
+    expect(page[at + 1]).toMatchObject({ type: 'text', text: sentence });
+  });
+});

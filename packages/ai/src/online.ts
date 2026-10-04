@@ -118,6 +118,13 @@ function toBlock(raw: BlockDraft): PageBlock {
   }
 }
 
+/** A file named by a sentence (a rewrite moved its instructions into the name): the sentence becomes the paragraph under an unnamed file. */
+function pageBlocks(raw: BlockDraft): PageBlock[] {
+  const block = toBlock(raw);
+  if (block.type !== 'file' || block.label.trim().length <= 60) return [block];
+  return [{ ...block, label: '', shows: block.shows || block.label }, { id: newId('x'), type: 'text', text: block.label }];
+}
+
 /** A silent recording of the screen, as against the instructor talking. */
 const isClip = (b: BlockDraft) => b.type === 'video' && (b.kind.trim().toLowerCase() === 'clip' || !b.transcript.trim());
 
@@ -128,7 +135,7 @@ export function modulePage(v: ModuleDraft, language: string): PageBlock[] {
   return [
     { id: newId('x'), type: 'text', text: v.intro },
     { id: newId('x'), type: 'checklist', items: v.checklist.map((c) => ({ id: newId('x'), ...c })) },
-    ...v.parts.flatMap((p): PageBlock[] => [{ id: newId('x'), type: 'heading', level: 2, text: p.title }, ...p.blocks.map(toBlock)]),
+    ...v.parts.flatMap((p): PageBlock[] => [{ id: newId('x'), type: 'heading', level: 2, text: p.title }, ...p.blocks.flatMap(pageBlocks)]),
     { id: newId('x'), type: 'heading', level: 2, text: WRAP_UP[language] ?? WRAP_UP.en! },
     { id: newId('x'), type: 'text', text: v.wrapUp },
   ];
