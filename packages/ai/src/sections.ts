@@ -301,9 +301,19 @@ async function writeWork(course: Course, lesson: Lesson, write: (piece: Lesson) 
  * stands: a page that could not be had is asked for again the next time the first week is written.
  */
 async function withStart(inference: Inference, course: Course, lesson: Lesson, signal: AbortSignal | undefined, page: Promise<SectionResult>): Promise<SectionResult> {
-  if (course.lessonOrder[0] !== lesson.id || course.pages.length) return page;
-  const [written, start] = await Promise.all([page, startCommands(inference, course, signal).catch(() => [])]);
-  return { ...written, commands: [...written.commands, ...start] };
+  const first = course.lessonOrder[0] === lesson.id && !course.pages.length;
+  // Written from the outline with week 1, the page promised a build every week and left out what later weeks came to need:
+  // once the last week is written, it is written again from the weeks themselves.
+  const others = course.lessonOrder.filter((id) => id !== lesson.id);
+  const last = course.lessonOrder.at(-1) === lesson.id && others.length > 0 && others.every((id) => course.lessons[id]?.page.length) && course.pages.every((p) => p.written === 'outline');
+  if (!first && !last) return page;
+  if (first) {
+    const [written, start] = await Promise.all([page, startCommands(inference, course, signal).catch(() => [])]);
+    return { ...written, commands: [...written.commands, ...start] };
+  }
+  const written = await page;
+  // The last week's own page is not in the course yet: the rewrite sees it through its commands being applied first.
+  return { ...written, commands: [...written.commands, ...(await startCommands(inference, course, signal, true).catch(() => []))] };
 }
 
 /** Generate one lesson's section. Pure with respect to the course: returns commands, commits nothing. */

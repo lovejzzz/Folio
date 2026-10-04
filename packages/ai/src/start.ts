@@ -35,7 +35,7 @@ const TITLES: Record<string, { start: string; first: string; rhythm: string; nee
 type NoId<T> = T extends unknown ? Omit<T, 'id'> : never;
 const block = (b: NoId<PageBlock>): PageBlock => ({ ...b, id: newId('x') }) as PageBlock;
 
-export function startPages(v: StartDraft, course: Course): CoursePage[] {
+export function startPages(v: StartDraft, course: Course, written: 'outline' | 'weeks' = 'outline'): CoursePage[] {
   const t = TITLES[course.language] ?? TITLES.en!;
   const terms = (items: { term: string; meaning: string }[]) => block({ type: 'terms', items });
   const h = (text: string) => block({ type: 'heading', level: 2, text });
@@ -53,8 +53,8 @@ export function startPages(v: StartDraft, course: Course): CoursePage[] {
     block({ type: 'list', ordered: false, items: v.instructor }),
   ];
   return [
-    { id: newId('p'), title: t.start, audience: 'student', blocks: student },
-    { id: newId('p'), title: t.toAdd, audience: 'teacher', blocks: [block({ type: 'list', ordered: false, items: v.toAdd })] },
+    { id: newId('p'), title: t.start, audience: 'student', blocks: student, written },
+    { id: newId('p'), title: t.toAdd, audience: 'teacher', blocks: [block({ type: 'list', ordered: false, items: v.toAdd })], written },
   ];
 }
 
@@ -66,21 +66,35 @@ export function pieceCounts(course: Course): string {
   return ` Pieces set across the course: ${[...counts].map(([item, n]) => `"${item}" ${n}`).join(', ')}. Use these counts.`;
 }
 
-export function startPrompt(course: Course): string {
+/** The written weeks in brief, for a Start here page that must match them: each week's checklist and what its files and videos ask of the instructor. */
+function weeksWritten(course: Course): string {
+  const weeks = orderedLessons(course).flatMap((l, i) => {
+    const list = l.page.find((b) => b.type === 'checklist');
+    if (!list || list.type !== 'checklist') return [];
+    const talks = l.page.filter((b) => b.type === 'video' && !b.clip).length;
+    return [`Week ${i + 1}, ${l.title}: ${list.items.map((x) => x.label).join('; ').slice(0, 420)}${talks ? ` [${talks} video(s) for the instructor to record]` : ''}`];
+  });
+  return weeks.length ? `The weeks as written, by their checklists:\n${weeks.join('\n')}` : '';
+}
+
+export function startPrompt(course: Course, final = false): string {
   const hours = course.online?.hoursPerWeek ?? 9;
   const mixed = isMixedOnline(course);
   return [
     'Write the "Start here" page of this course: what a student reads before the first week, alone. Address the student as "you".',
+    final ? `Every week is now written. The page must match the weeks: how a week runs names the parts every week has (as the checklists show them), what is needed covers everything any week uses (sound, sharing a file, a second person, a book), each graded component is described as the weeks set it, and the instructor's list includes what the weeks leave for them (videos to record, files to post, pairings to arrange).\n${weeksWritten(course)}` : '',
     `Under "firstSteps", what to do first, in order. Under "rhythm", how every week runs: when the week opens, ${mixed ? `the page, the self-check and one forum post before the live session, the live session of ${course.online?.liveMinutes || 75} minutes (its day and time are the instructor's to add), and all other work by Sunday night` : 'the first forum post by Thursday, replies and all other work by Sunday night'}, about ${hours} hours in all. Under "need", everything to install or buy, each with its exact version, its cost, where it comes from and what the computer must have; take versions and names from the brief and the teacher's sources, and leave out a requirement you are not sure of rather than send the student to look for it. When the first week's page teaches the set-up, "firstSteps" and "need" say what will be needed and that week 1 walks through installing it: they do not give a second, shorter set of steps.`,
     `Under "grading", one entry for each graded component the course has, in the grading's words: what counts toward it, how many pieces there are, and how they make its share. Give only shares the grading gives.${pieceCounts(course)}`,
     'Under "help", where to ask (the course\'s Q&A forum) and what to put in a question: what you did, what you expected, what happened, the exact error text and a screenshot.',
     'Under "instructor", what the instructor does every week and how soon, as a plan for them to confirm: an announcement when the week opens, answers in the forum within one working day, feedback on submitted work within a week.',
     `Under "toAdd", what only the instructor can supply, as a list for them alone: their name and how to reach them, office hours,${mixed ? ' the day, time and time zone of the live session, its meeting link and the shared document,' : ''} each policy the course needs that the class policies do not already state (late work, what help and AI tools are allowed, academic integrity, accessibility and accommodations), and a line asking them to confirm or change the response times the student's page promises in their name. Never write these yourself, and never put a blank for them on the student's page.`,
-  ].join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 /** The Start here page and the instructor's list, written once with the first week. */
-export async function startCommands(inference: Inference, course: Course, signal?: AbortSignal): Promise<Command[]> {
-  const result = await runJob(inference, { task: 'folio_start', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: startPrompt(course), effort: 'low', schema: StartDraft, signal });
-  return [cmd('pages.set', { pages: startPages(typesetDraft(result.value, course.language), course) })];
+export async function startCommands(inference: Inference, course: Course, signal?: AbortSignal, final = false): Promise<Command[]> {
+  const result = await runJob(inference, { task: 'folio_start', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: startPrompt(course, final), effort: 'low', schema: StartDraft, signal });
+  return [cmd('pages.set', { pages: startPages(typesetDraft(result.value, course.language), course, final ? 'weeks' : 'outline') })];
 }

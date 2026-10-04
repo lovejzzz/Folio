@@ -81,7 +81,7 @@ export const FacilitationSchema = z.object({
 export type Facilitation = z.infer<typeof FacilitationSchema>;
 
 /** A page of the course that belongs to no week: Start here, how the course works, the schedule. */
-export const CoursePageSchema = z.object({ id, title: text, blocks: z.array(PageBlockSchema), /** 'teacher' for what only the instructor sees: what is left for them to add before the course opens. */ audience: z.enum(['student', 'teacher']).default('student') });
+export const CoursePageSchema = z.object({ id, title: text, blocks: z.array(PageBlockSchema), /** 'teacher' for what only the instructor sees: what is left for them to add before the course opens. */ audience: z.enum(['student', 'teacher']).default('student'), /** What Folio wrote it from: the outline alone, or the weeks once they were all written. */ written: z.enum(['outline', 'weeks']).optional() });
 export type CoursePage = z.infer<typeof CoursePageSchema>;
 
 export const isOnline = (course: { delivery?: Delivery }): boolean => (course.delivery ?? 'inperson') !== 'inperson';

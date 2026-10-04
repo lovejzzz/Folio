@@ -124,6 +124,26 @@ describe('an online course with no set meeting time', () => {
     expect(JSON.stringify(checkModule(v, c))).toContain('a name, not a sentence');
   });
 
+  it('writes Start here again from the weeks when the last week is written', async () => {
+    const c = online();
+    const all = orderedLessons(c);
+    const page = modulePage(draft(), 'en');
+    const lessons = Object.fromEntries(all.map((l, i) => [l.id, i < all.length - 1 ? { ...l, page } : l]));
+    const built = { ...c, lessons, pages: [{ id: 'p_1', title: 'Start here', audience: 'student' as const, blocks: [], written: 'outline' as const }] } as Course;
+    const start = { welcome: 'Welcome.', firstSteps: ['Install Unity', 'Post an introduction'], rhythm: [{ when: 'Monday', what: 'The week opens' }, { when: 'Sunday', what: 'Work is due' }], need: [], grading: [], help: 'Ask in the Q&A forum.', instructor: ['An announcement each Monday', 'Answers within a day'], toAdd: ['Your name'] };
+    const answer = (task: string) => (task === 'folio_module_review' ? { issues: [] } : task === 'folio_start' ? start : draft());
+    const model = fakeInference((r) => answer(r.task));
+    const result = await generateSection(model, built, all.at(-1)!.id, 'plan', undefined, { reviewer: model });
+    const asked = model.calls.find((call) => call.task === 'folio_start');
+    expect(asked?.prompt).toMatch(/Every week is now written[\s\S]*The weeks as written, by their checklists/);
+    const pages = result.commands.find((x) => x.type === 'pages.set');
+    expect(pages?.type === 'pages.set' && pages.payload.pages.every((p) => p.written === 'weeks')).toBe(true);
+    // A page a teacher has had rewritten once is left alone.
+    const again = fakeInference((r) => answer(r.task));
+    await generateSection(again, { ...built, pages: [{ ...built.pages[0]!, written: 'weeks' }] }, all.at(-1)!.id, 'plan', undefined, { reviewer: again });
+    expect(again.calls.some((call) => call.task === 'folio_start')).toBe(false);
+  });
+
   it('keeps code as typed, and sets a name the screen shows in bold', () => {
     const set = typesetDraft(draft(), 'en');
     expect(set.parts[0]!.blocks[2]!.text).toContain('// "spin"');
