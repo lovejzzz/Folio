@@ -904,8 +904,8 @@
   "lesson": 5,
   "slot": 15,
   "src": "/samples/unity/media/w05-ontrigger.webp",
-  "caption": "The end of BallController.cs in Visual Studio Code after this step: the new method sits between the end of FixedUpdate and the final brace.",
-  "why": "Photographed in Visual Studio Code on a Mac."
+  "caption": "The end of BallController.cs after this step, drawn for this page: the new method sits between the end of FixedUpdate and the final brace. Your line numbers may differ by a few.",
+  "why": "Drawn from the week 4 file with the new method added."
  },
  {
   "lesson": 5,
@@ -6943,5 +6943,31 @@
   "retake": true,
   "caption": "Compare: your Audio folder holds hit and gameover.",
   "alt": "Project window, Assets > Audio, holding two audio clips named gameover and hit."
+ },
+ {
+  "lesson": 5,
+  "media": "w05-ontrigger.webp",
+  "retake": true,
+  "alt": "The last lines of BallController.cs with line numbers: FixedUpdate ends on line 49, the method OnTriggerEnter starts on line 52 and is marked, and the class closes on line 62."
+ },
+ {
+  "lesson": 3,
+  "media": "w03-new-script.webp",
+  "retake": true,
+  "caption": "The new script as it opens in Visual Studio Code. The class line is line 4.",
+  "alt": "Spinner.cs in Visual Studio Code: using UnityEngine on line 1, public class Spinner : MonoBehaviour on line 4, and empty Start and Update blocks, each with a comment above it."
+ },
+ {
+  "lesson": 3,
+  "media": "w03-missing-semicolon.webp",
+  "retake": true,
+  "caption": "Visual Studio Code with the cursor on line 17, where the semicolon is missing.",
+  "alt": "Spinner.cs in Visual Studio Code with line 17 current: Debug.Log(message + gameObject.name) with no semicolon at its end."
+ },
+ {
+  "lesson": 1,
+  "media": "w01-editor-all.webp",
+  "retake": true,
+  "caption": "All eleven objects of the Courtyard are in the Hierarchy, from Main Camera to Guard."
  }
 ]
