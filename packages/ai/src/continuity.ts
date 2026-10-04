@@ -182,6 +182,8 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
           // By what was actually set: named by what it counts toward, a step's due day collected the whole paper.
           const set = workOf(course, l, p.toward.trim());
           const what = set?.kind === 'assignment' ? `"${set.title}"` : p.kind === 'step' ? 'the short step' : `"${p.toward.trim() || 'the assignment'}"`;
+          // A standing piece is about the lesson it is due at: told where it was set, plans collected papers "on last time's readings".
+          if (p.standing) return `${what} (the one written for this lesson, on this lesson's reading or topic)`;
           return `${what} (set in "${l.title}"${p.kind === 'step' ? ', an ungraded step' : ''})`;
         }),
     );
