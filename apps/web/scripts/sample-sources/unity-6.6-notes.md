@@ -1,6 +1,6 @@
 # Instructor's version notes: Unity 6.6 (editor 6000.6.4), checked in the editor
 
-Use these names exactly. They are what students see on screen.
+Use these names exactly: students see them on screen.
 
 ## Unity Hub
 - Sidebar: Projects, Installs. Licenses are under Settings (the gear) > Licenses > Add license.
@@ -60,7 +60,7 @@ Use these names exactly. They are what students see on screen.
 
 ## 2D (the Universal 2D template), checked in this version
 - A project made from Universal 2D opens SampleScene with Main Camera (orthographic, Size 5, a dark blue background) and Global Light 2D. A window titled "2D URP Project" may open over the Editor: close it. Assets holds Scenes and Settings; InputSystem_Actions is in Assets/Settings, and InputSystem.actions.FindAction("Move") and FindAction("Jump") work as in the 3D project.
-- In a project made from Universal 2D the project's input actions are NOT switched on when Play starts (in Universal 3D they are): every script that uses InputSystem.actions calls InputSystem.actions.Enable(); in Start before FindAction, or nothing moves. A picture dragged into a 2D project imports with Sprite Mode "Multiple" (the sprite is then named Hero_0 and trimmed): set Sprite Mode to "Single" with Pixels Per Unit.
+- In a project made from Universal 2D the project's input actions are NOT switched on when Play starts (in Universal 3D they are): every script that uses InputSystem.actions calls InputSystem.actions.Enable(); in Start before FindAction, or nothing moves. A picture in a 2D project imports with Sprite Mode "Multiple" (the sprite is then named Hero_0 and trimmed): set Sprite Mode to "Single" with Pixels Per Unit.
 - GameObject > 2D Object: Sprites (Square, Circle, Capsule, Triangle, 9-Sliced, Hexagon Flat Top, Hexagon Point Top, Isometric Diamond), Physics (Dynamic Sprite, Static Sprite), Tilemap (Rectangular, Hexagonal Flat Top, Hexagonal Point Top, Isometric, Isometric Z as Y), Sprite Shape, Sprite Mask. These 2D menus exist only in a 2D project: the 3D project has no Sprites or Tilemap entries.
 - GameObject > 2D Object > Tilemap > Rectangular adds a Grid with a child Tilemap (components: Tilemap, Tilemap Renderer). The palette is Window > 2D > Tile Palette. Assets > Create > 2D: Sprites (the same shapes), Tile Palette > Rectangular, Tiles > Rule Tile, Sprite Atlas.
 - Component > Physics 2D: Rigidbody 2D, Box Collider 2D, Circle Collider 2D, Capsule Collider 2D, Polygon Collider 2D, Edge Collider 2D, Composite Collider 2D. Component > Tilemap: Tilemap Collider 2D.
