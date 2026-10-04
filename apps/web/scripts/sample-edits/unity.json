@@ -6982,5 +6982,258 @@
   "media": "w14-player.webp",
   "retake": true,
   "alt": "The Project Settings window with Player chosen in the list on the left: Company Name Sam, Product Name MoonHopper, Version 0.1.0."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-import.webp",
+  "caption": "Check your four settings against these. This picture shows one picture, Hero_Run1, after Apply; with all ten selected the top line names them together and Apply is still lit.",
+  "alt": "Inspector, Import Settings for Hero_Run1: Texture Type Sprite (2D and UI), Sprite Mode Single, Pixels Per Unit 32, Filter Mode Point (no filter), and in the Default tab Compression None. Revert and Apply sit at the lower right, grayed out.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-art.webp",
+  "caption": "Compare with your Art folder: ten pictures. The Animations and Prefabs folders in the list on the left come later on this page.",
+  "alt": "Project window, Assets > Art: Coin_1, Coin_2, Coin_3, Coin_4, Hero_Idle, Hero_Jump, Hero_Run1, Hero_Run2, Hero_Run3 and Hero_Run4, with Hero_Run1 selected.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-anim-run.webp",
+  "caption": "Hero_Run in the Animation window: four keyframes, evenly apart. The ruler here counts frames, so the keyframes sit at 0, 6, 12 and 18.",
+  "alt": "Animation window, clip Hero_Run: the row Hero : Sprite with four diamond keyframes at frames 0, 6, 12 and 18 on a ruler marked 0, 5, 10 and 15.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-anim-coin.webp",
+  "caption": "Coin_Spin in the Animation window: four keyframes, evenly apart. The ruler here counts frames, so the keyframes sit at 0, 6, 12 and 18.",
+  "alt": "Animation window, clip Coin_Spin: the row Coin : Sprite with four diamond keyframes at frames 0, 6, 12 and 18 on a ruler marked 0, 5, 10 and 15.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-animator.webp",
+  "alt": "Animator window on the Layers tab, Base Layer. Entry points to Hero_Idle, the orange default state. Two arrows run between Hero_Idle and Hero_Run, one in each direction. One arrow runs from Any State to Hero_Jump, and one from Hero_Jump back to Hero_Idle. An Exit box at the right has no arrows.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-states.mp4",
+  "caption": "Compare: idle when standing, run while moving, jump pose in the air. This clip was recorded at the end of the page, so it also shows the coins, the Coins label and the following camera that you add later.",
+  "alt": "Hero stands still, runs right with a four-picture run, jumps with the jump picture, lands and runs back. Coins, a Coins label at the top left and a camera that follows Hero are also visible; they come later on the page.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-coin.webp",
+  "caption": "Compare your Coin: Order in Layer 1, Is Trigger ticked, Radius 0.4. A trigger can be touched but does not block Hero. The Prefab row and the Animator in this picture come from the next steps, so yours does not show them yet.",
+  "alt": "Inspector for Coin: Position -6, -2.5, 0; Sprite Renderer with Sprite Coin_1 and Order in Layer 1; Circle Collider 2D with Is Trigger ticked and Radius 0.4. A Prefab row under the name and an Animator with Controller Coin are also visible; they come from later steps.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-coins-placed.webp",
+  "caption": "Three of the five coins, seen with the camera beside Hero: each floats clear of the tiles. Your own Game view shows a wider part of the level at this point, and the Coins: 0 label comes in the next part.",
+  "alt": "Game view before Play: Coins: 0 at the top left, Hero just above the left end of the floor with a coin beside it, and one coin above each of the two platforms in view.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-hierarchy.webp",
+  "caption": "Five coins, all in blue because they come from the prefab. This picture was taken at the end of the page: Canvas, CoinsText, EventSystem and GameManager come in the next part, and in your Hierarchy they sit below the coins.",
+  "alt": "Hierarchy listing Main Camera, Global Light 2D, Grid, Hero, Canvas with CoinsText, EventSystem, GameManager, and then Coin, Coin (1), Coin (2), Coin (3), Coin (4) in blue. Canvas, CoinsText, EventSystem and GameManager are made in the next part.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w07-importer.webp",
+  "caption": "The TMP Importer window, as in week 7. It opens once per project.",
+  "alt": "TMP Importer window with two sections: TMP Essentials with the button Import TMP Essentials, and TMP Examples & Extras with a grayed-out button.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-two-coins.webp",
+  "caption": "After three coins: the label reads Coins: 3. This picture was taken with the following camera from the next part, so your view shows a different part of the level.",
+  "alt": "Game view in Play: the label at the top left reads Coins: 3, Hero stands on a platform in the middle, and two coins remain up and to the right, one above a platform and one near the top right corner.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-midrun.webp",
+  "caption": "Compare with your Game view mid-run: Hero in the air beside a platform, and the label at the top left.",
+  "alt": "Game view in Play: Coins: 1 at the top left, Hero in the air to the right of the middle platform, three platforms rising to the right with a coin above each, and the floor below.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-preview.mp4",
+  "alt": "Hop in Play: Hero runs and jumps with animation up a row of platforms, each coin disappears when touched, the Coins label counts from 0 up to 5, and the camera follows Hero.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-scope.webp",
+  "caption": "An example for a made-up game, written as three lists one under the other instead of a three-column table. Compare the length of your finished notes, not the content.",
+  "alt": "GameScope notes for Lantern Run. Loop sentence: In Lantern Run you walk a keeper through a cave to collect 5 lanterns, while a bat sweeps across the path. Must (five or fewer): four lines, each ending with the game it was built in, Orb Collector or Dodge. Should: two lines. Could: one line listing a title menu, three levels and a story.",
+  "audit": true
+ },
+ {
+  "lesson": 12,
+  "media": "w01-hub-core.webp",
+  "alt": "Unity Hub New project screen: Editor version 6000.6.4f1, the template dropdown open with Core outlined and a callout Choose Core, and the Universal 2D and Universal 3D templates at the left.",
+  "audit": true
+ },
+ {
+  "lesson": 12,
+  "media": "w12-arena.webp",
+  "alt": "Scene view from above one corner: a gray floor inside four low walls, with a capsule, a red cube and five small spheres on it. One sphere at the right is selected and partly hidden by the Move arrows.",
+  "audit": true
+ },
+ {
+  "lesson": 12,
+  "media": "w12-pickups.webp",
+  "caption": "Five pickups in the Hierarchy, the first named Pickup and the copies Pickup (1) to Pickup (4). Hazard at the bottom comes in the next list.",
+  "alt": "Hierarchy: SampleScene with an asterisk (not saved yet), then Main Camera, Directional Light, Global Volume, Canvas, EventSystem, Game, Floor, Wall_North, Wall_South, Wall_East, Wall_West, Player, Pickup, Pickup (1), Pickup (2), Pickup (3), Pickup (4) and Hazard.",
+  "audit": true
+ },
+ {
+  "lesson": 12,
+  "media": "w12-bug2.webp",
+  "caption": "The entry before you click it: the second line already names the method and the line, 74 if you pasted the code.",
+  "alt": "Console with one red entry in two lines: NullReferenceException: Object reference not set to an instance of an object, then PrototypeGame.Refresh () (at Assets/Scripts/PrototypeGame.cs:74).",
+  "audit": true
+ },
+ {
+  "lesson": 12,
+  "media": "w12-win.webp",
+  "alt": "Game view after winning: the label at the top left reads You win! Press R to play again., the capsule stands beside the gray hazard cube, and no spheres are left on the floor.",
+  "audit": true
+ },
+ {
+  "lesson": 13,
+  "media": "w13-preview.mp4",
+  "alt": "Route A in Play, with the red hazard, the controls label under the score and a hint at the bottom: the capsule collects the five spheres with gold sparks at each, and the label counts from Score: 0 / 5 up to You win! Press R to play again.",
+  "audit": true
+ },
+ {
+  "lesson": 13,
+  "media": "w13-sheet.webp",
+  "caption": "Compare the layout: two player sections, then Top changes and Waits. The lines here are shortened; yours can use the full wording from the list.",
+  "alt": "PlaytestSheet with the headings Player 1, Player 2, Top changes and Waits. Under each player are eight empty lines: Player, Seconds until first pickup, Stuck points, Found R and when, How the round ended, Answer 1 what was the game about, Answer 2 best moment, Answer 3 what confused you.",
+  "audit": true
+ },
+ {
+  "lesson": 13,
+  "media": "w09-profile.webp",
+  "alt": "Build Profiles window, on a Mac: Add Build Profile and Scene List at the top left, a macOS profile marked Active under Build Profiles, the macOS settings on the right, and Cloud Build, Build and Build And Run at the bottom.",
+  "audit": true
+ },
+ {
+  "lesson": 13,
+  "media": "w13-player1.webp",
+  "caption": "An invented example. Compare: each line holds a time, an action and the player’s words.",
+  "alt": "Player 1 section filled in. Player: Maya, Windows. Seconds until first pickup: 18. Two highlighted stuck points: 0:05, stood still for 9 seconds, said: what do I press? and 0:45, walked into the gray cube twice, said: is that one good or bad? Found R at 1:30, after the second loss. The round ended: won. Three answers follow.",
+  "audit": true
+ },
+ {
+  "lesson": 13,
+  "media": "w13-changes.webp",
+  "caption": "An invented example. Compare: three numbered changes with a way to check each, and the rest under Waits.",
+  "alt": "Top changes with three numbered lines, each followed by a How I will know line: 1. No one knew the keys at the start, Impact high, Effort 10 minutes. 2. The hazard looks like the pickups, Impact high, Effort 10 minutes. 3. The score label is too small to notice, Impact medium, Effort 5 minutes. Under Waits: The floor color is dull, Impact low, and A second level, New feature.",
+  "audit": true
+ },
+ {
+  "lesson": 13,
+  "media": "w12-hazard.webp",
+  "caption": "Speed is on the Patrol component of Hazard, as in week 12. This picture shows Route A before any tuning, with Speed 3 and the gray material; yours may show another Speed and HazardRed.",
+  "alt": "Inspector for Hazard with the Patrol component: Direction 1, 0, 0, Distance 5 and Speed 3.",
+  "audit": true
+ },
+ {
+  "lesson": 13,
+  "media": "w13-hint-game.webp",
+  "caption": "Route A in the first seconds of a round, in the built game. It is the same picture as in the build part above: the hint at the bottom and the status label at the top left are both readable.",
+  "audit": true
+ },
+ {
+  "lesson": 13,
+  "media": "w13-sparks.mp4",
+  "caption": "Compare: the sound and sparks come at the moment of touch, and the score still counts. In this recording the hint lies partly over a white platform; if yours does too, raise its Pos Y.",
+  "alt": "A 2D platformer in Play: the player square touches a small circle at the lower left, gold sparks fly out where it was, and the label changes from Score: 0 / 5 to Score: 1 / 5. A hint in two lines sits across the middle, partly hidden by a white platform.",
+  "audit": true
+ },
+ {
+  "lesson": 13,
+  "media": "w13-after.webp",
+  "caption": "An invented example. Compare: each numbered change has an After line under it.",
+  "alt": "Top changes with a highlighted After line under each of three numbered changes: After: a hint with the keys shows for 8 seconds. Not yet checked with a player. After: the hazard is red. Not yet checked with a player. After: Font Size is 40 and I can read it from my chair.",
+  "audit": true
+ },
+ {
+  "lesson": 14,
+  "media": "w12-win.webp",
+  "caption": "A won round, as in week 12: the label ends with the win message. Your game now also shows your week 12 and 13 changes, such as the red hazard and the controls label.",
+  "alt": "Game view with the label You win! Press R to play again. at the top left, the capsule beside the gray hazard cube, and no spheres left.",
+  "audit": true
+ },
+ {
+  "lesson": 14,
+  "media": "w14-reply.webp",
+  "alt": "A drafted reply headed Reply to: Hopper Moon showcase, in three lines. I saw: I stood still for about ten seconds before I found the arrow keys. It made me: worry that I had a bad download. One question, highlighted: would a line of hint text at the start help?",
+  "audit": true
+ },
+ {
+  "lesson": 14,
+  "media": "w14-reflection.webp",
+  "alt": "Reflection.txt with four headings. What I can do now: five lines that each start with a verb, such as Read a Console error and find the line it names. The hardest moment: in week 7 a label never changed, the Console showed a NullReferenceException, and filling an empty slot fixed it. What my playtests taught me: both players walked into the hazard because it looked like a pickup. What I would change: the hazard’s shape.",
+  "audit": true
+ },
+ {
+  "lesson": 14,
+  "media": "w14-plan.webp",
+  "alt": "LearningPlan.txt with three headings. My next small project: a one-screen maze where a timer counts down and one door opens with a key. Three things to learn, each with where: tilemaps from the Unity Manual, saving a best time from a Unity Learn course, finishing under a deadline at a weekend game jam on itch.io. My first step, highlighted: Sketch the maze on paper and list its Musts: 30 minutes, on the 14th of this month.",
+  "audit": true
+ },
+ {
+  "lesson": 11,
+  "media": "w11-scope.webp",
+  "retake": true,
+  "caption": "An example for the made-up game Lantern Run, drawn for this page: compare the shape of your finished notes, not the content.",
+  "alt": "GameScope notes: the loop sentence for Lantern Run, then a table. Must: move and jump (Hop); collect gems, with a count (Hop); a dark cave that only the lantern lights (new). Should: a sound for each gem; a way to start over. Could: a second cave; bats; a high-score table."
+ },
+ {
+  "lesson": 11,
+  "media": "w11-animator.webp",
+  "retake": true,
+  "caption": "Compare your Animator window with this finished diagram: arrows both ways between Hero_Idle and Hero_Run, one from Any State to Hero_Jump, and one from Hero_Jump back to Hero_Idle.",
+  "alt": "Animator graph: Entry points to Hero_Idle, the orange default state. Two arrows join Hero_Idle and Hero_Run, one each way. An arrow runs from Any State to Hero_Jump and another from Hero_Jump to Hero_Idle. Exit stands alone."
+ },
+ {
+  "lesson": 13,
+  "media": "w13-sparks.mp4",
+  "retake": true,
+  "caption": "Compare: the sound and the sparks come at the moment of touch, and the score still counts. This is Route A; the 2D routes look the same with a circle.",
+  "alt": "Route A in Play: the capsule touches a sphere, gold sparks fly out where it was, and the label changes from Score: 0 / 5 to Score: 1 / 5."
+ },
+ {
+  "lesson": 13,
+  "media": "w13-hint-game.webp",
+  "retake": true,
+  "caption": "Route A in the first seconds of a round, in the Game view: the hint at the bottom and the labels at the top left are all readable.",
+  "alt": "Game view in Play: the walled floor with a red cube, Score: 0 / 5 and the controls label at the top left, and the hint in two lines at the bottom."
+ },
+ {
+  "lesson": 13,
+  "media": "w13-preview.mp4",
+  "retake": true,
+  "alt": "Route A in Play: a hint shows at the bottom for the first seconds; the capsule collects five spheres with gold sparks at each while a red cube patrols; the label ends with You win!"
+ },
+ {
+  "lesson": 14,
+  "media": "w14-demo.mp4",
+  "retake": true,
+  "alt": "A round of the example game in the Game view: a capsule collects five spheres with gold sparks at each while a red cube patrols, and the label ends with You win!"
  }
 ]

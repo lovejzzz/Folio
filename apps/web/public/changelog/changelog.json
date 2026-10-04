@@ -1,5 +1,37 @@
 [
  {
+  "version": "0.0.10",
+  "date": "October 4, 2026",
+  "title": "The Unity sample, picture by picture",
+  "lede": "Reviewers opened every picture and clip in the Unity sample, more than two hundred, and compared each with the step it sits under. The words had been checked; the pictures had not been checked against the words.",
+  "sections": [
+   {
+    "heading": "Pictures that did not match their step",
+    "body": "Nine were wrong enough to mislead. A floor’s settings were a blank panel. A label read Lives: 1 where the step said 2. A picture of the Audio folder showed the Prefabs folder. Two pictures meant to show a level’s colliders before and after merging looked the same. Seven were retaken in Unity; one clip that no longer matched its step was removed; one picture could not be staged again, and its caption now says what the student will see instead. About ninety captions and descriptions were rewritten to say what the picture actually shows. No picture showed anything private.",
+    "image": {
+     "src": "/changelog/0.0.10-anim.webp",
+     "alt": "Week 11 of the Unity sample: the Animation window with four keyframes of the run, under the step that places them",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "One game, the same from week to week",
+    "body": "Week 12 ends with a red hazard and a label for the controls. Week 13 begins from last week’s project, and its starter, pictures and clips did not have them. They do now, through week 14. A mistake of ours is also gone: a capture script had moved one of the five pickups to the middle of the floor in the week 13 and 14 project files.",
+    "image": {
+     "src": "/changelog/0.0.10-red.webp",
+     "alt": "Week 12 of the Unity sample: the game after the last part, with a red hazard and the controls under the score",
+     "width": 1600,
+     "height": 1000
+    }
+   },
+   {
+    "heading": "More to look at where there was little",
+    "body": "Weeks 11 and 12 had lost most of their pictures to things that had not been captured. Week 11 now shows the Animation window for each clip, the clip’s loop setting, Hero’s animation components, and a clip of idle, run and jump. Week 12 shows the floor, the arena, the pickups, the red material and each 2D route played through. Week 14 shows where the game gets its name."
+   }
+  ]
+ },
+ {
   "version": "0.0.9",
   "date": "October 4, 2026",
   "title": "The Unity sample: the editor students write code in, and Windows checked",
