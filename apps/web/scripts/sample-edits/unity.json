@@ -2356,6 +2356,170 @@
   "why": "All three routes were built in Unity from the page and played to a win, a loss by the hazard, a loss by leaving the level and a restart; the three planted bugs were reproduced."
  },
  {
+  "lesson": 13,
+  "slot": 1,
+  "src": "/samples/unity/media/w13-preview.mp4",
+  "poster": "/samples/unity/media/w13-preview.poster.webp"
+ },
+ {
+  "lesson": 13,
+  "slot": 3,
+  "src": "/samples/unity/media/w13-sheet.webp"
+ },
+ {
+  "lesson": 13,
+  "slot": 4,
+  "src": "/samples/unity/media/files/MyGame-week12-end.zip",
+  "caption": "MyGame_Start.zip"
+ },
+ {
+  "lesson": 13,
+  "slot": 5,
+  "src": "/samples/unity/media/w09-profile.webp",
+  "caption": "Build Profiles as in week 9: your profile is marked Active, and Build is at the bottom."
+ },
+ {
+  "lesson": 13,
+  "slot": 6,
+  "src": "/samples/unity/media/w09-platforms.webp",
+  "caption": "The Platform Browser as in week 9: choose your own system under Desktop."
+ },
+ {
+  "lesson": 13,
+  "slot": 7,
+  "drop": true,
+  "why": "The built game looks the same as the Game view; no picture of it was kept."
+ },
+ {
+  "lesson": 13,
+  "slot": 8,
+  "src": "/samples/unity/media/w13-player1.webp"
+ },
+ {
+  "lesson": 13,
+  "slot": 9,
+  "src": "/samples/unity/media/w13-changes.webp"
+ },
+ {
+  "lesson": 13,
+  "slot": 10,
+  "src": "/samples/unity/media/w13-hint.webp"
+ },
+ {
+  "lesson": 13,
+  "slot": 11,
+  "src": "/samples/unity/media/w12-hazard.webp",
+  "caption": "Speed is on the Patrol component of Hazard. This is Route A before tuning: Speed 3."
+ },
+ {
+  "lesson": 13,
+  "slot": 12,
+  "src": "/samples/unity/media/w13-hint-game.webp",
+  "caption": "Route A in the first seconds of a round: the hint and the status label are both readable."
+ },
+ {
+  "lesson": 13,
+  "slot": 13,
+  "src": "/samples/unity/media/files/PolishSounds.zip",
+  "caption": "PolishSounds.zip"
+ },
+ {
+  "lesson": 13,
+  "slot": 14,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 13,
+  "slot": 15,
+  "src": "/samples/unity/media/w13-burst.webp"
+ },
+ {
+  "lesson": 13,
+  "slot": 16,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 13,
+  "slot": 17,
+  "src": "/samples/unity/media/w13-feedback.webp"
+ },
+ {
+  "lesson": 13,
+  "slot": 18,
+  "src": "/samples/unity/media/w13-sparks.mp4",
+  "poster": "/samples/unity/media/w13-sparks.poster.webp"
+ },
+ {
+  "lesson": 13,
+  "slot": 19,
+  "src": "/samples/unity/media/w13-after.webp"
+ },
+ {
+  "lesson": 13,
+  "slot": 20,
+  "src": "/samples/unity/media/files/MyGame-week13-end.zip",
+  "caption": "MyGame_Polished.zip"
+ },
+ {
+  "lesson": 13,
+  "find": "Move with the arrow keys. Touch all five pickups.",
+  "replace": "Move with A, W, S and D. Touch all five pickups.",
+  "why": "Checked in Unity while building this week on Routes A and C."
+ },
+ {
+  "lesson": 13,
+  "find": "**Start Speed** to 4 and **Start Size** to 0.15.",
+  "replace": "**Start Speed** to 4 and **Start Size** to 0.15. On Route A, type 0.5 into **Start Size** instead: the camera is far from the floor, and smaller sparks can hardly be seen.",
+  "why": "Checked in Unity while building this week on Routes A and C."
+ },
+ {
+  "lesson": 13,
+  "find": "UnassignedReferenceException: The variable pickupSound of PickupFeedback has not been assigned. A slot in **Pickup Feedback** is empty. Drag the missing item into it.",
+  "replace": "UnassignedReferenceException: The variable burst of PickupFeedback has not been assigned (or the variable audioSource). That slot in **Pickup Feedback** is empty. Drag the missing item into it. If the Console says PlayOneShot was called with a null AudioClip, the **Pickup Sound** slot is the empty one.",
+  "why": "Checked in Unity while building this week on Routes A and C."
+ },
+ {
+  "lesson": 13,
+  "find": "then move **Pos Y** closer to 0.",
+  "replace": "then move **Pos Y** closer to 0. If the hint sits on a white object and cannot be read, change **Pos Y** until it is over the background.",
+  "why": "Checked in Unity while building this week on Routes A and C."
+ },
+ {
+  "lesson": 13,
+  "find": "Select only the item named MyGame, leaving out",
+  "replace": "Select only the application (its name ends in .app, which the Mac may hide), leaving out",
+  "why": "Checked in Unity while building this week on Routes A and C."
+ },
+ {
+  "lesson": 13,
+  "find": "Patrol Speed",
+  "replace": "Speed",
+  "all": true,
+  "why": "The field on the Patrol component is named Speed."
+ },
+ {
+  "lesson": 13,
+  "media": "w13-sparks.mp4",
+  "alt": "Route C in Play: the square touches a small circle, gold sparks fly out where it was, and the label changes to Score: 1 / 5."
+ },
+ {
+  "lesson": 13,
+  "media": "w12-hazard.webp",
+  "alt": "Inspector for Hazard with the Patrol component: Direction 1, 0, 0, Distance 5 and Speed 3."
+ },
+ {
+  "lesson": 13,
+  "media": "w09-profile.webp",
+  "alt": "Build Profiles window: a profile marked Active in the list on the left, and Build at the bottom."
+ },
+ {
+  "lesson": 13,
+  "settle": "*",
+  "why": "The hint, the tuning fields and the pickup sound and sparks were built in Unity on Routes A and C; the Console messages were read there."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
