@@ -32,6 +32,9 @@ interface Edit {
   poster?: string;
   caption?: string;
   drop?: boolean;
+  /** Instead of a replacement: the caption or alt text of the picture or clip already placed whose file has this name. */
+  media?: string;
+  alt?: string;
   /** Replace every occurrence, not just the one. */
   all?: boolean;
   /** Why, for whoever reads the file later. */
@@ -115,6 +118,13 @@ function editOne(name: SampleName): void {
       if (!slot || edit.slot >= all.length) throw new Error(`${name}: lesson ${edit.lesson} has no media slot ${edit.slot}`);
       if (edit.drop) slot.drop();
       else slot.fill(edit.src!, edit.poster, edit.caption);
+      continue;
+    }
+    if (edit.media !== undefined) {
+      const page = orderedLessons(course)[edit.lesson! - 1]!.page;
+      const placed = page.flatMap((b) => (b.type === 'image' || b.type === 'video' ? [b] : b.type === 'steps' ? b.items.flatMap((x) => (x.shot ? [x.shot] : [])) : [])).filter((m) => m.src.endsWith(`/${edit.media}`));
+      if (placed.length !== 1) throw new Error(`${name}: lesson ${edit.lesson} has ${placed.length} pictures named ${edit.media}`);
+      Object.assign(placed[0]!, edit.caption !== undefined ? { caption: edit.caption } : {}, edit.alt !== undefined ? { alt: edit.alt } : {});
       continue;
     }
     if (edit.settle !== undefined) {

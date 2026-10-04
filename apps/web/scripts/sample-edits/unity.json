@@ -3398,5 +3398,654 @@
   "replace": "The Console shows `NullReferenceException` pointing at `GameManager.UpdateLivesText`, or `UnassignedReferenceException: The variable gameOverPanel of GameManager has not been assigned`. What do I do?",
   "why": "As measured.",
   "late": true
+ },
+ {
+  "find": "open the maker’s system requirements page for Unity 6.6 and compare it with your computer",
+  "replace": "open Unity’s system requirements page for Unity 6.6 (it is in the Unity Manual at docs.unity3d.com; search the web for Unity 6.6 system requirements) and compare it with your computer",
+  "why": "Says whose page it is and where to find it, since no link is given.",
+  "review14": true
+ },
+ {
+  "find": "check the maker’s system requirements page for Unity 6.6 and for Visual Studio Code",
+  "replace": "check the system requirements pages for Unity 6.6 (in the Unity Manual at docs.unity3d.com) and for Visual Studio Code (at code.visualstudio.com/docs)",
+  "why": "Says where the two requirements pages are, since no link is given.",
+  "review14": true
+ },
+ {
+  "find": "Create a free Unity account, then install Unity Hub from the Unity website.",
+  "replace": "Create a free Unity account, then install Unity Hub from the Unity website. The Week 1 page gives every step for this and for the next two items, so you can do them from there.",
+  "why": "The start page lists the installs without steps; this points a beginner to where the steps are.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "The Install Editor list in Unity Hub showing Unity 6.6, version 6000.6.4f1, with its install button.",
+  "replace": "The Install Unity Editor list in Unity Hub with Unity 6.6 (6000.6.4f1) at the top, marked Installed here, above Unity 6.3 LTS and Unity 6.0, which each show an Install button.",
+  "why": "The picture shows Installed, not an install button, on the 6.6 row.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "Open the dropdown beside the search box, which shows the Learning templates, and choose **Core**.",
+  "replace": "Open the dropdown beside the search box. It may read **All** or **Learning**. Choose **Core**.",
+  "why": "The picture under this step shows the dropdown reading All, not Learning.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "The New project screen in Unity Hub with the dropdown open beside the search box and Core in the list.",
+  "replace": "The New project screen in Unity Hub with Editor version 6000.6.4f1 at the top and the dropdown beside the search box open, listing All, Custom, New, Core, Sample and Learning, with Core outlined.",
+  "why": "Alt text now names what the picture shows.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "The New project panel with Universal 3D selected, Project name Courtyard, a Location inside UnityCourse and a Create project button.",
+  "replace": "The New project panel with Universal 3D selected, Project name Courtyard, the Location box (blurred here; yours shows your UnityCourse folder), Use AI Assistant and Use Unity CLI unticked, and the Create project button.",
+  "why": "The Location is blurred in the picture, so the alt text should not claim it shows UnityCourse.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "and reads like SampleScene - Courtyard - Windows, Mac, Linux - Unity 6.6 (6000.6.4f1).",
+  "replace": "and reads like SampleScene - Courtyard - Windows, Mac, Linux - Unity 6.6 (6000.6.4f1). A short label in angle brackets may follow it, such as <Metal> on a Mac. Ignore that label, here and in later weeks.",
+  "why": "Every picture's title bar ends with <Metal>, which the quoted title does not have.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "The Inspector for Main Camera with a Transform section listing Position, Rotation and Scale, each with X, Y and Z boxes.",
+  "replace": "The Inspector for Main Camera: the name box, Tag MainCamera, Layer Default, and the Transform section with Position 0, 1, -10, Rotation 0, 0, 0 and Scale 1, 1, 1.",
+  "why": "Alt text now gives the names and values visible in the picture.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "In the **Scene** view, scroll the mouse wheel to zoom in and out.",
+  "replace": "In the **Scene** view, scroll the mouse wheel to zoom in and out. On a trackpad, slide two fingers up or down.",
+  "why": "The page says a trackpad works but gave only mouse actions.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "Keep holding it and press W, A, S and D to fly.",
+  "replace": "Keep holding it and press W, A, S and D to fly. On a trackpad this is awkward and you can skip it: this course places objects by typing numbers, so zooming and the F key are enough.",
+  "why": "Gives trackpad users a way past a mouse-only step.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "The Scene view zooms in and out, turns to look around, flies forward and sideways, and then circles the Main Camera.",
+  "replace": "The Scene view of the finished Courtyard zooms in toward the tower and out again, then circles around the courtyard so the walls, crates, ball and capsule are seen from every side.",
+  "why": "The clip circles the finished Courtyard, not the Main Camera.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "Set **Scale** to the values in the list.",
+  "replace": "Set **Scale** to the values in the list. Then go back to step 1 for the next object, until all six are in the Hierarchy.",
+  "why": "The steps did not say to repeat them for each of the six objects.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "A Hierarchy with eleven entries and a Scene view showing a square ground, a central tower, two walls, two crates, a ball and a capsule.",
+  "replace": "The Hierarchy listing Main Camera, Directional Light, Global Volume, Ground, Tower, Wall_Back, Wall_Left, Crate_A, Crate_B, Ball and Guard, and a Scene view of the courtyard seen from beyond the corner where the two walls meet, so the crates appear on the left and the capsule on the right.",
+  "why": "Alt text now names the entries and says the view is from behind, which explains the swapped sides.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "the crates should stand on the right and the ball and capsule on the left.",
+  "replace": "the crates should stand on one side of the tower and the ball and capsule on the other. Which side looks like the left depends on where your Scene view looks from: the picture above looks from beyond the corner where the walls meet, so its crates are on the left. The Game view in the next part shows the crates on the right.",
+  "why": "The picture above the checkpoint shows the crates on the left, the opposite of what the checkpoint said.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "On a Mac, open the downloaded zip file and drag **Visual Studio Code** onto the **Applications** folder.",
+  "replace": "On a Mac, double-click the downloaded zip file in Finder. **Visual Studio Code** appears beside it. Drag it onto **Applications** in the Finder sidebar.",
+  "why": "A zip has no Applications shortcut inside it, so the step now says where to drag.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "Add a Sphere named Dome that rests exactly on top of Tower, with its lowest point touching the top of the tower.",
+  "replace": "Add a Sphere named Dome with Scale 2, 2, 2, as wide as the tower, that rests exactly on top of Tower, with its lowest point touching the top of the tower.",
+  "why": "The hint assumed a Scale of 2 that the challenge never gave.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "Each next step is one step further forward, so its center moves back by the depth.",
+  "replace": "Each lower step sits one depth nearer the camera, so its center Z is 2 less than that of the step behind it.",
+  "why": "The old sentence said forward and back at once.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "rising towards",
+  "replace": "rising toward",
+  "why": "US spelling.",
+  "all": true,
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "name the five windows you will use every week",
+  "replace": "name the six windows you will use every week",
+  "why": "The page heading counts six windows.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "Save the scene, take a screenshot of the Unity Editor with the Game view visible, and make a short screen recording showing Play being pressed and stopped.",
+  "replace": "Save the scene. Click your added object in the Hierarchy so the Inspector shows its name and Transform, then take a screenshot of the whole Unity Editor with the Game view visible. Make a short screen recording showing Play being pressed and stopped.",
+  "why": "The rubric judges the added object's name and Transform values, which a screenshot shows only if the object is selected.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "Take a screenshot of the Unity Editor with the Game view visible, and record a short clip showing you press Play and stop it.",
+  "replace": "Click your added object in the Hierarchy so the Inspector shows its name and Transform. Take a screenshot of the whole Unity Editor with the Game view visible, and record a short clip showing you press Play and stop it.",
+  "why": "Same as the brief: the screenshot must show what the rubric judges.",
+  "review14": true
+ },
+ {
+  "lesson": 1,
+  "find": "A complete submission includes the saved scene, screenshot, recording and explanation.",
+  "replace": "A complete submission has the screenshot (Courtyard in the title bar, your added object selected, the Game view visible), the recording and the explanation.",
+  "why": "The scene file is not uploaded, so complete is now defined by what the upload shows.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Open the dropdown beside the search box, which shows the Learning templates, and choose **Core**.",
+  "replace": "Open the dropdown beside the search box. It may read **All** or **Learning**. Choose **Core**.",
+  "why": "Matches week 1 and the Unity Hub picture, where the dropdown reads All.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "The Editor version says something other than 6000.6: use the version callout at the top of this part before you go on.",
+  "replace": "The Editor version says something other than 6000.6: use the version callout at the top of this part before you go on.\n\nThe project will not create at all: download the starter project below, OrbCollector-week2-start.zip. Unzip it into your UnityCourse folder and add it in Unity Hub with Add > Add project from disk, as in week 1. Its folder and its name in Unity Hub are OrbCollector-week2-start, and its Arena scene is already saved, so carry on from the next part.",
+  "why": "The starter file sat on the page with no word on when or how to use it.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "OrbCollector-start.zip",
+  "replace": "OrbCollector-week2-start.zip",
+  "why": "The label now matches the name of the file that downloads.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "OrbCollector-week-end.zip",
+  "replace": "OrbCollector-week2-end.zip",
+  "why": "The label now matches the name of the file that downloads.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Edit > Delete is grayed out: click the object’s name in the Hierarchy first.",
+  "replace": "Edit > Delete is grayed out: click the object’s name in the Hierarchy first.\n\nYour project no longer works and you cannot see why: download the finished project below, OrbCollector-week2-end.zip. Unzip it beside your own OrbCollector folder, never onto it, add it in Unity Hub with Add > Add project from disk, and compare it with yours.",
+  "why": "The checkpoint file sat on the page with no word on when or how to use it.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Inspector for Floor listing Transform, Mesh Filter, Mesh Renderer and Box Collider, with Lit (Material) grayed out below",
+  "replace": "Inspector for Floor listing, from the top, Transform, Cube (Mesh Filter), Box Collider and Mesh Renderer, with Lit (Material) grayed out below",
+  "why": "Alt text now follows the order the picture and the step show.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Select M_Ball and drag the **Smoothness** slider to 0.8 so it looks shiny.",
+  "replace": "Select M_Ball and set **Smoothness** to 0.8 so it looks shiny: drag the slider, or type 0.8 in the box at its right end and press Enter.",
+  "why": "Dragging a slider to an exact value is hard; typing is the keyboard alternative.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Click the triangle beside **Emission** to open it.",
+  "replace": "If **Emission** is closed, click the triangle beside it to open it. If you can already see **Light Appearance**, it is open, so leave it.",
+  "why": "Emission is open by default (see the week 1 picture of the light), so a literal click would close it.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "The lit arena in the Game view; the Directional Light shows Light Appearance Color and Intensity 2.",
+  "replace": "The arena in the Game view under the warm white light: a slate floor, gray-blue walls, and the walls’ shadows along the near and right edges of the floor.",
+  "why": "The picture shows only the Game view, with no Inspector.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Choose **GameObject > 3D Object > Cube** and type Ramp.",
+  "replace": "Choose **GameObject > 3D Object > Cube**, type Ramp and press Enter.",
+  "why": "Every other naming step ends with pressing Enter.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Choose **GameObject > 3D Object > Sphere** and type Ball.",
+  "replace": "Choose **GameObject > 3D Object > Sphere**, type Ball and press Enter.",
+  "why": "Every other naming step ends with pressing Enter.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "The Scene view once Ramp and Ball are both placed: the ball hangs above the high end of the ramp.",
+  "replace": "The Scene view after step 6, with Ball placed and colored: the ball hangs above the high end of the ramp.",
+  "why": "The picture sits on step 4 but shows the state after steps 5 and 6.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "tilted down towards the far wall",
+  "replace": "tilted down toward the far wall",
+  "why": "US spelling.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "rolls towards Wall_North",
+  "replace": "rolls toward Wall_North",
+  "why": "US spelling.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Ball Inspector: Sphere Collider on, Rigidbody Mass 1, Use Gravity ticked; Hierarchy has no Ball_Heavy.",
+  "replace": "The Game view, two tests with a label on each. With the Sphere Collider off, the ball drops through the ramp and the floor and is gone. Then two balls, Mass 1 and Mass 10, land on the ramp together and roll side by side to the far wall.",
+  "why": "The alt text described an Inspector picture; the clip shows the two tests in the Game view.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Ball_Bouncy mid-bounce in a dimmed Arena with a warm patch of light on the floor.",
+  "replace": "The Game view of the Arena at its normal brightness: Ball_Bouncy drops near the far right corner and bounces several times, each bounce lower than the last, while the main Ball rolls down the ramp to the far wall.",
+  "why": "The clip shows no dimmed arena and no lamp.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "It went wrong if Ball_Bouncy does not bounce (the physics material is not on its Sphere Collider) or if nothing glows (Lamp Intensity is too low: try 30).",
+  "replace": "It went wrong if Ball_Bouncy does not bounce (the physics material is not on its Sphere Collider) or if nothing glows (Lamp Intensity is too low: try 30). When you have finished, you can keep Ball_Bouncy and Lamp. If you dimmed the Directional Light, set its Intensity back to 2 and choose File > Save, so your Arena matches the pictures in the weeks ahead.",
+  "why": "Nothing said what to do with the challenge objects, and a dimmed light would carry into every later week.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Do the optional challenge",
+  "replace": "Optional: do the second challenge, a lamp in the arena",
+  "why": "Optional work now starts with Optional in the checklist, as in week 3.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "choose a Hexadecimal color that changes the scene’s look.",
+  "replace": "choose a Hexadecimal color that changes the scene’s look. After you have captured your work you may set it back to FFF4E0, the page’s warm white.",
+  "why": "The graded light color would otherwise tint every later week without a word about it.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Take a screenshot of the Unity Editor with the Game view visible, and make a short screen recording showing the sphere fall as you press Play and stop it.",
+  "replace": "Click Color_Drop in the Hierarchy so the Inspector shows its components, then take a screenshot of the whole Unity Editor with the Game view visible. Make a short screen recording showing the sphere fall as you press Play and stop it.",
+  "why": "The rubric judges Position, collider and Rigidbody, which the screenshot shows only if Color_Drop is selected.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Take a screenshot of the Unity Editor with the Game view visible. Make a short screen recording showing you press Play, the sphere fall, and Play stop.",
+  "replace": "Click Color_Drop in the Hierarchy so the Inspector shows its Transform, Sphere Collider and Rigidbody. Take a screenshot of the whole Unity Editor with the Game view visible. Make a short screen recording showing you press Play, the sphere fall, and Play stop.",
+  "why": "Same as the brief: the screenshot must show what the rubric judges.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "A complete submission has the saved Arena scene, both captures, and your explanation.",
+  "replace": "A complete submission has both captures and your explanation, and the screenshot shows Arena in the title bar with no asterisk.",
+  "why": "The scene file is not uploaded, so complete is now defined by what the upload shows.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Arena is saved; the screenshot shows the Game view and the recording shows Play and stop;",
+  "replace": "The screenshot shows the Game view and Arena in the title bar with no asterisk; the recording shows Play and stop;",
+  "why": "The rubric can only judge saving by what the screenshot shows.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "The saved scene or both required captures are missing from the submission.",
+  "replace": "Both required captures are missing from the submission, or they do not show the Arena scene.",
+  "why": "The scene file is not part of the upload.",
+  "review14": true
+ },
+ {
+  "lesson": 2,
+  "find": "Students make a new project called OrbCollector, build an Arena",
+  "replace": "You make a new project called OrbCollector, build an Arena",
+  "why": "The announcement is posted to students and speaks to them as you everywhere else.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "check that you can see the Arena from last week: Floor, the four walls, Ramp and Ball.",
+  "replace": "check that you can see the Arena from last week: Floor, the four walls, Ramp and Ball. Objects you added yourself last week, such as Ball_Bouncy, Lamp or Color_Drop, may be listed too. They can stay; the pictures on this page do not show them.",
+  "why": "Last week's challenge and graded build leave objects in the scene that the page never mentions.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Then, in Unity Hub, on the Projects screen use the Add button to add the unzipped folder, and click it to open.",
+  "replace": "Then, in Unity Hub, on the Projects screen open the Add dropdown, choose Add project from disk and select the folder named OrbCollector-week2-end that contains Assets, Packages and ProjectSettings (on Windows it is one level inside the extracted folder). Click it in the list to open. Unity Hub lists it as OrbCollector-week2-end, so use that name wherever this page says OrbCollector.",
+  "why": "Extract All nests the project one folder down, and the starter is not called OrbCollector in Unity Hub or the title bar.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Wait for Unity to finish compiling before you attach the script.",
+  "replace": "Wait for Unity to finish compiling before you attach the script: a small spinning icon at the bottom right of the Editor shows it is busy.",
+  "why": "Compiling was used here before the page says how to tell when it is finished.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Why the name matters: the class inside the file",
+  "replace": "The class inside the file",
+  "why": "The callout already has a title; the second label was a leftover.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "In the **Project** window, double-click the Spinner script. Visual Studio Code opens with the file.",
+  "replace": "In the **Project** window, double-click the Spinner script. Visual Studio Code opens with the file. If it asks whether you trust the authors of the files in this folder, choose the button that says yes: the files are your own project.",
+  "why": "A beginner would stop at the trust prompt Visual Studio Code shows the first time it opens a folder.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Scene view with the yellow cube turned part-way and Console line Spinner started on Pickup_Test",
+  "replace": "Game view during Play with the yellow cube Pickup_Test turned part-way near the back left corner, Pickup_Test selected in the Hierarchy, and one Console line reading Spinner started on Pickup_Test",
+  "why": "The picture shows the Game view, not the Scene view.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Pressing Play: the cube turns steadily around its vertical axis and one line, Spinner started on Pickup_Test, appears in the Console.",
+  "replace": "The Game view during Play, labeled Speed 90: the yellow cube turns steadily around its vertical axis, one full turn every four seconds, while the Ball rolls down the Ramp to the far wall.",
+  "why": "The clip shows only the Game view; no Console is visible.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "During Play, Speed changes from 90 to 360, then -90, Is Spinning is unticked and the cube stops. After Play stops, Speed reads 90 again.",
+  "replace": "The Game view in three takes, each with a label: at Speed 90 the cube turns slowly, at Speed 360 it turns once a second, and at Speed -90 it turns the other way.",
+  "why": "The clip shows three speeds in the Game view; it does not show Is Spinning or the Inspector.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "**Speed** becomes 45, the value in the code.",
+  "replace": "**Speed** becomes 45, the value in the code. **Is Spinning** and **Message** go back to their values in the code too, so the Console line starts with Spinner started on again.",
+  "why": "Reset also undoes the Message change made a few steps earlier, which would surprise a beginner.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Two cubes in the Scene view, Pickup_Test_B Inspector Speed 30",
+  "replace": "Game view with two yellow cubes side by side near the back left corner, and the Hierarchy listing Pickup_Test and Pickup_Test_B with Pickup_Test_B selected",
+  "why": "The picture shows the Game view and the Hierarchy; no Inspector is visible.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "A yellow cube named Pickup_Test spins around its vertical axis in the Arena. The Console shows Spinner started on Pickup_Test and the Inspector shows Speed 120.",
+  "replace": "The Game view of the Arena: two yellow cubes near the back left corner turn around their vertical axes at different speeds, while the Ball rolls down the Ramp to the far wall.",
+  "why": "The clip shows two cubes in the Game view; no Console or Inspector is visible.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "From here on you will often need to show what is on your screen, for the forum and for getting help, so you learn to capture a screenshot and a recording on your own computer.",
+  "replace": "You captured the whole Editor in week 1. For the forum and for getting help you often need just one part of the screen, such as the Console, so here is a quicker way to capture a part, with a reminder of how to record.",
+  "why": "Week 1 already taught screenshots and recording; this part read as if it were new.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Ticking off Is Spinning still stops both turns.",
+  "replace": "Unticking Is Spinning still stops both turns.",
+  "why": "The page says untick everywhere else.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Spinner (Script) with Tumble Speed 45 and a cube tumbling in the Scene view",
+  "replace": "The Game view with two yellow cubes near the back left corner: one turns flat around its vertical axis and the other tumbles around two axes at once",
+  "why": "The clip shows the Game view only; no Inspector is visible.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Tumble Speed shows in the Inspector under Speed.",
+  "replace": "In the Inspector, Tumble Speed appears with Speed; the clip shows the Game view only.",
+  "why": "The caption pointed to an Inspector the clip does not show.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "drag the rectangle round the part",
+  "replace": "drag the rectangle around the part",
+  "why": "US usage.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Explain your chosen speeds and how you found and fixed the error.",
+  "replace": "Explain your chosen speeds and how you found and fixed the error, and copy the first Console error line into your explanation, because the fixed script no longer shows it.",
+  "why": "The debugging criterion had no evidence in the upload once the error was fixed.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "The LMS grade is complete or incomplete.",
+  "replace": "The LMS grade is complete or incomplete. A complete submission has the screenshot, the recording and the explanation, and the recording shows ScriptStudy turning around both axes.",
+  "why": "This week's brief did not say what complete means.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Set Speed to 75 and Roll Speed to 150 in the Inspector, then press Play to check both turns.",
+  "replace": "In the Inspector, choose your own Speed and Roll Speed for ScriptStudy (for example 75 and 150), then press Play to check both turns. Every cube with Spinner now has a Roll Speed of 45; set it to 0 on Pickup_Test and Pickup_Test_B if you want them to turn as before.",
+  "why": "The brief and rubric ask for the student's own speeds while the step fixed them, and the new field also changes the page's two cubes.",
+  "review14": true
+ },
+ {
+  "lesson": 3,
+  "find": "Set Speed to 75 and Roll Speed to 150; both axes turn during Play.",
+  "replace": "Speed and Roll Speed are the student’s own values, for example 75 and 150; both axes turn during Play.",
+  "why": "Keeps the answer key in line with the brief.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "set the camera so you can see the whole Arena while you test",
+  "replace": "set the camera so you can see most of the Arena while you test",
+  "why": "The picture of this camera position cuts off the near corners of the Arena.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "OrbCollector_Input_Start.zip",
+  "replace": "OrbCollector-week3-end.zip",
+  "why": "The label now matches the name of the file that downloads.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "OrbCollector_Input_Done.zip",
+  "replace": "OrbCollector-week4-end.zip",
+  "why": "The label now matches the name of the file that downloads.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "click Browse..., pick the folder that holds your OrbCollector folder, and make the path end with the zip’s name (OrbCollector_Input_Start or OrbCollector_Input_Done) before you click Extract.",
+  "replace": "click Browse..., pick the folder that holds your OrbCollector folder, and click Extract. A folder named after the zip (OrbCollector-week3-end or OrbCollector-week4-end) appears beside your own.",
+  "why": "The names in the instruction were not the names of the downloaded files or of the folders inside them.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "select the unzipped folder (the one that contains Assets, Packages and ProjectSettings), then click it in the list.",
+  "replace": "select the unzipped folder (the one that contains Assets, Packages and ProjectSettings), then click it in the list. Unity Hub lists it under the folder’s name, OrbCollector-week3-end or OrbCollector-week4-end; if you work in the starter, use that name wherever this page says OrbCollector.",
+  "why": "A student on the starter would look in vain for a project called OrbCollector.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "This spot is open floor, away from the Ramp and the two Pickup_Test cubes.",
+  "replace": "This spot is open floor, away from the Ramp and the two Pickup_Test cubes. Objects of your own from earlier weeks (Ball_Bouncy, Lamp, Color_Drop, ScriptStudy) are not in this page’s pictures. They can stay, but the Ball will bump into them; to match the pictures, click each one in the Hierarchy and choose **Edit > Delete**.",
+  "why": "Ball_Bouncy from the week 2 challenge rests right beside this spot, and earlier graded objects are still in the scene.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "Inspector for Ball showing Position 5, 1, 5 and a Rigidbody with Mass 1 and Use Gravity ticked.",
+  "replace": "Inspector for Ball with the Transform showing Position 5, 1, 5, Rotation 0, 0, 0 and Scale 1, 1, 1.",
+  "why": "The picture shows only the Transform; no Rigidbody is in it.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "Take the screenshot below, then click **Play** again to stop.",
+  "replace": "Compare your Game view with the picture below, then click **Play** again to stop.",
+  "why": "The old words were an instruction to whoever made the picture, not to the student.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "and you can see the whole Arena.",
+  "replace": "and you can see the far wall, the Ramp and both cubes. The near corners of the Arena are outside the view, as in the picture above.",
+  "why": "The picture shows the near corners cut off, so whole Arena would send a careful student looking for a mistake.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "Press W several times, one press at a time. Each press adds a line to the Console.",
+  "replace": "Press W several times, one press at a time. Each press adds a line to the Console. The two lines written when Play began come from Spinner on last week’s cubes.",
+  "why": "After Clear, the first lines in the Console are Spinner's, which the step did not expect.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "Ball is dragged onto the Target slot of Camera Follow, then in Play the camera follows the Ball as it is driven.",
+  "replace": "The Game view during Play, labeled Camera Follow with Target set to Ball: the Ball is driven along the far wall, past the two cubes and around the Arena, and the camera stays behind and above it the whole way.",
+  "why": "The clip does not show the drag, as its own caption says.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "A clean Console after the playtest: all three counters at the right read 0.",
+  "replace": "A clean Console after the playtest: only the plain lines Spinner writes for the two cubes, and the warning and error counters at the right read 0.",
+  "why": "The picture shows two message lines and a counter reading 2.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "Console window with no errors or warnings after a playtest.",
+  "replace": "Console after a playtest with two plain lines, Pickup ready on Pickup_Test_B and Pickup ready on Pickup_Test (yours may start with Spinner started on), and counters reading 2 messages, 0 warnings and 0 errors.",
+  "why": "Alt text now gives what the picture shows.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "and the Console is clean.",
+  "replace": "and the Console has no red or yellow lines. The plain lines from Spinner are fine.",
+  "why": "Clean was not defined, and the Console always holds Spinner's two lines.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "Hierarchy showing the saved scene name with no asterisk, Main Camera and Ball in the list.",
+  "replace": "Hierarchy with the scene name Arena at the top and no asterisk after it, listing Main Camera, Directional Light, Global Volume, Floor, the four walls, Ramp, Ball, Pickup_Test and Pickup_Test_B.",
+  "why": "Alt text now names what the picture lists.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "Divide each component by 5 to get `(0.60, 0, 0.80)`. Normalizing makes the direction length 1.",
+  "replace": "Divide each component by 5: x is 3 ÷ 5 = 0.60, y stays 0 and z is 4 ÷ 5 = 0.80. Normalizing makes the direction length 1.",
+  "why": "Goes with the reworded question, which now asks for one number.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "What is its normalized vector? Give each component to two decimal places.",
+  "replace": "What is the x component of its normalized vector? Give it to two decimal places.",
+  "why": "A Number answer question needs a single number, not three.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "(0.60, 0, 0.80)",
+  "replace": "0.60",
+  "why": "The model answer is now the one number the question asks for.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "one of the Ball’s Inspector showing Force and Linear Damping and one of Main Camera’s showing Offset,",
+  "replace": "one of the Ball’s Inspector showing Force and Linear Damping (if both do not fit, click the triangles beside the Sphere Collider and Mesh Renderer headings to fold them) and one of Main Camera’s showing Offset,",
+  "why": "Force and Linear Damping do not fit in one Inspector view unless components are folded, which was never taught.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "The screenshot clearly shows the chosen Force, Linear Damping, and Offset values; the recording clearly shows the custom setup in use.",
+  "replace": "The two screenshots clearly show the chosen Force, Linear Damping, and Offset values; the recording clearly shows the custom setup in use.",
+  "why": "The brief asks for two screenshots.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "The screenshot shows all three chosen settings, and the recording shows the setup in use.",
+  "replace": "The two screenshots show all three chosen settings, and the recording shows the setup in use.",
+  "why": "The brief asks for two screenshots.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "The screenshot or recording is missing or does not clearly show some required settings or behavior.",
+  "replace": "A screenshot or the recording is missing or does not clearly show some required settings or behavior.",
+  "why": "The brief asks for two screenshots.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "The screenshot and recording do not show the required settings and behavior.",
+  "replace": "The screenshots and recording do not show the required settings and behavior.",
+  "why": "The brief asks for two screenshots.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "Submit one screenshot and one short screen recording in common Windows and Mac file types",
+  "replace": "Submit two screenshots (the Ball’s Inspector and Main Camera’s Inspector) and one short screen recording in common Windows and Mac file types",
+  "why": "The answer key said one screenshot where the brief asks for two.",
+  "review14": true
+ },
+ {
+  "lesson": 4,
+  "find": "If it does not, choose Component > Physics > Rigidbody.",
+  "replace": "If it does not, click Add Component, type Rigidbody and choose Rigidbody, not Rigidbody 2D.",
+  "why": "Uses the way of adding a component that the course taught.",
+  "review14": true
  }
 ]
