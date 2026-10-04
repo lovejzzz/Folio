@@ -14,7 +14,7 @@ const line = z.string().min(1);
 
 export const PictureCheck = z.object({
   shows: line.describe('What the picture shows, in one sentence: which window, in what state'),
-  problems: z.array(line).max(6).default([]).describe('Each way the picture disagrees with the page at this point, quoting what the picture shows and what the page says; empty when it fits'),
+  problems: z.array(line).max(5).default([]).describe('Each way the picture disagrees with the page at this point, quoting what the picture shows and what the page says; empty when it fits'),
   personal: z
     .array(line)
     .max(6)
@@ -60,10 +60,11 @@ export function pictureCheckPrompt(course: Course, lesson: Lesson, place: Pictur
     place.caption.trim() ? `Its caption tells students: ${place.caption.trim()}` : '',
     [
       'Look at the picture and compare it with the page at this point.',
-      'It fits when it is the window and the state the page has reached: the names, values and text that can be read in it agree with the page\'s, what the caption tells students to compare can be seen, and nothing is in it that only a later step would add.',
-      'Under "problems", list each disagreement, quoting what the picture shows and what the page says ("the picture shows Position 0, 1, 0; the step sets 0, 0.5, 0"). A picture that is blank, of another window, or too small to read what must be read is a problem.',
-      'Do not list its crop, size, colors or theme unless they hide what must be seen, nor anything the page says nothing about.',
-      'Under "personal", list what is readable in the picture that names a person or an account.',
+      // Asked only whether it "fits", a reader listed what the page does not mention, which row was selected, and points on which it found no disagreement: eight right pictures in ten came back with notes.
+      'A problem is one of three things, and nothing else. The picture is of something else: another window, another state, or blank. A name, value or text that can be read in it differs from what the page says at this point. Or something the caption tells students to compare, or the page says they now see, cannot be seen in it: cut off, covered, not open, too small to read.',
+      'Under "problems", list each one, quoting what the picture shows and what the page says ("the picture shows Position 0, 1, 0; the step sets 0, 0.5, 0"). When an outline or arrow that was asked for is missing, say so once, last.',
+      'These are not problems: anything in the picture the page does not speak of (objects a new project comes with, other rows, which row is selected), its crop, size, colors or theme where what must be seen can be seen, and any point on which the picture and the page agree. A picture that fits has an empty list; an entry that would end by saying the picture is fine, or that it cannot be told, is not written.',
+      'Under "personal", list only what names a person or an account and can be read: a person\'s name, an email address, the name of an account or organization, a folder path with a user\'s name in it, a license key. A version number, a program\'s own path and a count of projects are not personal. Empty when there is none.',
     ].join(' '),
   ]
     .filter(Boolean)
@@ -72,6 +73,6 @@ export function pictureCheckPrompt(course: Course, lesson: Lesson, place: Pictur
 
 /** Look at one picture beside its step. */
 export async function checkPicture(inference: Inference, course: Course, lesson: Lesson, place: PicturePlace, picture: Picture, signal?: AbortSignal): Promise<PictureCheck> {
-  const result = await runJob(inference, { task: 'folio_picture_check', system: systemPrompt(course.language, course.locale), prompt: pictureCheckPrompt(course, lesson, place), effort: 'low', schema: PictureCheck, images: [picture], repair: false, signal });
+  const result = await runJob(inference, { task: 'folio_picture_check', system: systemPrompt(course.language, course.locale), prompt: pictureCheckPrompt(course, lesson, place), effort: 'medium', schema: PictureCheck, images: [picture], repair: false, signal });
   return result.value;
 }
