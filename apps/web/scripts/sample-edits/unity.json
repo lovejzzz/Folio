@@ -2328,7 +2328,7 @@
  {
   "lesson": 12,
   "media": "w12-a-level.webp",
-  "alt": "Game view from above and behind: a gray floor inside four low walls, a capsule near the front, five small spheres and a cube on the floor, and Score: 1 / 5 at the top left."
+  "alt": "Game view from above and behind: a gray floor inside four low walls, a capsule near the front, five small spheres and a cube on the floor, and Score: 0 / 5 at the top left."
  },
  {
   "lesson": 12,
@@ -5222,5 +5222,895 @@
   "replace": "Swink’s Game feel (week 8), Schell’s The art of game design (week 11) and Fullerton’s Game design workshop (week 13). All are optional: every page teaches what the week needs.",
   "why": "Week 11 names Schell, and the weeks treat every book as optional.",
   "start": true
+ },
+ {
+  "lesson": 12,
+  "find": "Watch this first; the page repeats everything you need if you only read the transcript.",
+  "replace": "Watch this first. If you cannot watch, read the transcript below; the page repeats everything you need.",
+  "why": "The original sentence is hard to parse.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "a player, a level that cannot be left by accident, five pickups",
+  "replace": "a player, a small level, five pickups",
+  "why": "Route C can be left by falling off the edge, so the claim contradicts the Route C line just below.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "Unzip it into a new folder named UnityExtras inside your Documents folder",
+  "replace": "Download PrototypeStarter.zip. It holds the scripts from this page as .cs files, in case typing goes wrong. Unzip it into a new folder named UnityExtras inside your Documents folder",
+  "why": "The file appears with no sentence saying what it is or that it must be downloaded; 'it' has nothing to refer to.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "Move out any feature that is not needed;",
+  "replace": "Move any feature that is not needed to the Waits list;",
+  "why": "'Move out' does not say where the feature goes.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "box and type Score: 0 / 5.",
+  "replace": "box, select the placeholder text that is already there, and type Score: 0 / 5 over it.",
+  "why": "A new TextMeshPro label already holds placeholder text; typing without replacing it leaves both.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "writes text such as ‘Score: 0 / 5'.",
+  "replace": "writes text such as ‘Score: 0 / 5’.",
+  "why": "Mismatched quotation marks.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "the light or lights from your template",
+  "replace": "the objects that came with your template (Directional Light and Global Volume in 3D, Global Light 2D in 2D)",
+  "why": "The 3D template also has Global Volume, which is not a light, so a 3D student sees an object the checkpoint does not list.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "If a red entry is there, it is the Stuck? list below you need.",
+  "replace": "If a red entry is there, use the Stuck? list below.",
+  "why": "Awkward sentence.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "In Play, your player moves with the keys for your route",
+  "replace": "Click Play and click once inside the Game view. Your player moves with the keys for your route",
+  "why": "No step in this part tells the student to press Play and click the Game view, yet the checkpoint describes Play.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "Nothing else happens yet: no pickups, no hazard.",
+  "replace": "Nothing else happens yet: no pickups, no hazard. Click Play again to stop before you go on, or the objects you make next will vanish when Play stops.",
+  "why": "Nothing tells the student to leave Play before building the pickups, and work done in Play is lost.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "Almost everything is white for now, so tell objects apart by shape and name.",
+  "replace": "Almost everything is one plain color for now (white in Routes B and C, light gray in Route A), so tell objects apart by shape and name.",
+  "why": "In Route A the floor, walls and shapes are gray, not white, as the Route A picture shows.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "the square rises about 2.5 units, which is enough to reach Platform_Left but not Platform_Right from the ground.",
+  "replace": "the square rises about 2.5 units, which is enough to reach Platform_Left but not Platform_Right from the ground. To get onto Platform_Right, jump across from Platform_Left.",
+  "why": "The page says Platform_Right cannot be reached from the ground but never says how to reach it, and a pickup sits above it.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "type your route’s number into",
+  "replace": "type the two numbers from your route’s hazard line (Patrol Distance, then Speed) into",
+  "why": "'Your route's number' is singular but two different numbers go into two fields.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "The hazard therefore slides from 4 units on one side of its start to 4 units on the other, and back.",
+  "replace": "The hazard therefore slides from 4 units on one side of its start to 4 units on the other, and back. When Play starts it jumps to the left end of that path first, so it is not where you placed it.",
+  "why": "The worked example gives offset -4 at the start, so the hazard visibly jumps when Play starts; a beginner would take that for a bug.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "The label reads The hazard got you. Press R to try again., and the player stops.",
+  "replace": "The player stops and the label reads The hazard got you. Press R to try again.",
+  "why": "The quoted label followed by '., and' is hard to read.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "Read it from the top, because one early error can cause many later ones.",
+  "replace": "When there are several red entries, start with the top one, because one early error can cause many later ones.",
+  "why": "'Read it from the top' follows a sentence about one entry, so 'it' seems to mean the entry instead of the list.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "the numbers in brackets (line, then column), and the message.",
+  "replace": "the two numbers in parentheses after it (line, then column), and the message.",
+  "why": "The Console shows the numbers in parentheses, as in PrototypeGame.cs(48,16); American English calls [ ] brackets.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "A missing semicolon is often reported on the line after the real mistake, so look at the line above too.",
+  "replace": "Here the entry names the very line you broke. Some other mistakes, such as a missing closing brace, are reported lower down than where they are, so when the named line looks right, look at the lines above it too.",
+  "why": "This compiler reports the missing semicolon on the broken line itself (the page's picture shows line 48, the score++ line), so the original claim is wrong here.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "Look at the line above too: a missing semicolon is often reported on the next line.",
+  "replace": "If that line looks right, look at the lines just above it too: some mistakes, such as a missing closing brace, are reported lower down than where they are.",
+  "why": "Same wrong claim about where a missing semicolon is reported.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "A missing semicolon is often reported on the line after the real mistake. A NullReferenceException",
+  "replace": "A missing semicolon is reported on the line you broke; if the named line looks right, check the lines just above it. A NullReferenceException",
+  "why": "Same wrong claim repeated in the recap.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "Note the file name and the line number in brackets",
+  "replace": "Note the file name and the line number in parentheses",
+  "why": "The Console shows parentheses, not brackets.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "Choose Hazard Speed or player Speed to change because of your notes.",
+  "replace": "Pick one number to change because of your notes: Speed in Patrol on Hazard, or Speed in your player script on Player.",
+  "why": "The original does not say where either Speed field is, and its wording is awkward.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "Add instructions that your player can see without this page.",
+  "replace": "Next comes a step you need for this week’s submission, which asks for a screenshot with visible controls: add a second label that tells the player the controls.",
+  "why": "The graded work requires visible controls, but the only instructions for them are buried in a paragraph that starts as an optional color tip.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "Replace its Text Input with your route’s controls, followed by Collect every pickup. Avoid the red hazard. Press R to restart at any time. For Route A or B, write A, W, S, D: move. For Route C, write A/D: move. Space: jump.",
+  "replace": "Replace its Text Input with two lines. The first line is your route’s controls: for Route A or B, type A, W, S, D: move, and for Route C, type A/D: move. Space: jump. The second line is the same for every route: Collect every pickup. Avoid the red hazard. Press R to restart at any time.",
+  "why": "The text to type is not marked off from the instructions, so the student cannot tell where it starts and ends or in what order it goes.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "The scene is saved. If the Hazard is still white in Route A",
+  "replace": "A ControlsText label under the score shows the controls. The scene is saved. If the Hazard has not turned red in Route A",
+  "why": "The checkpoint leaves out the controls label that the graded work needs, and the Route A hazard starts gray, not white.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "The other options add features to the core, leave out the obstacle, or cut the obstacle that can end the round.",
+  "replace": "The other options keep extra features in the core (dialogue, the shop or three levels), and one of them also moves the guard, the only obstacle, to the Waits list.",
+  "why": "'Leave out the obstacle' and 'cut the obstacle' say the same thing, and no option matches the first.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "If you did not hit a bug, describe the planted bug that taught you the most.",
+  "replace": "If you did not hit a bug, describe the planted bug that taught you the most. The planted bugs are in the part Find and fix bugs with the Console and Debug.Log, so do that part before you post.",
+  "why": "The checklist puts the first post before the debugging part, but the post asks about the planted bugs and Debug.Log.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "Choose one small feature from your Waits list that you can make with techniques covered earlier in the course.",
+  "replace": "Choose one small feature from your Waits list that you can make with techniques covered earlier in the course, for example a second hazard that patrols a different line. If your Waits list is empty, choose a small feature from the Should column of your GameScope table instead.",
+  "why": "The page allows an empty Waits list and gives no example of a feature small enough, so some students cannot do this graded step as written.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "find": "usually because the scene was renamed from SampleScene or the Game view was not clicked first",
+  "replace": "usually because the Game view was not clicked first, or the scene is missing from Scene List in File > Build Profiles",
+  "why": "The script reloads the active scene by its current name, so renaming the scene is not by itself the cause; the student page names the Scene List instead.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "media": "w12-game.webp",
+  "alt": "Prototype Game component on Game: Status Text set to StatusText, Player set to Player, Pickups To Win 5, Leave Limit 20.",
+  "why": "The alt says the Player slot is empty, but the picture and the caption show it filled.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "media": "w12-a-level.webp",
+  "alt": "Game view from above and behind: a gray floor inside four low walls, a capsule near the front, five small spheres and a cube on the floor, and Score: 0 / 5 at the top left.",
+  "why": "The picture shows Score: 0 / 5 with all five pickups, not Score: 1 / 5.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "media": "w12-c-level.webp",
+  "alt": "Game view: a long white ground along the bottom, two short platforms above it, a white square at the left end, a second square on the ground, five small circles (three just above the ground and one above each platform), and Score: 0 / 5 at the top left.",
+  "why": "The alt puts all five circles on the ground; two of them float above the platforms.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "media": "w12-bug1.webp",
+  "caption": "If you pasted the code, the entry names line 48, the line you broke. If you typed it, your line number may differ; the file and the message should match.",
+  "alt": "Console error entry: Assets/Scripts/PrototypeGame.cs(48,16): error CS1002: ; expected.",
+  "why": "The picture shows line 48, which is the score++ line in the pasted code, so line numbers match unless the student typed the code differently.",
+  "review": true
+ },
+ {
+  "lesson": 12,
+  "media": "w02-color-window.webp",
+  "caption": "The Color window, as in week 2. The picture shows a week 2 value; type your own value into Hexadecimal.",
+  "alt": "Color window with the Hexadecimal box outlined, holding a week 2 example value.",
+  "why": "The reused week 2 picture shows 3B4A5A in the Hexadecimal box, not D62828 as the alt claims.",
+  "review": true
+ },
+ {
+  "find": "It is uploaded to the LMS and graded complete or incomplete.",
+  "replace": "It is uploaded to the LMS and scored with a rubric as Exemplary, Proficient, Developing or Beginning.",
+  "why": "Week 9 scores Dodge with a rubric whose three criteria count equally toward the 15%; Start here said complete or incomplete.",
+  "review": true,
+  "course": true
+ },
+ {
+  "find": "In week 13 you playtest and polish it as a weekly build. Together they make up 30% of your course grade.",
+  "replace": "Together the three pieces make up 30% of your course grade. In week 13 you playtest and polish the game, and that work counts as a weekly build, not toward the 30%.",
+  "why": "'Together they' read as if the week 13 weekly build were part of the 30%.",
+  "review": true,
+  "course": true
+ },
+ {
+  "find": "The brief and rubric come with week 14, ‘Showcase, reflection and next steps’, and score your work as Exemplary, Proficient, Developing or Beginning.",
+  "replace": "Each piece has its own brief and rubric on that week’s page, and each is scored as Exemplary, Proficient, Developing or Beginning.",
+  "why": "Weeks 11 and 12 carry their own briefs and rubrics; the rubric does not only come with week 14.",
+  "review": true,
+  "course": true
+ },
+ {
+  "find": "You zip a build of your game in weeks 9 and 13 to share it.",
+  "replace": "You zip a build of your game in weeks 9, 13 and 14 to share it.",
+  "why": "Week 14 also zips the final build with a README.",
+  "review": true,
+  "course": true
+ },
+ {
+  "find": "Some weeks ask for reading, such as a book chapter or an article, and some for a second person",
+  "replace": "Some weeks suggest an optional reading, such as a book chapter, and some need other people",
+  "why": "The same page says all readings are optional, so 'ask for reading' contradicted it.",
+  "review": true,
+  "course": true
+ },
+ {
+  "find": "and in week 13 you run playtests with other people. The page tells you when.",
+  "replace": "in week 13 you watch two other people play your game, and in week 14 you play three classmates’ games. In weeks 9 and 13, look for your players in the first days of the week. The page tells you when.",
+  "why": "Week 14 also needs classmates, and weeks 9 and 13 set early days (Tuesday, Wednesday) that Start here did not warn about.",
+  "review": true,
+  "course": true
+ },
+ {
+  "find": "Each is graded complete or incomplete. Together the 10",
+  "replace": "Each is graded complete or incomplete, and each week’s page says what a complete build needs. Together the 10",
+  "why": "Weeks define 'complete' differently (all files present in weeks 1 to 3, Proficient on every criterion later), so Start here should point to the page.",
+  "review": true,
+  "course": true
+ },
+ {
+  "find": "Each is a short screen recording and a screenshot of what you made that week",
+  "replace": "Each is a short screen recording and one or two screenshots of what you made that week",
+  "why": "Weeks 4, 7 and 8 ask for two screenshots.",
+  "review": true,
+  "course": true
+ },
+ {
+  "find": "Schell’s The art of game design (week 11)",
+  "replace": "Schell’s The art of game design (named in week 10, for week 11)",
+  "why": "The Schell chapter is given on the week 10 page as reading for week 11.",
+  "review": true,
+  "course": true
+ },
+ {
+  "find": "a challenge and sometimes an optional challenge or a short self-check quiz",
+  "replace": "a challenge, an optional challenge and a short self-check quiz that is not graded",
+  "why": "Every week has an optional challenge and a self-check quiz; the quiz is in no graded component.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 1,
+  "find": "Next week you give these shapes components, materials and light, then roll a ball",
+  "replace": "Next week you start a new project, OrbCollector, where you give shapes like these components, materials and light, then roll a ball",
+  "why": "Week 2 starts a new OrbCollector project with an Arena; it does not continue the Courtyard shapes.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 7,
+  "find": "In the Dodge scene, change GameOverText to a short original message.",
+  "replace": "In your Dodge project, with SampleScene open, change GameOverText to a short original message.",
+  "why": "The scene is named SampleScene in weeks 6 to 9; there is no scene called Dodge.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 9,
+  "find": "Keep the MainMenu and Dodge scenes working",
+  "replace": "Keep the MainMenu and SampleScene scenes working",
+  "why": "The same step list later calls the game scene SampleScene, which is its real name.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 10,
+  "find": "You will show that your Hop character can move through the tilemap level and add a facing change of your own.",
+  "replace": "You will show that your Hop character can move through the tilemap level and add a facing change of your own. Your instructor grades this work complete or incomplete: Proficient or Exemplary on every rubric criterion is complete; otherwise it is incomplete.",
+  "why": "Week 10 is the only weekly build that never says how it is graded; this is the sentence weeks 4 to 8 use.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 10,
+  "find": "Reading for next week. Read Chapter 7, The Game Begins with an Idea, in Schell",
+  "replace": "Optional reading for next week. If your library has the book, read Chapter 7, The Game Begins with an Idea, in Schell",
+  "why": "Start here says every reading is optional; the paragraph opened as an instruction.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 10,
+  "find": "If your library has neither, post in the forum and your instructor will tell you what to do. The reading is optional:",
+  "replace": "If your library has neither, skip it. The reading is optional:",
+  "why": "Leaves the student waiting on the instructor for an optional reading.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 10,
+  "find": "Next week’s reading is Schell, The art of game design, Chapter 7.",
+  "replace": "Next week’s optional reading is Schell, The art of game design, Chapter 7.",
+  "why": "Keeps the recap in line with Start here: the reading is optional.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 10,
+  "find": "the self-check quiz, the Schell reading (Chapter 7, for next week’s proposal) and the Weekly builds submission by Sunday night. If you cannot find the Schell book, tell me in the forum and I will help.",
+  "replace": "the self-check quiz and the Weekly builds submission by Sunday night. The Schell reading (Chapter 7, for next week’s proposal) is optional; if you cannot find the book, skip it.",
+  "why": "The draft announcement listed an optional reading as a Sunday deadline.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 11,
+  "find": "Your work is graded complete or incomplete using the rubric below. Proficient or Exemplary is complete.",
+  "replace": "Your proposal is scored with the rubric below, as Exemplary, Proficient, Developing or Beginning on each criterion, and the score counts toward your Final game project.",
+  "why": "Start here and the course policy say the Final game project is scored with rubric levels, not complete or incomplete.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 12,
+  "find": "Your work is graded complete or incomplete. The rubric scores whether your prototype can be played through and restarted",
+  "replace": "Your prototype is scored with the rubric below, as Exemplary, Proficient, Developing or Beginning on each criterion, and the score counts toward your Final game project. The rubric scores whether your prototype can be played through and restarted",
+  "why": "Start here and the course policy say the Final game project is scored with rubric levels, not complete or incomplete.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 12,
+  "find": "whether your screenshots and recording show the required evidence. Proficient or Exemplary is complete.",
+  "replace": "whether your screenshots and recording show the required evidence.",
+  "why": "Removes the complete or incomplete rule from a rubric-scored piece of the Final game project.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 12,
+  "find": "Next week you playtest your prototype with classmates, record what you learn, and improve it.",
+  "replace": "Next week you watch two people play your prototype, classmates if you can, record what you learn, and improve it.",
+  "why": "Week 13 asks for two players who may be classmates, a friend or someone at home.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 13,
+  "find": "Proficient or Exemplary is complete; Developing or Beginning is incomplete.",
+  "replace": "This weekly build is graded complete or incomplete: Proficient or Exemplary on every rubric criterion is complete; otherwise it is incomplete.",
+  "why": "Same rule as weeks 4 to 8, stated the same way; the short form did not say what happens with mixed levels.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 14,
+  "find": "Upload the demo and screenshot to the LMS for Weekly builds by Sunday night.",
+  "replace": "You upload the demo and screenshot to the LMS with your Final game project by Sunday night. There is no separate weekly build this week.",
+  "why": "Week 14 has no weekly build: the 10 are weeks 1 to 8, 10 and 13. The demo and screenshot belong to the Final game project.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 14,
+  "find": "This project is worth 30% of your course grade.",
+  "replace": "This is the last of the three pieces of your Final game project, after the proposal and the prototype. Together they count for 30% of your course grade.",
+  "why": "Weeks 11 and 12 also count toward the same 30%; week 14 alone is not worth 30%.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 14,
+  "find": "The teacher uses the rubric to score your submitted files. Your project is complete when every criterion is Proficient or Exemplary; otherwise it is incomplete.",
+  "replace": "Your instructor scores your submitted files with the rubric below, as Exemplary, Proficient, Developing or Beginning on each criterion.",
+  "why": "Start here and the course policy say the Final game project is scored with rubric levels; also 'teacher' is 'instructor' everywhere else.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 14,
+  "find": "assign one level per criterion, and mark the project complete only if every criterion is Proficient or Exemplary; otherwise mark it incomplete.",
+  "replace": "and assign one level per criterion; the levels are the score.",
+  "why": "Teacher note must match the student text: rubric levels, not complete or incomplete.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 14,
+  "find": "students submit their own build and showcase materials online by Friday, then play",
+  "replace": "students post their showcase in the forum by Thursday and upload their files by Sunday night (by Friday if they can), then play",
+  "why": "The student page gives Thursday for the showcase post and Sunday night for the upload; Friday is only a suggestion.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 14,
+  "find": "By Sunday night, play at least two classmates’ games and reply to two posts.",
+  "replace": "By Sunday night, play three classmates’ games and reply to each of the three posts.",
+  "why": "The checklist, the video transcript, the page and the graded work all say three games and three replies.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 14,
+  "find": "Final game project: submit your final build and post your showcase (aim to finish by Friday so classmates have time to play)",
+  "replace": "Final game project: upload your final build and showcase files to the LMS (your showcase post is the forum post due Thursday; upload by Friday if you can)",
+  "why": "The showcase post and the first forum post are the same post, due Thursday; the checklist made them look like two things with two dates.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 14,
+  "find": "Upload the build zip, demo recording, gameplay screenshot, and showcase post text to the LMS.",
+  "replace": "Upload the build zip, demo recording, gameplay screenshot, and showcase post text to the LMS. Add Reflection.txt and LearningPlan.txt to the same submission; the rubric does not score them, but they complete the project.",
+  "why": "Start here says week 14 is 'the showcase with your reflection', yet nothing on the page asks the student to hand in the reflection or the learning plan.",
+  "review": true,
+  "course": true
+ },
+ {
+  "find": "arrange how students find a classmate to swap builds with in week 9 and where playtesters come from in week 13.",
+  "replace": "arrange how students find a classmate to swap builds with in week 9 and where playtesters come from in week 13. Decide how the three pieces of the Final game project (the proposal in week 11, the prototype in week 12, the showcase in week 14) share its 30%, and tell students.",
+  "why": "Nothing says how the 30% is shared, and that is the instructor’s to decide.",
+  "review": true,
+  "course": true
+ },
+ {
+  "lesson": 13,
+  "find": "They are practice: keep the result in your game or take it out again.",
+  "replace": "The first one is needed for this week’s graded Weekly build, so do it and keep it in your game. The second is practice only.",
+  "why": "The graded work requires hazard feedback, but the page calls the hazard challenge optional practice that may be removed.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Make the game play Hazard.wav once each time the player touches the Hazard.",
+  "replace": "This week’s graded Weekly build needs this change, so do not skip it. Make the game play Hazard.wav once each time the player touches the Hazard.",
+  "why": "A student who skips the challenge cannot make the graded recording.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "The pickup sound must still play only for pickups, and the sparks must not appear for the hazard.",
+  "replace": "The pickup sound must still play only for pickups. Sparks also burst when the hazard hits: choose where they appear, at the player or at the hazard, and be ready to explain your choice in your submission note.",
+  "why": "The challenge forbids sparks for the hazard while the graded work requires a particle burst for the hazard and an explanation of its placement.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "then a pickup sound, in that order, and see sparks twice.",
+  "replace": "then a pickup sound, in that order, and see sparks three times, once for each touch.",
+  "why": "Keeps the paper test consistent with the hazard burst that the graded work requires.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Then drag the imported Hazard audio asset into the new slot.",
+  "replace": "Then drag the imported Hazard audio asset into the new slot. For the sparks, reuse the two lines that move the burst and play it, with the position you chose.",
+  "why": "The graded work asks for a hazard burst but the page gives no hint how to make one.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "When this is true you are ready for this week’s Weekly build.",
+  "replace": "When this is true, do the first challenge below (a sound and sparks when the hazard hits). This week’s Weekly build needs it.",
+  "why": "The checkpoint says the student is ready to submit before the required hazard feedback exists.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Mac: double-click the zip, then Control-click MyGame and choose Open. Click Open in the box that appears.",
+  "replace": "Mac: double-click the zip, then double-click MyGame. If the Mac says it cannot be opened, click Done, open System Settings > Privacy & Security, scroll down to the line that names MyGame, click Open Anyway and confirm. On an older Mac, Control-click MyGame, choose Open, then click Open.",
+  "why": "On current macOS the Control-click route no longer opens an unsigned downloaded app; week 9 already teaches the Privacy & Security route.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "A Mac says the app cannot be opened. Control-click MyGame, choose",
+  "replace": "A Mac says the app cannot be opened. Click Done, open System Settings > Privacy & Security, scroll down to the line that names MyGame, click Open Anyway and confirm. On an older Mac, Control-click MyGame, choose",
+  "why": "Same macOS fact as week 9: Control-click then Open works only on older Macs.",
+  "review": true
+ },
+ {
+  "find": "On a Mac, Control-click MyGame, choose Open, then click Open in the box.",
+  "replace": "On a Mac, click Done, open System Settings > Privacy & Security, scroll down to the line that names MyGame, click Open Anyway and confirm. On an older Mac, Control-click MyGame, choose Open, then click Open in the box.",
+  "why": "Same macOS fact as week 9: Control-click then Open works only on older Macs.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "make a new folder named MyGame_Playtest, open it, and click",
+  "replace": "make a new folder named MyGame_Playtest (on a Mac, if you see no New Folder button, first click the small arrow beside the Save As box), open it, and click",
+  "why": "The Mac save panel opens in its small form with no New Folder button, so a Mac student cannot make the folder the step asks for.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "make a new folder named MyGame_Revised, open it, and click",
+  "replace": "make a new folder named MyGame_Revised (on a Mac, if you see no New Folder button, first click the small arrow beside the Save As box), open it, and click",
+  "why": "Same Mac save panel gap as in the first build.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Rename the zip MyGame_Playtest.zip.",
+  "replace": "The menu item may read Compress “MyGame” instead. Rename the zip MyGame_Playtest.zip.",
+  "why": "With one item selected, Finder names the item in the Compress command, so a student may not find Compress 1 Item.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Open Documents > UnityExtras in File Explorer on Windows, or in Finder on a Mac.",
+  "replace": "Now zip the build so you can send it. Open Documents > UnityExtras in File Explorer on Windows, or in Finder on a Mac.",
+  "why": "The step list restarts at 1 with no sentence saying the new list is for zipping.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Classmates in the course forum are a good place to find someone with the same kind of computer.",
+  "replace": "The course forum is a good place to find a classmate with the same kind of computer.",
+  "why": "Classmates are not a place; the sentence reads oddly.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "There are two ways to watch. Start recruiting classmates in the course forum early this week.",
+  "replace": "There are three ways to watch: a recording, a video call, or in person. Start recruiting classmates in the course forum early this week.",
+  "why": "The paragraph announces two ways and then describes three.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "For an asynchronous test, send your zip and ask the player to record their screen with microphone audio, follow the playtest instructions below, and return the recording and their answers before your Thursday post.",
+  "replace": "For an asynchronous test, send your zip with the opening instructions below, the sentence from step 4 and the three questions from your sheet. Ask the player to record their screen with microphone audio while they play and think aloud, then return the recording and their answers to the three questions before your Thursday post.",
+  "why": "The player was told to follow instructions written for the student and to return answers to questions the player was never sent.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Either way, you do not touch the keyboard.",
+  "replace": "In every case, you do not touch the keyboard. Send your player the opening instructions for their computer:",
+  "why": "The two bullets that follow had no sentence saying what they are or who they are for.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Start a timer on your phone.",
+  "replace": "Open the stopwatch on your phone, but do not start it yet.",
+  "why": "Step 3 starts the timer and step 5 starts it again at the first key press.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Everything else goes on your Waits list, the same one from last week, and it stays there.",
+  "replace": "Everything else goes on a Waits list, like the one in last week’s PrototypePlan, and it stays there.",
+  "why": "Last week's Waits list is in PrototypePlan, while this week the student makes a new Waits heading in PlaytestSheet.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Here is what each player section holds.",
+  "replace": "Here is what each player section holds. The numbered steps after the list make the file.",
+  "why": "The numbered steps start right after the bullet list with no sentence saying what they are for.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Under each numbered change, type how you will know it worked, for example: a new player says the goal within 30 seconds.",
+  "replace": "Under each numbered change, type a line that begins How I will know: and says how you will know the change worked, for example: How I will know: a new player says the goal within 30 seconds.",
+  "why": "The retest later tells the student to read the lines that begin How I will know, but this step never asked for that wording.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "media": "w13-after.webp",
+  "caption": "Compare: each numbered change has an After line under it.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "media": "w09-profile.webp",
+  "caption": "Build Profiles as in week 9. Scene List is at the top left. After step 11 your profile is marked Active, and Build is at the bottom.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "media": "w13-burst.webp",
+  "caption": "Compare the main section of your Particle System. This one shows Start Size 0.15, for Routes B and C. Route A uses 0.5.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "switches the object off, so the text disappears.",
+  "replace": "switches the object off, so the text disappears. The next steps put the script on HintText and test it.",
+  "why": "The step list restarts at 1 after the code with no sentence saying what the new list is for.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "You will drag the sound into Unity in the steps below.",
+  "replace": "The steps below come in three short lists: first you bring the sound into Unity, then you make the sparks, then you give Player an Audio Source and the script.",
+  "why": "Three numbered lists follow each other, each restarting at 1, with nothing saying what each is for.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": " moves the sparks to the pickup, and ",
+  "replace": " moves the sparks to the pickup (the `burst.Stop` line just before it clears any sparks still flying from the last pickup), and ",
+  "why": "The burst.Stop line in the code is never explained.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Then you make a new build, so you have a copy of the game that runs on its own.",
+  "replace": "Then you make a new build, so you have a copy of the game that runs on its own. The first list below is the retest. The second list makes the new build.",
+  "why": "The step list restarts at 1 with no sentence saying the new list makes the new build.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": ", type PickupFeedback and press Enter.",
+  "replace": ", type PickupFeedback and press Enter. Click the Scripts folder in the Project window before you choose the menu, so the script is made beside your other scripts.",
+  "why": "Week 12 keeps scripts in the Scripts folder; here no folder is named, so the script lands in the folder last clicked (Audio).",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Put a new script on the Main Camera with a public method called Shake.",
+  "replace": "Put a new script named CameraShake on the Main Camera, with a public method called Shake.",
+  "why": "The tip later uses the name CameraShake in code without ever naming the script.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Two players are stuck in the same place and a third dislikes the floor color",
+  "replace": "Both players are stuck in the same place and one of them also dislikes the floor color",
+  "why": "The week has two players, so a third player contradicts the page.",
+  "review": true
+ },
+ {
+  "find": "Then tell us which of your changes (three at most) you made because of it",
+  "replace": "Then tell us which of your changes (three at most) you chose because of it",
+  "why": "The first post is due Thursday, before the checklist item that applies the changes.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "It decides how far a player may go before the round is lost by leaving the level. Change it the same way, and test it by walking out on purpose.",
+  "replace": "It decides how far from the middle a player may go before the round is lost by leaving the level. Change it the same way. To test it, lower it for a moment as you did last week, walk until the label changes, then put your new value back.",
+  "why": "With walls and the usual limit of 20 the student cannot walk out on purpose; week 12 tested the limit by lowering it first.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "never inside a Unity project folder. Then open Unity Hub, click Projects, use the button beside New project that adds an existing project from disk, and choose the unzipped folder.",
+  "replace": "never inside a Unity project folder. Then open Unity Hub, click Projects, click Add, choose Add project from disk, and pick the unzipped folder.",
+  "why": "Week 12 names the control: click Add, then Add project from disk. Here it was described without its name.",
+  "review": true
+ },
+ {
+  "lesson": 13,
+  "find": "Create the project and the game rules. Then open Unity Hub, click Projects, use the button beside New project that adds an existing project from disk, and choose the unzipped folder.",
+  "replace": "Create the project and the game rules. Then open Unity Hub, click Projects, click Add, choose Add project from disk, and pick the unzipped folder.",
+  "why": "Week 12 names the control: click Add, then Add project from disk. Here it was described without its name.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "Start the game. On Windows, if a warning appears, click",
+  "replace": "Start the game. If a Mac blocks a downloaded game, click Done, open System Settings > Privacy & Security, scroll down to the line that names the game, click Open Anyway and confirm. The right-click steps at the end of this step work only on an older Mac. On Windows, if a warning appears, click",
+  "why": "On current macOS, right-click then Open no longer opens an unsigned downloaded app; week 9 already teaches the Privacy & Security route.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "A Mac says the app cannot be opened: right-click it, choose Open, then click Open.",
+  "replace": "A Mac says the app cannot be opened: click Done, open System Settings > Privacy & Security, scroll down to the line that names the game, click Open Anyway and confirm. On an older Mac, right-click it, choose Open, then click Open.",
+  "why": "Same macOS fact as week 9.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "A Mac says the app is damaged or from an unidentified developer: right-click the app, choose Open, then click Open.",
+  "replace": "A Mac says the app is from an unidentified developer or cannot be opened: click Done, open System Settings > Privacy & Security, scroll down to the line that names the game, click Open Anyway and confirm. On an older Mac, right-click the app, choose Open, then click Open.",
+  "why": "Same macOS fact as week 9.",
+  "review": true
+ },
+ {
+  "find": "On a Mac, if the app is damaged or from an unidentified developer, right-click the app, choose Open, then click Open.",
+  "replace": "On a Mac, if the app is from an unidentified developer or cannot be opened, click Done, open System Settings > Privacy & Security, scroll down to the line that names the game, click Open Anyway and confirm. On an older Mac, right-click the app, choose Open, then click Open.",
+  "why": "Same macOS fact as week 9.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "On a Mac, right-click the app, choose Open, then click Open.",
+  "replace": "On a Mac, click Done, then open System Settings > Privacy & Security and click Open Anyway.",
+  "why": "The README model that every classmate reads gives the Mac route that works only on older Macs.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "for example MoonHopper_Release. Open it, then click",
+  "replace": "for example MoonHopper_Release (on a Mac, if you see no New Folder button, first click the small arrow beside the Save As box). Open it, then click",
+  "why": "The Mac save panel opens in its small form with no New Folder button.",
+  "review": true
+ },
+ {
+  "find": "Say one thing that works and why it works for you as a player. Say one thing to change, and suggest how. End with a question about a choice they made.",
+  "replace": "Use the three parts from the page: I saw (one moment you noticed), It made me (its effect on you), and One question about a choice they made.",
+  "why": "The forum prompt asked for a different reply format from the one the page teaches and the graded work scores.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "Everything else is due Sunday night, but finish your showcase by Friday if you can, so classmates have time to play it.",
+  "replace": "That first post is your showcase post, with your demo and your zip, so classmates have time to play your game. Everything else is due Sunday night.",
+  "why": "The forum prompt makes the Thursday first post the showcase itself, so a Friday target for the showcase contradicts it.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "Please finish your showcase by Friday so others have time to play.",
+  "replace": "Your Thursday post is your showcase, so others have time to play.",
+  "why": "Same due day conflict in the announcement.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "and name it MoonHopper_ShowcaseNotes.txt in Documents > UnityExtras.",
+  "replace": "and name it MoonHopper_ShowcaseNotes.txt in Documents > UnityExtras (use your own game name). Then post your showcase: in the course forum, start a new post under this week’s prompt, paste in these notes, attach your demo and your zip (or a share link as in week 9 if the zip is too large), and post it.",
+  "why": "No step on the page tells the student to post the showcase, although the next part opens classmates' showcase posts.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "Write what happened in your playtests, not what you meant to do.",
+  "replace": "Write what happened in your playtests, not what you meant to do. Under WHAT I AM PROUDEST OF, name one design choice or addition that is your own, such as a rule, a color, a sound or a tuned number, because the project rubric looks for it.",
+  "why": "The rubric scores a design choice or addition of the student's own, but the page never asks for one.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "Watch it all the way through and check that the picture and the sound are clear.",
+  "replace": "Watch it all the way through and check that the picture and the sound are clear. On a Mac the recording hears the game only through the microphone, so play the sound through the speakers, not headphones.",
+  "why": "The Mac recording bar records the microphone, not the game's own sound, so a Mac demo can come out silent.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "Use a file only if your own project will not open or play.",
+  "replace": "Use a file only if your own project will not open or play. MyGame_Starter.zip is the Route A game as week 13 ended: use it to do this week’s steps. MyGame_FinalCheckpoint.zip is the same game with this week’s steps already done: use it to compare.",
+  "why": "Two files are offered with no word on which one to pick.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "On Windows, right-click the folder and choose",
+  "replace": "On Windows 11, right-click the folder and choose Compress to ZIP file. On Windows 10, right-click the folder and choose",
+  "why": "Week 13 gives Compress to ZIP file for Windows 11 and Send to for Windows 10; here only the Windows 10 route is given.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "Open the unzipped folder and open README.txt. Check that it matches what you see.",
+  "replace": "Open the unzipped folder (on Windows, then the MoonHopper_Release folder inside it) and open README.txt. Check that the program name and the keys in it match what you see.",
+  "why": "Extract All on Windows puts the release folder inside a new folder, and 'matches what you see' did not say what to compare.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "In Visual Studio Code, choose",
+  "replace": "Now save the script and put it on ReleaseTools. In Visual Studio Code, choose",
+  "why": "The step list restarts at 1 after the code with no sentence saying what the new list is for.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "Suppose a classmate’s game says Hopper Moon, and you stood still for ten seconds because you did not know the keys.",
+  "replace": "Suppose a classmate’s game is called Hopper Moon, and you stood still for ten seconds at the start because you did not know the keys.",
+  "why": "'A game says Hopper Moon' is unclear.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "These challenges have no steps, because working out the change is how what you learned sticks.",
+  "replace": "These challenges have no steps, because working out the change yourself is how learning sticks.",
+  "why": "The clause 'is how what you learned sticks' is hard to read.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "Copy what already works. Select HintText in the Hierarchy and choose Edit > Duplicate.",
+  "replace": "Copy what already works. If you did not make HintText and HideAfter last week, do Fix A on last week’s page first. Select HintText in the Hierarchy and choose Edit > Duplicate.",
+  "why": "Fix A was optional in week 13, so some students have no HintText or HideAfter to copy.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "Duplicate CreditsText and rename the copy ControlsText.",
+  "replace": "If you still have the ControlsText you made in week 12, add Esc: quit to its text and you are done. If not, duplicate CreditsText and rename the copy ControlsText.",
+  "why": "Week 12 already had the student make an object named ControlsText that lists the controls and stays on screen.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "Look down the list of projects you made this term and note the oldest one.",
+  "replace": "Look down the list of projects you made this term and note the oldest one. It reminds you where you started, which helps with the first heading.",
+  "why": "The step never said why the oldest project matters; nothing later uses it.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "If the red messages return, open the stuck list below.",
+  "replace": "If the red messages return, read the Stuck? list at the end of this part.",
+  "why": "The list is called Stuck? everywhere else, and it sits after the next subsection, not directly below.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "find": "On a Mac the same window opens from the same menu.",
+  "replace": "The menu item is the same on Windows and on a Mac.",
+  "why": "The sentence was wordy and unclear.",
+  "review": true
+ },
+ {
+  "lesson": 14,
+  "media": "w14-demo.mp4",
+  "caption": "MoonHopper is the example name this page uses for a finished game. This is one round of it: pickups, sparks and a win. Your own demo, later this week, also shows a loss and a restart.",
+  "review": true
  }
 ]
