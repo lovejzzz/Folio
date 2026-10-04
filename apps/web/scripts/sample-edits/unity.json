@@ -2520,6 +2520,157 @@
   "why": "The hint, the tuning fields and the pickup sound and sparks were built in Unity on Routes A and C; the Console messages were read there."
  },
  {
+  "lesson": 14,
+  "slot": 1,
+  "src": "/samples/unity/media/w14-demo.mp4",
+  "poster": "/samples/unity/media/w14-demo.poster.webp",
+  "caption": "MoonHopper is the example name this page uses. A demo shows a round like this one: the goal, a pickup, and a win."
+ },
+ {
+  "lesson": 14,
+  "slot": 3,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 14,
+  "slot": 4,
+  "src": "/samples/unity/media/w12-win.webp",
+  "caption": "A won round, as in week 12: the label ends with the win message."
+ },
+ {
+  "lesson": 14,
+  "slot": 5,
+  "src": "/samples/unity/media/files/MyGame-week13-end.zip"
+ },
+ {
+  "lesson": 14,
+  "slot": 6,
+  "src": "/samples/unity/media/files/MyGame-week14-end.zip"
+ },
+ {
+  "lesson": 14,
+  "slot": 7,
+  "drop": true,
+  "why": "Not captured."
+ },
+ {
+  "lesson": 14,
+  "slot": 8,
+  "drop": true,
+  "why": "The Project Settings window was not captured at a readable size."
+ },
+ {
+  "lesson": 14,
+  "slot": 9,
+  "src": "/samples/unity/media/w14-release.webp"
+ },
+ {
+  "lesson": 14,
+  "slot": 10,
+  "src": "/samples/unity/media/w09-platforms.webp",
+  "caption": "The Platform Browser, as in week 9."
+ },
+ {
+  "lesson": 14,
+  "slot": 11,
+  "drop": true,
+  "why": "A Windows or system screen that was not captured."
+ },
+ {
+  "lesson": 14,
+  "slot": 12,
+  "drop": true,
+  "why": "A Windows or system screen that was not captured."
+ },
+ {
+  "lesson": 14,
+  "slot": 13,
+  "drop": true,
+  "why": "A Windows or system screen that was not captured."
+ },
+ {
+  "lesson": 14,
+  "slot": 14,
+  "drop": true,
+  "why": "A Windows or system screen that was not captured."
+ },
+ {
+  "lesson": 14,
+  "slot": 15,
+  "drop": true,
+  "why": "A Windows or system screen that was not captured."
+ },
+ {
+  "lesson": 14,
+  "slot": 16,
+  "drop": true,
+  "why": "A Windows or system screen that was not captured."
+ },
+ {
+  "lesson": 14,
+  "slot": 17,
+  "src": "/samples/unity/media/w14-reply.webp"
+ },
+ {
+  "lesson": 14,
+  "slot": 18,
+  "drop": true,
+  "why": "A picture of a personal project list is not shown."
+ },
+ {
+  "lesson": 14,
+  "slot": 19,
+  "src": "/samples/unity/media/w14-reflection.webp",
+  "caption": "An invented example: four headings, with something specific under each."
+ },
+ {
+  "lesson": 14,
+  "slot": 20,
+  "src": "/samples/unity/media/w14-plan.webp",
+  "caption": "An invented example: the first step is small and has a date."
+ },
+ {
+  "lesson": 14,
+  "find": "Open it, then click **Select Folder** on Windows or **Save** on a Mac.",
+  "replace": "Open it, then click **Select Folder** on Windows. On a Mac the window has a **Save As** box, which is empty: type your game’s name there (it becomes the name of the app), choose the folder beside **Where**, and click **Save**.",
+  "why": "Seen in Unity on a Mac: the build window is a save panel with an empty Save As box, and Save stays gray until a name is typed."
+ },
+ {
+  "lesson": 14,
+  "find": "Move: arrow keys  R: restart  Esc: quit",
+  "replace": "Move: A, W, S, D  R: restart  Esc: quit",
+  "why": "The prototypes move with A, W, S and D."
+ },
+ {
+  "lesson": 13,
+  "find": "click **Select Folder** on Windows or **Choose** on a Mac.",
+  "replace": "click **Select Folder** on Windows. On a Mac, type MyGame into the **Save As** box, choose that folder beside **Where**, and click **Save**.",
+  "all": true,
+  "why": "Seen in Unity on a Mac: the build window is a save panel that needs a name."
+ },
+ {
+  "lesson": 14,
+  "media": "w14-demo.mp4",
+  "alt": "A round of the example game in the Game view: a capsule collects five spheres with gold sparks at each, the label counts up and ends with You win!"
+ },
+ {
+  "lesson": 14,
+  "media": "w14-reply.webp",
+  "alt": "A drafted reply in three lines: I saw, It made me, and One question, with the question highlighted."
+ },
+ {
+  "lesson": 14,
+  "settle": "*",
+  "why": "The quit script, the names and the release steps were followed in Unity on a Mac up to the save panel; Windows screens were not available."
+ },
+ {
+  "lesson": 9,
+  "find": "make a new folder named DodgeBuild in your Documents folder, choose it, and wait.",
+  "replace": "make a new folder named DodgeBuild in your Documents folder, choose it, and wait. On a Mac the window has a **Save As** box, which is empty: type Dodge there (it becomes the name of the app), choose DodgeBuild beside **Where**, and click **Save**.",
+  "why": "Seen in Unity on a Mac: the build window is a save panel that needs a name."
+ },
+ {
   "find": "centred",
   "replace": "centered",
   "all": true,
