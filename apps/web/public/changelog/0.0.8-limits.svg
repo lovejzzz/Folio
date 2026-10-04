@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .row { fill: #E3DED3 } .rule { stroke: #CFC8B9 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E } .row { fill: #3A3B35 } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">A WEEK’S CHECKLIST WITH ONE ITEM TOO MANY</text>
+  <rect class="card" x="36" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="56" y="96" font-size="16" font-weight="600">Before</text>
+  <g class="row"><rect x="56" y="112" width="230" height="8" rx="4"/><rect x="56" y="128" width="230" height="8" rx="4"/><rect x="56" y="144" width="230" height="8" rx="4"/><rect x="56" y="160" width="230" height="8" rx="4"/></g>
+  <rect class="bad" x="56" y="176" width="230" height="8" rx="4"/>
+  <text class="ink2" x="296" y="150" font-size="13">16 items</text><text class="bad" x="296" y="184" font-size="13" font-weight="600">17th</text>
+  <text class="bad" x="56" y="222" font-size="14" font-weight="600">The whole page is thrown away</text>
+  <text class="ink2" x="56" y="244" font-size="13">after minutes of writing, up to three times</text>
+  <rect class="card" x="414" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="434" y="96" font-size="16" font-weight="600">Now</text>
+  <g class="row"><rect x="434" y="112" width="230" height="8" rx="4"/><rect x="434" y="128" width="230" height="8" rx="4"/><rect x="434" y="144" width="230" height="8" rx="4"/><rect x="434" y="160" width="230" height="8" rx="4"/></g>
+  <rect class="acc" x="434" y="176" width="230" height="8" rx="4"/>
+  <text class="ink2" x="674" y="150" font-size="13">16 items</text><text class="acc" x="674" y="184" font-size="13" font-weight="600">17th</text>
+  <text class="acc" x="434" y="222" font-size="14" font-weight="600">The page is kept</text>
+  <text class="ink2" x="434" y="244" font-size="13">Folio still asks for the same, shorter list</text>
+</svg>
