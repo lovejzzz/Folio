@@ -1,12 +1,20 @@
 import { cmd, type Course, type Handout, type Lesson } from '@folio/core';
+import { Button } from '@folio/ui';
+import { useState } from 'react';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { Piece } from './Exhibit';
+import { addSupportedCopy } from '../state/supports';
 import { useSectionEdit } from './useSectionEdit';
 
 /** One sheet as it will be printed, every word editable, and under it the answers a student never sees. */
-function Sheet({ handout, change }: { handout: Handout; change: (next: Handout) => void }) {
+function Sheet({ handout, lessonId, supported, change }: { handout: Handout; lessonId: string; supported: boolean; change: (next: Handout) => void }) {
   const t = useT();
+  const [working, setWorking] = useState(false);
+  const add = () => {
+    setWorking(true);
+    void addSupportedCopy(lessonId, handout.id).finally(() => setWorking(false));
+  };
   return (
     <li className="mod-handout avoid-break">
       <div className="mod-exhibit-head">
@@ -23,6 +31,13 @@ function Sheet({ handout, change }: { handout: Handout; change: (next: Handout) 
         <div className="mod-handout-key no-print">
           <p className="mod-kicker">{t.handouts.key}</p>
           <EditableText as="div" multiline className="mod-callout-body" value={handout.key} label={t.handouts.key} onCommit={(key) => change({ ...handout, key })} />
+        </div>
+      )}
+      {!supported && (
+        <div className="no-print">
+          <Button size="sm" variant="quiet" isDisabled={working} onPress={add}>
+            {working ? t.handouts.addingSupports : t.handouts.addSupports}
+          </Button>
         </div>
       )}
     </li>
@@ -43,7 +58,8 @@ export function Handouts({ course, lesson }: { course: Course; lesson: Lesson })
       <p className="mb-3 font-ui text-13 text-ink-2">{t.handouts.note}</p>
       <ul className="grid gap-6">
         {lesson.handouts.map((h) => (
-          <Sheet key={h.id} handout={h} change={change} />
+          // A copy with supports is not offered for a sheet that is one, or that already has one after it.
+          <Sheet key={h.id} handout={h} lessonId={lesson.id} supported={h.title.endsWith(`(${t.handouts.withSupports})`) || lesson.handouts.some((x) => x.title === `${h.title} (${t.handouts.withSupports})`)} change={change} />
         ))}
       </ul>
     </section>

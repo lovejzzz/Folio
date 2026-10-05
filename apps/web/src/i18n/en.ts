@@ -321,6 +321,10 @@ export const en = {
     usedIn: (segment: string) => `Used in ${segment}`,
     title: 'Title of the handout',
     key: 'Answer key, for you only',
+    /** The name a supported copy takes, after its sheet's own. */
+    withSupports: 'with language supports',
+    addSupports: 'Add a copy with language supports',
+    addingSupports: 'Writing the copy…',
   },
   module: {
     thisWeek: 'This week',

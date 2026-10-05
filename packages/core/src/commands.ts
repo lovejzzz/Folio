@@ -229,7 +229,8 @@ const handlers: { [K in CommandType]: Handler<K> } = {
       lesson.vocabulary = p.content.vocabulary;
       lesson.page = p.content.page ?? [];
       lesson.facilitation = p.content.facilitation;
-      lesson.handouts = p.content.handouts ?? [];
+      // Only when the fill brings them: a note put right on the plan fills it again, and must not take its sheets away.
+      if (p.content.handouts !== undefined) lesson.handouts = p.content.handouts;
     } else if (p.kind === 'slides') {
       lesson.slides = p.content.slides;
     } else {

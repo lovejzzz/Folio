@@ -1,6 +1,6 @@
-import { orderedLessons } from '@folio/core';
+import { CourseStore, cmd, orderedLessons } from '@folio/core';
 import { describe, expect, it } from 'vitest';
-import { generateSection, type CompletionRequest, type SectionProgress } from '../src';
+import { generateSection, supportedHandout, type CompletionRequest, type SectionProgress } from '../src';
 import { fakeInference, planDraft, smallCourse } from './fake';
 
 /** A model that streams its answer in three pieces before returning it whole. */
@@ -92,6 +92,25 @@ describe('a section taking shape', () => {
     const bare = await generateSection(failing, course, lesson.id, 'plan');
     expect((bare.commands[0]!.payload as { content: { handouts?: unknown[] } }).content.handouts).toBeUndefined();
     expect(bare.flagged).toBe(0);
+  });
+
+  it('gets, when the teacher asks, a copy of a sheet with language supports straight after it: the same task, the original untouched', async () => {
+    const start = smallCourse();
+    const lesson = orderedLessons(start)[0]!;
+    const sheet = { id: 'x_a', title: 'Exit ticket', kind: 'slips' as const, usedIn: 'Close', copies: 'One per student', key: '1. Six.', blocks: [{ type: 'para' as const, text: 'How many CO2 molecules go in?' }] };
+    const other = { ...sheet, id: 'x_b', title: 'Cards' };
+    const course = { ...start, lessons: { ...start.lessons, [lesson.id]: { ...lesson, handouts: [sheet, other] } } };
+    const model = fakeInference(() => ({ blocks: [{ type: 'table', columns: ['Word', 'Meaning'], rows: [['molecule', 'a tiny piece of a gas']] }, { type: 'para', text: 'How many CO2 molecules go in?' }, { type: 'yours', text: 'I count … molecules.', lines: 2 }], keyNote: 'A word bank and a sentence starter were added.' }));
+    const commands = await supportedHandout(model, course, lesson.id, 'x_a', 'with language supports');
+    const handouts = (commands[0]!.payload as { handouts: { id: string; title: string; key: string; kind: string; blocks: { type: string }[] }[] }).handouts;
+    expect(handouts.map((h) => h.title)).toEqual(['Exit ticket', 'Exit ticket (with language supports)', 'Cards']);
+    expect(handouts[0]).toEqual(sheet);
+    expect(handouts[1]).toMatchObject({ kind: 'slips', key: '1. Six.\n\nA word bank and a sentence starter were added.', blocks: [{ type: 'table' }, { type: 'para' }, { type: 'yours' }] });
+    expect(model.calls[0]!.prompt).toContain('nothing is taken out, made easier or answered for them');
+    // And a note put right on the plan fills the plan again without taking its sheets away.
+    const store = new CourseStore(course);
+    store.apply([cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [], content: { keyIdeas: ['a', 'b'], segments: [], vocabulary: [] } })], { label: { key: 'built' }, source: 'ai' } as never);
+    expect(store.getState().lessons[lesson.id]!.handouts).toHaveLength(2);
   });
 
   it('is not asked to stream when nobody is watching', async () => {
