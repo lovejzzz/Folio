@@ -32,6 +32,14 @@ describe('a notebook run in Node', () => {
     expect(res.stdout).toBe('2\n');
   }, 60_000);
 
+  it('ends a cell that never ends, and the next cell starts in a new notebook', async () => {
+    const runner = nodeRunner(LIMITS, 4000);
+    await runner.run({ code: 'kept = 1' });
+    expect((await runner.run({ code: 'while True:\n    pass' })).error).toMatchObject({ type: 'TimeoutError' });
+    expect((await runner.run({ code: 'kept' })).error?.type).toBe('NameError');
+    runner.close();
+  }, 60_000);
+
   it('cuts output at the limit and says so', async () => {
     const runner = nodeRunner({ ...LIMITS, maxOut: 100 });
     const res = await runner.run({ code: 'print("x" * 1000)' });
