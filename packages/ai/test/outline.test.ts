@@ -19,6 +19,16 @@ const lessons = [
 ];
 
 describe('the outline', () => {
+  it('carries the standards a brief names onto the lessons that serve them, and drops a code the teacher never gave', () => {
+    const brief = 'Fractions for grade 3: two lessons. Standards: CCSS 3.NF.A.1 and 3.NF.A.2.';
+    const withCodes = [{ ...lessons[0]!, standards: ['3.NF.A.1', '3.NF.A.3'] }, { ...lessons[1]!, standards: ['3.nf.a.2 '] }];
+    const course = courseFromOutline({ ...req, brief }, OutlineDraft.parse({ title: 'Fractions', summary: 'S.', subject: 'Math', level: 'Grade 3', lessons: withCodes }));
+    const [first, second] = orderedLessons(course);
+    expect([first!.standards, second!.standards]).toEqual([['3.NF.A.1'], ['3.nf.a.2']]);
+    expect(lessonContext(course, first!)).toContain('It serves these standards, which the teacher answers for: 3.NF.A.1.');
+    expect(outlinePrompt({ ...req, brief })).toContain('never a code they do not name');
+  });
+
   it('grades a component on completion only when the brief says so in its own words', () => {
     const grading = [{ item: 'Weekly drafts', weight: 40, scoring: 'completion' }, { item: 'Final paper', weight: 60, scoring: 'scored' }];
     const draft = OutlineDraft.parse({ title: 'Writing', summary: 'S.', subject: 'Writing', level: 'Undergraduate', lessons, grading });

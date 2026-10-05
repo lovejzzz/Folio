@@ -18,6 +18,7 @@ export const OutlineDraft = z.object({
         title: line.describe('Lesson title naming the actual content, never "Lesson 1" or "Session 1 topic"'),
         summary: line.describe('One sentence on what this lesson covers'),
         objectives: z.array(line).min(1).max(3).describe('Measurable objectives starting with a verb'),
+        standards: z.array(z.string()).max(8).default([]).describe('The codes of the standards this lesson serves, copied exactly from the brief or the sources; empty when they name none'),
         readings: z
           .array(
             z.object({

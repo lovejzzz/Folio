@@ -117,6 +117,8 @@ export const LessonSchema = z.object({
    * never exported, and it joins the readings only when the teacher adds it.
    */
   suggestedReadings: z.array(text).default([]),
+  /** The standards this lesson serves, by the codes the teacher's brief or sources give ("3.NF.A.2", "MS-LS1-6"). Never invented: a code is kept only when the teacher named it. */
+  standards: z.array(text).default([]),
   // Courses saved before this had an assignment in every lesson.
   homework: HomeworkSchema.default({ kind: 'assignment', toward: '' }),
   /**

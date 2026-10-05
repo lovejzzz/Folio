@@ -39,6 +39,7 @@ export function projectPlan(ctx: Ctx): Block[] {
   const blocks: Block[] = [];
   for (const lesson of lessonsIn(ctx)) {
     blocks.push(lessonHeading(ctx, lesson));
+    if (lesson.standards.length) blocks.push({ t: 'meta', items: [{ label: l.standards, value: lesson.standards.join(', ') }] });
     if (nonEmpty(lesson.summary)) blocks.push({ t: 'para', text: lesson.summary, tone: 'lead' });
     const objectives = statedObjectives(course, lesson);
     if (objectives.length) {

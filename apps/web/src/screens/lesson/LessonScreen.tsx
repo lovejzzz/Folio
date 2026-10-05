@@ -62,6 +62,12 @@ function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
           <AddButton label={t.plan.addObjective} onPress={draft.start} />
           {!readings.shown && <AddButton label={t.plan.addReading} onPress={readings.start} />}
         </div>
+        {lesson.standards.length > 0 && (
+          <p className="mt-3 font-ui text-13 text-ink-2">
+            <span className="font-semibold text-ink">{t.lesson.standards}</span>{' '}
+            <EditableText as="span" value={lesson.standards.join(', ')} label={t.lesson.standards} onCommit={(text) => edit([cmd('lesson.update', { lessonId: lesson.id, standards: text.split(',').map((c) => c.trim()).filter(Boolean) })], { key: 'editedLesson', values: { n } })} />
+          </p>
+        )}
         <WellReadings course={course} lesson={lesson} n={n} readings={readings} />
         <SuggestedReadings course={course} lesson={lesson} n={n} readings={readings} />
       </div>

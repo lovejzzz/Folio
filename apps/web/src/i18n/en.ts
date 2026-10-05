@@ -397,6 +397,7 @@ export const en = {
   },
   lesson: {
     objectives: 'Objectives',
+    standards: 'Standards',
     objectivesOf: (n: number) => `Objectives of lesson ${n}`,
     beforeClass: 'Before class',
     keyIdeas: 'Key ideas',

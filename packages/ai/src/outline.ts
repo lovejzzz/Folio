@@ -51,6 +51,8 @@ export function outlinePrompt(input: OutlineInput): string {
     lessonsLine(input),
     'Order the lessons so each builds on the last. Give each lesson a short title that names what is taught, a one-sentence summary of under 25 words, and one to three measurable objectives of under 15 words each. When graded work happens in class, such as a quiz, a test, a seminar or a presentation, decide which lessons hold it, within the number of lessons asked for and never by adding one, leave it real time (a unit test or exam takes most of a lesson, after what it tests has been taught and practised; an assessment taken one student or one team at a time, such as an oral interview or a presentation, needs lessons enough for a whole class: when the brief gives the number of students or teams and the minutes each takes, work it out, with time between turns, and give it as many lessons as that needs), and say so in those lessons\' summaries: each lesson is planned on its own, and a graded quiz no summary placed was given in no lesson. A final exam sat after the last lesson is the last lesson\'s "test", so that its paper is written: that lesson\'s summary says it reviews for the exam and that the exam is sat afterwards. The same goes for work that runs over several days, such as an experiment, a model to watch or a project: start it in a lesson early enough for its result to be there when it is needed, and say in the summaries where it starts and where it is used.',
     'Do not mention the number of lessons or weeks, the lesson length, the number of quiz questions or which materials a lesson has: Folio keeps those as settings the teacher can change, so they must not be repeated in the text.',
+    // Teachers answer for standards by their codes; a plan that does not say which it serves has to be mapped by hand.
+    'When the brief or the sources name standards by code (3.NF.A.2, MS-LS1-6, TEKS 8.5A), give under "standards" the codes each lesson serves, copied exactly, every code under at least one lesson; never a code they do not name.',
     'Under "readings", list what students read before each lesson, taken from the brief or the attached sources. When the brief names a textbook but not its chapters, name the chapter that matches the lesson, by its topic if you are unsure of the number. For each reading, copy into "namedIn" the exact words of the brief, or the title of the attached source, that name the work: Folio keeps only readings it can find there. Never invent works, authors or page numbers, and never describe a reading in general terms; leave the readings empty when the brief and sources name nothing to read. A file the teacher attached for you to follow in writing the course (their notes on a tool\'s version, a style to keep to) is not a reading for students.',
     'Under "suggestedReadings", for a university course only, suggest up to three well-known further readings per lesson that the brief does not already list: established works a lecturer would recognise on that lesson\'s topic, with author, title and year, and a chapter only when you are sure of it. When the brief asks for readings by author or by kind without naming the works (two articles a week by named philosophers), propose here the works a teacher of the field would assign: the plans are written from them until the teacher confirms. Suggest each work once in the course, for the lesson it fits best. The teacher checks them before anything is assigned, so leave the list empty rather than guess.',
     'Under "grading", list every graded component the brief or an attached syllabus names, such as weekly quizzes and a final essay, with the weight it gives each; when it gives no weight, set it to null rather than guess. Leave the list empty if neither says how the course is graded.',
@@ -165,6 +167,8 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   const counts = towardGraded(outline);
   const readings = outline.lessons.map((d) => d.readings.filter((r) => named(r.namedIn)).map((r) => clean(r.work)).filter(Boolean));
   const seen = new Set(readings.flat().map(key));
+  const squash = (text: string) => text.toLowerCase().replace(/\s+/g, '');
+  const given = squash([req.brief, ...req.sources.map((x) => x.text)].join('\n'));
   const dueAt: [Homework, number][] = [];
   for (const [i, draft] of outline.lessons.entries()) {
     const lesson = emptyLesson(newId('l'), draft.title, draft.summary);
@@ -173,6 +177,8 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
     lesson.suggestedReadings = draft.suggestedReadings
       .map(clean)
       .filter((r) => r && !seen.has(key(r)) && seen.add(key(r)));
+    // Only codes the teacher gave: one that is nowhere in the brief or the sources was made up.
+    lesson.standards = [...new Set(draft.standards.map((c) => c.trim()).filter((c) => c && given.includes(squash(c))))];
     for (const text of draft.objectives) {
       const id = newId('o');
       course.objectives[id] = { id, text };

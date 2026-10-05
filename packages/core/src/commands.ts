@@ -31,7 +31,7 @@ import type {
 
 type Fields<T, K extends keyof T> = Partial<Pick<T, K>>;
 
-export type LessonFields = Fields<Lesson, 'title' | 'summary' | 'objectiveIds' | 'readings' | 'suggestedReadings' | 'homework' | 'also'>;
+export type LessonFields = Fields<Lesson, 'title' | 'summary' | 'objectiveIds' | 'readings' | 'suggestedReadings' | 'standards' | 'homework' | 'also'>;
 export type PlanFields = Fields<Lesson, 'segments' | 'keyIdeas' | 'vocabulary' | 'page' | 'facilitation' | 'handouts'>;
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 export type TaskFields = Partial<DistributiveOmit<Task, 'id' | 'kind' | 'lessonId'>>;
@@ -197,6 +197,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     if (p.objectiveIds !== undefined) lesson.objectiveIds = [...p.objectiveIds];
     if (p.readings !== undefined) lesson.readings = [...p.readings];
     if (p.suggestedReadings !== undefined) lesson.suggestedReadings = [...p.suggestedReadings];
+    if (p.standards !== undefined) lesson.standards = [...p.standards];
     if (p.homework !== undefined) lesson.homework = { ...p.homework };
     if (p.also !== undefined) lesson.also = p.also.map((x) => ({ ...x }));
   },

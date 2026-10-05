@@ -199,6 +199,7 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     // only that, they quoted other lessons' titles at students instead.
     `This is the lesson "${lesson.title}". ${lesson.summary} Refer to other lessons as "last time" (only the lesson just before), "earlier in the course", "next time" or "later in the course", never by title or number.`,
     objectives ? `Its objectives:\n${objectives}` : '',
+    lesson.standards.length ? `It serves these standards, which the teacher answers for: ${lesson.standards.join(', ')}. What students do and are asked meets them at their grade's level.` : '',
     hasModulePages(course) ? onlineHomeworkLine(course, lesson) : homeworkLine(course, lesson),
     // Called "proposed, for the teacher to confirm", the words came back in teacher notes and slide notes.
     readings ? `${before.proposed && hasModulePages(course) ? 'Further reading Folio suggests, which students may not be able to get: the page may point to it, marked optional and outside the week\'s hours, and never depends on it' : `Students read before this lesson${before.proposed ? ' (plan from these, naming them in full)' : ''}`}:\n${readings}` : '',
