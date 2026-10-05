@@ -41,9 +41,10 @@ describe('a notebook run in Node', () => {
 
 describe('a result from the runner', () => {
   it('is rebuilt from known fields: a figure that is not a PNG is dropped, extra fields are gone', () => {
-    const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0]);
-    const res = cleanResult({ stdout: 'ok', value: 7, extra: '<script>', error: { type: 'E', message: 5 }, figures: [{ png }, { png: new Uint8Array([60, 115, 118, 103]) }, 'x'] });
-    expect(res).toMatchObject({ stdout: 'ok', value: null, error: { type: 'E', message: '' }, figuresDropped: 2 });
+    const png = (width: number) => new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, width >> 8, width & 255, 0, 0, 0, 10, 8, 6, 0, 0, 0]);
+    // The second says it is 60,000 pixels wide; the third is an SVG; the fourth is not a figure at all.
+    const res = cleanResult({ stdout: 'ok', value: 7, extra: '<script>', error: { type: 'E', message: 5 }, figures: [{ png: png(800) }, { png: png(60000) }, { png: new Uint8Array([60, 115, 118, 103]) }, 'x'] });
+    expect(res).toMatchObject({ stdout: 'ok', value: null, error: { type: 'E', message: '' }, figuresDropped: 3 });
     expect(res?.figures).toHaveLength(1);
     expect(res).not.toHaveProperty('extra');
     expect(cleanResult('nope')).toBeNull();

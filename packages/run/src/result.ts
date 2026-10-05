@@ -52,10 +52,12 @@ export interface Limits {
   maxOut: number;
   maxFigures: number;
   maxPngBytes: number;
+  /** Pixels a figure may have along a side: a picture is decoded whole wherever it is shown or exported. */
+  maxPngSide: number;
   maxTraceback: number;
 }
 
-export const LIMITS: Limits = { maxOut: 200_000, maxFigures: 6, maxPngBytes: 8_000_000, maxTraceback: 20_000 };
+export const LIMITS: Limits = { maxOut: 200_000, maxFigures: 6, maxPngBytes: 2_000_000, maxPngSide: 4096, maxTraceback: 20_000 };
 
 const PNG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 const text = (v: unknown, max: number): string => (typeof v === 'string' ? v.slice(0, max) : '');
@@ -72,7 +74,10 @@ function cleanFigure(raw: unknown, limits: Limits): RunFigure | null {
   const f = record(raw);
   if (!f) return null;
   const png = f.png instanceof ArrayBuffer ? new Uint8Array(f.png) : f.png instanceof Uint8Array ? f.png : null;
-  if (!png || png.byteLength > limits.maxPngBytes || !PNG.every((b, i) => png[i] === b)) return null;
+  if (!png || png.byteLength < 24 || png.byteLength > limits.maxPngBytes || !PNG.every((b, i) => png[i] === b)) return null;
+  // The size is read from the file's own header, before anything decodes it.
+  const side = (at: number) => ((png[at]! << 24) | (png[at + 1]! << 16) | (png[at + 2]! << 8) | png[at + 3]!) >>> 0;
+  if (side(16) < 1 || side(20) < 1 || side(16) > limits.maxPngSide || side(20) > limits.maxPngSide) return null;
   return { png, widthIn: num(f.width_in), heightIn: num(f.height_in) };
 }
 

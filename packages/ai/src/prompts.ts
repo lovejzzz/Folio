@@ -86,7 +86,7 @@ function sessionsLine(course: Course): string {
  * the block early and pass what follows off as Folio's own words.
  */
 export function shield(text: string): string {
-  return text.replace(/<(\s*\/?\s*(?:sources|syllabus)\s*)>/gi, '‹$1›');
+  return text.replace(/<(\s*\/?\s*(?:sources|syllabus|output)\s*)>/gi, '‹$1›');
 }
 
 export function clip(text: string, budget: number): string {
