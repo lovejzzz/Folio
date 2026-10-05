@@ -46,3 +46,75 @@ test('the Python on a week’s page is run in the browser, shut in, and the page
   // The interpreter was fetched once by Folio's own page and handed in: three weeks, three notebooks, one download.
   expect(fetched.sort()).toEqual(['pyodide-lock.json', ASM_SCRIPT, 'pyodide.asm.wasm', 'python_stdlib.zip'].sort());
 });
+
+/** Talk to the runner's frame as Folio's page does, one cell after another, and give back each result. */
+async function runInFrame(page: import('@playwright/test').Page, cells: { code: string; cellMs?: number }[]): Promise<{ error?: { type: string; message: string }; stdout?: string; sessionLost?: boolean }[]> {
+  return page.evaluate(async (cells) => {
+    const frame = document.createElement('iframe');
+    frame.setAttribute('sandbox', 'allow-scripts');
+    frame.hidden = true;
+    frame.src = '/runner/';
+    const results: unknown[] = [];
+    let next = 0;
+    const send = (m: unknown, transfer: Transferable[] = []) => frame.contentWindow!.postMessage(m, '*', transfer);
+    const run = () => send({ t: 'run', id: next + 1, cell: { code: cells[next]!.code }, cellMs: cells[next]!.cellMs ?? 20000, loadMs: 60000 });
+    const done = new Promise<void>((resolve) => {
+      window.addEventListener('message', async (e) => {
+        if (e.source !== frame.contentWindow) return;
+        const m = e.data as { t: string; rid: number; name: string; id: number; res: unknown };
+        if (m.t === 'hello') send({ t: 'init', options: { limits: { maxOut: 2000, maxFigures: 2, maxPngBytes: 1e6, maxPngSide: 4096, maxTraceback: 2000 }, harden: { maxHeapMB: 256, fileQuotaMB: 8 } } });
+        else if (m.t === 'need') {
+          const buf = await (await fetch(`/api/runtime/pyodide-314.0.7/${m.name}`)).arrayBuffer();
+          send({ t: 'file', rid: m.rid, buf }, [buf]);
+        } else if (m.t === 'ready' && next === 0 && !results.length) run();
+        else if (m.t === 'result') {
+          results.push(m.res);
+          next += 1;
+          if (next === cells.length) resolve();
+          else run();
+        }
+      });
+    });
+    document.body.appendChild(frame);
+    await done;
+    frame.remove();
+    return results as never;
+  }, cells);
+}
+
+test('course code that never ends, takes all the memory or reaches for the network is stopped, and the next cell runs', async ({ page }) => {
+  test.setTimeout(120_000);
+  const asked: string[] = [];
+  await page.route('**/api/runtime/**', (route) => {
+    const name = route.request().url().split('/').pop()!;
+    if (name === ASM_SCRIPT) return route.fulfill({ body: classicAsm(readFileSync(join(RUNTIME, 'pyodide.asm.mjs'), 'utf8')), contentType: 'text/javascript' });
+    return route.fulfill({ body: readFileSync(join(RUNTIME, name)), contentType: TYPES[name.split('.').pop()!] });
+  });
+  page.on('request', (r) => asked.push(r.url()));
+  await page.goto('/');
+  const [kept, forever, after, memory, afterMemory, files, js, net, flood] = await runInFrame(page, [
+    { code: 'kept = 41\nprint(kept + 1)' },
+    { code: 'while True:\n    pass', cellMs: 2500 },
+    { code: 'print("kept" in dir())' },
+    { code: 'blocks = []\nwhile True:\n    blocks.append(bytearray(32_000_000))' },
+    { code: 'print(6 * 7)' },
+    { code: 'with open("big.bin", "wb") as f:\n    for _ in range(64):\n        f.write(bytes(1_000_000))' },
+    { code: 'import js\nprint([hasattr(js, n) for n in ("fetch", "localStorage", "indexedDB", "document", "self", "postMessage", "importScripts", "XMLHttpRequest")])' },
+    { code: 'import urllib.request\nurllib.request.urlopen("https://example.com/leak?x=1")' },
+    { code: 'print("x" * 5_000_000)' },
+  ]);
+  expect(kept).toMatchObject({ stdout: '42\n' });
+  // A cell that never ends is ended with its notebook, and the next cell starts in a new one.
+  expect(forever).toMatchObject({ error: { type: 'TimeoutError' }, sessionLost: true });
+  expect(after).toMatchObject({ stdout: 'False\n' });
+  // Memory and files have a ceiling; past it Python gets an error of its own, and the runner goes on.
+  expect(memory!.error!.type).toBe('MemoryError');
+  expect(afterMemory).toMatchObject({ stdout: '42\n' });
+  expect(files!.error!.type).toBe('OSError');
+  // Python is handed none of the browser, and the frame's policy lets no request out.
+  expect(js).toMatchObject({ stdout: `[${Array(8).fill('False').join(', ')}]\n` });
+  expect(net!.error).toBeTruthy();
+  expect(flood!.stdout!.length).toBe(2000);
+  // Nothing left for the address the code asked for: the frame's policy lets no request out.
+  expect(asked.filter((u) => u.includes('example.com'))).toEqual([]);
+});
