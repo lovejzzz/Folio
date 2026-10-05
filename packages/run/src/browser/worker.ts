@@ -48,8 +48,8 @@ function capHeap(megabytes: number): void {
 async function speed(session: Session): Promise<number> {
   const res = await session.run({ code: 'import time as _t\n_s = _t.perf_counter()\n_n = 0\nfor _i in range(300000):\n    _n += _i * _i % 7\n(_t.perf_counter() - _s) * 1000' });
   const ms = Number(res.value);
-  // About 40 ms on a 2023 laptop.
-  return Number.isFinite(ms) ? Math.min(8, Math.max(1, ms / 40)) : 1;
+  // 200 to 300 ms on a 2023 laptop, measured on the live site: Python in a browser runs several times slower than on the machine itself.
+  return Number.isFinite(ms) ? Math.min(8, Math.max(1, ms / 250)) : 1;
 }
 
 async function boot(options: BootOptions): Promise<Session> {
