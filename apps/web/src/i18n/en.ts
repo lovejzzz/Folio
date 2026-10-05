@@ -573,6 +573,7 @@ export const en = {
     noModelAnswer: () => 'The question has no sample answer.',
     answerNotNumber: () => 'The answer to a numeric question is not a number.',
     answerMismatch: (v: { stated: string; computed: string }) => `The stated answer (${v.stated}) doesn’t match the working (${v.computed}).`,
+    answerCheck: (v: { claim: string; found: string }) => `Folio ran this and it didn’t hold: ${v.claim}. ${v.found}. Check the answer and its explanation.`,
     minutesMismatch: (v: { total: number; target: number }) =>
       `The steps add up to ${v.total === 1 ? '1 minute' : `${v.total} minutes`}, not ${v.target}.`,
     unknownObjective: (v: { objective: number }) => `It refers to objective ${v.objective}, which doesn’t exist.`,

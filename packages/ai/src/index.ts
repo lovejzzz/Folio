@@ -19,3 +19,4 @@ export * from './pictureCheck';
 export * from './fixNote';
 export * from './partial';
 export { runCells, placeFigures, type RunOptions, type RanPage } from './runCells';
+export { checkAnswers, worthChecking, type AnswerChecks } from './answerCheck';

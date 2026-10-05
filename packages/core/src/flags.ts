@@ -24,6 +24,8 @@ const KnownFlag = z.discriminatedUnion('code', [
   plain('explanationUnsure'),
   plain('answerNotNumber'),
   withValues('answerMismatch', { stated: z.string(), computed: z.string() }),
+  /** Folio computed what the item claims, twice, and it did not hold: which claim, and the stored and computed values. */
+  withValues('answerCheck', { claim: z.string(), found: z.string() }),
   withValues('minutesMismatch', { total: z.number(), target: z.number() }),
   withValues('unknownObjective', { objective: z.number() }),
   plain('repeatsQuestion'),
@@ -78,6 +80,8 @@ export function describeFlag(flag: Flag): string {
       return 'The answer to a numeric question is not a number.';
     case 'answerMismatch':
       return `The stated answer (${flag.values.stated}) does not match the working (${flag.values.computed}).`;
+    case 'answerCheck':
+      return `Run as code, this did not hold: ${flag.values.claim} (${flag.values.found}). Work it out again and correct the answer, the choice or the explanation that is wrong.`;
     case 'minutesMismatch':
       return `The segments add up to ${flag.values.total} minutes, not ${flag.values.target}.`;
     case 'unknownObjective':

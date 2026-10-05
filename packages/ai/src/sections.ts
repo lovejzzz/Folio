@@ -30,6 +30,7 @@ import { mendModule, mendPlan } from './mend';
 import { reviewed, type Mend, type Read } from './secondRead';
 import { reviewModule } from './moduleReview';
 import { placeFigures, running, type RunOptions } from './runCells';
+import { withAnswerChecks } from './answerCheck';
 import { startCommands } from './start';
 import { runJob, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
@@ -376,10 +377,11 @@ export async function generateSection(
       return run(slides);
     case 'study':
       return run(study);
+    // Keys and explanations that can be computed are: what fails is noted on the item for the teacher.
     case 'quiz':
-      return run(quiz);
+      return withAnswerChecks(inference, options.run?.runner, await run(quiz), signal);
     case 'assignments':
-      return writeWork(course, lesson, (piece) => (piece.homework.kind === 'test' ? run(test, undefined, piece) : piece.homework.kind === 'step' ? run(step, undefined, piece) : run(assignments, undefined, piece)));
+      return withAnswerChecks(inference, options.run?.runner, await writeWork(course, lesson, (piece) => (piece.homework.kind === 'test' ? run(test, undefined, piece) : piece.homework.kind === 'step' ? run(step, undefined, piece) : run(assignments, undefined, piece))), signal);
     case 'discussions':
       return run(discussions);
     case 'faq':

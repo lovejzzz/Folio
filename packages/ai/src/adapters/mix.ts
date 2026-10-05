@@ -34,6 +34,8 @@ export const FOLIO_MIX: Readonly<Record<string, { model: string; effort: Effort 
 export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_clarify: 4000,
   folio_picture_check: 3000,
+  // A form for one question: about 900 tokens with its thinking in measured calls.
+  folio_answer_check: 6000,
   folio_plan: 12000,
   folio_plan_review: 8000,
   // A mend writes again only the parts at fault: seldom the whole, never more.

@@ -189,7 +189,7 @@ export async function runCells(runner: Runner, v: ModuleDraft, run = 1): Promise
 
 /** A runner is one notebook: weeks written side by side take their turn at it, each page from its first cell to its last. */
 const waiting = new WeakMap<Runner, Promise<unknown>>();
-function oneAtATime<T>(runner: Runner, work: () => Promise<T>): Promise<T> {
+export function oneAtATime<T>(runner: Runner, work: () => Promise<T>): Promise<T> {
   const turn = (waiting.get(runner) ?? Promise.resolve()).then(work, work);
   waiting.set(runner, turn.catch(() => undefined));
   return turn;

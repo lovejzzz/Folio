@@ -49,7 +49,7 @@ export async function updateSection(lessonId: string, kind: GeneratedKind): Prom
   setPending(k, { status: 'working', commands: [], basisRevision: course.revision });
   try {
     const reviewer = kind === 'plan' ? (currentReviewer() ?? undefined) : undefined;
-    const result = await generateSection(inference, course, lessonId, kind, undefined, { reviewer, run: kind === 'plan' ? pageRuns(course.id) : undefined });
+    const result = await generateSection(inference, course, lessonId, kind, undefined, { reviewer, run: ['plan', 'quiz', 'assignments'].includes(kind) ? pageRuns(course.id) : undefined });
     if (edited) {
       setPending(k, { status: 'ready', commands: result.commands, basisRevision: course.revision });
       useUi.getState().openDrawer('changes');
