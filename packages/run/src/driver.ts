@@ -121,7 +121,8 @@ def _figures(max_figs, dpi):
                 dropped += 1
                 continue
             png = io.BytesIO()
-            fig.savefig(png, format="png", dpi=dpi, metadata={"Software": None})
+            # Twice a screen's dots: a figure is shown at a page's width and printed, where one dot a pixel is soft.
+            fig.savefig(png, format="png", dpi=dpi or 200, metadata={"Software": None})
             w, h = fig.get_size_inches()
             figs.append({"png": png.getvalue(), "width_in": float(w), "height_in": float(h)})
         except Exception as e:  # a broken figure must not lose what the cell printed
