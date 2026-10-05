@@ -1,7 +1,5 @@
-import { cmd, newId, type Command, type Course, type Flag, type Handout, type Lesson, type Segment, type Task } from '@folio/core';
-import type { Runner } from '@folio/run';
+import { cmd, newId, type Command, type Course, type Handout, type Lesson, type Segment } from '@folio/core';
 import { z } from 'zod';
-import { checkAnswers } from './answerCheck';
 import { ExhibitBlockDraft, exhibitPart } from './exhibit';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
@@ -55,27 +53,21 @@ function toHandout(d: HandoutsDraft['handouts'][number]): Handout {
   return { id: newId('x'), title: d.title, kind: d.kind, usedIn: d.usedIn, copies: d.copies, blocks: exhibitPart({ label: '', blocks: d.blocks }).blocks, key: d.key };
 }
 
-/** A sheet with its key, as the answer check takes an assignment: the questions are its steps. */
-function asTask(lesson: Lesson, h: Handout): Task {
-  const steps = h.blocks.flatMap((b) => (b.type === 'list' ? b.items : b.type === 'table' ? [[b.columns.join(' | '), ...b.rows.map((r) => r.join(' | '))].join('\n')] : b.type === 'yours' ? [] : [b.type === 'field' ? `${b.label}: ${b.value}` : b.text]));
-  return { id: h.id, lessonId: lesson.id, objectiveIds: [], sourceRefs: [], origin: 'ai', edited: false, flags: [], kind: 'assignment', title: h.title, prompt: '', steps, rubricId: null, answerKey: h.key, toward: '' };
-}
-
 /**
- * The plan's commands with its sheets written and, where there is a runner, their keys computed. A lesson
- * online has a page instead; and sheets that cannot be had never cost the plan.
+ * The plan's commands with its sheets written. A lesson online has a page instead; and sheets that cannot be had
+ * never cost the plan. Their keys are not put through the answer check: on the first forty sheets it raised
+ * eleven notes and every one was a false alarm (fractions, powers of ten, a constant with one more digit), while
+ * a reviewer who worked all 94 answers by hand found none wrong.
  */
-export async function withHandouts(inference: Inference, course: Course, lesson: Lesson, written: { commands: Command[]; flagged: number }, runner?: Runner, signal?: AbortSignal): Promise<{ commands: Command[]; flagged: number }> {
+export async function withHandouts(inference: Inference, course: Course, lesson: Lesson, written: { commands: Command[]; flagged: number }, signal?: AbortSignal): Promise<{ commands: Command[]; flagged: number }> {
   const fill = written.commands.find((c) => c.type === 'section.fill' && c.payload.kind === 'plan');
   if (!fill || fill.type !== 'section.fill' || fill.payload.kind !== 'plan' || !fill.payload.content.segments.length) return written;
   const content = fill.payload.content;
   try {
     const result = await runJob(inference, { task: 'folio_handouts', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: handoutsPrompt(course, lesson, fill.payload.content), effort: 'medium', schema: HandoutsDraft, repair: false, signal });
     const handouts = result.value.handouts.map(toHandout);
-    const found = runner ? (await checkAnswers(inference, runner, handouts.map((h) => asTask(lesson, h)), signal)).flags : new Map<string, Flag[]>();
-    const notes: Flag[] = handouts.flatMap((h) => (found.get(h.id) ?? []).map((f): Flag => ({ code: 'reviewNote', values: { where: `Handout, ${h.title}`, text: f.code === 'answerCheck' ? `Worked out by running it, the key does not hold: ${f.values.claim} (${f.values.found}).` : '' } })));
-    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [...fill.payload.flags, ...notes], content: { ...content, handouts } }) : c));
-    return { commands, flagged: written.flagged + notes.length };
+    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: fill.payload.flags, content: { ...content, handouts } }) : c));
+    return { commands, flagged: written.flagged };
   } catch (error) {
     if (signal?.aborted) throw error;
     return written;
