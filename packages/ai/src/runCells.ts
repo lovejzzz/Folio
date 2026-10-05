@@ -22,9 +22,11 @@ export interface RanPage {
 }
 
 const kind = (b: Block): string => b.kind.trim().toLowerCase();
-export const isCell = (b: Block): boolean => b.type === 'code' && ['python', 'py', 'python3'].includes(kind(b));
+/** Python by what it says, for a block the writer gave no kind: an import, a print, a definition, a comment line. */
+const READS_AS_PYTHON = /^\s*(import \w|from \w+ import |print\(|def \w+\(|for \w+ in |# )/m;
+export const isCell = (b: Block): boolean => b.type === 'code' && (['python', 'py', 'python3', 'ipython'].includes(kind(b)) || (kind(b) === '' && READS_AS_PYTHON.test(b.text)));
 /** What a cell prints, as writers tag it; untagged counts too, since it stands where an output stands. */
-const isOutput = (b: Block): boolean => b.type === 'code' && ['output', 'text', 'console', 'stdout', ''].includes(kind(b));
+const isOutput = (b: Block): boolean => b.type === 'code' && !isCell(b) && ['output', 'text', 'console', 'stdout', ''].includes(kind(b));
 /** A figure a run put on the page: its "kind" names the picture, and a new run replaces it. */
 export const RUN_FIGURE = 'run:';
 const isRunFigure = (b: Block): boolean => b.type === 'image' && b.kind.startsWith(RUN_FIGURE);

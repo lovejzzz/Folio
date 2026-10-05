@@ -49,6 +49,13 @@ describe('a page whose Python is run', () => {
     expect(ran).toMatchObject({ cells: 3, notes: [] });
   });
 
+  it('takes a block with no kind for a cell when it reads as Python, and for the cell\'s output when it does not', async () => {
+    const v = page([code('import math\nprint(math.pi)', ''), code('3.14', ''), code('x = 1', '')]);
+    const ran = await runCells(fakeRunner({ 'import math': { stdout: '3.141592653589793\n' } }), v);
+    expect(ran.cells).toBe(1);
+    expect(kinds(ran.value.parts[0]!.blocks)).toEqual([':import math\nprint(math.pi)', 'output:3.141592653589793', ':x = 1']);
+  });
+
   it('tells the mend of a cell that fails, with the error and its line, and not of the cells that fail after it for want of its names', async () => {
     const v = page([code('import pandas as pd\ndf = pd.read_csv("scores.csv")\ndf.resample("M")'), code('ok', 'output'), code('print(total)\ntotal = df.sum()'), code('print(1)')]);
     const runner = fakeRunner({ 'import pandas as pd': { error: { type: 'ValueError', message: 'Invalid frequency: M', line: 3, traceback: '' } }, 'print(total)': { error: { type: 'NameError', message: "name 'total' is not defined", line: 1, traceback: '' } }, 'print(1)': { stdout: '1\n' } });

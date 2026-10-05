@@ -17,7 +17,7 @@ export const BlockDraft = z.object({
   type: z.enum(['heading', 'text', 'list', 'steps', 'callout', 'code', 'image', 'video', 'file', 'terms']),
   text: z.string().default('').describe('heading: its words. text: a paragraph. callout: its whole body. code: the code exactly as typed, with line breaks. image, video: the caption. file: its file name as students see it'),
   items: z.array(z.string()).default([]).describe('list: the items. steps: one action per item, unnumbered. terms: "term: meaning" per item'),
-  kind: z.string().default('').describe('callout: checkpoint, stuck, why, tip, warning or version. code: the language. file: starter, checkpoint, solution or resource. video: "clip" for a short silent recording of the screen, "talk" for one with the instructor speaking'),
+  kind: z.string().default('').describe('callout: checkpoint, stuck, why, tip, warning or version. code: the language, "python" for a notebook cell and "output" for what the cell before it prints. file: starter, checkpoint, solution or resource. video: "clip" for a short silent recording of the screen, "talk" for one with the instructor speaking'),
   title: z.string().default('').describe('callout: a short title, or empty'),
   shots: z
     .array(z.object({ step: z.number().int().min(1), shows: line, alt: line, caption: z.string().default('') }))
