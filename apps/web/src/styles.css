@@ -247,7 +247,7 @@
   }
   /* A chart leaves room on its slide for a line under it. */
   .folio-slide-chart {
-    max-height: 30cqw;
+    max-height: 24cqw;
   }
   .folio-slide-table th,
   .folio-slide-table td {
