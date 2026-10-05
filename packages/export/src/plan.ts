@@ -6,6 +6,7 @@ import { slugFilename } from './filenames';
 import { courseMediaIds, writeFolio, type FolioMedia } from './folioFile';
 import { exportLabels } from './labels';
 import type { MediaResolver } from './media';
+import { hasNotebook, weekNotebook } from './notebook';
 import { renderPptx } from './pptx';
 import { quizRows, renderXlsx } from './xlsx';
 import { ExportError } from './errors';
@@ -137,6 +138,24 @@ function mediaFiles(req: ExportRequest, opts: ExportOptions): Planned[] {
   });
 }
 
+/** Where a zip keeps the weeks' notebooks. */
+const NOTEBOOK_FOLDER = 'notebooks';
+
+/**
+ * A notebook for each exported week whose page has Python: the week ready to run, in place of typing it out.
+ * The teacher's copy shows what each cell printed. Only with the pages themselves.
+ */
+function notebookFiles(req: ExportRequest): Planned[] {
+  if (!req.kinds.includes('plan')) return [];
+  const l = courseLabels(req.course);
+  return (req.lessonIds ?? req.course.lessonOrder).flatMap((id) => {
+    const lesson = req.course.lessons[id];
+    if (!lesson || !hasNotebook(lesson)) return [];
+    const n = req.course.lessonOrder.indexOf(id) + 1;
+    return [{ name: `${NOTEBOOK_FOLDER}/${slugFilename(l.lesson(n), lesson.title, '', 'ipynb')}`, mime: 'application/x-ipynb+json', make: async () => weekNotebook(lesson, req.audience === 'teacher') }];
+  });
+}
+
 /** Everything that goes inside the zip bundle. */
 function zipContents(req: ExportRequest, opts: ExportOptions): Planned[] {
   const l = courseLabels(req.course);
@@ -145,7 +164,7 @@ function zipContents(req: ExportRequest, opts: ExportOptions): Planned[] {
   if (req.kinds.includes('quiz')) files.push(quizFile(req, 'csv'));
   // A .folio is the whole course with every answer: only a whole-course teacher copy carries one.
   if (req.audience === 'teacher' && !req.lessonIds) files.push(folioFile(req, opts));
-  return [...files, ...mediaFiles(req, opts)];
+  return [...files, ...notebookFiles(req), ...mediaFiles(req, opts)];
 }
 
 function plan(req: ExportRequest, opts: ExportOptions): Planned {
