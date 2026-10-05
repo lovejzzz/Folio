@@ -26,7 +26,8 @@ function usePreloadGuesses() {
   }, []);
 }
 
-const footerLink = 'rounded-control px-1 font-ui text-13 text-ink-2 underline-offset-4 outline-none hover:text-ink hover:underline focus-visible:ring-2 focus-visible:ring-accent';
+// Tall enough for a thumb: at 18px high these were the smallest things to press on a phone.
+const footerLink = 'rounded-control px-1 py-2 font-ui text-13 text-ink-2 underline-offset-4 outline-none hover:text-ink hover:underline focus-visible:ring-2 focus-visible:ring-accent';
 
 function Examples() {
   const t = useT();
@@ -62,7 +63,7 @@ function Examples() {
       <button
         type="button"
         onClick={() => useUi.getState().setSamplesOpen(true)}
-        className="rounded-control px-1 text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent"
+        className="rounded-control px-1 py-2 text-accent underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent"
       >
         {t.home.sample}
       </button>

@@ -14,7 +14,9 @@ export function LessonRail({ currentId }: { currentId: string }) {
   const { railCollapsed, set } = usePrefs();
   const kinds = enabledKinds(course);
   return (
-    <nav aria-label={t.lesson.rail} className={cx('no-print sticky top-14 hidden h-below-header shrink-0 overflow-y-auto border-r border-rule py-4 md:block', railCollapsed ? 'w-14 px-2' : 'w-52 px-3')}>
+    // From a wide screen only: beside a document on a tablet held upright it left the page 368px, and a rubric's table pushed the
+    // whole screen sideways. Below that the lessons are reached from the overview and the bar, as on a phone.
+    <nav aria-label={t.lesson.rail} className={cx('no-print sticky top-14 hidden h-below-header shrink-0 overflow-y-auto border-r border-rule py-4 lg:block', railCollapsed ? 'w-14 px-2' : 'w-52 px-3')}>
       <div className={cx('mb-2 flex items-center', railCollapsed ? 'justify-center' : 'justify-between pl-2')}>
         {!railCollapsed && <span className="font-ui text-12 font-medium text-ink-2">{t.lesson.rail}</span>}
         <IconButton size="sm" label={railCollapsed ? t.lesson.expandRail : t.lesson.collapseRail} onPress={() => set({ railCollapsed: !railCollapsed })}>

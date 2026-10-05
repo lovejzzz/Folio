@@ -52,11 +52,14 @@ export function AccountButton({ compact = false }: { compact?: boolean }) {
         onClick={signIn}
         className={cx(
           'flex h-8 shrink-0 items-center gap-2 rounded-full border border-rule bg-paper font-ui text-13 font-medium text-ink outline-none transition-colors duration-120 hover:border-field focus-visible:ring-2 focus-visible:ring-accent',
-          compact ? 'px-2.5' : 'px-3.5',
+          // In a course's bar there is no room for the words below a wide screen: with them the bar was 46px wider than a
+          // phone, and 125px wider than a tablet held upright, where the menu and this button sat off the screen.
+          compact ? 'w-8 justify-center lg:w-auto lg:px-2.5' : 'px-3.5',
         )}
+        aria-label={t.account.signIn}
       >
         <GoogleG />
-        {t.account.signIn}
+        <span className={compact ? 'hidden lg:inline' : undefined}>{t.account.signIn}</span>
       </button>
     );
   }

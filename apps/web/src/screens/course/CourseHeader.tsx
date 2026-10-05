@@ -86,8 +86,8 @@ function MoreMenu() {
   const store = useStore();
   const { toggleDrawer, setCommandOpen } = useUi();
   const views = useViewItems();
-  // Below sm the header has no room for the search button, so it lives here.
-  const narrow = useMediaQuery('(max-width: 639px)');
+  // Below lg the header has no room for the search button, so it lives here.
+  const narrow = useMediaQuery('(max-width: 1023px)');
   return (
     <Menu
       label={t.nav.more}
@@ -135,8 +135,8 @@ function Actions() {
   const changes = useChangeCount();
   const planning = useCourse().status === 'planning';
   return (
-    <div className="flex items-center gap-1">
-      <span className="hidden sm:contents">
+    <div className="flex shrink-0 items-center gap-1">
+      <span className="hidden lg:contents">
         <IconButton label={`${t.nav.commandBar} (${shortcut('⌘K')})`} onPress={() => setCommandOpen(true)}>
           <Search size={18} strokeWidth={1.5} />
         </IconButton>
@@ -162,9 +162,9 @@ function Actions() {
           )}
           <span className="hidden sm:contents">
             {/* Named: a bookmark icon alone didn't say that the teacher's own notes live here. */}
-            <Button variant="quiet" aria-expanded={drawer === 'sources'} onPress={() => toggleDrawer('sources')} className={cx('gap-1.5 px-2.5', drawer === 'sources' && 'bg-well text-ink')}>
+            <Button variant="quiet" aria-label={t.sources.title} aria-expanded={drawer === 'sources'} onPress={() => toggleDrawer('sources')} className={cx('gap-1.5 px-2.5', drawer === 'sources' && 'bg-well text-ink')}>
               <BookMarked size={16} strokeWidth={1.75} aria-hidden />
-              {t.sources.title}
+              <span className="hidden lg:inline">{t.sources.title}</span>
             </Button>
             <Button variant={drawer === 'export' ? 'primary' : 'secondary'} aria-expanded={drawer === 'export'} onPress={() => toggleDrawer('export')} className="ml-1">
               <Download size={16} strokeWidth={1.75} aria-hidden />
@@ -190,6 +190,9 @@ export function CourseHeader() {
         to="/c/$courseId/map"
         params={{ courseId: course.id }}
         lang={course.language}
+        // The title gives way before anything else in the bar does: sharing the squeeze with the buttons on its right, it
+        // kept 190px on a tablet held upright while the menu and Sign in sat past the edge of the screen.
+        style={{ flexShrink: 50 }}
         className="min-w-0 max-w-64 truncate rounded-control px-1 font-ui text-14 font-semibold text-ink outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent lg:max-w-80"
       >
         {course.title || t.common.untitled}

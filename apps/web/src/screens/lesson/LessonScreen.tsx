@@ -78,8 +78,23 @@ function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
 function usePosition(kinds: MaterialKind[], initial: MaterialKind | undefined, lessonId: string): MaterialKind | null {
   const [active, setActive] = useState<MaterialKind | null>(kinds[0] ?? null);
   useEffect(() => {
-    if (initial) document.getElementById(`m-${initial}`)?.scrollIntoView({ block: 'start' });
-    else window.scrollTo({ top: 0 });
+    if (!initial) return window.scrollTo({ top: 0 });
+    // Opened from a link or after a reload, the page is still filling when this first runs: the material was not there
+    // yet, or what stands above it had no height, and the link to a quiz opened on the top of the plan. So it is found
+    // again as the page grows, for a moment, and never once the reader has started to move the page themselves.
+    let moved = false;
+    const go = () => !moved && document.getElementById(`m-${initial}`)?.scrollIntoView({ block: 'start' });
+    const stop = () => (moved = true);
+    const grown = new ResizeObserver(go);
+    grown.observe(document.body);
+    for (const event of ['wheel', 'touchstart', 'keydown'] as const) window.addEventListener(event, stop, { passive: true, once: true });
+    const done = setTimeout(() => grown.disconnect(), 3000);
+    go();
+    return () => {
+      clearTimeout(done);
+      grown.disconnect();
+      for (const event of ['wheel', 'touchstart', 'keydown'] as const) window.removeEventListener(event, stop);
+    };
   }, [initial, lessonId]);
   useEffect(() => {
     const observer = new IntersectionObserver(

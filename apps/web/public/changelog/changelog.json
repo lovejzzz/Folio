@@ -1,9 +1,39 @@
 [
  {
+  "version": "0.0.20",
+  "date": "October 5, 2026",
+  "title": "A course fits a tablet and a phone when you are signed out, and a link to a quiz opens on the quiz",
+  "lede": "After the checkpoint we went through the live site in a browser, screen by screen, at the widths of a desktop, a tablet held upright and a phone. Most of it held. Four things did not.",
+  "sections": [
+   {
+    "heading": "The bar across a course was wider than the screen",
+    "body": "Signed out, the bar at the top of a course carries a Sign in button, and with it the bar was 46 pixels wider than a phone and 125 wider than a tablet held upright: on the phone the whole page slid sideways, and on the tablet the menu and Sign in sat past the edge where nobody could press them. Our tests did not look at these two screens at these widths. Below a wide screen the bar now shows Sign in as its mark alone and Sources as its icon, search moves into the menu, and a long course title gives way before any button does. The tests now try eight widths.",
+    "image": {
+     "src": "/changelog/0.0.20-tablet.webp",
+     "alt": "A lesson on a tablet held upright: the bar holds the course title, Overview, Lessons, Materials, the history and sources icons, Export, the menu and the sign-in mark, all on the screen",
+     "width": 820,
+     "height": 512
+    }
+   },
+   {
+    "heading": "A lesson has the tablet’s whole width",
+    "body": "On the same tablet the list of lessons stood beside the lesson and left it a column 368 pixels wide, in which a rubric’s table pushed the page sideways. The list now appears on wide screens only; below that, lessons are reached from the overview and the bar, as on a phone."
+   },
+   {
+    "heading": "A link to one material opens on it",
+    "body": "Open a quiz from the overview and the address ends in “?m=quiz”. Copied to a colleague, or reloaded, that address opened on the top of the lesson plan: the page looked for the quiz before it had finished filling. It now finds it again as the page fills, and stops as soon as you scroll."
+   },
+   {
+    "heading": "Small things to press",
+    "body": "On a phone the smallest targets were “Or open a sample course”, the links at the foot of the home page and “Show why” under a question, each about 18 pixels high. They are taller."
+   }
+  ]
+ },
+ {
   "version": "0.0.19",
   "date": "October 5, 2026",
   "title": "Checkpoint: where a week stands after a day of taking it apart",
-  "lede": "This release closes what the last four left open, and marks the place. A week of an online coding course now costs $0.53 to write and check where it cost $0.97 this morning, the reading and fixing of a page take about a minute where they took four, and pages read blind by a reviewer score what they did or a little better. What is still wrong is listed at the end.",
+  "lede": "This release closes what the last four left open, and marks the place. A week of an online coding course now costs $0.53 to write and check where it cost $0.97 four releases ago, the reading and fixing of a page take about a minute where they took four, and pages read blind by a reviewer score what they did or a little better. What is still wrong is listed at the end.",
   "sections": [
    {
     "heading": "The reader was policing rules meant for the writer",

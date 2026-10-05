@@ -67,3 +67,13 @@ test('the home page keeps to the new course: courses are in the library, and Abo
   await expect(page.getByRole('link', { name: 'xingpicture@gmail.com' })).toHaveAttribute('href', 'mailto:xingpicture@gmail.com');
   await expect(page).toHaveTitle('About Folio · Folio');
 });
+
+test('a link to one material of a lesson opens on that material, after a reload too', async ({ page }) => {
+  await openSample(page);
+  await page.getByRole('link', { name: /Center and spread/ }).first().click();
+  // The address a teacher copies after opening the quiz from the overview: opened cold, it showed the top of the plan.
+  await page.goto(`${new URL(page.url()).pathname}?m=quiz`);
+  const quiz = page.locator('#m-quiz');
+  await expect(quiz).toBeInViewport();
+  await expect.poll(async () => (await quiz.boundingBox())?.y ?? 9999).toBeLessThan(200);
+});

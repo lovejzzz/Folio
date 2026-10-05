@@ -23,7 +23,9 @@ test('no screen is wider than a phone', async ({ page }) => {
   await chooseSample(page);
   await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
   const base = page.url().replace(/\/map$/, '');
-  for (const path of ['/m/syllabus', '/m/map', '/m/plan', '/m/slides', '/m/quiz', '/m/assignments', '/m/rubrics', '/m/study', '/m/faq', '/m/discussions']) {
+  // The overview and a lesson too, signed out: their bar carries Sign in, and with its words it was 46px too wide.
+  const lesson = new URL((await page.locator('a[href*="/lesson/"]').first().getAttribute('href'))!, page.url()).pathname.replace(new URL(base).pathname, '');
+  for (const path of ['/map', lesson, '/m/syllabus', '/m/map', '/m/plan', '/m/slides', '/m/quiz', '/m/assignments', '/m/rubrics', '/m/study', '/m/faq', '/m/discussions']) {
     await page.goto(base + path);
     await expect(page.locator('h1').first()).toBeVisible();
     const w = await page.evaluate(() => document.documentElement.scrollWidth);
@@ -33,6 +35,21 @@ test('no screen is wider than a phone', async ({ page }) => {
     await page.goto(path);
     await expect(page.locator('h1').first()).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(width);
+  }
+});
+
+test('at every width in between, a course\'s bar keeps all its buttons on the screen', async ({ page }) => {
+  await page.goto('/');
+  await chooseSample(page);
+  await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
+  const lesson = await page.locator('a[href*="/lesson/"]').first().getAttribute('href');
+  for (const width of [375, 560, 640, 700, 768, 820, 1024, 1280]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto(lesson!);
+    await expect(page.locator('h1').first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `width ${width}`).toBeLessThanOrEqual(width);
+    const more = await page.getByRole('button', { name: 'More' }).boundingBox();
+    expect(more!.x + more!.width, `the menu at ${width}`).toBeLessThanOrEqual(width);
   }
 });
 

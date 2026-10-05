@@ -93,7 +93,7 @@ function AnswerFold({ q, update }: { q: Question; update: (fields: Partial<Quest
         type="button"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="no-print inline-flex items-center gap-1 rounded-control font-ui text-13 font-medium text-ink-2 outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+        className="no-print -my-1 inline-flex items-center gap-1 rounded-control py-2 font-ui text-13 font-medium text-ink-2 outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
       >
         <ChevronRight size={14} strokeWidth={1.75} className={cx('transition-transform duration-200 ease-ink', open && 'rotate-90')} aria-hidden />
         {graded ? (open ? t.quiz.hideWhy : t.quiz.showWhy) : open ? t.quiz.hideAnswer : t.quiz.showAnswer}
