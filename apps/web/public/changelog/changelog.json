@@ -1,5 +1,51 @@
 [
  {
+  "version": "0.0.13",
+  "date": "October 5, 2026",
+  "title": "Folio runs the code it writes",
+  "lede": "The Python on a week’s page is now run before you see the page, and the page shows what the code really prints. Answers that can be worked out are worked out, and the ones that don’t hold are marked for you.",
+  "sections": [
+   {
+    "heading": "The page shows what the code prints",
+    "body": "In an online course taught in a notebook, Folio wrote each cell and, under it, what it expected the cell to print. Nothing had run. Now every cell of a week is run in order, in a fresh notebook, and the output on the page is what came out: in place of what was written, or under a cell that had none. A chart a cell draws is placed under the cell. A cell that fails is sent back to be corrected with its real error, and so is a sentence that quotes a number the code does not print; what could not be put right is noted for you. Each output says what ran it. One kind of cell is left as written: one that asks the computer about itself, such as which version of pandas is installed, since the answer is about your students’ computers, not Folio’s.",
+    "image": {
+     "src": "/changelog/0.0.13-run.svg",
+     "alt": "Before, the output under a cell was what the writer expected, here a wrong 5; now it is what the code printed when Folio ran it, 6, marked as run on Python 3.14",
+     "width": 800,
+     "height": 330
+    }
+   },
+   {
+    "heading": "Answers that can be computed are",
+    "body": "The mistakes in a generated course were not where we looked for them. In four courses, the code on the pages was right, but 8 of 49 quiz questions and answer keys had a wrong key or a wrong explanation, and no reading had caught one. For any question or answer key with code or numbers in it, Folio now builds the item’s data, computes what the item claims, and compares the result with the words in the item. What fails twice is marked on the item, with the value it states and the value computed. Folio never changes a key by itself: you decide. On the first two courses written this way it marked three real mistakes in 43 items, among them the one pictured, and one item that was right; what caused that false alarm is fixed.",
+    "image": {
+     "src": "/changelog/0.0.13-answers.svg",
+     "alt": "An answer key that gives a chi-square statistic of 0.581, with a note under it: Folio ran this and it did not hold; computed from the counts, it is 0.867",
+     "width": 800,
+     "height": 300
+    }
+   },
+   {
+    "heading": "Where the code runs, and what it can reach",
+    "body": "The code runs in your own browser, so it costs you nothing and needs no account. It is shut in a frame that has none of Folio’s storage and is allowed no connection of any kind: it cannot read your courses or your keys, and it cannot send anything anywhere. A cell that runs too long, or takes too much memory, is stopped. The first time a course needs it, your browser fetches Python and its libraries (about 13 MB, or about 30 MB with pandas and Matplotlib) and keeps them. Folio’s Python is 3.14, with pandas 3.0, NumPy 2.4, Matplotlib 3.10, SciPy 1.18, statsmodels 0.14 and scikit-learn 1.8; a course you write for older versions is still written for yours, and its outputs say which version ran them. On a phone the code is not run, and the page is kept as written.",
+    "image": {
+     "src": "/changelog/0.0.13-shut-in.svg",
+     "alt": "Folio’s page holds your courses, account and keys; the runner is a frame with a Python in it; code goes in, text and pictures come out, and nothing else passes",
+     "width": 800,
+     "height": 300
+    }
+   },
+   {
+    "heading": "A notebook of each week",
+    "body": "When you export a course as a zip, each week that has Python now comes with a Jupyter notebook: the week’s words as text and its code as cells, in order, so a student can run the week instead of typing it out. The teacher’s copy also shows what each cell printed."
+   },
+   {
+    "heading": "Two faults found on the way",
+    "body": "Checking answers by running them showed that code of more than one line, inside a quiz choice or an answer, had its straight quotes turned into curly ones with the prose around it, and would not run when copied; such code is now left exactly as written. And a security review of this work found that a backup file made by hand could give a file a type the browser would run as a page; a file kept with a course is now shown only as a picture or a video, and anything else is a download. That fix went out earlier today."
+   }
+  ]
+ },
+ {
   "version": "0.0.12",
   "date": "October 4, 2026",
   "title": "Work that waits on a classmate is due after theirs",

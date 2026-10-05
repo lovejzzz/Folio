@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .accs { stroke: #2B46C4 } .bad { fill: #B4472E } .bads { stroke: #B4472E } .soft { fill: #EDF0FC } .rule { stroke: #CFC8B9 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .accs { stroke: #8FA3FF } .bad { fill: #E08A6E } .bads { stroke: #E08A6E } .soft { fill: #23284A } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">WHERE COURSE CODE RUNS, IN YOUR BROWSER</text>
+  <rect class="card" x="36" y="64" width="728" height="204" rx="14"/>
+  <text class="ink" x="60" y="98" font-size="16" font-weight="600">Folio’s page</text>
+  <text class="ink2" x="60" y="124" font-size="13">Your courses, your account,</text>
+  <text class="ink2" x="60" y="144" font-size="13">your keys.</text>
+  <rect class="soft" x="430" y="88" width="310" height="156" rx="12"/>
+  <text class="ink" x="452" y="120" font-size="16" font-weight="600">The runner</text>
+  <text class="ink2" x="452" y="146" font-size="13">A frame with a Python in it.</text>
+  <text class="ink2" x="452" y="166" font-size="13">It has none of Folio’s storage</text>
+  <text class="ink2" x="452" y="186" font-size="13">and may make no connection.</text>
+  <text class="ink2" x="452" y="218" font-size="13">A cell that runs too long is stopped.</text>
+  <line class="accs" x1="262" y1="176" x2="418" y2="176" stroke-width="2"/>
+  <path class="acc" d="M418 176l-10 -5v10z"/>
+  <text class="acc" x="340" y="166" font-size="13" font-weight="600" text-anchor="middle">code in</text>
+  <line class="accs" x1="262" y1="216" x2="418" y2="216" stroke-width="2"/>
+  <path class="acc" d="M262 216l10 -5v10z"/>
+  <text class="acc" x="340" y="238" font-size="13" font-weight="600" text-anchor="middle">text and pictures out</text>
+  <line class="bads" x1="262" y1="116" x2="400" y2="116" stroke-width="2" stroke-dasharray="5 5"/>
+  <line class="bads" x1="392" y1="106" x2="412" y2="126" stroke-width="2.5"/>
+  <line class="bads" x1="412" y1="106" x2="392" y2="126" stroke-width="2.5"/>
+  <text class="bad" x="330" y="106" font-size="13" font-weight="600" text-anchor="middle">nothing else</text>
+</svg>

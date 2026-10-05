@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .note { fill: #FBEFE9; stroke: #E9C9BC } .rule { stroke: #CFC8B9 }
+    .mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E } .note { fill: #33261F; stroke: #5A3B2E } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">AN ANSWER KEY, WORKED OUT</text>
+  <rect class="card" x="36" y="64" width="728" height="204" rx="14"/>
+  <text class="ink2" x="60" y="98" font-size="13" font-weight="600" letter-spacing="0.5">ANSWER KEY, FOR THE TEACHER</text>
+  <text class="ink" x="60" y="128" font-size="15">Observed 52, 42 and 26; expected 48, 42 and 30.</text>
+  <text class="ink" x="60" y="154" font-size="15">The statistic is χ² = <tspan class="bad" font-weight="600">0.581</tspan>, df = 2.</text>
+  <line class="rule" x1="60" y1="176" x2="740" y2="176"/>
+  <rect class="note" x="60" y="192" width="680" height="56" rx="10"/>
+  <text class="bad" x="78" y="216" font-size="13" font-weight="600">Needs a look</text>
+  <text class="ink" x="78" y="236" font-size="13">Folio ran this and it didn’t hold: the key says 0.581; computed from the counts, it is 0.867.</text>
+</svg>
