@@ -61,7 +61,8 @@ def flat(v):
     return out
 def num_ok(stored, d, computed, tol=None):
     if computed != computed: return False
-    t = float(tol) if tol is not None else 0.5 * 10 ** (-d)
+    # one unit of the last place given: half a unit called a key wrong when its constant had one more digit than the form's
+    t = float(tol) if tol is not None else 1.0 * 10 ** (-d)
     return abs(stored - computed) <= t * (1 + 1e-9) + 1e-12
 def not_literal(expr):
     try: tree = ast.parse(expr, mode='eval')
