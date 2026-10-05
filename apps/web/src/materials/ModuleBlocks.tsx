@@ -97,7 +97,7 @@ export function CodeBlock({ block }: { block: Of<'code'> }) {
   return (
     <figure className="mod-code avoid-break">
       <div className="mod-code-head">
-        <span>{[block.caption, block.language && block.language.toUpperCase()].filter(Boolean).join(' · ') || t.module.code}</span>
+        <span>{[block.caption, block.language && block.language.toUpperCase(), block.ran && t.module.ranOn(block.ran)].filter(Boolean).join(' · ') || t.module.code}</span>
         <IconButton size="sm" label={copied ? t.module.copied : t.module.copy} className="no-print" onPress={copy}>
           {copied ? <Check size={14} strokeWidth={1.75} /> : <Copy size={14} strokeWidth={1.5} />}
         </IconButton>

@@ -66,7 +66,7 @@ export const PageBlockSchema = z.discriminatedUnion('type', [
   z.object({ id, type: z.literal('steps'), items: z.array(StepSchema) }),
   z.object({ id, type: z.literal('callout'), kind: CalloutKindSchema, title: text.default(''), text }),
   /** Code to type or read, as it is: never typeset. */
-  z.object({ id, type: z.literal('code'), language: text.default(''), code: text, caption: text.default('') }),
+  z.object({ id, type: z.literal('code'), language: text.default(''), code: text, caption: text.default(''), /** On an output: what really ran the code above to print it ("Python 3.14.2, pandas 3.0.2"). Absent when it is as the writer wrote it. */ ran: text.optional() }),
   z.object({ id, type: z.literal('image'), ...media }),
   z.object({ id, type: z.literal('video'), ...media, poster: text.default(''), minutes: z.number().min(0).max(60).default(0), transcript: text.default(''), /** A short silent recording of the screen, shown for its motion: it has no words to transcribe. */ clip: z.boolean().default(false) }),
   z.object({ id, type: z.literal('file'), href: text.default(''), label: text, role: z.enum(['starter', 'checkpoint', 'solution', 'resource']).default('resource'), shows: text.default('') }),

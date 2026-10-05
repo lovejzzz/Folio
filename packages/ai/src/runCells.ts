@@ -1,6 +1,6 @@
 import type { Flag } from '@folio/core';
 import { RUNNER_ERRORS, type CellResult, type Runner, type Versions } from '@folio/run';
-import type { ModuleDraft } from './online';
+import { RAN, type ModuleDraft } from './online';
 import { shield } from './prompts';
 
 /**
@@ -131,6 +131,8 @@ const outputOf = (blocks: Block[], cell: number): Block | null => after(blocks, 
 
 interface Placing {
   ran: Map<Block, Ran>;
+  /** What ran the cells, for the outputs to say. */
+  on: string;
   figures: Record<string, Uint8Array>;
   /** Told apart from an earlier run's: a round of mending that is not kept leaves the earlier page, with its own pictures. */
   run: number;
@@ -140,7 +142,7 @@ interface Placing {
  * One part with what its cells really gave: outputs replaced where they stand or added under the cell, and the
  * figures after them. A picture the writer asked for of a cell's chart becomes the chart, with its caption and alt.
  */
-function withResults(blocks: Block[], { ran, figures, run }: Placing): Block[] {
+function withResults(blocks: Block[], { ran, figures, run, on }: Placing): Block[] {
   const kept = blocks.filter((b) => !isRunFigure(b));
   const output = new Map<Block, Block>();
   const slot = new Map<Block, Block>();
@@ -161,14 +163,15 @@ function withResults(blocks: Block[], { ran, figures, run }: Placing): Block[] {
     ran.get(cell)!.res.figures.slice(from).map((f) => ({ ...outputBlock(''), type: 'image', kind: named(f.png), text: cell.title || 'What the code above draws.', alt: 'The chart the code above draws.', shows: 'Drawn by running the code above.' }));
   const rest = (cell: Block): Block[] => drawn(cell, [...slot.values()].includes(cell) ? 1 : 0);
   // A cell that fails by a fault, or waits for the student, keeps what was written: the mend, or the student, comes first.
-  const real = (cell: Block, written: string): string => (['ok', 'meant'].includes(ran.get(cell)!.verdict) ? shown(ran.get(cell)!.res) : written);
+  const isReal = (cell: Block): boolean => ['ok', 'meant'].includes(ran.get(cell)!.verdict);
+  const real = (cell: Block, written: string): string => (isReal(cell) ? shown(ran.get(cell)!.res) : written);
   return kept.flatMap((b): Block[] => {
     const shows = output.get(b);
-    if (shows) return [...(real(shows, b.text) ? [{ ...b, kind: 'output', text: real(shows, b.text) }] : []), ...rest(shows)];
+    if (shows) return [...(real(shows, b.text) ? [{ ...b, kind: 'output', text: real(shows, b.text), title: isReal(shows) ? `${RAN}${on}` : '' }] : []), ...rest(shows)];
     const of = slot.get(b);
     if (of) return [{ ...b, kind: named(ran.get(of)!.res.figures[0]!.png) }];
     if (!ran.has(b) || placed.has(b)) return [b];
-    return [b, ...(real(b, '') ? [outputBlock(real(b, ''))] : []), ...rest(b)];
+    return [b, ...(real(b, '') ? [{ ...outputBlock(real(b, '')), title: `${RAN}${on}` }] : []), ...rest(b)];
   });
 }
 
@@ -207,7 +210,8 @@ export async function runCells(runner: Runner, v: ModuleDraft, run = 1): Promise
     }
   }
   const figures: Record<string, Uint8Array> = {};
-  return { value: { ...v, parts: v.parts.map((p) => ({ ...p, blocks: withResults(p.blocks, { ran, figures, run }) })) }, notes, figures, cells: cells.length };
+  const on = runtime(await runner.versions());
+  return { value: { ...v, parts: v.parts.map((p) => ({ ...p, blocks: withResults(p.blocks, { ran, figures, run, on }) })) }, notes, figures, cells: cells.length };
 }
 
 /** A runner is one notebook: weeks written side by side take their turn at it, each page from its first cell to its last. */

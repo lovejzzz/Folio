@@ -126,7 +126,8 @@ describe('a week written with a runner', () => {
     const saved: Uint8Array[] = [];
     const result = await generateSection(model, c, orderedLessons(c)[1]!.id, 'plan', undefined, { reviewer: model, run: { runner: fakeRunner(answers), saveFigure: async (png) => `media:m_${saved.push(png)}` } });
     const blocks = blocksOf(result.commands);
-    expect(blocks.find((b) => b.type === 'code' && b.code === '12')).toBeTruthy();
+    // The output says what ran it; the page's own words under a cell never do.
+    expect(blocks.find((b) => b.type === 'code' && b.code === '12')).toMatchObject({ language: 'output', caption: '', ran: 'Python 3.14.2, pandas 3.0.2' });
     expect(blocks.find((b) => b.type === 'image')).toMatchObject({ src: 'media:m_1' });
     expect(saved).toHaveLength(1);
     expect(model.calls.find((r) => r.task === 'folio_module_review')!.prompt).toContain('holds what it really printed');

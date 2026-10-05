@@ -70,6 +70,9 @@ export const ModuleDraft = z.object({
 });
 export type ModuleDraft = z.infer<typeof ModuleDraft>;
 
+/** How a draft's output block says a run produced it: its "title" starts with this, then names what ran. */
+export const RAN = 'ran:';
+
 const CALLOUTS = ['checkpoint', 'stuck', 'why', 'tip', 'warning', 'version'] as const;
 const ROLES = ['starter', 'checkpoint', 'solution', 'resource'] as const;
 const oneOf = <T extends string>(all: readonly T[], value: string, fallback: T): T => all.find((k) => k === value.trim().toLowerCase()) ?? fallback;
@@ -115,6 +118,8 @@ function toBlock(raw: BlockDraft): PageBlock {
     case 'callout':
       return calloutBlock(id, b);
     case 'code':
+      // An output a run produced carries what ran it under "title", marked, until it is a block of the page.
+      if (b.title.startsWith(RAN)) return { id, type: 'code', language: 'output', code: b.text, caption: '', ran: b.title.slice(RAN.length) };
       return { id, type: 'code', language: b.kind.trim().toLowerCase(), code: b.text, caption: b.title };
     case 'image':
       // A figure a run drew carries its name under "kind" until whoever holds the course has saved the picture.

@@ -323,6 +323,8 @@ export const en = {
     copy: 'Copy',
     copied: 'Copied',
     code: 'Code',
+    /** On an output block: what really ran the code to print it. */
+    ranOn: (what: string) => `run on ${what}`,
     imageSlot: 'Screenshot to add',
     videoSlot: 'Video to add',
     clipSlot: 'Clip to add',
