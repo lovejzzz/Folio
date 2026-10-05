@@ -8,11 +8,12 @@ import { z } from 'zod';
 
 /** A block inside an exhibit, flat: the fields each kind uses are named in its description. */
 export const ExhibitBlockDraft = z.object({
-  type: z.enum(['heading', 'para', 'list', 'field', 'table', 'yours']).describe('heading: a label inside the exhibit. para: a paragraph. list: items. field: a labelled line ("Question: …"; empty text is a line still to fill). table: columns and rows. yours: room for the student\'s own words, with a hint under "text"'),
+  type: z.enum(['heading', 'para', 'list', 'field', 'table', 'yours']).describe('heading: a label inside the exhibit. para: a paragraph. list: items. field: one labelled line, its label under "label" without a colon and what is written on it under "text" (empty for a line still to fill). table: columns and rows. yours: room for the student\'s own words, with a hint under "text"'),
   text: z.string().default('').describe('heading, para: the words. field: its value. table: a caption, or empty. yours: the hint'),
   label: z.string().default('').describe('field: its label'),
   items: z.array(z.string()).default([]).describe('list: the items'),
   columns: z.array(z.string()).default([]).describe('table: the column headings'),
+  lines: z.number().int().min(1).max(24).default(3).describe('yours: how many lines of room the answer needs: 2 for a sentence, 6 for a worked problem, 10 for a drawing'),
   rows: z.array(z.array(z.string())).default([]).describe('table: the rows, each with one cell per column; an empty cell is an empty string'),
 });
 
@@ -36,8 +37,12 @@ export function exhibitPart(p: ExhibitDraft['parts'][number]): ExhibitPart {
   const blocks = p.blocks.map((x): ExhibitPart['blocks'][number] => {
     if (x.type === 'heading' || x.type === 'para') return { type: x.type, text: x.text };
     if (x.type === 'list') return { type: 'list', ordered: false, items: x.items };
-    if (x.type === 'field') return { type: 'field', label: x.label, value: x.text };
-    if (x.type === 'yours') return { type: 'yours', hint: x.text };
+    // A label is given once and without its colon, which the page adds: "Name: Name:" was printed.
+    if (x.type === 'field') {
+      const label = x.label.trim().replace(/[:：]\s*$/, '');
+      return { type: 'field', label, value: x.text.trim().replace(/[:：]\s*$/, '') === label ? '' : x.text };
+    }
+    if (x.type === 'yours') return { type: 'yours', hint: x.text, lines: x.lines };
     return { type: 'table', columns: x.columns, rows: x.rows.map((r) => x.columns.map((_, i) => r[i] ?? '')), caption: x.text };
   });
   return { label: p.label, blocks };

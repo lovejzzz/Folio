@@ -74,7 +74,7 @@ export const ExhibitBlockSchema = z.discriminatedUnion('type', [
   /** Every row as long as the columns; an empty cell is an empty string. */
   z.object({ type: z.literal('table'), columns: z.array(text), rows: z.array(z.array(text)), caption: text.default('') }),
   /** Room for the student's own words. */
-  z.object({ type: z.literal('yours'), hint: text.default('') }),
+  z.object({ type: z.literal('yours'), hint: text.default(''), /** Lines of room it leaves: a sentence takes two, a worked problem six, a drawing ten. */ lines: z.number().int().min(1).max(24).default(3) }),
 ]);
 export type ExhibitBlock = z.infer<typeof ExhibitBlockSchema>;
 

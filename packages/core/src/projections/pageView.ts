@@ -51,7 +51,8 @@ export function exhibitBlock(b: ExhibitBlock, mark: (text: string) => string = (
     case 'table':
       return [{ t: 'table', head: b.columns.map(mark), rows: b.rows.map((r) => r.map(mark)) }, ...(b.caption ? [{ t: 'para' as const, tone: 'muted' as const, text: b.caption }] : [])];
     case 'yours':
-      return [{ t: 'para', tone: 'muted', text: b.hint || '\u2003' }];
+      // Room to write, as paper gives it: ruled lines, as many as the answer needs.
+      return [...(b.hint ? [{ t: 'para' as const, tone: 'muted' as const, text: b.hint }] : []), { t: 'para', text: Array.from({ length: b.lines }, () => '_'.repeat(72)).join('\n') }];
   }
 }
 

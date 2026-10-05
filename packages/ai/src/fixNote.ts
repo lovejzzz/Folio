@@ -26,11 +26,11 @@ type ExhibitBlockDraft = NonNullable<Block['exhibit']>['parts'][number]['blocks'
 
 /** A block of a saved exhibit, as the writer gives one. */
 function exhibitDraft(x: ExhibitBlock): ExhibitBlockDraft {
-  const blank = { text: '', label: '', items: [], columns: [], rows: [] };
+  const blank = { text: '', label: '', items: [], columns: [], rows: [], lines: 3 };
   if (x.type === 'heading' || x.type === 'para') return { ...blank, type: x.type, text: x.text };
   if (x.type === 'list') return { ...blank, type: 'list', items: x.items };
   if (x.type === 'field') return { ...blank, type: 'field', label: x.label, text: x.value };
-  if (x.type === 'yours') return { ...blank, type: 'yours', text: x.hint };
+  if (x.type === 'yours') return { ...blank, type: 'yours', text: x.hint, lines: x.lines };
   return { ...blank, type: 'table', columns: x.columns, rows: x.rows, text: x.caption };
 }
 

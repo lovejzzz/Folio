@@ -33,7 +33,12 @@ export function Piece({ block, change }: { block: ExhibitBlock; change: (next: E
         </p>
       );
     case 'yours':
-      return <p className="mod-exhibit-yours">{block.hint}</p>;
+      // As tall as the answer needs: a box of two lines under a problem to work out was the commonest fault of the first sheets.
+      return (
+        <p className="mod-exhibit-yours" data-lines={Math.min(12, block.lines)}>
+          {block.hint}
+        </p>
+      );
     case 'table':
       return <Table block={block} change={change} />;
   }
