@@ -24,7 +24,7 @@ export interface RanPage {
 const kind = (b: Block): string => b.kind.trim().toLowerCase();
 /** Python by what it says, for a block the writer gave no kind: an import, a print, a definition, a comment line. */
 const READS_AS_PYTHON = /^\s*(import \w|from \w+ import |print\(|def \w+\(|for \w+ in |# )/m;
-export const isCell = (b: Block): boolean => b.type === 'code' && (['python', 'py', 'python3', 'ipython'].includes(kind(b)) || (kind(b) === '' && READS_AS_PYTHON.test(b.text)));
+export const isCell = (b: Block): boolean => b.type === 'code' && (['python', 'py', 'python3', 'ipython'].includes(kind(b)) || (['', 'input', 'code', 'cell'].includes(kind(b)) && READS_AS_PYTHON.test(b.text)));
 /** What a cell prints, as writers tag it; untagged counts too, since it stands where an output stands. */
 const isOutput = (b: Block): boolean => b.type === 'code' && !isCell(b) && ['output', 'text', 'console', 'stdout', ''].includes(kind(b));
 /** A figure a run put on the page: its "kind" names the picture, and a new run replaces it. */
@@ -56,6 +56,16 @@ function defined(cells: string[]): Set<string> {
   const names = new Set<string>();
   for (const code of cells) for (const m of code.matchAll(/^\s*(?:def|class)\s+(\w+)|^\s*(?:import|from)\s+[\w.]+(?:\s+import\s+(\w+))?(?:\s+as\s+(\w+))?|^(\w+)\s*=[^=]|^\s*for\s+(\w+)\s+in/gm)) for (const name of m.slice(1)) if (name) names.add(name);
   return names;
+}
+
+/**
+ * The libraries the whole page brings in, named in a function nobody calls: the runner fetches what a cell
+ * imports before it runs the cell, and with this every library of the week is in place before the first one.
+ * A week failed when one library looked for another that a later cell was to bring in.
+ */
+function libraries(cells: string[]): string {
+  const roots = new Set(cells.flatMap((code) => [...code.matchAll(/^\s*(?:import|from)\s+([A-Za-z_]\w*)/gm)].map((m) => m[1]!)));
+  return `def _libraries():\n${[...roots].map((r) => `    import ${r}`).join('\n') || '    pass'}\n`;
 }
 
 type Verdict = 'ok' | 'meant' | 'machine' | 'student' | 'follows' | 'fault' | 'unrun';
@@ -170,6 +180,7 @@ export async function runCells(runner: Runner, v: ModuleDraft, run = 1): Promise
   const cells = v.parts.flatMap((p) => p.blocks.filter(isCell));
   if (!cells.length) return { value: v, notes: [], figures: {}, cells: 0 };
   await runner.reset();
+  await runner.run({ code: libraries(cells.map((c) => c.text)) });
   const names = defined(cells.map((c) => c.text));
   const ran = new Map<Block, Ran>();
   const notes: ReviewNote[] = [];

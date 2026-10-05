@@ -55,6 +55,9 @@ async function speed(session: Session): Promise<number> {
 async function boot(options: BootOptions): Promise<Session> {
   capHeap(options.harden.maxHeapMB);
   feed();
+  // The interpreter asks whether it may load scripts by loading an empty one, which the policy refuses and Safari's
+  // engine reports. It loads none here: without the function it does not ask.
+  (self as unknown as { importScripts?: unknown }).importScripts = undefined;
   // The interpreter's script stands before this code in the worker's own text, and left its function here.
   const createPyodideModule = (self as unknown as { _createPyodideModule?: unknown })._createPyodideModule;
   if (typeof createPyodideModule !== 'function') throw new Error('The interpreter could not be had.');

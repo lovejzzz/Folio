@@ -10,11 +10,15 @@ const text = (note: { values: { text: string } }) => note.values.text;
 const result = (over: Partial<CellResult>): CellResult => ({ stdout: '', stderr: '', value: null, error: null, figures: [], figuresDropped: 0, cut: false, loadError: null, sessionLost: false, ms: 1, ...over });
 
 /** A runner that answers each cell from a table by the cell's first line. */
-function fakeRunner(answers: Record<string, Partial<CellResult>>): Runner & { ran: string[] } {
+function fakeRunner(answers: Record<string, Partial<CellResult>>): Runner & { ran: string[]; libs: string[] } {
   const ran: string[] = [];
+  const libs: string[] = [];
   return {
     ran,
+    libs,
     run: async (cell: Cell) => {
+      // The first thing run names the page's libraries, so they are all in place: not one of the page's cells.
+      if (cell.code.startsWith('def _libraries():')) return (libs.push(cell.code), result({}));
       ran.push(cell.code);
       return result(answers[cell.code.split('\n')[0]!] ?? {});
     },
@@ -60,6 +64,7 @@ describe('a page whose Python is run', () => {
     const v = page([code('import pandas as pd\ndf = pd.read_csv("scores.csv")\ndf.resample("M")'), code('ok', 'output'), code('print(total)\ntotal = df.sum()'), code('print(1)')]);
     const runner = fakeRunner({ 'import pandas as pd': { error: { type: 'ValueError', message: 'Invalid frequency: M', line: 3, traceback: '' } }, 'print(total)': { error: { type: 'NameError', message: "name 'total' is not defined", line: 1, traceback: '' } }, 'print(1)': { stdout: '1\n' } });
     const ran = await runCells(runner, v);
+    expect(runner.libs).toEqual(['def _libraries():\n    import pandas\n']);
     expect(ran.notes).toHaveLength(1);
     expect(ran.notes[0]!.values).toMatchObject({ where: 'Part 1, Count the rows' });
     expect(text(ran.notes[0]!)).toContain('on Python 3.14.2, pandas 3.0.2, and failed at its line 3 (df.resample("M")) with ValueError: <output>\nInvalid frequency: M\n</output>');
