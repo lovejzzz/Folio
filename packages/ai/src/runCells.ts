@@ -58,7 +58,10 @@ function defined(cells: string[]): Set<string> {
   return names;
 }
 
-type Verdict = 'ok' | 'meant' | 'machine' | 'student' | 'follows' | 'fault';
+type Verdict = 'ok' | 'meant' | 'machine' | 'student' | 'follows' | 'fault' | 'unrun';
+
+/** How long one page's cells may take in all. Past it the rest are left as written: a teacher is waiting for the week. */
+const PAGE_MS = 120_000;
 
 /**
  * A cell that asks the machine about itself (which Python, which version of a library, which system): what it
@@ -98,6 +101,8 @@ function quoteNote(where: string, blocks: Block[], written: string, real: string
 }
 
 const outputBlock = (text: string): Block => ({ type: 'code', kind: 'output', text, items: [], title: '', shots: [], shows: '', alt: '', minutes: 0, transcript: '' });
+
+const UNRUN: CellResult = { stdout: '', stderr: '', value: null, error: null, figures: [], figuresDropped: 0, cut: false, loadError: null, sessionLost: false, ms: 0 };
 
 interface Ran {
   res: CellResult;
@@ -169,11 +174,16 @@ export async function runCells(runner: Runner, v: ModuleDraft, run = 1): Promise
   const ran = new Map<Block, Ran>();
   const notes: ReviewNote[] = [];
   let failed = false;
+  const started = Date.now();
   for (const [n, part] of v.parts.entries()) {
     const where = `Part ${n + 1}, ${part.title}`;
     for (const [i, b] of part.blocks.entries()) {
       if (!isCell(b)) continue;
       const written = outputOf(part.blocks, i)?.text ?? null;
+      if (Date.now() - started > PAGE_MS) {
+        ran.set(b, { res: UNRUN, verdict: 'unrun' });
+        continue;
+      }
       const res = await runner.run({ code: b.text });
       // The runner's own failure says nothing of the code: the page is then kept as written, and not blamed.
       if (res.error && RUNNER_ERRORS.includes(res.error.type)) throw new Error(res.error.message);

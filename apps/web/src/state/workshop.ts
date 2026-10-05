@@ -19,8 +19,13 @@ const runner: Runner = {
   close: () => void made?.then((r) => r.close()),
 };
 
+/** A phone has too little memory to hold a Python with its libraries beside Folio: there a page is kept as written. */
+const tooSmall = (): boolean => navigator.maxTouchPoints > 0 && Math.min(screen.width, screen.height) < 600;
+
 /** How a course's pages are run: figures the code draws are kept with the course's other pictures. */
-export const pageRuns = (courseId: string): RunOptions => ({
+export const pageRuns = (courseId: string): RunOptions | undefined => (tooSmall() ? undefined : runsFor(courseId));
+
+const runsFor = (courseId: string): RunOptions => ({
   runner,
   saveFigure: async (png) => localMediaRef(await putMedia(courseId, new Blob([png as BlobPart], { type: 'image/png' }), 'figure.png')),
 });
