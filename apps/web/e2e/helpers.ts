@@ -21,6 +21,8 @@ export async function openSample(page: Page): Promise<void> {
 /** Pretend a Claude key has been saved, without going through the dialog. */
 export async function withKey(page: Page, models: Record<string, string> = {}): Promise<void> {
   await page.addInitScript((models) => {
+    // Only the page itself: the frame that runs course code has no storage to set, and says so loudly.
+    if (window !== window.top) return;
     localStorage.setItem('folio.prefs', JSON.stringify({ state: { provider: 'anthropic', keys: { anthropic: 'sk-ant-test' }, models, theme: 'system', density: 'comfortable', railCollapsed: false, localUrl: 'http://localhost:11434/v1' }, version: 1 }));
   }, models);
 }

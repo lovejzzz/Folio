@@ -101,6 +101,15 @@ const START_HERE = {
   toAdd: ['Your name and how to reach you', 'Your late-work policy'],
 };
 
+/** The week with a notebook cell in it, and an output the writer got wrong: 0 to 9 add up to 45. */
+function withPython(page: ReturnType<typeof modulePage>) {
+  const cell = [
+    { type: 'code', kind: 'python', text: 'total = sum(range(10))\nprint("The total is", total)' },
+    { type: 'code', kind: 'output', text: 'The total is 44' },
+  ];
+  return { ...page, parts: page.parts.map((p, i) => (i === 0 ? { ...p, blocks: [...p.blocks, ...cell] } : p)) };
+}
+
 /** A week of an online course as the fake writes it: nine hours of work, steps with a picture, a checkpoint and a clip. */
 function modulePage(title: string) {
   return {
@@ -153,7 +162,7 @@ function mend(prompt: string) {
   return { segments: [], left: [] };
 }
 
-function answerFor(body: Body): unknown {
+function answerFor(body: Body, python = false): unknown {
   const system = typeof body.system === 'string' ? body.system : (body.system ?? []).map((b) => b.text).join('\n');
   const prompt = [system, ...body.messages.map((m) => m.content)].join('\n');
   const title = lessonTitle(prompt);
@@ -169,7 +178,7 @@ function answerFor(body: Body): unknown {
   // An online course's week: the page a student follows, its second read, and the course's Start here page.
   if (prompt.includes('Read this page as the student will')) return { issues: [] };
   if (prompt.includes('Write the "Start here" page')) return START_HERE;
-  if (prompt.includes("Write this week's module page")) return modulePage(title);
+  if (prompt.includes("Write this week's module page")) return python ? withPython(modulePage(title)) : modulePage(title);
   if (prompt.includes("week's discussion forum")) return { discussions: [{ prompt: 'Post a screenshot of your leaf diagram and say what surprised you.', followUps: ['What would you change?'] }] };
   if (prompt.includes('"Stuck?" list')) return { entries: [{ question: 'My diagram will not upload. What do I do?', answer: 'Save it as a PNG and try again; then ask in the Q&A forum.' }] };
   if (prompt.includes('Write the lesson plan'))
@@ -213,6 +222,8 @@ function answerFor(body: Body): unknown {
 export interface FakeModelOptions {
   delayMs?: number;
   status?: number;
+  /** The weekly pages carry a Python cell with a wrong output written under it. */
+  python?: boolean;
   /** Answer at Folio's own server (Folio credits) instead of at Anthropic. */
   viaFolio?: boolean;
 }
@@ -228,7 +239,7 @@ export async function fakeAnthropic(page: Page, options: FakeModelOptions = {}):
     if (options.status && options.status !== 200) {
       return route.fulfill({ status: options.status, headers: cors(), json: { type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } } });
     }
-    const text = JSON.stringify(answerFor(body));
+    const text = JSON.stringify(answerFor(body, options.python));
     if (body.stream) return route.fulfill({ status: 200, headers: { ...cors(), 'content-type': 'text/event-stream' }, body: streamed(text) });
     await route.fulfill({
       status: 200,
@@ -242,7 +253,7 @@ export async function fakeAnthropic(page: Page, options: FakeModelOptions = {}):
       const body = normalized(route.request().postDataJSON());
       calls.push(body);
       if (options.delayMs) await new Promise((r) => setTimeout(r, options.delayMs));
-      const text = JSON.stringify(answerFor(body));
+      const text = JSON.stringify(answerFor(body, options.python));
       await route.fulfill({
         status: 200,
         json: { id: `chatcmpl_${calls.length}`, model: body.model, choices: [{ index: 0, message: { role: 'assistant', content: text }, finish_reason: 'stop' }], usage: { prompt_tokens: 10, completion_tokens: 10 } },

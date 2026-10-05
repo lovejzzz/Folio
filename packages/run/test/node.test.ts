@@ -1,7 +1,8 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { cleanResult, LIMITS } from '../src';
+import { version } from 'pyodide';
+import { cleanResult, LIMITS, RUNTIME_VERSION } from '../src';
 import { nodeRunner, RUNTIME_DIR } from '../src/node';
 
 describe('a notebook run in Node', () => {
@@ -38,6 +39,8 @@ describe('a notebook run in Node', () => {
     expect(res.cut).toBe(true);
   }, 60_000);
 });
+
+it('names the version of the interpreter that is installed', () => expect(RUNTIME_VERSION).toBe(version));
 
 describe('a result from the runner', () => {
   it('is rebuilt from known fields: a figure that is not a PNG is dropped, extra fields are gone', () => {

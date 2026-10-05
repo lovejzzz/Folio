@@ -89,17 +89,24 @@ def _widen(np):
 
 
 def prepare(names):
-    """Settle a library the first time a cell brings it in, before the cell's own code touches it."""
+    """Settle a library the first time a cell brings it in, before the cell's own code touches it. Each is
+    imported here: on a slow machine the first import of pandas takes longer than a cell is allowed, and that
+    time is the library's, not the cell's."""
     for name in names:
         if name in _prepared:
             continue
         _prepared.add(name)
+        module = {"scikit-learn": "sklearn", "pillow": "PIL", "python-dateutil": "dateutil"}.get(name, name.replace("-", "_"))
+        try:
+            lib = __import__(module)
+        except Exception:
+            continue  # the cell's own import will say what is wrong, where the student would see it
         if name == "numpy":
-            import numpy
-            _widen(numpy)
+            _widen(lib)
         elif name == "pandas":
-            import pandas
-            pandas.set_option("display.max_columns", 20)  # as a notebook shows a table
+            lib.set_option("display.max_columns", 20)  # as a notebook shows a table
+        elif name == "matplotlib":
+            import matplotlib.pyplot
 
 
 def _figures(max_figs, dpi):

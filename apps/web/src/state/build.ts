@@ -1,3 +1,4 @@
+import { pageRuns } from './workshop';
 import { missingTargets, runBuild, targetKey, type BuildEvent, type BuildSummary, type BuildTarget, type Inference, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
 import { attentionItems, cmd, lessonNumber, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
@@ -155,6 +156,7 @@ async function guardedRun(store: Store, inference: Inference, usages: Usage[], c
       {
         inference,
         reviewer: currentReviewer((u) => usages.push(u)) ?? undefined,
+        run: pageRuns(store.getState().id),
         getCourse: store.getState,
         signal: controller.signal,
         commit: (target, commands) => {

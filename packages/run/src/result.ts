@@ -116,6 +116,12 @@ export function failed(type: string, message: string, ms = 0): CellResult {
   return { stdout: '', stderr: '', value: null, error: { type, message, line: null, traceback: '' }, figures: [], figuresDropped: 0, cut: false, loadError: null, sessionLost: true, ms };
 }
 
+/** The interpreter's version: the folder its files are served from, and what Node runs. A test holds it to the installed package. */
+export const RUNTIME_VERSION = '314.0.7';
+
+/** Errors that are the runner's own, not the code's: the cell was never judged. */
+export const RUNNER_ERRORS = ['RunnerError', 'RunnerUnresponsive'];
+
 /** Something that runs cells in order, one notebook at a time. */
 export interface Runner {
   run(cell: Cell): Promise<CellResult>;

@@ -52,15 +52,31 @@ export function cspHashes(): Plugin {
   };
 }
 
-/** Serve the built _headers during `vite preview`, so end-to-end tests run under the real CSP. */
+/** The headers each block of _headers sets, by the path it is for. */
+function blocks(text: string): { path: string; headers: [string, string][]; drops: string[] }[] {
+  return text
+    .split(/\n(?=\/)/)
+    .filter((b) => b.trim())
+    .map((block) => ({
+      path: block.split('\n')[0]!.trim(),
+      headers: [...block.matchAll(/^\s+([\w-]+): (.+)$/gm)].map((m) => [m[1]!, m[2]!] as [string, string]),
+      drops: [...block.matchAll(/^\s+! ([\w-]+)$/gm)].map((m) => m[1]!.toLowerCase()),
+    }));
+}
+
+/** Serve the built _headers during `vite preview`, so end-to-end tests run under the real CSP: every block that matches, in order, as the host does it. */
 export function previewHeaders(): Plugin {
   return {
     name: 'folio:preview-headers',
     configurePreviewServer(server) {
-      const file = join(server.config.build.outDir, '_headers');
-      const headers = [...readFileSync(file, 'utf8').split('/assets/*')[0]!.matchAll(/^\s+([\w-]+): (.+)$/gm)].map((m) => [m[1]!, m[2]!] as const);
-      server.middlewares.use((_req, res, next) => {
-        for (const [name, value] of headers) res.setHeader(name, value);
+      const rules = blocks(readFileSync(join(server.config.build.outDir, '_headers'), 'utf8'));
+      server.middlewares.use((req, res, next) => {
+        const path = (req.url ?? '/').split('?')[0]!;
+        for (const rule of rules) {
+          if (!(rule.path.endsWith('*') ? path.startsWith(rule.path.slice(0, -1)) : path === rule.path)) continue;
+          for (const name of rule.drops) res.removeHeader(name);
+          for (const [name, value] of rule.headers) res.setHeader(name, value);
+        }
         next();
       });
     },

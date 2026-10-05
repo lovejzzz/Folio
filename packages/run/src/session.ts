@@ -18,7 +18,8 @@ export interface SessionOptions {
 
 /** One interpreter: one notebook. What `run` returns is raw and still has to go through `cleanResult`. */
 export interface Session {
-  run(cell: Cell): Promise<Record<string, unknown>>;
+  /** `onExec` is called when the libraries are in and the cell's own code is about to start: its time is counted from there. */
+  run(cell: Cell, onExec?: () => void): Promise<Record<string, unknown>>;
   versions(): Record<string, unknown>;
   heapBytes(): number | null;
 }
@@ -95,7 +96,7 @@ export async function createSession(options: SessionOptions): Promise<Session> {
     return v;
   };
 
-  async function run(cell: Cell): Promise<Record<string, unknown>> {
+  async function run(cell: Cell, onExec?: () => void): Promise<Record<string, unknown>> {
     const started = performance.now();
     let loadError: string | null = null;
     try {
@@ -105,6 +106,7 @@ export async function createSession(options: SessionOptions): Promise<Session> {
       loadError = String(e).slice(0, 2000);
     }
     writeFiles(py, cell.files);
+    onExec?.();
     counting(true);
     try {
       const res = toJs(runCell.callKwargs(cell.code, { max_out: options.limits.maxOut, max_figs: options.limits.maxFigures, stdin: cell.stdin ?? '' })) as Record<string, unknown>;

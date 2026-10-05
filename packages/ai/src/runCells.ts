@@ -1,5 +1,5 @@
 import type { Flag } from '@folio/core';
-import type { CellResult, Runner, Versions } from '@folio/run';
+import { RUNNER_ERRORS, type CellResult, type Runner, type Versions } from '@folio/run';
 import type { ModuleDraft } from './online';
 import { shield } from './prompts';
 
@@ -165,6 +165,8 @@ export async function runCells(runner: Runner, v: ModuleDraft, run = 1): Promise
       if (!isCell(b)) continue;
       const written = outputOf(part.blocks, i)?.text ?? null;
       const res = await runner.run({ code: b.text });
+      // The runner's own failure says nothing of the code: the page is then kept as written, and not blamed.
+      if (res.error && RUNNER_ERRORS.includes(res.error.type)) throw new Error(res.error.message);
       const what = verdict(res, written, names, failed);
       ran.set(b, { res, verdict: what });
       if (what === 'fault') notes.push(faultNote(where, b.text, res, runtime(await runner.versions())));
