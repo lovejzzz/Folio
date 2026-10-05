@@ -268,6 +268,14 @@ function noteFlags(name: string, course: Course): void {
 const PAID = ARGS.includes('--paid');
 const keyOf = async (name: string) => (await (await fetch(`http://127.0.0.1:8799/key/${name}`, { headers: { 'x-experiment': '1' } })).text()).trim();
 const KEYS = PAID ? { anthropic: await keyOf('anthropic'), openai: await keyOf('openai') } : null;
+/** `--trace <dir>`: every paid call's request and answer, whole, in a file of its own: what a cost study reads. No key is in either. */
+const TRACE = ARGS.includes('--trace') ? ARGS[ARGS.indexOf('--trace') + 1]! : '';
+let traced = 0;
+function trace(body: string, res: Response, ms: number): void {
+  const file = join(TRACE, `${String(++traced).padStart(3, '0')}.json`);
+  mkdirSync(TRACE, { recursive: true });
+  void res.text().then((answer) => writeFileSync(file, JSON.stringify({ task: asking.getStore() ?? '', ms, status: res.status, request: JSON.parse(body) as unknown, answer }))).catch(() => undefined);
+}
 const paidFetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
   const url = String(input instanceof Request ? input.url : input);
   const openai = url.includes('/openai/v1/chat/completions');
@@ -278,6 +286,7 @@ const paidFetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
   const started = Date.now();
   const res = await fetch(openai ? 'https://api.openai.com/v1/chat/completions' : url.replace('https://folio.local/api/ai', 'https://api.anthropic.com'), { ...init, headers });
   appendFileSync(LOG, `${JSON.stringify({ at: new Date().toISOString(), paid: true, model: (JSON.parse(String(init?.body)) as { model?: string }).model, ms: Date.now() - started, status: res.status })}\n`);
+  if (TRACE) trace(String(init?.body), res.clone(), Date.now() - started);
   return res;
 }) as typeof fetch;
 /** Every call's tokens, as its provider reported them, by the job that made it. */
@@ -373,7 +382,7 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
 }
 
 const polishOnly = ARGS.includes('--polish');
-const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs', '--lessons'].includes(ARGS[i - 1] ?? ''));
+const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs', '--lessons', '--trace'].includes(ARGS[i - 1] ?? ''));
 const asked = names.length ? names : Object.keys(CHECKUP ?? BRIEFS);
 await Promise.all(asked.map((name) => make(name, polishOnly)));
 if (PAID) {

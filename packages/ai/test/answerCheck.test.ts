@@ -43,6 +43,10 @@ describe('an answer that can be computed', () => {
     const twiceWrong = await checkAnswers(model, scripted([fail('key'), PASS]), [wrong]);
     expect([twiceWrong.flags.size, twiceWrong.held.size]).toEqual([0, 1]);
     expect((await checkAnswers(model, scripted([fail('key'), fail('origin2')]), [wrong])).flags.size).toBe(0);
+    // One stated number, quoted by two forms with more and less of the text before it: the same claim.
+    const stated = (what: string) => fail('stated1', what);
+    expect((await checkAnswers(model, scripted([stated('answerKey: …so the standard deviation of the sample is '), stated('answerKey: …deviation of the sample is')]), [wrong])).flags.size).toBe(1);
+    expect((await checkAnswers(model, scripted([stated('answerKey: …the standard deviation is'), stated('answerKey: …the standard error is')]), [wrong])).flags.size).toBe(0);
   });
 
   it('is counted as unchecked, and never blamed, when the form does not bind or nothing can be run', async () => {
@@ -70,6 +74,14 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     const out = await checkAnswers(fakeInference(() => form), nodeRunner(), [q]);
     expect(out).toMatchObject({ checked: 1 });
     expect(out.flags.size).toBe(0);
+  }, 120_000);
+
+  it('takes a whole number for itself only, and a decimal to one unit of its last place', async () => {
+    const count = choice('t_count', 'With `labels = [1, 0, 1, 1, 0]`, how many are 1, and what share is that?', ['2, a share of 0.6', '3, a share of 0.6', '3, a share of 0.7'], 1, 'Count the ones.');
+    const form = { checkable: true, setup: 'labels = [1, 0, 1, 1, 0]', answer_expr: '(sum(labels), sum(labels) / len(labels))', choices: [{ n: 1, kind: 'value' }, { n: 2, kind: 'value' }, { n: 3, kind: 'value' }] };
+    // The key says 2 where the count is 3: at one unit it passed, and so did the right choice beside it.
+    const out = await checkAnswers(fakeInference(() => form), nodeRunner(), [count, choice('t_count_right', count.prompt, ['2, a share of 0.6', '3, a share of 0.6', '3, a share of 0.7'], 2, 'Count the ones.')]);
+    expect([out.flags.has('t_count'), out.flags.has('t_count_right')]).toEqual([true, false]);
   }, 120_000);
 
   it('reads numbers as a class writes them: a fraction, a mixed number, and a number times a power of ten', async () => {

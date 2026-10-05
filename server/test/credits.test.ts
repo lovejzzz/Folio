@@ -189,6 +189,12 @@ describe('what a call can ask for', () => {
     expect(Object.keys(sent[0]!.body).sort()).toEqual(['max_tokens', 'messages', 'model', 'output_config', 'system']);
   });
 
+  it('sends on the one setting of thinking that turns it off, which can only cost less', async () => {
+    const cookie = await signIn();
+    await ask(cookie, { thinking: { type: 'between_tools', budget_tokens: 30000 } });
+    expect(sent.at(-1)!.body.thinking).toEqual({ type: 'between_tools' });
+  });
+
   it('gives back the whole hold when the answer breaks off before it could be read', async () => {
     const cookie = await signIn();
     reply = cut;

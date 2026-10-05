@@ -39,7 +39,8 @@ export const ModuleDraft = z.object({
       z.object({
         label: line.describe('What to do, starting with a verb'),
         activity: z.enum(['read', 'watch', 'build', 'practice', 'check', 'discuss', 'submit']),
-        minutes: z.number().int().min(1).max(600),
+        // Optional work is outside the week's hours and often comes with none: refused, the whole page was written again for it.
+        minutes: z.number().int().min(0).max(600),
         due: z.string().default('').describe('The day it is due, when it has a deadline; else empty'),
       }),
     )

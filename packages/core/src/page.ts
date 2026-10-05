@@ -267,7 +267,7 @@ export function pageText(page: readonly PageBlock[]): string {
       case 'exhibit':
         return exhibitText(b);
       case 'checklist':
-        return b.items.map((i) => `- ${i.label} (${i.minutes} min)`).join('\n');
+        return b.items.map((i) => `- ${i.label}${i.minutes ? ` (${i.minutes} min)` : ''}`).join('\n');
       case 'terms':
         return b.items.map((t) => `${t.term}: ${t.meaning}`).join('\n');
     }

@@ -59,10 +59,13 @@ def flat(v):
     try: _flatten(v, out)
     except Exception: return None
     return out
-def num_ok(stored, d, computed, tol=None):
+def num_ok(stored, d, computed, tol=None, tight=False):
     if computed != computed: return False
-    # one unit of the last place given: half a unit called a key wrong when its constant had one more digit than the form's
-    t = float(tol) if tol is not None else 1.0 * 10 ** (-d)
+    # one unit of the last place given: half a unit called a key wrong when its constant had one more digit than the form's.
+    # A whole number is itself or wrong (at one unit "2 malignant" passed for a computed 3), and a form's own
+    # tolerance may widen the rule, never narrow it: at 0.01, "df = 11.0" failed against 10.958.
+    t = 0.5 * 10 ** (-d) if tight or d <= 0 else 1.0 * 10 ** (-d)
+    if tol is not None and not tight: t = max(t, float(tol))
     return abs(stored - computed) <= t * (1 + 1e-9) + 1e-12
 def not_literal(expr):
     try: tree = ast.parse(expr, mode='eval')
@@ -110,7 +113,7 @@ def run_code(code, ns, probe=None):
         err = e; result = e
     ns.update(result=result, raised=err is not None, error=type(err).__name__ if err else None, printed=buf.getvalue())
     return err
-def match_text(text, val, first=None, tol=None):
+def match_text(text, val, first=None, tol=None, tight=False):
     """does the stored text state the computed value? returns (ok, detail)"""
     body = text.replace('\x60', '')
     import numpy as np
@@ -125,7 +128,7 @@ def match_text(text, val, first=None, tol=None):
     ns_ = numbers(body)
     if first: ns_ = ns_[:int(first)]
     if len(ns_) != len(f): return False, f'stored has {len(ns_)} numbers {[n[2] for n in ns_][:8]}, computed {len(f)}: {[round(x, 6) for x in f][:8]}'
-    bad = [(n[2], round(c, 6)) for n, c in zip(ns_, f) if not num_ok(n[0], n[1], c, tol)]
+    bad = [(n[2], round(c, 6)) for n, c in zip(ns_, f) if not num_ok(n[0], n[1], c, tol, tight)]
     return not bad, (f'stored/computed differ: {bad[:6]}' if bad else f'{len(f)} numbers equal')
 
 def check_item(item, check):
@@ -166,6 +169,9 @@ def check_item(item, check):
             def f():
                 v = ev(check.get('answer_expr'))
                 hit = sorted(n for n in vals if match_text(ch[n - 1]['text'], v, ents[n].get('first'), tol)[0])
+                # two choices one unit apart (0.6 and 0.7) both pass the loose rule: the one that rounds to the value is the one that states it
+                near = [n for n in hit if match_text(ch[n - 1]['text'], v, ents[n].get('first'), tol, True)[0]] if len(hit) > 1 else []
+                hit = near or hit
                 return hit == [keyed], f'choices stating the computed value: {hit}; keyed: {keyed}; computed {str(v)[:80]!r}'
             guard('key', 'computed answer is stated by the keyed choice and by no other', f); key_checked = True
         if codes:
@@ -174,7 +180,7 @@ def check_item(item, check):
                 for n in sorted(codes):
                     ns = fresh(); err = run_code(strip_ticks(ch[n - 1]['text']), ns, check.get('probe'))
                     j = check.get('judge')
-                    if not isinstance(j, str) or not not_literal(j): raise Invalid('judge missing or literal')
+                    if not isinstance(j, str) or not j.strip() or not not_literal(j): raise Invalid('judge missing or literal')
                     try: ok = bool(eval(compile(j, '<cell judge>', 'eval'), ns))
                     except BaseException as e: ok = False; notes.append(f'{n}: judge raised {type(e).__name__}')
                     if err is not None: notes.append(f'{n}: {type(err).__name__}')
@@ -213,7 +219,7 @@ def check_item(item, check):
                 ns = fresh(); err = run_code(strip_ticks(item.get('answer') or ''), ns, check.get('probe'))
                 if err is not None: return False, f'stored answer does not run as written: {type(err).__name__}: {err}'
                 j = check.get('judge')
-                if not isinstance(j, str) or not not_literal(j): raise Invalid('judge missing or literal')
+                if not isinstance(j, str) or not j.strip() or not not_literal(j): raise Invalid('judge missing or literal')
                 try: return bool(eval(compile(j, '<cell judge>', 'eval'), ns)), 'stored answer ran; judge evaluated'
                 except BaseException as e: raise Invalid(f'judge raised {type(e).__name__}: {e}')
             guard('key', 'stored answer runs as written and does what is asked', f); key_checked = True

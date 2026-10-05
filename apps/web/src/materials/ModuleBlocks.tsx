@@ -39,7 +39,7 @@ export function Checklist({ block }: { block: Of<'checklist'> }) {
               <span>{item.label}</span>
               <span className="mod-checklist-meta">
                 {item.due && <span className="mod-due">{t.module.due(item.due)}</span>}
-                {duration(item.minutes)}
+                {item.minutes > 0 && duration(item.minutes)}
               </span>
             </li>
           );

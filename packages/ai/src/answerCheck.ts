@@ -122,13 +122,21 @@ async function runForm(runner: Runner, task: Task, form: Form): Promise<Verdict 
   }
 }
 
+// The instruction is the same for every item and nine tenths of what is sent: given apart, it is read from the cache after the first call.
 async function fill(inference: Inference, task: Task, signal?: AbortSignal): Promise<Form> {
-  const result = await runJob(inference, { task: 'folio_answer_check', system: 'You write data for a checking program. Reply with one JSON object and nothing else.', prompt: `${INSTRUCTION}\n${JSON.stringify(shownItem(task), null, 1)}`, effort: 'medium', schema: AnswerForm, repair: false, signal });
+  const result = await runJob(inference, { task: 'folio_answer_check', system: 'You write data for a checking program. Reply with one JSON object and nothing else.', context: INSTRUCTION, prompt: JSON.stringify(shownItem(task), null, 1), effort: 'medium', schema: AnswerForm, repair: false, signal });
   return result.value;
 }
 
 /** What one claim is: the key, a wrong choice's origin, a stated value. Forms number stated values as they list them, so those are told apart by what they point at. */
-const claim = (c: Check): string => (/^(stated|verbatim)/.test(c.id) ? c.what : c.id);
+const claim = (c: Check): string => {
+  if (!/^(stated|verbatim)/.test(c.id)) return c.id;
+  // By where it points, not by how much of the text around it a form quoted: two forms failing on one number with
+  // anchors of different lengths were taken for two claims, and a real error went unsaid.
+  const [where, ...rest] = c.what.split(':');
+  const words = rest.join(':').replace(/[…\s]+/g, ' ').trim();
+  return `${where}:${c.id.startsWith('stated') ? words.slice(-16) : words.slice(0, 16)}`;
+};
 
 export interface AnswerChecks {
   /** What failed twice, by task: for the teacher. */
@@ -164,15 +172,18 @@ async function checkOne(inference: Inference, runner: Runner, task: Task, signal
  */
 export async function checkAnswers(inference: Inference, runner: Runner, tasks: Task[], signal?: AbortSignal): Promise<AnswerChecks> {
   const out: AnswerChecks = { flags: new Map(), held: new Set(), checked: 0, unchecked: 0 };
-  await Promise.all(
-    tasks.filter(worthChecking).map(async (task) => {
-      const flags = await checkOne(inference, runner, task, signal).catch((error: unknown) => (signal?.aborted ? Promise.reject(error) : null));
-      if (flags === null) out.unchecked += 1;
-      else out.checked += 1;
-      if (flags?.length) out.flags.set(task.id, flags);
-      else if (flags) out.held.add(task.id);
-    }),
-  );
+  const one = async (task: Task) => {
+    const flags = await checkOne(inference, runner, task, signal).catch((error: unknown) => (signal?.aborted ? Promise.reject(error) : null));
+    if (flags === null) out.unchecked += 1;
+    else out.checked += 1;
+    if (flags?.length) out.flags.set(task.id, flags);
+    else if (flags) out.held.add(task.id);
+  };
+  // The first alone: its call puts the instruction in the cache, and the rest, sent together after it, read it there
+  // for a tenth of the price. Sent all at once, every call paid to write it and none read it.
+  const [first, ...rest] = tasks.filter(worthChecking);
+  if (first) await one(first);
+  await Promise.all(rest.map(one));
   return out;
 }
 

@@ -17,14 +17,14 @@ const error = (status: number, type: string, message: string) =>
 
 /**
  * What Folio's own requests carry, and all that is sent on. Anything else a request names (tools billed by
- * use, faster tiers, thinking) isn't in the price a call is charged at, so it never reaches Anthropic.
+ * use, faster tiers, more thinking) isn't in the price a call is charged at, so it never reaches Anthropic.
  */
 const FIELDS = ['model', 'max_tokens', 'system', 'messages', 'stream', 'output_config'] as const;
 
 /** A picture's data inside a request. */
 const PICTURE = /"data":"[A-Za-z0-9+/=]{2000,}"/g;
 
-type Body = Partial<Record<(typeof FIELDS)[number], unknown>>;
+type Body = Partial<Record<(typeof FIELDS)[number] | 'thinking', unknown>>;
 
 interface Checked {
   body: Body;
@@ -45,6 +45,8 @@ function checked(raw: string): Checked | Response {
   if (!asked || typeof asked !== 'object') return error(400, 'invalid_request_error', 'The request is not JSON.');
   const body: Body = {};
   for (const field of FIELDS) if (asked[field] !== undefined) body[field] = asked[field];
+  // One setting of thinking is sent on: the one that turns it off before an answer, which can only make a call cost less.
+  if ((asked.thinking as { type?: unknown } | undefined)?.type === 'between_tools') body.thinking = { type: 'between_tools' };
   const model = typeof body.model === 'string' ? body.model : '';
   const maxTokens = typeof body.max_tokens === 'number' ? body.max_tokens : 0;
   if (!PRICES[model] || !model.startsWith('claude-')) return error(400, 'invalid_request_error', 'That model is not available with Folio credits.');

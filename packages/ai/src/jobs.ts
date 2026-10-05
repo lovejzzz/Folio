@@ -23,6 +23,7 @@ export interface JobSpec<T> {
   context?: string;
   prompt: string;
   effort?: Effort;
+  write?: boolean;
   schema: z.ZodType<T>;
   /** Pictures the prompt is about. */
   images?: CompletionRequest['images'];
@@ -89,7 +90,7 @@ function repairPrompt(prompt: string, raw: unknown, problems: Problem[]): string
 const shown = (problems: Problem[]) => problems.filter((p) => !p.advisory);
 
 export async function runJob<T>(inference: Inference, spec: JobSpec<T>): Promise<JobResult<T>> {
-  const request = { task: spec.task, system: spec.system, context: spec.context, effort: spec.effort, schema: spec.schema, images: spec.images, signal: spec.signal, onText: spec.onText };
+  const request = { task: spec.task, system: spec.system, context: spec.context, effort: spec.effort, write: spec.write, schema: spec.schema, images: spec.images, signal: spec.signal, onText: spec.onText };
   const first = await attempt(inference, request, spec.prompt, spec);
   if (first.value !== undefined && first.problems.length === 0) {
     return { value: first.value, problems: [], repaired: false };

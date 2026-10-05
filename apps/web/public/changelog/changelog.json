@@ -1,5 +1,35 @@
 [
  {
+  "version": "0.0.16",
+  "date": "October 5, 2026",
+  "title": "A week of an online coding course costs about a third less to write",
+  "lede": "We traced every call Folio makes for a week of a course and found that a quarter of the money bought nothing: pages written and thrown away. That is gone, and the pages that come out were judged no worse.",
+  "sections": [
+   {
+    "heading": "Where the money went",
+    "body": "Before writing a week that teaches code, the model thought at length, working out by hand what every cell would print. In four runs of six it thought until its answer was full, wrote nothing, and was asked again; the second time it thought little and wrote a good page. The page is now written straight away, at the same care as before, and Folio runs the code to learn what it prints, as it has since 0.0.13. A page whose optional reading took no time was also being written again whole for that alone; it no longer is, and an optional item with no time shows none.",
+    "image": {
+     "src": "/changelog/0.0.16-cost.webp",
+     "alt": "Two bars. As it was, a week cost $0.97, of which $0.23 was written and thrown away and $0.22 the week’s page. Now it costs $0.68: the page $0.13, putting right what the review found $0.15, the review $0.14, the rest $0.17",
+     "width": 960,
+     "height": 340
+    }
+   },
+   {
+    "heading": "How we know the pages are no worse",
+    "body": "Six weeks written each way, from three courses, were read blind by a reviewer who did not know which was which, as an instructor would before releasing them: 8.1 of 10 for the new way and 7.9 for the old, one page with a fault that would stop a student on each side. A cheaper setting we tried first, which saved a little more, scored 6.9 with four such faults in a reading where the old way scored 8.3, and we did not take it. One thing is not as good: a first draft now draws more notes from its review (about seventeen where there were eleven), so the review and the fixes cost a little more and a teacher is left a note more often. It is counted in the figure above."
+   },
+   {
+    "heading": "Smaller things",
+    "body": "A fix now gives only the blocks that change; it used to type whole parts again, half of them untouched. The answer check costs half what it did for each question, and four faults of its own are mended: it took 2 for 3, could miss an error it had found twice when the two findings quoted the text differently, let a form narrow the rounding rule, and blamed a question for a form left empty. A week with no code, or a lesson taught in a room, costs about what it did; a lesson with a quiz to check, a little less."
+   },
+   {
+    "heading": "What this is measured on",
+    "body": "Three courses in Python, first weeks, with Folio credits (Claude Sonnet 5.5), and one week of a Unity course, which came out better the new way in its one comparison. With your own key and another model, pages are written as before."
+   }
+  ]
+ },
+ {
   "version": "0.0.15",
   "date": "October 5, 2026",
   "title": "A fault of ours in online courses, and four things teachers asked for",

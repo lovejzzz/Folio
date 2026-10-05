@@ -357,6 +357,7 @@ export async function generateSection(
       context: courseBackground(course),
       prompt: sectionPrompt(course, of, kind),
       effort: SECTION_EFFORT[kind],
+      write: planTask(kind) === 'folio_module',
       schema: job.schema,
       tidy: job.tidy ? (v) => job.tidy!(v, course, of) : undefined,
       check: job.check ? (v) => job.check!(v, course, of) : undefined,

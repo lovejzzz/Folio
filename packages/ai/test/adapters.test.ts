@@ -81,6 +81,18 @@ describe('anthropic adapter', () => {
     await expect(createInference(settings('anthropic'), bad.fn).complete(req)).rejects.toMatchObject({ kind: 'auth' });
   });
 
+  it('asks for writing at once only of a model that takes it', async () => {
+    const sent = async (model: string, write: boolean) => {
+      const { fn, seen } = mockFetch(200, anthropicMessage('{"title":"x"}'));
+      await createInference(settings('anthropic', { model }), fn).complete({ ...req, write });
+      return JSON.parse(String(seen[0]!.init.body)).thinking;
+    };
+    expect(await sent('claude-sonnet-5-5', true)).toEqual({ type: 'between_tools' });
+    expect(await sent('claude-sonnet-5-5', false)).toBeUndefined();
+    // Every other model refuses the setting: it thinks as it did.
+    expect(await sent('claude-opus-5-5', true)).toBeUndefined();
+  });
+
   it('omits fallbacks and effort for models that do not take them', async () => {
     const { fn, seen } = mockFetch(200, anthropicMessage('{"title":"x"}'));
     await createInference(settings('anthropic', { model: 'claude-haiku-4-5' }), fn).complete(req);

@@ -10,6 +10,11 @@ function acceptsEffort(model: string): boolean {
   return !/haiku|-4-5|-3-/.test(model);
 }
 
+/** Models that can be told to answer without thinking first: asked of any other, the request is refused. */
+function writesAtOnce(model: string): boolean {
+  return model.startsWith('claude-sonnet-5-5');
+}
+
 function mapError(error: unknown): InferenceError {
   if (error instanceof InferenceError) return error;
   if (isAbort(error) || error instanceof Anthropic.APIUserAbortError) return new InferenceError('aborted', 'Stopped.');
@@ -47,6 +52,8 @@ function requestBody(model: string, request: CompletionRequest) {
             : request.prompt,
       },
     ],
+    // The SDK's types do not know this setting yet; the API does.
+    ...(request.write && writesAtOnce(model) ? { thinking: { type: 'between_tools' } as unknown as { type: 'adaptive' } } : {}),
     output_config: {
       ...(acceptsEffort(model) ? { effort: request.effort ?? 'medium' } : {}),
       format: { type: 'json_schema' as const, schema: format.schema },

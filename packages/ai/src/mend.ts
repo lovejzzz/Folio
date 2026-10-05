@@ -10,7 +10,8 @@ import { PlanDraft } from './schemas';
 /**
  * Putting right what a review found, where it stands. A page with notes used to be written again whole: the
  * new page lost the notes it was told of and came back with as many of its own, so half of them shipped. A
- * mend writes again only the parts at fault, and what was sound is not put at risk.
+ * mend writes again only the blocks at fault (whole parts were half unchanged text, typed again and paid for), and
+ * what was sound is not put at risk.
  */
 
 const line = z.string().min(1);
@@ -39,7 +40,17 @@ export const ModuleMend = z.object({
   parts: z
     .array(z.object({ number: z.number().int().min(1).describe('The part\'s number, as in the page given'), title: line, blocks: z.array(BlockDraft).min(1) }))
     .default([])
-    .describe('Every part that changes, written again whole'),
+    .describe('A part most of whose blocks change, written again whole'),
+  changes: z
+    .array(
+      z.object({
+        part: z.number().int().min(1).describe('The part\'s number'),
+        block: z.number().int().min(1).describe('The number of the block that changes, as the page given numbers it'),
+        instead: z.array(BlockDraft).describe('What stands in its place: the block corrected; the block and a new one after or before it; nothing, when it is taken out'),
+      }),
+    )
+    .default([])
+    .describe('Every other block that changes, one entry for each'),
   intro: z.string().default('').describe('The introduction again, only when a problem is in it'),
   checklist: z.array(ModuleDraft.shape.checklist.element).max(24).default([]).describe('The whole checklist again, only when it changes'),
   live: ModuleDraft.shape.live.describe('The live session\'s whole run of show again, only when it changes'),
@@ -68,21 +79,36 @@ const HOW = [
 ].join(' ');
 
 export function moduleMendPrompt(course: Course, lesson: Lesson, v: ModuleDraft, notes: ReviewNote[]): string {
-  const page = { intro: v.intro, checklist: v.checklist, parts: v.parts.map((p, i) => ({ number: i + 1, ...p })), live: v.live, wrapUp: v.wrapUp, leaves: v.facilitation.leaves };
+  const page = { intro: v.intro, checklist: v.checklist, parts: v.parts.map((p, i) => ({ number: i + 1, title: p.title, blocks: p.blocks.map((b, j) => ({ n: j + 1, ...b })) })), live: v.live, wrapUp: v.wrapUp, leaves: v.facilitation.leaves };
   return [
     lessonContext(course, lesson),
     earlierLessons(course, lesson),
     `The brief this week's page was written to:\n${moduleAsk(course, lesson)}`,
     `The page as written:\n${JSON.stringify(bare(page))}`,
     `A reader who followed the page to the letter found these problems:\n${numbered(notes)}`,
-    `${HOW} An exhibit is part of the page: where the text and an exhibit disagree, the exhibit is corrected, with any blank or later state that shares its labels, and no sentence tells a student to disregard part of one. Under "parts", give every part that changes, whole, under its number: no part is added, removed or renumbered. Give "intro", "checklist", "live", "wrapUp" or "leaves" only when it changes, whole, and leave the others empty; when a fix changes what students do or how long it takes, the checklist and "leaves" change with it.`,
+    `${HOW} An exhibit is part of the page: where the text and an exhibit disagree, the exhibit is corrected, with any blank or later state that shares its labels, and no sentence tells a student to disregard part of one. Under "changes", give each block that changes by its part and its number ("n"), with what stands in its place, written without "n"; a block not named there stays word for word, so nothing sound is typed again. Only a part most of whose blocks change is given whole under "parts" instead, under its number: no part is added, removed or renumbered. Give "intro", "checklist", "live", "wrapUp" or "leaves" only when it changes, whole, and leave the others empty; when a fix changes what students do or how long it takes, the checklist and "leaves" change with it.`,
   ]
     .filter(Boolean)
     .join('\n\n');
 }
 
+/** A part with the blocks named in its changes replaced: several changes to one block are taken in the order given. */
+function withChanges(part: ModuleDraft['parts'][number], changes: ModuleMend['changes']): ModuleDraft['parts'][number] {
+  const by = new Map<number, ModuleMend['changes'][number]['instead']>();
+  for (const c of changes) if (c.block <= part.blocks.length) by.set(c.block, [...(by.get(c.block) ?? []), ...c.instead]);
+  const blocks = part.blocks.flatMap((b, j) => by.get(j + 1) ?? [b]);
+  // A part is never emptied by a mend: one that would be is left as it was.
+  return by.size && blocks.length ? { ...part, blocks } : part;
+}
+
 export function applyModuleMend(v: ModuleDraft, mend: ModuleMend): Mended<ModuleDraft> {
   const parts = new Map(mend.parts.filter((p) => p.number <= v.parts.length).map((p) => [p.number, { title: p.title, blocks: p.blocks }]));
+  // A part given whole has its changes in it already.
+  const pieces = mend.changes.filter((c) => c.part <= v.parts.length && !parts.has(c.part));
+  for (const n of new Set(pieces.map((c) => c.part))) {
+    const next = withChanges(v.parts[n - 1]!, pieces.filter((c) => c.part === n));
+    if (next !== v.parts[n - 1]) parts.set(n, next);
+  }
   const changed = [
     ...[...parts.keys()].sort((a, b) => a - b).map((n) => `Part ${n}`),
     ...(mend.intro.trim() ? ['the introduction'] : []),

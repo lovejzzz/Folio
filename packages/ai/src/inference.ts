@@ -66,6 +66,13 @@ export interface CompletionRequest {
   prompt: string;
   /** Defaults to medium. */
   effort?: Effort;
+  /**
+   * True to write straight away, with no thinking first, on a model that can be told to. A week's page thought
+   * for 12,000 to 36,000 tokens before its first word, and in four runs of six that used up the whole answer:
+   * nothing was written, and the call was paid for and made again. Written without it at the same effort, six
+   * pages were judged blind beside six written with it and came out level (8.1 and 7.9 of 10).
+   */
+  write?: boolean;
   schema: z.ZodType;
   /** Pictures the prompt is about, as base64: only for a provider that can see them (see `seesPictures`). */
   images?: readonly Picture[];

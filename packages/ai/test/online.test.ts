@@ -2,6 +2,7 @@ import { CourseStore, OnlineSchema, hasModulePages, orderedLessons, pageMinutes,
 import type { Lesson } from '@folio/core';
 import { describe, expect, it } from 'vitest';
 import { OutlineDraft, checkPicture, fixNotes, courseBackground, courseFromOutline, generateSection, outlinePrompt, picturePlace, sectionPrompt, type NewCourseRequest } from '../src';
+import { ModuleMend, applyModuleMend } from '../src/mend';
 import { applyModuleReview } from '../src/moduleReview';
 import { filesSoFar } from '../src/earlierFiles';
 import { pieceCounts, startPrompt } from '../src/start';
@@ -135,12 +136,29 @@ describe('an online course with no set meeting time', () => {
     const model = fakeInference((r) => (r.task === 'folio_module_review' ? { issues: [] } : r.task === 'folio_module_mend' ? mend : bare));
     const result = await generateSection(model, c, second.id, 'plan', undefined, { reviewer: model });
     expect(model.calls.map((call) => call.task)).toEqual(['folio_module', 'folio_module_review', 'folio_module_mend', 'folio_module_review']);
+    // The page is written at once; the mend and the other jobs think as they did.
+    expect(model.calls.map((call) => call.write ?? false)).toEqual([true, false, false, false]);
     expect(model.calls[2]!.prompt).toMatch(/Every image and video needs its caption/);
     expect(model.calls[3]!.prompt).toContain('since then these were written again: Part 1.');
     // What Folio's own checks found is not the reader's to check again.
     expect(model.calls[3]!.prompt).not.toContain('needs its caption');
     const fill = result.commands[0]!;
     expect(fill.type === 'section.fill' && fill.payload.flags).toEqual([]);
+  });
+
+  it('mends a page by the blocks that change, and leaves every other block as it was', () => {
+    const v = draft();
+    const [first, second] = [v.parts[0]!.blocks[0]!, { ...v.parts[0]!.blocks[0]!, text: 'A second block that is sound.' }];
+    v.parts[0]!.blocks = [first, second];
+    const fixed = { ...first, text: 'The first block, corrected.' };
+    const added = { ...first, text: 'A step that was missing.' };
+    const mended = applyModuleMend(v, ModuleMend.parse({ changes: [{ part: 1, block: 1, instead: [fixed, added] }, { part: 9, block: 1, instead: [] }, { part: 1, block: 7, instead: [] }] }));
+    expect(mended.value.parts[0]!.blocks).toEqual([fixed, added, second]);
+    expect(mended.value.parts[0]!.blocks[2]).toBe(second);
+    expect(mended.changed).toEqual(['Part 1']);
+    // Taken out, a block is gone; a part is never left empty.
+    expect(applyModuleMend(v, ModuleMend.parse({ changes: [{ part: 1, block: 2, instead: [] }] })).value.parts[0]!.blocks).toEqual([first]);
+    expect(applyModuleMend(v, ModuleMend.parse({ changes: [{ part: 1, block: 1, instead: [] }, { part: 1, block: 2, instead: [] }] })).changed).toEqual([]);
   });
 
   it('writes Start here again from the weeks when the last week is written', async () => {
