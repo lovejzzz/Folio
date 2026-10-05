@@ -16,7 +16,8 @@ export const test = base.extend<{ guard: void }>({
       );
       const problems: string[] = [];
       page.on('console', (m) => {
-        if (m.type() === 'error' && /Content Security Policy|Refused to/i.test(m.text())) problems.push(m.text());
+        // A refusal to reach example.com is a test proving that nothing leaves the frame that runs course code: there the refusal is the point.
+        if (m.type() === 'error' && /Content Security Policy|Refused to/i.test(m.text()) && !m.text().includes('example.com')) problems.push(m.text());
       });
       page.on('pageerror', (e) => problems.push(`Uncaught: ${e.message}`));
       await use();
