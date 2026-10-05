@@ -1,12 +1,37 @@
 import { exhibitBlock } from './pageView';
 import { filledTexts, isBlankPoint, isBlankSegment, isBlankTerm, statedObjectives } from '../blank';
 import { lessonSessions, sessionIndex } from '../course';
+import type { Handout } from '../page';
 import type { Lesson } from '../schema';
 import type { Block } from '../semantic';
 import { projectPage } from './pageView';
 import { field, lessonHeading, lessonsIn, nonEmpty, questionBlock, shownQuestions, type Ctx } from './shared';
 
 const terms = (lesson: Lesson) => lesson.vocabulary.filter((v) => !isBlankTerm(v)).map(({ term, definition }) => ({ term, definition }));
+
+/** Where a sheet of slips or cards is cut. */
+const CUT = `\u2702 ${'- '.repeat(34)}`.trimEnd();
+/** Slips to a page: a ticket is a few lines, and a page of one wastes two thirds of the paper. */
+const SLIPS = 3;
+/** Cards to a row, each with room to be picked up and sorted. */
+const CARDS = 3;
+
+/**
+ * A sheet as paper wants it. Slips come several to a page with a line to cut along; cards come as a grid, one
+ * card to a cell with space around its words, in place of a list that cannot be cut apart.
+ */
+function sheet(h: Handout): Block[] {
+  const body = (blocks: Handout['blocks']) => blocks.flatMap((b) => exhibitBlock(b));
+  if (h.kind === 'slips') return Array.from({ length: SLIPS }, (_, i): Block[] => [...(i ? [{ t: 'para' as const, tone: 'muted' as const, text: CUT }] : []), ...body(h.blocks)]).flat();
+  if (h.kind !== 'cards') return body(h.blocks);
+  return h.blocks.flatMap((b): Block[] => {
+    if (b.type !== 'table') return exhibitBlock(b);
+    // One card to a row of the sheet's table: its cells, without a column that only numbers the cards.
+    const cards = b.rows.map((r) => r.filter((c, i) => c.trim() && !(i === 0 && r.length > 1 && /^\d+\.?$/.test(c.trim()))).join('\n')).filter(Boolean);
+    const rows = Array.from({ length: Math.ceil(cards.length / CARDS) }, (_, i) => Array.from({ length: CARDS }, (_, j) => (cards[i * CARDS + j] ? `\n${cards[i * CARDS + j]}\n` : '')));
+    return [{ t: 'table', head: [], rows }];
+  });
+}
 
 /** Lesson plans. The student copy is a lesson outline without teacher notes. */
 export function projectPlan(ctx: Ctx): Block[] {
@@ -58,7 +83,7 @@ export function projectPlan(ctx: Ctx): Block[] {
     for (const h of lesson.handouts) {
       blocks.push({ t: 'break' }, { t: 'heading', level: 3, text: h.title });
       if (teacher && (h.copies || h.usedIn)) blocks.push({ t: 'para', tone: 'muted', text: [h.copies, h.usedIn && l.usedIn(h.usedIn)].filter(Boolean).join(' · ') });
-      blocks.push(...h.blocks.flatMap((b) => exhibitBlock(b)));
+      blocks.push(...sheet(h));
       if (teacher && h.key.trim()) blocks.push({ t: 'note', label: l.answerKey, text: h.key });
     }
     blocks.push({ t: 'break' });
