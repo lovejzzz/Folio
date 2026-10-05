@@ -15,16 +15,30 @@ warnings.filterwarnings('ignore')
 LOC = {0x201c: '"', 0x201d: '"', 0x2018: "'", 0x2019: "'", 0x2212: '-', 0xa0: ' '}
 def nloc(s): return s.translate(LOC)   # 1:1, used ONLY to locate an anchor; values and code are taken from the stored text
 NUM = re.compile(r'(?<![\w.])(?:(?<![\w)\]])[-−])?(?:(?:\d{1,3}(?:,\d{3})+(?!\d)|\d+)(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?')
+SUP = str.maketrans('⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻', '0123456789+-')
+SCI = re.compile(r'(\d[\d,]*(?:\.\d+)?)\s*[×x·*]\s*10\s*(?:\^\s*\{?\s*([-+−]?\d+)\s*\}?|([⁺⁻]?[⁰¹²³⁴⁵⁶⁷⁸⁹]+))')
+FRAC = re.compile(r'(?<![\w./])(?:(\d+)\s+)?(\d+)\s*/\s*(\d+)(?![\w/]|\.\d)')
 def numbers(text):
-    out = []
-    for m in NUM.finditer(text):
-        s = m.group(0).replace('−', '-')
-        if s.endswith('.'): s = s[:-1]
-        t = s.replace(',', '')
-        mant = re.split('[eE]', t)[0]
-        d = len(mant.split('.')[1]) if '.' in mant else 0
-        try: out.append((float(t), d, m.group(0)))
-        except ValueError: pass
+    """the numbers a text states, in order, each with the decimal places it is given to. Read as a class writes
+    them: 3.011 × 10²³ is one number, and so is 2/3, and 1 1/2"""
+    # scientific notation first, as one token the pattern below reads
+    text = SCI.sub(lambda m: m.group(1).replace(',', '') + 'e' + (m.group(2) or m.group(3).translate(SUP)).replace('−', '-'), text)
+    out = []; at = 0
+    def plain(part):
+        for m in NUM.finditer(part):
+            s = m.group(0).replace('−', '-')
+            if s.endswith('.'): s = s[:-1]
+            t = s.replace(',', '')
+            mant = re.split('[eE]', t)[0]
+            d = len(mant.split('.')[1]) if '.' in mant else 0
+            if re.search('[eE]', t): d = d - int(re.split('[eE]', t)[1])   # places of the whole number, not of its mantissa
+            try: out.append((float(t), d, m.group(0)))
+            except ValueError: pass
+    for m in FRAC.finditer(text):
+        plain(text[at:m.start()]); at = m.end()
+        whole, top, bottom = m.group(1), int(m.group(2)), int(m.group(3))
+        if bottom: out.append(((int(whole) if whole else 0) + top / bottom, 9, m.group(0)))   # a fraction is exact
+    plain(text[at:])
     return out
 def _flatten(v, out):
     import numpy as np

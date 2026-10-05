@@ -72,6 +72,23 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect(out.flags.size).toBe(0);
   }, 120_000);
 
+  it('reads numbers as a class writes them: a fraction, a mixed number, and a number times a power of ten', async () => {
+    const key = (id: string, answerKey: string): Task => ({ ...base, id, kind: 'assignment', title: 'Sheet', prompt: '', steps: ['Work out parts 1, 2, 3 and 4 with `len`.'], rubricId: null, answerKey, toward: '' });
+    const form = (expr: string, before: string) => ({ checkable: true, setup: 'from fractions import Fraction\nmol = 0.500\navogadro = 6.022e23', stated: [{ where: 'answerKey', before, expr }] });
+    // Each is really checked (an item that is not would also show no fault), and what it found is counted.
+    const run = async (task: Task, f: object) => {
+      const out = await checkAnswers(fakeInference(() => f), nodeRunner(), [task]);
+      expect(out.checked).toBe(1);
+      return out.flags.size;
+    };
+    expect(await run(key('t_sci', 'The sample holds 3.011 × 10²³ atoms.'), form('mol * avogadro', 'The sample holds '))).toBe(0);
+    expect(await run(key('t_sci2', 'The sample holds 3.011 x 10^23 atoms.'), form('mol * avogadro', 'The sample holds '))).toBe(0);
+    expect(await run(key('t_frac', 'Line 2 is marked at 1/3, 2/3 and 3/3.'), form('[Fraction(k, 3) for k in (1, 2, 3)]', 'Line 2 is marked at '))).toBe(0);
+    expect(await run(key('t_mixed', 'Together they make 1 1/2 strips.'), form('Fraction(3, 4) * 2', 'Together they make '))).toBe(0);
+    // And a wrong one still fails: 2/4 where three fourths was meant.
+    expect(await run(key('t_wrong_frac', 'The dot sits at 2/4.'), form('Fraction(3, 4)', 'The dot sits at '))).toBe(1);
+  }, 180_000);
+
   it('runs a stored answer as it is stored: a curly quote in code is a failure, not something to tidy first', async () => {
     const short: Task = { ...base, id: 't_code', kind: 'question', format: 'short', prompt: 'Write an expression for the number of rows whose `city` is Austin.', choices: [], correct: null, answer: '`(df["city"] == “Austin”).sum()`', explanation: '', difficulty: 2 };
     const form = { checkable: true, setup: 'import pandas as pd\ndf = pd.DataFrame({"city": ["Austin", "Reno", "Austin"]})', answer_kind: 'code', judge: 'result == (df["city"] == "Austin").sum()' };
