@@ -94,6 +94,12 @@ function swapBlock(b: Block, edit: ModuleIssue): { block: Block; hits: number } 
   };
   const block = { ...b, items: b.items.map(swap) };
   for (const f of TEXT_FIELDS) block[f] = swap(b[f]);
+  // An exhibit is part of the page: a fix that could reach only the sentences around one left the exhibit wrong
+  // and the page telling students to disregard it.
+  if (b.exhibit) {
+    const parts = b.exhibit.parts.map((p) => ({ label: swap(p.label), blocks: p.blocks.map((x) => ({ ...x, text: swap(x.text), label: swap(x.label), items: x.items.map(swap), columns: x.columns.map(swap), rows: x.rows.map((r) => r.map(swap)) })) }));
+    block.exhibit = { ...b.exhibit, title: swap(b.exhibit.title), parts };
+  }
   return { block, hits };
 }
 

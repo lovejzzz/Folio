@@ -417,6 +417,10 @@ describe('the files earlier weeks wrote', () => {
     expect(block).toMatchObject({ frame: 'notes', reveal: true, caption: 'Compare the Light column with yours.', parts: [{ blocks: [{ type: 'field', label: 'Question', value: 'Where does the mass come from?' }, { type: 'table', rows: [['Water', 'needed'], ['Soil', '']] }, { type: 'yours', hint: 'Your own example' }] }] });
     const found = JSON.stringify(checkModule(v, online()));
     expect(found).toContain('has a table whose rows are not as long as its columns');
+    // A fix the reviewer gives in a few words reaches inside the exhibit, where the wrong words stand.
+    const fixed = applyModuleReview(v, [{ part: 2, kind: 'fact', why: 'It is water.', find: 'Where does the mass come from?', replace: 'Where does the water go?' }]);
+    expect(fixed.applied).toHaveLength(1);
+    expect(JSON.stringify(fixed.value.parts[1])).toContain('Where does the water go?');
     const c = online();
     const first = orderedLessons(c)[0]!;
     const built = { ...c, lessons: { ...c.lessons, [first.id]: { ...first, page: modulePage(v, 'en') } } } as Course;

@@ -75,7 +75,7 @@ export function moduleMendPrompt(course: Course, lesson: Lesson, v: ModuleDraft,
     `The brief this week's page was written to:\n${moduleAsk(course, lesson)}`,
     `The page as written:\n${JSON.stringify(bare(page))}`,
     `A reader who followed the page to the letter found these problems:\n${numbered(notes)}`,
-    `${HOW} Under "parts", give every part that changes, whole, under its number: no part is added, removed or renumbered. Give "intro", "checklist", "live", "wrapUp" or "leaves" only when it changes, whole, and leave the others empty; when a fix changes what students do or how long it takes, the checklist and "leaves" change with it.`,
+    `${HOW} An exhibit is part of the page: where the text and an exhibit disagree, the exhibit is corrected, with any blank or later state that shares its labels, and no sentence tells a student to disregard part of one. Under "parts", give every part that changes, whole, under its number: no part is added, removed or renumbered. Give "intro", "checklist", "live", "wrapUp" or "leaves" only when it changes, whole, and leave the others empty; when a fix changes what students do or how long it takes, the checklist and "leaves" change with it.`,
   ]
     .filter(Boolean)
     .join('\n\n');

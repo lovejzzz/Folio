@@ -54,6 +54,8 @@ export function exhibitFaults(exhibit: ExhibitDraft | undefined): string[] {
   if (/(^|\s)(\.\.\.|…)(\s|$)/m.test(words)) out.push('stands in "…" for content: write what is there');
   const lost = exhibit.marks.filter((m) => !words.includes(m.quote));
   if (lost.length) out.push(`points at words that are not in it ("${lost[0]!.quote.slice(0, 40)}"): quote them exactly as the exhibit has them`);
+  const twice = exhibit.marks.find((m) => words.split(m.quote).length > 2);
+  if (twice) out.push(`points at words that occur more than once in it ("${twice.quote.slice(0, 40)}"): quote enough of them to occur once`);
   return out;
 }
 
