@@ -31,9 +31,17 @@ interface LiveState {
   rows: Record<string, LiveRow>;
   /** Sections seen taking shape: they settle where they are rather than fade in. */
   streamed: Record<string, true>;
+  /** Megabytes of Python fetched so far, the first time a course's code is run on this device; null when nothing is being fetched. */
+  fetching: number | null;
 }
 
-export const useLive = create<LiveState>(() => ({ partial: {}, rows: {}, streamed: {} }));
+export const useLive = create<LiveState>(() => ({ partial: {}, rows: {}, streamed: {}, fetching: null }));
+
+/** Python arriving: said in whole megabytes, so the page redraws a few dozen times and not for every packet. */
+export function showFetching(bytes: number | null): void {
+  const megabytes = bytes === null ? null : Math.floor(bytes / 1_000_000);
+  if (megabytes !== useLive.getState().fetching) useLive.setState({ fetching: megabytes });
+}
 
 // An answer streams in a few words at a time; the map redraws at most once a frame, whatever arrives.
 let pending: Record<string, unknown> = {};

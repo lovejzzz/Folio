@@ -29,7 +29,8 @@ function WorkingRow({ row, index }: { row: LiveRow; index: number }) {
   const running = row.stage === 'running';
   const checking = running || (row.stage === 'checking' && !row.checked);
   const metric = partial === undefined ? '' : livePreview(row.kind, partial, t).metric;
-  const detail = running ? t.build.live.running : checking ? t.build.live.checking : metric || t.build.live.writing;
+  const fetching = useLive((s) => s.fetching);
+  const detail = running ? (fetching === null ? t.build.live.running : t.build.live.fetching(fetching)) : checking ? t.build.live.checking : metric || t.build.live.writing;
   return (
     <li className={cx('flex animate-pop-in items-center gap-2.5', index >= 2 && 'hidden sm:flex')}>
       <RowName row={row} course={course} />

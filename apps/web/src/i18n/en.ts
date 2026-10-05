@@ -305,6 +305,8 @@ export const en = {
       writing: 'Writing…',
       checking: 'Checking the plan…',
       running: 'Running the code…',
+      /** The first time on a device: Python itself has to arrive. */
+      fetching: (megabytes: number) => `Getting Python to run the code… ${megabytes} MB`,
       checked: 'Plan checked',
       fixed: (n: number) => (n === 1 ? 'The check fixed 1 thing' : `The check fixed ${n} things`),
       notes: (n: number) => (n === 1 ? '1 note for you' : `${n} notes for you`),

@@ -1,6 +1,7 @@
 import type { RunOptions } from '@folio/ai';
 import { localMediaRef } from '@folio/core';
 import { RUNTIME_VERSION, type Runner } from '@folio/run';
+import { showFetching } from './live';
 import { putMedia } from './media';
 
 /**
@@ -9,11 +10,22 @@ import { putMedia } from './media';
  */
 
 let made: Promise<Runner> | null = null;
-const open = (): Promise<Runner> => (made ??= import('@folio/run/browser').then(({ browserRunner }) => browserRunner({ runnerUrl: '/runner/', runtimeUrl: `/api/runtime/pyodide-${RUNTIME_VERSION}/` })));
+/** Bytes of each file so far: the files arrive side by side. */
+const arrived = new Map<string, number>();
+const onDownload = (file: string, loaded: number): void => {
+  arrived.set(file, loaded);
+  showFetching([...arrived.values()].reduce((n, b) => n + b, 0));
+};
+const open = (): Promise<Runner> => (made ??= import('@folio/run/browser').then(({ browserRunner }) => browserRunner({ runnerUrl: '/runner/', runtimeUrl: `/api/runtime/pyodide-${RUNTIME_VERSION}/`, onDownload })));
 
 /** The runner, there from the first cell on: until then nothing is loaded. */
 const runner: Runner = {
-  run: async (cell) => (await open()).run(cell),
+  run: async (cell) => {
+    const result = await (await open()).run(cell);
+    // A cell has answered: whatever was being fetched for it is here.
+    showFetching(null);
+    return result;
+  },
   reset: async () => (made ? (await made).reset() : undefined),
   versions: async () => (await open()).versions(),
   close: () => void made?.then((r) => r.close()),
