@@ -155,6 +155,7 @@ export function QuestionCard({ course, q, n }: { course: Course; q: Question; n:
         </IconButton>
       </header>
       {q.flags.length > 0 && <FlagNote flags={q.flags} lessonId={q.lessonId} kind="quiz" itemId={q.id} />}
+      {q.checked && q.flags.length === 0 && <p className="no-print font-ui text-12 text-ink-2">{t.quiz.checked}</p>}
       <EditableText as="p" multiline value={q.prompt} label={t.quiz.question(n)} context={q.explanation} className="block font-reading text-17 leading-7 text-ink" onCommit={(prompt) => update({ prompt })} />
       {(q.format === 'choice' || q.format === 'truefalse') && <Choices q={q} update={update} label={label} />}
       <AnswerFold q={q} update={update} />

@@ -38,7 +38,10 @@ describe('an answer that can be computed', () => {
     expect(twice.flags.get('t_wrong')).toEqual([{ code: 'answerCheck', values: { claim: 'the key', found: 'stored 3.0 computed 4.0' } }]);
     expect(model.calls).toHaveLength(2);
     expect(model.calls[0]!.prompt).toContain('"keyed": true');
-    expect((await checkAnswers(model, scripted([fail('key'), PASS]), [wrong])).flags.size).toBe(0);
+    // A pass is said too: the item is marked as checked, which a teacher can see.
+    expect([...(await checkAnswers(model, scripted([PASS]), [right])).held]).toEqual(['t_right']);
+    const twiceWrong = await checkAnswers(model, scripted([fail('key'), PASS]), [wrong]);
+    expect([twiceWrong.flags.size, twiceWrong.held.size]).toEqual([0, 1]);
     expect((await checkAnswers(model, scripted([fail('key'), fail('origin2')]), [wrong])).flags.size).toBe(0);
   });
 

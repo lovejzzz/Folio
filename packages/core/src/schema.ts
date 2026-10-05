@@ -153,6 +153,8 @@ const taskBase = {
   origin: OriginSchema,
   edited: z.boolean(),
   flags: z.array(FlagSchema),
+  /** Folio computed what the item claims (its key, its stated values) and it held. Gone once the item is changed by hand. */
+  checked: z.boolean().optional(),
 };
 
 export const ChoiceSchema = z.object({ id, text });

@@ -112,6 +112,8 @@ const claim = (c: Check): string => (/^(stated|verbatim)/.test(c.id) ? c.what : 
 export interface AnswerChecks {
   /** What failed twice, by task: for the teacher. */
   flags: Map<string, Flag[]>;
+  /** The items whose claims were computed and held. */
+  held: Set<string>;
   checked: number;
   /** Items no check could bind to or run for: counted, never shown as a problem. */
   unchecked: number;
@@ -140,13 +142,14 @@ async function checkOne(inference: Inference, runner: Runner, task: Task, signal
  * it is then counted as unchecked. Stopping still stops.
  */
 export async function checkAnswers(inference: Inference, runner: Runner, tasks: Task[], signal?: AbortSignal): Promise<AnswerChecks> {
-  const out: AnswerChecks = { flags: new Map(), checked: 0, unchecked: 0 };
+  const out: AnswerChecks = { flags: new Map(), held: new Set(), checked: 0, unchecked: 0 };
   await Promise.all(
     tasks.filter(worthChecking).map(async (task) => {
       const flags = await checkOne(inference, runner, task, signal).catch((error: unknown) => (signal?.aborted ? Promise.reject(error) : null));
       if (flags === null) out.unchecked += 1;
       else out.checked += 1;
       if (flags?.length) out.flags.set(task.id, flags);
+      else if (flags) out.held.add(task.id);
     }),
   );
   return out;
@@ -158,8 +161,9 @@ type Fill = { type: string; payload: { tasks?: Task[] } };
 export async function withAnswerChecks<C extends { type: string; payload: unknown }>(inference: Inference, runner: Runner | undefined, written: { commands: C[]; flagged: number }, signal?: AbortSignal): Promise<{ commands: C[]; flagged: number }> {
   const tasks = written.commands.flatMap((c) => (c.type === 'tasks.fill' ? ((c as Fill).payload.tasks ?? []) : []));
   if (!runner || !tasks.some(worthChecking)) return written;
-  const { flags } = await checkAnswers(inference, runner, tasks, signal);
-  if (!flags.size) return written;
-  const noted = (c: C): C => (c.type === 'tasks.fill' ? { ...c, payload: { ...(c.payload as object), tasks: ((c as Fill).payload.tasks ?? []).map((t) => (flags.has(t.id) ? { ...t, flags: [...t.flags, ...flags.get(t.id)!] } : t)) } } : c);
+  const { flags, held } = await checkAnswers(inference, runner, tasks, signal);
+  if (!flags.size && !held.size) return written;
+  const mark = (t: Task): Task => (flags.has(t.id) ? { ...t, flags: [...t.flags, ...flags.get(t.id)!] } : held.has(t.id) ? { ...t, checked: true } : t);
+  const noted = (c: C): C => (c.type === 'tasks.fill' ? { ...c, payload: { ...(c.payload as object), tasks: ((c as Fill).payload.tasks ?? []).map(mark) } } : c);
   return { commands: written.commands.map(noted), flagged: written.flagged + flags.size };
 }

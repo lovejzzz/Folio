@@ -282,7 +282,8 @@ const handlers: { [K in CommandType]: Handler<K> } = {
   'task.update': (draft, p) => {
     const task = draft.tasks[p.taskId];
     if (!task) throw new CommandError(`No task ${p.taskId}`);
-    Object.assign(task, p.fields, { edited: true });
+    // What was checked is the item as it was: changed, it is unchecked again.
+    Object.assign(task, p.fields, { edited: true, checked: false });
     const lesson = draft.lessons[task.lessonId];
     if (lesson) markEdited(lesson, sectionOfTask(task as Task));
   },

@@ -464,6 +464,8 @@ export const en = {
     hideWhy: 'Hide why',
     answer: 'Answer',
     explanation: 'Why',
+    /** Under a question whose key Folio computed. */
+    checked: 'Answer checked by running it.',
     modelAnswer: 'Sample answer',
     markCorrect: 'Mark as the correct answer',
     choice: (letter: string) => `Choice ${letter}`,
