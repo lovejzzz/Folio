@@ -136,11 +136,7 @@ function modulePage(title: string) {
         title: 'Try it yourself',
         blocks: [
           { type: 'text', text: 'Draw a second leaf kept in the dark and say how it differs.' },
-          {
-            type: 'exhibit',
-            text: 'Compare the Dark column with what you wrote.',
-            exhibit: { frame: 'notes', title: 'Leaf notes', reveal: true, marks: [{ quote: 'Dark', note: 'The column you filled in.' }], parts: [{ blocks: [{ type: 'table', columns: ['Leaf', 'Light', 'Dark'], rows: [['Colour', 'green', 'pale'], ['Starch', 'present', 'absent']] }] }] },
-          },
+          { type: 'exhibit', kind: 'notes closed', title: 'Leaf notes', text: 'Compare the Dark column with what you wrote.', items: ['| Leaf | Light | Dark |', '| Colour | green | pale |', '| Starch | present | absent |', '!! Dark :: The column you filled in.'] },
         ],
       },
     ],
@@ -207,7 +203,7 @@ function answerFor(body: Body, python = false): unknown {
       vocabulary: [{ term: 'Chlorophyll', definition: 'The green pigment that absorbs light.' }],
     };
   if (prompt.includes('Write a slide deck'))
-    return { slides: [{ layout: 'title', title, bullets: [], notes: '' }, { layout: 'bullets', title: 'What plants need', bullets: ['Light', 'Water', 'Carbon dioxide'], notes: 'Ask students to guess first.' }, { layout: 'question', title: 'Where does the mass of a tree come from?', bullets: [], notes: 'Most say the soil.' }] };
+    return { slides: [{ layout: 'title', title, bullets: [], notes: '' }, { layout: 'bullets', title: 'What plants need', bullets: ['Light', 'Water', 'Carbon dioxide'], notes: 'Ask students to guess first.' }, { layout: 'question', title: 'Where does the mass of a tree come from?', bullets: [], notes: 'Most say the soil.' }, { layout: 'bullets', title: 'What goes in and what comes out', bullets: [], notes: '', table: { columns: ['', 'Goes in', 'Comes out'], rows: [['Gas', 'Carbon dioxide', 'Oxygen'], ['Other', 'Water'] ] } }, { layout: 'bullets', title: 'Starch after a day in the light', bullets: ['Which leaf made more?'], notes: '', chart: { chart: 'bar', categories: ['In light', 'In the dark'], series: [{ name: '', values: [8, 2] }], unit: 'mg of starch', illustrative: true } }] };
   if (prompt.includes('Write a study guide'))
     return { overview: `A summary of ${title.toLowerCase()}.`, points: [{ heading: 'The equation', explanation: 'Carbon dioxide and water make glucose and oxygen.' }, { heading: 'Where it happens', explanation: 'In chloroplasts, mostly in leaf cells.' }] };
   if (prompt.includes('quiz questions'))

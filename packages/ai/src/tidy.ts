@@ -119,7 +119,8 @@ export function tidySlides(v: SlidesDraft, language: Language): SlidesDraft {
       const half = Math.ceil(s.bullets.length / 2);
       return [
         { ...s, bullets: s.bullets.slice(0, half) },
-        { ...s, title: continued(s.title), bullets: s.bullets.slice(half), notes: '' },
+        // The table or chart stays with the first: shown twice, it read as two different figures.
+        { ...s, title: continued(s.title), bullets: s.bullets.slice(half), notes: '', table: undefined, chart: undefined },
       ];
     }),
   };

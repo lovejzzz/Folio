@@ -50,7 +50,7 @@ export function handoutsPrompt(course: Course, lesson: Lesson, plan: Content): s
 }
 
 function toHandout(d: HandoutsDraft['handouts'][number]): Handout {
-  return { id: newId('x'), title: d.title, kind: d.kind, usedIn: d.usedIn, copies: d.copies, blocks: exhibitPart({ label: '', blocks: d.blocks }).blocks, key: d.key };
+  return { id: newId('x'), title: d.title, kind: d.kind, usedIn: d.usedIn, copies: d.copies, blocks: exhibitPart({ label: '', blocks: d.blocks }).blocks, key: d.key, supports: false };
 }
 
 /**

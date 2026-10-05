@@ -136,7 +136,7 @@ function Terms({ b }: { b: B<'terms'> }) {
 function SlideBlock({ b, lang }: { b: B<'slide'>; lang: string }) {
   return (
     <div className="avoid-break my-4 overflow-hidden rounded-control shadow-sheet">
-      <SlideCanvas slide={{ id: String(b.n), layout: b.layout, title: b.title, bullets: b.bullets, notes: b.notes ?? '' }} lang={lang} footer={b.lesson} />
+      <SlideCanvas slide={{ id: String(b.n), layout: b.layout, title: b.title, bullets: b.bullets, notes: b.notes ?? '', visual: b.visual }} lang={lang} footer={b.lesson} />
       {b.notes && (
         <p className="border-t border-rule px-4 py-2 font-ui text-13 text-ink-2">
           <InlineText text={b.notes} />

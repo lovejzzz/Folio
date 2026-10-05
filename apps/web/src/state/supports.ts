@@ -21,7 +21,7 @@ export async function addSupportedCopy(lessonId: string, handoutId: string): Pro
   if (!canReach(inference)) return false;
   const course = store.getState();
   try {
-    const commands = await supportedHandout(inference, course, lessonId, handoutId, currentMessages().handouts.withSupports);
+    const commands = await supportedHandout(inference, course, lessonId, handoutId);
     // Written from the lesson as it was when asked: put over sheets edited since, it would undo those edits.
     if (store.getState().revision !== course.revision) {
       toast({ message: currentMessages().changes.fixStale, tone: 'attention' });

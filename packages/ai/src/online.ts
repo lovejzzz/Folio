@@ -2,7 +2,7 @@ import { cmd, hasModulePages, isOutsideHours, newId, orderedLessons, pageMinutes
 import { z } from 'zod';
 import type { Problem } from './jobs';
 import { isMixedOnline, mixedAsk } from './live';
-import { ExhibitDraft, exhibitFaults, exhibitPart } from './exhibit';
+import { EXHIBIT_KIND, EXHIBIT_LINES, exhibitFaults, exhibitFromLines, exhibitPart } from './exhibit';
 import { HANDS_ON } from './handsOn';
 import { flagsAt, otherPieces, workOf, type SectionJob } from './workJobs';
 
@@ -17,8 +17,8 @@ const line = z.string().min(1);
 export const BlockDraft = z.object({
   type: z.enum(['heading', 'text', 'list', 'steps', 'callout', 'code', 'image', 'video', 'file', 'terms', 'exhibit']),
   text: z.string().default('').describe('heading: its words. text: a paragraph. callout: its whole body. code: the code exactly as typed, with line breaks. image, video: the caption. file: its file name as students see it'),
-  items: z.array(z.string()).default([]).describe('list: the items. steps: one action per item, unnumbered. terms: "term: meaning" per item'),
-  kind: z.string().default('').describe('callout: checkpoint, stuck, why, tip, warning or version. code: the language, "python" for a notebook cell and "output" for what the cell before it prints. file: starter, checkpoint, solution or resource. video: "clip" for a short silent recording of the screen, "talk" for one with the instructor speaking'),
+  items: z.array(z.string()).default([]).describe(`list: the items. steps: one action per item, unnumbered. terms: "term: meaning" per item. ${EXHIBIT_LINES}`),
+  kind: z.string().default('').describe('callout: checkpoint, stuck, why, tip, warning or version. code: the language, "python" for a notebook cell and "output" for what the cell before it prints. file: starter, checkpoint, solution or resource. video: "clip" for a short silent recording of the screen, "talk" for one with the instructor speaking. ' + EXHIBIT_KIND),
   title: z.string().default('').describe('callout: a short title, or empty'),
   shots: z
     .array(z.object({ step: z.number().int().min(1), shows: line, alt: line, caption: z.string().default('') }))
@@ -28,7 +28,6 @@ export const BlockDraft = z.object({
   alt: z.string().default('').describe('image, clip: what a student who cannot see it needs from it: the names and values visible, what happens'),
   minutes: z.number().min(0).max(60).default(0).describe('video: its length'),
   transcript: z.string().default('').describe('video: what is said, word for word'),
-  exhibit: ExhibitDraft.optional().describe('exhibit only: the document, table or notes page itself; its caption goes under "text"'),
 });
 type BlockDraft = z.infer<typeof BlockDraft>;
 
@@ -100,8 +99,8 @@ const typed = (text: string) => text.replace(/\u2212(?=\d)/g, '-');
 
 /** An exhibit with nothing in it is a paragraph of its caption: never an empty box. */
 function exhibitBlock(id: string, b: BlockDraft): PageBlock {
-  if (!b.exhibit) return { id, type: 'text', text: b.text };
-  const e = b.exhibit;
+  const e = exhibitFromLines(b.kind, b.title, b.items);
+  if (!e) return { id, type: 'text', text: b.text };
   return { id, type: 'exhibit', frame: e.frame, title: e.title, parts: e.parts.map(exhibitPart), marks: e.marks, caption: b.text, reveal: e.reveal };
 }
 
@@ -197,7 +196,7 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
       const wrong = !name ? 'has no file name: give it under "text"' : name.length > 60 ? 'is named by a sentence: "text" holds the file\'s name alone (Dodge-week6-start.zip), "shows" says what the file holds, and anything said to the student goes in a paragraph beside it' : !b.shows.trim() ? 'does not say what it holds: give that under "shows"' : '';
       if (wrong) problems.push(issue(`In "${part.title}", the file ${name ? `"${name.slice(0, 40)}"` : `(${b.shows.trim().slice(0, 40) || 'unnamed'})`} ${wrong}`));
     }
-  for (const part of v.parts) for (const b of part.blocks) for (const wrong of b.type === 'exhibit' ? exhibitFaults(b.exhibit) : []) problems.push(issue(`In "${part.title}", the exhibit ${b.exhibit?.title ? `"${b.exhibit.title.slice(0, 40)}" ` : ''}${wrong}`));
+  for (const part of v.parts) for (const b of part.blocks) for (const wrong of b.type === 'exhibit' ? exhibitFaults(exhibitFromLines(b.kind, b.title, b.items)) : []) problems.push(issue(`In "${part.title}", the exhibit ${b.title ? `"${b.title.slice(0, 40)}" ` : ''}${wrong}`));
   const thin = blocks.filter((b) => b.type === 'callout' && ['stuck', 'checkpoint'].includes(b.kind.trim().toLowerCase()) && [b.text, ...b.items].join(' ').trim().length < 80);
   if (thin.length) problems.push(issue(`${thin.length} checkpoint or stuck callouts say too little: a checkpoint says what the student should see and what wrong looks like; a stuck callout gives each likely cause with its fix`));
   // Pictures and clips are owed where the steps are followed on a screen: a week that teaches a tool names its version or
@@ -297,7 +296,7 @@ export function moduleAsk(course: Course, lesson: Lesson): string {
     `Under "checklist", everything the student does this week in order, each with the kind of activity, an honest estimate in minutes for a student new to it, and the day it is due when it has a deadline. The week is planned as about ${hours * 60} minutes: when honest estimates fall short or run over, change the work, never the estimates. Estimate each item from what it asks, for a student doing it the first time: reading at about 200 words a minute, a first draft at about 300 words an hour, a guided build at three minutes a step, and for anything that needs another person the time to find them and wait for them. Work that will not fit moves to another week or becomes optional; a number is never made smaller to fit. No item runs over 60 minutes: split it. Anything optional says "optional" in its label and is not counted in the week.${others ? ` It includes, by name, the other materials of the week, which are written separately from this page: ${others}.` : ''}`,
     'Under "parts", the teaching itself, in the order the student does it: two to eight parts, each a chunk a student can finish in one sitting, built from blocks. Explain ideas in short paragraphs with an example each; use a list only for things that are a list. Where a short video of the instructor explaining would help, give a "video" block with its full transcript (under six minutes, about 130 words a minute) and say under "shows" what is on screen; the page must still teach a student who only reads the transcript. Where students read something, name it exactly (the chapter or section, never a whole book) and say what to read it for. Every part says why the student is doing it. A part is referred to by its title, never by a number.',
     // Seven picture places in ten asked for a picture of something the page had itself written, for a teacher to make by hand.
-    'Where the page shows something the course itself wrote (the student\'s notes or a shared document as they should now stand, a model memo or email, a filled-in table or form, a before and an after), give it as a block of type "exhibit": the thing itself under "exhibit", and under "text" one line telling the student what to look at. Never ask for a picture of it, a screenshot of the student\'s own notes included; and whenever a step has the student write or fill something in a set form, show that form once, blank or as a model on another case. A later state of a document, and a model beside its blank, keep the earlier one word for word, its headings, labels and row names too, and only add to it; a model obeys every rule the page teaches and has one entry for each thing its task asks for. Set "reveal" when the student is told to do the work first and then compare; leave it open when they read it before or while they work (a blank to fill, a model on another case). A mark quotes at least three words that occur once in the exhibit. An image is asked for only for what is not text: a real screen of a tool or a site, a photograph, a drawing.',
+    'Where the page shows something the course itself wrote (the student\'s notes or a shared document as they should now stand, a model memo or email, a filled-in table or form, a before and an after), give it as a block of type "exhibit": the thing itself in lines under "items", its own name under "title", and under "text" one line telling the student what to look at. Never ask for a picture of it, a screenshot of the student\'s own notes included; and whenever a step has the student write or fill something in a set form, show that form once, blank or as a model on another case. A later state of a document, and a model beside its blank, keep the earlier one word for word, its headings, labels and row names too, and only add to it; a model obeys every rule the page teaches and has one entry for each thing its task asks for. It is "closed" when the student is told to do the work first and then compare, and open when they read it before or while they work (a blank to fill, a model on another case). A mark quotes at least three words that occur once in the exhibit. An image is asked for only for what is not text: a real screen of a tool or a site, a photograph, a drawing.',
     HANDS_ON,
     isMixedOnline(course) ? mixedAsk(course) : '',
     'Under "wrapUp", 80 to 120 words: what the student can now do, one question to test themselves on each objective, and a look ahead to next week.',

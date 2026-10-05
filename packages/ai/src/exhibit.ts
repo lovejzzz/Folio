@@ -77,3 +77,74 @@ export function exhibitDraftText(e: ExhibitDraft): string {
   const marks = e.marks.map((m) => `  [points at "${m.quote}"] ${m.note}`);
   return [`[exhibit: ${e.frame}${e.reveal ? ', closed until the student opens it' : ''}] ${e.title}`.trim(), ...parts, ...marks].join('\n');
 }
+
+/**
+ * An exhibit as the page's writer gives it: lines. Given as nested objects (parts of blocks of rows of cells),
+ * the page's answer shape grew past what the model's provider will compile, and every online page was refused:
+ * found on the first paid run after it shipped, since the free runs did not hold the model to the shape. Lines
+ * add nothing to that shape, and writers set out a table in lines without being taught.
+ */
+export const EXHIBIT_LINES =
+  'exhibit: the thing itself, one line to an item: "# " before a label inside it; "| a | b | c" for a row of a table, the first such row its headings, a cell left empty where it is empty; "- " before a list item; "Label:: what is written" for a labelled line, with nothing after "::" when it is still to fill; "___ " and a hint for room for the student\'s own words; "=== " and a name ("After") to begin a second part set beside the first; "!! exact words :: what to notice" for something the page points at; any other line is a paragraph';
+export const EXHIBIT_KIND = 'exhibit: "notes" (the student\'s own working document as it should now stand), "document" (a model to study) or "plain" (a bare table or comparison), then " closed" when it stays closed until the student opens it to compare';
+
+type DraftBlock = ExhibitDraft['parts'][number]['blocks'][number];
+const blank = { text: '', label: '', items: [] as string[], columns: [] as string[], rows: [] as string[][], lines: 3 };
+const cells = (line: string): string[] => line.replace(/^\|/, '').replace(/\|\s*$/, '').split('|').map((c) => c.trim());
+
+/** One line as a block, joined to the block before it when it carries on a table or a list. */
+function addLine(blocks: DraftBlock[], line: string): void {
+  const last = blocks.at(-1);
+  if (line.startsWith('|')) {
+    if (/^\|[\s:|-]+\|?$/.test(line)) return; // the rule under a table's headings, as some write one
+    if (last?.type === 'table') last.rows.push(cells(line));
+    else blocks.push({ ...blank, type: 'table', columns: cells(line), rows: [] });
+  } else if (/^[-•]\s+/.test(line)) {
+    const item = line.replace(/^[-•]\s+/, '');
+    if (last?.type === 'list') last.items.push(item);
+    else blocks.push({ ...blank, type: 'list', items: [item] });
+  } else if (line.startsWith('# ')) blocks.push({ ...blank, type: 'heading', text: line.slice(2).trim() });
+  else if (/^_{3,}/.test(line)) blocks.push({ ...blank, type: 'yours', text: line.replace(/^_+\s*/, '') });
+  else if (/^[^:]{1,60}::/.test(line)) blocks.push({ ...blank, type: 'field', label: line.slice(0, line.indexOf('::')).trim(), text: line.slice(line.indexOf('::') + 2).trim() });
+  else blocks.push({ ...blank, type: 'para', text: line });
+}
+
+/** The exhibit a block of lines sets out, or nothing when it has no lines. */
+export function exhibitFromLines(kind: string, title: string, items: readonly string[]): ExhibitDraft | undefined {
+  const parts: ExhibitDraft['parts'] = [{ label: '', blocks: [] }];
+  const marks: ExhibitDraft['marks'] = [];
+  for (const line of items.flatMap((i) => i.split('\n')).map((l) => l.trim()).filter(Boolean)) {
+    if (line.startsWith('===')) {
+      const label = line.replace(/^=+\s*/, '');
+      // The first part takes a name too when the second has one: "=== Before" may open the exhibit.
+      if (parts.length === 1 && !parts[0]!.blocks.length) parts[0]!.label = label;
+      else if (parts.length === 1) parts.push({ label, blocks: [] });
+    } else if (line.startsWith('!!')) {
+      const [quote, ...note] = line.slice(2).split('::');
+      if (quote?.trim() && note.join('::').trim()) marks.push({ quote: quote.trim(), note: note.join('::').trim() });
+    } else addLine(parts.at(-1)!.blocks, line);
+  }
+  const filled = parts.filter((p) => p.blocks.length);
+  if (!filled.length) return undefined;
+  const k = kind.trim().toLowerCase();
+  const frame = k.startsWith('notes') ? 'notes' : k.startsWith('document') ? 'document' : 'plain';
+  return { frame, title, parts: filled, marks: marks.slice(0, 8), reveal: /\bclosed\b/.test(k) };
+}
+
+type SavedBlock = Extract<PageBlock, { type: 'exhibit' }>['parts'][number]['blocks'][number];
+
+function savedLines(b: SavedBlock): string[] {
+  if (b.type === 'heading') return [`# ${b.text}`];
+  if (b.type === 'para') return [b.text];
+  if (b.type === 'list') return b.items.map((i) => `- ${i}`);
+  if (b.type === 'field') return [`${b.label}:: ${b.value}`.trim()];
+  if (b.type === 'yours') return [`___ ${b.hint}`.trim()];
+  return [`| ${b.columns.join(' | ')} |`, ...b.rows.map((r) => `| ${r.join(' | ')} |`)];
+}
+
+/** A saved exhibit set out in lines again, as its writer gave it: what a mend reads and writes. */
+export function exhibitLines(e: Extract<PageBlock, { type: 'exhibit' }>): { kind: string; items: string[] } {
+  const named = e.parts.length > 1 || e.parts.some((p) => p.label);
+  const parts = e.parts.flatMap((p) => [...(named ? [`=== ${p.label}`.trim()] : []), ...p.blocks.flatMap(savedLines)]);
+  return { kind: `${e.frame}${e.reveal ? ' closed' : ''}`, items: [...parts, ...e.marks.map((m) => `!! ${m.quote} :: ${m.note}`)] };
+}

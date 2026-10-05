@@ -18,6 +18,7 @@ import {
   type GeneratedKind,
   type Lesson,
   type Question,
+  type SlideVisual,
 } from '@folio/core';
 import type { Inference } from './inference';
 import { parsePartialJson } from './partial';
@@ -92,6 +93,16 @@ const plan: SectionJob<PlanDraft> = {
   ],
 };
 
+type SlideDraft = SlidesDraft['slides'][number];
+
+/** A slide's table or chart as the deck keeps it: rows as long as their headings, a value for every category, or nothing at all. */
+function slideVisual(table: SlideDraft['table'], chart: SlideDraft['chart']): { visual?: SlideVisual } {
+  // The draft is taken loosely, so one odd chart does not cost the deck; only a sound one is kept.
+  if (chart && chart.categories.length >= 2 && chart.series.length >= 1 && chart.series.every((x) => x.values.length === chart.categories.length)) return { visual: { kind: 'chart', ...chart, series: chart.series as [typeof chart.series[number]] } };
+  if (table && table.columns.length >= 2 && table.rows.length) return { visual: { kind: 'table', columns: table.columns, rows: table.rows.map((r) => table.columns.map((_, i) => r[i] ?? '')) } };
+  return {};
+}
+
 const slides: SectionJob<SlidesDraft> = {
   schema: SlidesDraft,
   tidy: (v, course) => tidySlides(v, course.language),
@@ -100,7 +111,7 @@ const slides: SectionJob<SlidesDraft> = {
       lessonId: lesson.id,
       kind: 'slides',
       flags: flagsAt(problems, null),
-      content: { slides: v.slides.map((s) => ({ ...s, id: newId('x') })) },
+      content: { slides: v.slides.map(({ table, chart, ...s }) => ({ ...s, id: newId('x'), ...slideVisual(table, chart) })) },
     }),
   ],
 };

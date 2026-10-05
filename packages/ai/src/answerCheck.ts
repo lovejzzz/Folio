@@ -50,9 +50,31 @@ Rules: an expression must compute from the setup's names; a bare literal is reje
 
 The item:`;
 
-/** The form is data for the program, which checks every field itself: here only that it is an object. */
-const Form = z.looseObject({});
-type Form = z.infer<typeof Form>;
+/**
+ * The form, field by field as the checking program reads it. A model that must answer in a given shape gives
+ * exactly that shape: asked for "an object", the paid models gave an empty one every time, and the check ran on
+ * nothing while looking as if it worked (it had only been tried through a command line that does not hold the
+ * model to the shape).
+ */
+const expr = z.string().default('');
+const count = z.number().nullable().default(null);
+export const AnswerForm = z.object({
+  checkable: z.boolean(),
+  reason_kind: z.string().default(''),
+  setup: z.string().default(''),
+  answer_expr: expr,
+  answer_kind: z.enum(['', 'code', 'value', 'prose']).default(''),
+  first: count,
+  judge: expr,
+  probe: expr,
+  truth_expr: expr,
+  tolerance: count,
+  choices: z.array(z.object({ n: z.number().int(), kind: z.enum(['value', 'code', 'claim', 'concept']), origin_expr: expr, says_expr: expr, truth_expr: expr, first: count })).default([]),
+  stated: z.array(z.object({ where: z.string(), before: z.string(), expr: z.string(), occurrence: count, kind: z.enum(['', 'range']).default(''), tolerance: count })).default([]),
+  verbatim: z.array(z.object({ where: z.string(), text: z.string(), expect: expr, probe: expr, occurrence: count })).default([]),
+  unchecked: z.array(z.string()).default([]),
+});
+type Form = z.infer<typeof AnswerForm>;
 
 interface Check {
   id: string;
@@ -82,8 +104,7 @@ function shownItem(task: Task): unknown {
 
 /** The libraries the form's setup brings in, named where the runner looks for them before it runs anything. */
 function imports(form: Form): string {
-  const setup = typeof form.setup === 'string' ? form.setup : '';
-  const found = setup.split('\n').filter((l) => /^\s*(import|from)\s+[\w.]+/.test(l)).map((l) => `    ${l.trim()}`);
+  const found = form.setup.split('\n').filter((l) => /^\s*(import|from)\s+[\w.]+/.test(l)).map((l) => `    ${l.trim()}`);
   return found.length ? `def _libraries():\n${found.join('\n')}\n` : '';
 }
 
@@ -102,7 +123,7 @@ async function runForm(runner: Runner, task: Task, form: Form): Promise<Verdict 
 }
 
 async function fill(inference: Inference, task: Task, signal?: AbortSignal): Promise<Form> {
-  const result = await runJob(inference, { task: 'folio_answer_check', system: 'You write data for a checking program. Reply with one JSON object and nothing else.', prompt: `${INSTRUCTION}\n${JSON.stringify(shownItem(task), null, 1)}`, effort: 'medium', schema: Form, repair: false, signal });
+  const result = await runJob(inference, { task: 'folio_answer_check', system: 'You write data for a checking program. Reply with one JSON object and nothing else.', prompt: `${INSTRUCTION}\n${JSON.stringify(shownItem(task), null, 1)}`, effort: 'medium', schema: AnswerForm, repair: false, signal });
   return result.value;
 }
 

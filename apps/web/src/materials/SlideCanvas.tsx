@@ -3,6 +3,7 @@ import { cx } from '@folio/ui';
 import { EditableText } from '../components/editing/EditableText';
 import { InlineText } from '../components/InlineText';
 import { useT } from '../i18n';
+import { SlideVisualView } from './SlideVisual';
 
 interface SlideCanvasProps {
   slide: Slide;
@@ -83,6 +84,11 @@ export function SlideCanvas({ slide, lang, footer, onChange, className }: SlideC
         <div className={cx('folio-slide-title font-display text-ink', slide.layout === 'quote' && 'italic')} style={cq(titleSize)}>
           {title}
         </div>
+        {slide.visual && (
+          <div className="folio-slide-gap" style={cq(2.2)}>
+            <SlideVisualView visual={slide.visual} onChange={onChange && ((visual) => onChange({ ...slide, visual }))} />
+          </div>
+        )}
         <div className={cx('folio-slide-gap', slide.layout === 'question' && 'mx-auto')}>
           <Bullets slide={slide} onChange={onChange} lang={lang} />
         </div>

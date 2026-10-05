@@ -18,7 +18,7 @@ function Sheet({ handout, lessonId, supported, change }: { handout: Handout; les
   return (
     <li className="mod-handout avoid-break">
       <div className="mod-exhibit-head">
-        <span>{t.handouts.kinds[handout.kind]}</span>
+        <span>{[t.handouts.kinds[handout.kind], handout.supports && t.handouts.withSupports].filter(Boolean).join(' · ')}</span>
         <span>{[handout.copies, handout.usedIn && t.handouts.usedIn(handout.usedIn)].filter(Boolean).join(' · ')}</span>
       </div>
       <div className="mod-exhibit-body">
@@ -57,9 +57,9 @@ export function Handouts({ course, lesson }: { course: Course; lesson: Lesson })
       </h3>
       <p className="mb-3 font-ui text-13 text-ink-2">{t.handouts.note}</p>
       <ul className="grid gap-6">
-        {lesson.handouts.map((h) => (
+        {lesson.handouts.map((h, i) => (
           // A copy with supports is not offered for a sheet that is one, or that already has one after it.
-          <Sheet key={h.id} handout={h} lessonId={lesson.id} supported={h.title.endsWith(`(${t.handouts.withSupports})`) || lesson.handouts.some((x) => x.title === `${h.title} (${t.handouts.withSupports})`)} change={change} />
+          <Sheet key={h.id} handout={h} lessonId={lesson.id} supported={h.supports || lesson.handouts[i + 1]?.supports === true} change={change} />
         ))}
       </ul>
     </section>

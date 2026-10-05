@@ -83,7 +83,7 @@ export function projectPlan(ctx: Ctx): Block[] {
     // Each sheet on a page of its own, ready to copy; its answers follow it in the teacher's copy only.
     for (const h of lesson.handouts) {
       blocks.push({ t: 'break' }, { t: 'heading', level: 3, text: h.title });
-      if (teacher && (h.copies || h.usedIn)) blocks.push({ t: 'para', tone: 'muted', text: [h.copies, h.usedIn && l.usedIn(h.usedIn)].filter(Boolean).join(' · ') });
+      if (teacher && (h.copies || h.usedIn || h.supports)) blocks.push({ t: 'para', tone: 'muted', text: [h.supports && l.withSupports, h.copies, h.usedIn && l.usedIn(h.usedIn)].filter(Boolean).join(' · ') });
       blocks.push(...sheet(h));
       if (teacher && h.key.trim()) blocks.push({ t: 'note', label: l.answerKey, text: h.key });
     }
@@ -107,6 +107,7 @@ export function projectSlides(ctx: Ctx): Block[] {
         bullets: filledTexts(slide.bullets),
         lesson: `${lessonLabel} · ${lesson.title}`,
         ...(ctx.teacher && slide.notes ? { notes: slide.notes } : {}),
+        ...(slide.visual ? { visual: slide.visual } : {}),
       });
     }
   }

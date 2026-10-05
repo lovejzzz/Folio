@@ -313,6 +313,16 @@ export const en = {
       failed: 'Couldn’t be written',
     },
   },
+  /** A slide's table or chart. */
+  slides: {
+    barChart: 'Bar chart',
+    lineChart: 'Line chart',
+    illustrative: 'Illustration, not real data',
+    chartData: 'The chart’s numbers',
+    values: 'Values',
+    category: (n: number) => `Label ${n}`,
+    valueOf: (label: string) => `Value for ${label}`,
+  },
   /** The sheets a lesson in a room hands out. */
   handouts: {
     heading: 'Handouts',
@@ -321,7 +331,7 @@ export const en = {
     usedIn: (segment: string) => `Used in ${segment}`,
     title: 'Title of the handout',
     key: 'Answer key, for you only',
-    /** The name a supported copy takes, after its sheet's own. */
+    /** Beside the kind of a sheet that is a supported copy: for the teacher, never on the sheet. */
     withSupports: 'with language supports',
     addSupports: 'Add a copy with language supports',
     addingSupports: 'Writing the copy…',

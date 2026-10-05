@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { earlierLessons } from './continuity';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
-import { exhibitDraftText } from './exhibit';
+import { exhibitDraftText, exhibitFromLines } from './exhibit';
 import { sinceText, type Since } from './mend';
 import type { ModuleDraft } from './online';
 import { courseBackground, lessonContext, systemPrompt } from './prompts';
@@ -38,7 +38,8 @@ function blockText(b: Block): string {
   const head = b.type === 'callout' || b.type === 'code' ? `[${b.type}${b.kind ? `: ${b.kind}` : ''}] ${b.title}`.trim() : media ? `[${b.type}${b.kind ? `: ${b.kind}` : ''}] shows: ${b.shows}${b.alt ? ` | alt: ${b.alt}` : ''}` : '';
   // A file with its name on its own line was read as a download with no name.
   if (b.type === 'file') return `[file to download${b.kind ? `, ${b.kind}` : ''}] ${b.text} (holds: ${b.shows})`;
-  if (b.type === 'exhibit') return [b.exhibit ? exhibitDraftText(b.exhibit) : '[exhibit]', b.text].filter(Boolean).join('\n');
+  const exhibit = b.type === 'exhibit' ? exhibitFromLines(b.kind, b.title, b.items) : undefined;
+  if (b.type === 'exhibit') return [exhibit ? exhibitDraftText(exhibit) : '[exhibit]', b.text].filter(Boolean).join('\n');
   const shots = b.shots.map((s) => `  [picture under step ${s.step}] shows: ${s.shows} | alt: ${s.alt}`).join('\n');
   const items = b.items.map((item, i) => (b.type === 'steps' ? `${i + 1}. ${item}` : `- ${item}`)).join('\n');
   return [head, b.text, items, shots, b.transcript && `Transcript: ${b.transcript}`].filter(Boolean).join('\n');
@@ -94,12 +95,7 @@ function swapBlock(b: Block, edit: ModuleIssue): { block: Block; hits: number } 
   };
   const block = { ...b, items: b.items.map(swap) };
   for (const f of TEXT_FIELDS) block[f] = swap(b[f]);
-  // An exhibit is part of the page: a fix that could reach only the sentences around one left the exhibit wrong
-  // and the page telling students to disregard it.
-  if (b.exhibit) {
-    const parts = b.exhibit.parts.map((p) => ({ label: swap(p.label), blocks: p.blocks.map((x) => ({ ...x, text: swap(x.text), label: swap(x.label), items: x.items.map(swap), columns: x.columns.map(swap), rows: x.rows.map((r) => r.map(swap)) })) }));
-    block.exhibit = { ...b.exhibit, title: swap(b.exhibit.title), parts };
-  }
+  // An exhibit's words are its lines, under "items": a fix reaches them like any other, and the exhibit is corrected where it stands.
   return { block, hits };
 }
 

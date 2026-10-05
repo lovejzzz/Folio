@@ -72,12 +72,34 @@ export type Term = z.infer<typeof TermSchema>;
 export const SlideLayoutSchema = z.enum(['title', 'bullets', 'question', 'quote']);
 export type SlideLayout = z.infer<typeof SlideLayoutSchema>;
 
+/**
+ * What a slide shows beside its words: a table, or a chart drawn from numbers. Slides were bullets and nothing
+ * else: teachers who rate generated decks call a bulleted list with no visuals unusable, and a comparison across
+ * the same headings, or numbers to be compared, is read from a table or a chart and not from five bullets.
+ * A chart is always drawn from its numbers, never from an impression of a shape.
+ */
+export const SlideVisualSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('table'), columns: z.array(text), rows: z.array(z.array(text)) }),
+  z.object({
+    kind: z.literal('chart'),
+    chart: z.enum(['bar', 'line']),
+    categories: z.array(text),
+    series: z.array(z.object({ name: text, values: z.array(z.number()) })).min(1).max(2),
+    /** What the numbers are in ("%", "grams"). */
+    unit: text.default(''),
+    /** The numbers are made up to show a shape, and the slide says so. */
+    illustrative: z.boolean().default(false),
+  }),
+]);
+export type SlideVisual = z.infer<typeof SlideVisualSchema>;
+
 export const SlideSchema = z.object({
   id,
   layout: SlideLayoutSchema,
   title: text,
   bullets: z.array(text),
   notes: text,
+  visual: SlideVisualSchema.optional(),
 });
 export type Slide = z.infer<typeof SlideSchema>;
 

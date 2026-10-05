@@ -4,7 +4,7 @@ import { sampleCourse } from '../src/sample';
 
 const base = sampleCourse();
 const lesson = orderedLessons(base)[0]!;
-const sheet = (fields: Partial<Handout>): Handout => ({ id: 'x_1', title: 'Sheet', kind: 'worksheet', usedIn: 'Practice', copies: 'One per student', blocks: [], key: '', ...fields });
+const sheet = (fields: Partial<Handout>): Handout => ({ id: 'x_1', title: 'Sheet', kind: 'worksheet', usedIn: 'Practice', copies: 'One per student', blocks: [], key: '', supports: false, ...fields });
 const withSheets = (handouts: Handout[]): Course => ({ ...base, lessons: { ...base.lessons, [lesson.id]: { ...lesson, handouts } } });
 const blocks = (course: Course, audience: 'teacher' | 'student') => project(course, 'plan', { audience, lessonIds: [lesson.id] }).blocks;
 

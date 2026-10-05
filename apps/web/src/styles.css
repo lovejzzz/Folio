@@ -245,6 +245,18 @@
   .folio-slide-gap {
     margin-top: 3.5%;
   }
+  .folio-slide-table th,
+  .folio-slide-table td {
+    padding: 0.35em 0.6em;
+    border: 1px solid var(--folio-rule);
+    text-align: left;
+    vertical-align: top;
+  }
+  .folio-slide-table th {
+    font-family: var(--font-ui);
+    font-weight: 650;
+    background: var(--folio-well);
+  }
   .folio-slide-bullets > li {
     display: flex;
     gap: 0.6em;

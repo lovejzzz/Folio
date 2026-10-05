@@ -1,5 +1,5 @@
 import type { MaterialKind } from './materials';
-import type { Language, QuestionFormat, SlideLayout } from './schema';
+import type { Language, QuestionFormat, SlideLayout, SlideVisual } from './schema';
 
 /**
  * A SemanticDoc is what a material looks like once projected: headings,
@@ -28,7 +28,7 @@ export type Block =
       answer?: string;
       explanation?: string;
     }
-  | { t: 'slide'; n: number; layout: SlideLayout; title: string; bullets: string[]; notes?: string; lesson: string }
+  | { t: 'slide'; n: number; layout: SlideLayout; title: string; bullets: string[]; notes?: string; lesson: string; visual?: SlideVisual }
   | { t: 'answers'; title: string; items: { n: number; answer: string }[] }
   | { t: 'break' };
 

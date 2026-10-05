@@ -103,6 +103,20 @@ export const SlidesDraft = z.object({
         // Five fit a slide; a few more are split over two slides rather than sent back.
         bullets: z.array(line).max(10).describe('At most five'),
         notes: z.string().describe('Speaker notes for the teacher'),
+        table: z
+          .object({ columns: z.array(z.string()).max(6), rows: z.array(z.array(z.string())).max(10) })
+          .optional()
+          .describe('Only for a slide that compares things under the same headings: the table itself, cells of a few words; the slide then has two bullets at most'),
+        chart: z
+          .object({
+            chart: z.enum(['bar', 'line']).describe('"bar" to compare amounts, "line" for change over time or along a scale'),
+            categories: z.array(z.string()).max(12).describe('What stands along the bottom, in order'),
+            series: z.array(z.object({ name: z.string().default(''), values: z.array(z.number()).max(12) })).max(2).describe('One value for each category; a second series only to compare two things'),
+            unit: z.string().default('').describe('What the numbers are in'),
+            illustrative: z.boolean().default(false).describe('true when the numbers are made up to show a shape; real or given numbers are false'),
+          })
+          .optional()
+          .describe('Only for numbers the lesson compares or follows: the numbers themselves, the plan\'s own where it gives them'),
       }),
     )
     .min(3)

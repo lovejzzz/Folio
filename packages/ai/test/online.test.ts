@@ -409,9 +409,9 @@ describe('the files earlier weeks wrote', () => {
   });
 
   it('shows something the course wrote as an exhibit: a real table on the page and in a document, its form checked', () => {
-    const exhibit = { frame: 'notes', title: 'Week 3 notes', reveal: true, marks: [{ quote: 'Light', note: 'The column you fill in this week.' }], parts: [{ blocks: [{ type: 'field', label: 'Question', text: 'Where does the mass come from?' }, { type: 'table', columns: ['Input', 'Light'], rows: [['Water', 'needed'], ['Soil']] }, { type: 'yours', text: 'Your own example' }] }] };
+    const lines = ['Question:: Where does the mass come from?', '| Input | Light |', '| Water | needed |', '| Soil |', '___ Your own example', '!! Light :: The column you fill in this week.'];
     const v = draft();
-    v.parts[1]!.blocks.push(ModuleDraft.shape.parts.element.shape.blocks.element.parse({ type: 'exhibit', text: 'Compare the Light column with yours.', exhibit }));
+    v.parts[1]!.blocks.push(ModuleDraft.shape.parts.element.shape.blocks.element.parse({ type: 'exhibit', kind: 'notes closed', title: 'Week 3 notes', text: 'Compare the Light column with yours.', items: lines }));
     const block = modulePage(v, 'en').find((b) => b.type === 'exhibit');
     // A short row is filled out to its columns: the page never holds a ragged table.
     expect(block).toMatchObject({ frame: 'notes', reveal: true, caption: 'Compare the Light column with yours.', parts: [{ blocks: [{ type: 'field', label: 'Question', value: 'Where does the mass come from?' }, { type: 'table', rows: [['Water', 'needed'], ['Soil', '']] }, { type: 'yours', hint: 'Your own example' }] }] });

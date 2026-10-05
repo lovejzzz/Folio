@@ -360,8 +360,8 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
   }
   // --supports: a copy with language supports of each lesson's first sheet, as a teacher would ask for one, to be judged.
   if (ARGS.includes('--supports')) {
-    for (const lesson of orderedLessons(store.getState()).filter((l) => l.handouts.length && !l.handouts.some((h) => h.title.endsWith('(with language supports)')))) {
-      const commands = await supportedHandout(inference, store.getState(), lesson.id, lesson.handouts[0]!.id, 'with language supports').catch(() => []);
+    for (const lesson of orderedLessons(store.getState()).filter((l) => l.handouts.length && !l.handouts.some((h) => h.supports))) {
+      const commands = await supportedHandout(inference, store.getState(), lesson.id, lesson.handouts[0]!.id).catch(() => []);
       if (commands.length) store.apply(commands, { label: { key: 'built' }, source: 'ai', undoable: false });
     }
   }

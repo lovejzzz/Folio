@@ -154,6 +154,44 @@ function quoteSlide(slide: PptSlide, s: Slide, f: Faces): void {
   }
 }
 
+/** Where a slide's table or chart stands: under the title, across the width, above a line or two of words. */
+const VISUAL = { x: LEFT, y: 1.85, w: TEXT_W, h: 3.9 };
+
+/**
+ * A slide whose content is a table or a chart: its title, the visual, and under it at most two lines. The
+ * table is a table of PowerPoint's own and the chart a chart of its own, drawn from the numbers, so a teacher
+ * can restyle either or change a value there.
+ */
+function visualSlide(pptx: PptxGenJS, slide: PptSlide, s: Slide, f: Faces): void {
+  const v = s.visual!;
+  slide.addText(inline(s.title, { fontFace: f.title }), { x: LEFT, y: 0.55, w: TEXT_W, h: 1.1, fontFace: f.title, fontSize: sized([s.title], { w: TEXT_W, h: 1.1 }, 32, 20), color: printPalette.ink, valign: 'bottom', fit: 'shrink', lang: f.lang, margin: 0 });
+  if (v.kind === 'table') {
+    const cell = (text: string, head: boolean) => ({ text: plainText(text), options: { bold: head, fontFace: f.body, fontSize: 16, color: printPalette.ink, fill: { color: head ? printPalette.well : printPalette.paper }, valign: 'middle' as const } });
+    slide.addTable([v.columns.map((c) => cell(c, true)), ...v.rows.map((r) => r.map((c) => cell(c, false)))], { x: VISUAL.x, y: VISUAL.y, w: VISUAL.w, colW: v.columns.map(() => VISUAL.w / v.columns.length), border: { type: 'solid', pt: 0.75, color: printPalette.rule }, margin: 0.08 });
+  } else {
+    const named = v.series.some((x) => x.name.trim());
+    slide.addChart(v.chart === 'bar' ? pptx.ChartType.bar : pptx.ChartType.line, v.series.map((x) => ({ name: x.name || s.title, labels: v.categories, values: x.values })), {
+      ...VISUAL,
+      barDir: 'col',
+      chartColors: [printPalette.tab.slides, printPalette.ink2],
+      showLegend: named && v.series.length > 1,
+      legendPos: 'b',
+      showValue: v.series.length === 1,
+      catAxisLabelFontFace: f.body,
+      valAxisLabelFontFace: f.body,
+      catAxisLabelFontSize: 14,
+      valAxisLabelFontSize: 12,
+      dataLabelFontSize: 12,
+      valGridLine: { color: printPalette.rule, size: 0.5 },
+      showValAxisTitle: Boolean(v.unit),
+      valAxisTitle: v.unit,
+      lineDataSymbolSize: 8,
+    });
+  }
+  const under = [...(v.kind === 'chart' && v.illustrative ? [f.lang === 'zh-CN' ? '示意，非真实数据。' : 'Illustration, not real data.'] : []), ...s.bullets.slice(0, 2)];
+  if (under.length) slide.addText(inline(under.join('\n'), { fontFace: f.body }), { x: LEFT, y: 5.85, w: TEXT_W, h: 0.8, fontFace: f.body, fontSize: 16, color: printPalette.ink2, valign: 'top', fit: 'shrink', lang: f.lang, margin: 0 });
+}
+
 const LAYOUTS: Record<Slide['layout'], (slide: PptSlide, s: Slide, f: Faces) => void> = {
   title: titleSlide,
   bullets: bulletsSlide,
@@ -224,7 +262,8 @@ export async function renderPptx(given: SemanticDoc): Promise<Uint8Array> {
   }
   for (const s of slides.flatMap((x) => continued(x, f))) {
     const slide = pptx.addSlide({ masterName: MASTER });
-    LAYOUTS[s.layout](slide, s, f);
+    if (s.visual) visualSlide(pptx, slide, s, f);
+    else LAYOUTS[s.layout](slide, s, f);
     footer(slide, f, s.lesson);
     if (s.notes) slide.addNotes(plainText(s.notes));
   }

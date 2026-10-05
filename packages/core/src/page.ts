@@ -111,6 +111,8 @@ export const HandoutSchema = z.object({
   blocks: z.array(ExhibitBlockSchema),
   /** The answers and what to look for, for the teacher only; empty for a sheet with nothing to mark. */
   key: text.default(''),
+  /** A copy of the sheet before it, with supports for students still learning the language. Said to the teacher, never on the sheet. */
+  supports: z.boolean().default(false),
 });
 export type Handout = z.infer<typeof HandoutSchema>;
 

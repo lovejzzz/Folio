@@ -25,20 +25,22 @@ export function supportedPrompt(course: Course, lesson: Lesson, handout: Handout
     `A sheet this lesson hands out:\n${sheetText(handout)}`,
     `Its answers, for the teacher:\n${handout.key || '(none)'}`,
     [
-      'Write the same sheet again for students who need support with the language: students still learning English, and students who read below the level of this page. They do the same task, with the same questions, numbers and content, and reach the same answers: nothing is taken out, made easier or answered for them.',
-      'What changes is the way in. Instructions are in short sentences, one action each. Before the first question, a word bank gives the words of the subject that the sheet uses, each with a plain meaning of a few words (a table of two columns). A longer text is broken into short parts, each followed by one question on that part before the sheet\'s own questions. The first question of a kind is worked as an example where that does not give away another answer. Where an answer is to be written in sentences, a sentence starter is given ("The ratio is … because …") above the room to write; where it is a number, there is room to show the work.',
-      'Keep every block of the original that still serves, in its order, and the same room to answer or more. Write no translation and no note to the student about why the sheet is different.',
+      'Write the same sheet again for students who need support with the language: students still learning English, and students who read below the level of this page. They do the same task, with the same questions, numbers and content, and reach the same answers: nothing is taken out, made easier or answered for them, and no question is added.',
+      'What changes is the way in. Every instruction of the original is there, in short sentences of one action each. Before the first question, a word bank (a table of two columns) gives the words printed on the sheet that a newcomer may not know, subject words and everyday ones (units, foods, objects): each with a meaning of a few plain words that is true as the subject uses the word, never another subject word or a loose synonym. One worked example for the sheet, or one for each kind of question when there are two kinds, on numbers and things that are in no question, shows how to set an answer out. Where an answer is written in sentences, a starter gives the sentence\'s shape with a gap where the thinking goes ("… is greater than … because …"); where it is a number, there is room to show the work. Only a passage to read of more than about eighty words is broken into parts, with one question on each part; instructions and word problems are not.',
+      'Nothing on the sheet does the thinking a question asks for. Read the key: no hint, starter, example or word-bank line names the operation to use, the order to write things in, which number is the whole, or the mistake to be found, and none uses a question\'s own numbers. The copy holds at most about twice the words of the original.',
+      'Keep every block of the original that still serves, in its order, with the same room to answer or more. Write no translation, and nothing to the student about why the sheet is different. Under "keyNote", for the teacher, say in a sentence or two what was added.',
     ].join(' '),
   ].join('\n\n');
 }
 
 /** The commands that put a supported copy of a sheet straight after it. The original is never changed. */
-export async function supportedHandout(inference: Inference, course: Course, lessonId: string, handoutId: string, label: string, signal?: AbortSignal): Promise<Command[]> {
+export async function supportedHandout(inference: Inference, course: Course, lessonId: string, handoutId: string, signal?: AbortSignal): Promise<Command[]> {
   const lesson = course.lessons[lessonId];
   const handout = lesson?.handouts.find((h) => h.id === handoutId);
   if (!lesson || !handout) throw new Error('No such handout');
   const result = await runJob(inference, { task: 'folio_handout_supports', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: supportedPrompt(course, lesson, handout), effort: 'medium', schema: SupportedDraft, repair: false, signal });
-  const copy: Handout = { ...handout, id: newId('x'), title: `${handout.title} (${label})`, blocks: exhibitPart({ label: '', blocks: result.value.blocks }).blocks, key: [handout.key, result.value.keyNote].filter((t) => t.trim()).join('\n\n') };
+  // The copy keeps its sheet's own title: what marks it is for the teacher, and never printed on a student's page.
+  const copy: Handout = { ...handout, id: newId('x'), supports: true, blocks: exhibitPart({ label: '', blocks: result.value.blocks }).blocks, key: [handout.key, result.value.keyNote].filter((t) => t.trim()).join('\n\n') };
   const at = lesson.handouts.indexOf(handout);
   return [cmd('plan.update', { lessonId, handouts: lesson.handouts.toSpliced(at + 1, 0, copy) })];
 }

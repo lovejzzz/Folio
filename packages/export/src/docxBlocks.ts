@@ -228,6 +228,9 @@ function slide(ctx: BlockCtx, s: Slide): DocxChild[] {
   if (s.lesson && s.lesson !== ctx.lesson) out.push(heading(ctx, 1, s.lesson));
   ctx.lesson = s.lesson;
   out.push(heading(ctx, 2, `${ctx.x.slide(s.n)} · ${s.title}`));
+  // In a document the slide's table is a table, and its chart the numbers the chart is drawn from.
+  if (s.visual?.kind === 'table') out.push(table(ctx, s.visual.columns, s.visual.rows), spacer());
+  if (s.visual?.kind === 'chart') out.push(table(ctx, [s.visual.unit, ...s.visual.categories], s.visual.series.map((x) => [x.name, ...x.values.map(String)])), spacer());
   if (s.bullets.length) out.push(...list(ctx, s.layout === 'question', s.bullets));
   if (s.notes) out.push(...note(ctx, ctx.l.teacherNote, s.notes));
   return out;

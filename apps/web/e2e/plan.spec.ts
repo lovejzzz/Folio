@@ -123,9 +123,9 @@ test('a lesson taught in a room comes with the sheets its plan hands out, their 
   await expect(sheets.getByText('Light, water and carbon dioxide go in; sugar and oxygen come out.')).toBeVisible();
   // A copy with supports for students still learning the language, when the teacher asks: after its sheet, which stays as it was.
   await sheets.getByRole('button', { name: 'Add a copy with language supports' }).click();
-  await expect(sheets.getByRole('heading', { name: 'Exit ticket (with language supports)' })).toBeVisible();
+  await expect(sheets.getByText('Slips · with language supports')).toBeVisible();
+  await expect(sheets.getByRole('heading', { name: 'Exit ticket' })).toHaveCount(2);
   await expect(sheets.getByRole('cell', { name: 'a gas in the air' })).toBeVisible();
   await expect(sheets.getByText('Into a leaf go … Out of a leaf come …')).toBeVisible();
-  await expect(sheets.getByRole('heading', { name: 'Exit ticket', exact: true })).toBeVisible();
   await expect(sheets.getByRole('button', { name: 'Add a copy with language supports' })).toHaveCount(0);
 });
