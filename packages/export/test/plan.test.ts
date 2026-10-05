@@ -12,6 +12,7 @@ describe('exportCourse', () => {
     pptx: ['Reading the world with data — Slide decks (Teacher copy, with answers).pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
     xlsx: ['Reading the world with data — Quiz & exam bank (Teacher copy, with answers).xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
     csv: ['Reading the world with data — Quiz & exam bank (Teacher copy, with answers).csv', 'text/csv;charset=utf-8'],
+    qti: ['Reading the world with data — Quiz & exam bank for Canvas (QTI).zip', 'application/zip'],
     zip: ['Reading the world with data — Quiz & exam bank (Teacher copy, with answers).zip', 'application/zip'],
     folio: ['Reading the world with data.folio', 'application/zip'],
   };

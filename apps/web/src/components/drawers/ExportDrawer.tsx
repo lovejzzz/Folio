@@ -21,6 +21,7 @@ const ICONS: Record<FormatChoice, ReactNode> = {
   pptx: <Presentation size={18} strokeWidth={1.5} />,
   xlsx: <FileSpreadsheet size={18} strokeWidth={1.5} />,
   csv: <FileSpreadsheet size={18} strokeWidth={1.5} />,
+  qti: <FileArchive size={18} strokeWidth={1.5} />,
   zip: <FileArchive size={18} strokeWidth={1.5} />,
   folio: <FolderDown size={18} strokeWidth={1.5} />,
   google: <UploadCloud size={18} strokeWidth={1.5} />,

@@ -22,10 +22,12 @@ export function initialChoice(course: Course, lessonId: string | undefined): Exp
   return { scope: here ? 'lesson' : 'whole', lessonId: here ?? course.lessonOrder[0] ?? '', kinds: enabledKinds(course), audience: 'student', format: 'docx' };
 }
 
-export const FORMATS: FormatChoice[] = ['docx', 'pdf', 'pptx', 'xlsx', 'zip', 'folio', 'google'];
+export const FORMATS: FormatChoice[] = ['docx', 'pdf', 'pptx', 'xlsx', 'qti', 'zip', 'folio', 'google'];
 
 /** A Folio file is always the whole course with answers, whatever was chosen before. */
 export function effectiveChoice(choice: ExportChoice): ExportChoice {
+  // A quiz package for Canvas carries the answers Canvas marks by: it is the teacher's, whichever copy was chosen.
+  if (choice.format === 'qti') return { ...choice, audience: 'teacher' };
   return choice.format === 'folio' ? { ...choice, scope: 'whole', audience: 'teacher' } : choice;
 }
 
@@ -33,7 +35,7 @@ export function effectiveChoice(choice: ExportChoice): ExportChoice {
 export function kindsFor(course: Course, choice: ExportChoice): MaterialKind[] {
   const enabled = enabledKinds(course);
   if (choice.format === 'pptx') return ['slides'];
-  if (choice.format === 'xlsx' || choice.format === 'csv') return ['quiz'];
+  if (choice.format === 'xlsx' || choice.format === 'csv' || choice.format === 'qti') return ['quiz'];
   if (choice.scope === 'selected') return enabled.filter((k) => choice.kinds.includes(k));
   if (choice.scope === 'lesson') return enabled.filter((k) => k !== 'map' && k !== 'syllabus');
   return enabled;

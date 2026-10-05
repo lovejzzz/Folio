@@ -7,11 +7,12 @@ import { courseMediaIds, writeFolio, type FolioMedia } from './folioFile';
 import { exportLabels } from './labels';
 import type { MediaResolver } from './media';
 import { hasNotebook, weekNotebook } from './notebook';
+import { renderQti } from './qti';
 import { renderPptx } from './pptx';
 import { quizRows, renderXlsx } from './xlsx';
 import { ExportError } from './errors';
 
-export type ExportFormat = 'docx' | 'pptx' | 'xlsx' | 'csv' | 'zip' | 'folio';
+export type ExportFormat = 'docx' | 'pptx' | 'xlsx' | 'csv' | 'qti' | 'zip' | 'folio';
 
 export interface ExportRequest {
   course: Course;
@@ -39,6 +40,7 @@ export const MIME: Record<ExportFormat, string> = {
   xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   csv: 'text/csv;charset=utf-8',
   zip: 'application/zip',
+  qti: 'application/zip',
   folio: 'application/zip',
 };
 
@@ -88,6 +90,12 @@ function pptxFile(req: ExportRequest): Planned {
     mime: MIME.pptx,
     make: () => renderPptx(projectOne(req, 'slides')),
   };
+}
+
+/** The quizzes as a package Canvas imports: questions with their keys, so the teacher's copy only. */
+function qtiFile(req: ExportRequest): Planned {
+  const name = `${courseLabels(req.course).materials.quiz} for Canvas (QTI)`;
+  return { name: slugFilename(req.course.title, name, '', 'zip', scopeName(req)), mime: MIME.qti, make: async () => renderQti(req.course, req.lessonIds) };
 }
 
 function quizFile(req: ExportRequest, format: 'xlsx' | 'csv'): Planned {
@@ -162,6 +170,8 @@ function zipContents(req: ExportRequest, opts: ExportOptions): Planned[] {
   const files = req.kinds.map((k) => docxFile(req, [k], l.materials[k], opts));
   if (req.kinds.includes('slides')) files.push(pptxFile(req));
   if (req.kinds.includes('quiz')) files.push(quizFile(req, 'csv'));
+  // With the quiz bank, the same questions as Canvas takes them in: only where the answers may go.
+  if (req.kinds.includes('quiz') && req.audience === 'teacher') files.push(qtiFile(req));
   // A .folio is the whole course with every answer: only a whole-course teacher copy carries one.
   if (req.audience === 'teacher' && !req.lessonIds) files.push(folioFile(req, opts));
   return [...files, ...notebookFiles(req), ...mediaFiles(req, opts)];
@@ -176,6 +186,8 @@ function plan(req: ExportRequest, opts: ExportOptions): Planned {
     case 'xlsx':
     case 'csv':
       return quizFile(req, req.format);
+    case 'qti':
+      return qtiFile(req);
     case 'folio':
       if (req.audience !== 'teacher') throw new ExportError('folioIsTeacherCopy', 'A Folio file holds the whole course with answers, so it is always a teacher copy.');
       return folioFile(req, opts);
