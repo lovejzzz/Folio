@@ -31,8 +31,8 @@ describe('with Folio credits', () => {
     expect([0, 1, 2, 3].map(cap)).toEqual([FOLIO_OUTPUT_CAPS.folio_plan, FOLIO_OUTPUT_CAPS.folio_study, 32000, FOLIO_OUTPUT_CAPS.folio_plan_review]);
     // A job without its own cap keeps the adapter's.
     expect(cap(4)).toBe(16000);
-    // The longest is an online week's module page: room for what real pages ran to, and no other job needs more than 16,000.
-    expect(FOLIO_OUTPUT_CAPS.folio_module).toBe(28000);
+    // The longest is an online week's module page: a statistics week was cut off twice at 28,000, and no other job needs more than 16,000.
+    expect(FOLIO_OUTPUT_CAPS.folio_module).toBe(32000);
     expect(Math.max(...Object.entries(FOLIO_OUTPUT_CAPS).flatMap(([task, cap]) => (task === 'folio_module' ? [] : [cap])))).toBeLessThanOrEqual(16000);
   });
 

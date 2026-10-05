@@ -27,6 +27,7 @@ function Sheet({ handout, lessonId, supported, change }: { handout: Handout; les
           <Piece key={i} block={b} change={(next) => change({ ...handout, blocks: handout.blocks.map((x, n) => (n === i ? next : x)) })} />
         ))}
       </div>
+      {handout.supports && <p className="no-print font-ui text-13 text-ink-2">{t.handouts.supportsNote}</p>}
       {handout.key.trim() && (
         <div className="mod-handout-key no-print">
           <p className="mod-kicker">{t.handouts.key}</p>

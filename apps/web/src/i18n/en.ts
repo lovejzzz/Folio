@@ -333,6 +333,8 @@ export const en = {
     key: 'Answer key, for you only',
     /** Beside the kind of a sheet that is a supported copy: for the teacher, never on the sheet. */
     withSupports: 'with language supports',
+    /** Under a copy with supports: half of the first ones judged needed a line or two changed. */
+    supportsNote: 'A draft for you to read first: check the word bank and the example before you print it.',
     addSupports: 'Add a copy with language supports',
     addingSupports: 'Writing the copy…',
   },

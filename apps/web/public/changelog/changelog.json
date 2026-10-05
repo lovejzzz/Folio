@@ -1,5 +1,39 @@
 [
  {
+  "version": "0.0.15",
+  "date": "October 5, 2026",
+  "title": "A fault of ours in online courses, and four things teachers asked for",
+  "lede": "First, a correction. For some hours after the last release, a course taught online could not be written with a paid model, and the answer check added two releases ago was not really checking. Both are fixed. Then: slides with tables and charts, a copy of a handout for students still learning English, standards codes on lessons, and slips and cards that print as slips and cards.",
+  "sections": [
+   {
+    "heading": "What went wrong, and what we changed so it does not again",
+    "body": "The last release let a week’s page hold tables and notes as real content. The way that was described to the model made the request larger than the model’s provider accepts, and every weekly page of an online course was refused; lessons taught in a room were not affected. Separately, the check that computes answers was asking the model for a form in a way that the paid models answered with an empty one, so it had been passing everything without computing anything. We did not see either because our test runs used a route that does not hold the model to the shape of its answer. Both are fixed, and before each release every such shape is now sent to the provider itself. Run for real on a statistics week, the check computed five of seven answers."
+   },
+   {
+    "heading": "Slides can hold a table or a chart",
+    "body": "A deck was bullets and nothing else. Where a lesson compares things under the same headings, the slide is now a table; where it compares numbers or follows them over time, a chart drawn from those numbers, bars or a line. In PowerPoint the table is a real table and the chart a real chart, so you can restyle either or change a value there; in Folio you change the numbers under the slide and the chart is drawn again. Numbers made up to show a shape are marked as an illustration on the slide. Diagrams and drawings are not made yet.",
+    "image": {
+     "src": "/changelog/0.0.15-chart.webp",
+     "alt": "A slide with a bar chart of two bars, 8 and 2, labelled in milligrams of starch and marked as an illustration, with one question under it",
+     "width": 960,
+     "height": 540
+    }
+   },
+   {
+    "heading": "A copy of a handout with language supports",
+    "body": "About six teachers in ten say they lack materials for students still learning English. Under each handout you can now ask for a copy with supports: the same task, questions and answers, with shorter instructions, a word bank, one worked example and sentence starters. Nothing is made easier or taken out, and nothing on the student’s sheet says it is a different version. It is a draft for you to read: of the first nine we had judged, five could be printed as they were and four needed a line or two changed, usually a word’s meaning."
+   },
+   {
+    "heading": "Standards on the lessons that serve them",
+    "body": "When your brief or your files name standards by their codes, each lesson now says which it serves, in the plan and in what you export. Folio keeps only codes you gave it and never adds one."
+   },
+   {
+    "heading": "Slips and cards print as slips and cards",
+    "body": "An exit ticket took a page to itself, and cards came as a list that could not be cut apart. In a document, slips now come three to a page with a line to cut along, and cards one to a cell of a grid."
+   }
+  ]
+ },
+ {
   "version": "0.0.14",
   "date": "October 5, 2026",
   "title": "The sheets a lesson hands out are written, not just named",
