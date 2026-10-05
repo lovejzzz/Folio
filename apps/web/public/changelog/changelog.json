@@ -1,5 +1,45 @@
 [
  {
+  "version": "0.0.14",
+  "date": "October 5, 2026",
+  "title": "The sheets a lesson hands out are written, not just named",
+  "lede": "Four changes, each made because teachers say it is where generated lessons fall short: materials a plan names and does not include, pictures left for the teacher to make, quizzes that will not go into the LMS, and lessons that only ask students to repeat what they were shown.",
+  "sections": [
+   {
+    "heading": "Handouts, written in full",
+    "body": "A plan would say “hand out the exit ticket” or “students sort the cards”, and that was all there was of the ticket and the cards. Counted over six of Folio’s own courses, a lesson needed about thirteen things made and nearly half were left to you. For a lesson taught in a room, Folio now writes every sheet the plan puts in students’ hands: worksheets, exit tickets, organizers, cards, short texts, each from the plan’s own numbers and examples, with room to answer sized to the question. The answers stand beside the sheet for you and never on it. Sheets are edited under the plan and exported with it, each on its own page. A reviewer who worked all 94 answers on the first twenty sheets by hand found none wrong; nine sheets could be printed as they were, eight needed a small fix and three were not usable, mostly for their layout.",
+    "image": {
+     "src": "/changelog/0.0.14-handout.webp",
+     "alt": "A worksheet under a lesson plan: ratio tables with empty cells to fill in, room to write under each, and an answer key for the teacher below the sheet",
+     "width": 592,
+     "height": 1044
+    }
+   },
+   {
+    "heading": "What the course wrote is shown, not described",
+    "body": "On an online page, seven picture places in ten asked for a picture of something the page had itself written: your notes as they should now stand, a model email, a filled-in table. You were left to make each by hand from its description. The page now holds the thing itself: real text and real tables, edited where they stand, read aloud properly, and real tables in a Word file. One that shows what students are about to write stays closed until they open it to compare. On the first two courses written this way, a three-week course in technical writing went from about fourteen pictures for you to make to none; in psychology, the ten left are real screens and drawings. Read one by one, 41 of 54 could be used as they were and none was unusable.",
+    "image": {
+     "src": "/changelog/0.0.14-exhibit.webp",
+     "alt": "A page of notes shown as a table on the course page, with a note on one column and a button to hide it again",
+     "width": 593,
+     "height": 283
+    }
+   },
+   {
+    "heading": "Quizzes that go into Canvas",
+    "body": "The quiz bank left Folio as a spreadsheet, to be typed into the LMS again. It can now leave as a package Canvas imports (Settings, Import Course Content, QTI .zip file): one quiz for each lesson, with its key. Canvas marks the questions that have one right choice and the numeric ones; a short answer becomes a question you read, with the model answer as its comment. It imports as Classic Quizzes, the kind teachers report importing reliably. We have checked that the package is well formed and follows the format; we have not yet imported one into a real Canvas course, so please tell us if yours does not come in cleanly."
+   },
+   {
+    "heading": "One task beyond practice, and a quiz as hard as the lesson",
+    "body": "We measured 40 of Folio’s lessons the way a published study measured machine-written plans. Where that study found 45 activities in 100 asking students only to recall, Folio’s had 9. But in mathematics and chemistry no lesson went beyond practising the method just shown, the teacher explained for up to 28 minutes at a stretch, and the quiz was shallower than the lesson. A plan now holds one task a step beyond practice, at the students’ level (find and fix the mistake, choose between two ways and say why), in place of some of the practice; long explanation is broken by something every student does; and a quiz asks at least once for the hardest thing the lesson did. Measured again on nine lessons: none stops at practice, the longest stretch of explanation is 16 minutes, and students are active for 62 minutes in 100, up from 38."
+   },
+   {
+    "heading": "You can see which answers were checked",
+    "body": "A quiz question whose key Folio computed, and found to hold, now says so under it. Change the question and the mark goes, since what was checked is no longer what is there."
+   }
+  ]
+ },
+ {
   "version": "0.0.13",
   "date": "October 5, 2026",
   "title": "Folio runs the code it writes",
