@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
+import { claudeShape } from './shape';
 import { InferenceError, isAbort, parseJsonText, truncatedOutput, type CompletionRequest, type Inference, type ModelSettings, type OnUsage } from '../inference';
 
 /** Models that accept the server-side refusal fallback chain. */
@@ -31,7 +31,7 @@ function mapError(error: unknown): InferenceError {
 
 /** The request for one completion. */
 function requestBody(model: string, request: CompletionRequest) {
-  const format = zodOutputFormat(request.schema);
+  const schema = claudeShape(request.schema);
   return {
     model,
     max_tokens: request.maxTokens ?? 16000,
@@ -56,7 +56,7 @@ function requestBody(model: string, request: CompletionRequest) {
     ...(request.write && writesAtOnce(model) ? { thinking: { type: 'between_tools' } as unknown as { type: 'adaptive' } } : {}),
     output_config: {
       ...(acceptsEffort(model) ? { effort: request.effort ?? 'medium' } : {}),
-      format: { type: 'json_schema' as const, schema: format.schema },
+      format: { type: 'json_schema' as const, schema },
     },
     ...(FALLBACK_MODELS.has(model) ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' as const } : {}),
   };

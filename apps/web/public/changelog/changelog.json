@@ -1,5 +1,35 @@
 [
  {
+  "version": "0.0.17",
+  "date": "October 5, 2026",
+  "title": "Claude is now told what each part of its answer is for",
+  "lede": "Looking for what else a week’s page costs, we found something that cost nothing and was simply broken: most of the notes that tell the model what each field of its answer is for were never sent to it. They are now, and pages come out better formed for the same money.",
+  "sections": [
+   {
+    "heading": "What was lost on the way",
+    "body": "Folio holds a model to a shape: a page has parts, a part has blocks, a block has a kind, a title, a picture to ask for. Beside most fields is a line saying what belongs there. For Claude, the library that sends the shape dropped that line from every field that has a default or is used twice: 116 of 160, among them what a callout’s title is, what a picture must give a student who cannot see it, and nearly everything about the notes a teacher gets with a week. The model worked from the long instructions alone. Other providers’ models were not affected.",
+    "image": {
+     "src": "/changelog/0.0.17-fields.webp",
+     "alt": "Two bars. As it was, 44 of the 160 descriptions written in Folio’s shapes reached Claude. Now all 160 do. Among those that never arrived: what a callout’s title is, what a picture gives a student who cannot see it, who to contact this week and what to say",
+     "width": 960,
+     "height": 340
+    }
+   },
+   {
+    "heading": "What changes on the page",
+    "body": "Six weeks written each way were read blind, and the reader, asked whether the pages fell into two kinds, sorted all twelve correctly. With the descriptions, callouts have titles, the teacher’s notes name this week’s variables and say what to write to a student who has not started, and more pictures are asked for: 7.9 of 10 against 7.5, the difference in form and in the teacher’s notes, not in what is taught. Four lessons taught in a room, read the same way, came out level. The cost is the same."
+   },
+   {
+    "heading": "What we tried and did not take",
+    "body": "A fifth of what a week’s page costs is empty fields: every block writes ten, and seven are usually blank. Let the model leave them out and it does; but five pages of six then came back as a handful of blocks and the word “Placeholder”. They stay. What is left of a page’s cost is the page."
+   },
+   {
+    "heading": "Still wrong",
+    "body": "The teacher’s list of things to check in a week with code can quote numbers from before the code was run, which differ from those on the page. The page itself is put right; that list is not yet."
+   }
+  ]
+ },
+ {
   "version": "0.0.16",
   "date": "October 5, 2026",
   "title": "A week of an online coding course costs about a third less to write",

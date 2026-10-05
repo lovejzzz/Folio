@@ -81,6 +81,18 @@ describe('anthropic adapter', () => {
     await expect(createInference(settings('anthropic'), bad.fn).complete(req)).rejects.toMatchObject({ kind: 'auth' });
   });
 
+  it('tells Claude what every field is for: a field with a default keeps its description', async () => {
+    const { fn, seen } = mockFetch(200, anthropicMessage('{"blocks":[]}'));
+    const block = z.object({ kind: z.string().default('').describe('callout: checkpoint or stuck'), items: z.array(z.string().min(1)).default([]).describe('list: the items') });
+    await createInference(settings('anthropic'), fn).complete({ ...req, schema: z.object({ blocks: z.array(block) }) });
+    const sent = JSON.stringify(JSON.parse(String(seen[0]!.init.body)).output_config.format.schema);
+    // Named by reference, as the SDK's helper names them, both descriptions were dropped on the way.
+    expect(sent).toContain('callout: checkpoint or stuck');
+    expect(sent).toContain('list: the items');
+    expect(sent).not.toMatch(/\$ref|default/);
+    expect(sent).toContain('"required":["kind","items"]');
+  });
+
   it('asks for writing at once only of a model that takes it', async () => {
     const sent = async (model: string, write: boolean) => {
       const { fn, seen } = mockFetch(200, anthropicMessage('{"title":"x"}'));

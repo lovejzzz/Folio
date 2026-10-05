@@ -4,7 +4,7 @@
 //
 //   pnpm --filter @folio/ai exec tsx scripts/shape-check.ts      (keys from the local key page; a few cents)
 import Anthropic from '@anthropic-ai/sdk';
-import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
+import { claudeShape } from '../src/adapters/shape';
 import { AssignmentDraft, ClarifyDraft, DiscussionsDraft, FaqDraft, OutlineDraft, PlanDraft, QuizDraft, SlidesDraft, StepDraft, StudyDraft, TestDraft } from '../src';
 import type { z } from 'zod';
 import { AnswerForm } from '../src/answerCheck';
@@ -24,7 +24,7 @@ let refused = 0;
 for (const [name, schema] of Object.entries(SHAPES)) {
   try {
     // The shape is compiled before a word is written: one token of answer is enough to learn whether it is taken.
-    await client.messages.create({ model: 'claude-sonnet-5-5', max_tokens: 16, messages: [{ role: 'user', content: 'Answer with the smallest valid object.' }], output_config: { format: { type: 'json_schema', schema: zodOutputFormat(schema).schema } } } as never);
+    await client.messages.create({ model: 'claude-sonnet-5-5', max_tokens: 16, messages: [{ role: 'user', content: 'Answer with the smallest valid object.' }], output_config: { format: { type: 'json_schema', schema: claudeShape(schema) } } } as never);
     console.log(`ok       ${name}`);
   } catch (error) {
     const status = (error as { status?: number }).status;
