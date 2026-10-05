@@ -29,7 +29,7 @@ function ChartView({ v }: { v: Chart }) {
   const one = v.series.length === 1;
   const label = `${v.chart === 'bar' ? t.slides.barChart : t.slides.lineChart}: ${v.series.map((s) => `${s.name ? `${s.name}: ` : ''}${v.categories.map((c, i) => `${c} ${short(s.values[i] ?? 0)}${v.unit ? ` ${v.unit}` : ''}`).join(', ')}`).join('; ')}`;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={label}>
+    <svg viewBox={`0 0 ${W} ${H}`} className="folio-slide-chart w-full" role="img" aria-label={label}>
       {[0, 0.5, 1].map((f) => (
         <g key={f}>
           <line x1={PLOT.left} x2={PLOT.right} y1={y(top * f)} y2={y(top * f)} style={{ stroke: 'var(--folio-rule)' }} strokeWidth={0.6} />
@@ -76,7 +76,7 @@ function ChartView({ v }: { v: Chart }) {
 }
 
 /** The chart's numbers, to change where they stand: the chart is drawn from them again. */
-function ChartData({ v, onChange }: { v: Chart; onChange: (next: Chart) => void }) {
+export function ChartData({ v, onChange }: { v: Chart; onChange: (next: Chart) => void }) {
   const t = useT();
   const set = (k: number, i: number, text: string) => {
     const n = Number(text.replace(/,/g, ''));
@@ -139,13 +139,8 @@ function TableView({ v, onChange }: { v: Table; onChange?: (next: Table) => void
   );
 }
 
-/** A slide's table or chart, at the slide's own scale; with `onChange`, its words and numbers can be changed in place. */
+/** A slide's table or chart, at the slide's own scale. A table's words are changed in place; a chart's numbers under the slide, where there is room for them. */
 export function SlideVisualView({ visual, onChange }: { visual: SlideVisual; onChange?: (next: SlideVisual) => void }) {
   if (visual.kind === 'table') return <TableView v={visual} onChange={onChange} />;
-  return (
-    <div>
-      <ChartView v={visual} />
-      {onChange && <ChartData v={visual} onChange={onChange} />}
-    </div>
-  );
+  return <ChartView v={visual} />;
 }

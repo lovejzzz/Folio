@@ -129,3 +129,27 @@ test('a lesson taught in a room comes with the sheets its plan hands out, their 
   await expect(sheets.getByText('Into a leaf go … Out of a leaf come …')).toBeVisible();
   await expect(sheets.getByRole('button', { name: 'Add a copy with language supports' })).toHaveCount(0);
 });
+
+test('a deck can hold a table, and a chart drawn from numbers that the teacher can change', async ({ page }) => {
+  await planLessons(page, 'Photosynthesis for year 7, two lessons');
+  await page.getByRole('button', { name: /^Write 2/ }).click();
+  await expect(page.getByText(/^Course ready/)).toBeVisible({ timeout: 30_000 });
+  await page.getByRole('link', { name: /Light and leaves/ }).first().click();
+  await page.locator('#m-slides').getByRole('link', { name: /What goes in and what comes out/ }).click();
+  // A real table on the slide: headings and cells, a short row filled out to its headings.
+  const stage = page.locator('.folio-slide').last();
+  await expect(stage.getByRole('columnheader', { name: 'Comes out' })).toBeVisible();
+  await expect(stage.getByRole('cell', { name: /Carbon dioxide/ })).toBeVisible();
+  await page.keyboard.press('ArrowRight');
+  // The chart says what it shows to someone who cannot see it, and that its numbers are made up.
+  const chart = stage.getByRole('img', { name: /^Bar chart: In light 8 mg of starch, In the dark 2 mg of starch/ });
+  await expect(chart).toBeVisible();
+  await expect(stage.getByText(/Illustration, not real data/)).toBeVisible();
+  // Its numbers are changed under the slide, and the chart is drawn from them again.
+  const value = page.getByRole('textbox', { name: 'Value for In the dark' });
+  await value.click();
+  await page.keyboard.press('ControlOrMeta+A');
+  await page.keyboard.type('3');
+  await page.keyboard.press('Enter');
+  await expect(stage.getByRole('img', { name: /In the dark 3 mg of starch/ })).toBeVisible();
+});

@@ -9,6 +9,7 @@ import { startBuild, useBuild } from '../state/build';
 import { edit } from '../state/edit';
 import { focusItem } from './newItems';
 import { SlideCanvas } from './SlideCanvas';
+import { ChartData } from './SlideVisual';
 import { Filmstrip, SlidePager, deckOrder, useArrowKeys, type SlidePos } from './SlideNav';
 
 /** In the lesson view: the deck as a grid of thumbnails that open the slide editor. */
@@ -153,6 +154,7 @@ export function SlidesEditor({ course, lessonId, slide: slideNumber, onGo }: Sli
         <div className="overflow-hidden rounded-sheet shadow-overlay">
           <SlideCanvas key={slide.id} slide={slide} lang={course.language} footer={`${t.common.lesson(n)} · ${lesson.title}`} onChange={update} />
         </div>
+        {slide.visual?.kind === 'chart' && <ChartData v={slide.visual} onChange={(visual) => update({ ...slide, visual })} />}
         <SlidePager course={course} lesson={lesson} index={pos.index} onPrev={onPrev} onNext={onNext} />
         <section className="mt-4 rounded-sheet bg-paper p-5 shadow-sheet">
           <h3 className="mb-2 flex flex-wrap items-center gap-x-1.5 font-ui text-13 font-semibold text-ink">
