@@ -1,5 +1,27 @@
 [
  {
+  "version": "0.0.21",
+  "date": "October 5, 2026",
+  "title": "A question slide keeps its points beside their dots, and a link opened in another tab finds its place",
+  "lede": "Two more things from the walk through the live site, one of them a correction to the last release’s fix.",
+  "sections": [
+   {
+    "heading": "Question slides in the editor",
+    "body": "On a slide laid out as a question, each point was centred on its own line while its dot stayed at the left edge of the slide, a hand’s width away. The points now stand together as one block in the middle, each beside its dot, in the editor as on the slide you show.",
+    "image": {
+     "src": "/changelog/0.0.21-question.webp",
+     "alt": "The slide editor on a slide laid out as a question: the title centred, and under it two points in one centred block, each with its dot directly beside it",
+     "width": 1100,
+     "height": 640
+    }
+   },
+   {
+    "heading": "A link to a material, opened behind another tab",
+    "body": "The last release made a link such as “…?m=quiz” open on the quiz. Checking it on the live site, it still opened at the top when the page was loaded in a tab that was not in front, which is how most links get opened: a browser tells a hidden page nothing about its size changing, and that was what the fix listened for. It now watches what is added to the page as well, and goes on looking until the tab has been in front for a moment."
+   }
+  ]
+ },
+ {
   "version": "0.0.20",
   "date": "October 5, 2026",
   "title": "A course fits a tablet and a phone when you are signed out, and a link to a quiz opens on the quiz",

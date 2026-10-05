@@ -89,7 +89,9 @@ export function SlideCanvas({ slide, lang, footer, onChange, className }: SlideC
             <SlideVisualView visual={slide.visual} onChange={onChange && ((visual) => onChange({ ...slide, visual }))} />
           </div>
         )}
-        <div className={cx('folio-slide-gap', slide.layout === 'question' && 'mx-auto')}>
+        {/* A question's points stand as one block in the middle, each beside its dot: centred line by line in the editor, the
+            text drifted to the middle of the slide and left its dot at the edge. */}
+        <div className={cx('folio-slide-gap', slide.layout === 'question' && 'mx-auto w-fit max-w-full text-left')}>
           <Bullets slide={slide} onChange={onChange} lang={lang} />
         </div>
       </div>

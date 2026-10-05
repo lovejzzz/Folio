@@ -81,19 +81,36 @@ function usePosition(kinds: MaterialKind[], initial: MaterialKind | undefined, l
     if (!initial) return window.scrollTo({ top: 0 });
     // Opened from a link or after a reload, the page is still filling when this first runs: the material was not there
     // yet, or what stands above it had no height, and the link to a quiz opened on the top of the plan. So it is found
-    // again as the page grows, for a moment, and never once the reader has started to move the page themselves.
+    // again as the page fills, and never once the reader has started to move the page themselves. A link opened in a
+    // tab behind another fills while hidden, where a browser reports no change of size: there the page is watched for
+    // what is added to it, and the looking goes on until the tab has been in front for a moment.
     let moved = false;
+    let done: ReturnType<typeof setTimeout> | undefined;
     const go = () => !moved && document.getElementById(`m-${initial}`)?.scrollIntoView({ block: 'start' });
-    const stop = () => (moved = true);
     const grown = new ResizeObserver(go);
+    const added = new MutationObserver(go);
+    const finish = () => {
+      grown.disconnect();
+      added.disconnect();
+    };
+    const shown = () => {
+      if (document.visibilityState !== 'visible') return;
+      go();
+      clearTimeout(done);
+      done = setTimeout(finish, 3000);
+    };
+    const stop = () => (moved = true);
     grown.observe(document.body);
-    for (const event of ['wheel', 'touchstart', 'keydown'] as const) window.addEventListener(event, stop, { passive: true, once: true });
-    const done = setTimeout(() => grown.disconnect(), 3000);
+    added.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener('visibilitychange', shown);
+    for (const event of ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const) window.addEventListener(event, stop, { passive: true, once: true });
     go();
+    shown();
     return () => {
       clearTimeout(done);
-      grown.disconnect();
-      for (const event of ['wheel', 'touchstart', 'keydown'] as const) window.removeEventListener(event, stop);
+      finish();
+      document.removeEventListener('visibilitychange', shown);
+      for (const event of ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const) window.removeEventListener(event, stop);
     };
   }, [initial, lessonId]);
   useEffect(() => {
