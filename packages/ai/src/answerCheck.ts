@@ -129,7 +129,10 @@ async function checkOne(inference: Inference, runner: Runner, task: Task, signal
   const second = await once();
   if (!second || second.status !== 'FAIL') return [];
   const again = new Set(second.checks.filter((c) => c.status === 'fail').map(claim));
-  return first.checks.filter((c) => c.status === 'fail' && again.has(claim(c))).map((c) => ({ code: 'answerCheck' as const, values: { claim: c.what.slice(0, 200), found: c.detail.slice(0, 300) } }));
+  const failed = first.checks.filter((c) => c.status === 'fail' && again.has(claim(c)));
+  // The key first, and two at most: when the keyed code does not run, everything said of the choices fails with it.
+  const told = [...failed.filter((c) => c.id === 'key'), ...failed.filter((c) => c.id !== 'key')].slice(0, 2);
+  return told.map((c) => ({ code: 'answerCheck' as const, values: { claim: c.what.slice(0, 200), found: c.detail.slice(0, 300) } }));
 }
 
 /**

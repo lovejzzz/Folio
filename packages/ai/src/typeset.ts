@@ -4,8 +4,10 @@
  * Primes after digits (5' 3"), code between backticks and anything in an `expression` stay as written.
  */
 export function smartQuotes(text: string): string {
-  // Code between backticks stays exactly as written: `c('a', 'b')` with curly quotes does not run.
-  if (text.includes('`')) return text.split(/(`[^`\n]*`)/).map((part, i) => (i % 2 ? part : curl(part))).join('');
+  // Code between backticks stays exactly as written: `c('a', 'b')` with curly quotes does not run. Over several
+  // lines too, and in a fence of three: a quiz choice that is a whole function had its quotes curled, in the right
+  // answer as in the wrong ones, and none of the four would run.
+  if (text.includes('`')) return text.split(/(```[\s\S]*?```|`[^`]*`)/).map((part, i) => (i % 2 ? part : curl(part))).join('');
   return curl(text);
 }
 

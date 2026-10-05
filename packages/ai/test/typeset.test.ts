@@ -43,4 +43,11 @@ describe('model text outside course content', () => {
     expect(smartQuotes("Run `t.test(x, mu = 5, alternative = 'greater')` and read \"p-value\"; it's small.")).toBe("Run `t.test(x, mu = 5, alternative = 'greater')` and read “p-value”; it’s small.");
     expect(smartQuotes('`paste("a", "b")` joins them, as in "ab".')).toBe('`paste("a", "b")` joins them, as in “ab”.');
   });
+
+  it('leaves code as written when it runs over several lines, between backticks or in a fence', () => {
+    const fn = '`def total(rows):\n    return sum(row["minutes"] for row in rows)`';
+    expect(smartQuotes(`Which is "right"? ${fn}`)).toBe(`Which is “right”? ${fn}`);
+    const fenced = '```python\nprint("it\'s")\n```';
+    expect(smartQuotes(`Run it: ${fenced} and "see".`)).toBe(`Run it: ${fenced} and “see”.`);
+  });
 });

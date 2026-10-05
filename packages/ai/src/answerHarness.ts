@@ -174,7 +174,7 @@ def check_item(item, check):
                     ns = fresh()
                     if e.get('kind') == 'code': run_code(strip_ticks(ch[n - 1]['text']), ns, check.get('probe'))
                     if not not_literal(e['says_expr']): raise Invalid('says_expr is a literal')
-                    try: return bool(eval(compile(e['says_expr'], '<cell says>', 'eval'), ns)), 'what the explanation says about this choice'
+                    try: return bool(eval(compile(e['says_expr'], '<cell says>', 'eval'), ns)), f"choice {n}, tested as: {e['says_expr'][:160]}"
                     except BaseException as x: raise Invalid(f'says_expr raised {type(x).__name__}: {x}')
                 guard(f'says{n}', 'what the explanation says this choice does is what it does', f)
     elif fmt == 'truefalse':
