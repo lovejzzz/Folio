@@ -210,6 +210,8 @@ export function oneAtATime<T>(runner: Runner, work: () => Promise<T>): Promise<T
 /** A reading of a page with its Python run first: the reader sees real outputs, and what failed goes to the same mend as the reader's notes. */
 export interface RunOptions {
   runner: Runner;
+  /** Told why a page could not be run: the page is kept as written, and whoever holds the course may want to know. */
+  onError?: (error: unknown) => void;
   /** Keeps a figure and returns what the page should point at: `media:<id>`, or a path. */
   saveFigure?: (png: Uint8Array) => Promise<string>;
 }
@@ -227,7 +229,8 @@ export function running(options: RunOptions | undefined, figures: Record<string,
       const page = await oneAtATime(options.runner, () => runCells(options.runner, draft, ++run));
       Object.assign(figures, page.figures);
       return { value: page.value, notes: page.notes, ran: page.cells > 0 };
-    } catch {
+    } catch (error) {
+      options.onError?.(error);
       return { value: draft, notes: [], ran: false };
     }
   };

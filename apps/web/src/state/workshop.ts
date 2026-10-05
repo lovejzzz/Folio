@@ -27,5 +27,7 @@ export const pageRuns = (courseId: string): RunOptions | undefined => (tooSmall(
 
 const runsFor = (courseId: string): RunOptions => ({
   runner,
+  // Kept as written, and said where a developer looks: a teacher has nothing to do about it.
+  onError: (error) => console.error('Folio could not run this page\u2019s code:', error),
   saveFigure: async (png) => localMediaRef(await putMedia(courseId, new Blob([png as BlobPart], { type: 'image/png' }), 'figure.png')),
 });

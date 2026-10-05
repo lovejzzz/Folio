@@ -20,6 +20,9 @@ test('the Python on a week’s page is run in the browser, shut in, and the page
     if (name === ASM_SCRIPT) return route.fulfill({ body: classicAsm(readFileSync(join(RUNTIME, 'pyodide.asm.mjs'), 'utf8')), contentType: 'text/javascript' });
     return route.fulfill({ body: readFileSync(join(RUNTIME, name)), contentType: TYPES[name.split('.').pop()!] });
   });
+  // What the page and the runner's frame say, kept for when the run does not happen: the reason is only there.
+  const said: string[] = [];
+  page.on('console', (m) => said.push(`${m.type()}: ${m.text().slice(0, 500)}`));
   const model = await fakeAnthropic(page, { delayMs: 20, python: true });
   await page.goto('/');
   await page.getByLabel('Describe your course').fill('Photosynthesis for first-year undergraduates: an asynchronous online course, three weeks');
@@ -29,7 +32,7 @@ test('the Python on a week’s page is run in the browser, shut in, and the page
 
   // The writer said 44; the code prints 45, and that is what the page shows.
   await page.getByRole('link', { name: /Light and leaves/ }).first().click();
-  await expect(page.getByText('The total is 45')).toBeVisible();
+  await expect(page.getByText('The total is 45'), said.join('\n')).toBeVisible();
   await expect(page.getByText('The total is 44')).toHaveCount(0);
   // The reader of each page was told the outputs are real.
   expect(model.calls.filter((c) => c.messages[0]!.content.includes('holds what it really printed'))).toHaveLength(3);
