@@ -7,7 +7,7 @@ import { z } from 'zod';
  */
 
 /** A block inside an exhibit, flat: the fields each kind uses are named in its description. */
-const ExhibitBlockDraft = z.object({
+export const ExhibitBlockDraft = z.object({
   type: z.enum(['heading', 'para', 'list', 'field', 'table', 'yours']).describe('heading: a label inside the exhibit. para: a paragraph. list: items. field: a labelled line ("Question: …"; empty text is a line still to fill). table: columns and rows. yours: room for the student\'s own words, with a hint under "text"'),
   text: z.string().default('').describe('heading, para: the words. field: its value. table: a caption, or empty. yours: the hint'),
   label: z.string().default('').describe('field: its label'),

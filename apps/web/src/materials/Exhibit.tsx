@@ -9,7 +9,7 @@ type Exhibit = Extract<PageBlock, { type: 'exhibit' }>;
 type Part = Exhibit['parts'][number];
 
 /** One block of an exhibit, every word of it editable where it stands. */
-function Piece({ block, change }: { block: ExhibitBlock; change: (next: ExhibitBlock) => void }) {
+export function Piece({ block, change }: { block: ExhibitBlock; change: (next: ExhibitBlock) => void }) {
   const t = useT();
   const label = t.module.exhibit.text;
   switch (block.type) {

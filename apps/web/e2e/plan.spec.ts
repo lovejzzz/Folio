@@ -108,3 +108,17 @@ test('a brief with a lecture and a seminar plans both, and the lesson plan is ti
   await expect(plan.getByRole('heading', { name: 'Lecture · 50 min' })).toBeVisible();
   await expect(plan.getByRole('heading', { name: 'Seminar · 50 min' })).toBeVisible();
 });
+
+test('a lesson taught in a room comes with the sheets its plan hands out, their answers kept apart', async ({ page }) => {
+  await planLessons(page, 'Photosynthesis for year 7, two lessons');
+  await page.getByRole('button', { name: /^Write 2/ }).click();
+  await expect(page.getByText(/^Course ready/)).toBeVisible({ timeout: 30_000 });
+  await page.getByRole('link', { name: /Light and leaves/ }).first().click();
+  const sheets = page.getByRole('region', { name: 'Handouts' });
+  await expect(sheets.getByRole('heading', { name: 'Exit ticket' })).toBeVisible();
+  await expect(sheets.getByText('What goes into a leaf, and what comes out?')).toBeVisible();
+  await expect(sheets.getByText('One per student · Used in Exit ticket')).toBeVisible();
+  // The key is the teacher's: beside the sheet, never on it.
+  await expect(sheets.getByText('Answer key, for you only')).toBeVisible();
+  await expect(sheets.getByText('Light, water and carbon dioxide go in; sugar and oxygen come out.')).toBeVisible();
+});

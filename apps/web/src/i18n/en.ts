@@ -313,6 +313,15 @@ export const en = {
       failed: 'Couldn’t be written',
     },
   },
+  /** The sheets a lesson in a room hands out. */
+  handouts: {
+    heading: 'Handouts',
+    note: 'Written from this plan, ready to print. Change the plan and these stay as they are until you write the plan again.',
+    kinds: { worksheet: 'Worksheet', organizer: 'Organizer', reading: 'Reading', cards: 'Cards to cut out', slips: 'Slips', reference: 'Reference sheet' },
+    usedIn: (segment: string) => `Used in ${segment}`,
+    title: 'Title of the handout',
+    key: 'Answer key, for you only',
+  },
   module: {
     thisWeek: 'This week',
     total: (hours: string) => `About ${hours} of work`,

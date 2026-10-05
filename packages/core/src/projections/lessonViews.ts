@@ -1,3 +1,4 @@
+import { exhibitBlock } from './pageView';
 import { filledTexts, isBlankPoint, isBlankSegment, isBlankTerm, statedObjectives } from '../blank';
 import { lessonSessions, sessionIndex } from '../course';
 import type { Lesson } from '../schema';
@@ -52,6 +53,13 @@ export function projectPlan(ctx: Ctx): Block[] {
     if (vocabulary.length) {
       blocks.push({ t: 'heading', level: 3, text: l.vocabulary });
       blocks.push({ t: 'terms', items: vocabulary });
+    }
+    // Each sheet on a page of its own, ready to copy; its answers follow it in the teacher's copy only.
+    for (const h of lesson.handouts) {
+      blocks.push({ t: 'break' }, { t: 'heading', level: 3, text: h.title });
+      if (teacher && (h.copies || h.usedIn)) blocks.push({ t: 'para', tone: 'muted', text: [h.copies, h.usedIn && l.usedIn(h.usedIn)].filter(Boolean).join(' · ') });
+      blocks.push(...h.blocks.flatMap((b) => exhibitBlock(b)));
+      if (teacher && h.key.trim()) blocks.push({ t: 'note', label: l.answerKey, text: h.key });
     }
     blocks.push({ t: 'break' });
   }

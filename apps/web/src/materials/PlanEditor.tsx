@@ -1,3 +1,4 @@
+import { Handouts } from './Handouts';
 import { cmd, isBlankSegment, isBlankTerm, lessonSessions, newId, sessionIndex, type Course, type Lesson, type Segment } from '@folio/core';
 import { IconButton, InlineNumber, cx } from '@folio/ui';
 import { X } from 'lucide-react';
@@ -157,6 +158,7 @@ export function PlanEditor({ course, lesson }: { course: Course; lesson: Lesson 
         <SessionSegments key={i} course={course} lesson={lesson} session={i} save={setSegments} />
       ))}
       <Vocabulary course={course} lesson={lesson} />
+      <Handouts course={course} lesson={lesson} />
     </div>
   );
 }

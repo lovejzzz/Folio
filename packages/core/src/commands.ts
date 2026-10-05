@@ -3,7 +3,7 @@ import { emptyLesson } from './course';
 import type { Flag } from './flags';
 import type { GeneratedKind, MaterialKind } from './materials';
 import { computeBasis } from './ripple';
-import type { CoursePage, Facilitation, Online, PageBlock } from './page';
+import type { CoursePage, Facilitation, Handout, Online, PageBlock } from './page';
 import type {
   Course,
   CourseStatus,
@@ -32,12 +32,12 @@ import type {
 type Fields<T, K extends keyof T> = Partial<Pick<T, K>>;
 
 export type LessonFields = Fields<Lesson, 'title' | 'summary' | 'objectiveIds' | 'readings' | 'suggestedReadings' | 'homework' | 'also'>;
-export type PlanFields = Fields<Lesson, 'segments' | 'keyIdeas' | 'vocabulary' | 'page' | 'facilitation'>;
+export type PlanFields = Fields<Lesson, 'segments' | 'keyIdeas' | 'vocabulary' | 'page' | 'facilitation' | 'handouts'>;
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 export type TaskFields = Partial<DistributiveOmit<Task, 'id' | 'kind' | 'lessonId'>>;
 
 export interface SectionContent {
-  plan: { segments: Segment[]; keyIdeas: string[]; vocabulary: Term[]; page?: PageBlock[]; facilitation?: Facilitation };
+  plan: { segments: Segment[]; keyIdeas: string[]; vocabulary: Term[]; page?: PageBlock[]; facilitation?: Facilitation; handouts?: Handout[] };
   slides: { slides: Slide[] };
   study: { overview: string; points: StudyPoint[] };
 }
@@ -228,6 +228,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
       lesson.vocabulary = p.content.vocabulary;
       lesson.page = p.content.page ?? [];
       lesson.facilitation = p.content.facilitation;
+      lesson.handouts = p.content.handouts ?? [];
     } else if (p.kind === 'slides') {
       lesson.slides = p.content.slides;
     } else {
@@ -242,6 +243,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     if (p.vocabulary !== undefined) lesson.vocabulary = p.vocabulary;
     if (p.page !== undefined) lesson.page = p.page;
     if (p.facilitation !== undefined) lesson.facilitation = p.facilitation;
+    if (p.handouts !== undefined) lesson.handouts = p.handouts;
     markEdited(lesson, 'plan');
   },
   'slides.update': (draft, p) => {

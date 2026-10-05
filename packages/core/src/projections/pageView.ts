@@ -38,7 +38,7 @@ function numbered(marks: Exhibit['marks']): (text: string) => string {
     }, text);
 }
 
-function exhibitBlock(b: ExhibitBlock, mark: (text: string) => string): Block[] {
+export function exhibitBlock(b: ExhibitBlock, mark: (text: string) => string = (text) => text): Block[] {
   switch (b.type) {
     case 'heading':
       return [{ t: 'para', text: `**${mark(b.text).replace(/\*/g, '')}**` }];

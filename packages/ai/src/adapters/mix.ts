@@ -38,6 +38,8 @@ export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_answer_check: 6000,
   folio_plan: 12000,
   folio_plan_review: 8000,
+  // A lesson's sheets, written in full: several worksheets can run as long as the plan.
+  folio_handouts: 12000,
   // A mend writes again only the parts at fault: seldom the whole, never more.
   folio_plan_mend: 12000,
   folio_module_mend: 16000,

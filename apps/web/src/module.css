@@ -469,6 +469,19 @@
     }
   }
 
+  .mod-handout {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .mod-handout-key {
+    display: grid;
+    gap: 0.3rem;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    background: var(--folio-well);
+    font-family: var(--font-ui);
+  }
+
   .mod-terms {
     display: grid;
     gap: 0.5rem;

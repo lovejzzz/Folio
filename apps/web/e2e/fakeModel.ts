@@ -177,6 +177,8 @@ function answerFor(body: Body, python = false): unknown {
   const prompt = [system, ...body.messages.map((m) => m.content)].join('\n');
   const title = lessonTitle(prompt);
   if (prompt.includes('Return {"ok": true}')) return { ok: true };
+  // The sheets a plan hands out: one exit ticket, with its key.
+  if (prompt.includes('Write the sheets this lesson puts in students')) return { handouts: [{ title: 'Exit ticket', kind: 'slips', usedIn: 'Exit ticket', copies: 'One per student', key: 'Light, water and carbon dioxide go in; sugar and oxygen come out.', blocks: [{ type: 'para', text: 'Answer before you leave.' }, { type: 'list', items: ['What goes into a leaf, and what comes out?'] }, { type: 'yours', text: 'Your answer' }] }] };
   // The plan review: a plan written by the fake has nothing wrong with it.
   if (prompt.includes('Check this plan the way')) return { issues: [] };
   // Asked before the plan itself: a mend's request quotes the plan's.

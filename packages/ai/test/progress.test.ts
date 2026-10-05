@@ -77,6 +77,23 @@ describe('a section taking shape', () => {
     expect(dropped.flagged).toBe(0);
   });
 
+  it('comes with the sheets its plan hands out, written from the plan as reviewed, and stands without them when they cannot be had', async () => {
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const sheet = { title: 'Exit ticket', kind: 'slips', usedIn: 'Exit ticket', copies: 'One per student', key: '1. Six of each.', blocks: [{ type: 'para', text: 'Answer both before you leave.' }, { type: 'list', items: ['How many CO2 molecules go in?', 'Where does the oxygen come from?'] }, { type: 'yours', text: '' }] };
+    const writer = fakeInference(() => planDraft, { handouts: [sheet] });
+    const result = await generateSection(writer, course, lesson.id, 'plan', undefined, { reviewer: fakeInference(() => ({ issues: [] })) });
+    const content = (result.commands[0]!.payload as { content: { handouts: { title: string; key: string; blocks: { type: string }[] }[] } }).content;
+    expect(content.handouts).toMatchObject([{ title: 'Exit ticket', kind: 'slips', key: '1. Six of each.', blocks: [{ type: 'para' }, { type: 'list' }, { type: 'yours' }] }]);
+    // The sheets are asked for with the plan in front of the writer, its teacher's notes included.
+    expect(writer.sheets[0]!.prompt).toContain('3. Exit ticket (check, 20 min): Two questions.');
+    expect(writer.sheets[0]!.prompt).toContain("Teacher's notes: Balance it together.");
+    const failing = fakeInference(() => planDraft, 'not an answer');
+    const bare = await generateSection(failing, course, lesson.id, 'plan');
+    expect((bare.commands[0]!.payload as { content: { handouts?: unknown[] } }).content.handouts).toBeUndefined();
+    expect(bare.flagged).toBe(0);
+  });
+
   it('is not asked to stream when nobody is watching', async () => {
     const course = smallCourse();
     const writer = streaming({ slides: [{ layout: 'title', title: 'T', bullets: [], notes: '' }] });

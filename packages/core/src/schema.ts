@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { FlagSchema } from './flags';
 import { MATERIAL_KINDS, GENERATED_KINDS } from './materials';
-import { CoursePageSchema, DeliverySchema, FacilitationSchema, OnlineSchema, PageBlockSchema } from './page';
+import { CoursePageSchema, DeliverySchema, FacilitationSchema, HandoutSchema, OnlineSchema, PageBlockSchema } from './page';
 
 /**
  * The course document: the single source of truth. Every entity has a
@@ -133,6 +133,8 @@ export const LessonSchema = z.object({
   page: z.array(PageBlockSchema).default([]),
   /** The instructor's kit for the week, in an online course. */
   facilitation: FacilitationSchema.optional(),
+  /** The sheets a lesson in a room hands out, written in full: part of its plan. */
+  handouts: z.array(HandoutSchema).default([]),
   /** Order of this lesson's tasks (questions, assignments, discussions). */
   taskIds: z.array(id),
   faqIds: z.array(id),

@@ -31,6 +31,7 @@ import { reviewed, type Mend, type Read } from './secondRead';
 import { reviewModule } from './moduleReview';
 import { placeFigures, running, type RunOptions } from './runCells';
 import { withAnswerChecks } from './answerCheck';
+import { withHandouts } from './handouts';
 import { startCommands } from './start';
 import { runJob, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
@@ -372,7 +373,8 @@ export async function generateSection(
   switch (kind) {
     case 'plan':
       if (hasModulePages(course)) return withStart(inference, course, lesson, signal, pageWithRuns(run, moduleJob, { reviewer, now, lesson, signal, options, mendPage }));
-      return run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson) : undefined);
+      // The sheets the plan hands out are written from the plan as it stands after its review.
+      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson) : undefined), options.run?.runner, signal);
     case 'slides':
       return run(slides);
     case 'study':

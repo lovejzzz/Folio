@@ -2,13 +2,18 @@ import { cmd, CourseStore, createCourse, newId, type Course } from '@folio/core'
 import { parseJsonText, type CompletionRequest, type Inference } from '../src';
 
 /** A scripted model for tests: answers by task name, records every request. */
-export function fakeInference(answer: (req: CompletionRequest, call: number) => unknown): Inference & { calls: CompletionRequest[] } {
+export function fakeInference(answer: (req: CompletionRequest, call: number) => unknown, handouts?: unknown): Inference & { calls: CompletionRequest[]; sheets: CompletionRequest[] } {
   const calls: CompletionRequest[] = [];
+  const sheets: CompletionRequest[] = [];
   return {
     provider: 'anthropic',
     model: 'fake',
     calls,
+    sheets,
     async complete(req) {
+      // A plan's sheets are asked for after every plan: answered apart ("none" unless a test gives some), so tests
+      // of how plans are written count the calls they are about.
+      if (req.task === 'folio_handouts') return (sheets.push(req), handouts ?? { handouts: [] });
       calls.push(req);
       await Promise.resolve();
       return answer(req, calls.length);

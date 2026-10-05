@@ -59,6 +59,7 @@ export function emptyLesson(idValue: string, title: string, summary = ''): Lesso
     slides: [],
     study: { overview: '', points: [] },
     page: [],
+    handouts: [],
     taskIds: [],
     faqIds: [],
     gen: {},

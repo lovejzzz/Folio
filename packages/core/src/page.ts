@@ -94,6 +94,26 @@ const exhibit = {
   reveal: z.boolean().default(false),
 };
 
+/**
+ * A sheet a lesson in a room puts in students' hands: a worksheet, an exit ticket, an organizer, cards to cut out,
+ * a text to read. A plan used to name these and leave them to the teacher ("hand out the sorting cards"): in six
+ * courses, nearly half of what a lesson needed was left to be made. Here it is written in full, ready to print,
+ * with its answers kept apart for the teacher.
+ */
+export const HandoutSchema = z.object({
+  id,
+  title: text,
+  kind: z.enum(['worksheet', 'organizer', 'reading', 'cards', 'slips', 'reference']).default('worksheet'),
+  /** Where in the lesson it is used, in the plan's own words ("Guided practice"). */
+  usedIn: text.default(''),
+  /** How many to print: "One per student", "One set per group". */
+  copies: text.default(''),
+  blocks: z.array(ExhibitBlockSchema),
+  /** The answers and what to look for, for the teacher only; empty for a sheet with nothing to mark. */
+  key: text.default(''),
+});
+export type Handout = z.infer<typeof HandoutSchema>;
+
 export const PageBlockSchema = z.discriminatedUnion('type', [
   z.object({ id, type: z.literal('heading'), level: z.union([z.literal(2), z.literal(3)]), text }),
   z.object({ id, type: z.literal('text'), text }),
@@ -198,7 +218,7 @@ export const isOutsideHours = (label: string): boolean => /\boptional\b|\bif you
 export const isFileName = (label: string): boolean => /\.\w{2,5}$/.test(label.trim());
 
 /** One block of an exhibit as plain text. */
-function exhibitBlockText(b: ExhibitBlock): string {
+export function exhibitBlockText(b: ExhibitBlock): string {
   switch (b.type) {
     case 'heading':
     case 'para':
