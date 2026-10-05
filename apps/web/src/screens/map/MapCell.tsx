@@ -47,7 +47,8 @@ function Placeholder({ view, compact }: { view: CellView; compact: boolean }) {
 function LiveBody({ liveKey, kind, lang, compact }: { liveKey: string; kind: MaterialKind; lang: string; compact: boolean }) {
   const t = useT();
   const partial = useLive((s) => s.partial[liveKey]);
-  const checking = useLive((s) => s.rows[liveKey]?.stage === 'checking');
+  const running = useLive((s) => s.rows[liveKey]?.stage === 'running');
+  const checking = useLive((s) => s.rows[liveKey]?.stage === 'checking') || running;
   const preview = partial === undefined ? null : livePreview(kind, partial, t);
   const shown = useSmoothText(preview?.text ?? '');
   if (!preview || (!preview.text && !preview.metric)) return <Placeholder view="building" compact={compact} />;
@@ -61,8 +62,8 @@ function LiveBody({ liveKey, kind, lang, compact }: { liveKey: string; kind: Mat
       )}
       <span className="flex w-full items-center gap-1.5 text-12 text-ink-2">
         <StatusMark kind="building" label="" />
-        <span key={checking ? 'checking' : 'writing'} className={cx('truncate tabular', checking ? 'animate-shimmer' : 'animate-fade-in')}>
-          {checking ? t.map.checking : preview.metric || t.map.building}
+        <span key={running ? 'running' : checking ? 'checking' : 'writing'} className={cx('truncate tabular', checking ? 'animate-shimmer' : 'animate-fade-in')}>
+          {running ? t.map.running : checking ? t.map.checking : preview.metric || t.map.building}
         </span>
       </span>
     </>

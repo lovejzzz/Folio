@@ -222,6 +222,8 @@ export interface SectionResult {
 export type SectionProgress =
   | { type: 'partial'; value: unknown }
   | { type: 'checking' }
+  /** The page's code is being run. */
+  | { type: 'running' }
   /** What the plan's review changed, one reason per fix, and how many problems it left for the teacher. */
   | { type: 'reviewed'; fixes: string[]; notes: number }
   /** One round of mending what the review found. */
@@ -309,9 +311,10 @@ interface PageRun {
 /** A week's page: its Python run, then read and mended with what the run found, then its figures saved. */
 async function pageWithRuns(run: <T>(job: SectionJob<T>, revise?: Revision<T>) => Promise<SectionResult>, job: SectionJob<ModuleDraft>, { reviewer, now, lesson, signal, options, mendPage }: PageRun): Promise<SectionResult> {
   const figures: Record<string, Uint8Array> = {};
-  const ranFirst = running(options.run, figures);
+  const ranFirst = running(options.run, figures, () => options.onProgress?.({ type: 'running' }));
   const read: Read<ModuleDraft> = async (draft, since) => {
     const page = await ranFirst(draft);
+    if (page.ran) options.onProgress?.({ type: 'checking' });
     if (!reviewer) return { value: page.value, fixes: [], notes: page.notes };
     const read = await reviewModule(reviewer, now(), lesson, page.value, signal, since, page.ran);
     return { ...read, notes: [...page.notes, ...read.notes] };

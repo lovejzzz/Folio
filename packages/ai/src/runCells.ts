@@ -206,10 +206,11 @@ export interface RunOptions {
  * Runs before every reading, so a page that was mended is run again. A runner that cannot be had (too old a
  * browser, no memory, the download failed) must never cost the teacher the page: it is then read as written.
  */
-export function running(options: RunOptions | undefined, figures: Record<string, Uint8Array>): (draft: ModuleDraft) => Promise<{ value: ModuleDraft; notes: ReviewNote[]; ran: boolean }> {
+export function running(options: RunOptions | undefined, figures: Record<string, Uint8Array>, onRun?: () => void): (draft: ModuleDraft) => Promise<{ value: ModuleDraft; notes: ReviewNote[]; ran: boolean }> {
   let run = 0;
   return async (draft) => {
     if (!options) return { value: draft, notes: [], ran: false };
+    if (draft.parts.some((p) => p.blocks.some(isCell))) onRun?.();
     try {
       const page = await oneAtATime(options.runner, () => runCells(options.runner, draft, ++run));
       Object.assign(figures, page.figures);

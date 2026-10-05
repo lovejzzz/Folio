@@ -6,7 +6,7 @@ import { router } from '../app/router';
 import { currentMessages } from '../i18n';
 import { canReach, currentInference, currentReviewer, errorMessage } from './model';
 import { activeStore, onSessionChange, setBuilding } from './session';
-import { checkingRow, endRow, resetLive, reviewedRow, showPartial, startRow } from './live';
+import { checkingRow, endRow, resetLive, reviewedRow, runningRow, showPartial, startRow } from './live';
 import { costSentence, takeUsage } from './spend';
 import { toast } from './toasts';
 import { useUi } from './ui';
@@ -146,6 +146,7 @@ function trackProgress(target: BuildTarget, progress: SectionProgress): void {
   const key = targetKey(target);
   if (progress.type === 'partial') showPartial(key, progress.value);
   else if (progress.type === 'checking') checkingRow(key);
+  else if (progress.type === 'running') runningRow(key);
   else if (progress.type === 'reviewed') reviewedRow(key, progress.fixes, progress.notes);
 }
 

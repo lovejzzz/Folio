@@ -26,13 +26,14 @@ function WorkingRow({ row, index }: { row: LiveRow; index: number }) {
   const t = useT();
   const course = useCourse();
   const partial = useLive((s) => s.partial[row.key]);
-  const checking = row.stage === 'checking' && !row.checked;
+  const running = row.stage === 'running';
+  const checking = running || (row.stage === 'checking' && !row.checked);
   const metric = partial === undefined ? '' : livePreview(row.kind, partial, t).metric;
-  const detail = checking ? t.build.live.checking : metric || t.build.live.writing;
+  const detail = running ? t.build.live.running : checking ? t.build.live.checking : metric || t.build.live.writing;
   return (
     <li className={cx('flex animate-pop-in items-center gap-2.5', index >= 2 && 'hidden sm:flex')}>
       <RowName row={row} course={course} />
-      <span key={checking ? 'checking' : 'writing'} className={cx('ml-auto min-w-0 truncate font-ui text-12 text-ink-2 tabular', checking || !metric ? 'animate-shimmer' : 'animate-fade-in')}>
+      <span key={running ? 'running' : checking ? 'checking' : 'writing'} className={cx('ml-auto min-w-0 truncate font-ui text-12 text-ink-2 tabular', checking || !metric ? 'animate-shimmer' : 'animate-fade-in')}>
         {detail}
       </span>
     </li>

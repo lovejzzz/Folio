@@ -12,6 +12,7 @@ export type Mend<T> = (draft: T, notes: ReviewNote[]) => Promise<Mended<T>>;
 
 export type ReadProgress =
   | { type: 'checking' }
+  | { type: 'running' }
   | { type: 'reviewed'; fixes: string[]; notes: number }
   /** One round of mending: what was open, what was written again, what the next reading found, and whether the round was kept. */
   | { type: 'mended'; open: string[]; changed: string[]; found: string[]; kept: boolean };

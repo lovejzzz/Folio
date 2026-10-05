@@ -7,7 +7,7 @@ import { create } from 'zustand';
  * Nothing here is saved; the course itself is only ever changed by commands.
  */
 
-export type LiveStage = 'writing' | 'checking' | 'done' | 'failed';
+export type LiveStage = 'writing' | 'running' | 'checking' | 'done' | 'failed';
 
 /** One section in the account: updated in place as it goes, never appended again. */
 export interface LiveRow {
@@ -68,6 +68,8 @@ export function startRow(lessonId: string, kind: GeneratedKind): void {
 }
 
 export const checkingRow = (key: string): void => setRow(key, { stage: 'checking' });
+/** The page's code is being run, before it is read. */
+export const runningRow = (key: string): void => setRow(key, { stage: 'running' });
 export const reviewedRow = (key: string, fixes: string[], notes: number): void => setRow(key, { fixes, notes, checked: true });
 
 /** The section is saved, or given up on: its answer so far is no longer needed. */
@@ -89,7 +91,7 @@ export function resetLive(): void {
 /** What is being written, in the order it began, so rows stay put while others come and go. */
 export function workingRows(rows: Record<string, LiveRow>): LiveRow[] {
   return Object.values(rows)
-    .filter((r) => r.stage === 'writing' || r.stage === 'checking')
+    .filter((r) => r.stage === 'writing' || r.stage === 'running' || r.stage === 'checking')
     .sort((a, b) => a.started - b.started);
 }
 
