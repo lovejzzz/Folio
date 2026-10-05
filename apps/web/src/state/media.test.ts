@@ -108,4 +108,15 @@ describe('clearing media nothing can show again', () => {
     expect(await dropUnusedMedia(saved.id, [open, []])).toEqual([]);
     expect(await dropUnusedMedia(saved.id, [saved, []])).toEqual([id]);
   });
+
+  it('never keeps a file as something that could run: a backup or a server that calls it a page or an SVG gets a download', async () => {
+    await restoreMedia('c_t', { id: 'm_1.svg', name: 'chart.svg', type: 'image/svg+xml', bytes: new TextEncoder().encode('<svg onload="alert(1)"/>') });
+    await restoreMedia('c_t', { id: 'm_2.html', name: 'notes.html', type: 'text/html', bytes: new TextEncoder().encode('<script>1</script>') });
+    await restoreMedia('c_t', { id: 'm_3.png', name: 'a.png', type: 'IMAGE/PNG', bytes: new Uint8Array([1]) });
+    expect((await getMedia('c_t', 'm_1.svg'))!.blob.type).toBe('application/octet-stream');
+    expect((await getMedia('c_t', 'm_2.html'))!.blob.type).toBe('application/octet-stream');
+    expect((await getMedia('c_t', 'm_3.png'))!.blob.type).toBe('image/png');
+    const id = await putMedia('c_t', new Blob(['<svg/>'], { type: 'image/svg+xml' }), 'drawn.svg');
+    expect((await getMedia('c_t', id))!.type).toBe('application/octet-stream');
+  });
 });

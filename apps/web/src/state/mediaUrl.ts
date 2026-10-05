@@ -1,4 +1,4 @@
-import { isLocalMedia, localMediaId } from '@folio/core';
+import { isLocalMedia, localMediaId, safeMediaType } from '@folio/core';
 import { useEffect, useState } from 'react';
 import { getMedia } from './media';
 import { fetchMedia } from './mediaSync';
@@ -36,7 +36,8 @@ function acquire(courseId: string, id: string): Held {
       (row): MediaUrl => {
         // Everyone left while it was being read: there is no one to hold an address for.
         if (!row || held.get(key) !== made) return { state: 'missing' };
-        made.url = URL.createObjectURL(row.blob);
+        // A file kept before types were checked may still say it is a page: it gets an address only as a download.
+        made.url = URL.createObjectURL(safeMediaType(row.blob.type) === row.blob.type ? row.blob : new Blob([row.blob], { type: safeMediaType(row.blob.type) }));
         return { state: 'ready', url: made.url, name: row.name };
       },
       (): MediaUrl => ({ state: 'missing' }),

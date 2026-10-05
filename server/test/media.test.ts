@@ -46,6 +46,10 @@ describe('a course’s pictures, clips and files in the account', () => {
     // Never shown as a page of Folio's own, whatever the file is.
     expect(back.headers.get('content-disposition')).toBe('attachment');
     expect(back.headers.get('x-content-type-options')).toBe('nosniff');
+    expect(back.headers.get('content-security-policy')).toBe("default-src 'none'; sandbox");
+    // A file sent as something that could run script at Folio's address is kept, and comes back, as a download only.
+    expect((await call('courses/c_svg/media/m_bad.svg', { method: 'PUT', cookie, body: picture(4), headers: { 'content-type': 'image/svg+xml', 'x-folio-name': 'x.svg' } })).status).toBe(200);
+    expect((await call('courses/c_svg/media/m_bad.svg', { cookie })).headers.get('content-type')).toBe('application/octet-stream');
     expect(new Uint8Array(await back.arrayBuffer())).toEqual(picture(10));
     expect(await (await call('courses/c_1/media', { cookie })).json()).toEqual({ media: [{ id: 'm_abc.webp', bytes: 10 }] });
     // Another account sees nothing of it, and nobody signed out does.

@@ -1,4 +1,4 @@
-import { localMediaId, newId } from '@folio/core';
+import { localMediaId, newId, safeMediaType } from '@folio/core';
 import { db, type MediaRow } from './db';
 
 /**
@@ -22,14 +22,18 @@ function extensionOf(name: string, type: string): string {
 export async function putMedia(courseId: string, file: Blob, name: string, now = Date.now()): Promise<string> {
   const ext = extensionOf(name, file.type);
   const id = ext ? `${newId('m')}.${ext}` : newId('m');
-  await db.media.put({ key: key(courseId, id), courseId, id, name, type: file.type, bytes: file.size, blob: file, at: now });
+  const type = safeMediaType(file.type);
+  const blob = type === file.type ? file : new Blob([file], { type });
+  await db.media.put({ key: key(courseId, id), courseId, id, name, type, bytes: file.size, blob, at: now });
   return id;
 }
 
 /** Keep a file under the ID it already has: one read from a backup. */
 export async function restoreMedia(courseId: string, media: { id: string; name: string; type: string; bytes: Uint8Array }, now = Date.now()): Promise<void> {
-  const blob = new Blob([media.bytes as BlobPart], { type: media.type });
-  await db.media.put({ key: key(courseId, media.id), courseId, id: media.id, name: media.name, type: media.type, bytes: blob.size, blob, at: now });
+  // The type comes from a file someone made or from a server: it is taken only when it is one that cannot run.
+  const type = safeMediaType(media.type);
+  const blob = new Blob([media.bytes as BlobPart], { type });
+  await db.media.put({ key: key(courseId, media.id), courseId, id: media.id, name: media.name, type, bytes: blob.size, blob, at: now });
 }
 
 export async function getMedia(courseId: string, id: string): Promise<MediaRow | null> {

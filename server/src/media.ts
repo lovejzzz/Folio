@@ -34,13 +34,21 @@ export async function listMedia(bucket: R2Bucket, userId: string, courseId: stri
   return (await all(bucket, prefix)).map((o) => ({ id: o.key.slice(prefix.length), bytes: o.size }));
 }
 
+/**
+ * The types a file is kept and served as. It is served from Folio's own address, where a page or an SVG could run
+ * script as the person signed in: only what can never run keeps its type, and anything else is a download.
+ * The same list as the app's `safeMediaType`.
+ */
+const SHOWN_AS_ITSELF = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'video/mp4', 'video/webm', 'video/quicktime']);
+const safeMediaType = (type: string): string => (SHOWN_AS_ITSELF.has(type.trim().toLowerCase()) ? type.trim().toLowerCase() : 'application/octet-stream');
+
 export type PutResult = 'ok' | 'too-large' | 'account-full';
 
 export async function putMedia(bucket: R2Bucket, userId: string, courseId: string, id: string, data: ArrayBuffer, type: string, name: string): Promise<PutResult> {
   if (data.byteLength === 0 || data.byteLength > MAX_MEDIA_BYTES) return 'too-large';
   const held = (await all(bucket, `${userId}/`)).filter((o) => o.key !== keyOf(userId, courseId, id)).reduce((n, o) => n + o.size, 0);
   if (held + data.byteLength > MAX_ACCOUNT_MEDIA_BYTES) return 'account-full';
-  await bucket.put(keyOf(userId, courseId, id), data, { httpMetadata: { contentType: type || 'application/octet-stream' }, customMetadata: { name } });
+  await bucket.put(keyOf(userId, courseId, id), data, { httpMetadata: { contentType: safeMediaType(type) }, customMetadata: { name } });
   return 'ok';
 }
 
@@ -49,7 +57,7 @@ export async function getMedia(bucket: R2Bucket, userId: string, courseId: strin
   if (!found) return null;
   return new Response(found.body, {
     headers: {
-      'content-type': found.httpMetadata?.contentType ?? 'application/octet-stream',
+      'content-type': safeMediaType(found.httpMetadata?.contentType ?? ''),
       'content-length': String(found.size),
       // The file's own name, for the device that takes a copy; encoded, since a name can hold anything.
       'x-folio-name': encodeURIComponent(found.customMetadata?.name ?? ''),
@@ -57,6 +65,7 @@ export async function getMedia(bucket: R2Bucket, userId: string, courseId: strin
       // Never run as a page of Folio's own, whatever a file claims to be.
       'x-content-type-options': 'nosniff',
       'content-disposition': 'attachment',
+      'content-security-policy': "default-src 'none'; sandbox",
     },
   });
 }

@@ -131,6 +131,14 @@ export const isLocalMedia = (ref: string): boolean => ref.startsWith(LOCAL_MEDIA
 export const localMediaId = (ref: string): string | null => (isLocalMedia(ref) ? ref.slice(LOCAL_MEDIA.length) : null);
 export const localMediaRef = (id: string): string => `${LOCAL_MEDIA}${id}`;
 
+/**
+ * The types a kept file may be shown as. A file is opened at an address of Folio's own, where a page or an SVG
+ * could run script with the teacher's courses and keys in reach: so only what can never run is shown as itself,
+ * and anything else, whatever a backup or a server says it is, is a download and nothing more.
+ */
+const SHOWN_AS_ITSELF = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'video/mp4', 'video/webm', 'video/quicktime']);
+export const safeMediaType = (type: string): string => (SHOWN_AS_ITSELF.has(type.trim().toLowerCase()) ? type.trim().toLowerCase() : 'application/octet-stream');
+
 /** Every reference a page makes to something kept on the device, once each: pictures, step shots, videos, their posters, files. */
 export function pageMediaRefs(page: readonly PageBlock[]): string[] {
   const refs = page.flatMap((b): string[] => {
