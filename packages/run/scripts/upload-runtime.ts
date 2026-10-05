@@ -9,6 +9,7 @@ import { readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { version } from 'pyodide';
 import { RUNTIME_DIR } from '../src/node';
+import { ASM_SCRIPT } from '../src/result';
 
 const BUCKET = 'folio-media';
 const SITE = 'https://folio.university';
@@ -17,7 +18,7 @@ const TYPES: Record<string, string> = { wasm: 'application/wasm', json: 'applica
 
 async function main(): Promise<void> {
   // The page-side scripts (pyodide.mjs, pyodide.asm.mjs) ship with the site itself; these are what the page feeds in.
-  const files = readdirSync(RUNTIME_DIR).filter((f) => (/\.(wasm|zip|json|whl)$/.test(f) || f === 'pyodide.asm.js') && f !== 'manifest.json');
+  const files = readdirSync(RUNTIME_DIR).filter((f) => (/\.(wasm|zip|json|whl)$/.test(f) || f === ASM_SCRIPT) && f !== 'manifest.json');
   let sent = 0;
   for (const file of files) {
     const there = await fetch(`${SITE}/api/runtime/pyodide-${version}/${file}`, { method: 'GET', headers: { range: 'bytes=0-0' } }).then((r) => r.ok || r.status === 206, () => false);

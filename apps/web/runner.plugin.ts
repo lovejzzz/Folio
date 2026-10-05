@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { withoutProbe } from '@folio/run';
 import { build, type Plugin } from 'vite';
 
 /**
@@ -32,7 +33,7 @@ export interface RunnerPage {
 }
 
 export async function runnerPage(): Promise<RunnerPage> {
-  const worker = await bundle(entry('worker'));
+  const worker = withoutProbe(await bundle(entry('worker')));
   // Text inside a script cannot hold the tag that ends it.
   const script = (await bundle(entry('page'), { WORKER_SOURCE: JSON.stringify(worker) })).replace(/<\/script/gi, '<\\/script');
   const hash = `'sha256-${createHash('sha256').update(script).digest('base64')}'`;

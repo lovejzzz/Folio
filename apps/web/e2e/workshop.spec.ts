@@ -44,5 +44,5 @@ test('the Python on a week’s page is run in the browser, shut in, and the page
   expect(policy).toContain("connect-src 'none'");
   expect(policy).not.toContain("'self'; script-src 'self'");
   // The interpreter was fetched once by Folio's own page and handed in: three weeks, three notebooks, one download.
-  expect(fetched.sort()).toEqual(['pyodide-lock.json', 'pyodide.asm.js', 'pyodide.asm.wasm', 'python_stdlib.zip']);
+  expect(fetched.sort()).toEqual(['pyodide-lock.json', ASM_SCRIPT, 'pyodide.asm.wasm', 'python_stdlib.zip'].sort());
 });

@@ -1,4 +1,4 @@
-import type { Cell, Limits } from '../result';
+import { ASM_SCRIPT, type Cell, type Limits } from '../result';
 
 /**
  * What passes between the three places a run lives. The page of Folio (the host) holds the course and is the
@@ -53,4 +53,4 @@ export type FromWorker =
   | { t: 'fatal'; message: string };
 
 /** Files a session cannot start without: asked for before the worker asks, so they arrive together. The first is the interpreter's script, which the runner page puts at the head of the worker's own code. */
-export const CORE_FILES = ['pyodide.asm.js', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];
+export const CORE_FILES = [ASM_SCRIPT, 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];

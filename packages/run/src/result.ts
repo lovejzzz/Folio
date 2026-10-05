@@ -120,15 +120,29 @@ export function failed(type: string, message: string, ms = 0): CellResult {
 export const RUNTIME_VERSION = '314.0.7';
 
 /**
+ * The interpreter tests whether it is in the kind of worker it refuses by loading an empty script: there, the
+ * load succeeds. In the runner it must fail, and it does, because the runner's policy refuses every script; but
+ * Safari's engine reports each refusal as a violation. The test is taken out: this worker is of that kind, and
+ * the interpreter runs in it.
+ */
+const PROBE = /return\s+(?:globalThis\.)?importScripts\("data:text\/javascript,"\),!0/g;
+export function withoutProbe(code: string): string {
+  const out = code.replace(PROBE, 'return!1');
+  if (out.includes('data:text/javascript')) throw new Error('The interpreter tests for its worker in a way this does not know.');
+  return out;
+}
+
+/**
  * The interpreter's own script as a worker can hold it. It is published as a module; a worker made from text
  * cannot import one in every browser (Safari's engine refuses), so it is turned into a plain script that leaves
- * its one function where the worker finds it. Two edits, each checked: a version that no longer has them fails here.
+ * its one function where the worker finds it. Each edit is checked: a version shaped otherwise fails here.
+ * The name carries the edit's number: a browser keeps a runtime file for good, so a changed file needs a new name.
  */
-export const ASM_SCRIPT = 'pyodide.asm.js';
+export const ASM_SCRIPT = 'pyodide.asm.folio2.js';
 export function classicAsm(module: string): string {
   const tail = 'export default _createPyodideModule;';
   if (!module.trimEnd().endsWith(tail) || !module.startsWith('async function _createPyodideModule(')) throw new Error('The interpreter\'s script is not shaped as expected.');
-  return module.trimEnd().slice(0, -tail.length).replaceAll('import.meta.url', 'self.location.href');
+  return withoutProbe(module.trimEnd().slice(0, -tail.length).replaceAll('import.meta.url', 'self.location.href'));
 }
 
 /** Errors that are the runner's own, not the code's: the cell was never judged. */
