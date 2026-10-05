@@ -117,7 +117,8 @@ function toBlock(raw: BlockDraft): PageBlock {
     case 'code':
       return { id, type: 'code', language: b.kind.trim().toLowerCase(), code: b.text, caption: b.title };
     case 'image':
-      return { id, type: 'image', src: '', alt: b.alt, caption: b.text, shows: b.shows };
+      // A figure a run drew carries its name under "kind" until whoever holds the course has saved the picture.
+      return { id, type: 'image', src: b.kind.startsWith('run:') ? b.kind : '', alt: b.alt, caption: b.text, shows: b.shows };
     case 'video':
       return { id, type: 'video', src: '', poster: '', alt: b.alt, caption: b.text, shows: b.shows, minutes: b.minutes, transcript: b.transcript, clip: isClip(b) };
     case 'file':

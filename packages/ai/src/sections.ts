@@ -29,6 +29,7 @@ import { FORUM_GRADING, checkModule, moduleJob, type ModuleDraft } from './onlin
 import { mendModule, mendPlan } from './mend';
 import { reviewed, type Mend, type Read } from './secondRead';
 import { reviewModule } from './moduleReview';
+import { placeFigures, running, type RunOptions } from './runCells';
 import { startCommands } from './start';
 import { runJob, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
@@ -232,6 +233,8 @@ export interface SectionOptions {
   onProgress?: (progress: SectionProgress) => void;
   /** Told the plan as first written, before its review: what the next lesson's plan can already be written from. */
   onDraft?: (commands: Command[]) => void;
+  /** Runs the Python on a module page, so the page shows what the code really prints. */
+  run?: RunOptions;
   /** The course as it stands now, for the readings that come later: the lessons before this one may have been corrected since. */
   latest?: () => Course;
 }
@@ -294,6 +297,30 @@ async function withStart(inference: Inference, course: Course, lesson: Lesson, s
   return { ...written, commands: [...written.commands, ...(await startCommands(inference, course, signal, true).catch(() => []))] };
 }
 
+interface PageRun {
+  reviewer?: Inference;
+  now: () => Course;
+  lesson: Lesson;
+  signal?: AbortSignal;
+  options: SectionOptions;
+  mendPage: Mend<ModuleDraft>;
+}
+
+/** A week's page: its Python run, then read and mended with what the run found, then its figures saved. */
+async function pageWithRuns(run: <T>(job: SectionJob<T>, revise?: Revision<T>) => Promise<SectionResult>, job: SectionJob<ModuleDraft>, { reviewer, now, lesson, signal, options, mendPage }: PageRun): Promise<SectionResult> {
+  const figures: Record<string, Uint8Array> = {};
+  const ranFirst = running(options.run, figures);
+  const read: Read<ModuleDraft> = async (draft, since) => {
+    const page = await ranFirst(draft);
+    if (!reviewer) return { value: page.value, fixes: [], notes: page.notes };
+    const read = await reviewModule(reviewer, now(), lesson, page.value, signal, since, page.ran);
+    return { ...read, notes: [...page.notes, ...read.notes] };
+  };
+  const revise: Revision<ModuleDraft> | undefined = reviewer || options.run ? (draft) => reviewed(read, draft, options.onProgress, mendPage, (v) => checkModule(v, now())) : undefined;
+  const result = await run(job, revise);
+  return { ...result, commands: await placeFigures(result.commands, figures, options.run?.saveFigure) };
+}
+
 /** Generate one lesson's section. Pure with respect to the course: returns commands, commits nothing. */
 export async function generateSection(
   inference: Inference,
@@ -340,7 +367,7 @@ export async function generateSection(
   };
   switch (kind) {
     case 'plan':
-      if (hasModulePages(course)) return withStart(inference, course, lesson, signal, run(moduleJob, reviewer ? (draft) => reviewed((d, since) => reviewModule(reviewer, now(), lesson, d, signal, since), draft, options.onProgress, mendPage, (v) => checkModule(v, course)) : undefined));
+      if (hasModulePages(course)) return withStart(inference, course, lesson, signal, pageWithRuns(run, moduleJob, { reviewer, now, lesson, signal, options, mendPage }));
       return run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson) : undefined);
     case 'slides':
       return run(slides);

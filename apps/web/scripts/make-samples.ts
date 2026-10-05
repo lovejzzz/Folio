@@ -14,6 +14,7 @@ import { MATERIAL_KINDS, CourseStore, OnlineSchema, cmd, orderedLessons, parseCo
 import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawn } from 'node:child_process';
+import { nodeRunner } from '@folio/run/node';
 import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -288,10 +289,23 @@ const asking = new AsyncLocalStorage<string>();
 const made = createInference({ provider: 'folio', apiKey: '', model: 'claude-sonnet-5-5', baseUrl: 'https://folio.local/api/ai' }, PAID ? paidFetch : cliFetch, (u) => USED.push({ ...u, task: asking.getStore() ?? '' }));
 const inference: typeof made = { ...made, complete: (request) => asking.run(request.task, () => made.complete(request)) };
 
+/** `--run`: the Python on module pages is run, as a teacher's browser will, and the pages show what it prints. */
+const RUN = ARGS.includes('--run');
+const RUNNER = nodeRunner();
+let figureCount = 0;
+/** A figure a page's code drew, kept beside the course under its name. */
+async function saveFigure(name: string, png: Uint8Array): Promise<string> {
+  mkdirSync(join(OUT, `${name}-figures`), { recursive: true });
+  const file = `${name}-figures/figure-${++figureCount}.png`;
+  writeFileSync(join(OUT, file), png);
+  return file;
+}
+
 async function build(name: string, store: CourseStore, targets: BuildTarget[], failed: string[]): Promise<number> {
   const host: BuildHost = {
     inference,
     reviewer: inference,
+    run: RUN ? { runner: RUNNER, saveFigure: (png) => saveFigure(name, png) } : undefined,
     getCourse: store.getState,
     commit: (_target, commands) => {
       store.apply(commands, { label: { key: 'built' }, source: 'ai', undoable: false });

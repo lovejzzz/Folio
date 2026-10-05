@@ -6,6 +6,7 @@ const stillWanted = (course: Course, t: BuildTarget) => {
   return Boolean(lesson && setsWork(lesson, t.kind));
 };
 import { InferenceError, type Inference } from './inference';
+import type { RunOptions } from './runCells';
 import { generateSection, type SectionProgress } from './sections';
 import { BUILT_ON_PLAN } from './prompts';
 
@@ -31,6 +32,8 @@ export interface BuildHost {
   inference: Inference;
   /** Reviews each lesson plan before the materials written from it; none for providers it hasn't been tried with. */
   reviewer?: Inference;
+  /** Runs the Python on module pages; without it a page is kept as written. */
+  run?: RunOptions;
   /** Read the latest course before each job so edits made mid-build are respected. */
   getCourse(): Course;
   commit(target: BuildTarget, commands: Command[]): void;
@@ -168,7 +171,7 @@ async function runOne(host: BuildHost, target: BuildTarget, summary: BuildSummar
   host.onEvent?.({ type: 'start', target });
   try {
     const onProgress = host.onProgress ? (progress: SectionProgress) => host.onProgress!(target, progress) : undefined;
-    const options = { reviewer: host.reviewer, onProgress, latest: pipeline?.view, onDraft: pipeline ? (commands: Command[]) => pipeline.drafted(target.lessonId, commands) : undefined };
+    const options = { reviewer: host.reviewer, run: host.run, onProgress, latest: pipeline?.view, onDraft: pipeline ? (commands: Command[]) => pipeline.drafted(target.lessonId, commands) : undefined };
     // Asked once more before it counts as failed: a part that fails holds back what is written from it, and most failures do not happen twice.
     const write = () => generateSection(host.inference, course, target.lessonId, target.kind, host.signal, options);
     const result = await write().catch((error: unknown) => (error instanceof InferenceError && AGAIN.has(error.kind) && !host.signal.aborted ? write() : Promise.reject(error)));

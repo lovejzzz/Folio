@@ -10,6 +10,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",
     "@folio/core": "workspace:*",
+    "@folio/run": "workspace:*",
     "zod": "^4.6.5"
   }
 }

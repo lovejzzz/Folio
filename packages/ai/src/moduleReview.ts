@@ -53,7 +53,8 @@ function moduleText(v: ModuleDraft): string {
   return [`Introduction: ${v.intro}`, `Checklist (${total} minutes in all, not counting what is optional or done only in place of something missed):\n${checklist}`, parts, live, `Wrap-up: ${v.wrapUp}`].filter(Boolean).join('\n\n');
 }
 
-export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraft, since?: Since): string {
+/** `ran`: the page's Python was really run, and each output block holds what it gave. */
+export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraft, since?: Since, ran = false): string {
   return [
     lessonContext(course, lesson),
     earlierLessons(course, lesson),
@@ -62,7 +63,9 @@ export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraf
     [
       'Read this page as the student will: alone at home, with no one to ask, doing exactly what it says and nothing it does not say. Then read it again as an experienced teacher of the subject. List every problem that would stop, mislead or misinform a student:',
       'follow every step from where the step before left the student: nothing is clicked that was never opened, used that was never made or downloaded, or named differently from where it was made; every menu, button, field, default value and message is what the named version of the tool really shows; what each checkpoint says the student will see is what would really be there;',
-      'run every piece of code in your head as written, in the file and place the page says: it must compile, do what the page says it does, and agree with its explanation; work out every number yourself;',
+      ran
+        ? 'the Python on this page was run as written, in order, and every block marked "output" holds what it really printed: do not work those out again or doubt them; check that what the page says of each result agrees with the output shown, and run in your head only code that is not Python; work out every other number yourself;'
+        : 'run every piece of code in your head as written, in the file and place the page says: it must compile, do what the page says it does, and agree with its explanation; work out every number yourself;',
       'check every fact, definition and example against what is true, and every term against where it was first explained, on this page or in earlier weeks;',
       'check that nothing is promised and not given (a file, a video, a reading, a setting), and that the week can be done in the hours the checklist gives it: time each checklist item yourself from what it asks of a student doing it the first time, and name any that would take half as long again as it says, with your own figure;',
       'and, when earlier weeks are given, check the page keeps to their names and continues the project as they left it.',
@@ -125,12 +128,12 @@ export function applyModuleReview(v: ModuleDraft, issues: ModuleIssue[]): { valu
 type ReviewNote = Extract<Flag, { code: 'reviewNote' }>;
 
 /** Review a freshly written page: small sure fixes are made, the rest come back as notes for a rewrite or the teacher. */
-export async function reviewModule(inference: Inference, course: Course, lesson: Lesson, v: ModuleDraft, signal?: AbortSignal, since?: Since): Promise<{ value: ModuleDraft; fixes: string[]; notes: ReviewNote[] }> {
+export async function reviewModule(inference: Inference, course: Course, lesson: Lesson, v: ModuleDraft, signal?: AbortSignal, since?: Since, ran = false): Promise<{ value: ModuleDraft; fixes: string[]; notes: ReviewNote[] }> {
   const result = await runJob(inference, {
     task: 'folio_module_review',
     system: systemPrompt(course.language, course.locale),
     context: courseBackground(course),
-    prompt: moduleReviewPrompt(course, lesson, v, since),
+    prompt: moduleReviewPrompt(course, lesson, v, since, ran),
     effort: 'medium',
     schema: ModuleReviewDraft,
     signal,

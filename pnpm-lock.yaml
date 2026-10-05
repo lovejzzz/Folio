@@ -65,6 +65,9 @@ importers:
       '@folio/export':
         specifier: workspace:*
         version: link:../../packages/export
+      '@folio/run':
+        specifier: workspace:*
+        version: link:../../packages/run
       '@folio/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -162,6 +165,9 @@ importers:
       '@folio/core':
         specifier: workspace:*
         version: link:../core
+      '@folio/run':
+        specifier: workspace:*
+        version: link:../run
       zod:
         specifier: ^4.6.5
         version: 4.6.5
