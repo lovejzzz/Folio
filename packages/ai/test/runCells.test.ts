@@ -67,6 +67,13 @@ describe('a page whose Python is run', () => {
     expect(kinds(ran.value.parts[0]!.blocks)).toEqual(['python:scores["z"]', "output:KeyError: 'z'", 'python:assert mean_of([1, 2]) == 1.5', 'python:raise NotImplementedError']);
   });
 
+  it('keeps what was written under a cell that asks the machine about itself: the runner is not the student\'s computer', async () => {
+    const v = page([code('import sys, pandas as pd\nprint(sys.version_info[:2])\nprint(pd.__version__)'), code('(3, 12)\n2.2.3', 'output'), { type: 'text', text: 'You should see (3, 12) and a version that starts with 2.2.' }, code('print(len("abc"))'), code('2', 'output')]);
+    const ran = await runCells(fakeRunner({ 'import sys, pandas as pd': { stdout: '(3, 14)\n3.0.2\n' }, 'print(len("abc"))': { stdout: '3\n' } }), v);
+    expect(ran.notes).toEqual([]);
+    expect(kinds(ran.value.parts[0]!.blocks).filter((k) => k.startsWith('output'))).toEqual(['output:(3, 12)\n2.2.3', 'output:3']);
+  });
+
   it('tells the mend of a sentence that quotes a number the code does not print, and of nothing else that differs', async () => {
     const blocks = [code('print(df.mean())'), code('72.5\ndtype: object', 'output'), { type: 'text', text: 'The mean is 72.5, a little above the pass mark of 70.' }, code('print(df.dtypes)'), code('object', 'output'), { type: 'text', text: 'Each column has a type.' }];
     const ran = await runCells(fakeRunner({ 'print(df.mean())': { stdout: '74.25\ndtype: str\n' }, 'print(df.dtypes)': { stdout: 'str\n' } }), page(blocks));

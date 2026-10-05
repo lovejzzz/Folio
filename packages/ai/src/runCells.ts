@@ -56,10 +56,18 @@ function defined(cells: string[]): Set<string> {
   return names;
 }
 
-type Verdict = 'ok' | 'meant' | 'student' | 'follows' | 'fault';
+type Verdict = 'ok' | 'meant' | 'machine' | 'student' | 'follows' | 'fault';
 
-/** Why a cell failed: as the page means it to, for want of the student's code, because an earlier cell failed, or by its own fault. */
-function verdict(res: CellResult, written: string | null, names: Set<string>, failedBefore: boolean): Verdict {
+/**
+ * A cell that asks the machine about itself (which Python, which version of a library, which system): what it
+ * prints here is true of Folio's runner and not of the student's computer, which the course is written for.
+ * Shown, "3.14" stood under a page that had just had the student install 3.12.
+ */
+const ASKS_MACHINE = /__version__|\bversion_info\b|\bsys\.version\b|\bplatform\.\w+\(|\bshow_versions\(|\bsys\.(executable|platform|path)\b|\bos\.(getcwd|name)\b|\bPath\.(cwd|home)\(/;
+
+/** What to make of a cell's run: sound, about the machine, failing as the page means it to, waiting for the student's code, failing because an earlier cell did, or at fault. */
+function verdict(code: string, res: CellResult, written: string | null, names: Set<string>, failedBefore: boolean): Verdict {
+  if (written !== null && ASKS_MACHINE.test(code)) return 'machine';
   if (!res.error) return 'ok';
   if (written?.includes(res.error.type)) return 'meant';
   const missing = res.error.type === 'NameError' ? /name '(\w+)' is not defined/.exec(res.error.message)?.[1] : undefined;
@@ -167,7 +175,7 @@ export async function runCells(runner: Runner, v: ModuleDraft, run = 1): Promise
       const res = await runner.run({ code: b.text });
       // The runner's own failure says nothing of the code: the page is then kept as written, and not blamed.
       if (res.error && RUNNER_ERRORS.includes(res.error.type)) throw new Error(res.error.message);
-      const what = verdict(res, written, names, failed);
+      const what = verdict(b.text, res, written, names, failed);
       ran.set(b, { res, verdict: what });
       if (what === 'fault') notes.push(faultNote(where, b.text, res, runtime(await runner.versions())));
       if (what === 'fault' || what === 'follows') failed = true;
