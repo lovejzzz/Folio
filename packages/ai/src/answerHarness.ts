@@ -228,7 +228,14 @@ def check_item(item, check):
                 return ns_[0][0] <= fv[0] <= ns_[1][0], f'computed {fv[0]:.6g}; stored range {ns_[0][2]}..{ns_[1][2]}'
             fv = flat(v)
             if fv is not None:
-                return match_text(tail, v, len(fv), s.get('tolerance'))
+                # the computed values in order among the numbers that follow: a key says "2.45 for n = 4 and 1.64 for n = 9",
+                # and the 4 and the 9 are not results
+                stored = numbers(tail.replace('\x60', ''))[:3 * len(fv) + 4]; at = 0; bad = []
+                for c in fv:
+                    hit = next((k for k in range(at, len(stored)) if num_ok(stored[k][0], stored[k][1], c, s.get('tolerance'))), None)
+                    if hit is None: bad.append(round(c, 6))
+                    else: at = hit + 1
+                return not bad, (f'computed {bad[:6]} not among the stored {[n[2] for n in stored][:8]}' if bad else f'{len(fv)} numbers found in order')
             import numpy as np
             if isinstance(v, (bool, np.bool_)): return match_text(tail, v)
             want = ' '.join(str(v).split()); got = ' '.join(tail.replace('\x60', '').split()).lstrip('"\'“‘ ')

@@ -85,6 +85,9 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect(await run(key('t_sci2', 'The sample holds 3.011 x 10^23 atoms.'), form('mol * avogadro', 'The sample holds '))).toBe(0);
     expect(await run(key('t_frac', 'Line 2 is marked at 1/3, 2/3 and 3/3.'), form('[Fraction(k, 3) for k in (1, 2, 3)]', 'Line 2 is marked at '))).toBe(0);
     expect(await run(key('t_mixed', 'Together they make 1 1/2 strips.'), form('Fraction(3, 4) * 2', 'Together they make '))).toBe(0);
+    // Results set among numbers that are not results: the 4 and the 9 are sample sizes.
+    expect(await run(key('t_among', 'The standard errors are about 2.45 for n = 4 and 1.64 for n = 9.'), { checkable: true, setup: 'sd = 4.91', stated: [{ where: 'answerKey', before: 'The standard errors are about ', expr: '[sd / 4 ** 0.5, sd / 9 ** 0.5]' }] })).toBe(0);
+    expect(await run(key('t_among_wrong', 'The standard errors are about 2.45 for n = 4 and 1.94 for n = 9.'), { checkable: true, setup: 'sd = 4.91', stated: [{ where: 'answerKey', before: 'The standard errors are about ', expr: '[sd / 4 ** 0.5, sd / 9 ** 0.5]' }] })).toBe(1);
     // And a wrong one still fails: 2/4 where three fourths was meant.
     expect(await run(key('t_wrong_frac', 'The dot sits at 2/4.'), form('Fraction(3, 4)', 'The dot sits at '))).toBe(1);
   }, 180_000);

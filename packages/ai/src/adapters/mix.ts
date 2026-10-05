@@ -46,7 +46,9 @@ export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_module_mend: 16000,
   // A week's module page is several plans long. At 16,000, two pages in three were cut off and written again from
   // nothing, each cut-off answer paid for and thrown away: measured on real calls, a page with its thinking runs to about 19,000.
-  folio_module: 28000,
+  // On the paid run of 5 October a statistics week was cut off at 28,000 and again at 32,000 before a third try fitted:
+  // two answers paid for and thrown away. It starts with all the room there is.
+  folio_module: 32000,
   folio_start: 6000,
   folio_module_review: 12000,
   folio_syllabus_check: 10000,
