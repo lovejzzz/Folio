@@ -11,7 +11,7 @@
 // where the file is [{ "name", "brief", "attach"?: [absolute paths], "syllabus"?: title of the attached file that
 // is the syllabus, "policies"? }]; nothing is written again.
 import { MATERIAL_KINDS, CourseStore, OnlineSchema, cmd, orderedLessons, parseCourse, type Course, type Delivery, type GeneratedKind, type Online } from '@folio/core';
-import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
+import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, supportedHandout, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawn } from 'node:child_process';
 import { nodeRunner } from '@folio/run/node';
@@ -357,6 +357,13 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
     console.log(`${name}: writing again ${flawed(store.getState()).length} parts`);
     noteFlags(name, store.getState());
     await build(name, store, flawed(store.getState()), failed);
+  }
+  // --supports: a copy with language supports of each lesson's first sheet, as a teacher would ask for one, to be judged.
+  if (ARGS.includes('--supports')) {
+    for (const lesson of orderedLessons(store.getState()).filter((l) => l.handouts.length && !l.handouts.some((h) => h.title.endsWith('(with language supports)')))) {
+      const commands = await supportedHandout(inference, store.getState(), lesson.id, lesson.handouts[0]!.id, 'with language supports').catch(() => []);
+      if (commands.length) store.apply(commands, { label: { key: 'built' }, source: 'ai', undoable: false });
+    }
   }
   const course: Course = { ...store.getState(), status: missingTargets(store.getState()).length ? 'building' : 'ready' };
   writeFileSync(join(OUT, `${name}.json`), JSON.stringify(course));
