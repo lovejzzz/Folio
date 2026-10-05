@@ -125,7 +125,7 @@ export const RUNTIME_VERSION = '314.0.7';
  * Safari's engine reports each refusal as a violation. The test is taken out: this worker is of that kind, and
  * the interpreter runs in it.
  */
-const PROBE = /return\s+(?:globalThis\.)?importScripts\("data:text\/javascript,"\),!0/g;
+const PROBE = /return\s+(?:globalThis\.)?importScripts\((["'`])data:text\/javascript,\1\),!0/g;
 export function withoutProbe(code: string): string {
   const out = code.replace(PROBE, 'return!1');
   if (out.includes('data:text/javascript')) throw new Error('The interpreter tests for its worker in a way this does not know.');

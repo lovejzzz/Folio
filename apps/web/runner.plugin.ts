@@ -2,7 +2,8 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
-import { withoutProbe } from '@folio/run';
+// By its file: this is read by Node as the build starts, before anything resolves a workspace package.
+import { withoutProbe } from '../../packages/run/src/result.ts';
 import { build, type Plugin } from 'vite';
 
 /**
