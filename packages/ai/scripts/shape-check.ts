@@ -15,8 +15,9 @@ import { ModuleDraft } from '../src/online';
 import { PlanReviewDraft } from '../src/review';
 import { StartDraft } from '../src/start';
 import { SupportedDraft } from '../src/supports';
+import { StuckForm } from '../src/stuckCheck';
 
-const SHAPES: Record<string, z.ZodType> = { ModuleDraft, ModuleMend, ModuleReviewDraft, PlanDraft, PlanMend, PlanReviewDraft, SlidesDraft, HandoutsDraft, SupportedDraft, AnswerForm, StartDraft, OutlineDraft, ClarifyDraft, QuizDraft, AssignmentDraft, TestDraft, StepDraft, StudyDraft, DiscussionsDraft, FaqDraft };
+const SHAPES: Record<string, z.ZodType> = { ModuleDraft, ModuleMend, ModuleReviewDraft, PlanDraft, PlanMend, PlanReviewDraft, SlidesDraft, HandoutsDraft, SupportedDraft, AnswerForm, StuckForm, StartDraft, OutlineDraft, ClarifyDraft, QuizDraft, AssignmentDraft, TestDraft, StepDraft, StudyDraft, DiscussionsDraft, FaqDraft };
 
 const apiKey = (await (await fetch('http://127.0.0.1:8799/key/anthropic', { headers: { 'x-experiment': '1' } })).text()).trim();
 const client = new Anthropic({ apiKey });

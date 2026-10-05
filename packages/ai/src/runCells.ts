@@ -2,6 +2,7 @@ import type { Flag } from '@folio/core';
 import { RUNNER_ERRORS, type CellResult, type Runner, type Versions } from '@folio/run';
 import { RAN, type ModuleDraft } from './online';
 import { shield } from './prompts';
+import { causeNote, holds, type Claim } from './stuckCheck';
 
 /**
  * A page's Python, really run. The writer writes each cell, what it expects the cell to print, and what the
@@ -131,6 +132,25 @@ export function standing(notes: ReviewNote[], v: ModuleDraft): ReviewNote[] {
   });
 }
 
+/**
+ * A guessed number can be quoted far from the cell that was to print it: in a picture asked for at the top of the
+ * page, or in the instructor's notes. Judged pages kept "Train accuracy: 0.958" in an opening picture and in the
+ * notes over a page that printed 0.967. Only numbers unlikely to mean something else are looked for: a decimal, or
+ * three digits and more.
+ */
+function staleElsewhere(v: ModuleDraft, replaced: Set<string>): ReviewNote[] {
+  const telling = [...replaced].filter((n) => n.includes('.') || n.length >= 3);
+  const quoted = (text: string) => telling.filter((n) => numbers(text).has(n));
+  const note = (where: string, text: string): ReviewNote => ({ code: 'reviewNote', values: { where, text } });
+  const pictures = v.parts.flatMap((part, i) => {
+    const found = [...new Set(part.blocks.filter((b) => b.type === 'image' || b.type === 'video').flatMap((b) => quoted(said(b))))];
+    return found.length ? [note(`Part ${i + 1}, ${part.title}`, `A picture or video asked for in this part is to show ${found.slice(0, 6).join(', ')}, which the code does not print when it is run: the outputs now on the page are what it prints. Correct what the picture is asked to show, its caption and its description.`)] : [];
+  });
+  const kit = v.facilitation;
+  const told = [...new Set(quoted([...kit.leaves, ...kit.watchFor, ...kit.feedback, kit.announcement].join(' ')))];
+  return [...pictures, ...(told.length ? [note('The page', `The instructor's notes ("leaves", "watchFor", "feedback" or "announcement") give ${told.slice(0, 8).join(', ')}, which the code does not print when it is run: the outputs now on the page are what it prints. Give again, whole, each of those notes that quotes one, with the numbers the page shows.`)] : [])];
+}
+
 const outputBlock = (text: string): Block => ({ type: 'code', kind: 'output', text, items: [], title: '', shots: [], shows: '', alt: '', minutes: 0, transcript: '' });
 
 const UNRUN: CellResult = { stdout: '', stderr: '', value: null, error: null, figures: [], figuresDropped: 0, cut: false, loadError: null, sessionLost: false, ms: 0 };
@@ -200,7 +220,7 @@ function withResults(blocks: Block[], { ran, figures, run, on }: Placing): Block
  * Run every Python cell of the page in order, in one fresh notebook, and return the page with what they gave.
  * A page with no Python comes back as it is, and nothing is started for it.
  */
-export async function runCells(runner: Runner, v: ModuleDraft, run = 1): Promise<RanPage> {
+export async function runCells(runner: Runner, v: ModuleDraft, run = 1, causes?: (cells: Block[]) => Promise<Claim[]>): Promise<RanPage> {
   const cells = v.parts.flatMap((p) => p.blocks.filter(isCell));
   if (!cells.length) return { value: v, notes: [], figures: {}, cells: 0 };
   await runner.reset();
@@ -233,11 +253,33 @@ export async function runCells(runner: Runner, v: ModuleDraft, run = 1): Promise
       if (quote) notes.push(quote);
     }
   }
+  // The causes the page's notes give, tried. Each mistaken cell is run where a student would make the mistake: in a
+  // second notebook, after the cells before it and before its own right version. Tried at the end of the first, a
+  // cell met names the later cells had since changed, and a sound note was called false.
+  const sound = cells.filter((c) => ran.get(c)?.verdict === 'ok');
+  const claims = (sound.length && causes ? await causes(cells).catch(() => []) : []).filter((c) => {
+    const cell = cells[c.cell - 1];
+    return cell && v.parts[c.part - 1] && sound.includes(cell) && c.mistaken.trim() !== cell.text.trim();
+  });
+  if (claims.length) {
+    await runner.reset();
+    await runner.run({ code: libraries(cells.map((c) => c.text)) });
+    for (const [i, cell] of cells.entries()) {
+      if (Date.now() - started > PAGE_MS || !claims.some((c) => c.cell > i)) break;
+      for (const claim of claims.filter((c) => c.cell === i + 1)) {
+        const res = await runner.run({ code: claim.mistaken });
+        if (res.error && RUNNER_ERRORS.includes(res.error.type)) throw new Error(res.error.message);
+        if (!holds(claim, res, shown(res), shown(ran.get(cell)!.res))) notes.push(causeNote(`Part ${claim.part}, ${v.parts[claim.part - 1]!.title}`, claim, res, shown(res)));
+      }
+      await runner.run({ code: cell.text });
+    }
+  }
   const figures: Record<string, Uint8Array> = {};
   const on = runtime(await runner.versions());
   // The teacher's list of what to check was written with the outputs the writer guessed: an entry that quotes a number
   // the run has since replaced asks the teacher to check something the page no longer says (seven pages of twelve had one).
   const toCheck = v.facilitation.toCheck.filter((line) => ![...numbers(line)].some((n) => replaced.has(n)));
+  notes.push(...staleElsewhere(v, replaced));
   return { value: { ...v, facilitation: { ...v.facilitation, toCheck }, parts: v.parts.map((p) => ({ ...p, blocks: withResults(p.blocks, { ran, figures, run, on }) })) }, notes, figures, cells: cells.length };
 }
 
@@ -262,13 +304,20 @@ export interface RunOptions {
  * Runs before every reading, so a page that was mended is run again. A runner that cannot be had (too old a
  * browser, no memory, the download failed) must never cost the teacher the page: it is then read as written.
  */
-export function running(options: RunOptions | undefined, figures: Record<string, Uint8Array>, onRun?: () => void): (draft: ModuleDraft) => Promise<{ value: ModuleDraft; notes: ReviewNote[]; ran: boolean }> {
+export function running(
+  options: RunOptions | undefined,
+  figures: Record<string, Uint8Array>,
+  onRun?: () => void,
+  causes?: (draft: ModuleDraft, cells: Block[]) => Promise<Claim[]>,
+): (draft: ModuleDraft) => Promise<{ value: ModuleDraft; notes: ReviewNote[]; ran: boolean }> {
   let run = 0;
   return async (draft) => {
     if (!options) return { value: draft, notes: [], ran: false };
     if (draft.parts.some((p) => p.blocks.some(isCell))) onRun?.();
     try {
-      const page = await oneAtATime(options.runner, () => runCells(options.runner, draft, ++run));
+      // The causes are tried on the page as first written: once mended, its notes have been through the trial.
+      const first = run === 0 && causes ? (cells: Block[]) => causes(draft, cells) : undefined;
+      const page = await oneAtATime(options.runner, () => runCells(options.runner, draft, ++run, first));
       Object.assign(figures, page.figures);
       return { value: page.value, notes: page.notes, ran: page.cells > 0 };
     } catch (error) {

@@ -218,6 +218,8 @@ const FOLLOW_PLAN = `Use the same examples, data and figures as the plan. ${FOLL
  */
 const FOLLOW_PLAN_NEW_ITEMS = `Keep the plan's facts, data, methods and terms, but give students new items to work: other numbers or cases than the plan's worked examples and class practice, so the work can't be copied from the lesson. A new item has a name of its own: it never gives other values to something the plan had students make and name. ${FOLLOW_REST}`;
 
+const FOLLOW_PAGE_BUILD = `The work is what the page had students build, handed in under the names the page gave it (its notebook, its files, its objects), with what this assignment adds of the student's own: it never asks for the page's work again with other values, never forbids what the page told students to keep, and gives nothing the page made another value or name. ${FOLLOW_REST}`;
+
 /**
  * One scale for every rubric in a course. Each assignment is written on its
  * own, and a history course came back with four scales in four lessons. A
@@ -355,7 +357,10 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
   if (BUILT_ON_PLAN.has(kind)) {
     const plan = planSummary(lesson);
     // Each job invents what the sources don't give; without the plan, a quiz and a plan gave one coefficient two standard errors.
-    if (plan) parts.push(`${plan}\n\n${kind === 'quiz' || kind === 'assignments' ? FOLLOW_PLAN_NEW_ITEMS : FOLLOW_PLAN}`);
+    // A week's graded work online is the page's own build handed in with something of the student's own on it: told to
+    // "give new items, not the lesson's", an assignment forbade the notebook its page had just said to submit.
+    const follow = kind === 'assignments' && hasModulePages(course) ? FOLLOW_PAGE_BUILD : kind === 'quiz' || kind === 'assignments' ? FOLLOW_PLAN_NEW_ITEMS : FOLLOW_PLAN;
+    if (plan) parts.push(`${plan}\n\n${follow}`);
   }
   if (kind === 'plan') parts.push(nextReading(course, lesson), earlierLessons(course, lesson), earlierNotes(lesson));
   // A graded piece of its own, not one of a weekly run: it is written from the course, not from one lesson.

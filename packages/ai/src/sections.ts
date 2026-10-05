@@ -31,6 +31,7 @@ import { mendModule, mendPlan } from './mend';
 import { reviewed, type Mend, type Read } from './secondRead';
 import { reviewModule } from './moduleReview';
 import { placeFigures, running, standing, type RunOptions } from './runCells';
+import { stuckClaims } from './stuckCheck';
 import { withAnswerChecks } from './answerCheck';
 import { withHandouts } from './handouts';
 import { startCommands } from './start';
@@ -313,6 +314,8 @@ async function withStart(inference: Inference, course: Course, lesson: Lesson, s
 }
 
 interface PageRun {
+  /** Who writes: asked, too, to set down the causes the page's notes give, so that they can be tried. */
+  writer: Inference;
   reviewer?: Inference;
   now: () => Course;
   lesson: Lesson;
@@ -322,9 +325,9 @@ interface PageRun {
 }
 
 /** A week's page: its Python run, then read and mended with what the run found, then its figures saved. */
-async function pageWithRuns(run: <T>(job: SectionJob<T>, revise?: Revision<T>) => Promise<SectionResult>, job: SectionJob<ModuleDraft>, { reviewer, now, lesson, signal, options, mendPage }: PageRun): Promise<SectionResult> {
+async function pageWithRuns(run: <T>(job: SectionJob<T>, revise?: Revision<T>) => Promise<SectionResult>, job: SectionJob<ModuleDraft>, { writer, reviewer, now, lesson, signal, options, mendPage }: PageRun): Promise<SectionResult> {
   const figures: Record<string, Uint8Array> = {};
-  const ranFirst = running(options.run, figures, () => options.onProgress?.({ type: 'running' }));
+  const ranFirst = running(options.run, figures, () => options.onProgress?.({ type: 'running' }), (draft, cells) => stuckClaims(writer, draft, cells, signal));
   const read: Read<ModuleDraft> = async (draft, since) => {
     const page = await ranFirst(draft);
     if (page.ran) options.onProgress?.({ type: 'checking' });
@@ -384,7 +387,7 @@ export async function generateSection(
   };
   switch (kind) {
     case 'plan':
-      if (hasModulePages(course)) return withStart(inference, course, lesson, signal, pageWithRuns(run, moduleJob, { reviewer, now, lesson, signal, options, mendPage }));
+      if (hasModulePages(course)) return withStart(inference, course, lesson, signal, pageWithRuns(run, moduleJob, { writer: inference, reviewer, now, lesson, signal, options, mendPage }));
       // The sheets the plan hands out are written from the plan as it stands after its review.
       return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson) : undefined), signal);
     case 'slides':

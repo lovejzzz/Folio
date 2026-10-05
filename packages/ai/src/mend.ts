@@ -56,6 +56,9 @@ export const ModuleMend = z.object({
   live: ModuleDraft.shape.live.describe('The live session\'s whole run of show again, only when it changes'),
   wrapUp: z.string().default('').describe('The wrap-up again, only when a problem is in it'),
   leaves: z.array(line).max(32).default([]).describe('What the student\'s work holds at the end of the week, whole, only when a fix changes it'),
+  watchFor: z.array(line).max(8).default([]).describe('The instructor\'s "watch for" list, whole, only when a fix changes a number, name or symptom it gives'),
+  feedback: z.array(line).max(10).default([]).describe('The instructor\'s feedback comments, whole, only when a fix changes something they say'),
+  announcement: z.string().default('').describe('The instructor\'s announcement, whole, only when a fix changes a deadline, a name or a task it gives'),
   left: Left,
 });
 export type ModuleMend = z.infer<typeof ModuleMend>;
@@ -72,6 +75,8 @@ const numbered = (notes: ReviewNote[]) => notes.map((n, i) => `${i + 1}. ${n.val
 
 const HOW = [
   'Put each problem right where it stands, and change nothing else. A fix is the smallest one that makes the text true and doable as written: correct the step, the code, the number or the claim; add the step or the sentence that is missing; where more was promised than can be given, say less. What is not at fault stays word for word and in its order.',
+  // Judged pages kept "there are two reasons" over three, a wrong cause beside its right one, and "Tried by hand: the cell prints…".
+  'A correction takes the place of what it corrects: the old sentence does not stay beside the new one, a count said in the text ("two reasons") is made to fit, and nothing on the page says that something was corrected or how you checked it.',
   // Corrected in one segment only, a fact stood uncorrected in a key idea and in the activity built on it.
   'When what you correct (a fact, a name, a number, which text is read) is also said elsewhere in the text, in a key idea, another part, an answer or the vocabulary, correct it there too and give those as well: put right in one place and left standing in another, it is a new contradiction.',
   'Facts come from the teacher\'s sources and the earlier lessons, never from memory where they speak.',
@@ -79,14 +84,14 @@ const HOW = [
 ].join(' ');
 
 export function moduleMendPrompt(course: Course, lesson: Lesson, v: ModuleDraft, notes: ReviewNote[]): string {
-  const page = { intro: v.intro, checklist: v.checklist, parts: v.parts.map((p, i) => ({ number: i + 1, title: p.title, blocks: p.blocks.map((b, j) => ({ n: j + 1, ...b })) })), live: v.live, wrapUp: v.wrapUp, leaves: v.facilitation.leaves };
+  const page = { intro: v.intro, checklist: v.checklist, parts: v.parts.map((p, i) => ({ number: i + 1, title: p.title, blocks: p.blocks.map((b, j) => ({ n: j + 1, ...b })) })), live: v.live, wrapUp: v.wrapUp, leaves: v.facilitation.leaves, watchFor: v.facilitation.watchFor, feedback: v.facilitation.feedback, announcement: v.facilitation.announcement };
   return [
     lessonContext(course, lesson),
     earlierLessons(course, lesson),
     `The brief this week's page was written to:\n${moduleAsk(course, lesson)}`,
     `The page as written:\n${JSON.stringify(bare(page))}`,
     `A reader who followed the page to the letter found these problems:\n${numbered(notes)}`,
-    `${HOW} An exhibit is part of the page: where the text and an exhibit disagree, the exhibit is corrected, with any blank or later state that shares its labels, and no sentence tells a student to disregard part of one. Under "changes", give each block that changes by its part and its number ("n"), with what stands in its place, written without "n"; a block not named there stays word for word, so nothing sound is typed again. Only a part most of whose blocks change is given whole under "parts" instead, under its number: no part is added, removed or renumbered. Give "intro", "checklist", "live", "wrapUp" or "leaves" only when it changes, whole, and leave the others empty; when a fix changes what students do or how long it takes, the checklist and "leaves" change with it.`,
+    `${HOW} An exhibit is part of the page: where the text and an exhibit disagree, the exhibit is corrected, with any blank or later state that shares its labels, and no sentence tells a student to disregard part of one. Under "changes", give each block that changes by its part and its number ("n"), with what stands in its place, written without "n"; a block not named there stays word for word, so nothing sound is typed again. Only a part most of whose blocks change is given whole under "parts" instead, under its number: no part is added, removed or renumbered. Give "intro", "checklist", "live", "wrapUp" or "leaves" only when it changes, whole, and leave the others empty; "leaves", "watchFor", "feedback" and "announcement" are the instructor's notes on this page, never shown to students: when a fix changes a number, a name, a deadline or a symptom that one of them gives, give that one again, whole, so that the instructor is not told what the page no longer says; when a fix changes what students do or how long it takes, the checklist and "leaves" change with it.`,
   ]
     .filter(Boolean)
     .join('\n\n');
@@ -123,7 +128,14 @@ export function applyModuleMend(v: ModuleDraft, mend: ModuleMend): Mended<Module
     parts: v.parts.map((p, i) => parts.get(i + 1) ?? p),
     live: mend.live.length ? mend.live : v.live,
     wrapUp: mend.wrapUp.trim() || v.wrapUp,
-    facilitation: mend.leaves.length ? { ...v.facilitation, leaves: mend.leaves } : v.facilitation,
+    // The instructor's notes follow the page: left as written, they went on giving a camera position and an accuracy the mend had changed.
+    facilitation: {
+      ...v.facilitation,
+      leaves: mend.leaves.length ? mend.leaves : v.facilitation.leaves,
+      watchFor: mend.watchFor.length >= 2 ? mend.watchFor : v.facilitation.watchFor,
+      feedback: mend.feedback.length >= 2 ? mend.feedback : v.facilitation.feedback,
+      announcement: mend.announcement.trim() || v.facilitation.announcement,
+    },
   };
   return { value, changed, left: mend.left };
 }

@@ -22,7 +22,9 @@ export function EdgeTabs({ kinds, active }: { kinds: MaterialKind[]; active: Mat
             const target = document.getElementById(`m-${kind}`);
             if (!target) return;
             const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            target.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
+            // Gliding is for a short way: across a week's page of thirty screens it took four seconds to arrive.
+            const far = Math.abs(target.getBoundingClientRect().top) > window.innerHeight * 3;
+            target.scrollIntoView({ behavior: still || far ? 'auto' : 'smooth', block: 'start' });
             target.setAttribute('tabindex', '-1');
             target.focus({ preventScroll: true });
           }}

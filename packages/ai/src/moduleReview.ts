@@ -123,12 +123,22 @@ function fixed(v: ModuleDraft, edit: ModuleIssue): ModuleDraft | null {
   return { ...v, parts: v.parts.map((p, i) => (i === edit.part - 1 ? { ...p, blocks: swapped.map((s) => s.block) } : p)) };
 }
 
+/**
+ * Words by which a change brings the course's own arrangements into a page: how work is graded, when it is due,
+ * what a later week holds, where to ask. Told not to, the reader still wrote them in: nine of 81 ready-made changes
+ * in six readings, and every harmful one was of this kind (a 60/40 split the page never gave, a "help forum" the
+ * course does not have). A change that brings in such a word it did not find there is not made by itself: it goes
+ * to the writer as a note, who has the course's brief and can decline it.
+ */
+const ARRANGEMENTS = [/\d\s?%/, /\bdue\b/i, /\bdeadline/i, /\brubric/i, /\bgrad(e|ed|es|ing)\b/i, /\bforum\b/i, /\blater in the (course|term)\b/i, /\bnext (week|time|lesson)\b/i, /\bweeks? from now\b/i, /\b(final|last) week\b/i, /\bweek \d/i];
+export const bringsArrangements = (edit: ModuleIssue): boolean => ARRANGEMENTS.some((word) => word.test(edit.replace) && !word.test(edit.find));
+
 export function applyModuleReview(v: ModuleDraft, issues: ModuleIssue[]): { value: ModuleDraft; applied: ModuleIssue[]; notes: ModuleIssue[] } {
   let value = v;
   const applied: ModuleIssue[] = [];
   const notes: ModuleIssue[] = [];
   for (const issue of issues) {
-    const after = fixed(value, issue);
+    const after = bringsArrangements(issue) ? null : fixed(value, issue);
     if (after) {
       value = after;
       applied.push(issue);

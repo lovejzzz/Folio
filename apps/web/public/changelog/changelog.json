@@ -1,5 +1,39 @@
 [
  {
+  "version": "0.0.22",
+  "date": "October 5, 2026",
+  "title": "What the checkpoint left wrong: troubleshooting notes are tried, and the teacher’s notes keep up with the page",
+  "lede": "The checkpoint ended with a list of things still wrong. This release goes down that list. Six weeks written the new way and six the checkpoint’s way were read blind: 8.2 of 10 against 6.9, and for the first time two of the pages were judged ready to release as they stood.",
+  "sections": [
+   {
+    "heading": "A cause in a troubleshooting note is now tried",
+    "body": "A note says “if you see this, you did that”, and nobody had done that. In every page we had judged, some cause did not give its symptom. Now each cause that is a mistake in a cell’s code is written out as that cell with the mistake made, and Folio runs it where a student would make it, after the cells before it. A note whose symptom is not what appears goes back to the writer with what did. Our first version of this ran the mistake at the end of the notebook, where later cells had changed the names it used, and four of its six findings were its own errors; we caught that reading them one by one, and it never shipped. Run properly, on six pages it tried 27 causes and questioned two: one rightly (the chart below), one wrongly, over a note that said “near 10” for 9.75, which it now allows.",
+    "image": {
+     "src": "/changelog/0.0.22-tried.webp",
+     "alt": "Left, what a note said: no chart appears, make sure the last line of the cell is plt.show(). Right, what Folio ran: the page’s own cell with that line left out; a chart was drawn, and a line of text was printed",
+     "width": 960,
+     "height": 380
+    }
+   },
+   {
+    "heading": "The teacher’s notes follow the page",
+    "body": "When a page was corrected, the notes written for the instructor beside it were not: they went on quoting a number the code no longer printed, or a setting the page had since changed. A fix now carries the instructor’s notes with it, and a guessed number that survives in those notes, or in what a picture is asked to show, is sent back to be corrected. In the blind reading, notes that disagreed with their page fell from ten to two."
+   },
+   {
+    "heading": "The assignment builds on the page",
+    "body": "A week’s graded work online is the thing the page had students build, handed in with something of their own added. The assignment was written under a rule meant for a classroom (“give new items, not the lesson’s”) and in one case forbade the very notebook its page had told students to submit. It is now told to hand in the page’s work under the page’s names, and in the last runs each assignment names the notebook or the objects it wants."
+   },
+   {
+    "heading": "Corrections that leave no trace, and changes that wait for the writer",
+    "body": "A correction now takes the place of what it corrects: judged pages had kept “there are two reasons” above three, and a line saying how something had been checked. Leftovers of that kind fell from 21 to 12. And the reader’s ready-made changes are no longer all made on its word: reading 81 of them one by one, nine should not have been made, and every one of the nine wrote something about the course into the page that the page had not given (a 60/40 split, a deadline, a “help forum”). A change that brings in such a thing now goes to the writer, who has the course’s brief and can decline it; the rule catches all nine and two that were sound."
+   },
+   {
+    "heading": "What it costs, and what is still open",
+    "body": "Two sets of six weeks on the final code cost $0.61 and $0.53 a week; the new check is about a cent and a half of that. Not solved: a cause that is not a mistake in code (an install, a click, the order cells are run in) is still only as true as the writer makes it, and the judged pages still had six false causes in eighty-one. We could not test the screens behind sign-in, a real course being written in the browser, or code run in the browser on the live site; the files that last one needs are all in place and answer. And no teacher has yet read these pages: every score here is another model’s."
+   }
+  ]
+ },
+ {
   "version": "0.0.21",
   "date": "October 5, 2026",
   "title": "A question slide keeps its points beside their dots, and a link opened in another tab finds its place",

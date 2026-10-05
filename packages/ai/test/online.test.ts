@@ -3,7 +3,7 @@ import type { Lesson } from '@folio/core';
 import { describe, expect, it } from 'vitest';
 import { OutlineDraft, checkPicture, fixNotes, courseBackground, courseFromOutline, generateSection, outlinePrompt, picturePlace, sectionPrompt, type NewCourseRequest } from '../src';
 import { ModuleMend, applyModuleMend } from '../src/mend';
-import { applyModuleReview } from '../src/moduleReview';
+import { applyModuleReview, bringsArrangements } from '../src/moduleReview';
 import { filesSoFar } from '../src/earlierFiles';
 import { pieceCounts, startPrompt } from '../src/start';
 import { checkRunOfShow } from '../src/live';
@@ -206,6 +206,14 @@ describe('an online course with no set meeting time', () => {
     ]);
     expect(value.parts[0]!.blocks[1]!.items[1]).toBe('Choose **Create > MonoBehaviour Script**.');
     expect([applied.length, notes.length]).toEqual([1, 2]);
+    // A change that brings in how the course is graded, when work is due or where to ask is the writer's to weigh, not made by itself.
+    const brought = applyModuleReview(v, [
+      { part: 1, kind: 'missing', why: 'No grading is given', find: 'Choose **Create > Scripting > MonoBehaviour Script**.', replace: 'Choose **Create > Scripting > MonoBehaviour Script**. Weekly builds count for 60% of your grade.' },
+      { part: 1, kind: 'missing', why: 'No help is given', find: 'Choose **Create > Scripting > MonoBehaviour Script**.', replace: 'Choose **Create > Scripting > MonoBehaviour Script**, or post the error in the help forum.' },
+    ]);
+    expect([brought.applied.length, brought.notes.length]).toEqual([0, 2]);
+    // One that only moves such a word it found there is an ordinary fix.
+    expect(bringsArrangements({ part: 1, kind: 'fact', why: '', find: 'due Sunday', replace: 'due Sunday night' })).toBe(false);
   });
 
   it('writes the page in place of the plan, and reads it a second time as a student would', async () => {
