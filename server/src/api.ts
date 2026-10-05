@@ -1,3 +1,4 @@
+import { runtimeFile } from './runtime';
 import { count } from './counts';
 import { proxyMessages } from './ai';
 import { proxyChat } from './openai';
@@ -163,6 +164,7 @@ export async function handle(request: Request, env: Env, fetchImpl?: typeof fetc
   // Stripe's own call, trusted by its signature, not by a cookie or the page's header.
   if (path.join('/') === 'billing/webhook' && request.method === 'POST') return webhook(request, env);
   // Whether production's database has every table and column the code uses: checked after each deploy.
+  if (path[0] === 'runtime' && path.length === 3 && request.method === 'GET') return runtimeFile(env.MEDIA, path[1]!, path[2]!);
   if (path.join('/') === 'health' && request.method === 'GET') {
     const missing = await missingSchemaCached(env.DB);
     return json(missing.length ? { ok: false, missing } : { ok: true }, missing.length ? 503 : 200);

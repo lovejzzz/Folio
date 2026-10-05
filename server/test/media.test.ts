@@ -126,4 +126,19 @@ describe('the running totals', () => {
     expect(body.calls).toEqual({ made30: 0, refused30: 0, unreachable30: 0, ranOut30: 0 });
     expect(JSON.stringify(body)).not.toMatch(/g-teacher|example\.edu|gmail/i);
   });
+
+  it('serves the Python runtime to anyone, by version and file name, to be kept for good; and nothing else by that road', async () => {
+    await bucket.put('_runtime/pyodide-314.0.7/pyodide.asm.wasm', picture(6).buffer as ArrayBuffer);
+    const got = await call('runtime/pyodide-314.0.7/pyodide.asm.wasm', {});
+    expect(got.status).toBe(200);
+    expect(got.headers.get('content-type')).toBe('application/wasm');
+    expect(got.headers.get('cache-control')).toBe('public, max-age=31536000, immutable');
+    expect(new Uint8Array(await got.arrayBuffer())).toEqual(picture(6));
+    expect((await call('runtime/pyodide-314.0.7/numpy.whl', {})).status).toBe(404);
+    // A teacher's file is not reached through it, whatever is put where the version goes.
+    const cookie = await signIn();
+    await send(cookie, 'c_1', 'm_abc.webp');
+    expect((await call('runtime/g-123/m_abc.webp', {})).status).toBe(404);
+    expect((await call('runtime/pyodide-1.0/..%2F..%2Fg-123%2Fc_1%2Fm_abc.webp', {})).status).toBe(404);
+  });
 });

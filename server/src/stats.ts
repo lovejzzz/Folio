@@ -42,6 +42,8 @@ async function mediaTotals(env: Env): Promise<Stats['media']> {
   do {
     const page = await env.MEDIA.list({ prefix: '', cursor });
     for (const o of page.objects) {
+      // The Python runtime is kept in the same bucket and is nobody's media.
+      if (o.key.startsWith('_runtime/')) continue;
       total.files += 1;
       total.bytes += o.size;
       total[PICTURE.test(o.key) ? 'pictures' : CLIP.test(o.key) ? 'clips' : 'other'] += 1;
