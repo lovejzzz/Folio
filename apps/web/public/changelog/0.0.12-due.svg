@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 280" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .soft { fill: #EDF0FC } .rule { stroke: #CFC8B9 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E } .soft { fill: #23284A } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="280" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">A DRAFT AND THE REVIEWS OF IT, IN ONE ONLINE WEEK</text>
+  <rect class="card" x="36" y="64" width="350" height="180" rx="14"/>
+  <text class="ink" x="56" y="96" font-size="16" font-weight="600">Before</text>
+  <text class="ink2" x="56" y="130" font-size="14">Weekly draft</text><text class="bad" x="366" y="130" font-size="14" font-weight="600" text-anchor="end">due Sunday night</text>
+  <line class="rule" x1="56" y1="146" x2="366" y2="146"/>
+  <text class="ink2" x="56" y="174" font-size="14">Review two classmates’ drafts</text><text class="bad" x="366" y="174" font-size="14" font-weight="600" text-anchor="end">due Sunday night</text>
+  <text class="ink2" x="56" y="216" font-size="13">Nothing to review until the hour it is due.</text>
+  <rect class="card" x="414" y="64" width="350" height="180" rx="14"/>
+  <text class="ink" x="434" y="96" font-size="16" font-weight="600">Now</text>
+  <text class="ink2" x="434" y="130" font-size="14">Post your draft</text><text class="acc" x="744" y="130" font-size="14" font-weight="600" text-anchor="end">due Thursday</text>
+  <line class="rule" x1="434" y1="146" x2="744" y2="146"/>
+  <text class="ink2" x="434" y="174" font-size="14">Review two classmates’ drafts</text><text class="acc" x="744" y="174" font-size="14" font-weight="600" text-anchor="end">due Sunday night</text>
+  <text class="ink2" x="434" y="216" font-size="13">The same two days every week, said the same way.</text>
+</svg>

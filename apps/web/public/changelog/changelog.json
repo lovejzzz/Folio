@@ -1,5 +1,35 @@
 [
  {
+  "version": "0.0.12",
+  "date": "October 4, 2026",
+  "title": "Work that waits on a classmate is due after theirs",
+  "lede": "Three faults in how a course is put together, each found by reading a whole course through, and one plain page of what to know before you rely on Folio.",
+  "sections": [
+   {
+    "heading": "A review is due after the draft it reviews",
+    "body": "In an online course with peer review, the draft and the reviews of it were both due on Sunday night, so there was nothing to review until the hour the review was due. Work that needs a classmate’s work to exist now comes after it: what classmates will work on is posted by Thursday, and the work on it is due that Sunday, the same every week.",
+    "image": {
+     "src": "/changelog/0.0.12-due.svg",
+     "alt": "Before, a weekly draft and the reviews of it were both due Sunday night; now the draft is posted by Thursday and the reviews are due Sunday",
+     "width": 800,
+     "height": 280
+    }
+   },
+   {
+    "heading": "A milestone you name gets a task of its own",
+    "body": "When a brief named a step on the way to a larger piece, a prospectus in week 8 or a draft in week 10, Folio mentioned it in that week’s summary and wrote no task for it: no length, no contents, nothing to hand in. Each such milestone is now a task in the week you gave, and Folio no longer adds steps of its own that fall due the same day."
+   },
+   {
+    "heading": "A week’s hours are estimated, not made to fit",
+    "body": "An online week is planned for the hours you give it, and every week came out at exactly that number, including weeks that would take a student half as long again. Each item is now timed from what it asks (reading, a first draft, steps to follow, finding a partner), work that does not fit moves to another week or becomes optional, and the second reader times each item again and says where it disagrees."
+   },
+   {
+    "heading": "What to know before you rely on it",
+    "body": "The About page now says three things plainly: Folio writes in English for schools and universities in the United States and Canada; what it writes is a draft for you to read before you teach it; and for a course that teaches software, it needs your notes on the version your students use."
+   }
+  ]
+ },
+ {
   "version": "0.0.11",
   "date": "October 4, 2026",
   "title": "Your pictures on every device you sign in on",

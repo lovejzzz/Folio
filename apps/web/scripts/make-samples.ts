@@ -12,6 +12,7 @@
 // is the syllabus, "policies"? }]; nothing is written again.
 import { MATERIAL_KINDS, CourseStore, OnlineSchema, cmd, orderedLessons, parseCourse, type Course, type Delivery, type GeneratedKind, type Online } from '@folio/core';
 import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawn } from 'node:child_process';
 import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -280,11 +281,12 @@ const paidFetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
 }) as typeof fetch;
 /** Every call's tokens, as its provider reported them, by the job that made it. */
 const USED: (Usage & { task: string })[] = [];
-let task = '';
+// Calls overlap, so which job an answer's tokens belong to is carried with the call itself: read from one shared name,
+// a first run put the weekly pages' cost under whichever job had been asked for last.
+const asking = new AsyncLocalStorage<string>();
 
-const made = createInference({ provider: 'folio', apiKey: '', model: 'claude-sonnet-5-5', baseUrl: 'https://folio.local/api/ai' }, PAID ? paidFetch : cliFetch, (u) => USED.push({ ...u, task }));
-// Which job a call belongs to is known when it is asked for: calls overlap, so the name is taken then, not when the answer comes.
-const inference: typeof made = { ...made, complete: (request) => ((task = request.task), made.complete(request)) };
+const made = createInference({ provider: 'folio', apiKey: '', model: 'claude-sonnet-5-5', baseUrl: 'https://folio.local/api/ai' }, PAID ? paidFetch : cliFetch, (u) => USED.push({ ...u, task: asking.getStore() ?? '' }));
+const inference: typeof made = { ...made, complete: (request) => asking.run(request.task, () => made.complete(request)) };
 
 async function build(name: string, store: CourseStore, targets: BuildTarget[], failed: string[]): Promise<number> {
   const host: BuildHost = {
