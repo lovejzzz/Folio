@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { handle } from '../src/api';
 import { forgetGoogleKeys } from '../src/google';
 import { MAX_ACCOUNT_MEDIA_BYTES, putMedia } from '../src/media';
+import type { Stats } from '../src/stats';
 import type { Env } from '../src/types';
 import { fakeD1, fakeGoogle, fakeR2 } from './fake';
 
@@ -86,6 +87,25 @@ describe('a course’s pictures, clips and files in the account', () => {
 });
 
 describe('the running totals', () => {
+  it('say what was spent on which model, what was bought, and how much the busiest accounts used, without naming one', async () => {
+    const owner = await call('session', { method: 'POST', cookie: 'folio_signin=n-1', body: JSON.stringify({ idToken: await google.token({ sub: 'g-owner', email: 'xingpicture@gmail.com' }) }) });
+    const cookie = owner.headers.get('set-cookie')!.split(';')[0]!;
+    const now = Date.now();
+    const add = (id: string, user: string, kind: string, amount: number, detail: string) => env.DB.prepare('INSERT INTO credit_ledger (id, user_id, kind, amount, ref, detail, created_at) VALUES (?, ?, ?, ?, NULL, ?, ?)').bind(id, user, kind, amount, detail, now).run();
+    await add('a', 'g-1', 'spend', -40_000, 'claude-sonnet-5-5 9000+12000');
+    await add('b', 'g-1', 'spend', -2_000, 'gpt-6-luna 3000+9000');
+    await add('c', 'g-2', 'spend', -10_000, 'claude-sonnet-5-5 4000+3000');
+    await add('d', 'g-2', 'purchase', 1_000_000, '1,000 credits ($10.00)');
+    await env.DB.prepare("INSERT INTO courses (user_id, id, title, lesson_count, updated_at, version, size) VALUES ('g-1', 'c_1', 'T', 14, ?, 1, 5000), ('g-1', 'c_2', 'T', 4, ?, 1, 1000)").bind(new Date(now).toISOString(), '2026-01-01T00:00:00Z').run();
+    const body = (await (await call('admin/stats', { cookie })).json()) as Stats;
+    expect(body.models).toEqual([{ model: 'claude-sonnet-5-5', calls: 2, credits: 50 }, { model: 'gpt-6-luna', calls: 1, credits: 2 }]);
+    expect(body.heaviest).toEqual([42, 10]);
+    expect(body.credits).toMatchObject({ spent30: 52, bought30: 1000, purchases30: 1, dollars30: 10 });
+    expect(body.accounts).toMatchObject({ writing30: 2, paying: 1, withCourses: 1 });
+    expect(body.courses).toMatchObject({ kept: 2, lessons: 18, changed7: 1, short: 1, medium: 1, long: 0, mostInOneAccount: 2 });
+    expect(JSON.stringify(body)).not.toMatch(/g-1|g-2/);
+  });
+
   it('are shown to the account that runs Folio and to no one else, and name nobody', async () => {
     const owner = await call('session', { method: 'POST', cookie: 'folio_signin=n-1', body: JSON.stringify({ idToken: await google.token({ sub: 'g-owner', email: 'XingPicture@gmail.com' }) }) });
     const ownerCookie = owner.headers.get('set-cookie')!.split(';')[0]!;
@@ -95,10 +115,11 @@ describe('the running totals', () => {
     expect((await call('admin/stats')).status).toBe(401);
     const res = await call('admin/stats', { cookie: ownerCookie });
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { accounts: { all: number; week: number }; media: { files: number; bytes: number }; days: { day: string; counts: Record<string, number> }[] };
-    expect(body.accounts).toEqual({ all: 2, week: 2 });
-    expect(body.media).toEqual({ files: 1, bytes: 10 });
-    expect(body.days[0]!.counts.sign_in).toBe(2);
+    const body = (await res.json()) as Stats;
+    expect(body.accounts).toMatchObject({ all: 2, week: 2, school: 1, withCourses: 0, writing30: 0, paying: 0 });
+    expect(body.media).toEqual({ files: 1, bytes: 10, pictures: 1, clips: 0, other: 0 });
+    expect(body.days[0]!.counts).toMatchObject({ sign_in: 2, new_accounts: 2 });
+    expect(body.calls).toEqual({ made30: 0, refused30: 0, unreachable30: 0, ranOut30: 0 });
     expect(JSON.stringify(body)).not.toMatch(/g-teacher|example\.edu|gmail/i);
   });
 });
