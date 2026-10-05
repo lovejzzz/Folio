@@ -83,7 +83,9 @@ export function judgedLine(course: Course): string {
       : complete.length
         ? `Graded complete or incomplete: ${complete.join(', ')}; complete means every criterion of its rubric at the second-highest level or above. Every other component is scored by its points or its rubric's levels, and is never called complete or incomplete.`
         : 'Every component is scored by its points or its rubric\'s levels; none is graded complete or incomplete.',
-    'Pieces of one component count equally toward it unless the brief says otherwise. Say all of this the same way wherever graded work is described.',
+    // Told to "say all of this the same way wherever graded work is described", pages and assignments told students that their
+    // work was "scored by points or rubric levels, not complete or incomplete": a rule for the writer, read out to the class.
+    'Pieces of one component count equally toward it unless the brief says otherwise. All of this is for you, so that what you write of grading never contradicts it: students are told a component\'s name and its share where graded work is described, and never what the grading is not.',
   ]
     .filter(Boolean)
     .join(' ');

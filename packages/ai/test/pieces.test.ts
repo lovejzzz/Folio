@@ -67,7 +67,7 @@ describe('a lesson that holds more than one piece of work', () => {
   it('tells the plan of every piece it holds, and of everything due', () => {
     const course = courseFromOutline(req, outline());
     const [first, , third] = orderedLessons(course);
-    expect(lessonContext(course, first!)).toMatch(/also holds, each written separately: the piece graded in class "Presentation" \(run in the lesson\); the graded assignment "Seminar paper" \(set before students leave\)/);
+    expect(lessonContext(course, first!)).toMatch(/also holds, each written separately: the piece graded in class "Presentation" \(run in the lesson\); the graded assignment "Seminar paper" \(set before students leave; due at the start of the lesson 2 lessons after this one, the one on "Consciousness"\)/);
     expect(lessonContext(course, third!)).toMatch(/Due at the start of this lesson: "Seminar paper" \(set in "Dualism"\); "Weekly response papers" \(the one written for this lesson, on this lesson's reading or topic\); the short step \(set in "Functionalism", an ungraded step\)/);
   });
 

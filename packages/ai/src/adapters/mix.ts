@@ -45,7 +45,9 @@ export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_handout_supports: 8000,
   // A mend writes again only the parts at fault: seldom the whole, never more.
   folio_plan_mend: 12000,
-  folio_module_mend: 16000,
+  // A mend thinks before it writes, and is the better for it (twelve made without lost ten blind comparisons): one in twelve
+  // thought for 11,000 tokens, was cut off at 16,000 with its answer half written, and was paid for twice.
+  folio_module_mend: 24000,
   // A week's module page is several plans long. At 16,000, two pages in three were cut off and written again from
   // nothing, each cut-off answer paid for and thrown away: measured on real calls, a page with its thinking runs to about 19,000.
   // On the paid run of 5 October a statistics week was cut off at 28,000 and again at 32,000 before a third try fitted:

@@ -69,7 +69,7 @@ export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraf
       ran
         ? 'the Python on this page was run as written, in order, and every block marked "output" holds what it really printed: do not work those out again or doubt them; check that what the page says of each result agrees with the output shown, and run in your head only code that is not Python; work out every other number yourself;'
         : 'run every piece of code in your head as written, in the file and place the page says: it must compile, do what the page says it does, and agree with its explanation; work out every number yourself;',
-      'check every fact, definition and example against what is true, and every term against where it was first explained, on this page or in earlier weeks;',
+      'check every fact, definition and example against what is true, every cause a troubleshooting note gives against the symptom it is listed under (would that mistake really show that?), and every term against where it was first explained, on this page or in earlier weeks;',
       'check that nothing is promised and not given (a file, a video, a reading, a setting), and that the week can be done in the hours the checklist gives it: time each checklist item yourself from what it asks of a student doing it the first time, and name any that would take half as long again as it says, with your own figure;',
       'and, when earlier weeks are given, check the page keeps to their names and continues the project as they left it.',
       'Kinds: "fact" (wrong content), "missing" (a step, explanation or thing the student needs is not there), "feasibility" (cannot be done as written), "consistency" (the page contradicts itself or earlier weeks), "level" (too much assumed of these students).',
@@ -79,6 +79,10 @@ export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraf
       // Twelve first readings were checked one by one: every reading found every fault that mattered, and a third to a half of
       // what each listed was not a fault. The same few kinds came back: a checklist total added up wrong (100 minutes over, in
       // five readings), a deadline or grading rule the page never gave written into it, a tolerance of versions turned into a demand.
+      // The reader is given the course as the writer was, rules for writing included ("say this the same way wherever…", "written
+      // separately", "refer to other weeks as…", "the instructor does not lecture"): it held pages to them, and half of what it
+      // listed that was no fault was a page not obeying an instruction the student never sees.
+      'What is said above about how this course\'s materials are to be written (what is written separately and named only in the checklist, how deadlines and grading are to be worded, how other weeks are referred to, who lectures) was said to the page\'s writer, and you are given it only to know the course: a page that departs from it is not at fault for that, and you neither list it nor change the page toward it. The outputs marked as run were produced by Folio, on the versions their labels name, which may be newer than the versions the course asks students to install: that difference is not a problem.',
       'The checklist\'s total is worked out for you above and is right: do not add it up again. A change you give never puts into the page something about the course that neither the page nor the course above states (a date, a deadline, how work is graded, a version to insist on); where the page leaves such a thing open, that is the teacher\'s to settle and not a problem to list. What is true but would not stop, mislead or misinform a student is not listed.',
       'Do not list style preferences or things you would add, and give no links. Return an empty list if the page is sound.',
     ].join(' '),

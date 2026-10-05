@@ -118,10 +118,11 @@ export const test: SectionJob<TestDraft> = {
 const PIECE: Record<string, string> = { assignment: 'the graded assignment', step: 'a short ungraded step toward', test: 'the graded test', inclass: 'the piece graded in class', none: '' };
 
 /** What a lesson holds beside its main piece, for its plan: the plan sets or runs each, and writes none of them. */
-export function otherPieces(lesson: Lesson): string {
+export function otherPieces(lesson: Lesson, due: (piece: Lesson['homework']) => string = () => ''): string {
   // Each by where it happens: told "set before students leave, or run in the lesson", plans ran a weekly paper as silent writing in class.
   const moment = (p: Lesson['homework']) => (p.kind === 'inclass' ? 'run in the lesson' : p.kind === 'test' ? 'sat in the lesson' : p.standing ? 'done outside class every time: the close sets it in a sentence, and no lesson time goes to writing it' : 'set before students leave');
-  const others = (lesson.also ?? []).filter((p) => p.kind !== 'none').map((p) => `${PIECE[p.kind]}${p.toward.trim() ? ` "${p.toward.trim()}"` : ''} (${moment(p)})`);
+  // With when it is due, as the piece itself is told: untold, a page gave a step "by Sunday" that its own text set five weeks on.
+  const others = (lesson.also ?? []).filter((p) => p.kind !== 'none').map((p) => `${PIECE[p.kind]}${p.toward.trim() ? ` "${p.toward.trim()}"` : ''} (${[moment(p), due(p)].filter(Boolean).join('; ')})`);
   return others.length ? ` The lesson also holds, each written separately: ${others.join('; ')}. The plan gives each its moment and writes none of them.` : '';
 }
 

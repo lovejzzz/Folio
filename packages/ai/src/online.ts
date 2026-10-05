@@ -40,7 +40,7 @@ export const ModuleDraft = z.object({
         label: line.describe('What to do, starting with a verb'),
         activity: z.enum(['read', 'watch', 'build', 'practice', 'check', 'discuss', 'submit']),
         // Optional work is outside the week's hours and often comes with none: refused, the whole page was written again for it.
-        minutes: z.number().int().min(0).max(600),
+        minutes: z.number().int().min(0).max(600).describe('An honest estimate for a student new to it; for an item that is watching a video, that video\'s own length'),
         due: z.string().default('').describe('The day it is due, when it has a deadline; else empty'),
       }),
     )
@@ -253,7 +253,7 @@ export function onlineBackground(course: Course): string {
     'Say "this week", "last week" and "next week" where a course in a room says "this lesson" or "last time".',
     isMixedOnline(course)
       ? `Each week also has one live session of ${course.online?.liveMinutes || 75} minutes in a video meeting, for what needs other people; everything a student can take in alone is on the page. Work is submitted online, files are downloaded from the page.`
-      : 'The instructor does not lecture: they post an announcement, answer in the forum, and give feedback on work. Nothing is collected, handed out or said aloud; work is submitted online, files are downloaded from the page.',
+      : 'The instructor does not lecture: they post an announcement, answer in the forum, and give feedback on work. So nothing you write has anything collected, handed out or said aloud: work is submitted online and files are downloaded from the page. These are how the course is written, and are not said to students as rules.',
   ].join(' ');
 }
 
@@ -268,7 +268,13 @@ export function onlineHomeworkLine(course: Course, lesson: Lesson): string {
       const what = set?.kind === 'assignment' ? `"${set.title}"` : `"${p.toward.trim() || 'the assignment'}"`;
       return `${what} (${p.kind === 'step' ? `an ungraded step toward "${p.toward.trim()}", ` : ''}set in "${l.title}")`;
     }));
-  return `${mainPiece(course, lesson)}${otherPieces(lesson)}${due.length ? ` Due by Sunday night of this week from earlier weeks: ${due.join('; ')}. The checklist lists it.` : ''}`;
+  return `${mainPiece(course, lesson)}${otherPieces(lesson, (p) => dueIn(course, lesson, p))}${due.length ? ` Due by Sunday night of this week from earlier weeks: ${due.join('; ')}. The checklist lists it.` : ''}`;
+}
+
+/** When a piece set this week is due, in weeks from now; nothing when it is due with the week. */
+function dueIn(course: Course, lesson: Lesson, piece: Lesson['homework']): string {
+  const gap = piece.due && course.lessons[piece.due] ? course.lessonOrder.indexOf(piece.due) - course.lessonOrder.indexOf(lesson.id) : 0;
+  return gap > 0 ? `due by Sunday night ${gap === 1 ? 'of next week' : `${gap} weeks from now`}` : '';
 }
 
 function mainPiece(course: Course, lesson: Lesson): string {
@@ -286,9 +292,9 @@ function mainPiece(course: Course, lesson: Lesson): string {
     case 'inclass':
       return `This week holds ${named}, presented online (a recording, a post or a shared build) and graded with a rubric written separately: the page says what to prepare, how to present it and how to respond to classmates, and writes no criteria.`;
     case 'step':
-      return `This week sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, submitted ${when}. It is written separately: the page names it in the checklist and says where it fits, without spelling out its tasks.`;
+      return `This week sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, submitted ${when}. It is written separately and shown to the student under this page: the checklist names it at the point in the week where it is done, and no part or sentence of the page is about it.`;
     default:
-      return `This week sets a graded assignment${toward ? ` that counts toward "${toward}" (the page calls it by that name)` : ''}, submitted ${when}. It is written separately: the page names it in the checklist and says where it fits, without spelling out its tasks.`;
+      return `This week sets a graded assignment${toward ? ` that counts toward "${toward}" (the page calls it by that name)` : ''}, submitted ${when}. It is written separately and shown to the student under this page: the checklist names it at the point in the week where it is done, and no part or sentence of the page is about it.`;
   }
 }
 
@@ -309,7 +315,7 @@ export function moduleAsk(course: Course, lesson: Lesson): string {
     'Under "wrapUp", 80 to 120 words: what the student can now do, one question to test themselves on each objective, and a look ahead to next week.',
     'Under "vocabulary", the terms this week introduces, each in one plain sentence.',
     'Under "facilitation", the instructor\'s part of the week, never shown to students: the announcement to post on Monday (what the week is, the one thing to get right, the deadlines), what to watch for in the forum and in submitted work and what to do about it, comments to adapt when giving feedback, whom to contact by midweek, under "leaves" what a student\'s work holds at the end of the week, and under "toCheck" what the page states as fact without a source to go by.',
-    'The teacher\'s sources are for you: the page takes its facts and names from them without mentioning them, and sends students to a source only when it is among this week\'s readings. A term is explained in a sentence where it first appears. The graded work and the forum prompt are written separately and shown to the student with this page: the page names each once, in the checklist, with its deadline (the checklist lists no other submission than the work this week is told it sets), and says nothing of what they ask, how they are submitted or how they are graded; practice on the page is never called the submission.',
+    'The teacher\'s sources are for you: the page takes its facts and names from them without mentioning them, and sends students to a source only when it is among this week\'s readings. A term is explained in a sentence where it first appears. The graded work and the forum prompt are written separately and shown to the student with this page: the page names each once, in the checklist, with its deadline (the checklist lists no other submission than the work this week is told it sets), and says nothing of what they ask, how they are submitted or how they are graded, nor that they are "separate" or "posted separately": a part that only points to one of them ("open the separately posted step and follow it") is not written. Practice on the page is never called the submission.',
     'Never write a placeholder for the instructor to fill in, and never promise a file, link, video or reading that the page does not give as a block.',
   ].join(' ');
 }

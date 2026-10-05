@@ -1,5 +1,39 @@
 [
  {
+  "version": "0.0.19",
+  "date": "October 5, 2026",
+  "title": "Checkpoint: where a week stands after a day of taking it apart",
+  "lede": "This release closes what the last four left open, and marks the place. A week of an online coding course now costs $0.53 to write and check where it cost $0.97 this morning, the reading and fixing of a page take about a minute where they took four, and pages read blind by a reviewer score what they did or a little better. What is still wrong is listed at the end.",
+  "sections": [
+   {
+    "heading": "The reader was policing rules meant for the writer",
+    "body": "The model that reads a page is told about the course as the writer is, and with it came the writer’s own instructions: how deadlines are to be worded, what is written separately, who lectures. It held pages to them. Nearly half of what it listed was no fault of the page, and some of its ready-made changes wrote a deadline, a grading rule or a demand for one version of Python into a page that had none. It is now told those instructions are not its to enforce. What it lists that is no fault fell from 47 in a hundred to 37, and it lists a third fewer things. On twelve pages with 28 known faults it found 25, where it had found 27 before; so we judged the finished pages rather than the reading: six weeks each way, read blind, 7.75 of 10 against 7.83, two stopping faults against three, nine false statements against eleven.",
+    "image": {
+     "src": "/changelog/0.0.19-checkpoint.webp",
+     "alt": "Four bars: what one week of an online coding course cost to write and check. Release 0.0.15, $0.97. Release 0.0.16, $0.68, the page written without thinking itself to a stop. Release 0.0.18, $0.58, the reading at lower effort. Release 0.0.19, $0.53, the reader no longer polices the writer’s rules",
+     "width": 960,
+     "height": 330
+    }
+   },
+   {
+    "heading": "Rules that were read out to students",
+    "body": "Several things Folio tells the writer were turning up on the page as if students needed them: “every component is scored by points or rubric levels, not complete or incomplete”, “nothing is handed out or said aloud”, and parts whose only content was “open the separately posted step”. Each came from an instruction worded so that it asked to be repeated. They are reworded, and in the last runs on five courses none of them appears."
+   },
+   {
+    "heading": "Things that did not agree with each other",
+    "body": "A page gave a small ungraded step “by Sunday” that the step’s own text set five weeks on: the page is now told each piece’s real deadline. A version check showed the Python that Folio runs code on, above a sentence saying it should print the course’s: such a cell never shows Folio’s versions now, and the setup makes one environment with exactly the versions the course names. An assignment gave other measurements to an object the page had students build under the same name: a new item now has a name of its own. A picture went on being asked to show a number the code no longer printed. And a variable’s name was reused for a function further down, which broke the notebook when run again from the top."
+   },
+   {
+    "heading": "The answer check, measured again",
+    "body": "After the four repairs of 0.0.16, on the same 113 questions: it finds six of nine real errors where it found five, and blames two of 64 sound questions where it blamed five, for half the money. The measurement also showed that one of the repairs had let an error through, by matching a result of 1.459 to a stray “1” further along the line; that is mended in this release and has a test."
+   },
+   {
+    "heading": "Still wrong",
+    "body": "A troubleshooting note still sometimes names a cause that does not give the symptom it is listed under; asking the writer for true ones was not enough, and the real answer is to run them. The reader still proposes a change that should not be made about seven times in a hundred. A fix sometimes leaves the corrected sentence beside the one it corrects. The teacher’s summary of what students’ work holds can go stale when a page is mended. The last checks in this release were made with command-line tools, which show what a page says but not what it costs. No teacher has yet read any of these pages: every score here is another model’s."
+   }
+  ]
+ },
+ {
   "version": "0.0.18",
   "date": "October 5, 2026",
   "title": "A week’s page is read and put right in half the time, with fewer notes left for you",

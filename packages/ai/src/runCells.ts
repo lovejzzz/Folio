@@ -82,7 +82,8 @@ const ASKS_MACHINE = /__version__|\bversion_info\b|\bsys\.version\b|\bplatform\.
 
 /** What to make of a cell's run: sound, about the machine, failing as the page means it to, waiting for the student's code, failing because an earlier cell did, or at fault. */
 function verdict(code: string, res: CellResult, written: string | null, names: Set<string>, failedBefore: boolean): Verdict {
-  if (written !== null && ASKS_MACHINE.test(code)) return 'machine';
+  // With no output written under it too: left to the run, a version check showed "1.8.0" over "the first line starts with 1.5".
+  if (ASKS_MACHINE.test(code)) return 'machine';
   if (!res.error) return 'ok';
   if (written?.includes(res.error.type)) return 'meant';
   const missing = res.error.type === 'NameError' ? /name '(\w+)' is not defined/.exec(res.error.message)?.[1] : undefined;
@@ -101,10 +102,14 @@ function faultNote(where: string, code: string, res: CellResult, on: string): Re
 }
 
 /** A number the part's own sentences take from the output as first written, which the code does not print. */
+/** Everything a block says in words: its text and items, and what its pictures are asked to show. */
+const said = (b: Block): string => [b.text, ...b.items, b.shows, b.alt, ...b.shots.flatMap((s) => [s.shows, s.alt, s.caption])].join(' ');
+
 function quoteNote(where: string, blocks: Block[], written: string, real: string): ReviewNote | null {
   const gone = [...numbers(written)].filter((n) => !numbers(real).has(n));
   if (!gone.length) return null;
-  const prose = blocks.filter((b) => b.type !== 'code').map((b) => [b.text, ...b.items].join(' ')).join(' ');
+  // What a picture is asked to show is read too: an opening image went on promising "Train accuracy: 0.958" over a page that printed 0.967.
+  const prose = blocks.filter((b) => b.type !== 'code').map(said).join(' ');
   const quoted = gone.filter((n) => numbers(prose).has(n));
   if (!quoted.length) return null;
   return { code: 'reviewNote', values: { where, text: `The text gives ${quoted.slice(0, 6).join(', ')} as what the code prints. Run, the code prints: ${asOutput(real, 1200)} Correct the sentences that quote the old values, and nothing else.` } };
@@ -121,7 +126,7 @@ export function standing(notes: ReviewNote[], v: ModuleDraft): ReviewNote[] {
     if (!quoted) return true;
     const part = v.parts.find((p, i) => note.values.where === `Part ${i + 1}, ${p.title}`);
     if (!part) return true;
-    const prose = numbers(part.blocks.filter((b) => b.type !== 'code').map((b) => [b.text, ...b.items].join(' ')).join(' '));
+    const prose = numbers(part.blocks.filter((b) => b.type !== 'code').map(said).join(' '));
     return quoted.split(', ').some((n) => prose.has(n));
   });
 }

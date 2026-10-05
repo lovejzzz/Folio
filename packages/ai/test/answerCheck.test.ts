@@ -84,6 +84,14 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect([out.flags.has('t_count'), out.flags.has('t_count_right')]).toEqual([true, false]);
   }, 120_000);
 
+  it('does not take a whole number further on for a decimal result', async () => {
+    const key = (sd: string): Task => ({ ...choice('t_sd', 'Explain the spread of `[3, 4, 5, 7]`.', ['It varies', 'It does not'], 1, `The standard deviation is approximately ${sd}; a 95% interval leaves 100*(1-0.95)/2 in each tail.`), id: `t_sd_${sd}` });
+    const form = { checkable: true, setup: 'import statistics\nvalues = [3, 4, 5, 7]', choices: [{ n: 1, kind: 'concept' }, { n: 2, kind: 'concept' }], stated: [{ where: 'explanation', before: 'deviation is approximately', expr: 'statistics.stdev(values)' }] };
+    // 1.708 is the value. Given as 1.2, the "1" of the formula after it used to pass for it, to half a unit.
+    const out = await checkAnswers(fakeInference(() => form), nodeRunner(), [key('1.71'), key('1.2')]);
+    expect([out.flags.has('t_sd_1.71'), out.flags.has('t_sd_1.2')]).toEqual([false, true]);
+  }, 120_000);
+
   it('reads numbers as a class writes them: a fraction, a mixed number, and a number times a power of ten', async () => {
     const key = (id: string, answerKey: string): Task => ({ ...base, id, kind: 'assignment', title: 'Sheet', prompt: '', steps: ['Work out parts 1, 2, 3 and 4 with `len`.'], rubricId: null, answerKey, toward: '' });
     const form = (expr: string, before: string) => ({ checkable: true, setup: 'from fractions import Fraction\nmol = 0.500\navogadro = 6.022e23', stated: [{ where: 'answerKey', before, expr }] });

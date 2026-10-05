@@ -193,7 +193,7 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
         }),
     );
   // Set, due and collected were three guesses: one piece had two due dates and a close that said "give its due date".
-  const due = `${otherPieces(lesson)}${collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan collects it.` : ''}`;
+  const due = `${otherPieces(lesson, (p) => dueWords(course, { ...lesson, homework: p }).replace(/^It is /, '').replace(/[.:].*$/, ''))}${collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan collects it.` : ''}`;
   // "Sets no homework" beside a standing weekly paper had half the plans run the paper in class instead.
   if (lesson.homework.kind === 'none') return `${(lesson.also ?? []).some((p) => p.kind !== 'none') ? '' : 'This lesson sets no homework.'}${due}`.trim();
   const named = toward ? `"${toward}"` : 'a graded piece';

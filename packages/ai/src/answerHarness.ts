@@ -238,7 +238,10 @@ def check_item(item, check):
                 # and the 4 and the 9 are not results
                 stored = numbers(tail.replace('\x60', ''))[:3 * len(fv) + 4]; at = 0; bad = []
                 for c in fv:
-                    hit = next((k for k in range(at, len(stored)) if num_ok(stored[k][0], stored[k][1], c, s.get('tolerance'))), None)
+                    # a whole number further on is the value only when the value is whole: "SD approximately 1.427 … 100*(1-level)/2"
+                    # passed for a computed 1.4588, by the 1 in the formula
+                    whole = float(c).is_integer()
+                    hit = next((k for k in range(at, len(stored)) if num_ok(stored[k][0], stored[k][1], c, s.get('tolerance')) and (stored[k][1] > 0 or k == at or whole)), None)
                     if hit is None: bad.append(round(c, 6))
                     else: at = hit + 1
                 return not bad, (f'computed {bad[:6]} not among the stored {[n[2] for n in stored][:8]}' if bad else f'{len(fv)} numbers found in order')

@@ -216,7 +216,7 @@ const FOLLOW_PLAN = `Use the same examples, data and figures as the plan. ${FOLL
  * Work students do on their own is not the class practice copied out: told to use the plan's examples, graded
  * problem sets repeated the worked examples, numbers and all, with the answers in the study guide.
  */
-const FOLLOW_PLAN_NEW_ITEMS = `Keep the plan's facts, data, methods and terms, but give students new items to work: other numbers or cases than the plan's worked examples and class practice, so the work can't be copied from the lesson. ${FOLLOW_REST}`;
+const FOLLOW_PLAN_NEW_ITEMS = `Keep the plan's facts, data, methods and terms, but give students new items to work: other numbers or cases than the plan's worked examples and class practice, so the work can't be copied from the lesson. A new item has a name of its own: it never gives other values to something the plan had students make and name. ${FOLLOW_REST}`;
 
 /**
  * One scale for every rubric in a course. Each assignment is written on its
