@@ -75,5 +75,7 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('a notebook
     expect(res.figures).toHaveLength(1);
     expect(res.figures[0]!.png.byteLength).toBeGreaterThan(2000);
     expect(await runner.versions()).toMatchObject({ pandas: '3.0.2', numpy: '2.4.6' });
+    // Dates in a named time zone need the zone data, which pandas does not bring by itself.
+    expect((await runner.run({ code: 'print(pd.Timestamp("2026-03-08 12:00", tz="America/New_York"))' })).stdout).toBe('2026-03-08 12:00:00-04:00\n');
   }, 120_000);
 });

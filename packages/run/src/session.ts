@@ -101,6 +101,8 @@ export async function createSession(options: SessionOptions): Promise<Session> {
     let loadError: string | null = null;
     try {
       const loaded = await py.loadPackagesFromImports(cell.code, { messageCallback: (m: string) => options.onPackage?.(String(m).slice(0, 300)), errorCallback: () => undefined });
+      // pandas needs the time zone data for dates in a named zone, and does not list it as something it depends on.
+      if (loaded.some((p) => p.name === 'pandas')) await py.loadPackage('tzdata', { messageCallback: () => undefined, errorCallback: () => undefined }).catch(() => undefined);
       prepare(loaded.map((p) => p.name));
     } catch (e) {
       loadError = String(e).slice(0, 2000);

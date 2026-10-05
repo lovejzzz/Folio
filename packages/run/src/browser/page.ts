@@ -50,9 +50,12 @@ function spawn(): void {
   if (!interpreter) return up({ t: 'need', rid: INTERPRETER_RID, name: CORE_FILES[0]! });
   const url = URL.createObjectURL(new Blob([interpreter, '\n', WORKER_SOURCE], { type: 'text/javascript' }));
   const made = new Worker(url);
-  URL.revokeObjectURL(url);
   worker = made;
-  made.onmessage = (e) => made === worker && fromWorker(e.data as FromWorker);
+  made.onmessage = (e) => {
+    // Let go of the text only once the worker has read it: Safari's engine reads it late, and found it gone.
+    if ((e.data as FromWorker)?.t === 'alive') URL.revokeObjectURL(url);
+    if (made === worker) fromWorker(e.data as FromWorker);
+  };
   made.onerror = (e) => made === worker && lost(String(e.message ?? 'worker error'));
 }
 
