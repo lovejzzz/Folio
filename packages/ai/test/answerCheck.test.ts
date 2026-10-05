@@ -61,6 +61,14 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect(JSON.stringify(out.flags.get('t_wrong'))).toContain('keyed: 3');
   }, 120_000);
 
+  it('reads an answer of several parts, a list and a number, against the numbers the choice states', async () => {
+    const q = choice('t_parts', 'Proportions 0.50, 0.25, 0.25 and observed counts 66, 24, 30: which expected counts and degrees of freedom?', ['Expected counts 66, 24, 30; df = 3', 'Expected counts 60, 30, 30; df = 2'], 2, 'Multiply each proportion by the total, 120.');
+    const form = { checkable: true, setup: 'import numpy as np\nobserved = np.array([66, 24, 30])\nprops = [0.50, 0.25, 0.25]', answer_expr: '([p * observed.sum() for p in props], len(props) - 1)', choices: [{ n: 1, kind: 'value' }, { n: 2, kind: 'value' }] };
+    const out = await checkAnswers(fakeInference(() => form), nodeRunner(), [q]);
+    expect(out).toMatchObject({ checked: 1 });
+    expect(out.flags.size).toBe(0);
+  }, 120_000);
+
   it('runs a stored answer as it is stored: a curly quote in code is a failure, not something to tidy first', async () => {
     const short: Task = { ...base, id: 't_code', kind: 'question', format: 'short', prompt: 'Write an expression for the number of rows whose `city` is Austin.', choices: [], correct: null, answer: '`(df["city"] == “Austin”).sum()`', explanation: '', difficulty: 2 };
     const form = { checkable: true, setup: 'import pandas as pd\ndf = pd.DataFrame({"city": ["Austin", "Reno", "Austin"]})', answer_kind: 'code', judge: 'result == (df["city"] == "Austin").sum()' };

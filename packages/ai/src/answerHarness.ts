@@ -26,19 +26,25 @@ def numbers(text):
         try: out.append((float(t), d, m.group(0)))
         except ValueError: pass
     return out
+def _flatten(v, out):
+    import numpy as np
+    if isinstance(v, (bool, np.bool_, str, bytes)) or v is None: raise ValueError('not a number')
+    if hasattr(v, 'to_numpy'): v = v.to_numpy()
+    if isinstance(v, dict): v = list(v.values())
+    if isinstance(v, (list, tuple)):
+        # one by one: an answer of several parts ("expected counts 60, 30, 30; df = 2") is a list and a number
+        for x in v: _flatten(x, out)
+        return
+    a = np.asarray(v)
+    if a.dtype == object: a = np.asarray(a.tolist(), dtype=float)
+    if a.dtype.kind not in 'iuf': raise ValueError('not a number')
+    out.extend(float(x) for x in a.ravel())
 def flat(v):
-    """numbers in a computed value, or None when it is not numeric"""
-    try:
-        import numpy as np
-        if isinstance(v, (bool, np.bool_, str, bytes)) or v is None: return None
-        if hasattr(v, 'to_numpy'): v = v.to_numpy()
-        if isinstance(v, dict): v = list(v.values())
-        a = np.asarray(v)
-        if a.dtype == object: a = np.asarray(a.tolist(), dtype=float)
-        if a.dtype.kind == 'b': return None
-        if a.dtype.kind not in 'iuf': return None
-        return [float(x) for x in a.ravel()]
+    """numbers in a computed value, in order, or None when it is not numeric"""
+    out = []
+    try: _flatten(v, out)
     except Exception: return None
+    return out
 def num_ok(stored, d, computed, tol=None):
     if computed != computed: return False
     t = float(tol) if tol is not None else 0.5 * 10 ** (-d)
