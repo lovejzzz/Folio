@@ -1,6 +1,6 @@
 import { loadPyodide } from 'pyodide';
 import { createSession, type Session } from '../session';
-import { CORE_FILES, FEED, type BootOptions, type FromWorker, type ToWorker } from './protocol';
+import { FEED, type BootOptions, type FromWorker, type ToWorker } from './protocol';
 
 /**
  * Inside the runner's worker: one Python, one notebook. It has no network at all, so the interpreter's files
@@ -55,11 +55,9 @@ async function speed(session: Session): Promise<number> {
 async function boot(options: BootOptions): Promise<Session> {
   capHeap(options.harden.maxHeapMB);
   feed();
-  const asm = await need(CORE_FILES[0]!);
-  if (!asm) throw new Error('The interpreter could not be had.');
-  const url = URL.createObjectURL(new Blob([asm], { type: 'text/javascript' }));
-  const createPyodideModule = ((await import(/* @vite-ignore */ url)) as { default: unknown }).default;
-  URL.revokeObjectURL(url);
+  // The interpreter's script stands before this code in the worker's own text, and left its function here.
+  const createPyodideModule = (self as unknown as { _createPyodideModule?: unknown })._createPyodideModule;
+  if (typeof createPyodideModule !== 'function') throw new Error('The interpreter could not be had.');
   const session = await createSession({
     loadPyodide: loadPyodide as never,
     indexURL: FEED,

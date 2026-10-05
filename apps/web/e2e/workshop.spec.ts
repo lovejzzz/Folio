@@ -1,12 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { ASM_SCRIPT, classicAsm } from '@folio/run';
 import { expect, test } from './fixtures';
 import { fakeAnthropic } from './fakeModel';
 import { withKey } from './helpers';
 
 /** The interpreter's own files, from the installed package: enough for Python without libraries. */
 const RUNTIME = join(import.meta.dirname, '../../../packages/run/node_modules/pyodide');
-const TYPES: Record<string, string> = { wasm: 'application/wasm', json: 'application/json', zip: 'application/zip', mjs: 'text/javascript' };
+const TYPES: Record<string, string> = { wasm: 'application/wasm', json: 'application/json', zip: 'application/zip' };
 
 test('the Python on a week’s page is run in the browser, shut in, and the page shows what it really prints', async ({ page }) => {
   test.setTimeout(120_000);
@@ -15,6 +16,8 @@ test('the Python on a week’s page is run in the browser, shut in, and the page
   await page.route('**/api/runtime/**', (route) => {
     const name = route.request().url().split('/').pop()!;
     fetched.push(name);
+    // The interpreter's script is served as the runtime folder holds it: turned into a plain script.
+    if (name === ASM_SCRIPT) return route.fulfill({ body: classicAsm(readFileSync(join(RUNTIME, 'pyodide.asm.mjs'), 'utf8')), contentType: 'text/javascript' });
     return route.fulfill({ body: readFileSync(join(RUNTIME, name)), contentType: TYPES[name.split('.').pop()!] });
   });
   const model = await fakeAnthropic(page, { delayMs: 20, python: true });
@@ -38,5 +41,5 @@ test('the Python on a week’s page is run in the browser, shut in, and the page
   expect(policy).toContain("connect-src 'none'");
   expect(policy).not.toContain("'self'; script-src 'self'");
   // The interpreter was fetched once by Folio's own page and handed in: three weeks, three notebooks, one download.
-  expect(fetched.sort()).toEqual(['pyodide-lock.json', 'pyodide.asm.mjs', 'pyodide.asm.wasm', 'python_stdlib.zip']);
+  expect(fetched.sort()).toEqual(['pyodide-lock.json', 'pyodide.asm.js', 'pyodide.asm.wasm', 'python_stdlib.zip']);
 });

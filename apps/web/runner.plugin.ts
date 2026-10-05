@@ -39,8 +39,8 @@ export async function runnerPage(): Promise<RunnerPage> {
   return { html: `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Folio runner</title></head><body><script>${script}</script></body></html>\n`, hash };
 }
 
-/** What the runner page may do: run its one script, start a worker from text, run WebAssembly. No connection of any kind. */
-export const runnerPolicy = (hash: string): string => `default-src 'none'; script-src ${hash} blob: 'wasm-unsafe-eval'; worker-src blob:; connect-src 'none'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'`;
+/** What the runner page may do: run its one script, start a worker from text, run WebAssembly. No other script from anywhere, and no connection of any kind. */
+export const runnerPolicy = (hash: string): string => `default-src 'none'; script-src ${hash} 'wasm-unsafe-eval'; worker-src blob:; connect-src 'none'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'`;
 
 /** Writes /runner/index.html into the build and its policy into _headers; serves the same page in development. */
 export function runner(): Plugin {

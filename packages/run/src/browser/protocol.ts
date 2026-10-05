@@ -52,5 +52,5 @@ export type FromWorker =
   | { t: 'pong'; n: number }
   | { t: 'fatal'; message: string };
 
-/** Files a session cannot start without: asked for before the worker asks, so they arrive together. */
-export const CORE_FILES = ['pyodide.asm.mjs', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];
+/** Files a session cannot start without: asked for before the worker asks, so they arrive together. The first is the interpreter's script, which the runner page puts at the head of the worker's own code. */
+export const CORE_FILES = ['pyodide.asm.js', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];

@@ -8,7 +8,7 @@ import type { R2Bucket } from './types';
 
 const VERSION = /^pyodide-\d+(\.\d+){1,3}$/;
 const FILE = /^[A-Za-z0-9][A-Za-z0-9._+-]{0,159}$/;
-const TYPES: Record<string, string> = { wasm: 'application/wasm', json: 'application/json', mjs: 'text/javascript', zip: 'application/zip', whl: 'application/zip' };
+const TYPES: Record<string, string> = { wasm: 'application/wasm', json: 'application/json', js: 'text/javascript', zip: 'application/zip', whl: 'application/zip' };
 
 export const runtimeKey = (version: string, file: string): string => `_runtime/${version}/${file}`;
 

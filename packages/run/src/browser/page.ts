@@ -1,4 +1,4 @@
-import type { FromRunner, FromWorker, ToRunner, ToWorker, BootOptions } from './protocol';
+import { CORE_FILES, type BootOptions, type FromRunner, type FromWorker, type ToRunner, type ToWorker } from './protocol';
 
 /**
  * The runner page: the frame's own thread. It never runs course code. It owns the worker that does, ends a cell
@@ -41,9 +41,14 @@ function kill(): void {
   ready = false;
 }
 
+/** The interpreter's script, asked of the host once: it goes at the head of every worker's code. */
+let interpreter: ArrayBuffer | null = null;
+const INTERPRETER_RID = -1;
+
 function spawn(): void {
   kill();
-  const url = URL.createObjectURL(new Blob([WORKER_SOURCE], { type: 'text/javascript' }));
+  if (!interpreter) return up({ t: 'need', rid: INTERPRETER_RID, name: CORE_FILES[0]! });
+  const url = URL.createObjectURL(new Blob([interpreter, '\n', WORKER_SOURCE], { type: 'text/javascript' }));
   const made = new Worker(url);
   URL.revokeObjectURL(url);
   worker = made;
@@ -126,6 +131,10 @@ window.addEventListener('message', (e: MessageEvent<ToRunner>) => {
   if (m.t === 'init') {
     options = m.options;
     if (!worker) spawn();
+  } else if (m.t === 'file' && m.rid === INTERPRETER_RID) {
+    if (!m.buf) return lost('The interpreter could not be had.');
+    interpreter = m.buf;
+    spawn();
   } else if (m.t === 'file') down({ t: 'file', rid: m.rid, buf: m.buf }, m.buf ? [m.buf] : []);
   else if (m.t === 'reset') {
     current = null;

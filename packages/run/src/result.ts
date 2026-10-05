@@ -119,6 +119,18 @@ export function failed(type: string, message: string, ms = 0): CellResult {
 /** The interpreter's version: the folder its files are served from, and what Node runs. A test holds it to the installed package. */
 export const RUNTIME_VERSION = '314.0.7';
 
+/**
+ * The interpreter's own script as a worker can hold it. It is published as a module; a worker made from text
+ * cannot import one in every browser (Safari's engine refuses), so it is turned into a plain script that leaves
+ * its one function where the worker finds it. Two edits, each checked: a version that no longer has them fails here.
+ */
+export const ASM_SCRIPT = 'pyodide.asm.js';
+export function classicAsm(module: string): string {
+  const tail = 'export default _createPyodideModule;';
+  if (!module.trimEnd().endsWith(tail) || !module.startsWith('async function _createPyodideModule(')) throw new Error('The interpreter\'s script is not shaped as expected.');
+  return module.trimEnd().slice(0, -tail.length).replaceAll('import.meta.url', 'self.location.href');
+}
+
 /** Errors that are the runner's own, not the code's: the cell was never judged. */
 export const RUNNER_ERRORS = ['RunnerError', 'RunnerUnresponsive'];
 

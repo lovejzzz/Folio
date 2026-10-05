@@ -10,6 +10,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { version } from 'pyodide';
+import { ASM_SCRIPT, classicAsm } from '../src/result';
 import { RUNTIME_DIR } from '../src/node';
 
 interface Lock {
@@ -39,6 +40,8 @@ async function main(): Promise<void> {
   const pkg = dirname(createRequire(import.meta.url).resolve('pyodide'));
   mkdirSync(RUNTIME_DIR, { recursive: true });
   for (const f of CORE) copyFileSync(join(pkg, f), join(RUNTIME_DIR, f));
+  // For browsers: the interpreter's script as a worker made from text can hold it.
+  writeFileSync(join(RUNTIME_DIR, ASM_SCRIPT), classicAsm(readFileSync(join(pkg, 'pyodide.asm.mjs'), 'utf8')));
   const lock = JSON.parse(readFileSync(join(pkg, 'pyodide-lock.json'), 'utf8')) as Lock;
   const want = process.argv[2]?.split(',') ?? LIBRARIES;
   let bytes = 0;
