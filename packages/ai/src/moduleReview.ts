@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { earlierLessons } from './continuity';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
+import { exhibitDraftText } from './exhibit';
 import { sinceText, type Since } from './mend';
 import type { ModuleDraft } from './online';
 import { courseBackground, lessonContext, systemPrompt } from './prompts';
@@ -37,6 +38,7 @@ function blockText(b: Block): string {
   const head = b.type === 'callout' || b.type === 'code' ? `[${b.type}${b.kind ? `: ${b.kind}` : ''}] ${b.title}`.trim() : media ? `[${b.type}${b.kind ? `: ${b.kind}` : ''}] shows: ${b.shows}${b.alt ? ` | alt: ${b.alt}` : ''}` : '';
   // A file with its name on its own line was read as a download with no name.
   if (b.type === 'file') return `[file to download${b.kind ? `, ${b.kind}` : ''}] ${b.text} (holds: ${b.shows})`;
+  if (b.type === 'exhibit') return [b.exhibit ? exhibitDraftText(b.exhibit) : '[exhibit]', b.text].filter(Boolean).join('\n');
   const shots = b.shots.map((s) => `  [picture under step ${s.step}] shows: ${s.shows} | alt: ${s.alt}`).join('\n');
   const items = b.items.map((item, i) => (b.type === 'steps' ? `${i + 1}. ${item}` : `- ${item}`)).join('\n');
   return [head, b.text, items, shots, b.transcript && `Transcript: ${b.transcript}`].filter(Boolean).join('\n');

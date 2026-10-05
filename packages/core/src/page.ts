@@ -58,6 +58,42 @@ export type Step = z.infer<typeof StepSchema>;
 export const ChecklistItemSchema = z.object({ id, label: text, activity: ActivityKindSchema, minutes: z.number().int().min(0).max(1200), due: text.default('') });
 export type ChecklistItem = z.infer<typeof ChecklistItemSchema>;
 
+/**
+ * What an exhibit is made of. An exhibit is something the course itself wrote, shown as the thing it is: a page
+ * of the student's notes as it should stand, a model memo, a filled-in table. It used to be asked for as a
+ * picture ("a screenshot of the notes page with four rows…"), which a teacher then had to make by hand from the
+ * description; seven picture places in ten were of this kind. As blocks it is real text: read aloud, edited in
+ * place, and a real table in a Word file.
+ */
+export const ExhibitBlockSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('heading'), text }),
+  z.object({ type: z.literal('para'), text }),
+  z.object({ type: z.literal('list'), ordered: z.boolean().default(false), items: z.array(text) }),
+  /** "Question: …" on a form or a notes page; an empty value is a line still to be filled. */
+  z.object({ type: z.literal('field'), label: text, value: text.default('') }),
+  /** Every row as long as the columns; an empty cell is an empty string. */
+  z.object({ type: z.literal('table'), columns: z.array(text), rows: z.array(z.array(text)), caption: text.default('') }),
+  /** Room for the student's own words. */
+  z.object({ type: z.literal('yours'), hint: text.default('') }),
+]);
+export type ExhibitBlock = z.infer<typeof ExhibitBlockSchema>;
+
+/** Something in an exhibit the page points at, with what it says of it: the exact words, a column's heading or a row's first cell. */
+export const ExhibitMarkSchema = z.object({ quote: text, note: text });
+export type ExhibitMark = z.infer<typeof ExhibitMarkSchema>;
+
+const exhibit = {
+  /** notes: the student's own working document as it should now stand; document: a model to study; plain: a bare table or comparison. */
+  frame: z.enum(['notes', 'document', 'plain']).default('plain'),
+  title: text.default(''),
+  /** One part, or two side by side (before and after). */
+  parts: z.array(z.object({ label: text.default(''), blocks: z.array(ExhibitBlockSchema) })).min(1).max(2),
+  marks: z.array(ExhibitMarkSchema).default([]),
+  caption: text.default(''),
+  /** Shown closed until the student opens it: it holds what they are about to write or work out themselves. */
+  reveal: z.boolean().default(false),
+};
+
 export const PageBlockSchema = z.discriminatedUnion('type', [
   z.object({ id, type: z.literal('heading'), level: z.union([z.literal(2), z.literal(3)]), text }),
   z.object({ id, type: z.literal('text'), text }),
@@ -70,6 +106,7 @@ export const PageBlockSchema = z.discriminatedUnion('type', [
   z.object({ id, type: z.literal('image'), ...media }),
   z.object({ id, type: z.literal('video'), ...media, poster: text.default(''), minutes: z.number().min(0).max(60).default(0), transcript: text.default(''), /** A short silent recording of the screen, shown for its motion: it has no words to transcribe. */ clip: z.boolean().default(false) }),
   z.object({ id, type: z.literal('file'), href: text.default(''), label: text, role: z.enum(['starter', 'checkpoint', 'solution', 'resource']).default('resource'), shows: text.default('') }),
+  z.object({ id, type: z.literal('exhibit'), ...exhibit }),
   z.object({ id, type: z.literal('checklist'), items: z.array(ChecklistItemSchema) }),
   z.object({ id, type: z.literal('terms'), items: z.array(z.object({ term: text, meaning: text })) }),
 ]);
@@ -160,6 +197,30 @@ export const isOutsideHours = (label: string): boolean => /\boptional\b|\bif you
 /** "HopStart.zip": a label that is the file's own name, which a download or an export keeps. */
 export const isFileName = (label: string): boolean => /\.\w{2,5}$/.test(label.trim());
 
+/** One block of an exhibit as plain text. */
+function exhibitBlockText(b: ExhibitBlock): string {
+  switch (b.type) {
+    case 'heading':
+    case 'para':
+      return b.text;
+    case 'list':
+      return b.items.map((i) => `- ${i}`).join('\n');
+    case 'field':
+      return `${b.label}: ${b.value}`;
+    case 'table':
+      return [b.columns.join(' | '), ...b.rows.map((r) => r.join(' | ')), b.caption].filter(Boolean).join('\n');
+    case 'yours':
+      return b.hint ? `(${b.hint})` : '';
+  }
+}
+
+/** An exhibit as plain text: its title, each part under its label, what the page points at, its caption. */
+export function exhibitText(b: Extract<PageBlock, { type: 'exhibit' }>): string {
+  const parts = b.parts.map((p) => [p.label, ...p.blocks.map(exhibitBlockText)].filter(Boolean).join('\n'));
+  const marks = b.marks.map((m) => `[${m.quote}] ${m.note}`);
+  return [b.title, ...parts, ...marks, b.caption].filter(Boolean).join('\n');
+}
+
 /** The page as plain text, for digests and for hashing: what a student reads, in order. */
 export function pageText(page: readonly PageBlock[]): string {
   const line = (b: PageBlock): string => {
@@ -181,6 +242,8 @@ export function pageText(page: readonly PageBlock[]): string {
         return `[${b.type}: ${b.alt || b.shows}]`;
       case 'file':
         return `[file: ${b.label}]`;
+      case 'exhibit':
+        return exhibitText(b);
       case 'checklist':
         return b.items.map((i) => `- ${i.label} (${i.minutes} min)`).join('\n');
       case 'terms':

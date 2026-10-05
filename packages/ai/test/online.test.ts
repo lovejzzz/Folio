@@ -1,4 +1,4 @@
-import { CourseStore, OnlineSchema, hasModulePages, orderedLessons, pageMinutes, textRuns, type Course } from '@folio/core';
+import { CourseStore, OnlineSchema, hasModulePages, orderedLessons, pageMinutes, project, textRuns, type Course } from '@folio/core';
 import type { Lesson } from '@folio/core';
 import { describe, expect, it } from 'vitest';
 import { OutlineDraft, checkPicture, fixNotes, courseBackground, courseFromOutline, generateSection, outlinePrompt, picturePlace, sectionPrompt, type NewCourseRequest } from '../src';
@@ -406,5 +406,23 @@ describe('the files earlier weeks wrote', () => {
     const prompt = sectionPrompt(far, far.lessons[second.id]!, 'plan');
     expect(prompt).toMatch(/Further back, in brief:\n"[^"]+"\n Key ideas: A script is a component\.\n What students did: Part 0; Part 1;/);
     expect(prompt).not.toContain('word word word');
+  });
+
+  it('shows something the course wrote as an exhibit: a real table on the page and in a document, its form checked', () => {
+    const exhibit = { frame: 'notes', title: 'Week 3 notes', reveal: true, marks: [{ quote: 'Light', note: 'The column you fill in this week.' }], parts: [{ blocks: [{ type: 'field', label: 'Question', text: 'Where does the mass come from?' }, { type: 'table', columns: ['Input', 'Light'], rows: [['Water', 'needed'], ['Soil']] }, { type: 'yours', text: 'Your own example' }] }] };
+    const v = draft();
+    v.parts[1]!.blocks.push(ModuleDraft.shape.parts.element.shape.blocks.element.parse({ type: 'exhibit', text: 'Compare the Light column with yours.', exhibit }));
+    const block = modulePage(v, 'en').find((b) => b.type === 'exhibit');
+    // A short row is filled out to its columns: the page never holds a ragged table.
+    expect(block).toMatchObject({ frame: 'notes', reveal: true, caption: 'Compare the Light column with yours.', parts: [{ blocks: [{ type: 'field', label: 'Question', value: 'Where does the mass come from?' }, { type: 'table', rows: [['Water', 'needed'], ['Soil', '']] }, { type: 'yours', hint: 'Your own example' }] }] });
+    const found = JSON.stringify(checkModule(v, online()));
+    expect(found).toContain('has a table whose rows are not as long as its columns');
+    const c = online();
+    const first = orderedLessons(c)[0]!;
+    const built = { ...c, lessons: { ...c.lessons, [first.id]: { ...first, page: modulePage(v, 'en') } } } as Course;
+    const doc = project(built, 'plan', { audience: 'student', lessonIds: [first.id] });
+    expect(doc.blocks.find((b) => b.t === 'table' && b.head[1] === 'Light [1]')).toMatchObject({ rows: [['Water', 'needed'], ['Soil', '']] });
+    expect(JSON.stringify(doc.blocks)).toContain('Compare with this after you have written your own.');
+    expect(doc.blocks.some((b) => b.t === 'list' && b.ordered && b.items[0] === 'The column you fill in this week.')).toBe(true);
   });
 });

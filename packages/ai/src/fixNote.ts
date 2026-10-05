@@ -1,4 +1,4 @@
-import { cmd, newId, sessionIndex, type Command, type Course, type Flag, type Lesson, type PageBlock } from '@folio/core';
+import { cmd, newId, sessionIndex, type Command, type Course, type ExhibitBlock, type Flag, type Lesson, type PageBlock } from '@folio/core';
 import type { Inference } from './inference';
 import { mendModule, mendPlan, type Left } from './mend';
 import { BlockDraft, ModuleDraft, WRAP_UP, pageBlocks } from './online';
@@ -21,6 +21,18 @@ export interface NoteFix {
 }
 
 type Block = ModuleDraft['parts'][number]['blocks'][number];
+
+type ExhibitBlockDraft = NonNullable<Block['exhibit']>['parts'][number]['blocks'][number];
+
+/** A block of a saved exhibit, as the writer gives one. */
+function exhibitDraft(x: ExhibitBlock): ExhibitBlockDraft {
+  const blank = { text: '', label: '', items: [], columns: [], rows: [] };
+  if (x.type === 'heading' || x.type === 'para') return { ...blank, type: x.type, text: x.text };
+  if (x.type === 'list') return { ...blank, type: 'list', items: x.items };
+  if (x.type === 'field') return { ...blank, type: 'field', label: x.label, text: x.value };
+  if (x.type === 'yours') return { ...blank, type: 'yours', text: x.hint };
+  return { ...blank, type: 'table', columns: x.columns, rows: x.rows, text: x.caption };
+}
 
 /** A block of a saved page, as the writer first gave it: the form a mend reads and writes. */
 function blockDraft(b: PageBlock): Block | null {
@@ -45,6 +57,8 @@ function blockDraft(b: PageBlock): Block | null {
       return d({ type: 'file', kind: b.role, text: b.label, shows: b.shows });
     case 'terms':
       return d({ type: 'terms', items: b.items.map((t) => `${t.term}: ${t.meaning}`) });
+    case 'exhibit':
+      return d({ type: 'exhibit', text: b.caption, exhibit: { frame: b.frame, title: b.title, marks: b.marks, reveal: b.reveal, parts: b.parts.map((p) => ({ label: p.label, blocks: p.blocks.map(exhibitDraft) })) } });
     case 'checklist':
       return null;
   }

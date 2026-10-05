@@ -325,6 +325,17 @@ export const en = {
     copy: 'Copy',
     copied: 'Copied',
     code: 'Code',
+    /** Something the course wrote, shown as what it is. */
+    exhibit: {
+      frames: { notes: 'Your notes at this point', document: 'Example', plain: 'Table' },
+      show: 'Compare with yours',
+      hide: 'Hide',
+      wait: 'Write your own first, then open this to compare.',
+      title: 'Title of the example',
+      caption: 'Caption',
+      text: 'Text in the example',
+      cell: (column: string, row: number) => `${column || 'Cell'}, row ${row}`,
+    },
     /** On an output block: what really ran the code to print it. */
     ranOn: (what: string) => `run on ${what}`,
     imageSlot: 'Screenshot to add',

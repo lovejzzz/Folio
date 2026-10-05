@@ -349,6 +349,126 @@
     text-transform: capitalize;
   }
 
+  /* Something the course wrote, shown as the thing it is: a sheet set into the page. */
+  .mod-exhibit {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+  }
+  .mod-exhibit-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-family: var(--font-ui);
+    font-size: var(--text-12);
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--folio-ink-2);
+  }
+  .mod-exhibit-body {
+    display: grid;
+    gap: 0.7rem;
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--folio-rule);
+    border-radius: 10px;
+    background: var(--folio-paper);
+    font-size: var(--text-16);
+    line-height: var(--text-16--line-height);
+  }
+  .mod-exhibit[data-frame='notes'] .mod-exhibit-body {
+    background: var(--folio-well);
+  }
+  .mod-exhibit-held {
+    display: none;
+  }
+  .mod-exhibit-title,
+  .mod-exhibit-h {
+    font-family: var(--font-ui);
+    font-weight: 650;
+  }
+  .mod-exhibit-parts {
+    display: grid;
+    gap: 1rem;
+  }
+  .mod-exhibit-part {
+    display: grid;
+    gap: 0.55rem;
+    min-width: 0;
+    align-content: start;
+  }
+  .mod-exhibit-field {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--folio-rule);
+    padding-bottom: 0.2rem;
+  }
+  .mod-exhibit-field > :first-child {
+    font-weight: 600;
+  }
+  .mod-exhibit-field > :last-child {
+    flex: 1;
+    min-width: 2rem;
+  }
+  .mod-exhibit-yours {
+    min-height: 3rem;
+    padding: 0.5rem 0.65rem;
+    border: 1px dashed var(--folio-rule);
+    border-radius: 8px;
+    color: var(--folio-ink-2);
+  }
+  .mod-exhibit-scroll {
+    overflow-x: auto;
+  }
+  .mod-exhibit-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-14);
+    line-height: var(--text-14--line-height);
+  }
+  .mod-exhibit-table caption {
+    caption-side: bottom;
+    padding-top: 0.4rem;
+    text-align: left;
+    color: var(--folio-ink-2);
+  }
+  .mod-exhibit-table th,
+  .mod-exhibit-table td {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--folio-rule);
+    text-align: left;
+    vertical-align: top;
+  }
+  .mod-exhibit-table th {
+    font-family: var(--font-ui);
+    font-weight: 650;
+    background: var(--folio-well);
+  }
+  .mod-exhibit-marks {
+    display: grid;
+    gap: 0.25rem;
+    padding-left: 1.25rem;
+    list-style: decimal;
+    font-size: var(--text-14);
+    color: var(--folio-ink-2);
+  }
+  .mod-exhibit-wait,
+  .mod-exhibit-caption {
+    font-size: var(--text-14);
+    color: var(--folio-ink-2);
+  }
+  @media (min-width: 48rem) {
+    .mod-exhibit-parts[data-parts='2'] {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media print {
+    .mod-exhibit-held {
+      display: grid;
+    }
+  }
+
   .mod-terms {
     display: grid;
     gap: 0.5rem;

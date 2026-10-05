@@ -35,6 +35,13 @@ test('a course taught online on the students\u2019 own time is written as a page
   await expect(page.getByText('Clip to add')).toBeVisible();
   await expect(page.getByRole('complementary', { name: 'Checkpoint' })).toContainText('stomata labelled on the underside');
   await expect(page.getByRole('button', { name: 'Copy' })).toBeVisible();
+  // What the course itself wrote is shown as what it is: a table, closed until the student has written their own.
+  const notes = page.getByRole('figure', { name: 'Leaf notes' });
+  await expect(notes.getByText('Write your own first, then open this to compare.')).toBeVisible();
+  await expect(notes.getByRole('table')).toBeHidden();
+  await notes.getByRole('button', { name: 'Compare with yours' }).click();
+  await expect(notes.getByRole('columnheader', { name: 'Dark' })).toBeVisible();
+  await expect(notes.getByRole('cell', { name: 'pale' })).toBeVisible();
   // The forum's marking rule is stated only where posts carry a share of the grade, and this course grades none; the instructor has a kit of their own.
   await expect(page.getByText('Post a screenshot of your leaf diagram and say what surprised you.')).toBeVisible();
   await expect(page.getByText(/How posts are graded, every week/)).toHaveCount(0);

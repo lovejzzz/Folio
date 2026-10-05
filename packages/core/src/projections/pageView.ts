@@ -1,6 +1,6 @@
 import { MEDIA_FOLDER, mediaFileNames } from '../mediaNames';
 import type { Lesson } from '../schema';
-import type { PageBlock } from '../page';
+import type { ExhibitBlock, PageBlock } from '../page';
 import type { Block } from '../semantic';
 import type { Ctx } from './shared';
 
@@ -23,6 +23,50 @@ function videoView(ctx: Ctx, b: Extract<PageBlock, { type: 'video' }>, names: Na
   const text = name ? m.withFile(said, `${MEDIA_FOLDER}/${name}`) : said;
   const shown: Block = b.src && b.poster ? { t: 'image', src: b.poster, alt: b.alt, caption: text } : { t: 'para', tone: 'muted', text: b.src ? text : `${m.video(b.minutes)}: ${b.caption || b.shows}` };
   return [shown, ...(b.transcript.trim() ? [{ t: 'note' as const, label: m.transcript, text: b.transcript }] : [])];
+}
+
+type Exhibit = Extract<PageBlock, { type: 'exhibit' }>;
+
+/** The words of an exhibit with each thing the page points at numbered where it stands: "[1]" after it, and the notes listed under the exhibit. */
+function numbered(marks: Exhibit['marks']): (text: string) => string {
+  const done = new Set<number>();
+  return (text) =>
+    marks.reduce((out, m, i) => {
+      if (done.has(i) || !m.quote || !out.includes(m.quote)) return out;
+      done.add(i);
+      return out.replace(m.quote, () => `${m.quote} [${i + 1}]`);
+    }, text);
+}
+
+function exhibitBlock(b: ExhibitBlock, mark: (text: string) => string): Block[] {
+  switch (b.type) {
+    case 'heading':
+      return [{ t: 'para', text: `**${mark(b.text).replace(/\*/g, '')}**` }];
+    case 'para':
+      return [{ t: 'para', text: mark(b.text) }];
+    case 'list':
+      return [{ t: 'list', ordered: b.ordered, items: b.items.map(mark) }];
+    case 'field':
+      return [{ t: 'meta', items: [{ label: mark(b.label), value: mark(b.value) || '\u2003' }] }];
+    case 'table':
+      return [{ t: 'table', head: b.columns.map(mark), rows: b.rows.map((r) => r.map(mark)) }, ...(b.caption ? [{ t: 'para' as const, tone: 'muted' as const, text: b.caption }] : [])];
+    case 'yours':
+      return [{ t: 'para', tone: 'muted', text: b.hint || '\u2003' }];
+  }
+}
+
+/** An exhibit as a document sets it: real paragraphs and a real table, what the page points at numbered, the notes under it. */
+function exhibitView(ctx: Ctx, b: Exhibit): Block[] {
+  const mark = numbered(b.marks);
+  const parts = b.parts.flatMap((p): Block[] => [...(p.label ? [{ t: 'para' as const, text: `**${p.label.replace(/\*/g, '')}**` }] : []), ...p.blocks.flatMap((x) => exhibitBlock(x, mark))]);
+  return [
+    ...(b.title ? [{ t: 'para' as const, text: `**${mark(b.title).replace(/\*/g, '')}**` }] : []),
+    // Held back on the page until the student opens it: on paper, said.
+    ...(b.reveal ? [{ t: 'para' as const, tone: 'muted' as const, text: ctx.l.module.afterYourOwn }] : []),
+    ...parts,
+    ...(b.marks.length ? [{ t: 'list' as const, ordered: true, items: b.marks.map((m) => m.note) }] : []),
+    ...(b.caption ? [{ t: 'para' as const, tone: 'muted' as const, text: b.caption }] : []),
+  ];
 }
 
 function blockView(ctx: Ctx, b: PageBlock, names: Names): Block[] {
@@ -56,6 +100,8 @@ function blockView(ctx: Ctx, b: PageBlock, names: Names): Block[] {
       const text = `${m.file}: ${b.label}`;
       return [{ t: 'para', tone: 'muted', text: name && name !== b.label.trim() ? m.withFile(text, `${MEDIA_FOLDER}/${name}`) : text }];
     }
+    case 'exhibit':
+      return exhibitView(ctx, b);
     case 'checklist':
       return [
         { t: 'heading', level: 3, text: m.thisWeek },

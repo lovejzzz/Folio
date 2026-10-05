@@ -132,7 +132,17 @@ function modulePage(title: string) {
           { type: 'code', kind: 'text', text: 'carbon dioxide + water -> glucose + oxygen' },
         ],
       },
-      { title: 'Try it yourself', blocks: [{ type: 'text', text: 'Draw a second leaf kept in the dark and say how it differs.' }] },
+      {
+        title: 'Try it yourself',
+        blocks: [
+          { type: 'text', text: 'Draw a second leaf kept in the dark and say how it differs.' },
+          {
+            type: 'exhibit',
+            text: 'Compare the Dark column with what you wrote.',
+            exhibit: { frame: 'notes', title: 'Leaf notes', reveal: true, marks: [{ quote: 'Dark', note: 'The column you filled in.' }], parts: [{ blocks: [{ type: 'table', columns: ['Leaf', 'Light', 'Dark'], rows: [['Colour', 'green', 'pale'], ['Starch', 'present', 'absent']] }] }] },
+          },
+        ],
+      },
     ],
     wrapUp: 'You can now say where a plant takes in light. Next week: the chloroplast.',
     vocabulary: [{ term: 'Chlorophyll', definition: 'The green pigment that absorbs light.' }],

@@ -2,6 +2,7 @@ import { cmd, statedObjectives, type Course, type Facilitation, type Lesson, typ
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { EditableList } from './EditableList';
+import { ExhibitView } from './Exhibit';
 import { FileRow, Media } from './MediaSlot';
 import { Callout, Checklist, CodeBlock, Steps, Terms, type Patch } from './ModuleBlocks';
 import { useSectionEdit } from './useSectionEdit';
@@ -49,6 +50,8 @@ function Block({ block, step, patch, lead, courseId, lessonId }: { block: PageBl
       return <Media kind="video" media={block} courseId={courseId} onChange={(next) => patch({ ...block, ...next })} />;
     case 'file':
       return <FileRow block={block} courseId={courseId} onChange={(next) => patch({ ...block, ...next })} />;
+    case 'exhibit':
+      return <ExhibitView block={block} patch={patch} />;
     case 'checklist':
       return <Checklist block={block} />;
     case 'terms':

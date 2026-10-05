@@ -1,4 +1,4 @@
-import type { Lesson, PageBlock } from '@folio/core';
+import { exhibitText, type Lesson, type PageBlock } from '@folio/core';
 
 /**
  * A week's page as a Jupyter notebook: the page's words as text cells and its Python as cells to run, in the
@@ -30,6 +30,8 @@ function markdown(b: PageBlock): string {
       return `\`\`\`${b.language === 'output' ? '' : b.language}\n${b.code}\n\`\`\``;
     case 'terms':
       return b.items.map((t) => `**${t.term}**: ${t.meaning}`).join('\n\n');
+    case 'exhibit':
+      return exhibitText(b);
     case 'image':
       return b.caption ? `*${b.caption}*` : '';
     default:
