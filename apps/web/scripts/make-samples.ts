@@ -376,3 +376,5 @@ if (PAID) {
   console.log([...by].sort((a, b) => costOf(b[1], null).usd - costOf(a[1], null).usd).map(([name, list]) => row(name, list)).join('\n'));
   console.log(row('TOTAL', USED));
 }
+// The notebook's thread would keep the script alive after its last course: three runs sat finished until they were stopped.
+RUNNER.close();
