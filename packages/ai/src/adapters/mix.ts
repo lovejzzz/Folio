@@ -16,8 +16,10 @@ export const FOLIO_MIX: Readonly<Record<string, { model: string; effort: Effort 
   folio_quiz: { model: 'gpt-6-luna', effort: 'high' },
   folio_assignments: { model: 'gpt-6-luna', effort: 'high' },
   folio_plan_review: { model: 'gpt-6.1-sol', effort: 'low' },
-  // A module page is followed step by step and its code run in the head: more to work through than a plan.
-  folio_module_review: { model: 'gpt-6.1-sol', effort: 'medium' },
+  // A module page was read at medium while its code had to be run in the head. Now the code is run for real: twelve pages
+  // read at low and twice at medium, each reading checked fault by fault, and low found all 28 that mattered, as medium did,
+  // in under half the time.
+  folio_module_review: { model: 'gpt-6.1-sol', effort: 'low' },
   // The check of a syllabus the teacher brought is a review too: Sol, which found the most in plans.
   folio_syllabus_check: { model: 'gpt-6.1-sol', effort: 'low' },
 };

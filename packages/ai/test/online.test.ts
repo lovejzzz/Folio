@@ -1,4 +1,4 @@
-import { CourseStore, OnlineSchema, hasModulePages, orderedLessons, pageMinutes, project, textRuns, type Course } from '@folio/core';
+import { CourseStore, OnlineSchema, hasModulePages, isOutsideHours, orderedLessons, pageMinutes, project, textRuns, type Course } from '@folio/core';
 import type { Lesson } from '@folio/core';
 import { describe, expect, it } from 'vitest';
 import { OutlineDraft, checkPicture, fixNotes, courseBackground, courseFromOutline, generateSection, outlinePrompt, picturePlace, sectionPrompt, type NewCourseRequest } from '../src';
@@ -88,6 +88,10 @@ describe('an online course with no set meeting time', () => {
     unchecked.parts[1]!.blocks.push({ ...unchecked.parts[0]!.blocks[1]!, items: Array.from({ length: 7 }, (_, i) => `Step ${i}`), shots: [] });
     expect(JSON.stringify(checkModule(unchecked, c))).toMatch(/Try it yourself.*has 7 steps and no checkpoint/);
     expect(JSON.stringify(checkModule(unchecked, c))).toMatch(/has 7 steps and no pictures/);
+    // In a notebook the cell's own output is the picture: no screenshot of it is owed, and no recording of it being run.
+    const notebook = draft();
+    notebook.parts[1]!.blocks.push({ ...notebook.parts[0]!.blocks[1]!, items: Array.from({ length: 7 }, (_, i) => `Step ${i}`), shots: [] }, { ...notebook.parts[0]!.blocks[0]!, type: 'code', kind: 'python', text: 'print(1)' });
+    expect(JSON.stringify(checkModule(notebook, c))).not.toMatch(/no pictures|no clip/);
   });
 
   it('writes a value the student types with the keyboard hyphen, and asks for a caption under every picture', () => {
@@ -144,6 +148,11 @@ describe('an online course with no set meeting time', () => {
     expect(model.calls[3]!.prompt).not.toContain('needs its caption');
     const fill = result.commands[0]!;
     expect(fill.type === 'section.fill' && fill.payload.flags).toEqual([]);
+  });
+
+  it('counts a checklist item out of the week only when the item itself is optional', () => {
+    for (const label of ['Optional: read chapter 2', '(Optional) Try the plotting challenge', 'Read chapter 2 (optional)', 'Watch the recording if you missed the session']) expect(isOutsideHours(label)).toBe(true);
+    for (const label of ['Do both challenges, the second optional', 'Practice: challenges (second one optional)', 'Read the optional-arguments section']) expect(isOutsideHours(label)).toBe(false);
   });
 
   it('mends a page by the blocks that change, and leaves every other block as it was', () => {

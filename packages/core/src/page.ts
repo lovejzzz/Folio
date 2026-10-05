@@ -213,8 +213,10 @@ export function pageMediaRefs(page: readonly PageBlock[]): string[] {
 /**
  * A checklist item outside the week's hours, by how its label says so: work a student may skip, and what a student
  * does only in place of something else (the recording, "if you miss the session"). Counted, a 9-hour week read as 10.
+ * The item is optional when it says so of itself, at its start or in brackets at its end: "Do both challenges, the second
+ * optional" is owed, and left out of the count it put two weeks of twelve 30 and 40 minutes under what they asked.
  */
-export const isOutsideHours = (label: string): boolean => /\boptional\b|\bif you miss(ed)?\b/i.test(label);
+export const isOutsideHours = (label: string): boolean => /^\W*optional\b|\(optional\)\W*$|\bif you miss(ed)?\b/i.test(label);
 
 /** "HopStart.zip": a label that is the file's own name, which a download or an export keeps. */
 export const isFileName = (label: string): boolean => /\.\w{2,5}$/.test(label.trim());

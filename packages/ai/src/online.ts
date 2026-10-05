@@ -203,15 +203,19 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
   // Pictures and clips are owed where the steps are followed on a screen: a week that teaches a tool names its version or
   // gives code. Held to them, the steps of a psychology week ("write three sentences") were each asked for a screenshot.
   const onScreen = blocks.some((b) => (b.type === 'code' && b.kind.trim()) || (b.type === 'callout' && b.kind.trim().toLowerCase() === 'version'));
+  // A notebook cell's result is on the page already, as what it printed and drew when Folio ran it: asked for a
+  // screenshot of it and a recording of Shift+Enter, eleven weeks of twelve sent the page back to be mended for
+  // pictures a teacher would then have had to make and nobody needed.
+  const cell = (b: (typeof blocks)[number]) => b.type === 'code' && ['python', 'py', 'python3', 'ipython'].includes(b.kind.trim().toLowerCase());
   const pictures = (bs: typeof blocks) => bs.reduce((n, b) => n + (b.type === 'image' || b.type === 'video' ? 1 : 0) + b.shots.length, 0);
   for (const part of v.parts) {
     const steps = part.blocks.reduce((n, b) => n + (b.type === 'steps' ? b.items.length : 0), 0);
     const checked = part.blocks.some((b) => b.type === 'callout' && b.kind.trim().toLowerCase() === 'checkpoint');
     if (steps > 6 && !checked) problems.push(issue(`"${part.title}" has ${steps} steps and no checkpoint: say what the student should see`));
     // A beginner checks their screen against the page: a long run of steps with nothing to check against loses them.
-    if (onScreen && steps >= 5 && pictures(part.blocks) < 2) problems.push(issue(`"${part.title}" has ${steps} steps and ${pictures(part.blocks) === 1 ? '1 picture' : 'no pictures'}: ask for a screenshot where the thing to click is hard to find and one of the result`));
+    if (onScreen && steps >= 5 && pictures(part.blocks) < 2 && !part.blocks.some(cell)) problems.push(issue(`"${part.title}" has ${steps} steps and ${pictures(part.blocks) === 1 ? '1 picture' : 'no pictures'}: ask for a screenshot where the thing to click is hard to find and one of the result`));
   }
-  if (onScreen && blocks.some((b) => b.type === 'steps') && !blocks.some((b) => b.type === 'video' && isClip(b))) problems.push(issue('The week has steps to follow and no clip: ask for a short silent recording where something moves or runs'));
+  if (onScreen && !blocks.some(cell) && blocks.some((b) => b.type === 'steps') && !blocks.some((b) => b.type === 'video' && isClip(b))) problems.push(issue('The week has steps to follow and no clip: ask for a short silent recording where something moves or runs'));
   return problems;
 }
 
@@ -243,7 +247,9 @@ export function onlineBackground(course: Course): string {
   const hours = course.online?.hoursPerWeek ?? 9;
   return [
     'This course is taught online with no set meeting time. Each lesson is one week\'s module: students work through it alone, when they can, and no teacher is present while they do. Everything is written to the student as "you", in a warm, plain voice, and must be enough on its own: a student who follows the page gets there without asking anyone.',
-    `A week is about ${hours} hours of student work, everything counted. The week has one rhythm all term: ${isMixedOnline(course) ? 'the page, the self-check and one forum post before the live session, and all other work by Sunday night' : 'a first forum post by Thursday, replies and all other work by Sunday night'}. Work that needs a classmate's work to exist (a review of their draft, a test of their build) cannot be due with it: what classmates will work on is posted by Thursday of its week, and the work on it is due that Sunday night; every week says so in the same words, in the checklist and wherever either piece is described.`,
+    // The rule on work that needs a classmate's work was written as a rule and told to be said "in the same words": it was
+    // pasted, as written, into the checklists of weeks that had no such work, and four judges in four called it unreadable.
+    `A week is about ${hours} hours of student work, everything counted. The week has one rhythm all term: ${isMixedOnline(course) ? 'the page, the self-check and one forum post before the live session, and all other work by Sunday night' : 'a first forum post by Thursday, replies and all other work by Sunday night'}. Only in a week that sets work on a classmate's work (a review of their draft, a test of their build): the piece to be worked on is due Thursday and the work on it Sunday night, and each of the two checklist items says its own day in a student's words ("Post your draft by Thursday, so a classmate can review it"). A week with no such work says nothing of this rule.`,
     'Say "this week", "last week" and "next week" where a course in a room says "this lesson" or "last time".',
     isMixedOnline(course)
       ? `Each week also has one live session of ${course.online?.liveMinutes || 75} minutes in a video meeting, for what needs other people; everything a student can take in alone is on the page. Work is submitted online, files are downloaded from the page.`

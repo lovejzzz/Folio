@@ -1,5 +1,35 @@
 [
  {
+  "version": "0.0.18",
+  "date": "October 5, 2026",
+  "title": "A week’s page is read and put right in half the time, with fewer notes left for you",
+  "lede": "After a week’s page is written, a second model reads it as a student would and the writer puts right what it finds. That reading and fixing had become more than half of what a week costs. We took it apart, call by call and note by note, and most of what we changed is a fault removed.",
+  "sections": [
+   {
+    "heading": "What we found in the notes",
+    "body": "We had twelve first readings checked one by one. Every reading found every fault that mattered, 28 in all. But between a third and a half of what each reading listed was no fault, and the same kinds came back: a checklist’s minutes added up a hundred too many; a deadline or a grading rule written into a page that had never given one; “your version may differ a little” turned into a demand. Small changes of that kind were being made to pages without anyone asking. The reader is now told what is not its to list, and the false totals are gone: none in twelve readings where there had been five.",
+    "image": {
+     "src": "/changelog/0.0.18-loop.webp",
+     "alt": "Three figures, each the mean of six weeks. What the reading and the fixes cost: $0.23, where it was $0.34. How long they take: 2 minutes, where it was 4. Notes left for the teacher to settle in a week: 0.3, where it was 1.5",
+     "width": 960,
+     "height": 270
+    }
+   },
+   {
+    "heading": "Faults of ours that sent pages back",
+    "body": "Folio’s own check asked every notebook week for a screenshot of a cell and a recording of it being run, though the cell’s real output is already on the page: eleven weeks of twelve were sent to be mended for pictures a teacher would then have had to make. It no longer asks. A rule about work that depends on a classmate’s was written so that it was pasted, word for word and unreadable, into the checklists of weeks with no such work; it is rewritten. A note that a sentence quoted an old number was sent to the writer even after the reader had already corrected the sentence. A checklist item was left out of the week’s hours if it so much as mentioned the word optional, which put some weeks forty minutes under what they asked. And the teacher’s list of things to check quoted numbers from before the code was run; those entries now go when the run replaces the numbers."
+   },
+   {
+    "heading": "What we tried and did not take",
+    "body": "The reader now reads at a lower effort, since it no longer has to run the page’s code in its head: it found the same 28 faults, in under half the time. We tried the same economy on the writer’s fixes, and it failed: twelve fixes made without thinking first were set beside the twelve made with it, blind, and lost ten times, once by inventing the output of code that had been run. Fixes think as they did."
+   },
+   {
+    "heading": "The result",
+    "body": "A week of an online coding course costs about $0.58 to write, where it was $0.68, and is ready about two minutes sooner. Six weeks written each way were read blind: 7.7 of 10 against 7.3, the gain in sentences that should never have been on the page. Two of the six new pages had a fault that would stop a student, both of kinds seen before these changes; one, a version check that showed Folio’s Python and not the course’s, has a fix in this release that is not yet measured."
+   }
+  ]
+ },
+ {
   "version": "0.0.17",
   "date": "October 5, 2026",
   "title": "Claude is now told what each part of its answer is for",

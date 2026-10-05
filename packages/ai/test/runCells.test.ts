@@ -3,6 +3,7 @@ import type { Cell, CellResult, Runner } from '@folio/run';
 import { describe, expect, it } from 'vitest';
 import { generateSection, runCells } from '../src';
 import { ModuleDraft } from '../src/online';
+import { standing } from '../src/runCells';
 import { fakeInference, smallCourse } from './fake';
 
 const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
@@ -91,6 +92,15 @@ describe('a page whose Python is run', () => {
     const ran = await runCells(fakeRunner({ 'print(df.mean())': { stdout: '74.25\ndtype: str\n' }, 'print(df.dtypes)': { stdout: 'str\n' } }), page(blocks));
     expect(ran.notes).toHaveLength(1);
     expect(text(ran.notes[0]!)).toMatch(/^The text gives 72\.5 as what the code prints\. Run, the code prints: <output>\n74\.25/);
+    // What the teacher was told to check, in the writer's guessed numbers, goes with them; what holds stays.
+    const kit = { ...page(blocks).facilitation, toCheck: ['The mean of 72.5 in the first output is a guess.', 'The pass mark of 70 is the syllabus\'s.'] };
+    const told = await runCells(fakeRunner({ 'print(df.mean())': { stdout: '74.25\ndtype: str\n' }, 'print(df.dtypes)': { stdout: 'str\n' } }), { ...page(blocks), facilitation: kit });
+    expect(told.value.facilitation.toCheck).toEqual(['The pass mark of 70 is the syllabus\'s.']);
+    // A reader who has since put the sentence right leaves nothing to mend: the note no longer stands. A fault of the code still does.
+    const read = { ...ran.value, parts: ran.value.parts.map((p) => ({ ...p, blocks: p.blocks.map((b) => ({ ...b, text: b.text.replace('72.5', '74.25') })) })) };
+    const fault = { code: 'reviewNote' as const, values: { where: ran.notes[0]!.values.where, text: 'The code that begins "x" was run as the page gives it and failed.' } };
+    expect(standing([...ran.notes, fault], ran.value)).toHaveLength(2);
+    expect(standing([...ran.notes, fault], read)).toEqual([fault]);
   });
 
   it('gives a model what code printed as output and nothing more: short, between its own tags, which the output cannot close', async () => {

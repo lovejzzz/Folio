@@ -30,7 +30,7 @@ import { FORUM_GRADING, checkModule, moduleJob, type ModuleDraft } from './onlin
 import { mendModule, mendPlan } from './mend';
 import { reviewed, type Mend, type Read } from './secondRead';
 import { reviewModule } from './moduleReview';
-import { placeFigures, running, type RunOptions } from './runCells';
+import { placeFigures, running, standing, type RunOptions } from './runCells';
 import { withAnswerChecks } from './answerCheck';
 import { withHandouts } from './handouts';
 import { startCommands } from './start';
@@ -330,7 +330,7 @@ async function pageWithRuns(run: <T>(job: SectionJob<T>, revise?: Revision<T>) =
     if (page.ran) options.onProgress?.({ type: 'checking' });
     if (!reviewer) return { value: page.value, fixes: [], notes: page.notes };
     const read = await reviewModule(reviewer, now(), lesson, page.value, signal, since, page.ran);
-    return { ...read, notes: [...page.notes, ...read.notes] };
+    return { ...read, notes: [...standing(page.notes, read.value), ...read.notes] };
   };
   const revise: Revision<ModuleDraft> | undefined = reviewer || options.run ? (draft) => reviewed(read, draft, options.onProgress, mendPage, (v) => checkModule(v, now())) : undefined;
   const result = await run(job, revise);

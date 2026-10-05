@@ -76,6 +76,10 @@ export function moduleReviewPrompt(course: Course, lesson: Lesson, v: ModuleDraf
       'For each problem, say under "why" what is wrong and what the student would experience. When a change to a few words fixes it and you are sure, copy under "find" the exact words that are wrong, enough of them to appear only once in that part, and give under "replace" what should stand in their place; to add what is missing (a step, a sentence of explanation, the fix in a troubleshooting note), write it yourself: find the sentence it belongs after and replace it with that sentence followed by the new words. Leave both empty only when the fix needs a decision that is the teacher\'s.',
       'What the tool\'s screens are called and hold is settled by the teacher\'s sources when they say; where they are silent and you are not certain of the named version, do not correct the page from memory.',
       'The week\'s other materials (the self-check, the forum prompt, the graded work and its rubric, the "Stuck?" list, the recap) are written separately from this page: do not list them as missing. Pictures and videos are made after the page is written: judge what each is asked to show, not its absence.',
+      // Twelve first readings were checked one by one: every reading found every fault that mattered, and a third to a half of
+      // what each listed was not a fault. The same few kinds came back: a checklist total added up wrong (100 minutes over, in
+      // five readings), a deadline or grading rule the page never gave written into it, a tolerance of versions turned into a demand.
+      'The checklist\'s total is worked out for you above and is right: do not add it up again. A change you give never puts into the page something about the course that neither the page nor the course above states (a date, a deadline, how work is graded, a version to insist on); where the page leaves such a thing open, that is the teacher\'s to settle and not a problem to list. What is true but would not stop, mislead or misinform a student is not listed.',
       'Do not list style preferences or things you would add, and give no links. Return an empty list if the page is sound.',
     ].join(' '),
   ]
@@ -138,7 +142,7 @@ export async function reviewModule(inference: Inference, course: Course, lesson:
     system: systemPrompt(course.language, course.locale),
     context: courseBackground(course),
     prompt: moduleReviewPrompt(course, lesson, v, since, ran),
-    effort: 'medium',
+    effort: 'low',
     schema: ModuleReviewDraft,
     signal,
   });

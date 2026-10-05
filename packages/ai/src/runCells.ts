@@ -110,6 +110,22 @@ function quoteNote(where: string, blocks: Block[], written: string, real: string
   return { code: 'reviewNote', values: { where, text: `The text gives ${quoted.slice(0, 6).join(', ')} as what the code prints. Run, the code prints: ${asOutput(real, 1200)} Correct the sentences that quote the old values, and nothing else.` } };
 }
 
+/**
+ * The run's notes that still hold for a page a reader has since corrected. The reader sees the real outputs and
+ * often puts the sentence right itself; the note, made before it read, then sent the mend after a number the page
+ * no longer gave (two of twelve first mends were told of one), and a mend told of a fault that is not there rewrites.
+ */
+export function standing(notes: ReviewNote[], v: ModuleDraft): ReviewNote[] {
+  return notes.filter((note) => {
+    const quoted = /^The text gives (.+?) as what the code prints\./.exec(note.values.text)?.[1];
+    if (!quoted) return true;
+    const part = v.parts.find((p, i) => note.values.where === `Part ${i + 1}, ${p.title}`);
+    if (!part) return true;
+    const prose = numbers(part.blocks.filter((b) => b.type !== 'code').map((b) => [b.text, ...b.items].join(' ')).join(' '));
+    return quoted.split(', ').some((n) => prose.has(n));
+  });
+}
+
 const outputBlock = (text: string): Block => ({ type: 'code', kind: 'output', text, items: [], title: '', shots: [], shows: '', alt: '', minutes: 0, transcript: '' });
 
 const UNRUN: CellResult = { stdout: '', stderr: '', value: null, error: null, figures: [], figuresDropped: 0, cut: false, loadError: null, sessionLost: false, ms: 0 };
@@ -187,6 +203,8 @@ export async function runCells(runner: Runner, v: ModuleDraft, run = 1): Promise
   const names = defined(cells.map((c) => c.text));
   const ran = new Map<Block, Ran>();
   const notes: ReviewNote[] = [];
+  /** Numbers the writer gave as output that the run did not print. */
+  const replaced = new Set<string>();
   let failed = false;
   const started = Date.now();
   for (const [n, part] of v.parts.entries()) {
@@ -205,13 +223,17 @@ export async function runCells(runner: Runner, v: ModuleDraft, run = 1): Promise
       ran.set(b, { res, verdict: what });
       if (what === 'fault') notes.push(faultNote(where, b.text, res, runtime(await runner.versions())));
       if (what === 'fault' || what === 'follows') failed = true;
+      if (what === 'ok' && written) for (const n of numbers(written)) if (!numbers(shown(res)).has(n)) replaced.add(n);
       const quote = what === 'ok' && written ? quoteNote(where, part.blocks, written, shown(res)) : null;
       if (quote) notes.push(quote);
     }
   }
   const figures: Record<string, Uint8Array> = {};
   const on = runtime(await runner.versions());
-  return { value: { ...v, parts: v.parts.map((p) => ({ ...p, blocks: withResults(p.blocks, { ran, figures, run, on }) })) }, notes, figures, cells: cells.length };
+  // The teacher's list of what to check was written with the outputs the writer guessed: an entry that quotes a number
+  // the run has since replaced asks the teacher to check something the page no longer says (seven pages of twelve had one).
+  const toCheck = v.facilitation.toCheck.filter((line) => ![...numbers(line)].some((n) => replaced.has(n)));
+  return { value: { ...v, facilitation: { ...v.facilitation, toCheck }, parts: v.parts.map((p) => ({ ...p, blocks: withResults(p.blocks, { ran, figures, run, on }) })) }, notes, figures, cells: cells.length };
 }
 
 /** A runner is one notebook: weeks written side by side take their turn at it, each page from its first cell to its last. */
