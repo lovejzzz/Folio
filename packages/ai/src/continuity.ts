@@ -212,6 +212,9 @@ export function inClassAgain(course: Course, lesson: Lesson): string {
 /** The brief of a piece graded in class that an earlier lesson already wrote, so a later plan runs it as it was set. */
 function briefSoFar(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
+  // Pieces of one component that are each their own (a lab every week) have each their own brief: told to run the first
+  // one's "as it stands", the second week's lab was the first week's programs again.
+  if (lesson.homework.standing === false && orderedLessons(course).filter((l) => holds(l, 'inclass', toward)).length > 1) return '';
   const first = orderedLessons(course)
     .slice(0, course.lessonOrder.indexOf(lesson.id))
     .find((l) => holds(l, 'inclass', toward));
@@ -348,6 +351,8 @@ export function inClassPieces(course: Course): string {
       const toward = p.toward.trim();
       if (p.kind !== 'inclass' || !toward || seen.has(toward)) return [];
       seen.add(toward);
+      // A component whose pieces are each their own is written lesson by lesson: there is no one brief to point to.
+      if (p.standing === false && orderedLessons(course).filter((o) => holds(o, 'inclass', toward)).length > 1) return [];
       // Told only where the rubric was, a later lesson ran a five-minute "peer review" that two of its three criteria could not score.
       const brief = workOf(course, l, toward);
       const rubric = brief?.kind === 'assignment' && brief.rubricId ? course.rubrics[brief.rubricId] : undefined;

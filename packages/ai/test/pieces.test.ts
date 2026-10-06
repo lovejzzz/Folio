@@ -206,3 +206,16 @@ describe('a piece that is all questions with one right answer', () => {
     expect(Object.keys(store.getState().rubrics)).toHaveLength(0);
   });
 });
+
+describe('a component graded in class with a piece of its own in each lesson', () => {
+  it('points no lesson to the first one’s brief: a lab every week is a new lab', () => {
+    const draft = outline();
+    draft.lessons[0]!.also = [{ kind: 'inclass', toward: 'Presentation', due: null, standing: false }];
+    draft.lessons[2] = { ...draft.lessons[2]!, homework: 'inclass', homeworkToward: 'Presentation', homeworkStanding: false };
+    const course = courseFromOutline(req, draft);
+    expect(courseBackground(course)).not.toMatch(/"Presentation" has its brief and rubric written with/);
+    expect(lessonContext(course, orderedLessons(course)[2]!)).not.toMatch(/runs it as it stands/);
+    // Held by one lesson only, it is the one brief every lesson scores with.
+    expect(courseBackground(courseFromOutline(req, outline()))).toMatch(/"Presentation" has its brief and rubric written with the lesson "Dualism"/);
+  });
+});

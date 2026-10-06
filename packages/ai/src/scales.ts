@@ -29,7 +29,7 @@ export function universityRubric(locale: string): string {
 
 /** New problems need their answers: without a key the teacher works every problem set before marking it. */
 export const ANSWER_KEY =
-  'Under "answerKey", give the teacher the worked answer to each step, one per line and numbered as the steps are; leave it empty only when the work has no single answer, such as an essay or a project. For code that is tested automatically, the steps give the exact file, function names, parameters and return values, and the key gives test cases with their expected results; the rubric separates what the tests mark from what is marked by reading. An assignment asks for more than the session already built together. Numbers are chosen so that no answer sits on a rounding edge (22.5 to two figures).';
+  'Under "answerKey", give the teacher the worked answer to each step, one per line and numbered as the steps are; leave it empty only when the work has no single answer, such as an essay or a project. For code that is tested automatically, the steps give the exact file, function names, parameters and return values, and the key gives test cases with their expected results; the rubric separates what the tests mark from what is marked by reading. An assignment asks for more than the session already built together. Numbers are chosen so that no answer sits on a rounding edge (22.5 to two figures), and the test values of a program so that what the language really prints is what the key says (6.6 / 1.1 in floating point is not 6).';
 
 /** Work graded in the lesson itself: a presentation, a seminar, an interview, something made in class. */
 export const IN_CLASS =
