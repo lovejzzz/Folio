@@ -1,5 +1,43 @@
 [
  {
+  "version": "0.0.24",
+  "date": "October 6, 2026",
+  "title": "A second pass over the same sixteen lessons: smaller repairs, and where rules stop helping",
+  "lede": "We wrote the sixteen university lessons again with 0.0.23 and had them read the same way. They had fifteen faults that would stop a class, the same as before this release’s changes, and the five online weeks had six. So this release does not move that number, and we say so. It fixes what the readers named that a rule or a check can settle, and it takes back one mistake of our own.",
+  "sections": [
+   {
+    "heading": "A question for the whole class is on a slide",
+    "body": "Twice running, a microeconomics lecture graded its clicker questions and showed none of them: the slide said “Clicker questions: answer alone first”, and the questions with their choices were in the teacher’s notes. Every question a plan puts to the whole class now has a slide of its own, with its choices. A supply-and-demand graph is no longer drawn as a chart, since a chart can only set price along the bottom, the very mistake the lesson warns students about; its points go to the teacher to draw.",
+    "image": {
+     "src": "/changelog/0.0.24-poll.svg",
+     "alt": "Left, the slide as it was: clicker questions, answer alone first, with the questions only in the teacher’s notes. Right, a slide for one question: a frost hits the coffee crop, what happens to the price of coffee, with four choices",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "A number the plan got wrong is corrected in the plan",
+    "body": "The writer of a lesson’s worksheets works every answer, which makes it the second to compute the plan’s numbers. When they disagreed, the worksheet’s key said “correction to the plan: the standard deviation is about 25.79, not 25.70”, and the plan, its slides and the study guide went on saying 25.70. The correction is now made in the plan before anything else is written from it."
+   },
+   {
+    "heading": "Before the next lesson",
+    "body": "A test held next time is announced the lesson before, with what it covers, also when it is held beside other work; a midterm had opened a class nobody had told of it. Work graded in class for the first time next lesson is prepared now. A plan sets, hands out and collects only the work its lesson holds, and the lesson’s own quiz is practice, never said to count toward the grade."
+   },
+   {
+    "heading": "Notes to ourselves, taken out",
+    "body": "Folio’s instructions to its writers came back in the notes a teacher reads: “write no criteria of your own”, “no second set of questions here”, “the handout is written separately”. Sentences that only repeat such an instruction are now removed. And one we caused: in the last few days of work a discussion prompt’s follow-up questions had turned into advice on when to use the prompt. They are questions again."
+   },
+   {
+    "heading": "Two more false alarms",
+    "body": "The answer check told a teacher that a correct key “does not run” when the key quoted one line of a function, and that four choices all stated the answer because “elastic” is inside “inelastic”. Both are fixed."
+   },
+   {
+    "heading": "What this tells us",
+    "body": "About one fault a lesson remains, and each new set of lessons brings different ones: a quiz choice that is also right, a key not worked from its own data in R, a lesson that counts on what the one before never asked for. Adding rules has stopped lowering the count. The next work is of another kind: checking a lesson’s graded work against what it actually taught, and writing a course’s arrangements once for all its lessons."
+   }
+  ]
+ },
+ {
   "version": "0.0.23",
   "date": "October 6, 2026",
   "title": "The most common university courses, read as a class would meet them: half the faults gone, at the source",
