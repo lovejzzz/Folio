@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .bar { fill: #E9E4D8 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E } .bar { fill: #2E2F2A }
+    }
+  </style>
+  <rect class="bg" width="800" height="360" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">EIGHT NEW COURSES, SIXTEEN LESSONS, READ STRICTLY</text>
+  <rect class="card" x="36" y="64" width="728" height="262" rx="14"/>
+  <text class="ink" x="56" y="98" font-size="16" font-weight="600">Faults that would stop a lesson from being taught as written</text>
+  <text class="ink2" x="56" y="140" font-size="14">Version 0.0.26</text>
+  <rect class="bad" x="190" y="124" width="400" height="22" rx="6"/>
+  <text class="bad" x="602" y="141" font-size="18" font-weight="700">10</text>
+  <text class="ink2" x="56" y="184" font-size="14">Version 0.0.28</text>
+  <rect class="bad" x="190" y="168" width="160" height="22" rx="6"/>
+  <text class="bad" x="362" y="185" font-size="18" font-weight="700">4</text>
+  <text class="ink2" x="56" y="228" font-size="14">Version 0.0.29</text>
+  <rect class="acc" x="190" y="212" width="40" height="22" rx="6"/>
+  <text class="acc" x="242" y="229" font-size="18" font-weight="700">1</text>
+  <text class="ink2" x="56" y="276" font-size="13">Calculus, chemistry, physics, biology, sociology, composition, Java and accounting, two lessons each.</text>
+  <text class="ink2" x="56" y="298" font-size="13">Every number, key and program output the readers recomputed was right in all three rounds.</text>
+</svg>

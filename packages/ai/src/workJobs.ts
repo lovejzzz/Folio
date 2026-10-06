@@ -30,13 +30,17 @@ export const base = (lesson: Lesson) => ({ lessonId: lesson.id, sourceRefs: [], 
  * pieces, those a reader found undoable ran past ten words of task for each minute, and the rest under eight.
  */
 const WORDS_A_MINUTE = 10;
-function tooMuch(steps: string[], lesson: Lesson): Problem[] {
+function tooMuch(v: { prompt: string; steps: string[] }, lesson: Lesson): Problem[] {
   const toward = lesson.homework.toward.trim().toLowerCase();
   if (lesson.homework.kind !== 'inclass' || !toward) return [];
   const minutes = lesson.segments.filter((seg) => `${seg.title} ${seg.description}`.toLowerCase().includes(toward)).reduce((n, seg) => n + seg.minutes, 0);
-  const words = steps.join(' ').split(/\s+/).filter(Boolean).length;
-  if (!minutes || words <= WORDS_A_MINUTE * minutes) return [];
-  return [{ index: null, flag: { code: 'schemaIssue', values: { path: 'steps', issue: `The plan gives this ${minutes} minutes: ask for about half as much, the parts that matter most, so every group finishes` } } }];
+  if (!minutes) return [];
+  const issue = (text: string): Problem => ({ index: null, flag: { code: 'schemaIssue', values: { path: 'steps', issue: text } } });
+  // A sheet told groups to "work for 20 minutes" in a segment of 13.
+  const said = Math.max(0, ...[...`${v.prompt} ${v.steps.join(' ')}`.matchAll(/\b(\d{1,3})[- ]minutes?\b/gi)].map((m) => Number(m[1])));
+  if (said > minutes) return [issue(`The plan gives this ${minutes} minutes, and the piece says ${said}: it says the plan's time, and asks only what fits it`)];
+  const words = v.steps.join(' ').split(/\s+/).filter(Boolean).length;
+  return words > WORDS_A_MINUTE * minutes ? [issue(`The plan gives this ${minutes} minutes: ask for about half as much, the parts that matter most, so every group finishes`)] : [];
 }
 
 export const assignments: SectionJob<AssignmentDraft> = {
@@ -50,7 +54,7 @@ export const assignments: SectionJob<AssignmentDraft> = {
     ...(lesson.homework.kind === 'inclass' && !v.answerKey.trim()
       ? [{ index: null, flag: { code: 'schemaIssue' as const, values: { path: 'answerKey', issue: 'Say how the teacher runs and scores this for a whole class in the lesson' } } }]
       : []),
-    ...tooMuch(v.steps, lesson),
+    ...tooMuch(v, lesson),
     // A program with a fixed test run, or a problem with numbers, has results a marker needs: one came with no key at all.
     ...(lesson.homework.kind === 'assignment' && !lesson.homework.standing && !v.answerKey.trim() && v.steps.some((s) => /`[^`]+`|\d+(?:\.\d+)?\s*[×x*/÷+−-]\s*\d/.test(s))
       ? [{ index: null, flag: { code: 'schemaIssue' as const, values: { path: 'answerKey', issue: 'Give the worked answers or the expected results of what the steps ask for' } } }]

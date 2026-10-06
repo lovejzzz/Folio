@@ -231,5 +231,9 @@ describe('work done in class that is more than its minutes hold', () => {
     await generateSection(model, timed, first.id, 'assignments');
     expect(model.calls).toHaveLength(2);
     expect(model.calls[1]!.prompt).toMatch(/The plan gives this 5 minutes: ask for about half as much/);
+    // And a piece that names more minutes than its segment has is asked to say the plan's time.
+    const wrongTime = fakeInference((_r, call) => ({ ...(answer('"Presentation"') as object), prompt: call === 1 ? 'Work with your neighbors for 20 minutes.' : 'Work with your neighbors for 5 minutes.', answerKey: 'Run it in turn.' }));
+    await generateSection(wrongTime, timed, first.id, 'assignments');
+    expect(wrongTime.calls[1]!.prompt).toMatch(/The plan gives this 5 minutes, and the piece says 20/);
   });
 });
