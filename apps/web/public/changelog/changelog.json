@@ -10,7 +10,7 @@
     "body": "These were each written from the lesson plan alone, so they reached for the same example. A graded problem-set question was the recitation’s own, whose solutions are posted after class, and a graded quiz repeated the practice questions. They are now written in order, the practice quiz first, and each piece is shown what the lesson already sets and told to give other problems.",
     "image": {
      "src": "/changelog/0.0.28-once.svg",
-     "alt": "Before: the practice quiz, recitation and problem set used the same position function. Now each uses a different problem",
+     "alt": "Before: the practice quiz, recitation and problem set all asked for 54 km/h in metres per second. Now each asks a different conversion",
      "width": 800,
      "height": 360
     }

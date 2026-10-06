@@ -12,22 +12,22 @@
   <rect class="card" x="36" y="64" width="350" height="262" rx="14"/>
   <text class="ink" x="56" y="96" font-size="16" font-weight="600">Before: each written alone</text>
   <text class="ink2" x="56" y="140" font-size="14">Practice quiz</text>
-  <text class="bad" x="200" y="140" font-size="14">x(t) = 1 + 8t − t²</text>
+  <text class="bad" x="200" y="140" font-size="14">54 km/h in m/s</text>
   <text class="ink2" x="56" y="184" font-size="14">Recitation</text>
-  <text class="bad" x="200" y="184" font-size="14">x(t) = 1 + 8t − t²</text>
+  <text class="bad" x="200" y="184" font-size="14">54 km/h in m/s</text>
   <text class="ink2" x="56" y="228" font-size="14">Problem set</text>
-  <text class="bad" x="200" y="228" font-size="14">x(t) = 1 + 8t − t²</text>
+  <text class="bad" x="200" y="228" font-size="14">54 km/h in m/s</text>
   <path class="dash" d="M190 148 V214"/>
-  <text class="ink2" x="56" y="284" font-size="13">A graded problem answered by the solutions</text>
-  <text class="ink2" x="56" y="304" font-size="13">posted after recitation</text>
+  <text class="ink2" x="56" y="284" font-size="13">The same conversion three times, once</text>
+  <text class="ink2" x="56" y="304" font-size="13">graded after its solution was posted</text>
   <rect class="card" x="414" y="64" width="350" height="262" rx="14"/>
   <text class="ink" x="434" y="96" font-size="16" font-weight="600">Now: each sees the ones before</text>
   <text class="ink2" x="434" y="140" font-size="14">Practice quiz</text>
-  <text class="acc" x="578" y="140" font-size="14">v(t) = 6 − 3t</text>
+  <text class="acc" x="578" y="140" font-size="14">0.0068 m in mm</text>
   <text class="ink2" x="434" y="184" font-size="14">Recitation</text>
-  <text class="acc" x="578" y="184" font-size="14">x(t) = 1 + 8t − 2t²</text>
+  <text class="acc" x="578" y="184" font-size="14">81 km/h in m/s</text>
   <text class="ink2" x="434" y="228" font-size="14">Problem set</text>
-  <text class="acc" x="578" y="228" font-size="14">a braking car, 14 m/s</text>
+  <text class="acc" x="578" y="228" font-size="14">54 mi/h in m/s</text>
   <path class="line" d="M568 148 V214"/>
   <text class="ink2" x="434" y="284" font-size="13">Written in order: quiz, then graded work,</text>
   <text class="ink2" x="434" y="304" font-size="13">each told what is already set</text>
