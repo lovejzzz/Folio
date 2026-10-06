@@ -219,3 +219,17 @@ describe('a component graded in class with a piece of its own in each lesson', (
     expect(courseBackground(courseFromOutline(req, outline()))).toMatch(/"Presentation" has its brief and rubric written with the lesson "Dualism"/);
   });
 });
+
+describe('work done in class that is more than its minutes hold', () => {
+  it('is asked for again at about half the size', async () => {
+    const course = courseFromOutline(req, outline());
+    const first = orderedLessons(course)[0]!;
+    const segments = [{ id: 'x_1', session: 0, kind: 'practice' as const, title: 'Presentation', minutes: 5, description: 'Students give the Presentation.', teacherNotes: '' }];
+    const timed = { ...course, lessons: { ...course.lessons, [first.id]: { ...first, segments, also: [], homework: { kind: 'inclass' as const, toward: 'Presentation', standing: false } } } };
+    const long = Array.from({ length: 80 }, () => 'word').join(' ');
+    const model = fakeInference((_r, call) => ({ ...(answer('"Presentation"') as object), steps: call === 1 ? [long, long] : ['Present.', 'Answer one question.'], answerKey: 'Run it in turn.' }));
+    await generateSection(model, timed, first.id, 'assignments');
+    expect(model.calls).toHaveLength(2);
+    expect(model.calls[1]!.prompt).toMatch(/The plan gives this 5 minutes: ask for about half as much/);
+  });
+});
