@@ -226,16 +226,18 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
   // Set, due and collected were three guesses: one piece had two due dates and a close that said "give its due date".
   const due = `${otherPieces(lesson, (p) => dueWhen(course, { ...lesson, homework: p }))}${collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan collects it.` : ''}`;
   // "Sets no homework" beside a standing weekly paper had half the plans run the paper in class instead.
-  if (lesson.homework.kind === 'none') return `${(lesson.also ?? []).some((p) => p.kind !== 'none') ? '' : 'This lesson sets no homework.'}${due}`.trim();
+  // A close \"handed out the brief\" of a 20% paper that this lesson did not hold, and no brief existed.
+  const only = ' No other graded piece is set, handed out or collected in this lesson than those named here.';
+  if (lesson.homework.kind === 'none') return `${(lesson.also ?? []).some((p) => p.kind !== 'none') ? '' : 'This lesson sets no homework.'}${due}${only}`.trim();
   const named = toward ? `"${toward}"` : 'a graded piece';
   // The paper and the rubric are their own material: a plan that also wrote them gave the lesson two.
-  if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions (or, when the summary says it is sat after the course ends, reviews for it and says when and how it is sat), and writes no questions.${due}`;
-  if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done and graded in class with a rubric written separately: the plan runs it, with time for every student, and writes no criteria; what a student is graded for preparing or deciding (the questions of a discussion they lead, what a talk says) is left to them and never scripted.${briefSoFar(course, lesson)}${due}`;
+  if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions (or, when the summary says it is sat after the course ends, reviews for it and says when and how it is sat), and writes no questions.${due}${only}`;
+  if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done and graded in class with a rubric written separately: the plan runs it, with time for every student, and writes no criteria; what a student is graded for preparing or deciding (the questions of a discussion they lead, what a talk says) is left to them and never scripted.${briefSoFar(course, lesson)}${due}${only}`;
   const set = `which the plan has the teacher set before students leave, naming it and when it is due, without spelling out its tasks or naming files and handouts it may not have. ${dueWords(course, lesson)}`.trim();
-  if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}${due}`;
+  if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}${due}${only}`;
   // A plan gave the first weekly memo a subject of its own ("one page on your team's program") beside a brief that asked for the reading.
   const one = lesson.homework.standing ? ' Its brief is one text for every time it is set, on the reading or topic of the lesson it is due at: the plan gives it no other subject.' : '';
-  return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}" (the plan calls it by that name, not one of its own)` : ''}, ${set}${one}${due}`;
+  return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}" (the plan calls it by that name, not one of its own)` : ''}, ${set}${one}${due}${only}`;
 }
 
 /** A reading that names no work: "Journal articles by Putnam", "selected readings on the topic". */
@@ -264,6 +266,23 @@ export function readingsLead(course: Course, before: ReturnType<typeof readBefor
 }
 
 /**
+ * What the next lesson holds that students must hear of now. Only its main piece was looked at: a midterm held beside
+ * other work opened a class that nobody had announced it to, and the first student to lead a graded seminar saw the
+ * brief and the rubric an hour before being scored on them.
+ */
+function ahead(course: Course, next: Lesson): string {
+  const named = (p: Lesson['homework']) => (p.toward.trim() ? ` ("${p.toward.trim()}")` : '');
+  const pieces = lessonPieces(next);
+  const tests = pieces.filter((p) => p.kind === 'test');
+  const before = orderedLessons(course).slice(0, course.lessonOrder.indexOf(next.id));
+  const firstTurns = pieces.filter((p) => p.kind === 'inclass' && p.toward.trim() && !before.some((l) => holds(l, 'inclass', p.toward.trim())));
+  return [
+    tests.length ? `, and announces the test it holds${named(tests[0]!)}, what it covers and what to bring` : '',
+    firstTurns.length ? `, and prepares the work graded in class there for the first time${named(firstTurns[0]!)}: what students will be asked to do and how it is scored is said now, in general terms, and whoever goes first is settled now, since its brief is written with that lesson and nobody can prepare for a brief they have not seen` : '',
+  ].join('');
+}
+
+/**
  * What comes next, so the close can prepare students for it: a plan not told sent them home with "no further
  * task" before a lesson that assumed the reading, and no quiz was ever announced the lesson before.
  */
@@ -275,7 +294,7 @@ export function nextReading(course: Course, lesson: Lesson): string {
   const readings = before.optional || (hasModulePages(course) && before.proposed) ? [] : before.works;
   return [
     // Told to announce a quiz "if it holds one", nine plans in thirteen announced that none was held: the test is named only when there is one.
-    next.summary.trim() ? `Next time: ${next.summary.trim()} The close tells students what to expect${next.homework.kind === 'test' ? `, and announces the test it holds${next.homework.toward.trim() ? ` ("${next.homework.toward.trim()}")` : ''}` : ''}.` : '',
+    next.summary.trim() ? `Next time: ${next.summary.trim()} The close tells students what to expect${ahead(course, next)}.` : '',
     readings.length ? `Before the next lesson students read: ${readings.join('; ')}. The plan tells them so before they leave.` : '',
   ]
     .filter(Boolean)

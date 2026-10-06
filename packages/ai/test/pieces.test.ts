@@ -139,3 +139,17 @@ describe('a lesson that holds more than one piece of work', () => {
     expect(sectionPrompt(course, { ...orderedLessons(course)[1]!, homework: orderedLessons(course)[1]!.also[0]!, also: [] }, 'assignments')).toMatch(/short, ungraded step toward "Seminar paper"/);
   });
 });
+
+describe('what the next lesson holds that students must hear of now', () => {
+  it('announces a test held beside other work, and prepares a first graded turn', () => {
+    const course = courseFromOutline(req, {
+      ...outline(),
+      lessons: outline().lessons.map((l, i) => (i === 1 ? { ...l, also: [{ kind: 'test' as const, toward: 'Seminar paper', due: null, standing: false }, { kind: 'inclass' as const, toward: 'Presentation', due: null, standing: false }] } : i === 0 ? { ...l, also: [] } : l)),
+    });
+    const first = orderedLessons(course)[0]!;
+    const told = sectionPrompt(course, first, 'plan');
+    expect(told).toMatch(/announces the test it holds \("Seminar paper"\), what it covers and what to bring/);
+    expect(told).toMatch(/prepares the work graded in class there for the first time \("Presentation"\)/);
+    expect(told).toMatch(/No other graded piece is set, handed out or collected in this lesson than those named here\./);
+  });
+});
