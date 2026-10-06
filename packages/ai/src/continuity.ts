@@ -124,7 +124,15 @@ export function earlierSteps(course: Course, lesson: Lesson): string {
     const t = workOf(course, l, toward);
     return t?.kind === 'assignment' ? [`"${t.title}": ${clipNote(t.prompt)}`] : [];
   });
-  return steps.length ? `Earlier lessons already set these steps toward it:\n${steps.map((s) => `- ${s}`).join('\n')}\nThis is the next step: it asks for something those did not, and builds on them.` : '';
+  // The piece itself, when a lesson before set it: a step toward "the project" said to choose a topic and find data, where the
+  // project set in the first lesson gave its data and its question.
+  const set = orderedLessons(course)
+    .slice(0, course.lessonOrder.indexOf(lesson.id))
+    .find((l) => holds(l, 'assignment', toward));
+  const piece = set ? workOf(course, set, toward) : undefined;
+  const whole = piece?.kind === 'assignment' && piece.toward.trim() === toward ? `The piece itself is already set, in "${set!.title}": ${clipNote(piece.prompt, 400)} Its tasks: ${clipNote(piece.steps.join(' | '), 600)}\nThe step is a part of that piece as it is set (its data, its question), never another version of it.` : '';
+  const path = steps.length ? `Earlier lessons already set these steps toward it:\n${steps.map((s) => `- ${s}`).join('\n')}\nThis is the next step: it asks for something those did not, and builds on them.` : '';
+  return [whole, path].filter(Boolean).join('\n');
 }
 
 /**
@@ -253,7 +261,7 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
   const set = `which the plan has the teacher set before students leave, naming it and when it is due, without spelling out its tasks or naming files and handouts it may not have; work the brief has students do online is handed in online by then, and never collected in class. ${dueWords(course, lesson)}`.trim();
   if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}${due}${only}`;
   // A plan gave the first weekly memo a subject of its own ("one page on your team's program") beside a brief that asked for the reading.
-  const one = lesson.homework.standing ? ' Its brief is one text for every time it is set, on the reading or topic of the lesson it is due at: the plan gives it no other subject.' : '';
+  const one = lesson.homework.standing ? ' Its brief is one text for every time it is set, on the reading or topic of the lesson it is due at: the plan gives it no other subject, and its close puts in students\' hands what they need to do it for next time (the reading by name, the case, or next time\'s procedure with its substances and amounts).' : '';
   return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}" (the plan calls it by that name, not one of its own)` : ''}, ${set}${one}${due}${only}`;
 }
 
@@ -295,7 +303,7 @@ function ahead(course: Course, next: Lesson): string {
   const firstTurns = pieces.filter((p) => p.kind === 'inclass' && p.toward.trim() && !before.some((l) => holds(l, 'inclass', p.toward.trim())));
   return [
     tests.length ? `, and announces the test it holds${named(tests[0]!)}, what it covers and what to bring` : '',
-    firstTurns.length ? `, and prepares the work graded in class there for the first time${named(firstTurns[0]!)}: what students will be asked to do and how it is scored is said now, in general terms, and whoever goes first is settled now, since its brief is written with that lesson and nobody can prepare for a brief they have not seen` : '',
+    firstTurns.length ? `, and prepares the work graded in class there for the first time${named(firstTurns[0]!)}: its brief and rubric are written with that lesson, and the teacher hands them out or posts them now, says what everyone prepares for it, and settles who goes first: nobody can prepare for a brief they first see as they are scored on it` : '',
   ].join('');
 }
 

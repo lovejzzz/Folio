@@ -131,6 +131,8 @@ describe('a lesson that holds more than one piece of work', () => {
     const course: Course = store.getState();
     const titles = (n: number) => lessonAssignments(course, orderedLessons(course)[n]!).map((a) => [a.title, a.toward]);
     expect(titles(0)).toEqual([['Response paper', 'Weekly response papers'], ['Presenting and leading', 'Presentation'], ['Seminar paper', 'Seminar paper']]);
+    // The step toward the paper was written knowing the paper as the first lesson set it.
+    expect(model.calls[3]!.prompt).toMatch(/The piece itself is already set, in "Dualism": Seminar paper: what to do\. Its tasks: Read \| Write/);
     expect(titles(1)).toEqual([['Response paper', 'Weekly response papers'], ['Prospectus', 'Seminar paper']]);
     // A later lesson that runs the piece graded in class is told what its rubric scores, so its task can be scored with it.
     expect(courseBackground(course)).toMatch(/"Presentation" has its brief and rubric written with the lesson "Dualism" \(scored on: [^)]+\)/);
