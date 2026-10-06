@@ -27,8 +27,8 @@ describe('with Folio credits', () => {
     const inference = createInference(folio, fn);
     for (const task of ['folio_plan', 'folio_study', 'folio_quiz', 'folio_plan_review', 'folio_outline']) await inference.complete({ task, system: 's', prompt: 'p', schema });
     const cap = (i: number) => seen[i]!.body.max_tokens ?? seen[i]!.body.max_completion_tokens;
-    // Quizzes by Luna grow with the quiz size and cost little to hold: they get all the room there is.
-    expect([0, 1, 2, 3].map(cap)).toEqual([FOLIO_OUTPUT_CAPS.folio_plan, FOLIO_OUTPUT_CAPS.folio_study, 32000, FOLIO_OUTPUT_CAPS.folio_plan_review]);
+    // A quiz by Sol is about 1,500 tokens, and a long one that reaches its cap is asked for again with all the room there is.
+    expect([0, 1, 2, 3].map(cap)).toEqual([FOLIO_OUTPUT_CAPS.folio_plan, FOLIO_OUTPUT_CAPS.folio_study, FOLIO_OUTPUT_CAPS.folio_quiz, FOLIO_OUTPUT_CAPS.folio_plan_review]);
     // A job without its own cap keeps the adapter's.
     expect(cap(4)).toBe(16000);
     // The longest is an online week's module page: a statistics week was cut off twice at 28,000, and only its mend, of the rest, needs more than 16,000.

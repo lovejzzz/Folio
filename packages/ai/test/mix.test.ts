@@ -23,14 +23,14 @@ function folioServer(status = 200) {
 const ask = (task: string, effort: 'low' | 'medium' | 'high' = 'medium') => ({ task, system: 'sys', prompt: 'hello', schema, effort });
 
 describe('Folio credits: each part by its own model', () => {
-  it('sends quizzes and assignments to GPT-6 Luna at high effort, through Folio’s server, with no key', async () => {
+  it('sends quizzes and assignments to GPT-6.1 Sol at low effort, through Folio’s server, with no key', async () => {
     const { fn, seen } = folioServer();
     const inference = createInference(folio, fn);
     expect(await inference.complete(ask('folio_quiz'))).toEqual({ title: 'Cells' });
     await inference.complete(ask('folio_assignments', 'low'));
     for (const call of seen) {
       expect(call.url).toBe('https://folio.university/api/ai/openai/v1/chat/completions');
-      expect(call.body).toMatchObject({ model: 'gpt-6-luna', reasoning_effort: 'high' });
+      expect(call.body).toMatchObject({ model: 'gpt-6.1-sol', reasoning_effort: 'low' });
       expect(call.headers.get('x-folio')).toBe('1');
       expect(call.headers.get('authorization')).toBeNull();
     }

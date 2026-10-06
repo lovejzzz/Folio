@@ -8,7 +8,7 @@ export const settingsText = {
   ownChoice: 'Which AI',
   brands: { folio: 'Folio credits', anthropic: 'Claude', openai: 'OpenAI', google: 'Gemini', deepseek: 'DeepSeek', local: 'On this device' },
   providers: {
-    folio: { name: 'Use Folio credits', short: 'Folio credits', note: 'No key needed: sign in with Google. School emails (.edu) get 750 free credits, enough for about 23 lessons with every material.' },
+    folio: { name: 'Use Folio credits', short: 'Folio credits', note: 'No key needed: sign in with Google. School emails (.edu) get 750 free credits, enough for about 19 lessons with every material.' },
     anthropic: { name: 'Use my Claude key', short: 'your Claude key', note: 'Anthropic. You pay per use, and Claude Opus 5.5 checks each lesson plan before the rest is written.' },
     openai: { name: 'Use my OpenAI key', short: 'your OpenAI key', note: 'OpenAI. You pay per use.' },
     google: { name: 'Use my Gemini key', short: 'your Gemini key', note: 'Google. You pay per use. The free tier allows too few requests to write a whole course.' },

@@ -7,14 +7,19 @@ import { openaiInference } from './openai';
  * on 12 lessons, judged blind by Fable 5.1 and GPT-6 Astra (they agree only where noted):
  * - Plans, slides, study guides, discussions and FAQ stay with Claude Sonnet 5.5 (the teacher's model): both
  *   judges scored its study guides and discussions above GPT-6 Luna's, and Luna's plans were thinner.
- * - Quizzes and assignments go to GPT-6 Luna at high reasoning: scored level with Sonnet's, at a tenth the cost.
+ * - Quizzes and assignments go to GPT-6.1 Sol at low reasoning. They went to GPT-6 Luna at high, a tenth the cost, on a
+ *   judgment of how they read; counted fault by fault they were where the wrong keys came from. The same sixteen
+ *   university lessons, their quizzes and graded work written again by each and judged blind, twice: Luna had 17
+ *   wrong keys or explanations in 32 lessons and 12 lessons with nothing wrong; Sol at low had 1 and 25. Sonnet at
+ *   medium cost more than Sol and had 5 in 16; Sol at medium was no better than low; Luna for the quiz alone gave
+ *   back part of the gain. It costs about six cents more a lesson.
  * - The plan review goes to GPT-6.1 Sol at low reasoning: it found 73–85% of the real problems where Opus 5.5 at
  *   medium found 22–45%, for about a third of the cost; medium and high found no more.
  * Every other job (outline, questions, edits) stays with Claude.
  */
 export const FOLIO_MIX: Readonly<Record<string, { model: string; effort: Effort }>> = {
-  folio_quiz: { model: 'gpt-6-luna', effort: 'high' },
-  folio_assignments: { model: 'gpt-6-luna', effort: 'high' },
+  folio_quiz: { model: 'gpt-6.1-sol', effort: 'low' },
+  folio_assignments: { model: 'gpt-6.1-sol', effort: 'low' },
   folio_plan_review: { model: 'gpt-6.1-sol', effort: 'low' },
   // A module page was read at medium while its code had to be run in the head. Now the code is run for real: twelve pages
   // read at low and twice at medium, each reading checked fault by fault, and low found all 28 that mattered, as medium did,
@@ -33,13 +38,15 @@ export const FOLIO_MIX: Readonly<Record<string, { model: string; effort: Effort 
  * teacher's balance: with 16,000 for everything, a few hundred credits looked spent while a build ran. Each cap
  * is five times or more the longest the job wrote in measured runs (October 2026), and an answer that still
  * reaches its cap is asked for again at the longest Folio allows: a cap may never cost a teacher part of a
- * lesson. Quizzes and assignments by GPT-6 Luna have none: they grow with the quiz size, Luna thinks at length,
- * and its longest answer holds only about five credits.
+ * lesson.
  */
 export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_clarify: 4000,
   folio_picture_check: 3000,
   // A form for one question: about 900 tokens with its thinking in measured calls.
+  // Sol writes a quiz in about 1,500 tokens and a piece of work with its rubric and key in about 2,500.
+  folio_quiz: 8000,
+  folio_assignments: 10000,
   folio_answer_check: 6000,
   folio_answer_fix: 6000,
   // A dozen mistaken cells at most, each written whole.

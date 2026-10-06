@@ -77,10 +77,10 @@ export const creditsText = {
   notEnough: 'Not enough credits',
   addCredits: 'Add credits',
   youHave: (n: number) => `You have ${n.toLocaleString('en-US')} credits.`,
-  signInToStart: 'Sign in with Google to start. Sign in with a school email (ending in .edu) and you get 750 free credits, enough for about 23 lessons with every material.',
+  signInToStart: 'Sign in with Google to start. Sign in with a school email (ending in .edu) and you get 750 free credits, enough for about 19 lessons with every material.',
   notSchool: 'Free credits come with school email addresses, ending in .edu. Buy credits below, or use your own AI key.',
   signIn: 'Sign in with Google',
-  how: 'Claude Sonnet 5.5 writes the plans, slides, study guides, discussions and FAQ; GPT-6 Luna writes the quizzes and assignments; GPT-6.1 Sol checks every lesson plan. Each part uses the model that did it best for the least. A lesson with every material uses about 30 credits.',
+  how: 'Claude Sonnet 5.5 writes the plans, slides, study guides, discussions and FAQ; GPT-6.1 Sol writes the quizzes and assignments and checks every lesson plan. Each part uses the model that did it best for a fair price. A lesson with every material uses about 38 credits.',
   buy: 'Buy credits',
   buySoon: 'Buying more credits opens soon.',
   pack: (p: Pack) => `$${p.usd} for ${p.credits.toLocaleString('en-US')} credits${bonusOf(p) ? `, including ${bonusOf(p).toLocaleString('en-US')} bonus` : ''}`,
@@ -102,11 +102,12 @@ export const creditsText = {
 
 /**
  * Credits a lesson's parts use with Folio's mix (packages/ai/src/adapters/mix.ts), measured in September 2026:
- * the plan by Sonnet 5.5 with its check by GPT-6.1 Sol, quizzes and assignments by GPT-6 Luna, the rest by
+ * the plan by Sonnet 5.5 with its check by GPT-6.1 Sol, quizzes and assignments by GPT-6.1 Sol too, the rest by
  * Sonnet. Rubrics come with the assignments. Overview and syllabus are built from the rest and cost nothing.
- * Since October the slides and the study guide are also shown the lesson's sheets, about a credit more each.
+ * Since October the slides and the study guide are also shown the lesson's sheets, about a credit more each, and
+ * quizzes and assignments are written by GPT-6.1 Sol (three and five credits, where Luna's were one).
  */
-const PER_LESSON: Partial<Record<string, number>> = { plan: 11, slides: 7, quiz: 1, study: 6, faq: 3, discussions: 3, assignments: 1, rubrics: 0 };
+const PER_LESSON: Partial<Record<string, number>> = { plan: 11, slides: 7, quiz: 3, study: 6, faq: 3, discussions: 3, assignments: 5, rubrics: 0 };
 
 /** About how many credits writing these lessons with these materials takes, rounded up to ten. */
 export function estimateCredits(lessons: number, kinds: readonly string[]): number {

@@ -11,6 +11,7 @@
 // where the file is [{ "name", "brief", "attach"?: [absolute paths], "syllabus"?: title of the attached file that
 // is the syllabus, "policies"? }]; nothing is written again.
 import { MATERIAL_KINDS, CourseStore, OnlineSchema, cmd, orderedLessons, parseCourse, type Course, type Delivery, type GeneratedKind, type Online } from '@folio/core';
+import { FOLIO_MIX } from '../../../packages/ai/src/adapters/mix';
 import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, supportedHandout, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawn } from 'node:child_process';
@@ -357,7 +358,11 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
   const failed: string[] = [];
   let store: CourseStore;
   if (polishOnly) {
-    store = new CourseStore(parseCourse(JSON.parse(readFileSync(join(OUT, `${name}.json`), 'utf8'))));
+    const saved = JSON.parse(readFileSync(join(OUT, `${name}.json`), 'utf8')) as { lessonOrder: string[]; lessons: Record<string, { gen: Record<string, unknown> }> };
+    // --redo quiz,assignments: those parts of the first lessons are written again from the plans as they stand, to
+    // compare ways of writing one part on the same lessons.
+    for (const id of saved.lessonOrder.slice(0, Number(option('--lessons') ?? saved.lessonOrder.length))) for (const kind of (option('--redo') ?? '').split(',').filter(Boolean)) delete saved.lessons[id]!.gen[kind];
+    store = new CourseStore(parseCourse(saved));
   } else {
     const spec = specFor(name);
     const req = CHECKUP ? await clarified(name, requestFor(spec), spec) : requestFor(spec);
@@ -396,7 +401,9 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
 }
 
 const polishOnly = ARGS.includes('--polish');
-const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs', '--lessons', '--trace'].includes(ARGS[i - 1] ?? ''));
+// --mix '{"folio_assignments":{"model":"claude-sonnet-5-5","effort":"medium"}}': who writes a part, for an experiment.
+if (option('--mix')) Object.assign(FOLIO_MIX as Record<string, unknown>, JSON.parse(option('--mix')!));
+const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs', '--lessons', '--trace', '--redo', '--mix'].includes(ARGS[i - 1] ?? ''));
 const asked = names.length ? names : Object.keys(CHECKUP ?? BRIEFS);
 await Promise.all(asked.map((name) => make(name, polishOnly)));
 {
