@@ -169,3 +169,12 @@ describe('a piece graded in class every time, with new questions each time', () 
     expect(lessonContext(courseFromOutline(req, outline()), orderedLessons(courseFromOutline(req, outline()))[0]!)).not.toMatch(/the ones of this time/);
   });
 });
+
+describe('weekly work the brief has students do before a lesson', () => {
+  it('is told the lesson it is due at, so a quiz on the reading is on that reading', () => {
+    const course = courseFromOutline(req, outline());
+    const [first, second] = orderedLessons(course);
+    const weekly = { ...first!, also: [], homework: { kind: 'assignment' as const, toward: 'Weekly response papers', due: second!.id } };
+    expect(sectionPrompt(course, weekly, 'assignments')).toMatch(/unless the brief has students do it before a lesson to prepare for it.*The lesson it is due at is "Functionalism": S2\./);
+  });
+});

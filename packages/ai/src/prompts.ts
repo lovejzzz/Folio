@@ -1,5 +1,5 @@
 import { hasModulePages, lessonSessions, orderedLessons, statedObjectives, type Course, type Delivery, type Language, type Lesson, type Online, type Session, type SessionKind } from '@folio/core';
-import { courseSoFar, dueWords, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, inClassAgain, nextReading, readBefore, readingsLead, sharedComponent } from './continuity';
+import { courseSoFar, dueLesson, dueWords, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, inClassAgain, nextReading, readBefore, readingsLead, sharedComponent } from './continuity';
 import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, judgedLine, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 import { LIVE_ASKS, MIXED_ASKS, isLiveOnline, isMixedOnline, liveBackground, runOfShow } from './live';
@@ -306,7 +306,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
       ].join(' ');
     // One of a run (weekly sets) is about its lesson; a piece of its own (a paper, a project) is about the course.
     const own = sharedComponent(c, lesson)
-      ? 'it is about what this lesson taught'
+      ? `it is about what this lesson taught, unless the brief has students do it before a lesson to prepare for it (a quiz on the reading before each class): then it is on what they read for the lesson it is due at, in questions a student who did the reading answers alone, each with one right answer when the brief calls it a quiz.${dueLesson(c, lesson)}`
       : "it is a piece of the whole course, so its topic and criteria come from the brief, not from this one lesson's topic, and any length the brief sets must be reachable with what the course has taught by now (say what fills it); when it is due lessons after it is set, it asks for what the lessons up to then teach as well, as the list of lessons shows; when the brief sets it stages or milestones with dates of their own, it is the whole piece, and lists every stage with when the brief says it is due";
     return [
       toward

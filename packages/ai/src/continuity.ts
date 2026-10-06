@@ -184,6 +184,17 @@ export function dueWords(course: Course, lesson: Lesson): string {
 }
 
 /**
+ * The lesson a piece is due at, for work the brief has students do to prepare for it. "Online reading quizzes
+ * before each lecture" were written on the lecture just given, so the quiz due before a lecture never touched its reading.
+ */
+export function dueLesson(course: Course, lesson: Lesson): string {
+  const due = lesson.homework.due ? course.lessons[lesson.homework.due] : undefined;
+  if (!due) return '';
+  const works = readBefore(due).works;
+  return ` The lesson it is due at is "${due.title}": ${due.summary.trim()}${works.length ? ` Students read for it: ${works.join('; ')}.` : ''}`;
+}
+
+/**
  * A piece graded in class that later lessons score again with the rubric written here (participation, a seminar
  * turn): told only of its own lesson, a participation rubric graded "explains the phone-checking behavior", and the
  * next lesson's subfield matching was scored with it.
