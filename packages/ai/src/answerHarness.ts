@@ -17,7 +17,7 @@ def nloc(s): return s.translate(LOC)   # 1:1, used ONLY to locate an anchor; val
 NUM = re.compile(r'(?<![\w.])(?:(?<![\w)\]])[-−])?(?:(?:\d{1,3}(?:,\d{3})+(?!\d)|\d+)(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?')
 SUP = str.maketrans('⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻', '0123456789+-')
 SCI = re.compile(r'(\d[\d,]*(?:\.\d+)?)\s*[×x·*]\s*10\s*(?:\^\s*\{?\s*([-+−]?\d+)\s*\}?|([⁺⁻]?[⁰¹²³⁴⁵⁶⁷⁸⁹]+))')
-FRAC = re.compile(r'(?<![\w./])(?:(\d+)\s+)?(\d+)\s*/\s*(\d+)(?![\w/]|\.\d)')
+FRAC = re.compile(r'(?<![\w./])((?<![\w)\]])[-−])?(?:(\d+)\s+)?(\d+)\s*/\s*(\d+)(?![\w/]|\.\d)')
 def numbers(text):
     """the numbers a text states, in order, each with the decimal places it is given to. Read as a class writes
     them: 3.011 × 10²³ is one number, and so is 2/3, and 1 1/2"""
@@ -36,8 +36,8 @@ def numbers(text):
             except ValueError: pass
     for m in FRAC.finditer(text):
         plain(text[at:m.start()]); at = m.end()
-        whole, top, bottom = m.group(1), int(m.group(2)), int(m.group(3))
-        if bottom: out.append(((int(whole) if whole else 0) + top / bottom, 9, m.group(0)))   # a fraction is exact
+        whole, top, bottom = m.group(2), int(m.group(3)), int(m.group(4))
+        if bottom: out.append(((-1 if m.group(1) else 1) * ((int(whole) if whole else 0) + top / bottom), 9, m.group(0)))   # a fraction is exact, and −19/6 is one number
     plain(text[at:])
     return out
 def _flatten(v, out):
@@ -195,6 +195,10 @@ def check_item(item, check):
                 if len(hit) > 1 and fv and len(fv) == 1:
                     off = {n: min((abs(x[0] - fv[0]) for x in numbers(ch[n - 1]['text'].replace('\x60', ''))), default=9e99) for n in hit}
                     hit = [n for n in hit if off[n] <= min(off.values()) + 1e-12]
+                # "10 km at 37° north of west" and "…north of east" state the same computed numbers: words the numbers cannot judge
+                if len(hit) > 1 and keyed in hit:
+                    stated = lambda n: [x[0] for x in numbers(ch[n - 1]['text'].replace('\x60', ''))]
+                    if all(stated(n) == stated(keyed) for n in hit): return True, f'choices {hit} state the computed numbers and differ in words; the keyed one is among them'
                 # a word answer two choices contain ("elastic", "unit elastic"): the choice that is the answer and no more states it
                 same = [n for n in hit if isinstance(v, str) and ' '.join(nloc(ch[n - 1]['text']).replace('\x60', '').split()).casefold().strip(' .') == ' '.join(v.split()).casefold().strip(' .')]
                 hit = same or hit
@@ -227,7 +231,11 @@ def check_item(item, check):
                 def f(n=n, e=e):
                     v = ev(e['origin_expr'])
                     if flat(v) and not numbers(ch[n - 1]['text'].replace('\x60', '')): raise Invalid('the choice states no number to compare')
-                    return match_text(ch[n - 1]['text'], v, e.get('first'), tol)
+                    ok, detail = match_text(ch[n - 1]['text'], v, e.get('first'), tol)
+                    # a named mistake that gives what no choice states was modelled wrongly by the form far more often than
+                    # explained wrongly by the item: it stands only when it gives another choice's value
+                    if not ok and not any(match_text(c['text'], v, None, tol)[0] for k, c in enumerate(ch) if k != n - 1): raise Invalid('the mistake as computed gives a value no choice states')
+                    return ok, detail
                 guard(f'origin{n}', 'the mistake the explanation names gives this distractor', f)
             if e.get('says_expr') and e.get('kind') == 'code':
                 def f(n=n, e=e):

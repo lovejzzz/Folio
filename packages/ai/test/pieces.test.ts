@@ -123,7 +123,7 @@ describe('a lesson that holds more than one piece of work', () => {
     // The standing piece is asked for as one text for every week.
     // Each piece after the first is shown what the ones before it set, so no problem is set twice.
     expect(model.calls[0]!.prompt).not.toMatch(/Already written for this lesson/);
-    expect(model.calls[2]!.prompt).toMatch(/Already written for this lesson, and worked by the same students:\n- Read\n- Write\n- Read\n- Write\nThis piece gives other problems than these/);
+    expect(model.calls[2]!.prompt).toMatch(/Already written for this lesson, and worked by the same students:\n- Read\n- Write\n- Read\n- Write\nThis piece gives other problems than these: another function, case or set of numbers each time: one of them under other letters/);
     expect(model.calls[0]!.prompt).toMatch(/set again and again through the course in the same form/);
     store.apply((await generateSection(model, store.getState(), second!.id, 'assignments')).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
     // Only the prospectus is written for the second lesson: the response paper is the first lesson's, as it stands.
@@ -188,5 +188,19 @@ describe('a deadline in a lesson of several meetings', () => {
     };
     expect(told(courseFromOutline({ ...req, sessions }, outline()))).toMatch(/due at the first meeting of the next lesson/);
     expect(told(courseFromOutline(req, outline()))).toMatch(/due at the start of the next lesson/);
+  });
+});
+
+describe('a piece that is all questions with one right answer', () => {
+  it('is scored by its answers and carries no rubric', async () => {
+    const course = courseFromOutline(req, outline());
+    const third = orderedLessons(course)[2]!;
+    const quiz = { ...course, lessons: { ...course.lessons, [third.id]: { ...third, homework: { kind: 'assignment' as const, toward: 'Weekly response papers' } } } };
+    const model = fakeInference(() => ({ title: 'Reading quiz', prompt: 'One point each.', steps: ['Which? A. x B. y', 'Which? A. p B. q'], rubric: { levels: [{ label: 'A', points: 3 }, { label: 'B', points: 2 }, { label: 'C', points: 1 }], criteria: [] }, answerKey: '1. A\n2. B' }));
+    const store = new CourseStore(quiz);
+    store.apply((await generateSection(model, quiz, third.id, 'assignments')).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
+    const [task] = lessonAssignments(store.getState(), orderedLessons(store.getState())[2]!);
+    expect(task).toMatchObject({ title: 'Reading quiz', rubricId: null });
+    expect(Object.keys(store.getState().rubrics)).toHaveLength(0);
   });
 });

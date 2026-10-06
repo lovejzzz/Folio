@@ -38,6 +38,8 @@ export const assignments: SectionJob<AssignmentDraft> = {
   ],
   toCommands: (v, problems, _course, lesson) => {
     const levels = v.rubric.levels.map((lv) => ({ id: newId('x'), label: lv.label, points: lv.points }));
+    // A quiz of questions with one right answer each is scored by its answers: on a four-level rubric, none right earned 2 of 8.
+    const scored = v.rubric.criteria.length > 0;
     const rubric: Rubric = {
       id: newId('r'),
       title: v.title,
@@ -57,11 +59,11 @@ export const assignments: SectionJob<AssignmentDraft> = {
       title: v.title,
       prompt: v.prompt,
       steps: v.steps,
-      rubricId: rubric.id,
+      rubricId: scored ? rubric.id : null,
       answerKey: v.answerKey.trim(),
       toward: lesson.homework.toward.trim(),
     };
-    return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: flagsAt(problems, null), tasks: [task], rubrics: [rubric] })];
+    return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: flagsAt(problems, null), tasks: [task], rubrics: scored ? [rubric] : [] })];
   },
 };
 
@@ -177,7 +179,7 @@ const clip = (text: string, room: number) => (text.length > room ? `${text.slice
  * whose solutions are posted, and a graded quiz repeated the practice questions word for word.
  */
 export function alreadySet(tasks: Task[]): string {
-  const items = tasks.flatMap((t) => (t.kind === 'question' ? [clip(t.prompt, 160)] : t.kind === 'assignment' ? t.steps.map((s) => clip(s, 200)) : []));
+  const items = tasks.flatMap((t) => (t.kind === 'question' ? [clip(t.prompt, 240)] : t.kind === 'assignment' ? t.steps.map((s) => clip(s, 420)) : []));
   if (!items.length) return '';
-  return `Already written for this lesson, and worked by the same students:\n${items.map((i) => `- ${i}`).join('\n')}\nThis piece gives other problems than these: another function, case or set of numbers each time, never one of them again.`;
+  return `Already written for this lesson, and worked by the same students:\n${items.map((i) => `- ${i}`).join('\n')}\nThis piece gives other problems than these: another function, case or set of numbers each time: one of them under other letters or in another story is the same problem.`;
 }

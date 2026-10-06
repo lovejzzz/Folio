@@ -155,8 +155,8 @@ export const AssignmentDraft = z.object({
     levels: z.array(z.object({ label: line, points: z.number().min(0) })).min(3).max(5),
     criteria: z
       .array(z.object({ name: line, descriptors: z.array(line).describe('One descriptor per level, same order as levels') }))
-      .min(2)
-      .max(5),
+      .max(5)
+      .describe('Two to five; empty only for a piece that is all questions with one right answer each, scored by the answers'),
   }),
   answerKey: z.string().default('').describe('For the teacher: the worked answer to each step, one per line, numbered as the steps are; empty when the work has no single answer, such as an essay'),
 });

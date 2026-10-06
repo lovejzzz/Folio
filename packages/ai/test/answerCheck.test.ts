@@ -142,6 +142,18 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect([out.flags.has('t_vol'), out.flags.has('t_vol_wrong'), out.flags.has('t_ph'), out.flags.has('t_ph_wrong')]).toEqual([false, true, false, true]);
   }, 120_000);
 
+  it('reads a negative fraction as one number, lets words decide between choices with the same numbers, and doubts its own model of a mistake', async () => {
+    const sheet = (id: string, answerKey: string): Task => ({ ...base, id, kind: 'assignment', title: 'Sheet', prompt: '', steps: ['Evaluate the limit of `(x**3 + 5*x - 1) / (x**2 + 2)` at −2.'], rubricId: null, answerKey, toward: '' });
+    const limit = { checkable: true, setup: 'x = -2', stated: [{ where: 'answerKey', before: 'give ((−2)³ + 5(−2) − 1)/6 = ', expr: '(x**3 + 5*x - 1) / (x**2 + 2)' }] };
+    const hiker = (id: string, keyed: number) => choice(id, 'A hiker walks 8.0 km west and then 6.0 km north. What is the displacement?', ['14 km at 37° north of west', '10 km at 37° north of west', '10 km at 53° north of west', '10 km at 37° north of east'], keyed, 'Use the components.');
+    const walk = { checkable: true, setup: 'import math', answer_expr: '(math.hypot(8, 6), round(math.degrees(math.atan2(6, 8))))', choices: [1, 2, 3, 4].map((n) => ({ n, kind: 'value' })) };
+    const fiber = choice('t_fiber', 'A glass fiber is 0.0068 m long. What is its length in millimeters?', ['0.0000068 mm', '0.0068 mm', '6.8 mm'], 3, 'Multiply by 1000; the first choice reverses the conversion.');
+    const mm = { checkable: true, setup: 'm = 0.0068', answer_expr: 'm * 1000', choices: [{ n: 1, kind: 'value', origin_expr: 'round(m / 1000, 3)' }, { n: 2, kind: 'value' }, { n: 3, kind: 'value' }] };
+    const pick = (r: { prompt: string }) => (r.prompt.includes('hiker') ? walk : r.prompt.includes('fiber') ? mm : limit);
+    const out = await checkAnswers(fakeInference(pick), nodeRunner(), [sheet('t_lim', 'Direct substitution and the quotient law give ((−2)³ + 5(−2) − 1)/6 = −19/6.'), sheet('t_lim_wrong', 'Direct substitution and the quotient law give ((−2)³ + 5(−2) − 1)/6 = 19/6.'), hiker('t_hiker', 2), hiker('t_hiker_wrong', 3), fiber]);
+    expect(['t_lim', 't_lim_wrong', 't_hiker', 't_hiker_wrong', 't_fiber'].map((id) => out.flags.has(id))).toEqual([false, true, false, true, false]);
+  }, 120_000);
+
   it('puts right a key the numbers contradict, and keeps the correction only when it then holds', async () => {
     const work: Task = { ...base, id: 't_key', kind: 'assignment', title: 'Wait times', prompt: 'Wait times in minutes: 2, 3, 4, 4, 4, 5, 6, 8.', steps: ['Find the median wait time.'], rubricId: null, answerKey: '1. Sorted: 2, 3, 4, 4, 4, 5, 6, 8. Median = (4 + 5) ÷ 2 = 4.5 minutes.', toward: '' };
     const form = { checkable: true, setup: 'import numpy as np\nx = np.array([2, 3, 4, 4, 4, 5, 6, 8])', stated: [{ where: 'answerKey', before: 'Median = (4 + 5) ÷ 2 =', expr: 'float(np.median(x))' }] };
