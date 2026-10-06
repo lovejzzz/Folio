@@ -30,10 +30,20 @@ export const base = (lesson: Lesson) => ({ lessonId: lesson.id, sourceRefs: [], 
  * pieces, those a reader found undoable ran past ten words of task for each minute, and the rest under eight.
  */
 const WORDS_A_MINUTE = 10;
-function tooMuch(v: { prompt: string; steps: string[] }, lesson: Lesson): Problem[] {
-  const toward = lesson.homework.toward.trim().toLowerCase();
-  if (lesson.homework.kind !== 'inclass' || !toward) return [];
-  const minutes = lesson.segments.filter((seg) => `${seg.title} ${seg.description}`.toLowerCase().includes(toward)).reduce((n, seg) => n + seg.minutes, 0);
+/** The words a plan would use for a component: "In-class group worksheets" is run as "the group worksheet". */
+const stems = (name: string) => name.toLowerCase().split(/[^\p{L}\d]+/u).filter((w) => w.length > 2 && !['class', 'weekly', 'the', 'and'].includes(w)).map((w) => w.replace(/s$/, ''));
+
+/** The minutes a plan gives a piece done in class: its segments, and not the one that only lists how the course is graded. */
+export function minutesFor(course: Course, lesson: Lesson): number {
+  const toward = lesson.homework.toward.trim();
+  const others = course.grading.map((g) => g.item.trim().toLowerCase()).filter((item) => item && item !== toward.toLowerCase());
+  const runs = (text: string) => stems(toward).every((w) => text.includes(w)) && !others.some((item) => text.includes(item));
+  return lesson.segments.filter((seg) => runs(`${seg.title} ${seg.description}`.toLowerCase())).reduce((n, seg) => n + seg.minutes, 0);
+}
+
+function tooMuch(v: { prompt: string; steps: string[] }, course: Course, lesson: Lesson): Problem[] {
+  if (lesson.homework.kind !== 'inclass' || !lesson.homework.toward.trim()) return [];
+  const minutes = minutesFor(course, lesson);
   if (!minutes) return [];
   const issue = (text: string): Problem => ({ index: null, flag: { code: 'schemaIssue', values: { path: 'steps', issue: text } } });
   // A sheet told groups to "work for 20 minutes" in a segment of 13.
@@ -46,7 +56,7 @@ function tooMuch(v: { prompt: string; steps: string[] }, lesson: Lesson): Proble
 export const assignments: SectionJob<AssignmentDraft> = {
   schema: AssignmentDraft,
   tidy: tidySteps,
-  check: (v, _course, lesson) => [
+  check: (v, course, lesson) => [
     ...v.rubric.criteria
       .filter((c) => c.descriptors.length !== v.rubric.levels.length)
       .map((c): Problem => ({ index: null, flag: { code: 'criterionLevels', values: { criterion: c.name } } })),
@@ -54,7 +64,7 @@ export const assignments: SectionJob<AssignmentDraft> = {
     ...(lesson.homework.kind === 'inclass' && !v.answerKey.trim()
       ? [{ index: null, flag: { code: 'schemaIssue' as const, values: { path: 'answerKey', issue: 'Say how the teacher runs and scores this for a whole class in the lesson' } } }]
       : []),
-    ...tooMuch(v, lesson),
+    ...tooMuch(v, course, lesson),
     // A program with a fixed test run, or a problem with numbers, has results a marker needs: one came with no key at all.
     ...(lesson.homework.kind === 'assignment' && !lesson.homework.standing && !v.answerKey.trim() && v.steps.some((s) => /`[^`]+`|\d+(?:\.\d+)?\s*[×x*/÷+−-]\s*\d/.test(s))
       ? [{ index: null, flag: { code: 'schemaIssue' as const, values: { path: 'answerKey', issue: 'Give the worked answers or the expected results of what the steps ask for' } } }]

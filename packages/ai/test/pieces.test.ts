@@ -224,7 +224,11 @@ describe('work done in class that is more than its minutes hold', () => {
   it('is asked for again at about half the size', async () => {
     const course = courseFromOutline(req, outline());
     const first = orderedLessons(course)[0]!;
-    const segments = [{ id: 'x_1', session: 0, kind: 'practice' as const, title: 'Presentation', minutes: 5, description: 'Students give the Presentation.', teacherNotes: '' }];
+    // The opening segment only lists how the course is graded: its minutes are not the piece's.
+    const segments = [
+      { id: 'x_0', session: 0, kind: 'warmup' as const, title: 'How the course is graded', minutes: 30, description: 'Weekly response papers 20%, Presentation 20%, Seminar paper 60%.', teacherNotes: '' },
+      { id: 'x_1', session: 0, kind: 'practice' as const, title: 'Presentations', minutes: 5, description: 'Students present in turn.', teacherNotes: '' },
+    ];
     const timed = { ...course, lessons: { ...course.lessons, [first.id]: { ...first, segments, also: [], homework: { kind: 'inclass' as const, toward: 'Presentation', standing: false } } } };
     const long = Array.from({ length: 80 }, () => 'word').join(' ');
     const model = fakeInference((_r, call) => ({ ...(answer('"Presentation"') as object), steps: call === 1 ? [long, long] : ['Present.', 'Answer one question.'], answerKey: 'Run it in turn.' }));
@@ -235,5 +239,16 @@ describe('work done in class that is more than its minutes hold', () => {
     const wrongTime = fakeInference((_r, call) => ({ ...(answer('"Presentation"') as object), prompt: call === 1 ? 'Work with your neighbors for 20 minutes.' : 'Work with your neighbors for 5 minutes.', answerKey: 'Run it in turn.' }));
     await generateSection(wrongTime, timed, first.id, 'assignments');
     expect(wrongTime.calls[1]!.prompt).toMatch(/The plan gives this 5 minutes, and the piece says 20/);
+  });
+});
+
+describe('the sheets of a lesson that holds a piece graded in class', () => {
+  it('leave that piece to its own writer: a sheet for it would be a second version', async () => {
+    const { handoutsPrompt } = await import('../src/handouts');
+    const course = courseFromOutline(req, outline());
+    const [first, , third] = orderedLessons(course);
+    const plan = { segments: [], keyIdeas: [], vocabulary: [] };
+    expect(handoutsPrompt(course, first!, plan)).toMatch(/Graded in this lesson, each printed with its own tasks by another writer: "Presentation"\. Write no sheet for any of them/);
+    expect(handoutsPrompt(course, third!, plan)).not.toMatch(/Graded in this lesson/);
   });
 });

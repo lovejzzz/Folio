@@ -1,4 +1,4 @@
-import { cmd, newId, type Command, type Course, type Handout, type Lesson, type Segment } from '@folio/core';
+import { cmd, lessonPieces, newId, type Command, type Course, type Handout, type Lesson, type Segment } from '@folio/core';
 import { z } from 'zod';
 import { codeFaults } from './codeLines';
 import { ExhibitBlockDraft, exhibitPart } from './exhibit';
@@ -38,10 +38,17 @@ type Content = { keyIdeas: string[]; segments: Segment[] };
 
 const planText = (plan: Content): string => plan.segments.map((s, i) => `${i + 1}. ${s.title} (${s.kind}, ${s.minutes} min): ${s.description}${s.teacherNotes ? `\n   Teacher's notes: ${s.teacherNotes}` : ''}`).join('\n');
 
+/** A graded worksheet came twice: as a sheet of six tasks and as the graded piece of four, with a rubric for the four. */
+function graded(lesson: Lesson): string {
+  const names = lessonPieces(lesson).filter((p) => (p.kind === 'inclass' || p.kind === 'test') && p.toward.trim()).map((p) => `"${p.toward.trim()}"`);
+  return names.length ? `Graded in this lesson, each printed with its own tasks by another writer: ${names.join(', ')}. Write no sheet for any of them, whatever the plan calls it (a worksheet, a quiz paper): a sheet of yours would be a second version.` : '';
+}
+
 export function handoutsPrompt(course: Course, lesson: Lesson, plan: Content): string {
   return [
     lessonContext(course, lesson),
     `The lesson plan, as it will be taught:\n${planText(plan)}`,
+    graded(lesson),
     [
       'Write the sheets this lesson puts in students\' hands or on the wall, each in full and ready to print: every worksheet, exit ticket (graded or not), organizer, set of cards, text to read, reference sheet, or paper the teacher is to mark or cut beforehand, that the plan names or plainly needs for what it has students do. None when the lesson needs none; six at most, one sheet for one activity, and none for a discussion held aloud.',
       'A sheet the plan describes is that sheet: its numbers, names, examples and questions are the plan\'s own, and where the plan gives only some of them ("ten problems like these") write them all; it asks nothing of a student that the plan has them do elsewhere (at desks, not at the floor line). Give it as blocks in the order a student reads them: a line of instructions; the questions as a list, unnumbered, since the page numbers them; a table to fill in, with its headings and empty cells; a text as paragraphs; cards as a table with one card to a row; and after each question a "yours" for the answer, with as many lines as the answer needs. What students need in hand to do a task alone is on a sheet, never only in the notes for the teacher: the code they are to type or change, and the steps and amounts of a procedure they carry out at a bench or a computer, as a reference sheet. A question about a figure carries what it needs on the sheet, as the numbers in a table or a full description in words, never "the histogram on the board": the sheet is written before any slide. A question is never written inside the room for its answer.',
