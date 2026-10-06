@@ -221,6 +221,10 @@ const FOLLOW_PLAN = `Use the same examples, data and figures as the plan. ${FOLL
  */
 const FOLLOW_PLAN_NEW_ITEMS = `Keep the plan's facts, data, methods and terms, but give students new items to work: other numbers or cases than the plan's worked examples and class practice, so the work can't be copied from the lesson. A new item has a name of its own: it never gives other values to something the plan had students make and name. ${FOLLOW_REST}`;
 
+// Told to give "new items", the brief of a session's graded engagement set an invented claim, a reply to a classmate and a PDF of
+// screenshots due Sunday, in a session whose plan ran three polls and a shared document.
+const FOLLOW_IN_CLASS = `This piece is the work the plan runs in the lesson and nothing more: its steps are what the plan has students do there, with the plan's own materials, groups and minutes, and what is scored is what that produces. It adds no task, reply, file, deadline or proof of taking part that the plan does not have, and agrees with what the plan says of missing a session. ${FOLLOW_REST}`;
+
 const FOLLOW_PAGE_BUILD = `The work is what the page had students build, handed in under the names the page gave it (its notebook, its files, its objects), with what this assignment adds of the student's own: it never asks for the page's work again with other values, never forbids what the page told students to keep, and gives nothing the page made another value or name. ${FOLLOW_REST}`;
 
 /**
@@ -303,7 +307,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
     // One of a run (weekly sets) is about its lesson; a piece of its own (a paper, a project) is about the course.
     const own = sharedComponent(c, lesson)
       ? 'it is about what this lesson taught'
-      : "it is a piece of the whole course, so its topic and criteria come from the brief, not from this one lesson's topic, and any length the brief sets must be reachable with what the course has taught by now (say what fills it); when it is due lessons after it is set, it asks for what the lessons up to then teach as well, as the list of lessons shows";
+      : "it is a piece of the whole course, so its topic and criteria come from the brief, not from this one lesson's topic, and any length the brief sets must be reachable with what the course has taught by now (say what fills it); when it is due lessons after it is set, it asks for what the lessons up to then teach as well, as the list of lessons shows; when the brief sets it stages or milestones with dates of their own, it is the whole piece, and lists every stage with when the brief says it is due";
     return [
       toward
         ? `Write the assignment "${toward}" as the brief describes it, with its length and requirements, set in this lesson and drawing on the course so far; ${own}: two to six steps (the page numbers them, so leave numbers out), and a rubric: four levels from strongest to weakest with points, and two to four criteria with one descriptor per level.`
@@ -365,7 +369,8 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     // Each job invents what the sources don't give; without the plan, a quiz and a plan gave one coefficient two standard errors.
     // A week's graded work online is the page's own build handed in with something of the student's own on it: told to
     // "give new items, not the lesson's", an assignment forbade the notebook its page had just said to submit.
-    const follow = kind === 'assignments' && hasModulePages(course) ? FOLLOW_PAGE_BUILD : kind === 'quiz' || kind === 'assignments' ? FOLLOW_PLAN_NEW_ITEMS : FOLLOW_PLAN;
+    const inClass = kind === 'assignments' && lesson.homework.kind === 'inclass';
+    const follow = inClass ? FOLLOW_IN_CLASS : kind === 'assignments' && hasModulePages(course) ? FOLLOW_PAGE_BUILD : kind === 'quiz' || kind === 'assignments' ? FOLLOW_PLAN_NEW_ITEMS : FOLLOW_PLAN;
     if (plan) parts.push([plan, sheetsText(lesson, kind === 'slides' || kind === 'study' || kind === 'assignments'), follow].filter(Boolean).join('\n\n'));
   }
   if (kind === 'plan') parts.push(nextReading(course, lesson), earlierLessons(course, lesson), earlierNotes(lesson));

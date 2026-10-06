@@ -137,7 +137,7 @@ export function sharedComponent(course: Course, lesson: Lesson): string {
   const sharing = orderedLessons(course).filter((l) => holds(l, lesson.homework.kind, toward));
   if (sharing.length < 2) return '';
   const place = sharing.findIndex((l) => l.id === lesson.id) + 1;
-  if (lesson.homework.kind === 'inclass' && lesson.homework.standing !== false) return `"${toward}" is taken over ${sharing.length} lessons, a group in each: write it once and whole, since the later lessons use it as it stands, with running notes that say who goes in which lesson.`;
+  if (lesson.homework.kind === 'inclass' && lesson.homework.standing !== false) return `"${toward}" is taken over ${sharing.length} lessons, a group in each: write it once and whole, since the later lessons use it as it stands, with running notes that say who goes in which lesson: so it names nothing only this lesson has (its reading, its case, its volunteer), and what students do each time is left to each lesson's plan.`;
   // Papers of one component (two quizzes) told only "cover the lessons so far" came out alike, title and half the questions.
   if (lesson.homework.kind === 'test') {
     const earlier = workOf(course, sharing[place - 2], toward);
@@ -221,7 +221,9 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
   if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done and graded in class with a rubric written separately: the plan runs it, with time for every student, and writes no criteria; what a student is graded for preparing or deciding (the questions of a discussion they lead, what a talk says) is left to them and never scripted.${briefSoFar(course, lesson)}${due}`;
   const set = `which the plan has the teacher set before students leave, naming it and when it is due, without spelling out its tasks or naming files and handouts it may not have. ${dueWords(course, lesson)}`.trim();
   if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}${due}`;
-  return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}" (the plan calls it by that name, not one of its own)` : ''}, ${set}${due}`;
+  // A plan gave the first weekly memo a subject of its own ("one page on your team's program") beside a brief that asked for the reading.
+  const one = lesson.homework.standing ? ' Its brief is one text for every time it is set, on the reading or topic of the lesson it is due at: the plan gives it no other subject.' : '';
+  return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}" (the plan calls it by that name, not one of its own)` : ''}, ${set}${one}${due}`;
 }
 
 /** A reading that names no work: "Journal articles by Putnam", "selected readings on the topic". */
