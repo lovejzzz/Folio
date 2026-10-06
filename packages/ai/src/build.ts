@@ -8,6 +8,7 @@ const stillWanted = (course: Course, t: BuildTarget) => {
 import { InferenceError, type Inference } from './inference';
 import type { RunOptions } from './runCells';
 import { generateSection, type SectionProgress } from './sections';
+import { lastRead } from './lastRead';
 import { BUILT_ON_PLAN } from './prompts';
 
 export interface BuildTarget {
@@ -32,6 +33,8 @@ export interface BuildHost {
   inference: Inference;
   /** Reviews each lesson plan before the materials written from it; none for providers it hasn't been tried with. */
   reviewer?: Inference;
+  /** False to leave out the last read of each whole lesson: for measuring what is written before anything reads it. */
+  wholeRead?: boolean;
   /** Runs the Python on module pages; without it a page is kept as written. */
   run?: RunOptions;
   /** Read the latest course before each job so edits made mid-build are respected. */
@@ -76,6 +79,27 @@ function withDrafts(course: Course, drafts: ReadonlyMap<string, Command[]>): Cou
   const store = new CourseStore(course);
   for (const [lessonId, commands] of drafts) if (course.lessons[lessonId]) store.apply(commands, { label: { key: 'draft' }, source: 'ai', silent: true });
   return store.getState();
+}
+
+/**
+ * A lesson is read whole once the last of its parts is in, while the next lessons are still being written, so it
+ * adds little to the wait. Only a lesson whose plan this build wrote: one part written again at the teacher's word
+ * does not reopen the rest. Returns what starts the reads that have come due.
+ */
+function lastReads(host: BuildHost, targets: BuildTarget[], pending: BuildTarget[], running: Map<string, Promise<void>>): () => void {
+  const reviewer = host.reviewer;
+  if (!reviewer || host.wholeRead === false) return () => {};
+  const waiting = new Set(targets.filter((t) => t.kind === 'plan').map((t) => t.lessonId));
+  const whole = (lessonId: string): boolean => !pending.some((t) => t.lessonId === lessonId) && ![...running.keys()].some((k) => k.startsWith(`${lessonId}:`)) && !missingTargets(host.getCourse(), [lessonId]).length;
+  const read = (lessonId: string): void => {
+    waiting.delete(lessonId);
+    const key = `${lessonId}:read`;
+    const job = lastRead(reviewer, host.getCourse(), lessonId, host.signal)
+      .then((r) => void (r.commands.length && !host.signal.aborted && host.commit({ lessonId, kind: 'plan' }, r.commands)))
+      .catch(() => undefined);
+    running.set(key, job.finally(() => running.delete(key)));
+  };
+  return () => [...waiting].filter(whole).forEach(read);
 }
 
 /**
@@ -130,6 +154,8 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
     }
   };
 
+  const readWhole = lastReads(host, targets, pending, running);
+
   const start = (t: BuildTarget): void => {
     const key = targetKey(t);
     const failed = (error: InferenceError) => void (t.kind === 'plan' && failedPlans.set(t.lessonId, error));
@@ -138,7 +164,9 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
     running.set(key, job.finally(() => (running.delete(key), t.kind === 'plan' && drafts.delete(t.lessonId))));
   };
 
-  while ((pending.length || running.size) && !summary.fatal) {
+  // Until nothing is left to start and nothing runs: asked "while something is queued or running", the loop ended as the last
+  // part came in, and the last lesson of every build went unread.
+  while (!summary.fatal) {
     if (host.signal.aborted) break;
     dropUnplanned();
     let index = pending.findIndex((t) => !blocked(t));
@@ -146,6 +174,7 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
       start(pending.splice(index, 1)[0]!);
       index = pending.findIndex((t) => !blocked(t));
     }
+    if (!failedPlans.size) readWhole();
     if (running.size === 0) break;
     await Promise.race([...running.values(), new Promise<void>((resolve) => (wake = resolve))]);
   }

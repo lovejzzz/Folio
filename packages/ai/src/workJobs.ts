@@ -144,7 +144,8 @@ export function continuedInClass(course: Course, lesson: Lesson): Command[] | nu
   const toward = lesson.homework.toward.trim();
   // Work in class the outline marked as different pieces of one component (an organizer, then a draft) is written each on its
   // own: taken for one piece in groups, the draft was given the organizer's brief and rubric, word for word.
-  if (!(kind === 'inclass' ? standing !== false : standing) || !toward) return null;
+  // A paper sat in class is never the same paper twice: marked standing, a lab's second pre-lab quiz was its first, word for word.
+  if (kind === 'test' || !(kind === 'inclass' ? standing !== false : standing) || !toward) return null;
   const first = course.lessonOrder
     .slice(0, course.lessonOrder.indexOf(lesson.id))
     .map((id) => course.lessons[id])

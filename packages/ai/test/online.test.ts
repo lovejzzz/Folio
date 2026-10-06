@@ -3,6 +3,7 @@ import type { Lesson } from '@folio/core';
 import { describe, expect, it } from 'vitest';
 import { OutlineDraft, checkPicture, fixNotes, courseBackground, courseFromOutline, generateSection, outlinePrompt, picturePlace, sectionPrompt, type NewCourseRequest } from '../src';
 import { ModuleMend, applyModuleMend } from '../src/mend';
+import { agreementFaults } from '../src/pageChecks';
 import { applyModuleReview, bringsArrangements } from '../src/moduleReview';
 import { filesSoFar } from '../src/earlierFiles';
 import { pieceCounts, startPrompt } from '../src/start';
@@ -148,6 +149,23 @@ describe('an online course with no set meeting time', () => {
     expect(model.calls[3]!.prompt).not.toContain('needs its caption');
     const fill = result.commands[0]!;
     expect(fill.type === 'section.fill' && fill.payload.flags).toEqual([]);
+  });
+
+  it('finds a checklist that names a part the page does not have, or gives a video more than twice its length', () => {
+    const c = online();
+    const v = draft();
+    const title = v.parts[0]!.title;
+    v.checklist = [
+      { label: `Read "${title}"`, activity: 'read', minutes: 10, due: '' },
+      { label: 'Read "Why k matters" and take notes', activity: 'read', minutes: 10, due: '' },
+      { label: 'Watch the opening video', activity: 'watch', minutes: 10, due: '' },
+      ...v.checklist,
+    ];
+    v.parts[0]!.blocks.push({ ...v.parts[0]!.blocks[0]!, type: 'video', kind: 'talk', text: 'An opening', shows: 'The instructor', minutes: 3, transcript: 'Hello.' });
+    const faults = agreementFaults(v, c);
+    expect(faults.filter((f) => f.includes('"Why k matters"'))).toHaveLength(1);
+    expect(faults.some((f) => f.includes(title))).toBe(false);
+    expect(faults.some((f) => /minutes to watching, and the page's videos run 3 in all/.test(f))).toBe(true);
   });
 
   it('counts a checklist item out of the week only when the item itself is optional', () => {

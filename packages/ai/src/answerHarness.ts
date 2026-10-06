@@ -172,6 +172,9 @@ def check_item(item, check):
                 # two choices one unit apart (0.6 and 0.7) both pass the loose rule: the one that rounds to the value is the one that states it
                 near = [n for n in hit if match_text(ch[n - 1]['text'], v, ents[n].get('first'), tol, True)[0]] if len(hit) > 1 else []
                 hit = near or hit
+                # several values at once (two quartiles, a fence and a verdict) matched against choices that word them their own way:
+                # when none fits, it is the form that does not fit
+                if not hit and (len(flat(v) or []) > 1 or (isinstance(v, (tuple, list)) and len(v) > 1)): raise Invalid('computed several values and no choice states them in that form')
                 return hit == [keyed], f'choices stating the computed value: {hit}; keyed: {keyed}; computed {str(v)[:80]!r}'
             guard('key', 'computed answer is stated by the keyed choice and by no other', f); key_checked = True
         if codes:
@@ -195,7 +198,11 @@ def check_item(item, check):
         for n, e in sorted(ents.items()):
             if not 1 <= n <= len(ch): add(f'choice{n}', 'entry', 'invalid', 'no such choice'); continue
             if e.get('origin_expr'):
-                guard(f'origin{n}', 'the mistake the explanation names gives this distractor', lambda n=n, e=e: match_text(ch[n - 1]['text'], ev(e['origin_expr']), e.get('first'), tol))
+                def f(n=n, e=e):
+                    v = ev(e['origin_expr'])
+                    if flat(v) and not numbers(ch[n - 1]['text'].replace('\x60', '')): raise Invalid('the choice states no number to compare')
+                    return match_text(ch[n - 1]['text'], v, e.get('first'), tol)
+                guard(f'origin{n}', 'the mistake the explanation names gives this distractor', f)
             if e.get('says_expr') and e.get('kind') == 'code':
                 def f(n=n, e=e):
                     ns = fresh()
@@ -257,6 +264,10 @@ def check_item(item, check):
             text = field(item, s.get('where', '')); t = s.get('text', '')
             pos = locate(text, t, s.get('occurrence'), end=False); stored = text[pos:pos + len(nloc(t))]
             ns = fresh(); err = run_code(stored, ns, s.get('probe'))
+            # a line lifted from a key ("current.next = new") has no list to act on: not run is not wrong; and an error the item
+            # itself names (what happens on the input "]"? IndexError) is the answer, not a fault
+            if isinstance(err, NameError): raise Invalid(f'stored code needs names it does not set: {str(err)[:80]}')
+            if err is not None and type(err).__name__ in json.dumps(item): return True, f'raises {type(err).__name__}, as the item says'
             if err is not None: return False, f'stored code does not run as written: {type(err).__name__}: {str(err)[:120]} | {stored[:80]!r}'
             if s.get('expect'):
                 if not not_literal(s['expect']): raise Invalid('expect is a literal')

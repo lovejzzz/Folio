@@ -22,6 +22,9 @@ export const FOLIO_MIX: Readonly<Record<string, { model: string; effort: Effort 
   folio_module_review: { model: 'gpt-6.1-sol', effort: 'low' },
   // The check of a syllabus the teacher brought is a review too: Sol, which found the most in plans.
   folio_syllabus_check: { model: 'gpt-6.1-sol', effort: 'low' },
+  // The last read of a whole lesson: of six readers tried on sixteen lessons, Sol at low found the most that mattered (22 of 30
+  // known faults, 28 real in all) in twenty seconds; medium found no more, and Opus and Sonnet fewer.
+  folio_last_read: { model: 'gpt-6.1-sol', effort: 'low' },
 };
 
 /**
@@ -57,6 +60,7 @@ export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_module: 32000,
   folio_start: 6000,
   folio_module_review: 12000,
+  folio_last_read: 10000,
   folio_syllabus_check: 10000,
   folio_slides: 10000,
   folio_study: 8000,

@@ -67,7 +67,7 @@ describe('a lesson that holds more than one piece of work', () => {
   it('tells the plan of every piece it holds, and of everything due', () => {
     const course = courseFromOutline(req, outline());
     const [first, , third] = orderedLessons(course);
-    expect(lessonContext(course, first!)).toMatch(/also holds, each written separately: the piece graded in class "Presentation" \(run in the lesson\); the graded assignment "Seminar paper" \(set before students leave; due at the start of the lesson 2 lessons after this one, the one on "Consciousness"\)/);
+    expect(lessonContext(course, first!)).toMatch(/also holds, each written separately: the piece graded in class "Presentation" \(run in the lesson\); the graded assignment "Seminar paper" \(set before students leave; due at the start of the lesson 2 lessons after this one, "Consciousness" \(wherever students are told the deadline it is in these words, "at the start of the class on Consciousness"/);
     expect(lessonContext(course, third!)).toMatch(/Due at the start of this lesson: "Seminar paper" \(set in "Dualism"\); "Weekly response papers" \(the one written for this lesson, on this lesson's reading or topic\); the short step \(set in "Functionalism", an ungraded step\)/);
   });
 
@@ -87,6 +87,31 @@ describe('a lesson that holds more than one piece of work', () => {
     expect(lessonContext(vague, vague.lessons[second!.id]!)).toMatch(/plan from these, naming them in full\):\n- Putnam, H\. \(1967\)/);
     expect(lessonContext(vague, vague.lessons[second!.id]!)).not.toMatch(/Journal articles by Putnam/);
     expect(sectionPrompt(vague, vague.lessons[first!.id]!, 'plan')).toMatch(/Before the next lesson students read: Putnam, H\. \(1967\)/);
+  });
+
+  it('assigns no book the teacher did not ask for: with no readings in the brief, what Folio proposes is further reading', () => {
+    const course = courseFromOutline(req, outline());
+    const [first, second] = orderedLessons(course);
+    const none: Course = { ...course, lessons: { ...course.lessons, [second!.id]: { ...second!, readings: [], suggestedReadings: ['Sedgewick and Wayne, Algorithms (2011)'] } } };
+    expect(lessonContext(none, none.lessons[second!.id]!)).toMatch(/Further reading Folio suggests, which the teacher did not ask for[\s\S]*nothing in the lesson assigns it, tests it or depends on having read it[\s\S]*Sedgewick/);
+    expect(sectionPrompt(none, none.lessons[first!.id]!, 'plan')).not.toMatch(/Before the next lesson students read/);
+  });
+
+  it('never takes a paper sat in class, or work graded in class, for a standing piece of homework', async () => {
+    const quizzes = courseFromOutline(req, {
+      ...outline(),
+      lessons: outline().lessons.map((l, i) => (i < 2 ? { ...l, homework: 'test' as const, homeworkToward: 'Presentation', homeworkDue: null, homeworkStanding: true, also: [{ kind: 'test' as const, toward: 'Seminar paper', due: null, standing: true }] } : l)),
+    });
+    const [first, second] = orderedLessons(quizzes);
+    expect(lessonPieces(first!).map((p) => Boolean(p.standing))).toEqual([false, false]);
+    // An older course may still carry the mark: its second paper is written, never copied from the first.
+    const store = new CourseStore({ ...quizzes, lessons: { ...quizzes.lessons, [first!.id]: { ...first!, also: [], homework: { ...first!.homework, standing: true } }, [second!.id]: { ...second!, also: [], homework: { ...second!.homework, standing: true } } } });
+    const model = fakeInference(() => ({ title: 'Quiz', instructions: 'Ten minutes.', questions: [1, 2, 3].map((n) => ({ question: `Q${n}?`, points: 2, answer: 'A.' })) }));
+    for (const l of [first!, second!]) store.apply((await generateSection(model, store.getState(), l.id, 'assignments')).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
+    expect(model.calls).toHaveLength(2);
+    const inclass = { ...first!, also: [], homework: { kind: 'inclass' as const, toward: 'Presentation', standing: true } };
+    expect(sectionPrompt(quizzes, inclass, 'assignments')).not.toMatch(/due at the start of the lesson after the one that sets it/);
+    expect(sectionPrompt(quizzes, inclass, 'assignments')).toMatch(/done and graded in class/);
   });
 
   it('writes each piece once, sets a standing piece again as it stands, and labels each by its component', async () => {

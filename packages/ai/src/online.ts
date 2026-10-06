@@ -4,6 +4,7 @@ import type { Problem } from './jobs';
 import { isMixedOnline, mixedAsk } from './live';
 import { EXHIBIT_KIND, EXHIBIT_LINES, exhibitFaults, exhibitFromLines, exhibitPart } from './exhibit';
 import { HANDS_ON } from './handsOn';
+import { agreementFaults } from './pageChecks';
 import { flagsAt, otherPieces, workOf, type SectionJob } from './workJobs';
 
 /**
@@ -198,6 +199,7 @@ export function checkModule(v: ModuleDraft, course: Course): Problem[] {
       if (wrong) problems.push(issue(`In "${part.title}", the file ${name ? `"${name.slice(0, 40)}"` : `(${b.shows.trim().slice(0, 40) || 'unnamed'})`} ${wrong}`));
     }
   for (const part of v.parts) for (const b of part.blocks) for (const wrong of b.type === 'exhibit' ? exhibitFaults(exhibitFromLines(b.kind, b.title, b.items)) : []) problems.push(issue(`In "${part.title}", the exhibit ${b.title ? `"${b.title.slice(0, 40)}" ` : ''}${wrong}`));
+  for (const fault of agreementFaults(v, course)) problems.push(issue(fault));
   const thin = blocks.filter((b) => b.type === 'callout' && ['stuck', 'checkpoint'].includes(b.kind.trim().toLowerCase()) && [b.text, ...b.items].join(' ').trim().length < 80);
   if (thin.length) problems.push(issue(`${thin.length} checkpoint or stuck callouts say too little: a checkpoint says what the student should see and what wrong looks like; a stuck callout gives each likely cause with its fix`));
   // Pictures and clips are owed where the steps are followed on a screen: a week that teaches a tool names its version or
@@ -294,7 +296,7 @@ function mainPiece(course: Course, lesson: Lesson): string {
     case 'step':
       return `This week sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, submitted ${when}. It is written separately and shown to the student under this page: the checklist names it at the point in the week where it is done, and no part or sentence of the page is about it.`;
     default:
-      return `This week sets a graded assignment${toward ? ` that counts toward "${toward}" (the page calls it by that name)` : ''}, submitted ${when}. It is written separately and shown to the student under this page: the checklist names it at the point in the week where it is done, and no part or sentence of the page is about it.`;
+      return `This week sets a graded assignment${toward ? ` that counts toward "${toward}" (the page calls it by that name)` : ''}, submitted ${when}. It is written separately and shown to the student under this page: the checklist names it at the point in the week where it is done, and no part or sentence of the page is about it.${lesson.homework.standing ? ' Its brief is one text for every week and names none: so the checklist\'s line for it says, in a clause, what this week\'s is on (which reading, which question, whose drafts).' : ''}`;
   }
 }
 

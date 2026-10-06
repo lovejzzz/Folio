@@ -33,6 +33,7 @@ import { reviewModule } from './moduleReview';
 import { placeFigures, running, standing, type RunOptions } from './runCells';
 import { stuckClaims } from './stuckCheck';
 import { withAnswerChecks } from './answerCheck';
+import { codeFaults } from './codeLines';
 import { withHandouts } from './handouts';
 import { startCommands } from './start';
 import { runJob, type Problem } from './jobs';
@@ -389,7 +390,7 @@ export async function generateSection(
     case 'plan':
       if (hasModulePages(course)) return withStart(inference, course, lesson, signal, pageWithRuns(run, moduleJob, { writer: inference, reviewer, now, lesson, signal, options, mendPage }));
       // The sheets the plan hands out are written from the plan as it stands after its review.
-      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson) : undefined), signal);
+      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, codeFaults) : undefined), signal);
     case 'slides':
       return run(slides);
     case 'study':

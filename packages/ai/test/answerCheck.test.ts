@@ -112,6 +112,15 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect(await run(key('t_wrong_frac', 'The dot sits at 2/4.'), form('Fraction(3, 4)', 'The dot sits at '))).toBe(1);
   }, 180_000);
 
+  it('does not blame an item for what the form could not fit: a fragment with no names, an error the item names, values no choice words that way', async () => {
+    const fragment: Task = { ...base, id: 't_frag', kind: 'question', format: 'short', prompt: 'A list is D → F → J. `current` points to F and `new` to a node holding H. Write the two assignments that insert H after F. What does `[].pop()` raise?', choices: [], correct: null, answer: '`new.next = current.next` then `current.next = new`. It raises IndexError.', explanation: '', difficulty: 2 };
+    const formA = { checkable: true, setup: 'x = 1', verbatim: [{ where: 'answer', text: 'current.next = new' }, { where: 'prompt', text: '[].pop()' }] };
+    const fences = choice('t_fence', 'Delays 2, 4, 5, 7, 8, 10, 24: which conclusion follows from the 1.5 × IQR rule?', ['Q1 = 4.5 and Q3 = 9; the upper fence is 15.75, so 24 is a possible outlier.', 'Q1 = 5 and Q3 = 10; the upper fence is 17.5, so 24 is a possible outlier.', 'Use `IQR(x)`; `range(x)` gives two numbers.'], 1, 'The fence is Q3 + 1.5 × IQR.');
+    const formB = { checkable: true, setup: 'import numpy as np\nx = np.array([2, 4, 5, 7, 8, 10, 24])', answer_expr: '(np.percentile(x, 25), np.percentile(x, 75), np.percentile(x, 75) + 1.5 * (np.percentile(x, 75) - np.percentile(x, 25)), True)', choices: [{ n: 1, kind: 'value' }, { n: 2, kind: 'value' }, { n: 3, kind: 'value', origin_expr: 'float(x.max() - x.min())' }] };
+    const out = await checkAnswers(fakeInference((r) => (r.prompt.includes('Delays') ? formB : formA)), nodeRunner(), [fragment, fences]);
+    expect([...out.flags.values()]).toEqual([]);
+  }, 120_000);
+
   it('runs a stored answer as it is stored: a curly quote in code is a failure, not something to tidy first', async () => {
     const short: Task = { ...base, id: 't_code', kind: 'question', format: 'short', prompt: 'Write an expression for the number of rows whose `city` is Austin.', choices: [], correct: null, answer: '`(df["city"] == “Austin”).sum()`', explanation: '', difficulty: 2 };
     const form = { checkable: true, setup: 'import pandas as pd\ndf = pd.DataFrame({"city": ["Austin", "Reno", "Austin"]})', answer_kind: 'code', judge: 'result == (df["city"] == "Austin").sum()' };

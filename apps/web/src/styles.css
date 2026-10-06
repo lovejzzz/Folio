@@ -155,6 +155,8 @@
     letter-spacing: 0;
     /* Code is read character by character: a ligature turned `//=` into a not-equals sign. */
     font-variant-ligatures: none;
+    /* And space by space: a Python listing set a line to a chip lost its indentation, and with it which lines belong to a loop. */
+    white-space: pre-wrap;
     padding: 0.08em 0.32em;
     border-radius: 3px;
     background: color-mix(in oklab, var(--folio-ink) 6.5%, transparent);

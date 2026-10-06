@@ -166,14 +166,33 @@ export function earlierNotes(lesson: Lesson): string {
 
 /** What the lesson sets as homework, when it is due and what is handed in today, so its plan and materials agree: untold, each plan guessed. */
 /** When the work a lesson sets is handed in, in the words a plan or an assignment can use. */
-export function dueWords(course: Course, lesson: Lesson): string {
+/** When a piece is due, as a clause: "due at the start of the next lesson". Empty when it is not handed in at a later lesson. */
+function dueWhen(course: Course, lesson: Lesson): string {
   const due = lesson.homework.due ? course.lessons[lesson.homework.due] : undefined;
   const gap = due ? course.lessonOrder.indexOf(due.id) - course.lessonOrder.indexOf(lesson.id) : 0;
   if (!due || gap < 1) return '';
   // A week's work is due on its Sunday: told "at the start of the next lesson", an online assignment gave a room course's deadline.
-  if (hasModulePages(course)) return `It is due by Sunday night ${gap === 1 ? 'of next week' : `${gap} weeks from now`}.`;
-  // Said as a count, not a title: students were told to "submit it at the start of Research ethics and the IRB".
-  return gap === 1 ? 'It is due at the start of the next lesson.' : `It is due at the start of the lesson ${gap} lessons after this one, the one on "${due.title}": to students that lesson is named by what it covers, never by its title or a count of lessons.`;
+  if (hasModulePages(course)) return `due by Sunday night ${gap === 1 ? 'of next week' : `${gap} weeks from now`}`;
+  // One wording, given: named "by what it covers", one paper was due at "the meeting on writing the literature review" in its
+  // brief and "the meeting on developing literature review drafts" on the slide, and a student could not tell which meeting.
+  return gap === 1 ? 'due at the start of the next lesson' : `due at the start of the lesson ${gap} lessons after this one, "${due.title}" (wherever students are told the deadline it is in these words, "at the start of the class on ${due.title}", never a paraphrase, a count of lessons, or a week or date of your own)`;
+}
+
+export function dueWords(course: Course, lesson: Lesson): string {
+  const when = dueWhen(course, lesson);
+  return when ? `It is ${when}.` : '';
+}
+
+/** The brief of a piece graded in class that an earlier lesson already wrote, so a later plan runs it as it was set. */
+function briefSoFar(course: Course, lesson: Lesson): string {
+  const toward = lesson.homework.toward.trim();
+  const first = orderedLessons(course)
+    .slice(0, course.lessonOrder.indexOf(lesson.id))
+    .find((l) => holds(l, 'inclass', toward));
+  const brief = toward ? workOf(course, first, toward) : undefined;
+  if (brief?.kind !== 'assignment') return '';
+  const rubric = brief.rubricId ? course.rubrics[brief.rubricId] : undefined;
+  return ` Its brief is already written, and this lesson runs it as it stands: ${clipNote(brief.steps.join(' | '), 600)}${rubric ? ` It is scored on: ${rubric.criteria.map((c) => c.name).join('; ')}.` : ''}`;
 }
 
 export function homeworkLine(course: Course, lesson: Lesson): string {
@@ -193,13 +212,13 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
         }),
     );
   // Set, due and collected were three guesses: one piece had two due dates and a close that said "give its due date".
-  const due = `${otherPieces(lesson, (p) => dueWords(course, { ...lesson, homework: p }).replace(/^It is /, '').replace(/[.:].*$/, ''))}${collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan collects it.` : ''}`;
+  const due = `${otherPieces(lesson, (p) => dueWhen(course, { ...lesson, homework: p }))}${collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan collects it.` : ''}`;
   // "Sets no homework" beside a standing weekly paper had half the plans run the paper in class instead.
   if (lesson.homework.kind === 'none') return `${(lesson.also ?? []).some((p) => p.kind !== 'none') ? '' : 'This lesson sets no homework.'}${due}`.trim();
   const named = toward ? `"${toward}"` : 'a graded piece';
   // The paper and the rubric are their own material: a plan that also wrote them gave the lesson two.
   if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions (or, when the summary says it is sat after the course ends, reviews for it and says when and how it is sat), and writes no questions.${due}`;
-  if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done and graded in class with a rubric written separately: the plan runs it, with time for every student, and writes no criteria.${due}`;
+  if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done and graded in class with a rubric written separately: the plan runs it, with time for every student, and writes no criteria; what a student is graded for preparing or deciding (the questions of a discussion they lead, what a talk says) is left to them and never scripted.${briefSoFar(course, lesson)}${due}`;
   const set = `which the plan has the teacher set before students leave, naming it and when it is due, without spelling out its tasks or naming files and handouts it may not have. ${dueWords(course, lesson)}`.trim();
   if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}${due}`;
   return `For homework this lesson sets a graded assignment${toward ? ` that counts toward "${toward}" (the plan calls it by that name, not one of its own)` : ''}, ${set}${due}`;
@@ -211,14 +230,23 @@ const VAGUE = /^(journal |selected |assorted |various |recent |key )?(articles?|
 /**
  * What students read before a lesson. The brief's own readings come first; the works Folio proposed stand in
  * when the brief gave none for the lesson, or gave only a description of them: a seminar planned from "Kim's
- * assigned articles" never opened one, and no close ever told students what to read.
+ * assigned articles" never opened one, and no close ever told students what to read. Where the brief asked for
+ * no reading at all they are further reading and nothing more: assigned as they stood, a course with no textbook
+ * was given a different one each lesson, and a quiz on "the assigned reading" in a book nobody was told to get.
  */
-export function readBefore(lesson: Lesson): { works: string[]; proposed: boolean } {
+export function readBefore(lesson: Lesson): { works: string[]; proposed: boolean; optional: boolean } {
   const given = lesson.readings.map((r) => r.trim()).filter(Boolean);
   const proposed = lesson.suggestedReadings.map((r) => r.trim()).filter(Boolean);
   const named = given.filter((r) => !(VAGUE.test(r) && !/\d{4}/.test(r)));
-  if (named.length === given.length && given.length) return { works: given, proposed: false };
-  return { works: [...named, ...proposed], proposed: proposed.length > 0 };
+  if (named.length === given.length && given.length) return { works: given, proposed: false, optional: false };
+  return { works: [...named, ...proposed], proposed: proposed.length > 0, optional: proposed.length > 0 && !given.length };
+}
+
+/** How a lesson's readings are introduced: assigned by the teacher, standing in for ones they described, or only suggested. */
+export function readingsLead(course: Course, before: ReturnType<typeof readBefore>): string {
+  if (before.proposed && hasModulePages(course)) return 'Further reading Folio suggests, which students may not be able to get: the page may point to it, marked optional and outside the week\'s hours, and never depends on it';
+  if (before.optional) return 'Further reading Folio suggests, which the teacher did not ask for and students may not have: nothing in the lesson assigns it, tests it or depends on having read it, and no other book is named as the course\'s text; a guide or a close may name it once as optional further reading';
+  return `Students read before this lesson${before.proposed ? ' (plan from these, naming them in full)' : ''}`;
 }
 
 /**
@@ -229,7 +257,8 @@ export function nextReading(course: Course, lesson: Lesson): string {
   const next = orderedLessons(course)[course.lessonOrder.indexOf(lesson.id) + 1];
   if (!next) return '';
   // In an online course Folio's own suggestions are optional reading: no close sends students to a book they may not have.
-  const readings = hasModulePages(course) && readBefore(next).proposed ? [] : readBefore(next).works;
+  const before = readBefore(next);
+  const readings = before.optional || (hasModulePages(course) && before.proposed) ? [] : before.works;
   return [
     // Told to announce a quiz "if it holds one", nine plans in thirteen announced that none was held: the test is named only when there is one.
     next.summary.trim() ? `Next time: ${next.summary.trim()} The close tells students what to expect${next.homework.kind === 'test' ? `, and announces the test it holds${next.homework.toward.trim() ? ` ("${next.homework.toward.trim()}")` : ''}` : ''}.` : '',

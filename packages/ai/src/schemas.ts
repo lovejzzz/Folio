@@ -35,14 +35,14 @@ export const OutlineDraft = z.object({
           .describe('The graded or handed-in work this lesson holds, following how the brief says the course is assessed'),
         homeworkToward: z.string().default('').describe('The graded component the homework counts toward, named as under "grading"; empty if none'),
         homeworkDue: z.number().int().min(1).nullable().default(null).describe('The number of the lesson at whose start this work is handed in; null when it is done in class, nothing is handed in, or it is due after the last lesson'),
-        homeworkStanding: z.boolean().default(false).describe('True when this piece is the same task every time it is set, only its subject changing: a weekly response paper, a preparation memo, a reading journal; and for work done in class, when it is one piece taken by part of the class in each of several lessons (an oral interview in two groups, a presentation in turns). False when lessons hold different pieces of one component (an organizer in one, a draft in another)'),
+        homeworkStanding: z.boolean().default(false).describe('True only when the same instructions, word for word, serve every time this piece is set: a weekly response paper, a preparation memo, a reading journal (never a problem set, worksheet, lab assignment or quiz, which has its own questions each time); and for work done in class, when it is one piece taken by part of the class in each of several lessons (an oral interview in two groups, a presentation in turns). False when lessons hold different pieces of one component (an organizer in one, a draft in another)'),
         also: z
           .array(
             z.object({
               kind: z.enum(['assignment', 'step', 'test', 'inclass']),
               toward: z.string().default('').describe('The graded component it counts toward, named as under "grading"'),
               due: z.number().int().min(1).nullable().default(null).describe('The number of the lesson at whose start it is handed in, as for "homeworkDue"'),
-              standing: z.boolean().default(false),
+              standing: z.boolean().default(false).describe('As for "homeworkStanding"'),
             }),
           )
           .max(4)
@@ -135,7 +135,7 @@ export const QuestionDraft = z.object({
   prompt: line,
   choices: z.array(z.string()).default([]).describe('For choice: the options. For truefalse: ["True", "False"], never the statement. Empty for others'),
   answer: line.describe('For choice: the exact text of the correct option. For truefalse: "True" or "False". Otherwise the model answer'),
-  explanation: line,
+  explanation: line.describe('Why the answer is right, worked through; for a choice question also the slip behind each wrong choice, a clause each, naming the choice by its own words'),
   difficulty: z.number().int().min(1).max(3),
   expression: z.string().nullable().default(null).describe('For arithmetic answers, the calculation, e.g. "(4+5+9)/3"; else null'),
   objective: z.number().int().min(1).describe('Which objective this assesses (1-based)'),

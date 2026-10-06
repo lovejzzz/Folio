@@ -314,6 +314,7 @@ async function build(name: string, store: CourseStore, targets: BuildTarget[], f
   const host: BuildHost = {
     inference,
     reviewer: inference,
+    wholeRead: !ARGS.includes('--no-read'),
     run: RUN ? { runner: RUNNER, saveFigure: (png) => saveFigure(name, png) } : undefined,
     getCourse: store.getState,
     commit: (_target, commands) => {
