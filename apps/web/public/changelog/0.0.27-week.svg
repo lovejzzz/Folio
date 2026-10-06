@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .rule { stroke: #CFC8B9 } .slot { fill: #E9E4D8 } .on { fill: #2B46C4 } .lost { fill: none; stroke: #B4472E; stroke-dasharray: 5 4 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E } .rule { stroke: #3A3B35 } .slot { fill: #2E2F2A } .on { fill: #8FA3FF } .lost { stroke: #E08A6E }
+    }
+  </style>
+  <rect class="bg" width="800" height="360" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">THREE LECTURES AND A RECITATION A WEEK</text>
+  <rect class="card" x="36" y="64" width="350" height="262" rx="14"/>
+  <text class="ink" x="56" y="96" font-size="16" font-weight="600">Before: the week as one meeting</text>
+  <rect class="on" x="56" y="124" width="68" height="74" rx="8"/>
+  <rect class="lost" x="134" y="124" width="68" height="74" rx="8"/>
+  <rect class="lost" x="212" y="124" width="68" height="74" rx="8"/>
+  <rect class="lost" x="290" y="124" width="68" height="74" rx="8"/>
+  <text class="ink2" x="56" y="222" font-size="13">Lecture</text>
+  <text class="bad" x="134" y="222" font-size="13">three meetings left unplanned</text>
+  <text class="bad" x="56" y="278" font-size="40" font-weight="700">50</text>
+  <text class="ink2" x="112" y="278" font-size="14">minutes planned of 200</text>
+  <rect class="card" x="414" y="64" width="350" height="262" rx="14"/>
+  <text class="ink" x="434" y="96" font-size="16" font-weight="600">Now: every meeting of the week</text>
+  <rect class="on" x="434" y="124" width="68" height="74" rx="8"/>
+  <rect class="on" x="512" y="124" width="68" height="74" rx="8"/>
+  <rect class="on" x="590" y="124" width="68" height="74" rx="8"/>
+  <rect class="on" x="668" y="124" width="68" height="74" rx="8" opacity="0.6"/>
+  <text class="ink2" x="434" y="222" font-size="13">Lecture</text>
+  <text class="ink2" x="512" y="222" font-size="13">Lecture</text>
+  <text class="ink2" x="590" y="222" font-size="13">Lecture</text>
+  <text class="ink2" x="668" y="222" font-size="13">Recitation</text>
+  <text class="acc" x="434" y="278" font-size="40" font-weight="700">200</text>
+  <text class="ink2" x="512" y="278" font-size="14">minutes, each meeting with its plan</text>
+</svg>

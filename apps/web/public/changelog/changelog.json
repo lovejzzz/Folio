@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.0.27",
+  "date": "October 6, 2026",
+  "title": "A week with three lectures and a recitation is planned as one",
+  "lede": "We built eight common first-year courses Folio had never been tuned on (calculus, chemistry, physics, biology, sociology, composition, Java, accounting) and had strict readers go through two lessons of each. Every number, key and program output they recomputed was right. What they found instead was about how courses meet, and this release fixes it where it starts.",
+  "sections": [
+   {
+    "heading": "Every meeting of the week gets its plan",
+    "body": "A course described as “three 50-minute lectures and one 50-minute recitation a week” was planned as a single 50 minutes a week: Folio kept at most three meetings, lost the recitation, and then took the week for one lecture. A lesson now holds up to four meetings, and when you plan a lesson a week, it takes every meeting the week has, whether they are of one kind or several. The physics and calculus courses that showed the problem now come out as 200 minutes a week, each lecture and the recitation with its own steps.",
+    "image": {
+     "src": "/changelog/0.0.27-week.svg",
+     "alt": "Before: one 50-minute lecture planned and three meetings left out. Now: three lectures and a recitation, 200 minutes, each with its plan",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "Graded clicker rounds and recitation problems have their questions",
+    "body": "Work that is graded in class every time, such as clicker questions or recitation problems, has one set of instructions and one rubric for the whole term. So the instructions named no questions, and the lesson plan, told the piece was written elsewhere, wrote none either. The plan now writes that day’s questions, with their answers in the teacher’s notes."
+   },
+   {
+    "heading": "Smaller things",
+    "body": "Slides no longer carry notes meant for the teacher, and code on a slide is typed as it runs. A study guide gives again the program or example it talks about, since students do not hold the teacher’s notes. The answer check no longer doubts a right key because of how a number was written (82.0 against 82.0000, or 6.3 × 10⁻⁴)."
+   }
+  ]
+ },
+ {
   "version": "0.0.26",
   "date": "October 6, 2026",
   "title": "One writer for the worksheet, another for its key",
