@@ -33,7 +33,7 @@ export const ANSWER_KEY =
 
 /** Work graded in the lesson itself: a presentation, a seminar, an interview, something made in class. */
 export const IN_CLASS =
-  'This piece is done and graded in class, not taken home: the steps say what students do in the lesson, the rubric is what the teacher scores with while or after they do it, and "answerKey" tells the teacher how to run and score it for a whole class in the time (who goes when, what the others do), or is empty.';
+  'This piece is done in class, not taken home: the steps say what students do in the lesson, in full, since they are what the teacher prints for it (no other sheet holds its tasks); the rubric is what the teacher scores with, as it happens for what is performed and after class for written work handed in, and "answerKey" tells the teacher how to run and score it for a whole class in the time (who goes when, what the others do), or is empty.';
 
 /** A test, quiz or exam taken in class, as a paper to print, with its key. */
 export function testAsk(lesson: Lesson): string {

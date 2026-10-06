@@ -111,7 +111,7 @@ describe('a lesson that holds more than one piece of work', () => {
     expect(model.calls).toHaveLength(2);
     const inclass = { ...first!, also: [], homework: { kind: 'inclass' as const, toward: 'Presentation', standing: true } };
     expect(sectionPrompt(quizzes, inclass, 'assignments')).not.toMatch(/due at the start of the lesson after the one that sets it/);
-    expect(sectionPrompt(quizzes, inclass, 'assignments')).toMatch(/done and graded in class/);
+    expect(sectionPrompt(quizzes, inclass, 'assignments')).toMatch(/done in class and graded with a rubric written separately.*scored after class/);
   });
 
   it('writes each piece once, sets a standing piece again as it stands, and labels each by its component', async () => {
