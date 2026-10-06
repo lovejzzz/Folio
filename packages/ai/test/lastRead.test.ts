@@ -92,7 +92,7 @@ describe('the last read of a whole lesson', () => {
     expect(read).toMatchObject({ fixed: 0, noted: 1 });
   });
 
-  it('is asked for once for each lesson a build writes whole, when there is a reviewer', async () => {
+  it('is asked for once for each lesson a build writes whole, when the build asks for it', async () => {
     const store = new CourseStore(smallCourse());
     const reads: string[] = [];
     const inference = fakeInference((req) => (req.task === 'folio_plan' ? planDraft : req.task === 'folio_quiz' ? quizDraft(3) : {}));
@@ -104,12 +104,12 @@ describe('the last read of a whole lesson', () => {
     const targets = missingTargets(store.getState()).filter((t) => t.kind === 'plan' || t.kind === 'quiz');
     const only = { ...store.getState(), materials: Object.fromEntries(Object.entries(store.getState().materials).map(([k, v]) => [k, { ...v, enabled: k === 'plan' || k === 'quiz' }])) } as Course;
     const built = new CourseStore(only);
-    const summary = await runBuild({ inference, reviewer, getCourse: built.getState, commit: (_t, c) => built.apply(c, { label: { key: 'b' }, source: 'ai', undoable: false }), signal: new AbortController().signal }, targets);
+    const summary = await runBuild({ inference, reviewer, wholeRead: true, getCourse: built.getState, commit: (_t, c) => built.apply(c, { label: { key: 'b' }, source: 'ai', undoable: false }), signal: new AbortController().signal }, targets);
     expect(summary.failed).toBe(0);
     expect(reads).toHaveLength(2);
     // The last lesson too, and a course of one lesson: its read starts after its last part is in.
     const one = new CourseStore({ ...only, lessonOrder: only.lessonOrder.slice(0, 1) });
-    await runBuild({ inference, reviewer, getCourse: one.getState, commit: (_t, c) => one.apply(c, { label: { key: 'b' }, source: 'ai', undoable: false }), signal: new AbortController().signal }, missingTargets(one.getState()));
+    await runBuild({ inference, reviewer, wholeRead: true, getCourse: one.getState, commit: (_t, c) => one.apply(c, { label: { key: 'b' }, source: 'ai', undoable: false }), signal: new AbortController().signal }, missingTargets(one.getState()));
     expect(reads).toHaveLength(3);
     expect(reads[0]).toMatch(/<quiz>/);
     expect(orderedLessons(built.getState()).map((l) => l.segments[0]!.description)).toEqual(Array(2).fill('Compare a leaf kept in the dark with one kept in light.'));

@@ -33,7 +33,11 @@ export interface BuildHost {
   inference: Inference;
   /** Reviews each lesson plan before the materials written from it; none for providers it hasn't been tried with. */
   reviewer?: Inference;
-  /** False to leave out the last read of each whole lesson: for measuring what is written before anything reads it. */
+  /**
+   * True to read each lesson whole once all of it is written (lastRead.ts). Off unless asked for: on sixteen lessons written
+   * from the fixed source it made 63 changes and the count of faults that would stop a class did not fall (15 without, 15
+   * with, read by hand), so it stays a measuring tool until it earns its three credits a lesson.
+   */
   wholeRead?: boolean;
   /** Runs the Python on module pages; without it a page is kept as written. */
   run?: RunOptions;
@@ -88,7 +92,7 @@ function withDrafts(course: Course, drafts: ReadonlyMap<string, Command[]>): Cou
  */
 function lastReads(host: BuildHost, targets: BuildTarget[], pending: BuildTarget[], running: Map<string, Promise<void>>): () => void {
   const reviewer = host.reviewer;
-  if (!reviewer || host.wholeRead === false) return () => {};
+  if (!reviewer || !host.wholeRead) return () => {};
   const waiting = new Set(targets.filter((t) => t.kind === 'plan').map((t) => t.lessonId));
   const whole = (lessonId: string): boolean => !pending.some((t) => t.lessonId === lessonId) && ![...running.keys()].some((k) => k.startsWith(`${lessonId}:`)) && !missingTargets(host.getCourse(), [lessonId]).length;
   const read = (lessonId: string): void => {

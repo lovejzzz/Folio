@@ -11,7 +11,8 @@ const KB = 1024;
 // Total JS is everything a visitor could ever load, most of it on demand; the first load keeps its own, strict budget.
 // It was raised from 3.5 to 3.75 MB in version 0.0.5, for tests, answer keys and due dates, and to 3.9 MB when
 // teachers could add pictures to a page and have them looked at: all of it loaded on demand. To 3.95 MB in version
-// 0.0.23, for the last read of a whole lesson, which runs only while a course is built.
+// 0.0.23, for what a build now checks and puts right as it writes (keys, sheets, code), and a reader of whole lessons
+// we measure with: none of it loads before a course is built.
 // The sample courses and the changelog's pictures are content, fetched only when opened: each has its own budget,
 // apart from the app's.
 const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 3.95 * KB * KB, dist: 10 * KB * KB, samples: 3 * KB * KB, changelog: 4 * KB * KB, media: 60 * KB * KB };

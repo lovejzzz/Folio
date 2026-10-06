@@ -50,10 +50,9 @@ test('a teacher with no key signs in and writes with Folio credits', async ({ pa
   await expect(page.getByText(/That used about \d+ credits?\./)).toBeVisible();
   // Every call went to Folio's server, none to Anthropic from the page, and no key was sent.
   expect(model.calls.length).toBeGreaterThan(3);
-  // Folio's mix: Sonnet writes the plans; GPT-6.1 Sol checks each at low effort, and reads each lesson whole once it is
-  // all written; GPT-6 Luna writes the quizzes at high.
+  // Folio's mix: Sonnet writes the plans; GPT-6.1 Sol checks each at low effort; GPT-6 Luna writes the quizzes at high.
   const sent = (m: string) => model.calls.filter((c) => c.model === m) as { reasoning_effort?: string }[];
-  expect(sent('gpt-6.1-sol').length).toBe(4);
+  expect(sent('gpt-6.1-sol').length).toBe(2);
   expect(sent('gpt-6.1-sol').every((c) => c.reasoning_effort === 'low')).toBe(true);
   expect(sent('gpt-6-luna').length).toBeGreaterThan(0);
   expect(sent('gpt-6-luna').every((c) => c.reasoning_effort === 'high')).toBe(true);

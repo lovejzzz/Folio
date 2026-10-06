@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .rule { stroke: #CFC8B9 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="360" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">A PROBLEM SET, IN A DATA STRUCTURES COURSE</text>
+  <rect class="card" x="36" y="64" width="350" height="262" rx="14"/>
+  <text class="ink" x="56" y="96" font-size="16" font-weight="600">Before: one text for every week</text>
+  <text class="bad" x="56" y="130" font-size="14" font-weight="600">“Complete this Problem sets</text>
+  <text class="bad" x="56" y="150" font-size="14" font-weight="600">assignment to prepare for the reading</text>
+  <text class="bad" x="56" y="170" font-size="14" font-weight="600">or topic of the lesson it is due at.”</text>
+  <line class="rule" x1="56" y1="192" x2="366" y2="192"/>
+  <text class="ink2" x="56" y="218" font-size="13">1. Review the assigned preparation.</text>
+  <text class="ink2" x="56" y="240" font-size="13">2. Identify one central idea…</text>
+  <text class="ink2" x="56" y="278" font-size="13">No problem in it, the same words in</text>
+  <text class="ink2" x="56" y="298" font-size="13">every lesson, 40% of the grade</text>
+  <rect class="card" x="414" y="64" width="350" height="262" rx="14"/>
+  <text class="ink" x="434" y="96" font-size="16" font-weight="600">Now: written for its lesson</text>
+  <text class="acc" x="434" y="130" font-size="14" font-weight="600">“Problem sets: linked-list operations</text>
+  <text class="acc" x="434" y="150" font-size="14" font-weight="600">and cost analysis”</text>
+  <line class="rule" x1="434" y1="192" x2="744" y2="192"/>
+  <text class="ink2" x="434" y="218" font-size="13">1. Create linked_list_assignment.py.</text>
+  <text class="ink2" x="434" y="240" font-size="13">   Define Node with __init__(self, value)…</text>
+  <text class="ink2" x="434" y="278" font-size="13">Due at the start of the next lesson,</text>
+  <text class="ink2" x="434" y="298" font-size="13">with a key worked from its own data</text>
+</svg>

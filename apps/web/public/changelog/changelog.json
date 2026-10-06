@@ -1,5 +1,47 @@
 [
  {
+  "version": "0.0.23",
+  "date": "October 6, 2026",
+  "title": "The most common university courses, read as a class would meet them: half the faults gone, at the source",
+  "lede": "We wrote two lessons each of eight courses a university teaches most (microeconomics, a history survey, data structures, intro psychology, an organic lab, research methods, statistics with a lab, biostatistics) and had every lesson read whole, the way a last reader would before class. Thirty things would have stopped a class; fifteen of sixteen lessons had one. Most came from how Folio makes a lesson, not from what a model wrote, so that is where they were fixed. Written again, the same sixteen had fifteen, and seven lessons had none.",
+  "sections": [
+   {
+    "heading": "Homework that changes every week is written every week",
+    "body": "Folio writes a weekly response paper once, because its instructions are the same each time. It had come to treat problem sets, lab worksheets and pre-lab quizzes the same way: one text, copied to every lesson. A data structures problem set had no problems in it, a statistics “lab worksheet” asked for two terms from the reading and no R, and a lab’s second quiz was its first, word for word. Thirteen of the thirty faults were this one. Work with its own questions each time is now written for its lesson, from that lesson, and a paper sat in class is never copied.",
+    "image": {
+     "src": "/changelog/0.0.23-source.svg",
+     "alt": "Left, a problem set as it was: complete this assignment to prepare for the reading of the lesson it is due at, with no problem in it. Right, as it is written now: linked-list operations and cost analysis, with its files and steps",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "One textbook, or none",
+    "body": "When a brief named no readings, Folio suggested some, a different book for each lesson, and the plans assigned them: a second-year class was to read Knuth for a quiz on Thursday. What Folio suggests is now further reading and nothing in a lesson depends on it. A deadline is given in one wording wherever it is said, the lesson’s own title, where before a paper was due at “the meeting on writing the literature review” in one place and “on developing literature review drafts” in another."
+   },
+   {
+    "heading": "Code keeps its indentation",
+    "body": "A handout asked which line of a Python function was at fault, with every line set one space in: it could not be read, and it would not run. Folio now asks for each line with its indentation, sends a listing back when it comes squeezed, and the page no longer collapses the spaces inside code, which it had been doing even to listings that were right."
+   },
+   {
+    "heading": "What a lesson relies on is written out",
+    "body": "A plan said “students describe the histogram on the board” and no slide held a histogram; a graded poll had no choices; a reflection was collected that had no prompt. A plan now writes out a poll’s choices, a prompt and a figure’s numbers, its review looks for them, the slides draw the figure, and a worksheet’s question carries what it needs. The slides, the study guide and the graded work are shown the sheets already written for the lesson, so a slide no longer asks students to write what their sheet prints. The first meeting of a course no longer opens with a quiz on a reading nobody could have been told about."
+   },
+   {
+    "heading": "A key the numbers contradict is corrected, not noted",
+    "body": "Folio computes the answers its quizzes and keys claim. When one failed, it left a note for the teacher and the wrong key beside it: a median of 4.5 for data whose median is 4. The words at fault are now replaced with what was computed and the item is checked again; only if it still fails does the note remain. Three kinds of false alarm from this check are gone, among them blaming a line of a key for not running on its own."
+   },
+   {
+    "heading": "What we tried and did not turn on",
+    "body": "We also built a reader that goes over each finished lesson whole and corrects it. On lessons made the old way it found three in four of the known faults. On lessons made the new way it made 63 changes and the count of faults that stop a class did not fall, so it is not part of a build: it costs three credits a lesson and we could not show it earns them. We use it to measure. What remains, about one fault a lesson, is mostly graded work that uses something the lesson did not teach, and that is what we are on now; the first rule for it is in this release and not yet measured."
+   },
+   {
+    "heading": "Smaller things",
+    "body": "The estimate of credits for a lesson rose by two, for the sheets now shown to the slides and the guide; the free credits are said to cover about 23 lessons, where it said 25. A quiz taken in class is given its minutes and comes after what it tests. Quiz explanations say why each wrong choice is wrong."
+   }
+  ]
+ },
+ {
   "version": "0.0.22",
   "date": "October 5, 2026",
   "title": "What the checkpoint left wrong: troubleshooting notes are tried, and the teacher’s notes keep up with the page",

@@ -219,7 +219,7 @@ const FOLLOW_PLAN = `Use the same examples, data and figures as the plan. ${FOLL
  * Work students do on their own is not the class practice copied out: told to use the plan's examples, graded
  * problem sets repeated the worked examples, numbers and all, with the answers in the study guide.
  */
-const FOLLOW_PLAN_NEW_ITEMS = `Keep the plan's facts, data, methods and terms, but give students new items to work: other numbers or cases than the plan's worked examples and class practice, so the work can't be copied from the lesson. A new item has a name of its own: it never gives other values to something the plan had students make and name. ${FOLLOW_REST}`;
+const FOLLOW_PLAN_NEW_ITEMS = `Keep the plan's facts, data, methods and terms, but give students new items to work: other numbers or cases than the plan's worked examples and class practice, so the work can't be copied from the lesson. A new item has a name of its own: it never gives other values to something the plan had students make and name. The work asks only for what students were shown how to do, on the slides and sheets they hold: a function, command, formula or method it needs that they were not shown is given in the work itself, with how to use it, and its key is worked the way the lesson teaches (a quartile by the lesson's rule, an elasticity by its formula). ${FOLLOW_REST}`;
 
 // Told to give "new items", the brief of a session's graded engagement set an invented claim, a reply to a classmate and a PDF of
 // screenshots due Sunday, in a session whose plan ran three polls and a shared document.
