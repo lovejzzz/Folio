@@ -254,3 +254,16 @@ describe('the sheets of a lesson that holds a piece graded in class', () => {
     expect(handoutsPrompt(course, third!, plan)).not.toMatch(/Graded in this lesson/);
   });
 });
+
+describe('the first lesson to run a turn students prepare', () => {
+  it('introduces and models it, and scores from the next lesson', () => {
+    const draft = outline();
+    draft.lessons[0]!.also = [];
+    draft.lessons[1] = { ...draft.lessons[1]!, homework: 'inclass', homeworkToward: 'Presentation', homeworkStanding: true, also: [] };
+    draft.lessons[2] = { ...draft.lessons[2]!, homework: 'inclass', homeworkToward: 'Presentation', homeworkStanding: true };
+    const course = courseFromOutline(req, draft);
+    const [, second, third] = orderedLessons(course);
+    expect(lessonContext(course, second!)).toMatch(/This is the first lesson to run it.*scored turns begin next time/);
+    expect(lessonContext(course, third!)).not.toMatch(/This is the first lesson to run it/);
+  });
+});

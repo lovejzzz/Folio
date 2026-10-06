@@ -232,6 +232,17 @@ function briefSoFar(course: Course, lesson: Lesson): string {
   return ` Its brief is already written, and this lesson runs it as it stands: ${clipNote(brief.steps.join(' | '), 600)}${rubric ? ` It is scored on: ${rubric.criteria.map((c) => c.name).join('; ')}.` : ''}`;
 }
 
+/**
+ * The first lesson to run a piece students prepare a turn for. Its brief is written with this lesson, so nobody has had
+ * it: the first leader of a graded seminar saw the rubric minutes before being scored on it, in every run.
+ */
+function firstTurn(course: Course, lesson: Lesson): string {
+  const toward = lesson.homework.toward.trim();
+  const before = orderedLessons(course).slice(0, course.lessonOrder.indexOf(lesson.id));
+  if (!toward || lesson.homework.standing === false || before.some((l) => holds(l, 'inclass', toward))) return '';
+  return ' This is the first lesson to run it, and its brief is written with this lesson: where a student prepares their turn (leading, presenting), today the brief and rubric are given out, the teacher models a turn that is not scored, and who goes first next time is settled; scored turns begin next time. Where nothing is prepared (taking part, answering in class), it is scored from today.';
+}
+
 export function homeworkLine(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   const collected = orderedLessons(course)
@@ -257,7 +268,7 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
   const named = toward ? `"${toward}"` : 'a graded piece';
   // The paper and the rubric are their own material: a plan that also wrote them gave the lesson two.
   if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions (or, when the summary says it is sat after the course ends, reviews for it and says when and how it is sat), and writes no questions.${due}${only}`;
-  if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done in class and graded with a rubric written separately: the plan runs it, with time for every student to do all of it (when each is heard or scored one by one, the minutes are one student's multiplied by the class the brief describes, with the moves between them: where that does not fit, it is scored from what is handed in or over several lessons), and writes no criteria; written work is handed in and scored after class (only what is performed, a talk or a discussion led, is scored as it happens), with no helpers the brief does not name; its tasks are printed with the piece, so the plan names no other sheet for it; what a student is graded for preparing or deciding (the questions of a discussion they lead, what a talk says) is left to them and never scripted.${lesson.homework.standing ? ` Its${EACH_TIME.slice(5)}.` : ''}${briefSoFar(course, lesson)}${due}${only}`;
+  if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done in class and graded with a rubric written separately: the plan runs it, with time for every student to do all of it (when each is heard or scored one by one, the minutes are one student's multiplied by the class the brief describes, with the moves between them: where that does not fit, it is scored from what is handed in or over several lessons), and writes no criteria; written work is handed in and scored after class (only what is performed, a talk or a discussion led, is scored as it happens), with no helpers the brief does not name; its tasks are printed with the piece, so the plan names no other sheet for it; what a student is graded for preparing or deciding (the questions of a discussion they lead, what a talk says) is left to them and never scripted.${firstTurn(course, lesson)}${lesson.homework.standing ? ` Its${EACH_TIME.slice(5)}.` : ''}${briefSoFar(course, lesson)}${due}${only}`;
   const set = `which the plan has the teacher set before students leave, naming it and when it is due, without spelling out its tasks or naming files and handouts it may not have; work the brief has students do online is handed in online by then, and never collected in class. ${dueWords(course, lesson)}`.trim();
   if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}${due}${only}`;
   // A plan gave the first weekly memo a subject of its own ("one page on your team's program") beside a brief that asked for the reading.
@@ -303,7 +314,7 @@ function ahead(course: Course, next: Lesson): string {
   const firstTurns = pieces.filter((p) => p.kind === 'inclass' && p.toward.trim() && !before.some((l) => holds(l, 'inclass', p.toward.trim())));
   return [
     tests.length ? `, and announces the test it holds${named(tests[0]!)}, what it covers and what to bring` : '',
-    firstTurns.length ? `, and prepares the work graded in class there for the first time${named(firstTurns[0]!)}: its brief and rubric are written with that lesson, and the teacher hands them out or posts them now, says what everyone prepares for it, and settles who goes first: nobody can prepare for a brief they first see as they are scored on it` : '',
+    firstTurns.length ? `, and prepares the work graded in class there for the first time${named(firstTurns[0]!)}: which that lesson introduces with its brief and rubric: say now that it begins there and what everyone prepares for it; no turn is scored before students have had the brief for a lesson` : '',
   ].join('');
 }
 

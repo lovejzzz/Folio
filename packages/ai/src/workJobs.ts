@@ -37,8 +37,12 @@ const stems = (name: string) => name.toLowerCase().split(/[^\p{L}\d]+/u).filter(
 export function minutesFor(course: Course, lesson: Lesson): number {
   const toward = lesson.homework.toward.trim();
   const others = course.grading.map((g) => g.item.trim().toLowerCase()).filter((item) => item && item !== toward.toLowerCase());
-  const runs = (text: string) => stems(toward).every((w) => text.includes(w)) && !others.some((item) => text.includes(item));
-  return lesson.segments.filter((seg) => runs(`${seg.title} ${seg.description}`.toLowerCase())).reduce((n, seg) => n + seg.minutes, 0);
+  const text = (seg: Lesson['segments'][number]) => `${seg.title} ${seg.description}`.toLowerCase();
+  const mine = lesson.segments.filter((seg) => !others.some((item) => text(seg).includes(item)));
+  const whole = mine.filter((seg) => stems(toward).every((w) => text(seg).includes(w))).reduce((n, seg) => n + seg.minutes, 0);
+  // The longer reading wins: "Lab notebook" was tied to nine minutes of "preparing for the lab", not to the 95 of "Graded notebook".
+  const part = Math.max(0, ...mine.filter((seg) => stems(toward).some((w) => text(seg).includes(w))).map((seg) => seg.minutes));
+  return Math.max(whole, part);
 }
 
 function tooMuch(v: { prompt: string; steps: string[] }, course: Course, lesson: Lesson): Problem[] {
