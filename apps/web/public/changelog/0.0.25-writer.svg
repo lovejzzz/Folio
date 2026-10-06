@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .rule { stroke: #CFC8B9 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="360" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">WHO WRITES THE QUIZ AND THE GRADED WORK</text>
+  <rect class="card" x="36" y="64" width="728" height="262" rx="14"/>
+  <text class="ink2" x="56" y="98" font-size="13">The same lessons, written again by each and judged blind</text>
+  <text class="ink2" x="430" y="98" font-size="13">Wrong keys or explanations, per 16 lessons</text>
+  <text class="ink" x="56" y="140" font-size="15" font-weight="600">GPT-6 Luna, high (until now)</text>
+  <text class="ink2" x="56" y="160" font-size="13">12 of 32 lessons with nothing wrong</text>
+  <rect class="bad" x="430" y="126" width="255" height="18" rx="4"/>
+  <text class="ink" x="695" y="140" font-size="14" font-weight="600">8.5</text>
+  <line class="rule" x1="56" y1="176" x2="744" y2="176"/>
+  <text class="ink" x="56" y="204" font-size="15" font-weight="600">Claude Sonnet 5.5, medium</text>
+  <text class="ink2" x="56" y="224" font-size="13">7 of 16 lessons with nothing wrong</text>
+  <rect class="bad" x="430" y="190" width="150" height="18" rx="4"/>
+  <text class="ink" x="590" y="204" font-size="14" font-weight="600">5.0</text>
+  <line class="rule" x1="56" y1="240" x2="744" y2="240"/>
+  <text class="ink" x="56" y="268" font-size="15" font-weight="600">GPT-6.1 Sol, low (from now)</text>
+  <text class="ink2" x="56" y="288" font-size="13">25 of 32 lessons with nothing wrong</text>
+  <rect class="acc" x="430" y="254" width="15" height="18" rx="4"/>
+  <text class="ink" x="455" y="268" font-size="14" font-weight="600">0.5</text>
+</svg>

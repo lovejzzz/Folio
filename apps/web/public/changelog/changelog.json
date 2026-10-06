@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.0.25",
+  "date": "October 6, 2026",
+  "title": "Quizzes and graded work have a new writer: one wrong key where there were seventeen",
+  "lede": "The last release ended by saying that rules had stopped helping. So we stopped adding rules and tested the writers instead. On the same sixteen university lessons, with the same plans and worksheets, we had the quiz and the graded work written again by four different writers and judged blind, twice. The writer Folio had been using for them was the worst of the four.",
+  "sections": [
+   {
+    "heading": "What was measured",
+    "body": "Each judge saw one lesson and four versions of its quiz and graded work, without knowing who wrote which, worked every key and answer, and counted what was false. GPT-6 Luna, which Folio had used because it was a tenth the price and read as well, had 17 wrong keys or explanations in 32 lessons, and 12 lessons with nothing wrong at all. GPT-6.1 Sol had 1 and 25. Claude Sonnet, which writes the plans, cost more than Sol and came between them. Asking Sol to think longer changed nothing; letting Luna keep the quiz and giving Sol only the graded work gave part of the gain back.",
+    "image": {
+     "src": "/changelog/0.0.25-writer.svg",
+     "alt": "Wrong keys or explanations per sixteen lessons: GPT-6 Luna at high effort 8.5, Claude Sonnet at medium 5, GPT-6.1 Sol at low 0.5",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "What it costs",
+    "body": "About six cents more a lesson. A lesson with every material now uses about 38 credits where we said 32, and the free credits cover about 19 lessons, not 23; both numbers are corrected where Folio states them. We think a key a teacher can grade from is worth six cents."
+   },
+   {
+    "heading": "What we tried and kept as it was",
+    "body": "The same test on lesson plans went the other way. Sol’s plans cost half as much and had fewer wrong numbers, but the judges preferred Sonnet’s in fifteen lessons of sixteen: more concrete, more for students to do, more of a lesson. Plans stay with Sonnet. The two results fit together: one writer designs the teaching, another writes the items that have to be exactly right."
+   }
+  ]
+ },
+ {
   "version": "0.0.24",
   "date": "October 6, 2026",
   "title": "A second pass over the same sixteen lessons: smaller repairs, and where rules stop helping",
