@@ -69,6 +69,7 @@ def num_ok(stored, d, computed, tol=None, tight=False):
     t = 0.5 * 10 ** (-d) if tight or d <= 0 else 1.0 * 10 ** (-d)
     if tol is not None and not tight: t = max(t, float(tol))
     return abs(stored - computed) <= t * (1 + 1e-9) + 1e-12
+WORDS = 'zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty'.split()
 def is_mantissa(tok, c):
     """6.3e-4 against a computed 6.31: the form worked out the digits and left the power of ten"""
     p = re.split('[eE]', tok.replace('−', '-').replace(',', ''))
@@ -285,6 +286,10 @@ def check_item(item, check):
                     hit = next((k for k in range(at, len(stored)) if num_ok(stored[k][0], stored[k][1], c, s.get('tolerance')) and (stored[k][1] > 0 or k == at or whole)), None)
                     if hit is None: bad.append(round(c, 6))
                     else: at = hit + 1
+                # a count a key spells out ("totaling four", "more than eight of the 16") is that number
+                bad = [c for c in bad if not (float(c).is_integer() and 0 <= c <= 20 and re.search(r'(?<![\w-])' + WORDS[int(c)] + r'(?![\w-])', tail[:120], re.I))]
+                # the form's anchor ran past the value it was to find: the number is in the words it quoted
+                if bad and str(s.get('before') or '').rstrip()[-1:] not in ('=', '≈', ':', '') and all(any(num_ok(n[0], n[1], c, s.get('tolerance')) for n in numbers(str(s.get('before') or ''))) for c in bad): raise Invalid('the anchor already holds the value')
                 if bad and all(any(is_mantissa(n[2], c) for n in stored) for c in bad): raise Invalid('the form computed the digits of a number the text gives with its power of ten')
                 return not bad, (f'computed {bad[:6]} not among the stored {[n[2] for n in stored][:8]}' if bad else f'{len(fv)} numbers found in order')
             import numpy as np

@@ -154,6 +154,18 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect(['t_lim', 't_lim_wrong', 't_hiker', 't_hiker_wrong', 't_fiber'].map((id) => out.flags.has(id))).toEqual([false, true, false, true, false]);
   }, 120_000);
 
+  it('reads a count spelled out, and does not look for a value past an anchor that already holds it', async () => {
+    const sheet = (id: string, answerKey: string): Task => ({ ...base, id, kind: 'assignment', title: 'Sheet', prompt: '', steps: ['Count the bonds of each carbon in propane with `3 + 1`.'], rubricId: null, answerKey, toward: '' });
+    const bonds = (before: string, expr: string) => ({ checkable: true, setup: 'c, h = 1, 3', stated: [{ where: 'answerKey', before, expr }] });
+    const pick = (r: { prompt: string }) => (r.prompt.includes('lie close') ? bonds('−0.2488 and −0.2513 lie close to that number', '-0.2488') : bonds('three with hydrogen, totaling ', 'c + h'));
+    const out = await checkAnswers(fakeInference(pick), nodeRunner(), [
+      sheet('t_word', 'Each end carbon forms one bond with carbon and three with hydrogen, totaling four. The middle carbon forms 2.'),
+      sheet('t_word_wrong', 'Each end carbon forms one bond with carbon and three with hydrogen, totaling five. The middle carbon forms 2.'),
+      sheet('t_anchor', 'The secant slopes approach −0.25: −0.2488 and −0.2513 lie close to that number on opposite sides. (3 points) Total: 10 points'),
+    ]);
+    expect(['t_word', 't_word_wrong', 't_anchor'].map((id) => out.flags.has(id))).toEqual([false, true, false]);
+  }, 120_000);
+
   it('puts right a key the numbers contradict, and keeps the correction only when it then holds', async () => {
     const work: Task = { ...base, id: 't_key', kind: 'assignment', title: 'Wait times', prompt: 'Wait times in minutes: 2, 3, 4, 4, 4, 5, 6, 8.', steps: ['Find the median wait time.'], rubricId: null, answerKey: '1. Sorted: 2, 3, 4, 4, 4, 5, 6, 8. Median = (4 + 5) ÷ 2 = 4.5 minutes.', toward: '' };
     const form = { checkable: true, setup: 'import numpy as np\nx = np.array([2, 3, 4, 4, 4, 5, 6, 8])', stated: [{ where: 'answerKey', before: 'Median = (4 + 5) ÷ 2 =', expr: 'float(np.median(x))' }] };
