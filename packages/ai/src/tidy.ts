@@ -42,8 +42,22 @@ const REF_SENTENCE = new RegExp(String.raw`(^|[.!?])[ \t]*(?:see\s+)?${REFS}\.?(
 /** "Torres's report in passage [6] that…", "her article, passage [6].": the pointer goes, the sentence stays. */
 const REF_INLINE = new RegExp(String.raw`(?:,\s*|\s+in\s+|\s+)${REFS}(?=[\s.,:;)]|$)`, 'gi');
 
+/**
+ * Folio's own instructions, come back as advice. Told never to restate them, writers still do, in the notes a
+ * teacher reads: "write no criteria of your own", "no second set of questions here", "the handout is written
+ * separately". A sentence that carries one of these is the writer talking to itself, and goes.
+ */
+const ECHOES = /\bwrites? no (?:other |separate )?criteria\b|\bno second set of questions\b|\b(?:is|are) written separately\b|\bseparately written\b|\bscored by (?:its |their |the )?points\b|\btakes the place of further practice\b|\bin exactly these words\b/i;
+
+/** The text without the sentences that only echo an instruction. Lines of code are never touched. */
+export function withoutEchoes(text: string): string {
+  if (!ECHOES.test(text)) return text;
+  const kept = text.split('\n').map((row) => (row.includes('`') ? row : row.split(/(?<=[.!?])\s+/).filter((sentence) => !ECHOES.test(sentence)).join(' ')));
+  return kept.filter((row, i) => row.trim() || !text.split('\n')[i]!.trim()).join('\n').trim();
+}
+
 export function tidyPlanSources<T extends { segments: { description: string; teacherNotes: string }[] }>(v: T): T {
-  const strip = (text: string) => text.replace(REF_IN_BRACKETS, '').replace(REF_SENTENCE, '$1').replace(REF_INLINE, '').trim();
+  const strip = (text: string) => withoutEchoes(text.replace(REF_IN_BRACKETS, '').replace(REF_SENTENCE, '$1').replace(REF_INLINE, '').trim());
   return { ...v, segments: v.segments.map((seg) => ({ ...seg, description: strip(seg.description), teacherNotes: strip(seg.teacherNotes) })) };
 }
 
@@ -115,6 +129,7 @@ export function tidySlides(v: SlidesDraft, language: Language): SlidesDraft {
     slides: v.slides.flatMap((s) => {
       // A question with its lettered options is one thing to look at: split, the poll showed option A and hid B to D.
       const options = s.bullets.filter((b) => /^\(?[A-Ea-e][.):]\s/.test(b.trim())).length >= 2;
+      s = { ...s, notes: withoutEchoes(s.notes) };
       if (s.bullets.length <= BULLETS_PER_SLIDE || options) return [s];
       const half = Math.ceil(s.bullets.length / 2);
       return [

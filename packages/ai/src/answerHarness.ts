@@ -124,7 +124,8 @@ def match_text(text, val, first=None, tol=None, tight=False):
     f = flat(val)
     if f is None:
         s = ' '.join(str(val).split()).casefold(); b = ' '.join(nloc(body).split()).casefold()
-        return (s in b) if s else False, f'stored {text[:50]!r} computed {str(val)[:50]!r}'
+        # as a word of its own: "elastic" was found in "inelastic" and in "unit elastic", and four choices all stated the answer
+        return bool(s and re.search(r'(?<![\w-])' + re.escape(s) + r'(?![\w-])', b)), f'stored {text[:50]!r} computed {str(val)[:50]!r}'
     ns_ = numbers(body)
     if first: ns_ = ns_[:int(first)]
     if len(ns_) != len(f): return False, f'stored has {len(ns_)} numbers {[n[2] for n in ns_][:8]}, computed {len(f)}: {[round(x, 6) for x in f][:8]}'
@@ -172,6 +173,9 @@ def check_item(item, check):
                 # two choices one unit apart (0.6 and 0.7) both pass the loose rule: the one that rounds to the value is the one that states it
                 near = [n for n in hit if match_text(ch[n - 1]['text'], v, ents[n].get('first'), tol, True)[0]] if len(hit) > 1 else []
                 hit = near or hit
+                # a word answer two choices contain ("elastic", "unit elastic"): the choice that is the answer and no more states it
+                same = [n for n in hit if isinstance(v, str) and ' '.join(nloc(ch[n - 1]['text']).replace('\x60', '').split()).casefold().strip(' .') == ' '.join(v.split()).casefold().strip(' .')]
+                hit = same or hit
                 # several values at once (two quartiles, a fence and a verdict) matched against choices that word them their own way:
                 # when none fits, it is the form that does not fit
                 if not hit and (len(flat(v) or []) > 1 or (isinstance(v, (tuple, list)) and len(v) > 1)): raise Invalid('computed several values and no choice states them in that form')
@@ -266,7 +270,7 @@ def check_item(item, check):
             ns = fresh(); err = run_code(stored, ns, s.get('probe'))
             # a line lifted from a key ("current.next = new") has no list to act on: not run is not wrong; and an error the item
             # itself names (what happens on the input "]"? IndexError) is the answer, not a fault
-            if isinstance(err, NameError): raise Invalid(f'stored code needs names it does not set: {str(err)[:80]}')
+            if isinstance(err, NameError) or (isinstance(err, SyntaxError) and 'outside' in str(err)): raise Invalid(f'stored code is a fragment: {str(err)[:80]}')
             if err is not None and type(err).__name__ in json.dumps(item): return True, f'raises {type(err).__name__}, as the item says'
             if err is not None: return False, f'stored code does not run as written: {type(err).__name__}: {str(err)[:120]} | {stored[:80]!r}'
             if s.get('expect'):

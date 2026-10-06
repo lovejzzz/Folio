@@ -118,7 +118,9 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     const formA = { checkable: true, setup: 'x = 1', verbatim: [{ where: 'answer', text: 'current.next = new' }, { where: 'prompt', text: '[].pop()' }] };
     const fences = choice('t_fence', 'Delays 2, 4, 5, 7, 8, 10, 24: which conclusion follows from the 1.5 × IQR rule?', ['Q1 = 4.5 and Q3 = 9; the upper fence is 15.75, so 24 is a possible outlier.', 'Q1 = 5 and Q3 = 10; the upper fence is 17.5, so 24 is a possible outlier.', 'Use `IQR(x)`; `range(x)` gives two numbers.'], 1, 'The fence is Q3 + 1.5 × IQR.');
     const formB = { checkable: true, setup: 'import numpy as np\nx = np.array([2, 4, 5, 7, 8, 10, 24])', answer_expr: '(np.percentile(x, 25), np.percentile(x, 75), np.percentile(x, 75) + 1.5 * (np.percentile(x, 75) - np.percentile(x, 25)), True)', choices: [{ n: 1, kind: 'value' }, { n: 2, kind: 'value' }, { n: 3, kind: 'value', origin_expr: 'float(x.max() - x.min())' }] };
-    const out = await checkAnswers(fakeInference((r) => (r.prompt.includes('Delays') ? formB : formA)), nodeRunner(), [fragment, fences]);
+    const gym = choice('t_gym', 'Passes fall from 130 to 70 when the price rises from $8 to $12. By the midpoint method, demand is:', ['Elastic', 'Inelastic', 'Unit elastic', 'Perfectly inelastic'], 1, 'The midpoint elasticity is 1.5.');
+    const formC = { checkable: true, setup: 'e = abs(((70 - 130) / 100) / ((12 - 8) / 10))', answer_expr: '"Elastic" if e > 1 else "Inelastic"', choices: [1, 2, 3, 4].map((n) => ({ n, kind: 'value' })) };
+    const out = await checkAnswers(fakeInference((r) => (r.prompt.includes('Delays') ? formB : r.prompt.includes('Passes') ? formC : formA)), nodeRunner(), [fragment, fences, gym]);
     expect([...out.flags.values()]).toEqual([]);
   }, 120_000);
 

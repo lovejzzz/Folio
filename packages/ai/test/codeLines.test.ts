@@ -24,3 +24,30 @@ describe('code a room lesson shows, line by line', () => {
     expect(sheetFault(sheet({ type: 'table', columns: ['Price', 'Quantity'], rows: [['$2', ''], ['$4', '']] }))).toBeNull();
   });
 });
+
+describe('a number the sheets\' writer works out against the plan', () => {
+  it('is put right in the plan itself, where it stands once', async () => {
+    const { withHandouts } = await import('../src/handouts');
+    const { CourseStore, cmd, orderedLessons, newId } = await import('@folio/core');
+    const { fakeInference, planDraft, smallCourse } = await import('./fake');
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const segments = planDraft.segments.map((s, i) => ({ ...s, id: newId('x'), session: 1, kind: s.kind as 'teach', teacherNotes: i === 0 ? 'The standard deviation is about 25.70.' : s.teacherNotes }));
+    const written = { commands: [cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [], content: { segments, keyIdeas: ['Light drives it'], vocabulary: [] } })], flagged: 0 };
+    const model = fakeInference(() => ({}), { handouts: [], corrections: [{ find: 'about 25.70', replace: 'about 25.79' }, { find: 'not in the plan', replace: 'x' }] });
+    const out = await withHandouts(model, course, lesson, written);
+    const store = new CourseStore(course);
+    store.apply(out.commands, { label: { key: 'b' }, source: 'ai' });
+    expect(store.getState().lessons[lesson.id]!.segments[0]!.teacherNotes).toBe('The standard deviation is about 25.79.');
+  });
+});
+
+describe('an instruction that comes back as advice', () => {
+  it('is taken out of the notes, and nothing else is', async () => {
+    const { withoutEchoes } = await import('../src/tidy');
+    expect(withoutEchoes('Score with the rubric from last time; write no criteria of your own. Hear two pairs.')).toBe('Hear two pairs.');
+    expect(withoutEchoes('Students take the quiz. The quiz is scored by points. Collect the papers.')).toBe('Students take the quiz. Collect the papers.');
+    expect(withoutEchoes('Hand out the sheet.\n`x = 1  # written separately`\nThe handout is written separately; do not model it.')).toBe('Hand out the sheet.\n`x = 1  # written separately`');
+    expect(withoutEchoes('Each criterion is scored from 1 to 4 points.')).toBe('Each criterion is scored from 1 to 4 points.');
+  });
+});
