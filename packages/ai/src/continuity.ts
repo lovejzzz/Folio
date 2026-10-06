@@ -314,7 +314,7 @@ function ahead(course: Course, next: Lesson): string {
   const firstTurns = pieces.filter((p) => p.kind === 'inclass' && p.toward.trim() && !before.some((l) => holds(l, 'inclass', p.toward.trim())));
   return [
     tests.length ? `, and announces the test it holds${named(tests[0]!)}, what it covers and what to bring` : '',
-    firstTurns.length ? `, and prepares the work graded in class there for the first time${named(firstTurns[0]!)}: which that lesson introduces with its brief and rubric: say now that it begins there and what everyone prepares for it; no turn is scored before students have had the brief for a lesson` : '',
+    firstTurns.length ? `, and prepares the work graded in class there for the first time${named(firstTurns[0]!)}: which that lesson introduces with its brief and rubric, the teacher modelling a first turn: say now that it is introduced there; nobody is asked to lead or present at that lesson, and no turn is scored before students have had the brief for a lesson` : '',
   ].join('');
 }
 

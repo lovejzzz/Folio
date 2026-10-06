@@ -1,5 +1,35 @@
 [
  {
+  "version": "0.0.29",
+  "date": "October 6, 2026",
+  "title": "Work done in class fits its minutes, and is written once",
+  "lede": "We kept rereading the eight first-year courses Folio was never tuned on, fixing what the readers found where it started and building the courses again. At 0.0.26 they found ten faults that would stop a lesson being taught as written. In the most recent reading of each course they found none.",
+  "sections": [
+   {
+    "heading": "Graded work in class is sized to the time",
+    "body": "A fifteen-minute group worksheet came with four parts, three tables, two drawings and a paragraph. Telling the writer to size it did not help, so Folio now measures it: work done in class is compared with the minutes its plan gives it and written again, shorter, when it is too much. A sheet that says “work for 20 minutes” in a 13-minute segment is caught the same way.",
+    "image": {
+     "src": "/changelog/0.0.29-fits.svg",
+     "alt": "Faults that would stop a lesson, in sixteen lessons of eight new courses: 10 at version 0.0.26, 4 after 0.0.28, 0 at 0.0.29",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "One version of each graded piece",
+    "body": "A graded worksheet used to appear twice, once among the handouts with six tasks and once as the graded piece with four and a rubric for the four. The handout writer is now told which pieces are graded and leaves them alone. A lab held every week is a new lab each week, never the first week’s again. A quiz of questions with one right answer is scored by its answers and has no rubric. A later lesson that reuses a rubric is told what the rubric scores and shows it to students again."
+   },
+   {
+    "heading": "Turns students prepare",
+    "body": "The first student to lead a graded seminar used to see the brief minutes before being scored on it. The first meeting that runs such a piece now gives out the brief, has the teacher model a turn that is not scored, and settles who goes first; scoring begins the meeting after. A step toward a project is written knowing the project as it was set, and a weekly pre-lab entry comes with the procedure it is about."
+   },
+   {
+    "heading": "Smaller things",
+    "body": "A wrong number on a worksheet that its answer key noticed is corrected on the worksheet, not just mentioned to the teacher. A text the plan puts on the screen is on a slide. A character of code keeps its straight quotes. The answer check no longer doubts a right key because a number was spelled out, a sign stood apart from its number, or a fraction was negative, and what it finds wrong in the explanation of a wrong choice it now puts right."
+   }
+  ]
+ },
+ {
   "version": "0.0.28",
   "date": "October 6, 2026",
   "title": "No problem is set twice in a week",
