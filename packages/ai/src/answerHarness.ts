@@ -21,6 +21,8 @@ FRAC = re.compile(r'(?<![\w./])((?<![\w)\]])[-−])?(?:(\d+)\s+)?(\d+)\s*/\s*(\d
 def numbers(text):
     """the numbers a text states, in order, each with the decimal places it is given to. Read as a class writes
     them: 3.011 × 10²³ is one number, and so is 2/3, and 1 1/2"""
+    # a debt is written with its sign before the currency mark: −$24 is −24
+    text = re.sub(r'([-−])([$€£])(?=\d)', r'\2\1', text)
     # scientific notation first, as one token the pattern below reads
     text = SCI.sub(lambda m: m.group(1).replace(',', '') + 'e' + (m.group(2) or m.group(3).translate(SUP)).replace('−', '-'), text)
     out = []; at = 0

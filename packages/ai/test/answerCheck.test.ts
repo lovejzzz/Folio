@@ -176,6 +176,10 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
       sheet('t_fmt', 'Use `System.out.printf("Total cost: $%.2f%n", totalCost);` Expected output: Total cost: $125.45'),
     ]);
     expect(['t_vec', 't_vec_wrong', 't_fmt'].map((id) => more.flags.has(id))).toEqual([false, true, false]);
+    // A debt is written −$24.
+    const debt = (id: string, answer: string): Task => ({ ...base, id, kind: 'question', format: 'numeric', prompt: 'Half of a $360 crop is the family share; the store bill is $204. What is left? Use a minus sign for debt.', choices: [], correct: null, answer, explanation: 'Half of 360 is 180, and 180 less 204 is a debt.', difficulty: 2 });
+    const owed = await checkAnswers(fakeInference(() => ({ checkable: true, setup: 'left = 360 / 2 - 204', answer_kind: 'value', answer_expr: 'left' })), nodeRunner(), [debt('t_debt', '−$24'), debt('t_debt_wrong', '$24')]);
+    expect([owed.flags.has('t_debt'), owed.flags.has('t_debt_wrong')]).toEqual([false, true]);
   }, 120_000);
 
   it('puts right a key the numbers contradict, and keeps the correction only when it then holds', async () => {
