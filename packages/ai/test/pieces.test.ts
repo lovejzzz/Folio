@@ -178,3 +178,15 @@ describe('weekly work the brief has students do before a lesson', () => {
     expect(sectionPrompt(course, weekly, 'assignments')).toMatch(/unless the brief has students do it before a lesson to prepare for it.*The lesson it is due at is "Functionalism": S2\./);
   });
 });
+
+describe('a deadline in a lesson of several meetings', () => {
+  it('names the first meeting of the next lesson, since "next time" is also this lesson’s next meeting', () => {
+    const sessions = [{ kind: 'lecture' as const, minutes: 50 }, { kind: 'problems' as const, minutes: 50 }];
+    const told = (course: Course) => {
+      const [first, second] = orderedLessons(course);
+      return lessonContext(course, { ...first!, also: [], homework: { kind: 'assignment' as const, toward: 'Weekly response papers', due: second!.id } });
+    };
+    expect(told(courseFromOutline({ ...req, sessions }, outline()))).toMatch(/due at the first meeting of the next lesson/);
+    expect(told(courseFromOutline(req, outline()))).toMatch(/due at the start of the next lesson/);
+  });
+});

@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.0.28",
+  "date": "October 6, 2026",
+  "title": "No problem is set twice in a week",
+  "lede": "After the last release we reread the physics, calculus and chemistry courses with strict readers. Nothing blocked a lesson from being taught, and every number was right. What they did find is fixed here.",
+  "sections": [
+   {
+    "heading": "The quiz, the homework and the recitation work no longer share problems",
+    "body": "These were each written from the lesson plan alone, so they reached for the same example. A graded problem-set question was the recitation’s own, whose solutions are posted after class, and a graded quiz repeated the practice questions. They are now written in order, the practice quiz first, and each piece is shown what the lesson already sets and told to give other problems.",
+    "image": {
+     "src": "/changelog/0.0.28-once.svg",
+     "alt": "Before: the practice quiz, recitation and problem set used the same position function. Now each uses a different problem",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "Work done before class is about that class",
+    "body": "When your brief says students take a reading quiz before each lecture, the quiz is now written on the reading for the lecture it is due at, in questions with one right answer. Before, it was on the lecture just given. Work your brief says is done online is handed in online, and no longer collected in class."
+   },
+   {
+    "heading": "Smaller things",
+    "body": "In a week of several meetings, a deadline names the first meeting of the next week, since “next time” could mean tomorrow’s lecture, and slide notes set homework in the meeting where the plan does. A short quiz paper is sized to its minutes. Written work done in class is scored after class, and discussion prompts are questions for students, never notes to the teacher."
+   }
+  ]
+ },
+ {
   "version": "0.0.27",
   "date": "October 6, 2026",
   "title": "A week with three lectures and a recitation is planned as one",
