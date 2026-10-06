@@ -274,14 +274,21 @@ def check_item(item, check):
             if fv is not None:
                 # the computed values in order among the numbers that follow: a key says "2.45 for n = 4 and 1.64 for n = 9",
                 # and the 4 and the 9 are not results
-                stored = numbers(tail.replace('\x60', ''))[:3 * len(fv) + 4]; at = 0; bad = []
-                for c in fv:
-                    # a whole number further on is the value only when the value is whole: "SD approximately 1.427 … 100*(1-level)/2"
-                    # passed for a computed 1.4588, by the 1 in the formula
-                    whole = float(c).is_integer()
-                    hit = next((k for k in range(at, len(stored)) if num_ok(stored[k][0], stored[k][1], c, s.get('tolerance')) and (stored[k][1] > 0 or k == at or whole)), None)
-                    if hit is None: bad.append(round(c, 6))
-                    else: at = hit + 1
+                def missed(words):
+                    stored = numbers(words.replace('\x60', ''))[:3 * len(fv) + 4]; at = 0; bad = []
+                    for c in fv:
+                        # a whole number further on is the value only when the value is whole: "SD approximately 1.427 … 100*(1-level)/2"
+                        # passed for a computed 1.4588, by the 1 in the formula
+                        whole = float(c).is_integer()
+                        hit = next((k for k in range(at, len(stored)) if num_ok(stored[k][0], stored[k][1], c, s.get('tolerance')) and (stored[k][1] > 0 or k == at or whole)), None)
+                        if hit is None: bad.append(round(c, 6))
+                        else: at = hit + 1
+                    return stored, bad
+                # the anchor fell inside a format string ("Total cost: $%.2f"), where no value stands
+                if tail.lstrip().startswith('%'): raise Invalid('the anchor points into a format string')
+                stored, bad = missed(tail)
+                # components of a vector or terms of a sum are written with the sign set off: "3î − 5ĵ − 7k̂" states −5 and −7
+                if bad and not missed(re.sub(r'([−-])\s+(?=[\d.])', r'\1', tail))[1]: bad = []
                 # a count a key spells out ("totaling four", "more than eight of the 16") is that number
                 bad = [c for c in bad if not (float(c).is_integer() and 0 <= c <= 20 and re.search(r'(?<![\w-])' + WORDS[int(c)] + r'(?![\w-])', tail[:120], re.I))]
                 # the form's anchor ran past the value it was to find: the number is in the words it quoted

@@ -168,6 +168,14 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
       sheet('t_anchor', 'The secant slopes approach −0.25: −0.2488 and −0.2513 lie close to that number on opposite sides. (3 points) Total: 10 points'),
     ]);
     expect(['t_word', 't_word_wrong', 't_anchor'].map((id) => out.flags.has(id))).toEqual([false, true, false]);
+    // The terms of a vector carry their signs set off by a space, and a format string holds no value.
+    const cross = (r: { prompt: string }) => (r.prompt.includes('printf') ? { checkable: true, setup: 'cost = 125.45', stated: [{ where: 'answerKey', before: 'Total cost: $', occurrence: 1, expr: 'cost' }] } : { checkable: true, setup: 'import numpy as np\nc = np.cross([1, 2, -1], [3, -1, 0])', stated: [{ where: 'answerKey', before: 'C × D = ', expr: 'c.tolist()' }] });
+    const more = await checkAnswers(fakeInference(cross), nodeRunner(), [
+      sheet('t_vec', 'The correct cross product is C × D = −1î − 3ĵ − 7k̂. Use `np.cross`.'),
+      sheet('t_vec_wrong', 'The correct cross product is C × D = −1î + 3ĵ − 7k̂. Use `np.cross`.'),
+      sheet('t_fmt', 'Use `System.out.printf("Total cost: $%.2f%n", totalCost);` Expected output: Total cost: $125.45'),
+    ]);
+    expect(['t_vec', 't_vec_wrong', 't_fmt'].map((id) => more.flags.has(id))).toEqual([false, true, false]);
   }, 120_000);
 
   it('puts right a key the numbers contradict, and keeps the correction only when it then holds', async () => {
