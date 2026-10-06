@@ -50,6 +50,17 @@ export function handoutsPrompt(course: Course, lesson: Lesson, plan: Content): s
   ].join('\n\n');
 }
 
+/**
+ * What is wrong with the sheets' form, as their writer can put it right; the first found, or nothing. A worksheet
+ * went out with a table of three empty rows and no headings under "Complete the table", and its key said so.
+ */
+export function sheetFault(draft: HandoutsDraft): string | null {
+  const code = codeFaults(draft)[0]?.flag;
+  if (code?.code === 'schemaIssue') return String(code.values.issue);
+  const empty = draft.handouts.find((h) => h.blocks.some((b) => b.type === 'table' && (!b.columns.length || !b.rows.length || b.rows.some((r) => r.length !== b.columns.length))));
+  return empty ? `the sheet "${empty.title}" has a table without its headings or with rows that are not as long as them: give every table its column headings and every row one cell for each, the cells students fill as empty strings and the labels they need written in` : null;
+}
+
 function toHandout(d: HandoutsDraft['handouts'][number]): Handout {
   return { id: newId('x'), title: d.title, kind: d.kind, usedIn: d.usedIn, copies: d.copies, blocks: exhibitPart({ label: '', blocks: d.blocks }).blocks, key: d.key, supports: false };
 }
@@ -68,9 +79,9 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
     const write = (told = '') => runJob(inference, { task: 'folio_handouts', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: `${handoutsPrompt(course, lesson, content)}${told}`, effort: 'medium', schema: HandoutsDraft, repair: false, signal });
     const first = await write();
     // Code a student must read line by line is asked for once more when it came squeezed; the second answer is kept only if it is sound.
-    const fault = codeFaults(first.value)[0]?.flag;
-    const again = fault?.code === 'schemaIssue' ? await write(`\n\nA first answer was not usable: ${fault.values.issue}.`).catch(() => null) : null;
-    const result = again && !codeFaults(again.value).length ? again : first;
+    const fault = sheetFault(first.value);
+    const again = fault ? await write(`\n\nA first answer was not usable: ${fault}.`).catch(() => null) : null;
+    const result = again && !sheetFault(again.value) ? again : first;
     const handouts = result.value.handouts.map(toHandout);
     const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: fill.payload.flags, content: { ...content, handouts } }) : c));
     return { commands, flagged: written.flagged };

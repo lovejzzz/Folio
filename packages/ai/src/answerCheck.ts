@@ -1,6 +1,7 @@
 import type { Flag, Task } from '@folio/core';
 import { RUNNER_ERRORS, type Runner } from '@folio/run';
 import { z } from 'zod';
+import { corrected } from './answerFix';
 import { HARNESS } from './answerHarness';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
@@ -141,6 +142,8 @@ const claim = (c: Check): string => {
 export interface AnswerChecks {
   /** What failed twice, by task: for the teacher. */
   flags: Map<string, Flag[]>;
+  /** Items put right by what was computed, as they now stand: each held when checked again. */
+  fixed: Map<string, Task>;
   /** The items whose claims were computed and held. */
   held: Set<string>;
   checked: number;
@@ -171,13 +174,17 @@ async function checkOne(inference: Inference, runner: Runner, task: Task, signal
  * it is then counted as unchecked. Stopping still stops.
  */
 export async function checkAnswers(inference: Inference, runner: Runner, tasks: Task[], signal?: AbortSignal): Promise<AnswerChecks> {
-  const out: AnswerChecks = { flags: new Map(), held: new Set(), checked: 0, unchecked: 0 };
+  const out: AnswerChecks = { flags: new Map(), fixed: new Map(), held: new Set(), checked: 0, unchecked: 0 };
   const one = async (task: Task) => {
     const flags = await checkOne(inference, runner, task, signal).catch((error: unknown) => (signal?.aborted ? Promise.reject(error) : null));
     if (flags === null) out.unchecked += 1;
     else out.checked += 1;
-    if (flags?.length) out.flags.set(task.id, flags);
-    else if (flags) out.held.add(task.id);
+    if (!flags?.length) return void (flags && out.held.add(task.id));
+    // Put right by what was computed, and kept only if it then holds: otherwise the item stands as written, with its note.
+    const again = await corrected(inference, task, shownItem(task), flags, signal).catch(() => null);
+    const holds = again ? await checkOne(inference, runner, again, signal).catch(() => null) : null;
+    if (again && holds && !holds.length) out.fixed.set(task.id, again);
+    else out.flags.set(task.id, flags);
   };
   // The first alone: its call puts the instruction in the cache, and the rest, sent together after it, read it there
   // for a tenth of the price. Sent all at once, every call paid to write it and none read it.
@@ -193,9 +200,11 @@ type Fill = { type: string; payload: { tasks?: Task[] } };
 export async function withAnswerChecks<C extends { type: string; payload: unknown }>(inference: Inference, runner: Runner | undefined, written: { commands: C[]; flagged: number }, signal?: AbortSignal): Promise<{ commands: C[]; flagged: number }> {
   const tasks = written.commands.flatMap((c) => (c.type === 'tasks.fill' ? ((c as Fill).payload.tasks ?? []) : []));
   if (!runner || !tasks.some(worthChecking)) return written;
-  const { flags, held } = await checkAnswers(inference, runner, tasks, signal);
-  if (!flags.size && !held.size) return written;
-  const mark = (t: Task): Task => (flags.has(t.id) ? { ...t, flags: [...t.flags, ...flags.get(t.id)!] } : held.has(t.id) ? { ...t, checked: true } : t);
+  const checked = await checkAnswers(inference, runner, tasks, signal);
+  const { flags, held } = checked;
+  const { fixed } = checked;
+  if (!flags.size && !held.size && !fixed.size) return written;
+  const mark = (t: Task): Task => (fixed.has(t.id) ? { ...fixed.get(t.id)!, checked: true } : flags.has(t.id) ? { ...t, flags: [...t.flags, ...flags.get(t.id)!] } : held.has(t.id) ? { ...t, checked: true } : t);
   const noted = (c: C): C => (c.type === 'tasks.fill' ? { ...c, payload: { ...(c.payload as object), tasks: ((c as Fill).payload.tasks ?? []).map(mark) } } : c);
   return { commands: written.commands.map(noted), flagged: written.flagged + flags.size };
 }

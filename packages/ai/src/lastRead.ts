@@ -92,7 +92,7 @@ function placedLine<T>(value: T, find: string, replace: string): { value: T; hit
  * once: a quarter of its changes were found nowhere and became notes saying what the text should have said. Lines
  * are placed one by one, and all of them or none.
  */
-function placed<T>(value: T, find: string, replace: string): { value: T; hits: number } {
+export function placed<T>(value: T, find: string, replace: string): { value: T; hits: number } {
   const [from, to] = [find.split('\n'), replace.split('\n')];
   if (from.length === 1 || from.length !== to.length) return placedLine(value, find, replace);
   let now = value;

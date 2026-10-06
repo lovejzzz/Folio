@@ -183,6 +183,18 @@ export function dueWords(course: Course, lesson: Lesson): string {
   return when ? `It is ${when}.` : '';
 }
 
+/**
+ * A piece graded in class that later lessons score again with the rubric written here (participation, a seminar
+ * turn): told only of its own lesson, a participation rubric graded "explains the phone-checking behavior", and the
+ * next lesson's subfield matching was scored with it.
+ */
+export function inClassAgain(course: Course, lesson: Lesson): string {
+  const toward = lesson.homework.toward.trim();
+  const graded = course.grading.some((g) => g.item.trim() === toward);
+  const once = orderedLessons(course).filter((l) => holds(l, 'inclass', toward)).length < 2;
+  return toward && graded && once ? ` "${toward}" is a share of the course grade earned in other lessons too, and they score with this same brief and rubric: so its steps and criteria hold for any lesson's activity and name nothing of this one's, and the running notes say how it is scored in a lesson and recorded.` : '';
+}
+
 /** The brief of a piece graded in class that an earlier lesson already wrote, so a later plan runs it as it was set. */
 function briefSoFar(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();

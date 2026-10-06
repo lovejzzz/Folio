@@ -96,6 +96,19 @@ async function viaCodex(body: Record<string, unknown>): Promise<string> {
   return jsonIn(readFileSync(file, 'utf8'));
 }
 
+/**
+ * Tokens a CLI answer would have cost through the API, from its characters: the CLIs report none. The rates are
+ * tokens per character measured on 268 paid calls of 5 October 2026 (Sonnet 0.355 in and 0.35 out; Luna at high
+ * 0.213 in and 1.108 out, its thinking included; Sol at low 0.216 in and 0.277 out), so a check-up run through
+ * the CLIs still says what it would cost.
+ */
+function estimated(body: Record<string, unknown>, text: string): { input: number; output: number } {
+  const sent = JSON.stringify([body.system ?? '', body.messages ?? '', body.response_format ?? (body.output_config as { format?: unknown } | undefined)?.format ?? '']).length;
+  const model = String(body.model);
+  const [i, o] = model.includes('luna') ? [0.213, body.reasoning_effort === 'high' ? 1.108 : 0.5] : model.startsWith('gpt') ? [0.216, 0.277] : [0.355, 0.35];
+  return { input: Math.round(sent * i), output: Math.round(text.length * o) };
+}
+
 const anthropicAnswer = (body: Record<string, unknown>, text: string) => ({
   id: `msg_${Date.now()}`,
   type: 'message',
@@ -104,7 +117,7 @@ const anthropicAnswer = (body: Record<string, unknown>, text: string) => ({
   content: [{ type: 'text', text }],
   stop_reason: 'end_turn',
   stop_sequence: null,
-  usage: { input_tokens: 0, output_tokens: 0 },
+  usage: { input_tokens: estimated(body, text).input, output_tokens: estimated(body, text).output },
 });
 
 /** The same answer as a stream, for a request that asked for one (a long answer). */
@@ -115,7 +128,7 @@ function anthropicStream(body: Record<string, unknown>, text: string): string {
     ['content_block_start', { type: 'content_block_start', index: 0, content_block: { type: 'text', text: '' } }],
     ['content_block_delta', { type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text } }],
     ['content_block_stop', { type: 'content_block_stop', index: 0 }],
-    ['message_delta', { type: 'message_delta', delta: { stop_reason: 'end_turn', stop_sequence: null }, usage: { output_tokens: 0 } }],
+    ['message_delta', { type: 'message_delta', delta: { stop_reason: 'end_turn', stop_sequence: null }, usage: { output_tokens: estimated(body, text).output } }],
     ['message_stop', { type: 'message_stop' }],
   ];
   return events.map(([event, data]) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`).join('');
@@ -130,7 +143,7 @@ const cliFetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
   try {
     const text = openai ? await viaCodex(body) : await viaClaude(body);
     appendFileSync(LOG, `${JSON.stringify({ at: new Date().toISOString(), model: body.model, ms: Date.now() - started, chars: text.length })}\n`);
-    if (openai) return Response.json({ choices: [{ index: 0, message: { role: 'assistant', content: text }, finish_reason: 'stop' }], usage: { prompt_tokens: 0, completion_tokens: 0 } });
+    if (openai) return Response.json({ choices: [{ index: 0, message: { role: 'assistant', content: text }, finish_reason: 'stop' }], usage: { prompt_tokens: estimated(body, text).input, completion_tokens: estimated(body, text).output } });
     if (body.stream) return new Response(anthropicStream(body, text), { headers: { 'content-type': 'text/event-stream' } });
     return Response.json(anthropicAnswer(body, text));
   } catch (error) {
@@ -386,7 +399,9 @@ const polishOnly = ARGS.includes('--polish');
 const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs', '--lessons', '--trace'].includes(ARGS[i - 1] ?? ''));
 const asked = names.length ? names : Object.keys(CHECKUP ?? BRIEFS);
 await Promise.all(asked.map((name) => make(name, polishOnly)));
-if (PAID) {
+{
+  // Through the CLIs the tokens are estimated from characters, and the dollars are what the API would have charged.
+  if (!PAID) console.log('Tokens and cost estimated from characters (CLI run, nothing charged):');
   const by = new Map<string, Usage[]>();
   for (const u of USED) by.set(u.task, [...(by.get(u.task) ?? []), u]);
   const row = (name: string, list: Usage[]) => `${name.padEnd(24)} ${String(list.length).padStart(4)} calls  in ${String(list.reduce((n, u) => n + u.input + u.cacheRead + u.cacheWrite, 0)).padStart(8)}  out ${String(list.reduce((n, u) => n + u.output, 0)).padStart(7)}  $${costOf(list, null).usd.toFixed(3)}`;

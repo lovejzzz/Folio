@@ -41,6 +41,7 @@ export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_picture_check: 3000,
   // A form for one question: about 900 tokens with its thinking in measured calls.
   folio_answer_check: 6000,
+  folio_answer_fix: 6000,
   // A dozen mistaken cells at most, each written whole.
   folio_stuck_check: 8000,
   folio_plan: 12000,

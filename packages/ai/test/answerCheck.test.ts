@@ -36,7 +36,8 @@ describe('an answer that can be computed', () => {
     // Twice on the key: a finding. Once, then a pass: the form was wrong, not the item. Twice, on different claims: not the same finding.
     const twice = await checkAnswers(model, scripted([fail('key'), fail('key')]), [wrong]);
     expect(twice.flags.get('t_wrong')).toEqual([{ code: 'answerCheck', values: { claim: 'the key', found: 'stored 3.0 computed 4.0' } }]);
-    expect(model.calls).toHaveLength(2);
+    // Two forms, then one request to put the item right (which this model answers with nothing to place).
+    expect(model.calls.map((c) => c.task)).toEqual(['folio_answer_check', 'folio_answer_check', 'folio_answer_fix']);
     expect(model.calls[0]!.prompt).toContain('"keyed": true');
     // A pass is said too: the item is marked as checked, which a teacher can see.
     expect([...(await checkAnswers(model, scripted([PASS]), [right])).held]).toEqual(['t_right']);
@@ -120,6 +121,21 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     const out = await checkAnswers(fakeInference((r) => (r.prompt.includes('Delays') ? formB : formA)), nodeRunner(), [fragment, fences]);
     expect([...out.flags.values()]).toEqual([]);
   }, 120_000);
+
+  it('puts right a key the numbers contradict, and keeps the correction only when it then holds', async () => {
+    const work: Task = { ...base, id: 't_key', kind: 'assignment', title: 'Wait times', prompt: 'Wait times in minutes: 2, 3, 4, 4, 4, 5, 6, 8.', steps: ['Find the median wait time.'], rubricId: null, answerKey: '1. Sorted: 2, 3, 4, 4, 4, 5, 6, 8. Median = (4 + 5) ÷ 2 = 4.5 minutes.', toward: '' };
+    const form = { checkable: true, setup: 'import numpy as np\nx = np.array([2, 3, 4, 4, 4, 5, 6, 8])', stated: [{ where: 'answerKey', before: 'Median = (4 + 5) ÷ 2 =', expr: 'float(np.median(x))' }] };
+    const fixedForm = { ...form, stated: [{ where: 'answerKey', before: 'Median = (4 + 4) ÷ 2 =', expr: 'float(np.median(x))' }] };
+    const model = fakeInference((r) => (r.task === 'folio_answer_fix' ? { changes: [{ find: '(4 + 5) ÷ 2 = 4.5 minutes', replace: '(4 + 4) ÷ 2 = 4 minutes' }] } : r.prompt.includes('(4 + 4)') ? fixedForm : form));
+    const out = await checkAnswers(model, nodeRunner(), [work]);
+    expect(out.flags.size).toBe(0);
+    expect((out.fixed.get('t_key') as { answerKey: string }).answerKey).toContain('Median = (4 + 4) ÷ 2 = 4 minutes');
+    // A correction that does not hold is not kept: the item stands as written, with its note.
+    const stubborn = fakeInference((r) => (r.task === 'folio_answer_fix' ? { changes: [{ find: '4.5 minutes', replace: '5 minutes' }] } : form));
+    const kept = await checkAnswers(stubborn, nodeRunner(), [work]);
+    expect(kept.fixed.size).toBe(0);
+    expect(kept.flags.has('t_key')).toBe(true);
+  }, 240_000);
 
   it('runs a stored answer as it is stored: a curly quote in code is a failure, not something to tidy first', async () => {
     const short: Task = { ...base, id: 't_code', kind: 'question', format: 'short', prompt: 'Write an expression for the number of rows whose `city` is Austin.', choices: [], correct: null, answer: '`(df["city"] == “Austin”).sum()`', explanation: '', difficulty: 2 };
