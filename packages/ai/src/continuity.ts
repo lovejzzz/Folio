@@ -348,8 +348,11 @@ export function inClassPieces(course: Course): string {
       const toward = p.toward.trim();
       if (p.kind !== 'inclass' || !toward || seen.has(toward)) return [];
       seen.add(toward);
-      return [`"${toward}" has its brief and rubric written with the lesson "${l.title}"`];
+      // Told only where the rubric was, a later lesson ran a five-minute "peer review" that two of its three criteria could not score.
+      const brief = workOf(course, l, toward);
+      const rubric = brief?.kind === 'assignment' && brief.rubricId ? course.rubrics[brief.rubricId] : undefined;
+      return [`"${toward}" has its brief and rubric written with the lesson "${l.title}"${rubric ? ` (scored on: ${rubric.criteria.map((c) => c.name).join('; ')})` : ''}`];
     }),
   );
-  return lines.length ? `${lines.join('; ')}. A lesson that runs one of these says so and scores with that rubric; it writes no criteria of its own.` : '';
+  return lines.length ? `${lines.join('; ')}. A lesson that runs one of these says so and scores with that rubric; it writes no criteria of its own, gives students a task in which every criterion has something to show, and puts the brief and rubric before them again (on the screen or as copies).` : '';
 }

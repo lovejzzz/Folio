@@ -135,7 +135,9 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
   const blocked = (t: BuildTarget): boolean => {
     const queued = [...pending, ...[...running.keys()].map(parseKey)];
     const waiting = queued.filter((o) => o.kind === 'plan');
-    if (t.kind === 'plan') return waiting.some((o) => position(o.lessonId) < position(t.lessonId) && !drafts.has(o.lessonId));
+    // A plan that runs a piece graded in class is told what its rubric scores: it waits for an earlier lesson's brief and rubric.
+    const scored = (o: BuildTarget) => o.kind === 'assignments' && position(o.lessonId) < position(t.lessonId) && pieces(o.lessonId).some((key) => key.startsWith('inclass:'));
+    if (t.kind === 'plan') return queued.some(scored) || waiting.some((o) => position(o.lessonId) < position(t.lessonId) && !drafts.has(o.lessonId));
     if (t.kind === 'assignments' && queued.some((o) => o.kind === 'assignments' && position(o.lessonId) < position(t.lessonId) && shares(o.lessonId, t.lessonId))) return true;
     // Graded work is written after the lesson's quiz, which it is shown: written beside it, both set the same problems.
     if (t.kind === 'assignments' && queued.some((o) => o.kind === 'quiz' && o.lessonId === t.lessonId)) return true;

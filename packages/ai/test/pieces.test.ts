@@ -1,6 +1,6 @@
 import { CourseStore, lessonAssignments, lessonPieces, orderedLessons, project, setsWork, type Course } from '@folio/core';
 import { describe, expect, it } from 'vitest';
-import { OutlineDraft, courseFromOutline, generateSection, lessonContext, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
+import { OutlineDraft, courseBackground, courseFromOutline, generateSection, lessonContext, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
 import { fakeInference } from './fake';
 
 const req: NewCourseRequest = {
@@ -132,6 +132,8 @@ describe('a lesson that holds more than one piece of work', () => {
     const titles = (n: number) => lessonAssignments(course, orderedLessons(course)[n]!).map((a) => [a.title, a.toward]);
     expect(titles(0)).toEqual([['Response paper', 'Weekly response papers'], ['Presenting and leading', 'Presentation'], ['Seminar paper', 'Seminar paper']]);
     expect(titles(1)).toEqual([['Response paper', 'Weekly response papers'], ['Prospectus', 'Seminar paper']]);
+    // A later lesson that runs the piece graded in class is told what its rubric scores, so its task can be scored with it.
+    expect(courseBackground(course)).toMatch(/"Presentation" has its brief and rubric written with the lesson "Dualism" \(scored on: [^)]+\)/);
     expect(Object.keys(course.rubrics)).toHaveLength(4);
     // Each is printed as the piece it is: graded in class, a step toward the paper, due where the outline said.
     const text = JSON.stringify(project(course, 'assignments', { audience: 'student' }).blocks);
