@@ -374,7 +374,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     // "give new items, not the lesson's", an assignment forbade the notebook its page had just said to submit.
     const inClass = kind === 'assignments' && lesson.homework.kind === 'inclass';
     const follow = inClass ? FOLLOW_IN_CLASS : kind === 'assignments' && hasModulePages(course) ? FOLLOW_PAGE_BUILD : kind === 'quiz' || kind === 'assignments' ? FOLLOW_PLAN_NEW_ITEMS : FOLLOW_PLAN;
-    if (plan) parts.push([plan, sheetsText(lesson, kind === 'slides' || kind === 'study' || kind === 'assignments'), follow].filter(Boolean).join('\n\n'));
+    if (plan) parts.push([plan, sheetsText(lesson, kind === 'slides' || kind === 'study' || kind === 'faq' || kind === 'assignments'), follow].filter(Boolean).join('\n\n'));
   }
   if (kind === 'plan') parts.push(nextReading(course, lesson), earlierLessons(course, lesson), earlierNotes(lesson));
   // A graded piece of its own, not one of a weekly run: it is written from the course, not from one lesson.
