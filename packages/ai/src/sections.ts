@@ -23,7 +23,7 @@ import {
 import type { Inference } from './inference';
 import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
-import { assignments, base, continuedInClass, flagsAt, step, test, type SectionJob } from './workJobs';
+import { alreadySet, assignments, base, continuedInClass, flagsAt, step, test, type SectionJob } from './workJobs';
 import { issuePlace, reviewPlan } from './review';
 import { PREPARATION_GRADING, checkRunOfShow, isLiveOnline, isMixedOnline } from './live';
 import { FORUM_GRADING, checkModule, moduleJob, type ModuleDraft } from './online';
@@ -281,14 +281,17 @@ const readPlan = (reviewer: Inference, course: () => Course, lesson: Lesson, sig
  * the same wherever it is set is taken from where it was first written, and the lesson is filled with all of them
  * at once. Written one piece to a lesson, a seminar's weekly paper gave way whenever a larger piece was set.
  */
-async function writeWork(course: Course, lesson: Lesson, write: (piece: Lesson) => Promise<SectionResult>): Promise<SectionResult> {
+async function writeWork(course: Course, lesson: Lesson, write: (piece: Lesson, set: string) => Promise<SectionResult>): Promise<SectionResult> {
   const results: SectionResult[] = [];
+  const filled = () => results.flatMap((r) => r.commands).flatMap((c) => (c.type === 'tasks.fill' ? [c.payload] : []));
+  // Each piece sees the lesson's quiz and the pieces before it, so no problem is set twice.
+  const quiz = (course.lessons[lesson.id]?.taskIds ?? []).flatMap((id) => (course.tasks[id]?.kind === 'question' ? [course.tasks[id]] : []));
   for (const homework of lessonPieces(lesson)) {
     const piece = { ...lesson, homework, also: [] };
     const continued = continuedInClass(course, piece);
-    results.push(continued ? { commands: continued, flagged: 0 } : await write(piece));
+    results.push(continued ? { commands: continued, flagged: 0 } : await write(piece, alreadySet([...quiz, ...filled().flatMap((f) => f.tasks)])));
   }
-  const fills = results.flatMap((r) => r.commands).flatMap((c) => (c.type === 'tasks.fill' ? [c.payload] : []));
+  const fills = filled();
   if (!fills.length) return { commands: [], flagged: 0 };
   const merged = cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: fills.flatMap((f) => f.flags), tasks: fills.flatMap((f) => f.tasks), rubrics: fills.flatMap((f) => f.rubrics ?? []) });
   return { commands: [merged], flagged: results.reduce((n, r) => n + r.flagged, 0) };
@@ -354,12 +357,12 @@ export async function generateSection(
   if (!lesson) throw new Error(`No lesson ${lessonId}`);
   // A module page is several times a plan's length, and is given the room.
   const planTask = (k: GeneratedKind) => (k === 'plan' && hasModulePages(course) ? 'folio_module' : `folio_${k}`);
-  const run = async <T>(job: SectionJob<T>, revise?: Revision<T>, of: Lesson = lesson): Promise<SectionResult> => {
+  const run = async <T>(job: SectionJob<T>, revise?: Revision<T>, of: Lesson = lesson, already = ''): Promise<SectionResult> => {
     const result = await runJob(inference, {
       task: planTask(kind),
       system: systemPrompt(course.language, course.locale),
       context: courseBackground(course),
-      prompt: sectionPrompt(course, of, kind),
+      prompt: sectionPrompt(course, of, kind, already),
       effort: SECTION_EFFORT[kind],
       write: planTask(kind) === 'folio_module',
       schema: job.schema,
@@ -399,7 +402,7 @@ export async function generateSection(
     case 'quiz':
       return withAnswerChecks(inference, options.run?.runner, await run(quiz), signal);
     case 'assignments':
-      return withAnswerChecks(inference, options.run?.runner, await writeWork(course, lesson, (piece) => (piece.homework.kind === 'test' ? run(test, undefined, piece) : piece.homework.kind === 'step' ? run(step, undefined, piece) : run(assignments, undefined, piece))), signal);
+      return withAnswerChecks(inference, options.run?.runner, await writeWork(now(), lesson, (piece, set) => (piece.homework.kind === 'test' ? run(test, undefined, piece, set) : piece.homework.kind === 'step' ? run(step, undefined, piece, set) : run(assignments, undefined, piece, set))), signal);
     case 'discussions':
       return run(discussions);
     case 'faq':

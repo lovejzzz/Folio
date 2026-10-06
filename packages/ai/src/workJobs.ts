@@ -168,3 +168,16 @@ export function continuedInClass(course: Course, lesson: Lesson): Command[] | nu
   const task: Task = { ...source, ...base(lesson), id: newId('t'), objectiveIds: [...lesson.objectiveIds], flags: [], rubricId: rubric?.id ?? null, toward };
   return [cmd('tasks.fill', { lessonId: lesson.id, kind: 'assignments', flags: [], tasks: [task], rubrics: rubric ? [rubric] : [] })];
 }
+
+const clip = (text: string, room: number) => (text.length > room ? `${text.slice(0, room)}…` : text).replace(/\s+/g, ' ');
+
+/**
+ * What the same students already hold to work in this lesson, for the piece written next. The quiz, the problem
+ * set and the recitation work were each written from the plan alone: a graded problem was the recitation's own,
+ * whose solutions are posted, and a graded quiz repeated the practice questions word for word.
+ */
+export function alreadySet(tasks: Task[]): string {
+  const items = tasks.flatMap((t) => (t.kind === 'question' ? [clip(t.prompt, 160)] : t.kind === 'assignment' ? t.steps.map((s) => clip(s, 200)) : []));
+  if (!items.length) return '';
+  return `Already written for this lesson, and worked by the same students:\n${items.map((i) => `- ${i}`).join('\n')}\nThis piece gives other problems than these: another function, case or set of numbers each time, never one of them again.`;
+}

@@ -305,6 +305,9 @@ describe('runBuild', () => {
     );
     expect(summary).toMatchObject({ built: 14, failed: 0, stopped: false, fatal: null });
     expect(order.indexOf('0:plan')).toBeLessThan(order.indexOf('0:slides'));
+    // Graded work is shown the lesson's quiz, so it waits for it.
+    for (const n of [0, 1]) if (order.includes(`${n}:assignments`)) expect(order.indexOf(`${n}:quiz`)).toBeLessThan(order.indexOf(`${n}:assignments`));
+    expect(order.some((o) => o.endsWith(':assignments'))).toBe(true);
     expect(missingTargets(store.getState())).toEqual([]);
     expect(staleItems(store.getState())).toEqual([]);
   });

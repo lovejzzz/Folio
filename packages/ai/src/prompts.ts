@@ -362,7 +362,7 @@ function onlineAsk(course: Course, lesson: Lesson, kind: SectionPromptKind): str
 }
 
 /** The per-call part of a section request; the course itself goes in courseBackground. */
-export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromptKind): string {
+export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromptKind, already = ''): string {
   const parts = [lessonContext(course, lesson)];
   if (BUILT_ON_PLAN.has(kind)) {
     const plan = planSummary(lesson);
@@ -385,6 +385,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     );
   }
   parts.push(hasModulePages(course) ? onlineAsk(course, lesson, kind) : asks[kind](course, lesson));
+  parts.push(already);
   // Taught live online, a plan is a run of show, and the slides and prompts are for a screen and a breakout room.
   if (isLiveOnline(course)) parts.push(kind === 'plan' ? runOfShow(course) : kind === 'slides' || kind === 'discussions' || kind === 'faq' ? LIVE_ASKS[kind] : '');
   return parts.filter(Boolean).join('\n\n');

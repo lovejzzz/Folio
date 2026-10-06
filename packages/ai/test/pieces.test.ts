@@ -121,6 +121,9 @@ describe('a lesson that holds more than one piece of work', () => {
     store.apply((await generateSection(model, store.getState(), first!.id, 'assignments')).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
     expect(model.calls).toHaveLength(3);
     // The standing piece is asked for as one text for every week.
+    // Each piece after the first is shown what the ones before it set, so no problem is set twice.
+    expect(model.calls[0]!.prompt).not.toMatch(/Already written for this lesson/);
+    expect(model.calls[2]!.prompt).toMatch(/Already written for this lesson, and worked by the same students:\n- Read\n- Write\n- Read\n- Write\nThis piece gives other problems than these/);
     expect(model.calls[0]!.prompt).toMatch(/set again and again through the course in the same form/);
     store.apply((await generateSection(model, store.getState(), second!.id, 'assignments')).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
     // Only the prospectus is written for the second lesson: the response paper is the first lesson's, as it stands.
