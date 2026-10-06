@@ -115,12 +115,15 @@ export const test: SectionJob<TestDraft> = {
   },
 };
 
+// A graded clicker round had a brief ("answer the instructor's questions") and a plan that ran "the clicker questions": nobody wrote one.
+export const EACH_TIME = '; its brief and rubric are one text for every time and hold no questions or problems, so the ones of this time are written out in full, with their answers in the notes, in the segment that runs it';
+
 const PIECE: Record<string, string> = { assignment: 'the graded assignment', step: 'a short ungraded step toward', test: 'the graded test', inclass: 'the piece graded in class', none: '' };
 
 /** What a lesson holds beside its main piece, for its plan: the plan sets or runs each, and writes none of them. */
 export function otherPieces(lesson: Lesson, due: (piece: Lesson['homework']) => string = () => ''): string {
   // Each by where it happens: told "set before students leave, or run in the lesson", plans ran a weekly paper as silent writing in class.
-  const moment = (p: Lesson['homework']) => (p.kind === 'inclass' ? 'run in the lesson' : p.kind === 'test' ? 'sat in the lesson' : p.standing ? 'done outside class every time: the close sets it in a sentence, and no lesson time goes to writing it' : 'set before students leave');
+  const moment = (p: Lesson['homework']) => (p.kind === 'inclass' ? `run in the lesson${p.standing ? EACH_TIME : ''}` : p.kind === 'test' ? 'sat in the lesson' : p.standing ? 'done outside class every time: the close sets it in a sentence, and no lesson time goes to writing it' : 'set before students leave');
   // With when it is due, as the piece itself is told: untold, a page gave a step "by Sunday" that its own text set five weeks on.
   const others = (lesson.also ?? []).filter((p) => p.kind !== 'none').map((p) => `${PIECE[p.kind]}${p.toward.trim() ? ` "${p.toward.trim()}"` : ''} (${[moment(p), due(p)].filter(Boolean).join('; ')})`);
   return others.length ? ` The lesson also holds, each written separately: ${others.join('; ')}. The plan gives each its moment and writes none of them.` : '';

@@ -1,5 +1,5 @@
 import { briefWithAnswers, clarifyCourse, courseFromOutline, generateOutline, lessonsToPlan, minutesToPlan, type Clarification, type ClarifyDraft, type NewCourseRequest, type Usage } from '@folio/ai';
-import { guessLessons, guessMinutes, guessQuizSize, guessSessions } from '../../lib/brief';
+import { guessLessons, guessMinutes, guessQuizSize, guessSessions, sessionsOfWeek } from '../../lib/brief';
 import { MATERIAL_KINDS } from '@folio/core';
 import { Button, Skeleton } from '@folio/ui';
 import { FileText } from 'lucide-react';
@@ -56,10 +56,12 @@ function requestFromDraft(): NewCourseRequest | null {
 
 /** The request, with what Folio read from the brief and files and what the teacher answered. */
 function withAnswers(req: NewCourseRequest, read: ClarifyDraft | null, answers: Clarification[]): NewCourseRequest {
+  const lessonCount = lessonsToPlan({ ...req, defaultLessons: useDraft.getState().lessons }, read, answers);
   return {
     ...req,
     brief: briefWithAnswers(req.brief, answers),
-    lessonCount: lessonsToPlan({ ...req, defaultLessons: useDraft.getState().lessons }, read, answers),
+    lessonCount,
+    sessions: req.sessions ?? sessionsOfWeek(req.brief, lessonCount) ?? undefined,
     minutesPerLesson: minutesToPlan(req.minutesPerLesson, read, answers),
     level: req.level || read?.level || '',
     syllabus: ownSyllabus(read, req.sources),

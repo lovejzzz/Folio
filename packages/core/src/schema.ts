@@ -337,7 +337,7 @@ export const CourseSchema = z.object({
   audience: z.object({ level: text, subject: text }),
   shape: z.object({
     /** The whole lesson: with sessions, the sum of theirs. */
-    // Up to three sessions of up to 300 minutes each.
+    // Up to four sessions of up to 300 minutes each.
     minutesPerLesson: z.number().int().min(5).max(900),
     quizSize: z.number().int().min(1).max(40),
     /** Two or more when each lesson meets more than once (a lecture, then a seminar); empty when it meets once. */

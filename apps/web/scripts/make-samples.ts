@@ -20,7 +20,7 @@ import { nodeRunner } from '@folio/run/node';
 import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { guessLessons, guessLevel, guessMinutes, guessQuizSize, guessSessions } from '../src/lib/brief';
+import { guessLessons, guessLevel, guessMinutes, guessQuizSize, guessSessions, sessionsOfWeek } from '../src/lib/brief';
 import type { SampleName } from '../src/lib/samples';
 
 const WEB = new URL('..', import.meta.url).pathname;
@@ -219,10 +219,12 @@ async function clarified(name: string, req: NewCourseRequest, spec: Spec): Promi
   const answers = (read?.questions ?? []).map((q) => ({ question: q.question, answer: q.options.find((o) => !/^I(?:'|’)ll\b|^I will\b/i.test(o)) ?? q.options[0]! }));
   writeFileSync(join(OUT, `${name}.clarify.json`), JSON.stringify({ read, answers }, null, 1));
   const syllabus = (read ? read.syllabus : spec.syllabus) || undefined;
+  const lessonCount = lessonsToPlan({ ...req, defaultLessons: 4 }, read, answers);
   return {
     ...req,
     brief: briefWithAnswers(req.brief, answers),
-    lessonCount: lessonsToPlan({ ...req, defaultLessons: 4 }, read, answers),
+    lessonCount,
+    sessions: req.sessions ?? sessionsOfWeek(req.brief, lessonCount) ?? undefined,
     minutesPerLesson: minutesToPlan(req.minutesPerLesson, read, answers),
     level: req.level || read?.level || '',
     ...(syllabus ? { syllabus } : {}),

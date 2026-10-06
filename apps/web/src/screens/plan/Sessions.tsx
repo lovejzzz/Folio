@@ -6,7 +6,7 @@ import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
 
 const KINDS: SessionKind[] = ['class', 'lecture', 'seminar', 'lab', 'problems'];
-const MAX_SESSIONS = 3;
+const MAX_SESSIONS = 4;
 /** A lesson's sessions together, as the course schema allows. */
 const MAX_TOTAL = 900;
 

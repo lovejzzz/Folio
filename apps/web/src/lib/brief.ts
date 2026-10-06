@@ -237,18 +237,14 @@ const SESSION_WORDS: [RegExp, SessionKind][] = [
 ];
 // "Two 50-minute lectures": an optional count, the length, the kind. "Discussion" alone is usually a part of a lesson, not a meeting.
 // One describing word may come between: "a 50-minute computer lab" was read as no lab at all, and the course had none.
-const EN_SESSION = /\b(?:(two|three|2|3)\s+)?(\d{1,3}|an?|one|two|three)[\s-]*(minutes?|mins?|hours?|hrs?)(?:[\s-]+long)?[\s-]+(?:[a-z][\w-]*\s+)?(lectures?|seminars?|tutorials?|discussion sections?|labs?|laborator(?:y|ies)|practicals?|problem class(?:es)?|recitations?|workshops?|class(?:es)?)\b/gi;
+const EN_SESSION = /\b(?:(two|three|four|2|3|4)\s+)?(\d{1,3}|an?|one|two|three)[\s-]*(minutes?|mins?|hours?|hrs?)(?:[\s-]+long)?[\s-]+(?:[a-z][\w-]*\s+)?(lectures?|seminars?|tutorials?|discussion sections?|labs?|laborator(?:y|ies)|practicals?|problem class(?:es)?|recitations?|workshops?|class(?:es)?)\b/gi;
 const ZH_SESSION = /(?:([两二三])(?:节|次))?(\d{1,3}|[一二两三四五六七八九十]{1,3})\s*(分钟|小时)\s*的?\s*(讲座|讲授|理论课|研讨课?|讨论课|实验课?|习题课|课堂)/g;
 
-/**
- * The sessions of each lesson when the brief names more than one kind of
- * meeting with its length: "a 50-minute lecture and a 50-minute seminar",
- * "每周50分钟讲授加50分钟研讨". Null when it names fewer than two kinds.
- * The same meeting named twice ("90-minute lectures… each 90-minute lecture")
- * counts once, and a short part of a lesson ("ending with a 10-minute
- * discussion") isn't a meeting of its own.
- */
-export function guessSessions(text: string): Session[] | null {
+/** As many meetings as a lesson holds: three lectures and a recitation are a common week, and the recitation was cut off. */
+const MAX_MEETINGS = 4;
+
+/** Every meeting a brief names with its length, in order. A short part of a lesson ("a 10-minute discussion") is not one. */
+function weekMeetings(text: string): Session[] {
   const found: Session[] = [];
   const add = (times: string | undefined, count: string, unit: string, word: string) => {
     const kind = SESSION_WORDS.find(([re]) => re.test(word.trim()))?.[1];
@@ -263,6 +259,27 @@ export function guessSessions(text: string): Session[] | null {
   for (const [, m] of all.sort((a, b) => a[0] - b[0])) add(m[1], m[2]!, m[3]!, m[4]!);
   const longest = Math.max(0, ...found.map((s) => s.minutes));
   // A 75-minute lecture beside a 3-hour lab is a meeting; a 10-minute discussion at the end of one isn't.
-  const meetings = found.filter((s) => s.minutes >= 25 && (s.minutes >= 45 || s.minutes * 2 >= longest)).slice(0, 3);
+  return found.filter((s) => s.minutes >= 25 && (s.minutes >= 45 || s.minutes * 2 >= longest)).slice(0, MAX_MEETINGS);
+}
+
+/**
+ * The sessions of each lesson when the brief names more than one kind of
+ * meeting with its length: "a 50-minute lecture and a 50-minute seminar",
+ * "每周50分钟讲授加50分钟研讨". Null when it names fewer than two kinds.
+ * The same meeting named twice ("90-minute lectures… each 90-minute lecture")
+ * counts once, and a short part of a lesson ("ending with a 10-minute
+ * discussion") isn't a meeting of its own.
+ */
+export function guessSessions(text: string): Session[] | null {
+  const meetings = weekMeetings(text);
   return meetings.length > 1 && new Set(meetings.map((s) => s.kind)).size > 1 ? meetings : null;
+}
+
+/**
+ * The meetings of a week, when the course is planned a week to a lesson: "three 50-minute lectures a week" for 14
+ * weeks, planned as 14 lessons, is three meetings a lesson. Planned as one, the week was a single 50 minutes.
+ */
+export function sessionsOfWeek(text: string, lessons: number | null): Session[] | null {
+  const meetings = weekMeetings(text);
+  return meetings.length > 1 && lessons !== null && lessons === lessonsFromWeeks(text) ? meetings : null;
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { SHAPE_LIMITS } from '@folio/core';
 import { en } from '../i18n/en';
-import { MAX_GUESSED_LESSONS, guessDelivery, guessLessons, guessLevel, guessMinutes, guessQuizSize, guessSessions } from './brief';
+import { MAX_GUESSED_LESSONS, guessDelivery, guessLessons, guessLevel, guessMinutes, guessQuizSize, guessSessions, sessionsOfWeek } from './brief';
 
 describe('reading the brief for the chips', () => {
   it.each([
@@ -222,5 +222,23 @@ describe('how the course meets', () => {
     expect(guessDelivery('Online: an asynchronous module each week plus one live 75-minute session')).toBe('online-mixed');
     expect(guessDelivery('An online course in statistics')).toBe('inperson');
     expect(guessDelivery('Eight 50-minute lessons on ratios')).toBe('inperson');
+  });
+});
+
+describe('a week of several meetings', () => {
+  const lecture = { kind: 'lecture', minutes: 50 };
+  it('keeps the recitation after three lectures, and plans a lesson a week', () => {
+    const brief = 'Physics I: 14 weeks, three 50-minute lectures and one 50-minute problem-solving recitation a week.';
+    expect(guessSessions(brief)).toEqual([lecture, lecture, lecture, { kind: 'problems', minutes: 50 }]);
+    expect(guessLessons(brief)).toBe(14);
+  });
+  it('gives a lesson all the meetings of its week once the teacher plans a lesson a week', () => {
+    const brief = 'General Chemistry I: 14 weeks, three 50-minute lectures a week in a large lecture hall.';
+    expect(guessSessions(brief)).toBeNull();
+    expect(sessionsOfWeek(brief, 14)).toEqual([lecture, lecture, lecture]);
+    // A lesson a meeting: each is one lecture.
+    expect(sessionsOfWeek(brief, 42)).toBeNull();
+    expect(sessionsOfWeek(brief, null)).toBeNull();
+    expect(sessionsOfWeek('Six 50-minute classes on the Cold War, each ending with a 10-minute discussion.', 6)).toBeNull();
   });
 });

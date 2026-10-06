@@ -127,6 +127,17 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect([...out.flags.values()]).toEqual([]);
   }, 120_000);
 
+  it('does not blame a key for how the form wrote its number: as text, or as the digits before a power of ten', async () => {
+    const volume = (id: string, keyed: number) => choice(id, 'A 25.0 mL sample is diluted with 57.0 mL of water. What is the final volume?', ['32.0 mL', '82.0 mL', '57.0 mL'], keyed, 'Add the volumes.');
+    const text = { checkable: true, setup: 'v = 25.0 + 57.0', answer_expr: "f'{v:.4f}'", choices: [1, 2, 3].map((n) => ({ n, kind: 'value' })) };
+    const sheet = (id: string, answerKey: string): Task => ({ ...base, id, kind: 'assignment', title: 'Sheet', prompt: '', steps: ['Find the hydrogen ion concentration at pH 3.2 with `10 ** -3.2`.'], rubricId: null, answerKey, toward: '' });
+    const digits = (expr: string) => ({ checkable: true, setup: 'h = 10 ** -3.2', stated: [{ where: 'answerKey', before: '≈ ', expr }] });
+    const pick = (r: { prompt: string }) => (r.prompt.includes('diluted') ? text : r.prompt.includes('7.1 × 10') ? digits('h') : digits('h * 1e4'));
+    const out = await checkAnswers(fakeInference(pick), nodeRunner(), [volume('t_vol', 2), volume('t_vol_wrong', 1), sheet('t_ph', 'At pH 3.2, [H⁺] = 10^{−3.2} ≈ 6.3 × 10⁻⁴ M.'), sheet('t_ph_wrong', 'At pH 3.2, [H⁺] ≈ 7.1 × 10⁻⁴ M.')]);
+    // The right keys pass or go unchecked; the wrong ones are still caught.
+    expect([out.flags.has('t_vol'), out.flags.has('t_vol_wrong'), out.flags.has('t_ph'), out.flags.has('t_ph_wrong')]).toEqual([false, true, false, true]);
+  }, 120_000);
+
   it('puts right a key the numbers contradict, and keeps the correction only when it then holds', async () => {
     const work: Task = { ...base, id: 't_key', kind: 'assignment', title: 'Wait times', prompt: 'Wait times in minutes: 2, 3, 4, 4, 4, 5, 6, 8.', steps: ['Find the median wait time.'], rubricId: null, answerKey: '1. Sorted: 2, 3, 4, 4, 4, 5, 6, 8. Median = (4 + 5) ÷ 2 = 4.5 minutes.', toward: '' };
     const form = { checkable: true, setup: 'import numpy as np\nx = np.array([2, 3, 4, 4, 4, 5, 6, 8])', stated: [{ where: 'answerKey', before: 'Median = (4 + 5) ÷ 2 =', expr: 'float(np.median(x))' }] };

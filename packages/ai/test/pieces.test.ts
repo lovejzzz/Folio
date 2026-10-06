@@ -153,3 +153,16 @@ describe('what the next lesson holds that students must hear of now', () => {
     expect(told).toMatch(/No other graded piece is set, handed out or collected in this lesson than those named here\./);
   });
 });
+
+describe('a piece graded in class every time, with new questions each time', () => {
+  it('has its plan write the questions of that lesson, since its brief names none', () => {
+    const draft = outline();
+    draft.lessons[0]!.also = [{ kind: 'inclass', toward: 'Presentation', due: null, standing: true }];
+    draft.lessons[2] = { ...draft.lessons[2]!, homework: 'inclass', homeworkToward: 'Presentation', homeworkStanding: true };
+    const course = courseFromOutline(req, draft);
+    const [first, , third] = orderedLessons(course);
+    for (const lesson of [first!, third!]) expect(lessonContext(course, lesson)).toMatch(/brief and rubric are one text for every time and hold no questions or problems, so the ones of this time are written out in full/);
+    // A piece run once (a presentation each student gives) scripts nothing for them.
+    expect(lessonContext(courseFromOutline(req, outline()), orderedLessons(courseFromOutline(req, outline()))[0]!)).not.toMatch(/the ones of this time/);
+  });
+});

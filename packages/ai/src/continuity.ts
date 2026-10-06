@@ -1,7 +1,7 @@
 import { hasModulePages, lessonPieces, orderedLessons, type Course, type Lesson } from '@folio/core';
 import { filesSoFar } from './earlierFiles';
 import { moduleDigest, moduleSummary } from './online';
-import { otherPieces, workOf } from './workJobs';
+import { EACH_TIME, otherPieces, workOf } from './workJobs';
 
 /** Whether a lesson holds a piece of this kind for this component, as its main piece or beside it. */
 const holds = (l: Lesson, kind: string, toward: string) => lessonPieces(l).some((p) => p.kind === kind && p.toward.trim() === toward);
@@ -232,7 +232,7 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
   const named = toward ? `"${toward}"` : 'a graded piece';
   // The paper and the rubric are their own material: a plan that also wrote them gave the lesson two.
   if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions (or, when the summary says it is sat after the course ends, reviews for it and says when and how it is sat), and writes no questions.${due}${only}`;
-  if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done and graded in class with a rubric written separately: the plan runs it, with time for every student, and writes no criteria; what a student is graded for preparing or deciding (the questions of a discussion they lead, what a talk says) is left to them and never scripted.${briefSoFar(course, lesson)}${due}${only}`;
+  if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done and graded in class with a rubric written separately: the plan runs it, with time for every student, and writes no criteria; what a student is graded for preparing or deciding (the questions of a discussion they lead, what a talk says) is left to them and never scripted.${lesson.homework.standing ? ` Its${EACH_TIME.slice(5)}.` : ''}${briefSoFar(course, lesson)}${due}${only}`;
   const set = `which the plan has the teacher set before students leave, naming it and when it is due, without spelling out its tasks or naming files and handouts it may not have. ${dueWords(course, lesson)}`.trim();
   if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}${due}${only}`;
   // A plan gave the first weekly memo a subject of its own ("one page on your team's program") beside a brief that asked for the reading.
