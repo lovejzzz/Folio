@@ -79,7 +79,7 @@ function sessionsLine(course: Course): string {
   const sessions = lessonSessions(course);
   if (sessions.length < 2) return `Each lesson lasts ${course.shape.minutesPerLesson} minutes.`;
   const kinds = [...new Set(sessions.map((s) => s.kind))];
-  return `Each lesson meets ${sessions.length} times: ${sessionList(sessions)}. What each is for: ${kinds.map((k) => SESSION_GUIDE[k]).join('; ')}.`;
+  return `Each lesson meets ${sessions.length} times: ${sessionList(sessions)}. What each is for: ${kinds.map((k) => SESSION_GUIDE[k]).join('; ')}. They fall on different days: "today", "earlier" and "next time" are said of one meeting, and a sheet from another meeting is named by that meeting.`;
 }
 
 /**
@@ -278,6 +278,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
       'A text students read that is not among the teacher\'s sources is named exactly (author, title, and the section or passage to use, by its opening words when it has no number), so the teacher can find it, with a note to prepare copies; never just "an excerpt".',
       'When a segment uses another of the lesson\'s materials, such as the quiz, the slides or the assignment, say what students do with it, not what its questions or items will be: those are written separately, from this plan.',
       // A close gave six minutes to taking and going over five questions, one a calculation and one a written answer.
+      'A sheet or text from an earlier lesson that this lesson works from is handed out again or put on the screen, and the plan says so: students are counted on to bring only what that lesson told them to keep.',
       `The lesson's quiz has ${c.shape.quizSize} questions, some worked or written out: a segment that has students take it comes after everything the lesson teaches, in whichever session that is, and leaves about two minutes a question before any going over; or they take it after class, and the close says so in a few words, so nobody wonders when it is taken or whether it counts. It is practice and counts toward no part of the grade (the lesson's graded test, when it holds one, is a paper of its own): the plan never says otherwise.`,
       'When a segment gives students a set of items to work on that no other material holds, such as statements to sort, scenarios to classify, cases to match or data to read, write every item out in the teacher notes, one per line with its expected answer, however many there are; the word limit is for the rest of the notes. Keep such a set to what fits the minutes, usually four to six items. Never describe items that are left for the teacher to write. The same holds for a poll or clicker question, written with its choices, for a prompt students write to, for a figure the lesson shows (given by its numbers, or exactly enough to draw), and for a single question, such as an exit ticket: no other material holds it, so its wording and expected answer are in the plan. And for any form, checklist, handout or model text a segment relies on: it is written out in the notes in full, never only named. So too a case or text students must have read that the course does not have: the plan writes it as a one-page handout from well-established public facts (or plainly hypothetical), with the preparation questions the brief asks for, to be given out the lesson before.',
     ].filter(Boolean).join(' '),
@@ -345,7 +346,7 @@ function slidesFor(course: Course): string {
   if (sessions.length < 2) return '';
   const shown = sessions.filter((s) => s.kind === 'lecture' || s.kind === 'class');
   // Notes on the last slide set the homework "before students leave" in the third lecture of a week whose plan set it at the recitation.
-  const own = 'A slide belongs to the meeting whose step it serves, and its notes say only what the plan does in that meeting: homework is set, work collected and "next time" announced where the plan does it.';
+  const own = 'The meetings fall on different days, so "today" and "earlier today" are said of one meeting only. A slide belongs to the meeting whose step it serves, and its notes say only what the plan does in that meeting: homework is set, work collected and "next time" announced where the plan does it.';
   if (!shown.length || shown.length === sessions.length) return own;
   return `The slides are for the ${SESSION_NAMES[shown[0]!.kind]}; the other sessions run without them. ${own}`;
 }

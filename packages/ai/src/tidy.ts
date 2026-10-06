@@ -47,7 +47,7 @@ const REF_INLINE = new RegExp(String.raw`(?:,\s*|\s+in\s+|\s+)${REFS}(?=[\s.,:;)
  * teacher reads: "write no criteria of your own", "no second set of questions here", "the handout is written
  * separately". A sentence that carries one of these is the writer talking to itself, and goes.
  */
-const ECHOES = /\bwrites? no (?:other |separate )?criteria\b|\bno second set of questions\b|\b(?:is|are) written separately\b|\bseparately written\b|\bscored by (?:its |their |the )?points\b|\btakes the place of further practice\b|\bin exactly these words\b/i;
+const ECHOES = /\bwrites? no (?:other |separate )?criteria\b|\bno second set of questions\b|\b(?:is|are) written separately\b|\bseparately written\b|\bscored by (?:its |their |the )?points\b|\btakes the place of further practice\b|\bin exactly these words\b|\buse (?:new|different|other) (?:cases|functions|numbers)[^.]*\b(?:not|from) those\b|\bnobody has been told anything yet\b|\b(?:two|three|four|five) bullets at most\b/i;
 
 /** The text without the sentences that only echo an instruction. Lines of code are never touched. */
 export function withoutEchoes(text: string): string {

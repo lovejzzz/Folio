@@ -35,6 +35,10 @@ export const assignments: SectionJob<AssignmentDraft> = {
     ...(lesson.homework.kind === 'inclass' && !v.answerKey.trim()
       ? [{ index: null, flag: { code: 'schemaIssue' as const, values: { path: 'answerKey', issue: 'Say how the teacher runs and scores this for a whole class in the lesson' } } }]
       : []),
+    // A program with a fixed test run, or a problem with numbers, has results a marker needs: one came with no key at all.
+    ...(lesson.homework.kind === 'assignment' && !lesson.homework.standing && !v.answerKey.trim() && v.steps.some((s) => /`[^`]+`|\d+(?:\.\d+)?\s*[×x*/÷+−-]\s*\d/.test(s))
+      ? [{ index: null, flag: { code: 'schemaIssue' as const, values: { path: 'answerKey', issue: 'Give the worked answers or the expected results of what the steps ask for' } } }]
+      : []),
   ],
   toCommands: (v, problems, _course, lesson) => {
     const levels = v.rubric.levels.map((lv) => ({ id: newId('x'), label: lv.label, points: lv.points }));

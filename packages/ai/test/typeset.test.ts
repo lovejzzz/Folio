@@ -4,6 +4,8 @@ import { smartQuotes, typesetDraft } from '../src/typeset';
 describe('smart quotes', () => {
   it('curls quotes and apostrophes', () => {
     expect(smartQuotes(`Ask: "Where did the mass come from?"`)).toBe('Ask: “Where did the mass come from?”');
+    // A character of code keeps its quotes: ‘B’ does not compile.
+    expect(smartQuotes(`a char named cabinet with the value 'B', and 'the rest' as words`)).toBe(`a char named cabinet with the value 'B', and ‘the rest’ as words`);
     expect(smartQuotes(`Expect answers like 'the soil', 'water' or 'sunlight'.`)).toBe('Expect answers like ‘the soil’, ‘water’ or ‘sunlight’.');
     expect(smartQuotes(`It's the students' turn; don't rush.`)).toBe('It’s the students’ turn; don’t rush.');
     expect(smartQuotes(`"How much do backpacks weigh?" is statistical.`)).toBe('“How much do backpacks weigh?” is statistical.');

@@ -34,14 +34,16 @@ describe('the keys to a lesson\'s sheets, written from the sheets by another wri
     const lesson = orderedLessons(course)[0]!;
     const segments = planDraft.segments.map((s, i) => ({ ...s, id: newId('x'), session: 1, kind: s.kind as 'teach', teacherNotes: i === 0 ? 'The standard deviation is about 25.70.' : s.teacherNotes }));
     const written = { commands: [cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [], content: { segments, keyIdeas: ['Light drives it'], vocabulary: [] } })], flagged: 0 };
-    const sheet = { title: 'Spread', kind: 'worksheet', usedIn: 'The equation', copies: 'One each', blocks: [{ type: 'para', text: 'Find the standard deviation.' }] };
-    const model = fakeInference(() => ({}), { handouts: [sheet], keyed: { keys: [{ title: 'Spread', key: 'About 25.79.' }], corrections: [{ find: 'about 25.70', replace: 'about 25.79' }, { find: 'not in the plan', replace: 'x' }] } });
+    const sheet = { title: 'Spread', kind: 'worksheet', usedIn: 'The equation', copies: 'One each', blocks: [{ type: 'para', text: 'Find the standard deviation. For 5 and 2 the average is 2.5.' }] };
+    const model = fakeInference(() => ({}), { handouts: [sheet], keyed: { keys: [{ title: 'Spread', key: 'About 25.79.' }], corrections: [{ find: 'about 25.70', replace: 'about 25.79' }, { find: 'not in the plan', replace: 'x' }, { find: 'the average is 2.5', replace: 'the average is 3.5' }] } });
     const out = await withHandouts(model, course, lesson, written);
     const store = new CourseStore(course);
     store.apply(out.commands, { label: { key: 'b' }, source: 'ai' });
     expect(store.getState().lessons[lesson.id]!.segments[0]!.teacherNotes).toBe('The standard deviation is about 25.79.');
     // The key is the second writer's, set on the sheet it names.
     expect(store.getState().lessons[lesson.id]!.handouts.map((h) => [h.title, h.key])).toEqual([['Spread', 'About 25.79.']]);
+    // And a wrong number on the sheet itself is put right on the sheet: its key is the key to the corrected sheet.
+    expect(JSON.stringify(store.getState().lessons[lesson.id]!.handouts[0]!.blocks)).toContain('the average is 3.5');
   });
 });
 
@@ -49,6 +51,7 @@ describe('an instruction that comes back as advice', () => {
   it('is taken out of the notes, and nothing else is', async () => {
     const { withoutEchoes } = await import('../src/tidy');
     expect(withoutEchoes('Score with the rubric from last time; write no criteria of your own. Hear two pairs.')).toBe('Hear two pairs.');
+    expect(withoutEchoes('Groups hand in one sheet. Use new cases and numbers, not those from the examples in class. Post solutions after class.')).toBe('Groups hand in one sheet. Post solutions after class.');
     expect(withoutEchoes('Students take the quiz. The quiz is scored by points. Collect the papers.')).toBe('Students take the quiz. Collect the papers.');
     expect(withoutEchoes('Hand out the sheet.\n`x = 1  # written separately`\nThe handout is written separately; do not model it.')).toBe('Hand out the sheet.\n`x = 1  # written separately`');
     expect(withoutEchoes('Each criterion is scored from 1 to 4 points.')).toBe('Each criterion is scored from 1 to 4 points.');

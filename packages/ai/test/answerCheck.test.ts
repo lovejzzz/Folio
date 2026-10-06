@@ -44,6 +44,10 @@ describe('an answer that can be computed', () => {
     const twiceWrong = await checkAnswers(model, scripted([fail('key'), PASS]), [wrong]);
     expect([twiceWrong.flags.size, twiceWrong.held.size]).toEqual([0, 1]);
     expect((await checkAnswers(model, scripted([fail('key'), fail('origin2')]), [wrong])).flags.size).toBe(0);
+    // What an explanation says of a wrong choice is put right when it can be; when it cannot, the teacher is not told: forms misread it too often.
+    const origin = fail('origin2', 'the mistake the explanation names gives this distractor');
+    const quiet = await checkAnswers(model, scripted([origin, origin]), [wrong]);
+    expect([quiet.flags.size, model.calls.at(-1)!.task]).toEqual([0, 'folio_answer_fix']);
     // One stated number, quoted by two forms with more and less of the text before it: the same claim.
     const stated = (what: string) => fail('stated1', what);
     expect((await checkAnswers(model, scripted([stated('answerKey: …so the standard deviation of the sample is '), stated('answerKey: …deviation of the sample is')]), [wrong])).flags.size).toBe(1);

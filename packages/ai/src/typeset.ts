@@ -11,9 +11,13 @@ export function smartQuotes(text: string): string {
   return curl(text);
 }
 
+// A single character between single quotes is a character of code as often as a quotation ('B' in Java, 'a' in C): it stays as typed.
+const CHAR = /(^|[\s([{=,:])'(\\?[^\s'])'(?![\p{L}\d])/gu;
+
 function curl(text: string): string {
   return (
     text
+      .replace(CHAR, '$1\uE000$2\uE000')
       // Apostrophes inside or at the end of words: it's, students', '90s stays below.
       .replace(/(\p{L})'(?=\p{L})/gu, '$1’')
       .replace(/(\p{L}s)'(?=[\s.,;:!?)]|$)/gu, '$1’')
@@ -23,6 +27,7 @@ function curl(text: string): string {
       // Single quotes used as quotation marks.
       .replace(/(^|[\s([{—–-])'/gu, '$1‘')
       .replace(/(?<!\d)'/g, '’')
+      .replace(/\uE000/g, "'")
   );
 }
 

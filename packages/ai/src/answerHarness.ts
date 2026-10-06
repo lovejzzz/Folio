@@ -232,11 +232,7 @@ def check_item(item, check):
                 def f(n=n, e=e):
                     v = ev(e['origin_expr'])
                     if flat(v) and not numbers(ch[n - 1]['text'].replace('\x60', '')): raise Invalid('the choice states no number to compare')
-                    ok, detail = match_text(ch[n - 1]['text'], v, e.get('first'), tol)
-                    # a named mistake that gives what no choice states was modelled wrongly by the form far more often than
-                    # explained wrongly by the item: it stands only when it gives another choice's value
-                    if not ok and not any(match_text(c['text'], v, None, tol)[0] for k, c in enumerate(ch) if k != n - 1): raise Invalid('the mistake as computed gives a value no choice states')
-                    return ok, detail
+                    return match_text(ch[n - 1]['text'], v, e.get('first'), tol)
                 guard(f'origin{n}', 'the mistake the explanation names gives this distractor', f)
             if e.get('says_expr') and e.get('kind') == 'code':
                 def f(n=n, e=e):

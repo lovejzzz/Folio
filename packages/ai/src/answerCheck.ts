@@ -139,6 +139,8 @@ const claim = (c: Check): string => {
   return `${where}:${c.id.startsWith('stated') ? words.slice(-16) : words.slice(0, 16)}`;
 };
 
+const ORIGIN = 'the mistake the explanation names';
+
 export interface AnswerChecks {
   /** What failed twice, by task: for the teacher. */
   flags: Map<string, Flag[]>;
@@ -184,7 +186,12 @@ export async function checkAnswers(inference: Inference, runner: Runner, tasks: 
     const again = await corrected(inference, task, shownItem(task), flags, signal).catch(() => null);
     const holds = again ? await checkOne(inference, runner, again, signal).catch(() => null) : null;
     if (again && holds && !holds.length) out.fixed.set(task.id, again);
-    else out.flags.set(task.id, flags);
+    else {
+      // What an explanation says of a wrong choice ("22.0 omits the initial velocity", when that gives 18.0) is put right when it
+      // can be; when it cannot, the form misread the mistake as often as the item misstated it, and the teacher is not told.
+      const loud = flags.filter((f) => !(f.code === 'answerCheck' && f.values.claim.startsWith(ORIGIN)));
+      if (loud.length) out.flags.set(task.id, loud);
+    }
   };
   // The first alone: its call puts the instruction in the cache, and the rest, sent together after it, read it there
   // for a tenth of the price. Sent all at once, every call paid to write it and none read it.
