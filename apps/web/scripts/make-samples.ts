@@ -12,6 +12,7 @@
 // is the syllabus, "policies"? }]; nothing is written again.
 import { MATERIAL_KINDS, CourseStore, OnlineSchema, cmd, orderedLessons, parseCourse, type Course, type Delivery, type GeneratedKind, type Online } from '@folio/core';
 import { FOLIO_MIX } from '../../../packages/ai/src/adapters/mix';
+import { withHandouts } from '../../../packages/ai/src/handouts';
 import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, supportedHandout, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawn } from 'node:child_process';
@@ -361,8 +362,16 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
     const saved = JSON.parse(readFileSync(join(OUT, `${name}.json`), 'utf8')) as { lessonOrder: string[]; lessons: Record<string, { gen: Record<string, unknown> }> };
     // --redo quiz,assignments: those parts of the first lessons are written again from the plans as they stand, to
     // compare ways of writing one part on the same lessons.
-    for (const id of saved.lessonOrder.slice(0, Number(option('--lessons') ?? saved.lessonOrder.length))) for (const kind of (option('--redo') ?? '').split(',').filter(Boolean)) delete saved.lessons[id]!.gen[kind];
+    for (const id of saved.lessonOrder.slice(0, Number(option('--lessons') ?? saved.lessonOrder.length))) for (const kind of (option('--redo') ?? '').split(',').filter((k) => k && k !== 'handouts')) delete saved.lessons[id]!.gen[kind];
     store = new CourseStore(parseCourse(saved));
+    // --redo handouts: the sheets alone, written again from the plan as it stands.
+    if ((option('--redo') ?? '').split(',').includes('handouts')) {
+      for (const id of store.getState().lessonOrder.slice(0, Number(option('--lessons') ?? 99))) {
+        const lesson = store.getState().lessons[id]!;
+        const written = { commands: [cmd('section.fill', { lessonId: id, kind: 'plan', flags: lesson.gen.plan?.flags ?? [], content: { segments: lesson.segments, keyIdeas: lesson.keyIdeas, vocabulary: lesson.vocabulary } })], flagged: 0 };
+        store.apply((await withHandouts(inference, store.getState(), lesson, written)).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
+      }
+    }
   } else {
     const spec = specFor(name);
     const req = CHECKUP ? await clarified(name, requestFor(spec), spec) : requestFor(spec);

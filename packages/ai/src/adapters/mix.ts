@@ -19,6 +19,8 @@ import { openaiInference } from './openai';
  */
 export const FOLIO_MIX: Readonly<Record<string, { model: string; effort: Effort }>> = {
   folio_quiz: { model: 'gpt-6.1-sol', effort: 'low' },
+  // And the keys to a lesson's sheets, written from the sheets Sonnet wrote: no wrong answer in sixteen lessons where Sonnet's own had four.
+  folio_handout_keys: { model: 'gpt-6.1-sol', effort: 'low' },
   folio_assignments: { model: 'gpt-6.1-sol', effort: 'low' },
   folio_plan_review: { model: 'gpt-6.1-sol', effort: 'low' },
   // A module page was read at medium while its code had to be run in the head. Now the code is run for real: twelve pages
@@ -55,6 +57,7 @@ export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_plan_review: 8000,
   // A lesson's sheets, written in full: several worksheets can run as long as the plan.
   folio_handouts: 12000,
+  folio_handout_keys: 8000,
   folio_handout_supports: 8000,
   // A mend writes again only the parts at fault: seldom the whole, never more.
   folio_plan_mend: 12000,

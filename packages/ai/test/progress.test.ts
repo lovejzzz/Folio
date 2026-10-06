@@ -81,7 +81,8 @@ describe('a section taking shape', () => {
     const course = smallCourse();
     const lesson = orderedLessons(course)[0]!;
     const sheet = { title: 'Exit ticket', kind: 'slips', usedIn: 'Exit ticket', copies: 'One per student', key: '1. Six of each.', blocks: [{ type: 'para', text: 'Answer both before you leave.' }, { type: 'list', items: ['How many CO2 molecules go in?', 'Where does the oxygen come from?'] }, { type: 'yours', text: '' }] };
-    const writer = fakeInference(() => planDraft, { handouts: [sheet] });
+    // The key the sheets' writer gave is not kept: the key is written from the finished sheet by another writer.
+    const writer = fakeInference(() => planDraft, { handouts: [{ ...sheet, key: 'A guess.' }], keyed: { keys: [{ title: 'Exit ticket', key: '1. Six of each.' }], corrections: [] } });
     const result = await generateSection(writer, course, lesson.id, 'plan', undefined, { reviewer: fakeInference(() => ({ issues: [] })) });
     const content = (result.commands[0]!.payload as { content: { handouts: { title: string; key: string; blocks: { type: string }[] }[] } }).content;
     expect(content.handouts).toMatchObject([{ title: 'Exit ticket', kind: 'slips', key: '1. Six of each.', blocks: [{ type: 'para' }, { type: 'list' }, { type: 'yours' }] }]);

@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.0.26",
+  "date": "October 6, 2026",
+  "title": "One writer for the worksheet, another for its key",
+  "lede": "We went on testing writers, one part of a lesson at a time, on the same sixteen university lessons and judged blind. The same thing came out four times: Claude Sonnet writes the better teaching, and GPT-6.1 Sol gets the answers right. This release puts each where it is best for worksheets, as the last did for quizzes.",
+  "sections": [
+   {
+    "heading": "The key is written from the finished worksheet",
+    "body": "Judges preferred Sonnet’s worksheets to Sol’s in eleven lessons of sixteen: more to do, better laid out. But Sonnet’s keys to them had wrong answers, a mean said to be above seven of eight patients when it is above six, a bound on copying that its own example breaks. So the worksheet is still Sonnet’s, and its key is now written afterwards by Sol, from the sheet as it stands, every answer worked. On the same sheets, Sol’s keys had no wrong answer and one question left unkeyed; Sonnet’s had four and six. Judges would rather mark from Sol’s key in twelve lessons, from Sonnet’s in none.",
+    "image": {
+     "src": "/changelog/0.0.26-keys.svg",
+     "alt": "Left: judges preferred Sonnet’s worksheets in 11 lessons and Sol’s in 4. Right: on the same sheets, Sonnet’s keys had 4 wrong answers and Sol’s had none",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "What stays as it was, and why",
+    "body": "We ran the same test on lesson plans and on slides, study guides, FAQ and discussion prompts. Sol was cheaper each time and made fewer slips, and each time the judges chose Sonnet’s: in fifteen lessons of sixteen for plans, eleven for the rest. They found Sol’s thinner, with less for students to think about. So those stay with Sonnet. One thing the test showed against Sonnet is fixed here: its slides tended to show the answer to something the plan had students predict first."
+   },
+   {
+    "heading": "What it costs",
+    "body": "About two cents more a lesson, for a key a teaching assistant can mark from. A lesson with every material is now about 40 credits, and the free credits cover about 18 lessons; both are corrected where Folio states them."
+   }
+  ]
+ },
+ {
   "version": "0.0.25",
   "date": "October 6, 2026",
   "title": "Quizzes and graded work have a new writer: one wrong key where there were seventeen",

@@ -8,7 +8,7 @@ import { claudeShape } from '../src/adapters/shape';
 import { AssignmentDraft, ClarifyDraft, DiscussionsDraft, FaqDraft, OutlineDraft, PlanDraft, QuizDraft, SlidesDraft, StepDraft, StudyDraft, TestDraft } from '../src';
 import type { z } from 'zod';
 import { AnswerForm } from '../src/answerCheck';
-import { HandoutsDraft } from '../src/handouts';
+import { HandoutKeysDraft, HandoutsDraft } from '../src/handouts';
 import { LastReadDraft } from '../src/lastRead';
 import { ModuleMend, PlanMend } from '../src/mend';
 import { ModuleReviewDraft } from '../src/moduleReview';
@@ -18,7 +18,7 @@ import { StartDraft } from '../src/start';
 import { SupportedDraft } from '../src/supports';
 import { StuckForm } from '../src/stuckCheck';
 
-const SHAPES: Record<string, z.ZodType> = { ModuleDraft, ModuleMend, ModuleReviewDraft, LastReadDraft, PlanDraft, PlanMend, PlanReviewDraft, SlidesDraft, HandoutsDraft, SupportedDraft, AnswerForm, StuckForm, StartDraft, OutlineDraft, ClarifyDraft, QuizDraft, AssignmentDraft, TestDraft, StepDraft, StudyDraft, DiscussionsDraft, FaqDraft };
+const SHAPES: Record<string, z.ZodType> = { ModuleDraft, ModuleMend, ModuleReviewDraft, LastReadDraft, PlanDraft, PlanMend, PlanReviewDraft, SlidesDraft, HandoutsDraft, HandoutKeysDraft, SupportedDraft, AnswerForm, StuckForm, StartDraft, OutlineDraft, ClarifyDraft, QuizDraft, AssignmentDraft, TestDraft, StepDraft, StudyDraft, DiscussionsDraft, FaqDraft };
 
 const apiKey = (await (await fetch('http://127.0.0.1:8799/key/anthropic', { headers: { 'x-experiment': '1' } })).text()).trim();
 const client = new Anthropic({ apiKey });

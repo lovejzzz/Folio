@@ -25,8 +25,8 @@ describe('code a room lesson shows, line by line', () => {
   });
 });
 
-describe('a number the sheets\' writer works out against the plan', () => {
-  it('is put right in the plan itself, where it stands once', async () => {
+describe('the keys to a lesson\'s sheets, written from the sheets by another writer', () => {
+  it('are set on their sheets, and a number of the plan they contradict is put right in the plan', async () => {
     const { withHandouts } = await import('../src/handouts');
     const { CourseStore, cmd, orderedLessons, newId } = await import('@folio/core');
     const { fakeInference, planDraft, smallCourse } = await import('./fake');
@@ -34,11 +34,14 @@ describe('a number the sheets\' writer works out against the plan', () => {
     const lesson = orderedLessons(course)[0]!;
     const segments = planDraft.segments.map((s, i) => ({ ...s, id: newId('x'), session: 1, kind: s.kind as 'teach', teacherNotes: i === 0 ? 'The standard deviation is about 25.70.' : s.teacherNotes }));
     const written = { commands: [cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [], content: { segments, keyIdeas: ['Light drives it'], vocabulary: [] } })], flagged: 0 };
-    const model = fakeInference(() => ({}), { handouts: [], corrections: [{ find: 'about 25.70', replace: 'about 25.79' }, { find: 'not in the plan', replace: 'x' }] });
+    const sheet = { title: 'Spread', kind: 'worksheet', usedIn: 'The equation', copies: 'One each', blocks: [{ type: 'para', text: 'Find the standard deviation.' }] };
+    const model = fakeInference(() => ({}), { handouts: [sheet], keyed: { keys: [{ title: 'Spread', key: 'About 25.79.' }], corrections: [{ find: 'about 25.70', replace: 'about 25.79' }, { find: 'not in the plan', replace: 'x' }] } });
     const out = await withHandouts(model, course, lesson, written);
     const store = new CourseStore(course);
     store.apply(out.commands, { label: { key: 'b' }, source: 'ai' });
     expect(store.getState().lessons[lesson.id]!.segments[0]!.teacherNotes).toBe('The standard deviation is about 25.79.');
+    // The key is the second writer's, set on the sheet it names.
+    expect(store.getState().lessons[lesson.id]!.handouts.map((h) => [h.title, h.key])).toEqual([['Spread', 'About 25.79.']]);
   });
 });
 

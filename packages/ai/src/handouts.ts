@@ -5,6 +5,7 @@ import { ExhibitBlockDraft, exhibitPart } from './exhibit';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
 import { placed } from './lastRead';
+import { say } from './lessonView';
 import { courseBackground, lessonContext, systemPrompt } from './prompts';
 
 /**
@@ -25,16 +26,11 @@ export const HandoutsDraft = z.object({
         usedIn: line.describe('The title of the plan\'s segment that uses it'),
         copies: line.describe('"One per student", "One set per group", "One to project"'),
         blocks: z.array(ExhibitBlockDraft).min(1).describe('The sheet itself, in full and in order, as a student gets it'),
-        key: z.string().default('').describe('For the teacher only: the answer to every question on the sheet, in order, and what to look for; empty for a sheet with nothing to mark'),
+        key: z.string().default('').describe('Leave empty: the key is written from the finished sheet'),
       }),
     )
     .max(6)
     .default([]),
-  corrections: z
-    .array(z.object({ find: line.describe('The exact words of the plan that are wrong, copied character for character, where they stand only once'), replace: z.string().describe('What should stand there') }))
-    .max(6)
-    .default([])
-    .describe('Only where a number or result the plan states is wrong by your own working: one entry for each place the plan says it. Usually empty'),
 });
 export type HandoutsDraft = z.infer<typeof HandoutsDraft>;
 
@@ -49,7 +45,7 @@ export function handoutsPrompt(course: Course, lesson: Lesson, plan: Content): s
     [
       'Write the sheets this lesson puts in students\' hands or on the wall, each in full and ready to print: every worksheet, exit ticket (graded or not), organizer, set of cards, text to read, reference sheet, or paper the teacher is to mark or cut beforehand, that the plan names or plainly needs for what it has students do. None when the lesson needs none; six at most, one sheet for one activity, and none for a discussion held aloud.',
       'A sheet the plan describes is that sheet: its numbers, names, examples and questions are the plan\'s own, and where the plan gives only some of them ("ten problems like these") write them all; it asks nothing of a student that the plan has them do elsewhere (at desks, not at the floor line). Give it as blocks in the order a student reads them: a line of instructions; the questions as a list, unnumbered, since the page numbers them; a table to fill in, with its headings and empty cells; a text as paragraphs; cards as a table with one card to a row; and after each question a "yours" for the answer, with as many lines as the answer needs. What students need in hand to do a task alone is on a sheet, never only in the notes for the teacher: the code they are to type or change, and the steps and amounts of a procedure they carry out at a bench or a computer, as a reference sheet. A question about a figure carries what it needs on the sheet, as the numbers in a table or a full description in words, never "the histogram on the board": the sheet is written before any slide. A question is never written inside the room for its answer.',
-      'What a student should not see is not on the sheet: answers, hints at the answer, what the teacher is looking for. Those go under "key", every answer in the order of the questions, worked out by you from the sheet as written; where a number in the plan disagrees with what you work out, the key gives what is right, and the wrong words of the plan go under "corrections" with what should stand there, so that the plan and all that is written from it are put right: the key itself says nothing of the plan.',
+      'What a student should not see is not on the sheet: answers, hints at the answer, what the teacher is looking for. The key to each sheet is written afterwards, from the sheet as it stands: leave "key" empty.',
       'Quotation marks, and the words "excerpt" or "quotation", are only for the exact words of a real text you are sure of; a summary in your own words is called a summary.',
       'Leave out what is not paper or is not yours to write: real objects and anything students bring, the slides, the quiz and the graded work (written separately), a text the teacher\'s sources hold (name it and where to find it in "copies"), and a sheet that would only repeat what the teacher says aloud.',
     ].join(' '),
@@ -65,6 +61,31 @@ export function sheetFault(draft: HandoutsDraft): string | null {
   if (code?.code === 'schemaIssue') return String(code.values.issue);
   const empty = draft.handouts.find((h) => h.blocks.some((b) => b.type === 'table' && (!b.columns.length || !b.rows.length || b.rows.some((r) => r.length !== b.columns.length))));
   return empty ? `the sheet "${empty.title}" has a table without its headings or with rows that are not as long as them: give every table its column headings and every row one cell for each, the cells students fill as empty strings and the labels they need written in` : null;
+}
+
+/**
+ * The keys, written from the finished sheets by the writer that gets answers right. Sheets and keys came from one
+ * writer: judged blind on sixteen lessons, its sheets were the ones teachers would rather use (11 lessons to 4) and
+ * its keys had five wrong answers, where the other writer's sheets were thinner and its keys had none. Given the
+ * first writer's sheets, the second's keys had no wrong answer and one gap, against four and six, and were
+ * preferred in twelve lessons and never the other way.
+ */
+export const HandoutKeysDraft = z.object({
+  keys: z.array(z.object({ title: line.describe('The sheet, by its title exactly'), key: z.string().describe('Its key; empty for a sheet with nothing to mark') })).max(6).default([]),
+  corrections: z
+    .array(z.object({ find: line.describe('The exact words of the plan that are wrong, copied character for character, where they stand only once'), replace: z.string().describe('What should stand there') }))
+    .max(6)
+    .default([])
+    .describe('Only where a number or result the plan states is wrong by your own working: one entry for each place the plan says it. Usually empty'),
+});
+export type HandoutKeysDraft = z.infer<typeof HandoutKeysDraft>;
+
+const KEYS_ASK =
+  'Below are a lesson plan and the sheets it hands to students, already written. Write the key to each sheet, for the teacher only: the answer to every question, cell and blank on the sheet, in the order they stand, worked out by you from the sheet as it is written (every number computed, every piece of code traced), with what to look for in an open answer and the common slip where there is one. Where a number or statement in the plan disagrees with what you work out, the key gives what is right and says nothing of the plan, and the wrong words of the plan go under "corrections" with what should stand there, so that the plan and all that is written from it are put right. A sheet with nothing to mark has an empty key.';
+
+export function handoutKeysPrompt(course: Course, lesson: Lesson, plan: Content, sheets: HandoutsDraft['handouts']): string {
+  const shown = sheets.map((h) => `### ${h.title} (${h.kind}, used in "${h.usedIn}")\n${exhibitPart({ label: '', blocks: h.blocks }).blocks.map((b) => say(b as Record<string, unknown>)).join('\n')}`).join('\n\n');
+  return [lessonContext(course, lesson), `The lesson plan, as it will be taught:\n${planText(plan)}`, `The sheets:\n${shown}`, KEYS_ASK].join('\n\n');
 }
 
 function toHandout(d: HandoutsDraft['handouts'][number]): Handout {
@@ -88,10 +109,15 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
     const fault = sheetFault(first.value);
     const again = fault ? await write(`\n\nA first answer was not usable: ${fault}.`).catch(() => null) : null;
     const result = again && !sheetFault(again.value) ? again : first;
-    const handouts = result.value.handouts.map(toHandout);
-    // The sheets' writer works every answer, which makes it the second to compute the plan's numbers: a key said "correction to
-    // the plan: the standard deviation is 25.79, not 25.70", and the plan, its slides and the study guide kept 25.70.
-    const plan = result.value.corrections.reduce((now, fix) => {
+    // A key that cannot be had leaves the sheets without one, never the lesson without its sheets.
+    const keyed = result.value.handouts.length
+      ? await runJob(inference, { task: 'folio_handout_keys', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: handoutKeysPrompt(course, lesson, content, result.value.handouts), effort: 'low', schema: HandoutKeysDraft, repair: false, signal }).then((r) => r.value, () => null)
+      : null;
+    const keyOf = (title: string) => keyed?.keys.find((k) => k.title.trim() === title.trim())?.key ?? '';
+    const handouts = result.value.handouts.map((h) => toHandout({ ...h, key: keyOf(h.title) }));
+    // Working every answer makes the keys' writer the second to compute the plan's numbers: a key said "correction to the
+    // plan: the standard deviation is 25.79, not 25.70", and the plan, its slides and the study guide kept 25.70.
+    const plan = (keyed?.corrections ?? []).reduce((now, fix) => {
       const got = placed(now, fix.find, fix.replace);
       return got.hits === 1 ? got.value : now;
     }, { segments: content.segments, keyIdeas: content.keyIdeas, vocabulary: content.vocabulary });

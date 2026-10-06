@@ -14,6 +14,8 @@ export function fakeInference(answer: (req: CompletionRequest, call: number) => 
       // A plan's sheets are asked for after every plan: answered apart ("none" unless a test gives some), so tests
       // of how plans are written count the calls they are about.
       if (req.task === 'folio_handouts') return (sheets.push(req), handouts ?? { handouts: [] });
+      // And their keys, written after them by another writer: none unless a test gives some under "keyed".
+      if (req.task === 'folio_handout_keys') return (handouts as { keyed?: unknown } | undefined)?.keyed ?? { keys: [], corrections: [] };
       calls.push(req);
       await Promise.resolve();
       return answer(req, calls.length);
