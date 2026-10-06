@@ -321,7 +321,7 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
   },
   discussions: (c) =>
     [
-      'Write two discussion prompts that make students think and disagree productively, each with two or three follow-up questions for the teacher. Where the plan has students discuss a question, the first prompt is that question, worded as the plan runs it, so the teacher finds it where it is used. Every follow-up is a question put to students, never a note on when or how to use the prompt. In a course that teaches a language, the prompts get students using that language at their level, not debating about it in another: for beginners, instructions in the language of instruction and sentence frames in the language being learned.',
+      'Write two discussion prompts that make students think and disagree productively, each with two or three follow-up questions for the teacher. Where the plan has students discuss a question, the first prompt is that question, worded as the plan runs it, so the teacher finds it where it is used. A prompt is the question itself, in the words said to students, with what it is about (the case, the numbers) in it: never an instruction to the teacher ("Show a student\'s work", "Students write"). Every follow-up is a question put to students, never a note on when or how to use the prompt. In a course that teaches a language, the prompts get students using that language at their level, not debating about it in another: for beginners, instructions in the language of instruction and sentence frames in the language being learned.',
       lessonSessions(c).some((s) => s.kind === 'seminar') ? 'They are for the seminar: rooted in the reading, for students to lead.' : '',
     ]
       .filter(Boolean)
@@ -344,8 +344,10 @@ function slidesFor(course: Course): string {
   const sessions = lessonSessions(course);
   if (sessions.length < 2) return '';
   const shown = sessions.filter((s) => s.kind === 'lecture' || s.kind === 'class');
-  if (!shown.length || shown.length === sessions.length) return '';
-  return `The slides are for the ${SESSION_NAMES[shown[0]!.kind]}; the other sessions run without them.`;
+  // Notes on the last slide set the homework "before students leave" in the third lecture of a week whose plan set it at the recitation.
+  const own = 'A slide belongs to the meeting whose step it serves, and its notes say only what the plan does in that meeting: homework is set, work collected and "next time" announced where the plan does it.';
+  if (!shown.length || shown.length === sessions.length) return own;
+  return `The slides are for the ${SESSION_NAMES[shown[0]!.kind]}; the other sessions run without them. ${own}`;
 }
 
 const FOLLOW_UPS = 'Do not say how posts are graded: Folio adds that, the same every week. Under "followUps", two or three things the instructor can ask in the thread or in the session to push it further.';

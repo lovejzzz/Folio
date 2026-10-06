@@ -190,6 +190,11 @@ def check_item(item, check):
                 # two choices one unit apart (0.6 and 0.7) both pass the loose rule: the one that rounds to the value is the one that states it
                 near = [n for n in hit if match_text(ch[n - 1]['text'], v, ents[n].get('first'), tol, True)[0]] if len(hit) > 1 else []
                 hit = near or hit
+                # "8.7 g" and "9 g" both state a computed 8.7 by the rules above: the choice nearest the value is the one that states it
+                fv = flat(v)
+                if len(hit) > 1 and fv and len(fv) == 1:
+                    off = {n: min((abs(x[0] - fv[0]) for x in numbers(ch[n - 1]['text'].replace('\x60', ''))), default=9e99) for n in hit}
+                    hit = [n for n in hit if off[n] <= min(off.values()) + 1e-12]
                 # a word answer two choices contain ("elastic", "unit elastic"): the choice that is the answer and no more states it
                 same = [n for n in hit if isinstance(v, str) and ' '.join(nloc(ch[n - 1]['text']).replace('\x60', '').split()).casefold().strip(' .') == ' '.join(v.split()).casefold().strip(' .')]
                 hit = same or hit

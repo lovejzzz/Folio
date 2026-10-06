@@ -132,8 +132,12 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     const text = { checkable: true, setup: 'v = 25.0 + 57.0', answer_expr: "f'{v:.4f}'", choices: [1, 2, 3].map((n) => ({ n, kind: 'value' })) };
     const sheet = (id: string, answerKey: string): Task => ({ ...base, id, kind: 'assignment', title: 'Sheet', prompt: '', steps: ['Find the hydrogen ion concentration at pH 3.2 with `10 ** -3.2`.'], rubricId: null, answerKey, toward: '' });
     const digits = (expr: string) => ({ checkable: true, setup: 'h = 10 ** -3.2', stated: [{ where: 'answerKey', before: '≈ ', expr }] });
-    const pick = (r: { prompt: string }) => (r.prompt.includes('diluted') ? text : r.prompt.includes('7.1 × 10') ? digits('h') : digits('h * 1e4'));
-    const out = await checkAnswers(fakeInference(pick), nodeRunner(), [volume('t_vol', 2), volume('t_vol_wrong', 1), sheet('t_ph', 'At pH 3.2, [H⁺] = 10^{−3.2} ≈ 6.3 × 10⁻⁴ M.'), sheet('t_ph_wrong', 'At pH 3.2, [H⁺] ≈ 7.1 × 10⁻⁴ M.')]);
+    const mass = (id: string, keyed: number) => choice(id, 'A 3.0 mL sample has density 2.9 g/mL. What is its mass?', ['1.0 g', '8.7 g', '9 g'], keyed, 'Multiply.');
+    const near = { checkable: true, setup: 'm = 3.0 * 2.9', answer_expr: 'm', choices: [1, 2, 3].map((n) => ({ n, kind: 'value' })) };
+    const pick = (r: { prompt: string }) => (r.prompt.includes('density 2.9') ? near : r.prompt.includes('diluted') ? text : r.prompt.includes('7.1 × 10') ? digits('h') : digits('h * 1e4'));
+    const out = await checkAnswers(fakeInference(pick), nodeRunner(), [volume('t_vol', 2), volume('t_vol_wrong', 1), sheet('t_ph', 'At pH 3.2, [H⁺] = 10^{−3.2} ≈ 6.3 × 10⁻⁴ M.'), sheet('t_ph_wrong', 'At pH 3.2, [H⁺] ≈ 7.1 × 10⁻⁴ M.'), mass('t_mass', 2), mass('t_mass_wrong', 3)]);
+    // Beside "8.7 g", "9 g" does not state 8.7.
+    expect([out.flags.has('t_mass'), out.flags.has('t_mass_wrong')]).toEqual([false, true]);
     // The right keys pass or go unchecked; the wrong ones are still caught.
     expect([out.flags.has('t_vol'), out.flags.has('t_vol_wrong'), out.flags.has('t_ph'), out.flags.has('t_ph_wrong')]).toEqual([false, true, false, true]);
   }, 120_000);
