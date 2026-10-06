@@ -128,6 +128,15 @@ def match_text(text, val, first=None, tol=None, tight=False):
         return bool(s and re.search(r'(?<![\w-])' + re.escape(s) + r'(?![\w-])', b)), f'stored {text[:50]!r} computed {str(val)[:50]!r}'
     ns_ = numbers(body)
     if first: ns_ = ns_[:int(first)]
+    if len(ns_) > len(f) and not first:
+        # an answer in prose says more than the result ("Q1 7, Q3 13, IQR 6, fences -2 and 22; 30 is beyond 22, so the whisker ends at 14"):
+        # the computed values are looked for in order among its numbers, as for a value stated in a key
+        at = 0; missed = []
+        for c in f:
+            hit = next((k for k in range(at, len(ns_)) if num_ok(ns_[k][0], ns_[k][1], c, tol, tight)), None)
+            if hit is None: missed.append(round(c, 6))
+            else: at = hit + 1
+        return not missed, (f'computed {missed[:6]} not among the stored {[n[2] for n in ns_][:8]}' if missed else f'{len(f)} numbers found in order')
     if len(ns_) != len(f): return False, f'stored has {len(ns_)} numbers {[n[2] for n in ns_][:8]}, computed {len(f)}: {[round(x, 6) for x in f][:8]}'
     bad = [(n[2], round(c, 6)) for n, c in zip(ns_, f) if not num_ok(n[0], n[1], c, tol, tight)]
     return not bad, (f'stored/computed differ: {bad[:6]}' if bad else f'{len(f)} numbers equal')

@@ -120,7 +120,10 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     const formB = { checkable: true, setup: 'import numpy as np\nx = np.array([2, 4, 5, 7, 8, 10, 24])', answer_expr: '(np.percentile(x, 25), np.percentile(x, 75), np.percentile(x, 75) + 1.5 * (np.percentile(x, 75) - np.percentile(x, 25)), True)', choices: [{ n: 1, kind: 'value' }, { n: 2, kind: 'value' }, { n: 3, kind: 'value', origin_expr: 'float(x.max() - x.min())' }] };
     const gym = choice('t_gym', 'Passes fall from 130 to 70 when the price rises from $8 to $12. By the midpoint method, demand is:', ['Elastic', 'Inelastic', 'Unit elastic', 'Perfectly inelastic'], 1, 'The midpoint elasticity is 1.5.');
     const formC = { checkable: true, setup: 'e = abs(((70 - 130) / 100) / ((12 - 8) / 10))', answer_expr: '"Elastic" if e > 1 else "Inelastic"', choices: [1, 2, 3, 4].map((n) => ({ n, kind: 'value' })) };
-    const out = await checkAnswers(fakeInference((r) => (r.prompt.includes('Delays') ? formB : r.prompt.includes('Passes') ? formC : formA)), nodeRunner(), [fragment, fences, gym]);
+    const prose: Task = { ...base, id: 't_prose', kind: 'question', format: 'short', prompt: 'Scores 4, 7, 9, 11, 13, 30: find Q1, Q3 and the upper fence by the rule taught (medians of the halves).', choices: [], correct: null, answer: 'Q1 = 7, Q3 = 13, IQR = 6, so the fences are −2 and 22; 30 is beyond 22 and the whisker ends at 13.', explanation: '', difficulty: 2 };
+    const formD = { checkable: true, setup: 'q1, q3 = 7, 13', answer_kind: 'value', answer_expr: '(q1 + 0, q3 + 0, q3 - q1, q1 - 1.5 * (q3 - q1), q3 + 1.5 * (q3 - q1))' };
+    const pick = (r: { prompt: string }) => (r.prompt.includes('Delays') ? formB : r.prompt.includes('Passes') ? formC : r.prompt.includes('Scores 4') ? formD : formA);
+    const out = await checkAnswers(fakeInference(pick), nodeRunner(), [fragment, fences, gym, prose]);
     expect([...out.flags.values()]).toEqual([]);
   }, 120_000);
 
