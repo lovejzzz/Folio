@@ -60,6 +60,18 @@ describe('the R a lesson gives students, run as they run it', () => {
     expect(r.ran).not.toContain('answer <- c(...)');
   });
 
+  it('runs a statement set inside a sentence, and leaves a file the teacher hands out to the teacher', async () => {
+    const course = labCourse(['x <- 1']);
+    const lesson = orderedLessons(course)[1]!;
+    const prose: Handout = { ...sheet('Reading', []), blocks: [{ type: 'para', text: 'Load the data with `survey <- read.csv("survey.csv")` and then run `mean(survey$age)`. The function `mean()` takes a vector; finish `ggplot(survey, aes(x = age)) +` yourself.' }, { type: 'table', columns: ['Command', 'Output'], rows: [['`median(scores)`', '']] }] };
+    const r = fakeR();
+    const faults = await lessonCodeFaults(r, course, { ...lesson, handouts: [prose] });
+    // The two statements and the table's cell were run; the bare mention and the unfinished line were not.
+    expect(r.ran.slice(-3)).toEqual(['survey <- read.csv("survey.csv")', 'mean(survey$age)', 'median(scores)']);
+    // survey.csv is the teacher's to supply, so neither its line nor the one that uses it is a fault; `scores` was never made.
+    expect(faults.map((f) => f.line)).toEqual(['median(scores)']);
+  });
+
   it('corrects what stops and keeps the correction only when the sheet then runs', async () => {
     const course = labCourse(['setwd("~/stats")', 'cars_df <- read.csv("cars.csv")']);
     const lesson = orderedLessons(course)[1]!;

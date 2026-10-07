@@ -34,9 +34,18 @@ export interface CodeFault {
 const whole = (text: string): string | null => /^\s*`([^`]+)`\s*$/.exec(text)?.[1] ?? null;
 const inline = (text: string): string[] => [...text.matchAll(/`([^`\n]+)`/g)].map((m) => m[1]!);
 
+/** Code set in a sentence that is a statement of its own: it assigns or calls with something, and ends where it should. */
+const complete = (code: string): boolean => {
+  const open = (code.match(/[([{]/g) ?? []).length === (code.match(/[)\]}]/g) ?? []).length;
+  return open && /<-|\w\(\s*[^)\s]/.test(code) && !/(?:[+,({]|\|>|%>%|<-|=)\s*$/.test(code.trim());
+};
+
+/** The code a text holds, in order: a line that is all code, and the statements set inside a sentence. */
+const codeIn = (text: string): string[] => text.split('\n').flatMap((row) => (whole(row)?.trim() ? [whole(row)!] : inline(row).filter(complete)));
+
 function sheetLines(h: Handout): string[] {
-  const rows = h.blocks.flatMap((b): string[] => (b.type === 'list' ? b.items : 'text' in b && typeof b.text === 'string' ? b.text.split('\n') : []));
-  return rows.map(whole).filter((l): l is string => Boolean(l?.trim()));
+  // A table's cells too: a lab sheet sets its commands beside the room for their output.
+  return h.blocks.flatMap((b): string[] => (b.type === 'list' ? b.items : b.type === 'table' ? b.rows.flat() : 'text' in b && typeof b.text === 'string' ? [b.text] : [])).flatMap(codeIn);
 }
 
 /** The code of one lesson in the order it is met: what the teacher prepares, each sheet, each piece of work. */
@@ -47,7 +56,7 @@ export function codeUnits(course: Course, lesson: Lesson): CodeUnit[] {
   return [
     { kind: 'notes' as const, title: '', lines: notes },
     ...lesson.handouts.map((h) => ({ kind: 'handout' as const, title: h.title, lines: sheetLines(h) })),
-    ...work.map((t) => ({ kind: 'assignment' as const, title: t.title, lines: t.steps.flatMap((s) => s.split('\n')).map(whole).filter((l): l is string => Boolean(l?.trim())) })),
+    ...work.map((t) => ({ kind: 'assignment' as const, title: t.title, lines: t.steps.flatMap(codeIn) })),
   ].filter((u) => u.lines.length);
 }
 
@@ -56,6 +65,9 @@ export const looksLikeR = (units: CodeUnit[]): boolean => units.some((u) => u.ki
 
 /** A line a student completes, or one that waits for a person: it cannot be run, and is no fault. */
 const SKIPPED = /\.\.\.|___|<[a-z][a-z ]*>|^\s*(?:install\.packages|View|file\.choose|readline|edit|fix|help|vignette|q|quit)\(|^\s*\?/i;
+
+/** A call that reads a file. */
+const GIVEN = /\b(?:read\.(?:csv|table|delim)|read_(?:csv|tsv|delim|excel|rds)|readRDS|readxl::read_excel|load|scan)\(/;
 
 async function runUnit(runner: LineRunner, unit: CodeUnit): Promise<{ line: string; error: string }[]> {
   await runner.fresh();
@@ -71,6 +83,13 @@ async function runUnit(runner: LineRunner, unit: CodeUnit): Promise<{ line: stri
     }
     const error = await runner.run(line);
     if (!error) continue;
+    // A file nothing in the course made is one the teacher hands out: the line is theirs to make work, and what it would
+    // have loaded is not missed. Sent to be "corrected", it came back as a file's contents typed into the call as text.
+    if (GIVEN.test(line) && /cannot open|does not exist|No such file/i.test(error)) {
+      const name = /^\s*([\w.]+)\s*(?:<-|=)/.exec(line)?.[1];
+      if (name) unmade.add(name);
+      continue;
+    }
     const missing = /object '([^']+)' not found/.exec(error)?.[1];
     if (missing && unmade.has(missing)) continue;
     faults.push({ line, error });
