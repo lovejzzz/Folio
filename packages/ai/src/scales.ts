@@ -58,7 +58,7 @@ export const UNIVERSITY_TEACHING =
  */
 const QUIZ_IN_PLAN =
   'A graded quiz, test or exam in the lesson asks about new cases with new numbers, not the examples the course taught with, covers what the lessons before it taught, fits the minutes it has, and has its questions (with the choices, where it has them), answers and the points each carries written out in the notes, however long. Nothing left on the board or screen while students take it gives an answer.';
-const QUIZ_IS_MATERIAL = `${QUIZ_IN_PLAN.replace('A graded quiz, test or exam', 'A graded test or exam')} A short quiz on the lesson itself is the lesson's quiz, written separately: the plan gives it time and says how it is marked, and writes no second set of questions.`;
+const QUIZ_IS_MATERIAL = `${QUIZ_IN_PLAN.replace('A graded quiz, test or exam', 'A graded test or exam')} A short quiz on the lesson itself is the lesson's quiz, written separately: it is practice that counts toward no grade, and the plan gives it time or leaves it for after class, and writes no second set of questions.`;
 const NOTHING_SHOWN = 'Nothing left on the board or screen while students take it gives an answer.';
 
 /** What a plan is told about the graded papers its lesson holds. */
