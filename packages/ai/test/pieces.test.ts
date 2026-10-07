@@ -271,3 +271,15 @@ describe('the first lesson to run a turn students prepare', () => {
     expect(lessonContext(course, third!)).not.toMatch(/This is the first lesson to run it/);
   });
 });
+
+describe('what students read beside the lesson’s work', () => {
+  it('is written knowing the keys, and gives none of them away', async () => {
+    const store = new CourseStore(courseFromOutline(req, outline()));
+    const model = fakeInference((r) => ({ ...(answer(r.prompt) as object), answerKey: '1. Demand is elastic above $5: a $1 rise is a small share of a high price.' }));
+    const [first] = orderedLessons(store.getState());
+    store.apply((await generateSection(model, store.getState(), first!.id, 'assignments')).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
+    const lesson = orderedLessons(store.getState())[0]!;
+    for (const kind of ['study', 'faq'] as const) expect(sectionPrompt(store.getState(), lesson, kind)).toMatch(/with their keys, already written:[\s\S]*a \$1 rise is a small share of a high price[\s\S]*agrees with these keys/);
+    expect(sectionPrompt(store.getState(), lesson, 'slides')).not.toMatch(/with their keys, already written/);
+  });
+});

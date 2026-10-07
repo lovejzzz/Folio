@@ -308,6 +308,8 @@ describe('runBuild', () => {
     // Graded work is shown the lesson's quiz, so it waits for it.
     for (const n of [0, 1]) if (order.includes(`${n}:assignments`)) expect(order.indexOf(`${n}:quiz`)).toBeLessThan(order.indexOf(`${n}:assignments`));
     expect(order.some((o) => o.endsWith(':assignments'))).toBe(true);
+    // The study guide and the FAQ are told the keys of the work, so they wait for it.
+    for (const kind of ['study', 'faq']) if (order.includes(`0:${kind}`) && order.includes('0:assignments')) expect(order.indexOf('0:assignments')).toBeLessThan(order.indexOf(`0:${kind}`));
     expect(missingTargets(store.getState())).toEqual([]);
     expect(staleItems(store.getState())).toEqual([]);
   });

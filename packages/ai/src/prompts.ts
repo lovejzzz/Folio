@@ -1,5 +1,6 @@
 import { hasModulePages, lessonSessions, orderedLessons, statedObjectives, type Course, type Delivery, type Language, type Lesson, type Online, type Session, type SessionKind } from '@folio/core';
 import { R_COURSE_PACKAGES, R_PACKAGES } from '@folio/run';
+import { keysSoFar } from './workJobs';
 import { courseSoFar, dueLesson, dueWords, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, inClassAgain, nextReading, readBefore, readingsLead, sharedComponent } from './continuity';
 import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, judgedLine, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
@@ -402,6 +403,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
   }
   parts.push(hasModulePages(course) ? onlineAsk(course, lesson, kind) : asks[kind](course, lesson));
   parts.push(already);
+  if (kind === 'study' || kind === 'faq') parts.push(keysSoFar(lesson.taskIds.flatMap((id) => (course.tasks[id] ? [course.tasks[id]] : []))));
   // Taught live online, a plan is a run of show, and the slides and prompts are for a screen and a breakout room.
   if (isLiveOnline(course)) parts.push(kind === 'plan' ? runOfShow(course) : kind === 'slides' || kind === 'discussions' || kind === 'faq' ? LIVE_ASKS[kind] : '');
   return parts.filter(Boolean).join('\n\n');

@@ -110,6 +110,9 @@ function lastReads(host: BuildHost, targets: BuildTarget[], pending: BuildTarget
  * Run section jobs with a small concurrency limit, in lesson order, so the
  * map fills from the top. Sections written from the lesson plan wait for it.
  */
+/** What a part waits for in its own lesson, beside the plan. */
+const AFTER: Partial<Record<BuildTarget['kind'], BuildTarget['kind'][]>> = { assignments: ['quiz'], study: ['quiz', 'assignments'], faq: ['quiz', 'assignments'] };
+
 export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise<BuildSummary> {
   const summary: BuildSummary = { built: 0, failed: 0, flagged: 0, stopped: false, fatal: null };
   const pending = [...targets];
@@ -139,8 +142,8 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
     const scored = (o: BuildTarget) => o.kind === 'assignments' && position(o.lessonId) < position(t.lessonId) && pieces(o.lessonId).some((key) => key.startsWith('inclass:'));
     if (t.kind === 'plan') return queued.some(scored) || waiting.some((o) => position(o.lessonId) < position(t.lessonId) && !drafts.has(o.lessonId));
     if (t.kind === 'assignments' && queued.some((o) => o.kind === 'assignments' && position(o.lessonId) < position(t.lessonId) && shares(o.lessonId, t.lessonId))) return true;
-    // Graded work is written after the lesson's quiz, which it is shown: written beside it, both set the same problems.
-    if (t.kind === 'assignments' && queued.some((o) => o.kind === 'quiz' && o.lessonId === t.lessonId)) return true;
+    // Each is shown what came before it: graded work the quiz (beside it, both set the same problems), the guide and the FAQ the keys.
+    if (queued.some((o) => (AFTER[t.kind] ?? []).includes(o.kind) && o.lessonId === t.lessonId)) return true;
     return BUILT_ON_PLAN.has(t.kind) && waiting.some((o) => o.lessonId === t.lessonId);
   };
 

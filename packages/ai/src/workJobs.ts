@@ -221,3 +221,17 @@ export function alreadySet(tasks: Task[]): string {
   if (!items.length) return '';
   return `Already written for this lesson, and worked by the same students:\n${items.map((i) => `- ${i}`).join('\n')}\nThis piece gives other problems than these: another function, case or set of numbers each time: one of them under other letters or in another story is the same problem.`;
 }
+
+/**
+ * The lesson's work with its answers, for what students read beside it. The study guide and the questions students
+ * ask were written from the plan alone, before any key existed: where they and a key disagreed, a student was
+ * graded by one and taught by the other.
+ */
+export function keysSoFar(tasks: Task[]): string {
+  const items = tasks.flatMap((t) => {
+    if (t.kind === 'question') return [`${clip(t.prompt, 200)} → ${clip(t.choices.find((c) => c.id === t.correct)?.text ?? t.answer, 160)}`];
+    return t.kind === 'assignment' && t.answerKey.trim() ? [`${t.title}: ${clip(t.steps.join(' | '), 500)} → key: ${clip(t.answerKey, 900)}`] : [];
+  });
+  if (!items.length) return '';
+  return `The lesson's quiz and graded work with their keys, already written:\n${items.map((i) => `- ${i}`).join('\n')}\nWhat this material says agrees with these keys: a rule, a direction (larger or smaller, more or less) or a value it states is the one they use. It gives none of these answers away: its examples are its own.`;
+}
