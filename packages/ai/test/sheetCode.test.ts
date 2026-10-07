@@ -101,7 +101,11 @@ describe('the R a lesson gives students, run as they run it', () => {
     // A line the sheet gives as broken on purpose is left alone, and is no fault to report.
     const exercise = await sheetsRun(fakeInference(() => ({ changes: [{ find: '`setwd("~/stats")`', replace: '`getwd()`' }], meant: ['setwd("~/stats")'] })), fakeR(), course, lesson, lesson.handouts);
     expect([exercise.handouts, exercise.flags]).toEqual([lesson.handouts, []]);
-    // No R, no check.
+    // What the broken line was to load is missing until a student repairs it: the lines after it are not blamed for that.
+    const loads = labCourse(['setwd("~/stats")', 'mean(tbl$mpg)']);
+    const [after] = [orderedLessons(loads)[1]!];
+    const told = (reply: object) => sheetsRun(fakeInference(() => reply), fakeR(), loads, after, after.handouts).then((o) => o.flags.length);
+    expect([await told({ changes: [], meant: ['setwd("~/stats")'] }), await told({ changes: [] })]).toEqual([0, 2]);
     expect(await sheetsRun(fixer, undefined, course, lesson, lesson.handouts)).toEqual({ handouts: lesson.handouts, flags: [] });
   });
 

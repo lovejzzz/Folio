@@ -41,7 +41,12 @@ async function mended<T>(inference: Inference, first: Material<T>, shown: (value
   const fix = await codeFix(inference, shown(first.value), wrong, signal).catch(() => ({ changes: [], meant: [] as string[] }));
   // A line given to students as broken, to find and repair, is meant to stop: "fixed", the exercise had nothing left to fix.
   const meant = new Set(fix.meant.map((l) => l.replace(/`/g, '').trim()));
-  const real = (faults: CodeFault[]) => faults.filter((f) => !meant.has(f.line.trim()));
+  // What the broken line was to load or make is missing until the student repairs it: the lines after it that miss
+  // something are its doing, and were reported to the teacher as lines of their own that stop.
+  const real = (faults: CodeFault[]) => {
+    const broken = new Set<string>();
+    return faults.filter((f) => (meant.has(f.line.trim()) ? !broken.add(f.title) : !(broken.has(f.title) && /not found|could not find/.test(f.error))));
+  };
   const kept = fix.changes.filter((c) => ![...meant].some((line) => c.find.includes(line)));
   const value = kept.reduce<T>((now, c) => changed(now, c.find, c.replace) ?? now, first.value);
   if (value === first.value) return { value, faults: real(first.faults) };
