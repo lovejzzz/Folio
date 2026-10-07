@@ -68,6 +68,17 @@ export function outlinePrompt(input: OutlineInput): string {
   return parts.join('\n\n');
 }
 
+/**
+ * Graded components no lesson holds. An outline of a course graded 80% by three exams and a final came back with no
+ * test in any lesson: nothing asked that each component be somewhere. Asked for once more; what is still unheld is
+ * left as it is, since a component with nothing to write (attendance) is held by no lesson rightly.
+ */
+function unheld(v: OutlineDraft): Problem[] {
+  const held = new Set(v.lessons.flatMap((l) => [l.homeworkToward, ...(l.also ?? []).map((p) => p.toward)]).map(plain));
+  const missing = v.grading.map((g) => g.item).filter((item) => item.trim() && !held.has(plain(item)));
+  return missing.length ? [{ index: null, advisory: true, flag: { code: 'schemaIssue', values: { path: 'lessons', issue: `No lesson holds these graded components, named exactly as under "grading": ${missing.join('; ')}. Each is held by the lessons where it is set, sat or done` } } }] : [];
+}
+
 /** First model call: an outline only. Nothing else is generated until the teacher agrees to it. */
 export async function generateOutline(inference: Inference, req: NewCourseRequest, signal?: AbortSignal): Promise<OutlineDraft> {
   const input: OutlineInput = { ...req };
@@ -78,10 +89,10 @@ export async function generateOutline(inference: Inference, req: NewCourseReques
     schema: OutlineDraft,
     // Never more lessons than a course holds, whatever was asked or answered.
     tidy: (v) => tidyOutline({ ...v, lessons: v.lessons.slice(0, SHAPE_LIMITS.lessons.max) }),
-    check: (v): Problem[] =>
-      req.lessonCount === null || v.lessons.length === req.lessonCount
-        ? []
-        : [{ index: null, flag: { code: 'lessonCount', values: { got: v.lessons.length, want: req.lessonCount } } }],
+    check: (v): Problem[] => [
+      ...(req.lessonCount === null || v.lessons.length === req.lessonCount ? [] : [{ index: null, flag: { code: 'lessonCount' as const, values: { got: v.lessons.length, want: req.lessonCount } } }]),
+      ...unheld(v),
+    ],
     signal,
   });
   return result.value;

@@ -188,3 +188,17 @@ describe('the outline', () => {
     expect(orderedLessons(courseFromOutline(req, draft)).map((l) => l.homework.toward)).toEqual(['', 'quizzes']);
   });
 });
+
+describe('an outline that leaves a graded component out', () => {
+  it('is asked once more, with the components no lesson holds by name', async () => {
+    const { generateOutline } = await import('../src');
+    const lesson = (title: string, toward: string) => ({ title, summary: 'S.', objectives: ['Do it'], homework: toward ? ('assignment' as const) : ('none' as const), homeworkToward: toward });
+    const draft = (withExam: boolean) => ({ title: 'Biology', summary: 'S.', subject: 'Biology', level: 'Undergraduate', grading: [{ item: 'Problem sets', weight: 20 }, { item: 'Final exam', weight: 80 }], lessons: [lesson('Cells', 'Problem sets'), withExam ? { ...lesson('Review', ''), homework: 'test' as const, homeworkToward: 'Final exam' } : lesson('Review', '')] });
+    const { fakeInference } = await import('./fake');
+    const model = fakeInference((_r, call) => draft(call > 1));
+    const out = await generateOutline(model, { brief: 'Biology: problem sets 20%, a final exam 80%.', lessonCount: 2, minutesPerLesson: 50, quizSize: 5, level: '', language: 'en', materials: ['plan'], sources: [] });
+    expect(model.calls).toHaveLength(2);
+    expect(model.calls[1]!.prompt).toMatch(/No lesson holds these graded components, named exactly as under "grading": Final exam/);
+    expect(out.lessons[1]!.homeworkToward).toBe('Final exam');
+  });
+});
