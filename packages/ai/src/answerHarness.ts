@@ -47,6 +47,10 @@ def numbers(text):
         if bottom: out.append(((-1 if m.group(1) else 1) * ((int(whole) if whole else 0) + top / bottom), 9, m.group(0)))   # a fraction is exact, and −19/6 is one number
     plain(text[at:])
     return out
+def terms(token):
+    """the top and bottom of a quotient as it is written, each a whole number of its own"""
+    m = re.fullmatch(r'[−-]?(\d+)/(\d+)', token.strip())
+    return [(float(m.group(1)), 0, m.group(1)), (float(m.group(2)), 0, m.group(2))] if m else []
 def _flatten(v, out):
     import numpy as np
     if isinstance(v, (bool, np.bool_, str, bytes)) or v is None: raise ValueError('not a number')
@@ -282,7 +286,8 @@ def check_item(item, check):
                 # the computed values in order among the numbers that follow: a key says "2.45 for n = 4 and 1.64 for n = 9",
                 # and the 4 and the 9 are not results
                 def missed(words):
-                    stored = numbers(words.replace('\x60', ''))[:3 * len(fv) + 4]; at = 0; bad = []
+                    # a quotient written out states its terms too: "s = √(50/5)" gives the 50 a form computed, and "438 / 8" the 438
+                    stored = [x for n in numbers(re.sub(r'(\d)\s+/\s+(?=\d)', r'\1/', words.replace('\x60', '')))[:3 * len(fv) + 4] for x in (terms(n[2]) + [n])]; at = 0; bad = []
                     for c in fv:
                         # a whole number further on is the value only when the value is whole: "SD approximately 1.427 … 100*(1-level)/2"
                         # passed for a computed 1.4588, by the 1 in the formula

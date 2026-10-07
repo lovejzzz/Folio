@@ -111,6 +111,10 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect(await run(key('t_frac', 'Line 2 is marked at 1/3, 2/3 and 3/3.'), form('[Fraction(k, 3) for k in (1, 2, 3)]', 'Line 2 is marked at '))).toBe(0);
     expect(await run(key('t_mixed', 'Together they make 1 1/2 strips.'), form('Fraction(3, 4) * 2', 'Together they make '))).toBe(0);
     // Results set among numbers that are not results: the 4 and the 9 are sample sizes.
+    // A quotient written out states its terms: the 50 of √(50/5) and the 438 of "438 / 8" are what a form computes on the way.
+    expect(await run(key('t_top', 'The sample SD is √(50/5) = 3.16.'), form('sum((x - 10) ** 2 for x in (5, 10, 10, 10, 15))', 'The sample SD is √('))).toBe(0);
+    expect(await run(key('t_top2', 'The variance is 438 / 8 = 54.75.'), form('sum(d * d for d in (3, 5, 20, 2))', 'The variance is '))).toBe(0);
+    expect(await run(key('t_top_wrong', 'The sample SD is √(60/4) = 3.87.'), form('sum((x - 10) ** 2 for x in (5, 10, 10, 10, 15))', 'The sample SD is √('))).toBe(1);
     expect(await run(key('t_among', 'The standard errors are about 2.45 for n = 4 and 1.64 for n = 9.'), { checkable: true, setup: 'sd = 4.91', stated: [{ where: 'answerKey', before: 'The standard errors are about ', expr: '[sd / 4 ** 0.5, sd / 9 ** 0.5]' }] })).toBe(0);
     expect(await run(key('t_among_wrong', 'The standard errors are about 2.45 for n = 4 and 1.94 for n = 9.'), { checkable: true, setup: 'sd = 4.91', stated: [{ where: 'answerKey', before: 'The standard errors are about ', expr: '[sd / 4 ** 0.5, sd / 9 ** 0.5]' }] })).toBe(1);
     // And a wrong one still fails: 2/4 where three fourths was meant.
