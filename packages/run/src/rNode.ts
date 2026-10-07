@@ -17,10 +17,13 @@ const BASE = ['stats', 'graphics', 'grDevices', 'utils', 'datasets', 'methods', 
 const FRESH = `rm(list = ls(all.names = TRUE), envir = globalenv()); for (p in setdiff(sub("^package:", "", grep("^package:", search(), value = TRUE)), c(${BASE.map((p) => `"${p}"`).join(', ')}))) try(detach(paste0("package:", p), character.only = TRUE), silent = TRUE); setwd("/work")`;
 
 /** Null where R cannot be had (the package is not installed, the interpreter does not start): the check is then skipped. */
-export async function rRunner(lineMs = 60_000): Promise<LineRunner | null> {
+/** The packages teachers' browsers can load: Folio's own copy. The check-ups use the same, so a package missing there is missing here. */
+export const R_MIRROR = process.env.FOLIO_R_REPO ?? 'https://folio.university/api/runtime/webr-0.6.0';
+
+export async function rRunner(lineMs = 60_000, repoUrl = R_MIRROR): Promise<LineRunner | null> {
   try {
     const { WebR } = await import('webr');
-    const webR = new WebR({ interactive: false });
+    const webR = new WebR({ interactive: false, repoUrl });
     await webR.init();
     await webR.evalRVoid('dir.create("/work", showWarnings = FALSE); setwd("/work"); options(width = 80)');
     const had = new Set<string>();
@@ -29,7 +32,8 @@ export async function rRunner(lineMs = 60_000): Promise<LineRunner | null> {
       async need(packages) {
         const missing = packages.filter((p) => !had.has(p) && !BASE.includes(p));
         missing.forEach((p) => had.add(p));
-        if (missing.length) await webR.installPackages(missing, { quiet: true }).catch(() => undefined);
+        // One at a time: asked for together, a package the mirror does not hold took the ones it does hold down with it.
+        for (const name of missing) await webR.installPackages([name], { quiet: true }).catch(() => undefined);
       },
       async run(line) {
         const shelter = await new webR.Shelter();

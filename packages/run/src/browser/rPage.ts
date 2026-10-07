@@ -50,7 +50,8 @@ async function answer(m: Exclude<ToR, { t: 'boot' }>): Promise<string | null> {
   if (m.t === 'need') {
     const missing = m.packages.filter((p) => /^[A-Za-z][\w.]{0,60}$/.test(p) && !had.has(p) && !BASE.includes(p));
     missing.forEach((p) => had.add(p));
-    if (missing.length) await r.installPackages(missing, { quiet: true }).catch(() => undefined);
+    // One at a time: asked for together, a package the mirror does not hold took the ones it does hold down with it.
+    for (const name of missing) await r.installPackages([name], { quiet: true }).catch(() => undefined);
     return null;
   }
   const shelter = await new r.Shelter();
