@@ -72,6 +72,9 @@ describe('the R a lesson gives students, run as they run it', () => {
     expect(idle.handouts).toEqual(lesson.handouts);
     expect(idle.flags[0]).toMatchObject({ code: 'reviewNote', values: { where: 'Summaries' } });
     expect(JSON.stringify(idle.flags[0])).toContain('cannot change working directory');
+    // A line the sheet gives as broken on purpose is left alone, and is no fault to report.
+    const exercise = await sheetsRun(fakeInference(() => ({ changes: [{ find: '`setwd("~/stats")`', replace: '`getwd()`' }], meant: ['setwd("~/stats")'] })), fakeR(), course, lesson, lesson.handouts);
+    expect([exercise.handouts, exercise.flags]).toEqual([lesson.handouts, []]);
     // No R, no check.
     expect(await sheetsRun(fixer, undefined, course, lesson, lesson.handouts)).toEqual({ handouts: lesson.handouts, flags: [] });
   });

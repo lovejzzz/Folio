@@ -102,18 +102,19 @@ export const CodeFix = z.object({
     .array(z.object({ find: z.string().min(1).describe('The exact text at fault, copied character for character, where it stands only once'), replace: z.string().describe('What stands in its place') }))
     .max(8)
     .default([]),
+  meant: z.array(z.string()).max(12).default([]).describe('Lines that stopped which the material gives students as broken on purpose, to find and fix: copied exactly, and left unchanged'),
 });
 
 const ASK = [
   'The R below is given to students on a sheet or in a piece of work. It was run line by line in a new R session, in the working folder the course set, holding the files earlier lessons made; some lines stopped, with the messages shown.',
-  'Give the changes of text that make every line run as a student will run it: load or create what the line uses, name no folder of anyone\'s machine, correct a call that R refuses. Change as little as possible, and nothing that ran. A change replaces text exactly as it stands in the material, backticks included where they are part of it.',
+  'Give the changes of text that make every line run as a student will run it: load or create what the line uses, name no folder of anyone\'s machine, correct a call that R refuses. Change as little as possible, and nothing that ran. A line the material itself presents as faulty, for students to find the mistake in or repair, is meant to stop: change nothing in it, and list it under "meant". A change replaces text exactly as it stands in the material, backticks included where they are part of it.',
 ].join(' ');
 
 /** The words to change so the lines run, or none. */
-export async function codeFix(inference: Inference, material: string, faults: CodeFault[], signal?: AbortSignal): Promise<{ find: string; replace: string }[]> {
+export async function codeFix(inference: Inference, material: string, faults: CodeFault[], signal?: AbortSignal): Promise<z.infer<typeof CodeFix>> {
   const told = faults.map((f) => `- ${f.kind === 'handout' ? 'Sheet' : 'Work'} "${f.title}": \`${f.line}\` stopped with: ${f.error}`).join('\n');
   const result = await runJob(inference, { task: 'folio_answer_fix', system: 'You correct course materials. Reply with one JSON object and nothing else.', prompt: `${ASK}\n\nThe lines that stopped:\n${told}\n\nThe material:\n${material}`, effort: 'low', schema: CodeFix, repair: false, signal });
-  return result.value.changes;
+  return result.value;
 }
 
 /** A note for the teacher on a line that still stops. */
