@@ -1,5 +1,6 @@
 import { rRunner } from '@folio/run/r';
 import { describe, expect, it } from 'vitest';
+import { STATEMENT } from '../src/sheetCode';
 
 // R itself, as the check-ups use it. It ships with the package; only library() calls need the network, and none is made here.
 describe('R on the command line', () => {
@@ -13,6 +14,9 @@ describe('R on the command line', () => {
       // The default bins of a histogram: the same as the ones a sheet then asked for "to compare".
       expect(await r!.run('stopifnot(identical(hist(c(2, 3, 4, 4, 5, 6, 7, 9, 12, 24), plot = FALSE)$breaks, seq(0, 25, 5)))')).toBeNull();
       expect(await r!.run('write.csv(mtcars, "cars.csv", row.names = FALSE)')).toBeNull();
+      // Which code set in a sentence is a statement to run: R is asked, not a pattern.
+      const statement = async (code: string) => (await r!.run(STATEMENT(code))) === null;
+      expect(await Promise.all(['fit <- lm(mpg ~ wt, data = mtcars)', 'summary(mtcars$mpg)', 'mtcars |> head(3)', 'mean()', 'x', '2 + 2', 'mtcars$mpg', 'ggplot(mtcars, aes(x = mpg)) +', 'lm(mpg ~'].map(statement))).toEqual([true, true, true, false, false, false, false, false, false]);
       await r!.fresh();
       expect(await r!.run('mean(x)')).toMatch(/object 'x' not found/);
       expect(await r!.run('stopifnot(ncol(read.csv("cars.csv")) == 11)')).toBeNull();

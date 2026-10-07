@@ -35,8 +35,10 @@ function changed<T>(value: T, find: string, replace: string): T | null {
 }
 
 async function mended<T>(inference: Inference, first: Material<T>, shown: (value: T) => string, check: (value: T) => Promise<CodeFault[]>, signal?: AbortSignal): Promise<Material<T>> {
-  if (!first.faults.length) return first;
-  const fix = await codeFix(inference, shown(first.value), first.faults, signal).catch(() => ({ changes: [], meant: [] as string[] }));
+  // What Folio could not run is said, never "corrected": sent to be fixed, a lesson would be rewritten around another package.
+  const wrong = first.faults.filter((f) => !f.unchecked);
+  if (!wrong.length) return first;
+  const fix = await codeFix(inference, shown(first.value), wrong, signal).catch(() => ({ changes: [], meant: [] as string[] }));
   // A line given to students as broken, to find and repair, is meant to stop: "fixed", the exercise had nothing left to fix.
   const meant = new Set(fix.meant.map((l) => l.replace(/`/g, '').trim()));
   const real = (faults: CodeFault[]) => faults.filter((f) => !meant.has(f.line.trim()));
@@ -44,7 +46,8 @@ async function mended<T>(inference: Inference, first: Material<T>, shown: (value
   const value = kept.reduce<T>((now, c) => changed(now, c.find, c.replace) ?? now, first.value);
   if (value === first.value) return { value, faults: real(first.faults) };
   const faults = real(await check(value));
-  return faults.length < real(first.faults).length ? { value, faults } : { value: first.value, faults: real(first.faults) };
+  const count = (list: CodeFault[]) => list.filter((f) => !f.unchecked).length;
+  return count(faults) < count(real(first.faults)) ? { value, faults } : { value: first.value, faults: real(first.faults) };
 }
 
 const notes = (faults: CodeFault[]): Flag[] => faults.map((f) => ({ code: 'reviewNote', values: { where: f.title, text: faultNote(f) } }));

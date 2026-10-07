@@ -13,6 +13,13 @@ function fakeR(): LineRunner & { ran: string[]; sessions: number } {
     fresh: async () => void ((names = new Set()), (r.sessions += 1)),
     need: async () => undefined,
     run: async (line: string) => {
+      // The question "is this a statement of its own?", answered as R would for the cases here.
+      const asked = /parse\(text = ("(?:[^"\\]|\\.)*")\)/.exec(line)?.[1];
+      if (asked) {
+        const code = JSON.parse(asked) as string;
+        return /[+,(]\s*$/.test(code) || !/<-|\w\(\s*[^)\s]/.test(code) ? 'Error: not a statement' : null;
+      }
+      if (/^library\(car\)/.test(line)) return 'Error in `library(car)`: there is no package called ‘car’';
       r.ran.push(line);
       if (/^setwd\("~/.test(line)) return 'Error in `setwd("~/stats")`: cannot change working directory';
       const wrote = /write\.csv\(.*"([^"]+\.csv)"/.exec(line)?.[1];
@@ -70,6 +77,13 @@ describe('the R a lesson gives students, run as they run it', () => {
     expect(r.ran.slice(-3)).toEqual(['survey <- read.csv("survey.csv")', 'mean(survey$age)', 'median(scores)']);
     // survey.csv is the teacher's to supply, so neither its line nor the one that uses it is a fault; `scores` was never made.
     expect(faults.map((f) => f.line)).toEqual(['median(scores)']);
+    // A package Folio's R does not hold: said as not checked, never sent to be corrected, and nothing after it is blamed.
+    const unheld = { ...lesson, handouts: [sheet('Regression', ['library(car)', 'vif(model)'])] };
+    const fixer = fakeInference(() => ({ changes: [{ find: '`library(car)`', replace: '`library(stats)`' }] }));
+    const out = await sheetsRun(fixer, fakeR(), course, unheld, unheld.handouts);
+    expect(fixer.calls).toHaveLength(0);
+    expect(out.handouts).toEqual(unheld.handouts);
+    expect(JSON.stringify(out.flags)).toMatch(/Folio's R does not have the package that `library\(car\)` loads: that line and the ones after it were not checked/);
   });
 
   it('corrects what stops and keeps the correction only when the sheet then runs', async () => {
@@ -97,5 +111,14 @@ describe('the R a lesson gives students, run as they run it', () => {
     const work: Task = { id: newId('t'), lessonId: lesson.id, objectiveIds: [], sourceRefs: [], origin: 'ai', edited: false, flags: [], kind: 'assignment', title: 'Lab report', prompt: 'p', steps: ['Run:\n`mean(scores)`'], rubricId: null, answerKey: '', toward: '' };
     const [noted] = await workRun(fakeInference(() => ({ changes: [] })), fakeR(), course, lesson, [work]);
     expect(JSON.stringify(noted!.flags)).toContain("object 'scores' not found");
+  });
+});
+
+describe('a course taught with R', () => {
+  it('tells its writers which packages Folio can run, and a course without R nothing', async () => {
+    const { courseBackground } = await import('../src');
+    const plain = smallCourse();
+    expect(courseBackground(plain)).not.toMatch(/run before it reaches them/);
+    expect(courseBackground({ ...plain, brief: 'Introductory statistics with weekly labs in R and RStudio.' })).toMatch(/with base R and these packages: tidyverse, palmerpenguins, NHANES, .*ggplot2, dplyr/);
   });
 });

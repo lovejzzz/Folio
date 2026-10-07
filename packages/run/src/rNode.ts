@@ -1,3 +1,8 @@
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import { createServer } from 'node:http';
+import { homedir } from 'node:os';
+import { join, normalize } from 'node:path';
+
 /**
  * R for the command line and the check-ups, as `node.ts` is Python's: the code a lesson gives students is run
  * before a reader ever sees it. Lines are run one at a time, as a student runs them, and what R says when one
@@ -20,8 +25,29 @@ const FRESH = `rm(list = ls(all.names = TRUE), envir = globalenv()); for (p in s
 /** The packages teachers' browsers can load: Folio's own copy. The check-ups use the same, so a package missing there is missing here. */
 export const R_MIRROR = process.env.FOLIO_R_REPO ?? 'https://folio.university/api/runtime/webr-0.6.0';
 
-export async function rRunner(lineMs = 60_000, repoUrl = R_MIRROR): Promise<LineRunner | null> {
+/** The folder `scripts/fetch-webr.ts` fills: the same files the site serves. */
+const LOCAL = process.env.FOLIO_WEBR_DIR ?? join(homedir(), '.cache', 'folio', 'webr-0.6.0');
+
+/** The mirror's files from this machine when they are here: the same packages, and no trip to the site for each. */
+async function localMirror(): Promise<{ url: string; close: () => void } | null> {
+  if (!existsSync(join(LOCAL, 'bin'))) return null;
+  const server = createServer((req, res) => {
+    const path = normalize(new URL(req.url ?? '/', 'http://x').pathname).replace(/^[\\/]+/, '');
+    const file = join(LOCAL, path);
+    if (path.startsWith('..') || !existsSync(file) || !statSync(file).isFile()) return void res.writeHead(404).end();
+    const body = readFileSync(file);
+    res.writeHead(200, { 'content-length': body.length });
+    res.end(req.method === 'HEAD' ? undefined : body);
+  });
+  await new Promise<void>((ready) => server.listen(0, '127.0.0.1', ready));
+  server.unref();
+  return { url: `http://127.0.0.1:${(server.address() as { port: number }).port}`, close: () => void server.close() };
+}
+
+export async function rRunner(lineMs = 60_000, repoUrl?: string): Promise<LineRunner | null> {
   try {
+    const local = repoUrl ? null : await localMirror();
+    repoUrl ??= local?.url ?? R_MIRROR;
     const { WebR } = await import('webr');
     const webR = new WebR({ interactive: false, repoUrl });
     await webR.init();
@@ -49,7 +75,7 @@ export async function rRunner(lineMs = 60_000, repoUrl = R_MIRROR): Promise<Line
           shelter.purge();
         }
       },
-      close: () => webR.close(),
+      close: () => (webR.close(), local?.close()),
     };
   } catch {
     return null;

@@ -1,4 +1,5 @@
 import { hasModulePages, lessonSessions, orderedLessons, statedObjectives, type Course, type Delivery, type Language, type Lesson, type Online, type Session, type SessionKind } from '@folio/core';
+import { R_COURSE_PACKAGES, R_PACKAGES } from '@folio/run';
 import { courseSoFar, dueLesson, dueWords, inClassPieces, ownPiece, planSummary, earlierLessons, earlierNotes, earlierSteps, homeworkLine, inClassAgain, nextReading, readBefore, readingsLead, sharedComponent } from './continuity';
 import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, judgedLine, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
@@ -153,6 +154,7 @@ function gradingLine(course: Course): string {
     // Told that every piece of work "says which one", a course named its final assessment in a dozen materials.
     'Anything the brief or the grading has happen in class, such as a student presentation, a debate or a test, needs a place in the lesson plans; an assignment that prepares for a graded component says which one, and other materials need not. State a component\'s share of the course grade only as the grading gives it; never infer one. Points within a quiz or test are another matter: the plan sets them.',
     scaleLine(course),
+    rPackages(course),
     inClassPieces(course),
   ]
     .filter(Boolean)
@@ -165,6 +167,17 @@ function gradingLine(course: Course): string {
  * same for every call in a build, so providers can cache it and each call
  * pays only for what is new.
  */
+/**
+ * A course taught with R: the packages Folio can run, so the code it writes keeps to them. Told nothing, a writer may
+ * load any of CRAN's; the check then says only that it could not look.
+ */
+function rPackages(course: Course): string {
+  if (!/\bRStudio\b|\btidyverse\b|\bggplot2?\b|\b(?:in|using|with|through) R\b|\bR (?:labs?|code|scripts?|programming|sessions?|and RStudio)\b/.test(course.brief)) return '';
+  // The tidyverse's own, named because writers load them one by one as often as together.
+  const known = [...R_COURSE_PACKAGES, ...['ggplot2', 'dplyr', 'tidyr', 'readr', 'tibble', 'stringr', 'forcats', 'purrr', 'lubridate'].filter((p) => R_PACKAGES.includes(p))];
+  return `The R that students are given is run before it reaches them, with base R and these packages: ${known.join(', ')}. Code keeps to them; where the brief names another package, it is used and the teacher is told Folio could not run those lines.`;
+}
+
 export function courseBackground(course: Course): string {
   const all = orderedLessons(course)
     .map((l, i) => `${i + 1}. ${l.title}`)

@@ -21,6 +21,8 @@ export interface CodeUnit {
   kind: 'notes' | 'handout' | 'assignment';
   title: string;
   lines: string[];
+  /** The lines that stood inside a sentence: run only when R reads them as a statement of their own. */
+  inline?: string[];
 }
 
 export interface CodeFault {
@@ -28,25 +30,39 @@ export interface CodeFault {
   title: string;
   line: string;
   error: string;
+  /** Folio could not run the line (a package it does not hold): nothing is wrong with the lesson, and nothing was checked from here on. */
+  unchecked?: boolean;
 }
 
 /** A line that is code and nothing else: `x <- 1` alone between backticks. */
 const whole = (text: string): string | null => /^\s*`([^`]+)`\s*$/.exec(text)?.[1] ?? null;
 const inline = (text: string): string[] => [...text.matchAll(/`([^`\n]+)`/g)].map((m) => m[1]!);
 
-/** Code set in a sentence that is a statement of its own: it assigns or calls with something, and ends where it should. */
-const complete = (code: string): boolean => {
-  const open = (code.match(/[([{]/g) ?? []).length === (code.match(/[)\]}]/g) ?? []).length;
-  return open && /<-|\w\(\s*[^)\s]/.test(code) && !/(?:[+,({]|\|>|%>%|<-|=)\s*$/.test(code.trim());
-};
+/** Code set in a sentence that could be a statement: R decides, when it is run. */
+const maybe = (code: string): boolean => /<-|\w\(/.test(code);
 
-/** The code a text holds, in order: a line that is all code, and the statements set inside a sentence. */
-const codeIn = (text: string): string[] => text.split('\n').flatMap((row) => (whole(row)?.trim() ? [whole(row)!] : inline(row).filter(complete)));
-
-function sheetLines(h: Handout): string[] {
-  // A table's cells too: a lab sheet sets its commands beside the room for their output.
-  return h.blocks.flatMap((b): string[] => (b.type === 'list' ? b.items : b.type === 'table' ? b.rows.flat() : 'text' in b && typeof b.text === 'string' ? [b.text] : [])).flatMap(codeIn);
+interface Found {
+  lines: string[];
+  inline: string[];
 }
+
+/** The code a text holds, in order: a line that is all code, and what is set inside a sentence. */
+function codeIn(texts: string[]): Found {
+  const found: Found = { lines: [], inline: [] };
+  for (const row of texts.flatMap((t) => t.split('\n'))) {
+    const line = whole(row)?.trim();
+    if (line) found.lines.push(line);
+    else {
+      const set = inline(row).filter(maybe);
+      found.lines.push(...set);
+      found.inline.push(...set);
+    }
+  }
+  return found;
+}
+
+// A table's cells too: a lab sheet sets its commands beside the room for their output.
+const sheetTexts = (h: Handout): string[] => h.blocks.flatMap((b): string[] => (b.type === 'list' ? b.items : b.type === 'table' ? b.rows.flat() : 'text' in b && typeof b.text === 'string' ? [b.text] : []));
 
 /** The code of one lesson in the order it is met: what the teacher prepares, each sheet, each piece of work. */
 export function codeUnits(course: Course, lesson: Lesson): CodeUnit[] {
@@ -55,8 +71,8 @@ export function codeUnits(course: Course, lesson: Lesson): CodeUnit[] {
   const work = lesson.taskIds.map((id) => course.tasks[id]).filter((t): t is Extract<Task, { kind: 'assignment' }> => t?.kind === 'assignment');
   return [
     { kind: 'notes' as const, title: '', lines: notes },
-    ...lesson.handouts.map((h) => ({ kind: 'handout' as const, title: h.title, lines: sheetLines(h) })),
-    ...work.map((t) => ({ kind: 'assignment' as const, title: t.title, lines: t.steps.flatMap(codeIn) })),
+    ...lesson.handouts.map((h) => ({ kind: 'handout' as const, title: h.title, ...codeIn(sheetTexts(h)) })),
+    ...work.map((t) => ({ kind: 'assignment' as const, title: t.title, ...codeIn(t.steps) })),
   ].filter((u) => u.lines.length);
 }
 
@@ -69,10 +85,21 @@ const SKIPPED = /\.\.\.|___|<[a-z][a-z ]*>|^\s*(?:install\.packages|View|file\.c
 /** A call that reads a file. */
 const GIVEN = /\b(?:read\.(?:csv|table|delim)|read_(?:csv|tsv|delim|excel|rds)|readRDS|readxl::read_excel|load|scan)\(/;
 
-async function runUnit(runner: LineRunner, unit: CodeUnit): Promise<{ line: string; error: string }[]> {
+/**
+ * Asked of R itself: is this one statement that assigns, or calls with something? A name alone, a function named
+ * with empty brackets, a sum, a column read by `$`, or a line that ends before it is done are shown in a sentence
+ * to be read, and stop in a new session for no fault.
+ */
+export const STATEMENT = (code: string): string =>
+  `stopifnot(local({ e <- parse(text = ${JSON.stringify(code)}); length(e) == 1 && is.call(e[[1]]) && length(e[[1]]) > 1 && !(as.character(e[[1]][[1]])[1] %in% c("+", "-", "*", "/", "^", ":", "==", "!=", "<", ">", "<=", ">=", "$", "[", "[[", "(", "&", "|", "!", "~")) }))`;
+
+type Stop = { line: string; error: string; unchecked?: boolean };
+
+async function runUnit(runner: LineRunner, unit: CodeUnit): Promise<Stop[]> {
   await runner.fresh();
   await runner.need(unit.lines.flatMap((l) => [...l.matchAll(/\b(?:library|require)\(\s*["']?([\w.]+)/g)].map((m) => m[1]!)));
-  const faults: { line: string; error: string }[] = [];
+  const faults: Stop[] = [];
+  const inline = new Set(unit.inline ?? []);
   // What a skipped line would have made is missing for the lines after it: that is the template's doing, not a fault.
   const unmade = new Set<string>();
   for (const line of unit.lines) {
@@ -81,8 +108,11 @@ async function runUnit(runner: LineRunner, unit: CodeUnit): Promise<{ line: stri
       if (name) unmade.add(name);
       continue;
     }
+    if (inline.has(line) && (await runner.run(STATEMENT(line)))) continue;
     const error = await runner.run(line);
     if (!error) continue;
+    // A package Folio's R does not hold: the lesson is not wrong, and from here on nothing can be told of it.
+    if (/there is no package called/i.test(error)) return [...faults, { line, error, unchecked: true }];
     // A file nothing in the course made is one the teacher hands out: the line is theirs to make work, and what it would
     // have loaded is not missed. Sent to be "corrected", it came back as a file's contents typed into the call as text.
     if (GIVEN.test(line) && /cannot open|does not exist|No such file/i.test(error)) {
@@ -137,4 +167,7 @@ export async function codeFix(inference: Inference, material: string, faults: Co
 }
 
 /** A note for the teacher on a line that still stops. */
-export const faultNote = (f: CodeFault): string => `In "${f.title}", the line \`${f.line}\` stops when run in a new R session: ${f.error}`;
+export const faultNote = (f: CodeFault): string =>
+  f.unchecked
+    ? `In "${f.title}", Folio's R does not have the package that \`${f.line}\` loads: that line and the ones after it were not checked.`
+    : `In "${f.title}", the line \`${f.line}\` stops when run in a new R session: ${f.error}`;

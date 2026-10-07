@@ -5,7 +5,7 @@
  *
  *   pnpm --filter @folio/run exec tsx scripts/fetch-webr.ts [package ...]
  */
-import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { createRequire } from 'node:module';
 import { homedir } from 'node:os';
@@ -54,6 +54,10 @@ async function main(): Promise<void> {
     process.stdout.write(`${loaded ? 'loads' : 'DOES NOT LOAD'} ${name}\n`);
     shelter.purge();
   }
+  // What the mirror now holds, for the writers (who are told what can be run) and the check (which says what it could not).
+  const held = [...new Set(readdirSync(join(WEBR_DIR, 'bin', 'emscripten', 'contrib')).flatMap((v) => readdirSync(join(WEBR_DIR, 'bin', 'emscripten', 'contrib', v))).filter((f) => f.endsWith('.tgz')).map((f) => f.split('_')[0]!))].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+  const asked = [...new Set([...PACKAGES, ...wanted])].filter((name) => held.includes(name));
+  writeFileSync(join(import.meta.dirname, '..', 'src', 'rPackages.ts'), `/** Written by \`scripts/fetch-webr.ts\`, never by hand: the R packages Folio's own copy holds beside the ones R ships with. */\nexport const R_PACKAGES: readonly string[] = ${JSON.stringify(held)};\n/** The ones that were asked for by name; the rest came with them. */\nexport const R_COURSE_PACKAGES: readonly string[] = ${JSON.stringify(asked)};\n`);
   webR.close();
   server.close();
   process.exit(0);
