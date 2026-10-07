@@ -20,7 +20,22 @@ const first = (error: unknown): string => String((error as Error)?.message ?? er
 let r: R | null = null;
 const had = new Set<string>();
 
+/**
+ * webR starts its worker straight from the folder when the folder's address looks like the page's own. This page's
+ * address does, and its origin is none: so the worker is started from a line of text that loads the script, which
+ * a frame with no origin may do.
+ */
+function workersFromText(base: string): void {
+  const Native = Worker;
+  const made = function (url: string | URL, options?: WorkerOptions): Worker {
+    const address = String(url);
+    return address.startsWith(base) ? new Native(URL.createObjectURL(new Blob([`importScripts(${JSON.stringify(address)});`], { type: 'text/javascript' })), options) : new Native(url, options);
+  };
+  (globalThis as { Worker: unknown }).Worker = made;
+}
+
 async function boot(base: string): Promise<void> {
+  workersFromText(base);
   // The address is checked by the page's policy, which names the one folder scripts and files may come from.
   const lib = (await import(/* @vite-ignore */ `${base}webr.js`)) as { WebR: new (options: object) => R; ChannelType: { PostMessage: unknown } };
   const made = new lib.WebR({ baseUrl: base, repoUrl: base.replace(/\/$/, ''), channelType: lib.ChannelType.PostMessage });

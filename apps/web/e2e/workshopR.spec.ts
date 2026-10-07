@@ -5,6 +5,8 @@ import { expect, test } from './fixtures';
 /** R's own files, from the installed package: enough for R without added packages. */
 const DIST = join(import.meta.dirname, '../../../packages/run/node_modules/webr/dist');
 const BASE = 'https://folio.university/api/runtime/webr-0.6.0/';
+/** The site as teachers reach it: R's folder is then on the page's own address, which is where its worker would not start. */
+const SITE = 'https://folio.university';
 const TYPES: Record<string, string> = { wasm: 'application/wasm', js: 'text/javascript' };
 
 test('R runs in a frame with no origin that can reach only the folder holding R, and says why a line stops', async ({ page, browserName }) => {
@@ -22,12 +24,16 @@ test('R runs in a frame with no origin that can reach only the folder holding R,
   });
   const said: string[] = [];
   page.on('console', (m) => said.push(`${m.type()}: ${m.text().slice(0, 300)}`));
-  await page.goto('/');
-  const answers = await page.evaluate(async (base) => {
+  // The runner page at the site's own address, as teachers get it: the page and its policy as built, under a bare page of that address.
+  const local = await page.request.get('/runner-r/');
+  await page.route(`${SITE}/runner-r/`, async (route) => route.fulfill({ status: 200, contentType: 'text/html', headers: { 'content-security-policy': local.headers()['content-security-policy']! }, body: await local.text() }));
+  await page.route(`${SITE}/`, (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>Folio</title>' }));
+  await page.goto(`${SITE}/`);
+  const answers = await page.evaluate(async ([base, site]) => {
     const frame = document.createElement('iframe');
     frame.setAttribute('sandbox', 'allow-scripts');
     frame.hidden = true;
-    frame.src = '/runner-r/';
+    frame.src = `${site}/runner-r/`;
     const lines = ['x <- c(38, 41, 44, 46, 49, 54, 58, 63, 70)', 'stopifnot(round(sd(x), 2) == 10.65)', 'setwd("~/stats")', 'hist(x)'];
     const out: (string | null)[] = [];
     return new Promise<(string | null)[] | string>((resolve) => {
@@ -47,7 +53,7 @@ test('R runs in a frame with no origin that can reach only the folder holding R,
       });
       document.body.append(frame);
     });
-  }, BASE);
+  }, [BASE, SITE] as const);
   expect(answers, said.join('\n')).toEqual([null, null, expect.stringMatching(/cannot change working directory/), null]);
   // Its policy: scripts and connections from R's folder alone, and no address of ours or anyone's beside it.
   const policy = (await page.request.get('/runner-r/')).headers()['content-security-policy']!;
