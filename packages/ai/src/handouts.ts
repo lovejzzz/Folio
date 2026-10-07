@@ -41,10 +41,23 @@ type Content = { keyIdeas: string[]; segments: Segment[] };
 
 const planText = (plan: Content): string => plan.segments.map((s, i) => `${i + 1}. ${s.title} (${s.kind}, ${s.minutes} min): ${s.description}${s.teacherNotes ? `\n   Teacher's notes: ${s.teacherNotes}` : ''}`).join('\n');
 
-/** A graded worksheet came twice: as a sheet of six tasks and as the graded piece of four, with a rubric for the four. */
+/**
+ * A graded worksheet came twice: as a sheet of six tasks and as the graded piece of four, with a rubric for the four.
+ * So the sheet writer leaves alone what another writer prints whole. But a piece run every time on one brief (clicker
+ * rounds, recitation problems) has its questions of the day in this plan's notes and nowhere a student can see:
+ * those are a sheet, and nobody else prints it.
+ */
 function graded(lesson: Lesson): string {
-  const names = lessonPieces(lesson).filter((p) => (p.kind === 'inclass' || p.kind === 'test') && p.toward.trim()).map((p) => `"${p.toward.trim()}"`);
-  return names.length ? `Graded in this lesson, each printed with its own tasks by another writer: ${names.join(', ')}. Write no sheet for any of them, whatever the plan calls it (a worksheet, a quiz paper): a sheet of yours would be a second version.` : '';
+  const pieces = lessonPieces(lesson).filter((p) => (p.kind === 'inclass' || p.kind === 'test') && p.toward.trim());
+  const name = (p: Lesson['homework']) => `"${p.toward.trim()}"`;
+  const whole = pieces.filter((p) => !(p.kind === 'inclass' && p.standing));
+  const daily = pieces.filter((p) => p.kind === 'inclass' && p.standing);
+  return [
+    whole.length ? `Graded in this lesson, each printed with its own tasks by another writer: ${whole.map(name).join(', ')}. Write no sheet for any of them, whatever the plan calls it (a worksheet, a quiz paper): a sheet of yours would be a second version.` : '',
+    daily.length ? `Run in this lesson on a brief that is the same every time: ${daily.map(name).join(', ')}. Its brief and rubric are printed elsewhere, but the questions or problems of this time are only in the plan's notes: print them as a sheet under the piece's name, in full and without their answers, unless the plan puts them to the class from the screen (a poll, clicker questions), where the slides carry them.` : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 export function handoutsPrompt(course: Course, lesson: Lesson, plan: Content): string {

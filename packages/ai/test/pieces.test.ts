@@ -252,6 +252,10 @@ describe('the sheets of a lesson that holds a piece graded in class', () => {
     const plan = { segments: [], keyIdeas: [], vocabulary: [] };
     expect(handoutsPrompt(course, first!, plan)).toMatch(/Graded in this lesson, each printed with its own tasks by another writer: "Presentation"\. Write no sheet for any of them/);
     expect(handoutsPrompt(course, third!, plan)).not.toMatch(/Graded in this lesson/);
+    // A piece run every time on one brief has that day's questions in the plan's notes only: those are a sheet.
+    const daily = { ...first!, also: [], homework: { kind: 'inclass' as const, toward: 'Recitation problems', standing: true } };
+    expect(handoutsPrompt(course, daily, plan)).toMatch(/same every time: "Recitation problems"\..*print them as a sheet under the piece's name, in full and without their answers/);
+    expect(handoutsPrompt(course, daily, plan)).not.toMatch(/Write no sheet for any of them/);
   });
 });
 
