@@ -17,7 +17,7 @@ import { toast } from '../../state/toasts';
 import { dropSession } from '../../state/session';
 
 async function saveFolio(course: Course): Promise<void> {
-  const [{ writeFolio, slugFilename, MIME }, { backupMedia }] = await Promise.all([import('@folio/export'), import('../../lib/exportMedia')]);
+  const [{ writeFolio, slugFilename, MIME }, { backupMedia }] = await Promise.all([import('@folio/export/files'), import('../../lib/exportMedia')]);
   download({ name: slugFilename(course.title, '', '', 'folio'), mime: MIME.folio, bytes: writeFolio(course, undefined, await backupMedia(course)) });
 }
 
@@ -59,7 +59,7 @@ function Header() {
   const file = useRef<HTMLInputElement>(null);
   const open = async (f: File) => {
     try {
-      const { readFolioFile } = await import('@folio/export');
+      const { readFolioFile } = await import('@folio/export/files');
       const { course: read, media } = readFolioFile(new Uint8Array(await f.arrayBuffer()));
       // Opening a backup never replaces a course already here: it arrives as a copy.
       const course = (await loadCourse(read.id)) ? { ...read, id: newId('c'), title: t.library.copyOf(read.title) } : read;

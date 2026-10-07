@@ -11,25 +11,21 @@ function remote(): Remote<ExportWorkerApi> {
 }
 
 /**
- * Make an export file in the worker; fall back to the main thread if workers are unavailable. The course's
- * pictures and files are read here, on the page, and handed to the worker as it asks for each.
+ * Make an export file in the worker. The course's pictures and files are read here, on the page, and handed to the
+ * worker as it asks for each. A worker that stopped is started once more; there is no making the file on the page
+ * itself: that kept a second copy of the Word and PowerPoint libraries (750 KB) in the site for browsers without
+ * module workers, which cannot run the rest of Folio either.
  */
 export async function makeExport(req: ExportRequest): Promise<ExportFile> {
   const { mediaResolver } = await import('./exportMedia');
   const media = mediaResolver(req.course.id);
-  let result: ExportResult;
-  try {
-    // Moved, not copied: a clip is large, and the page has no further use for these bytes.
-    const moved: typeof media = async (ref, use) => {
-      const found = await media(ref, use);
-      return found && transfer(found, [found.bytes.buffer]);
-    };
-    result = await remote().exportCourse(req, proxy(moved));
-  } catch {
-    // The worker couldn't run at all: make the file here instead.
-    const { exportCourse } = await import('@folio/export');
-    return exportCourse(req, { media });
-  }
+  // Moved, not copied: a clip is large, and the page has no further use for these bytes.
+  const moved: typeof media = async (ref, use) => {
+    const found = await media(ref, use);
+    return found && transfer(found, [found.bytes.buffer]);
+  };
+  const once = (): Promise<ExportResult> => remote().exportCourse(req, proxy(moved));
+  const result = await once().catch(() => ((worker = null), once()));
   if (result.ok) return result.file;
   throw exportFailure(result.code, result.message);
 }

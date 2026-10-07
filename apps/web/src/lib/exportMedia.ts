@@ -65,7 +65,7 @@ export function mediaResolver(courseId: string): MediaResolver {
 
 /** Everything a backup of this course carries beside its text. */
 export async function backupMedia(course: Course): Promise<FolioMedia[]> {
-  const { courseMediaIds } = await import('@folio/export');
+  const { courseMediaIds } = await import('@folio/export/files');
   const resolve = mediaResolver(course.id);
   const out: FolioMedia[] = [];
   for (const id of courseMediaIds(course)) {

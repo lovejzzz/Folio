@@ -122,7 +122,7 @@ function AppearanceSection() {
 
 /** One zip of every course on this device, each a backup file with the pictures, clips and files it holds. */
 async function saveAll(): Promise<void> {
-  const [{ writeFolio, zipFiles, slugFilename }, { backupMedia }] = await Promise.all([import('@folio/export'), import('../../lib/exportMedia')]);
+  const [{ writeFolio, zipFiles, slugFilename }, { backupMedia }] = await Promise.all([import('@folio/export/files'), import('../../lib/exportMedia')]);
   const files: { name: string; bytes: Uint8Array }[] = [];
   for (const c of await allCourses()) files.push({ name: slugFilename(c.title, '', '', 'folio'), bytes: writeFolio(c, undefined, await backupMedia(c)) });
   download({ name: settingsText.backupAllName, mime: 'application/zip', bytes: zipFiles(files) });

@@ -1,4 +1,5 @@
 import { MEDIA_FOLDER, courseLabels, localMediaRef, mediaFileNames, pageMediaRefs, project, type Audience, type Course, type MaterialKind } from '@folio/core';
+import { MIME } from './mime';
 import { zipFiles } from './bundle';
 import { renderCsv } from './csv';
 import { renderDocx } from './docx';
@@ -34,15 +35,7 @@ export interface ExportFile {
   bytes: Uint8Array;
 }
 
-export const MIME: Record<ExportFormat, string> = {
-  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  csv: 'text/csv;charset=utf-8',
-  zip: 'application/zip',
-  qti: 'application/zip',
-  folio: 'application/zip',
-};
+export { MIME } from './mime';
 
 /** A file the export will produce: its name now, its bytes on demand. */
 interface Planned {
