@@ -63,7 +63,7 @@ describe('the R a lesson gives students, run as they run it', () => {
   it('runs a statement set inside a sentence, and leaves a file the teacher hands out to the teacher', async () => {
     const course = labCourse(['x <- 1']);
     const lesson = orderedLessons(course)[1]!;
-    const prose: Handout = { ...sheet('Reading', []), blocks: [{ type: 'para', text: 'Load the data with `survey <- read.csv("survey.csv")` and then run `mean(survey$age)`. The function `mean()` takes a vector; finish `ggplot(survey, aes(x = age)) +` yourself.' }, { type: 'table', columns: ['Command', 'Output'], rows: [['`median(scores)`', '']] }] };
+    const prose: Handout = { ...sheet('Reading', []), blocks: [{ type: 'para', text: 'Load the data with `survey <- read.csv("survey.csv")` and then run `mean(survey$age)`. The function `mean()` takes a vector; finish `ggplot(survey, aes(x = age)) +` yourself.' }, { type: 'table', columns: ['Command', 'Output'], rows: [['`median(scores)`', '']], caption: '' }] };
     const r = fakeR();
     const faults = await lessonCodeFaults(r, course, { ...lesson, handouts: [prose] });
     // The two statements and the table's cell were run; the bare mention and the unfinished line were not.
