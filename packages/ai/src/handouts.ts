@@ -1,3 +1,5 @@
+import { sheetsRun } from './sheetRun';
+import type { LineRunner } from './sheetCode';
 import { cmd, lessonPieces, newId, type Command, type Course, type Handout, type Lesson, type Segment } from '@folio/core';
 import { z } from 'zod';
 import { codeFaults } from './codeLines';
@@ -105,7 +107,7 @@ function toHandout(d: HandoutsDraft['handouts'][number]): Handout {
  * eleven notes and every one was a false alarm (fractions, powers of ten, a constant with one more digit), while
  * a reviewer who worked all 94 answers by hand found none wrong.
  */
-export async function withHandouts(inference: Inference, course: Course, lesson: Lesson, written: { commands: Command[]; flagged: number }, signal?: AbortSignal): Promise<{ commands: Command[]; flagged: number }> {
+export async function withHandouts(inference: Inference, course: Course, lesson: Lesson, written: { commands: Command[]; flagged: number }, signal?: AbortSignal, r?: LineRunner): Promise<{ commands: Command[]; flagged: number }> {
   const fill = written.commands.find((c) => c.type === 'section.fill' && c.payload.kind === 'plan');
   if (!fill || fill.type !== 'section.fill' || fill.payload.kind !== 'plan' || !fill.payload.content.segments.length) return written;
   const content = fill.payload.content;
@@ -130,8 +132,10 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
       const got = placed(now, fix.find, fix.replace);
       return got.hits === 1 ? got.value : now;
     }, { segments: content.segments, keyIdeas: content.keyIdeas, vocabulary: content.vocabulary });
-    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: fill.payload.flags, content: { ...content, ...plan, handouts } }) : c));
-    return { commands, flagged: written.flagged };
+    // Code on a sheet is run as a student runs it; what stops is corrected once, and what still stops is said to the teacher.
+    const run = await sheetsRun(inference, r, course, { ...lesson, segments: plan.segments as Lesson['segments'] }, handouts, signal);
+    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [...fill.payload.flags, ...run.flags], content: { ...content, ...plan, handouts: run.handouts } }) : c));
+    return { commands, flagged: written.flagged + run.flags.length };
   } catch (error) {
     if (signal?.aborted) throw error;
     return written;

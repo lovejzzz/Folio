@@ -6,10 +6,12 @@
   "exports": {
     ".": "./src/index.ts",
     "./node": "./src/node.ts",
-    "./browser": "./src/browser/host.ts"
+    "./browser": "./src/browser/host.ts",
+    "./r": "./src/rNode.ts"
   },
   "sideEffects": false,
   "dependencies": {
-    "pyodide": "314.0.7"
+    "pyodide": "314.0.7",
+    "webr": "^0.6.0"
   }
 }

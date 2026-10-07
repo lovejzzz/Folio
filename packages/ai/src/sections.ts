@@ -23,6 +23,8 @@ import {
 import type { Inference } from './inference';
 import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
+import { workRun } from './sheetRun';
+import type { LineRunner } from './sheetCode';
 import { alreadySet, assignments, base, continuedInClass, flagsAt, step, test, type SectionJob } from './workJobs';
 import { issuePlace, reviewPlan } from './review';
 import { PREPARATION_GRADING, checkRunOfShow, isLiveOnline, isMixedOnline } from './live';
@@ -297,6 +299,13 @@ async function writeWork(course: Course, lesson: Lesson, write: (piece: Lesson, 
   return { commands: [merged], flagged: results.reduce((n, r) => n + r.flagged, 0) };
 }
 
+/** The work with its code run: what stopped is corrected or noted on the piece it stands in. */
+async function ranWork(inference: Inference, r: LineRunner | undefined, course: Course, lesson: Lesson, signal: AbortSignal | undefined, written: SectionResult): Promise<SectionResult> {
+  if (!r) return written;
+  const commands = await Promise.all(written.commands.map(async (c) => (c.type === 'tasks.fill' ? cmd('tasks.fill', { ...c.payload, tasks: await workRun(inference, r, course, lesson, c.payload.tasks, signal) }) : c)));
+  return { ...written, commands };
+}
+
 /**
  * The first week of an online course is written with the course's Start here page. Written or not, the week
  * stands: a page that could not be had is asked for again the next time the first week is written.
@@ -393,7 +402,7 @@ export async function generateSection(
     case 'plan':
       if (hasModulePages(course)) return withStart(inference, course, lesson, signal, pageWithRuns(run, moduleJob, { writer: inference, reviewer, now, lesson, signal, options, mendPage }));
       // The sheets the plan hands out are written from the plan as it stands after its review.
-      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, codeFaults) : undefined), signal);
+      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, codeFaults) : undefined), signal, options.run?.r);
     case 'slides':
       return run(slides);
     case 'study':
@@ -402,7 +411,7 @@ export async function generateSection(
     case 'quiz':
       return withAnswerChecks(inference, options.run?.runner, await run(quiz), signal);
     case 'assignments':
-      return withAnswerChecks(inference, options.run?.runner, await writeWork(now(), lesson, (piece, set) => (piece.homework.kind === 'test' ? run(test, undefined, piece, set) : piece.homework.kind === 'step' ? run(step, undefined, piece, set) : run(assignments, undefined, piece, set))), signal);
+      return withAnswerChecks(inference, options.run?.runner, await ranWork(inference, options.run?.r, now(), lesson, signal, await writeWork(now(), lesson, (piece, set) => (piece.homework.kind === 'test' ? run(test, undefined, piece, set) : piece.homework.kind === 'step' ? run(step, undefined, piece, set) : run(assignments, undefined, piece, set)))), signal);
     case 'discussions':
       return run(discussions);
     case 'faq':

@@ -1,5 +1,6 @@
 import type { Flag } from '@folio/core';
 import { RUNNER_ERRORS, type CellResult, type Runner, type Versions } from '@folio/run';
+import type { LineRunner } from './sheetCode';
 import { RAN, type ModuleDraft } from './online';
 import { shield } from './prompts';
 import { causeNote, holds, type Claim } from './stuckCheck';
@@ -294,6 +295,8 @@ export function oneAtATime<T>(runner: Runner, work: () => Promise<T>): Promise<T
 /** A reading of a page with its Python run first: the reader sees real outputs, and what failed goes to the same mend as the reader's notes. */
 export interface RunOptions {
   runner: Runner;
+  /** R, where it can be had: the code on a lesson's sheets and in its work is then run before anyone reads it. */
+  r?: LineRunner;
   /** Told why a page could not be run: the page is kept as written, and whoever holds the course may want to know. */
   onError?: (error: unknown) => void;
   /** Keeps a figure and returns what the page should point at: `media:<id>`, or a path. */

@@ -17,6 +17,7 @@ import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutli
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawn } from 'node:child_process';
 import { nodeRunner } from '@folio/run/node';
+import { rRunner } from '@folio/run/r';
 import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -318,6 +319,8 @@ const inference: typeof made = { ...made, complete: (request) => asking.run(requ
 /** `--run`: the Python on module pages is run, as a teacher's browser will, and the pages show what it prints. */
 const RUN = ARGS.includes('--run');
 const RUNNER = nodeRunner();
+/** R beside it, where it starts: the code on sheets and in work is then run as a student will run it. */
+const R = RUN ? await rRunner() : null;
 let figureCount = 0;
 /** A figure a page's code drew, kept beside the course under its name. */
 async function saveFigure(name: string, png: Uint8Array): Promise<string> {
@@ -332,7 +335,7 @@ async function build(name: string, store: CourseStore, targets: BuildTarget[], f
     inference,
     reviewer: inference,
     wholeRead: ARGS.includes('--read'),
-    run: RUN ? { runner: RUNNER, saveFigure: (png) => saveFigure(name, png) } : undefined,
+    run: RUN ? { runner: RUNNER, r: R ?? undefined, saveFigure: (png) => saveFigure(name, png) } : undefined,
     getCourse: store.getState,
     commit: (_target, commands) => {
       store.apply(commands, { label: { key: 'built' }, source: 'ai', undoable: false });
@@ -371,7 +374,7 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
       for (const id of store.getState().lessonOrder.slice(0, Number(option('--lessons') ?? 99))) {
         const lesson = store.getState().lessons[id]!;
         const written = { commands: [cmd('section.fill', { lessonId: id, kind: 'plan', flags: lesson.gen.plan?.flags ?? [], content: { segments: lesson.segments, keyIdeas: lesson.keyIdeas, vocabulary: lesson.vocabulary } })], flagged: 0 };
-        store.apply((await withHandouts(inference, store.getState(), lesson, written)).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
+        store.apply((await withHandouts(inference, store.getState(), lesson, written, undefined, R ?? undefined)).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
       }
     }
   } else {
@@ -428,3 +431,4 @@ await Promise.all(asked.map((name) => make(name, polishOnly)));
 }
 // The notebook's thread would keep the script alive after its last course: three runs sat finished until they were stopped.
 RUNNER.close();
+R?.close();
