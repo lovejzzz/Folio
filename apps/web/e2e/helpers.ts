@@ -35,3 +35,20 @@ export async function retype(page: Page, name: string | RegExp, text: string): P
   await page.keyboard.type(text);
   await field.blur();
 }
+
+/** What is on screen once nothing on it is still moving: contrast is measured on that, not on a fade half done. */
+export async function settled(page: Page): Promise<void> {
+  // Measure contrast on settled text: a fixed wait let a busy machine measure cards still fading in.
+  await page.evaluate(() => document.fonts.ready);
+  // Still for a while, not for an instant: on a slow runner a fade could start just after one quiet check (CI measured a
+  // card mid-fade on the home page one run and a toolbar on the slides the next).
+  await page.evaluate(async () => {
+    const quiet = () => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getComputedTiming().iterations === Infinity);
+    for (let still = 0, tries = 0; still < 4 && tries < 100; tries++) {
+      still = quiet() ? still + 1 : 0;
+      await new Promise((r) => setTimeout(r, 100));
+    }
+  });
+  // And one painted frame after, so what axe measures is what is on screen.
+  await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+}

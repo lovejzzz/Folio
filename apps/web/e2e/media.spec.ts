@@ -6,7 +6,7 @@ import { orderedLessons, parseCourse, type PageBlock } from '@folio/core';
 import { sampleCourse } from '@folio/core/sample';
 import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
-import { retype } from './helpers';
+import { retype, settled } from './helpers';
 
 /** A small PNG of one colour, made here so the test carries no binary file. */
 function png(width: number, height: number): Buffer {
@@ -88,6 +88,8 @@ test('a teacher adds a picture to a page, captions it, removes it and brings it 
   // The page with a picture, its fields and buttons, and the places still empty beside it, passes axe in both schemes.
   for (const colorScheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
+    // A busy machine measured the objectives' heading while the page was still fading in.
+    await settled(page);
     const results = await new AxeBuilder({ page }).include('.mod').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
     expect(results.violations.map((v) => `${colorScheme}: ${v.id} ${v.nodes[0]?.target.join(' ')}`)).toEqual([]);
   }
