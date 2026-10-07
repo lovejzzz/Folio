@@ -3,6 +3,7 @@ import type { LineRunner } from './sheetCode';
 import { cmd, lessonPieces, newId, type Command, type Course, type Handout, type Lesson, type Segment } from '@folio/core';
 import { z } from 'zod';
 import { codeFaults } from './codeLines';
+import { overfull, overfullNote } from './sheetTime';
 import { ExhibitBlockDraft, exhibitPart } from './exhibit';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
@@ -115,9 +116,11 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
     const write = (told = '') => runJob(inference, { task: 'folio_handouts', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: `${handoutsPrompt(course, lesson, content)}${told}`, effort: 'medium', schema: HandoutsDraft, repair: false, signal });
     const first = await write();
     // Code a student must read line by line is asked for once more when it came squeezed; the second answer is kept only if it is sound.
-    const fault = sheetFault(first.value);
+    // And sheets that ask more than their segment's minutes hold: counted by parts, as a reader counts them.
+    const over = (draft: HandoutsDraft) => overfull(draft.handouts, content.segments);
+    const fault = sheetFault(first.value) ?? (over(first.value).length ? overfullNote(over(first.value)) : null);
     const again = fault ? await write(`\n\nA first answer was not usable: ${fault}.`).catch(() => null) : null;
-    const result = again && !sheetFault(again.value) ? again : first;
+    const result = again && !sheetFault(again.value) && over(again.value).length <= over(first.value).length ? again : first;
     // A key that cannot be had leaves the sheets without one, never the lesson without its sheets.
     const keyed = result.value.handouts.length
       ? await runJob(inference, { task: 'folio_handout_keys', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: handoutKeysPrompt(course, lesson, content, result.value.handouts), effort: 'low', schema: HandoutKeysDraft, repair: false, signal }).then((r) => r.value, () => null)

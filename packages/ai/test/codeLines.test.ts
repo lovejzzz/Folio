@@ -47,6 +47,27 @@ describe('the keys to a lesson\'s sheets, written from the sheets by another wri
   });
 });
 
+describe('sheets that ask more than their segment holds', () => {
+  it('are written once more, shorter, and the shorter ones are kept', async () => {
+    const { withHandouts } = await import('../src/handouts');
+    const { CourseStore, cmd, orderedLessons, newId } = await import('@folio/core');
+    const { fakeInference, smallCourse } = await import('./fake');
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const segments = [{ id: newId('x'), session: 0, kind: 'practice' as const, title: 'Four cases', minutes: 10, description: 'Students work the cases.', teacherNotes: '' }];
+    const written = { commands: [cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [], content: { segments, keyIdeas: ['k'], vocabulary: [] } })], flagged: 0 };
+    const sheet = (rooms: number) => ({ title: 'Cases', kind: 'worksheet', usedIn: 'Four cases', copies: 'One each', blocks: [{ type: 'para', text: 'Answer each.' }, ...Array.from({ length: rooms }, () => ({ type: 'yours', text: '', lines: 3 }))] });
+    // The first answer is twelve answer rooms; asked again, four.
+    const model = fakeInference(() => ({}), ((n: number) => ({ handouts: [sheet(n === 1 ? 12 : 4)] })) as never);
+    const out = await withHandouts(model, course, lesson, written);
+    const store = new CourseStore(course);
+    store.apply(out.commands, { label: { key: 'b' }, source: 'ai' });
+    expect(model.sheets).toHaveLength(2);
+    expect(model.sheets[1]!.prompt).toMatch(/"Cases" asks for about 24 minutes of writing in "Four cases", which has 10/);
+    expect(store.getState().lessons[lesson.id]!.handouts[0]!.blocks.filter((b) => b.type === 'yours')).toHaveLength(4);
+  });
+});
+
 describe('an instruction that comes back as advice', () => {
   it('is taken out of the notes, and nothing else is', async () => {
     const { withoutEchoes } = await import('../src/tidy');
