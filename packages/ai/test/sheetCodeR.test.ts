@@ -1,6 +1,6 @@
 import { rRunner } from '@folio/run/r';
 import { describe, expect, it } from 'vitest';
-import { STATEMENT } from '../src/sheetCode';
+import { STATEMENT, joined } from '../src/sheetCode';
 
 // R itself, as the check-ups use it. It ships with the package; only library() calls need the network, and none is made here.
 describe('R on the command line', () => {
@@ -17,6 +17,10 @@ describe('R on the command line', () => {
       // Which code set in a sentence is a statement to run: R is asked, not a pattern.
       const statement = async (code: string) => (await r!.run(STATEMENT(code))) === null;
       expect(await Promise.all(['fit <- lm(mpg ~ wt, data = mtcars)', 'summary(mtcars$mpg)', 'mtcars |> head(3)', 'mean()', 'x', '2 + 2', 'mtcars$mpg', 'ggplot(mtcars, aes(x = mpg)) +', 'lm(mpg ~'].map(statement))).toEqual([true, true, true, false, false, false, false, false, false]);
+      // A statement over several lines is run as one: alone, its first line "does not run".
+      expect(await r!.run('summary(mtcars$mpg) +')).toMatch(/unexpected end of input|unexpected/);
+      expect(joined(['fit <- lm(mpg ~ wt,', '  data = mtcars)', 'coef(fit)', 'mtcars |>', '  head(2)'])).toEqual(['fit <- lm(mpg ~ wt,\n  data = mtcars)', 'coef(fit)', 'mtcars |>\n  head(2)']);
+      for (const step of joined(['fit <- lm(mpg ~ wt,', '  data = mtcars)', 'coef(fit)', 'mtcars |>', '  head(2)'])) expect(await r!.run(step)).toBeNull();
       await r!.fresh();
       expect(await r!.run('mean(x)')).toMatch(/object 'x' not found/);
       expect(await r!.run('stopifnot(ncol(read.csv("cars.csv")) == 11)')).toBeNull();

@@ -176,6 +176,10 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
       sheet('t_fmt', 'Use `System.out.printf("Total cost: $%.2f%n", totalCost);` Expected output: Total cost: $125.45'),
     ]);
     expect(['t_vec', 't_vec_wrong', 't_fmt'].map((id) => more.flags.has(id))).toEqual([false, true, false]);
+    // A root is the number it names.
+    const rooted = (id: string, answerKey: string): Task => ({ ...base, id, kind: 'assignment', title: 'Sheet', prompt: '', steps: ['Evaluate the limit with `math.sqrt(5) / 2`.'], rubricId: null, answerKey, toward: '' });
+    const roots = await checkAnswers(fakeInference(() => ({ checkable: true, setup: 'import math', stated: [{ where: 'answerKey', before: 'The limit is ', expr: 'math.sqrt(5) / 2' }] })), nodeRunner(), [rooted('t_root', 'The limit is √5/2, about 1.118.'), rooted('t_root_wrong', 'The limit is √3/2, about 0.866.')]);
+    expect([roots.flags.has('t_root'), roots.flags.has('t_root_wrong')]).toEqual([false, true]);
     // A debt is written −$24.
     const debt = (id: string, answer: string): Task => ({ ...base, id, kind: 'question', format: 'numeric', prompt: 'Half of a $360 crop is the family share; the store bill is $204. What is left? Use a minus sign for debt.', choices: [], correct: null, answer, explanation: 'Half of 360 is 180, and 180 less 204 is a debt.', difficulty: 2 });
     const owed = await checkAnswers(fakeInference(() => ({ checkable: true, setup: 'left = 360 / 2 - 204', answer_kind: 'value', answer_expr: 'left' })), nodeRunner(), [debt('t_debt', '−$24'), debt('t_debt_wrong', '$24')]);

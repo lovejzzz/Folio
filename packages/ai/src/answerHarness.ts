@@ -23,6 +23,11 @@ def numbers(text):
     them: 3.011 × 10²³ is one number, and so is 2/3, and 1 1/2"""
     # a debt is written with its sign before the currency mark: −$24 is −24
     text = re.sub(r'([-−])([$€£])(?=\d)', r'\2\1', text)
+    # a root is the number it names: √5/2, 3√2 and √(10) are read as values, to the digits a float carries
+    def root(m):
+        v = float(m.group(1) or 1) * math.sqrt(float(m.group(2) or m.group(3)))
+        return ' ' + repr(round(v / float(m.group(4)) if m.group(4) else v, 9)) + ' '
+    text = re.sub(r'(?<![\w.])(\d+(?:\.\d+)?)?\s*√\s*(?:\((\d+(?:\.\d+)?)\)|(\d+(?:\.\d+)?))(?:\s*/\s*(\d+(?:\.\d+)?))?', root, text)
     # scientific notation first, as one token the pattern below reads
     text = SCI.sub(lambda m: m.group(1).replace(',', '') + 'e' + (m.group(2) or m.group(3).translate(SUP)).replace('−', '-'), text)
     out = []; at = 0

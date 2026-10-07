@@ -95,6 +95,21 @@ export const STATEMENT = (code: string): string =>
 
 type Stop = { line: string; error: string; unchecked?: boolean };
 
+/**
+ * A statement set over several lines is one statement: `ggplot(...) +` alone stops with "unexpected end of input",
+ * and was reported as a line that does not run. A line that ends where more must follow is joined to the next.
+ */
+export function joined(lines: string[], apart: (line: string) => boolean = () => false): string[] {
+  const out: string[] = [];
+  for (const line of lines) {
+    const last = out.at(-1);
+    const open = last !== undefined && !apart(last) && !apart(line) && /(?:[+,({]|\|>|%>%|%in%|<-|=|&&|\|\||[-*/~])\s*$/.test(last);
+    if (open) out[out.length - 1] = `${last}\n${line}`;
+    else out.push(line);
+  }
+  return out;
+}
+
 async function runUnit(runner: LineRunner, unit: CodeUnit): Promise<Stop[]> {
   await runner.fresh();
   await runner.need(unit.lines.flatMap((l) => [...l.matchAll(/\b(?:library|require)\(\s*["']?([\w.]+)/g)].map((m) => m[1]!)));
@@ -102,7 +117,8 @@ async function runUnit(runner: LineRunner, unit: CodeUnit): Promise<Stop[]> {
   const inline = new Set(unit.inline ?? []);
   // What a skipped line would have made is missing for the lines after it: that is the template's doing, not a fault.
   const unmade = new Set<string>();
-  for (const line of unit.lines) {
+  // Only lines that stood alone are joined: code set in a sentence is judged piece by piece.
+  for (const line of joined(unit.lines, (l) => inline.has(l))) {
     if (SKIPPED.test(line)) {
       const name = /^\s*([\w.]+)\s*(?:<-|=)/.exec(line)?.[1];
       if (name) unmade.add(name);
