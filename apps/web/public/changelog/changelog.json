@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.0.31",
+  "date": "October 6, 2026",
+  "title": "R is run before a lesson reaches you",
+  "lede": "The last release asked the writers to keep to what can be known without running R. That moved the faults; it did not end them. So Folio now runs the R it gives your students, the way it already ran Python.",
+  "sections": [
+   {
+    "heading": "Every sheet and every piece of work, line by line",
+    "body": "When a lesson with R is written, each handout and each assignment is run one line at a time in a fresh R session, in a folder that holds the files earlier lessons made (the data file you prepared in week 1 is there in week 2). A line that stops is sent back once to be corrected, and the correction is kept only if the sheet then runs. What still stops is noted on the lesson with R’s own message, so you see exactly which line and why. A line you give students as broken on purpose, to find and fix, is left alone. Tried on courses built before this release, it found the faults our readers had found by hand: a table that was never loaded, a first line that changed to a folder no student has, a plot drawn before its library was loaded.",
+    "image": {
+     "src": "/changelog/0.0.31-r.svg",
+     "alt": "A lab sheet as first written, with two lines that stop and R’s messages beside them, and the same sheet as it reaches the teacher, where every line runs",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "Where it runs",
+    "body": "R runs in your browser, in a frame of its own that has no access to your account or your courses and can reach only the folder on our site that holds R itself. It is fetched the first time a lesson with R is written (R and the tidyverse are about 80 MB, kept by your browser afterwards), and not at all for courses without R. On a phone, lessons are kept as written."
+   },
+   {
+    "heading": "What it does not do yet",
+    "body": "Running finds lines that stop. It does not yet check that an answer key agrees with what R prints; the answer check still works those in Python."
+   }
+  ]
+ },
+ {
   "version": "0.0.30",
   "date": "October 6, 2026",
   "title": "Code that runs as it is given, and readings with a name",

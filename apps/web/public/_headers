@@ -13,3 +13,8 @@
   ! Content-Security-Policy
   Content-Security-Policy: RUNNER_POLICY
   Cache-Control: no-cache
+
+/runner-r/*
+  ! Content-Security-Policy
+  Content-Security-Policy: RUNNER_R_POLICY
+  Cache-Control: no-cache

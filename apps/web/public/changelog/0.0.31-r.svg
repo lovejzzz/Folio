@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px } .rule { stroke: #CFC8B9 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="360" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">A LAB SHEET IS RUN BEFORE YOU SEE IT</text>
+  <rect class="card" x="36" y="64" width="728" height="262" rx="14"/>
+  <text class="ink2" x="56" y="98" font-size="13">Lab sheet: summary statistics, as first written</text>
+  <text class="ink code" x="56" y="128">setwd("~/stats")</text>
+  <text class="bad" x="300" y="128" font-size="13">stops: cannot change working directory</text>
+  <text class="ink code" x="56" y="152">cars_df &lt;- read.csv("mtcars_lab.csv")</text>
+  <text class="ink code" x="56" y="176">hist(planets$diameter_km)</text>
+  <text class="bad" x="300" y="176" font-size="13">stops: object 'planets' not found</text>
+  <line class="rule" x1="56" y1="200" x2="744" y2="200"/>
+  <text class="ink2" x="56" y="228" font-size="13">As it reaches you</text>
+  <text class="ink code" x="56" y="256">cars_df &lt;- read.csv("mtcars_lab.csv")</text>
+  <text class="ink code" x="56" y="280">planets &lt;- read.csv("planets.csv")</text>
+  <text class="ink code" x="56" y="304">hist(planets$diameter_km, breaks = seq(0, 150000, 25000))</text>
+  <text class="acc" x="560" y="280" font-size="13">every line runs</text>
+</svg>

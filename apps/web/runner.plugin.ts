@@ -41,6 +41,22 @@ export async function runnerPage(): Promise<RunnerPage> {
   return { html: `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Folio runner</title></head><body><script>${script}</script></body></html>\n`, hash };
 }
 
+/** R's files, as webR publishes them and as `upload-webr.ts` puts them on the site: one folder a version. */
+export const R_RUNTIME = 'https://folio.university/api/runtime/webr-0.6.0/';
+
+export async function runnerRPage(): Promise<RunnerPage> {
+  const script = (await bundle(entry('rPage'))).replace(/<\/script/gi, '<\\/script');
+  const hash = `'sha256-${createHash('sha256').update(script).digest('base64')}'`;
+  return { html: `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Folio R runner</title></head><body><script>${script}</script></body></html>\n`, hash };
+}
+
+/**
+ * What the R runner page may do. R is built to fetch its own files and to make functions from text, so this page
+ * is allowed two things the Python page is not: scripts and connections from the one folder that holds R, and
+ * eval. It still has no origin, no storage, and no other address it can reach: what R is given cannot leave.
+ */
+export const runnerRPolicy = (hash: string): string => `default-src 'none'; script-src ${hash} 'unsafe-eval' 'wasm-unsafe-eval' blob: ${R_RUNTIME}; worker-src blob:; connect-src ${R_RUNTIME}; frame-ancestors 'self'; base-uri 'none'; form-action 'none'`;
+
 /** What the runner page may do: run its one script, start a worker from text, run WebAssembly. No other script from anywhere, and no connection of any kind. */
 export const runnerPolicy = (hash: string): string => `default-src 'none'; script-src ${hash} 'wasm-unsafe-eval'; worker-src blob:; connect-src 'none'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'`;
 
@@ -54,6 +70,14 @@ export function runner(): Plugin {
       outDir = config.build.outDir;
     },
     configureServer(server) {
+      let madeR: Promise<RunnerPage> | null = null;
+      server.middlewares.use('/runner-r', (_req, res) => {
+        void (madeR ??= runnerRPage()).then((page) => {
+          res.setHeader('content-type', 'text/html; charset=utf-8');
+          res.setHeader('content-security-policy', runnerRPolicy(page.hash));
+          res.end(page.html);
+        });
+      });
       server.middlewares.use('/runner', (_req, res) => {
         void (made ??= runnerPage()).then((page) => {
           res.setHeader('content-type', 'text/html; charset=utf-8');
@@ -65,10 +89,13 @@ export function runner(): Plugin {
     async closeBundle() {
       if (this.environment?.config.command !== 'build') return;
       const page = await runnerPage();
+      const r = await runnerRPage();
+      mkdirSync(join(outDir, 'runner-r'), { recursive: true });
+      writeFileSync(join(outDir, 'runner-r', 'index.html'), r.html);
       mkdirSync(join(outDir, 'runner'), { recursive: true });
       writeFileSync(join(outDir, 'runner', 'index.html'), page.html);
       const file = join(outDir, '_headers');
-      writeFileSync(file, readFileSync(file, 'utf8').replace('RUNNER_POLICY', runnerPolicy(page.hash)));
+      writeFileSync(file, readFileSync(file, 'utf8').replace('RUNNER_R_POLICY', runnerRPolicy(r.hash)).replace('RUNNER_POLICY', runnerPolicy(page.hash)));
     },
   };
 }
