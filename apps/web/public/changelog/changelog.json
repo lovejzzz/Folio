@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.0.30",
+  "date": "October 6, 2026",
+  "title": "Code that runs as it is given, and readings with a name",
+  "lede": "Folio runs the Python it writes before a lesson reaches you. It cannot yet run R, and the statistics courses showed it: a histogram asked for twice with the same bins, a lab step that used a table nobody had loaded. Until R can be run too, this release makes the writers hold to what can be known without running.",
+  "sections": [
+   {
+    "heading": "Every sheet stands on its own",
+    "body": "Code on a handout or in an assignment is now written to run in a fresh session: it loads or creates everything it uses, writes out every setting its result depends on, and names no folder on anyone’s machine. A strict reader traced thirteen R sheets and assignments in two statistics courses step by step afterwards; each loaded what it used and asked students only for what its output shows. Two faults of this kind still got through in a later reading (a fixed folder path, and a key that described a data set as it is generally known and not the file students were given), which is why running R for real is next on our list.",
+    "image": {
+     "src": "/changelog/0.0.30-fresh.svg",
+     "alt": "A lab sheet before: it uses a table loaded last week and relies on default bins. After: it reads its file, sets its bins and can be run on its own",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "What to read, in writing",
+    "body": "The last slide of a meeting that sets work or reading now says what is due and what to read, by name. An assigned reading is never left as “the reader’s chapter”: students get an author and a title. A brief or rubric from an earlier lesson is reprinted as it was, never written again."
+   },
+   {
+    "heading": "Smaller things",
+    "body": "The answer check now looks at every result on a long line of a key, not just the first few, and reads a debt written as −$24."
+   }
+  ]
+ },
+ {
   "version": "0.0.29",
   "date": "October 6, 2026",
   "title": "Work done in class fits its minutes, and is written once",

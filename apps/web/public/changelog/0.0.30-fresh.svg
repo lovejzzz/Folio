@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E }
+    }
+  </style>
+  <rect class="bg" width="800" height="360" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">A LAB SHEET, RUN IN A FRESH SESSION</text>
+  <rect class="card" x="36" y="64" width="350" height="262" rx="14"/>
+  <text class="ink" x="56" y="96" font-size="16" font-weight="600">Before</text>
+  <text class="ink code" x="56" y="134">hist(planets$diameter_km)</text>
+  <text class="bad" x="56" y="158" font-size="13">object 'planets' not found</text>
+  <text class="ink code" x="56" y="200">hist(routes$km)</text>
+  <text class="ink code" x="56" y="222">hist(routes$km, breaks = seq(0, 25, 5))</text>
+  <text class="bad" x="56" y="246" font-size="13">the same picture twice: the default bins</text>
+  <text class="bad" x="56" y="264" font-size="13">were already 0, 5, 10, 15, 20, 25</text>
+  <rect class="card" x="414" y="64" width="350" height="262" rx="14"/>
+  <text class="ink" x="434" y="96" font-size="16" font-weight="600">Now</text>
+  <text class="ink code" x="434" y="134">planets &lt;- read.csv("planets.csv")</text>
+  <text class="ink code" x="434" y="156">hist(planets$diameter_km,</text>
+  <text class="ink code" x="434" y="178">     breaks = seq(0, 150000, 25000))</text>
+  <text class="acc" x="434" y="212" font-size="13">loads what it uses</text>
+  <text class="acc" x="434" y="232" font-size="13">writes the settings its result depends on</text>
+  <text class="acc" x="434" y="252" font-size="13">asks only for what the output shows</text>
+  <text class="ink2" x="434" y="296" font-size="13">Thirteen R sheets traced step by step by a reader</text>
+</svg>
