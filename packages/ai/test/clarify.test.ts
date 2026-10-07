@@ -29,6 +29,9 @@ describe('reading the brief before planning', () => {
     expect(lessonsToPlan({ ...req, lessonCount: 6 }, read, [{ question: 'How many lessons?', answer: '' }])).toBe(6);
     expect(lessonsToPlan(req, read, [{ question: 'How many lessons?', answer: '10 lessons, two a week' }])).toBe(10);
     expect(lessonsToPlan(req, read, [{ question: 'How many lessons?', answer: 'About a dozen' }])).toBeNull();
+    // 42 lectures, and an answer that says what a lesson is: never a course of one lesson.
+    expect(lessonsToPlan(req, { ...read, lessonCount: 42 }, [{ question: 'How many lessons?', answer: 'One lesson per lecture, dropping the two exam-review days' }])).toBeNull();
+    expect(lessonsToPlan(req, { ...read, lessonCount: 42 }, [{ question: 'How many lessons?', answer: '1 lesson' }])).toBeNull();
     expect(lessonsToPlan(req, read, [{ question: 'How many lessons?', answer: '' }])).toBe(14);
     expect(lessonsToPlan(req, { ...read, lessonCount: null }, [])).toBeNull();
     expect(lessonsToPlan({ ...req, sources: [] }, { ...read, lessonCount: null }, [])).toBe(4);
@@ -38,6 +41,9 @@ describe('reading the brief before planning', () => {
     expect(lessonsIn('4 lessons of 45 minutes')).toBe(4);
     expect(lessonsIn('45-minute classes, 6 of them')).toBe(6);
     expect(lessonsIn('Six sessions')).toBe(6);
+    // What a lesson is, not how many: said of 42 lectures, it planned the course as one lesson.
+    expect(lessonsIn('One lesson per lecture, dropping the two exam-review days')).toBeNull();
+    expect(lessonsIn('One lesson for each week')).toBeNull();
     expect(lessonsIn('As many as it takes')).toBeNull();
     expect(lessonsIn('150 lessons, about four per week')).toBeNull();
     expect(lessonsIn('36 lessons, one for each week')).toBe(36);

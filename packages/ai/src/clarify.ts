@@ -130,17 +130,19 @@ const inRange = (n: number): number | null => (n >= 1 && n <= SHAPE_LIMITS.lesso
  */
 export function lessonsIn(text: string): number | null {
   const answer = digits(text);
-  const named = answer.match(new RegExp(`\\b(\\d{1,3})\\s*${MEETING}\\b(?!\\s*${RATE})`, 'i'))?.[1];
+  // "One lesson per lecture" names what a lesson is, not how many there are: a count is never followed by "per", "a" or "each".
+  const named = answer.match(new RegExp(`\\b(\\d{1,3})\\s*${MEETING}\\b(?!\\s*(?:a|per|each|every|for each)\\s+\\w)`, 'i'))?.[1];
   if (named) return inRange(Number(named));
   const weeks = answer.match(/\b(\d{1,2})\s*weeks?\b/i)?.[1];
   const rate = answer.match(new RegExp(`\\b(\\d{1,2})\\s*(?:x|times?|${MEETING})?\\s*(?:a|per|each|every)\\s+week\\b`, 'i'))?.[1];
   if (weeks) return inRange(Number(weeks) * Number(rate ?? 1));
   // What is left once lengths, rates, ranges and counts of other things are gone: one number alone is the count.
   const rest = answer
+    .replace(new RegExp(`\\b\\d+\\s*${MEETING}\\s+(?:for\\s+)?(?:a|per|each|every)\\s+\\w+`, 'gi'), ' ')
     .replace(/\b\d+(?:\.\d+)?\s*-?\s*(?:min|mins|minutes?|hours?|hrs?|h)\b/gi, ' ')
     .replace(new RegExp(`\\b\\d+\\s*(?:\\w+\\s+)?${RATE}`, 'gi'), ' ')
     .replace(/\b\d+\s*(?:-|–|to)\s*\d+\b/gi, ' ')
-    .replace(new RegExp(`\\b${OTHER}\\s*\\d+\\b|\\b\\d+\\s*${OTHER}\\b`, 'gi'), ' ');
+    .replace(new RegExp(`\\b${OTHER}\\s*\\d+\\b|\\b\\d+\\s*(?:[\\w-]+\\s+)?${OTHER}\\b`, 'gi'), ' ');
   const bare = [...new Set(rest.match(/\b\d{1,3}\b/g) ?? [])];
   return bare.length === 1 ? inRange(Number(bare[0])) : null;
 }
@@ -163,7 +165,12 @@ export function minutesIn(text: string): number | null {
 export function lessonsToPlan(req: Pick<ClarifyRequest, 'lessonCount' | 'defaultLessons' | 'sources'>, read: ClarifyDraft | null, answers: Clarification[]): number | null {
   // The teacher's answer is their latest word, and wins even over a count read from the brief.
   const [answer] = answersAbout(read, answers, ['lessons']);
-  if (answer) return lessonsIn(answer);
+  if (answer) {
+    const said = lessonsIn(answer);
+    // A count a seventh of what the brief holds is a misreading, not a wish: a course of 42 lectures was planned as one lesson.
+    const held = read?.lessonCount ?? req.lessonCount ?? 0;
+    return said !== null && said * 7 < held ? null : said;
+  }
   if (req.lessonCount) return req.lessonCount;
   // A count read as more than a course can hold (a class that meets daily) is left for the outline to fit.
   if (read?.lessonCount) return inRange(read.lessonCount);
