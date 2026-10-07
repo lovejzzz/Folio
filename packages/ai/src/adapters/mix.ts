@@ -73,10 +73,12 @@ export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_module_review: 12000,
   folio_last_read: 10000,
   folio_syllabus_check: 10000,
-  folio_slides: 10000,
-  folio_study: 8000,
-  folio_discussions: 6000,
-  folio_faq: 6000,
+  // At high effort the four think before they write: of 64 measured calls half were under 2,600 tokens with their
+  // thinking, six were over 9,800 and the longest was 16,149. Room for all but that one, which is asked again with all there is.
+  folio_slides: 16000,
+  folio_study: 12000,
+  folio_discussions: 10000,
+  folio_faq: 10000,
 };
 
 /** The longest answer Folio's server lets any call give. */

@@ -419,8 +419,12 @@ export const SECTION_EFFORT: Record<SectionPromptKind, Effort> = {
   plan: 'medium',
   quiz: 'medium',
   assignments: 'low',
-  slides: 'low',
-  study: 'low',
-  discussions: 'low',
-  faq: 'low',
+  // What is built on the plan, thought over: sixteen university lessons written at low, medium and high and judged blind
+  // twice. At high the four had half the faults (6 where low had 12 and medium 11: answers shown before students work them
+  // out, a planned question on no slide, a false explanation in a guide) and were preferred in 13 lessons of 16, for about
+  // eight cents more a lesson. Medium bought nothing.
+  slides: 'high',
+  study: 'high',
+  discussions: 'high',
+  faq: 'high',
 };

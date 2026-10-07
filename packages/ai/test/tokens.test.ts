@@ -39,7 +39,9 @@ describe('spending fewer tokens', () => {
   it('thinks hard only where it pays', () => {
     expect(SECTION_EFFORT.quiz).toBe('medium');
     expect(SECTION_EFFORT.plan).toBe('medium');
-    expect(SECTION_EFFORT.slides).toBe('low');
+    // The four built on the plan, where thinking halved the faults readers found; the graded work goes to its own writer.
+    expect([SECTION_EFFORT.slides, SECTION_EFFORT.study, SECTION_EFFORT.faq, SECTION_EFFORT.discussions]).toEqual(['high', 'high', 'high', 'high']);
+    expect(SECTION_EFFORT.assignments).toBe('low');
   });
 });
 
