@@ -3,6 +3,7 @@ import type { LineRunner } from './sheetCode';
 import { cmd, lessonPieces, newId, type Command, type Course, type Handout, type Lesson, type Segment } from '@folio/core';
 import { z } from 'zod';
 import { codeFaults } from './codeLines';
+import { sheetLeads } from './sheetLeads';
 import { overfull, overfullNote } from './sheetTime';
 import { ExhibitBlockDraft, exhibitPart } from './exhibit';
 import type { Inference } from './inference';
@@ -134,9 +135,12 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
     const fault = sheetFault(first.value) ?? (over(first.value).length ? overfullNote(over(first.value)) : null);
     const again = fault ? await write(`\n\nA first answer was not usable: ${fault}.`).catch(() => null) : null;
     const result = again && !sheetFault(again.value) && over(again.value).length <= over(first.value).length ? again : first;
+    // The shorter sheets kept, the plan's account of those segments is written again from them: it told of the longer ones.
+    const cut = result === again ? over(first.value).filter((o) => !over(again.value).some((still) => still.segment === o.segment)) : [];
+    const led = cut.length ? await sheetLeads(inference, course, lesson, content, result.value.handouts, cut, signal).catch(() => content) : content;
     // A key that cannot be had leaves the sheets without one, never the lesson without its sheets.
     const keyed = result.value.handouts.length
-      ? await runJob(inference, { task: 'folio_handout_keys', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: handoutKeysPrompt(course, lesson, content, result.value.handouts), effort: 'low', schema: HandoutKeysDraft, repair: false, signal }).then((r) => r.value, () => null)
+      ? await runJob(inference, { task: 'folio_handout_keys', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: handoutKeysPrompt(course, lesson, led, result.value.handouts), effort: 'low', schema: HandoutKeysDraft, repair: false, signal }).then((r) => r.value, () => null)
       : null;
     const keyOf = (title: string) => keyed?.keys.find((k) => k.title.trim() === title.trim())?.key ?? '';
     // A sheet said "the average is 2.5, make it print 2.5" where it is 3.5; its key warned the teacher and the sheet was printed as it was.
@@ -147,7 +151,7 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
     const plan = (keyed?.corrections ?? []).reduce((now, fix) => {
       const got = placed(now, fix.find, fix.replace);
       return got.hits === 1 ? got.value : now;
-    }, { segments: content.segments, keyIdeas: content.keyIdeas, vocabulary: content.vocabulary });
+    }, { segments: led.segments, keyIdeas: led.keyIdeas, vocabulary: led.vocabulary });
     // Code on a sheet is run as a student runs it; what stops is corrected once, and what still stops is said to the teacher.
     const run = await sheetsRun(inference, r, course, { ...lesson, segments: plan.segments as Lesson['segments'] }, handouts, signal);
     const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [...fill.payload.flags, ...run.flags], content: { ...content, ...plan, handouts: run.handouts } }) : c));

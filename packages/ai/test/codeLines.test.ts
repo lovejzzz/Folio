@@ -58,13 +58,16 @@ describe('sheets that ask more than their segment holds', () => {
     const written = { commands: [cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [], content: { segments, keyIdeas: ['k'], vocabulary: [] } })], flagged: 0 };
     const sheet = (rooms: number) => ({ title: 'Cases', kind: 'worksheet', usedIn: 'Four cases', copies: 'One each', blocks: [{ type: 'para', text: 'Answer each.' }, ...Array.from({ length: rooms }, () => ({ type: 'yours', text: '', lines: 3 }))] });
     // The first answer is twelve answer rooms; asked again, four.
-    const model = fakeInference(() => ({}), ((n: number) => ({ handouts: [sheet(n === 1 ? 12 : 4)] })) as never);
+    // And the plan, which told of twelve, is written again for that segment from the four.
+    const model = fakeInference((req) => (req.task === 'folio_plan_mend' ? { segments: [{ number: 1, kind: 'practice', session: 1, title: 'Four cases', minutes: 10, description: 'Students work the four cases.', teacherNotes: 'Answers to cases 1 to 4.' }], left: [] } : {}), ((n: number) => ({ handouts: [sheet(n === 1 ? 12 : 4)] })) as never);
     const out = await withHandouts(model, course, lesson, written);
     const store = new CourseStore(course);
     store.apply(out.commands, { label: { key: 'b' }, source: 'ai' });
     expect(model.sheets).toHaveLength(2);
     expect(model.sheets[1]!.prompt).toMatch(/"Cases" asks for about 24 minutes of writing in "Four cases", which has 10/);
     expect(store.getState().lessons[lesson.id]!.handouts[0]!.blocks.filter((b) => b.type === 'yours')).toHaveLength(4);
+    expect(model.calls.filter((c) => c.task === 'folio_plan_mend').map((c) => /Four cases: The sheet students are handed here was shortened to fit the segment's 10 minutes/.test(c.prompt))).toEqual([true]);
+    expect(store.getState().lessons[lesson.id]!.segments[0]).toMatchObject({ minutes: 10, description: 'Students work the four cases.', teacherNotes: 'Answers to cases 1 to 4.' });
   });
 });
 
