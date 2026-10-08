@@ -25,12 +25,14 @@ interface Sheet {
 const answer = (lines: number): number => (lines <= 2 ? 1 : lines <= 7 ? 2 : 5);
 
 /**
- * What a heading asks for, by its own form: a question, or a heading of four words or more ("What was true before? What
- * after?", "Our reason, citing the passage"), is answered in a sentence; "Place", "Age", "Design" in a word or a number.
- * An organizer of six rows under three questions was counted as forty-two quick cells, four minutes and a half, and
- * passed for a segment of twelve; readers counted eighteen short answers and twenty-seven minutes.
+ * What a heading asks for, by its own form: a question, or a heading of more than one word ("What was true before? What
+ * after?", "Our reason", "Worldview we chose"), is answered with a sentence or a judgment; a one-word label ("Place",
+ * "Age", "Design") with a word or a number. An organizer of six rows under three questions was counted as forty-two
+ * quick cells, four minutes and a half, and passed for a segment of twelve; readers counted eighteen short answers and
+ * twenty-seven minutes. Counted by headings of four words or more, a ten-cell organizer of judgments still passed at
+ * seventeen minutes for thirteen.
  */
-const sentence = (heading: string): boolean => heading.includes('?') || heading.trim().split(/\s+/).length >= 4;
+const sentence = (heading: string): boolean => heading.includes('?') || heading.trim().split(/\s+/).length >= 2;
 
 function tableMinutes(b: Block): number {
   const rows = b.rows ?? [];
