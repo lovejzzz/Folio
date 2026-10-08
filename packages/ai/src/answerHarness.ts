@@ -330,7 +330,7 @@ def check_item(item, check):
                 # a count a key spells out ("totaling four", "more than eight of the 16") is that number
                 bad = [c for c in bad if not (float(c).is_integer() and 0 <= c <= 20 and re.search(r'(?<![\w-])' + WORDS[int(c)] + r'(?![\w-])', tail[:120], re.I))]
                 # the form's anchor ran past the value it was to find: the number is in the words it quoted
-                if bad and str(s.get('before') or '').rstrip()[-1:] not in ('=', '≈', ':', '') and all(any(num_ok(n[0], n[1], c, s.get('tolerance')) for n in numbers(str(s.get('before') or ''))) for c in bad): raise Invalid('the anchor already holds the value')
+                if bad and str(s.get('before') or '').rstrip()[-1:] not in ('=', '≈', ':', '') and all(any(num_ok(n[0], n[1], c, s.get('tolerance')) for n in [x for m in numbers(str(s.get('before') or '')) for x in (terms(m[2]) + [m])]) for c in bad): raise Invalid('the anchor already holds the value')
                 if bad and all(any(is_mantissa(n[2], c) for n in stored) for c in bad): raise Invalid('the form computed the digits of a number the text gives with its power of ten')
                 # several values computed, none of them there, and the sentence lists another number of values ("frequencies 3, 3, 1,
                 # 0, 0, 1" against a computed pair): the form worked out something else than the key states

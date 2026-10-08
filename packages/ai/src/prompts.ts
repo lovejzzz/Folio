@@ -172,11 +172,15 @@ function gradingLine(course: Course): string {
  * A course taught with R: the packages Folio can run, so the code it writes keeps to them. Told nothing, a writer may
  * load any of CRAN's; the check then says only that it could not look.
  */
+/** The R of the runtime Folio holds (webR 0.6.0), as it says of itself. */
+const R_VERSION = '4.6.0';
+
 function rPackages(course: Course): string {
   if (!/\bRStudio\b|\btidyverse\b|\bggplot2?\b|\b(?:in|using|with|through) R\b|\bR (?:labs?|code|scripts?|programming|sessions?|and RStudio)\b/.test(course.brief)) return '';
   // The tidyverse's own, named because writers load them one by one as often as together.
   const known = [...R_COURSE_PACKAGES, ...['ggplot2', 'dplyr', 'tidyr', 'readr', 'tibble', 'stringr', 'forcats', 'purrr', 'lubridate'].filter((p) => R_PACKAGES.includes(p))];
-  return `The R that students are given is run before it reaches them, with base R and these packages: ${known.join(', ')}. Code keeps to them; where the brief names another package, it is used and the teacher is told Folio could not run those lines.`;
+  // And the version: a tip said forgetting a library gives "object 'penguins' not found", false since R 4.5 ships that table itself.
+  return `The R that students are given is run before it reaches them, in R ${R_VERSION} with base R and these packages: ${known.join(', ')}. What is said of how R behaves (an error's words, a default, what is there without a library) is what holds in that version. Code keeps to them; where the brief names another package, it is used and the teacher is told Folio could not run those lines.`;
 }
 
 export function courseBackground(course: Course): string {

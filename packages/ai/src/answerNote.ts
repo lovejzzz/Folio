@@ -43,8 +43,8 @@ function foundOf(found: string): string {
   if ((m = /^choices whose stored code does the job: \[(.*?)\]; keyed: (\d+)/.exec(found)))
     return `run as written, ${m[1]!.trim() ? `${choices(m[1]!)} did it` : 'no choice did it'}; choice ${m[2]} is keyed`;
   if ((m = /^statement computed (\w+); keyed:? (\w+)/.exec(found))) return `worked out, the statement is ${truth(m[1]!)}, and the key has it as ${truth(m[2]!)}`;
-  if ((m = /^computed \[(.*?)\] not among the stored \[(.*?)\]/s.exec(found))) return `worked out, it is ${list(m[1]!)}; the text there has ${list(m[2]!)}`;
-  if ((m = /^stored has (\d+) numbers \[(.*?)\], computed (\d+): \[(.*?)\]/s.exec(found))) return `worked out, there are ${m[3]} values (${list(m[4]!)}) where the text gives ${m[1]} (${list(m[2]!)})`;
+  if ((m = /^computed \[(.*?)\] not among the stored \[(.*?)(?:\]|$)/s.exec(found))) return `worked out, it is ${list(m[1]!)}; the text there has ${list(m[2]!)}`;
+  if ((m = /^stored has (\d+) numbers \[(.*?)\], computed (\d+): \[(.*?)(?:\]|$)/s.exec(found))) return `worked out, there are ${m[3]} values (${list(m[4]!)}) where the text gives ${m[1]} (${list(m[2]!)})`;
   if (/^stored\/computed differ:/.test(found)) return 'worked out, the values come out differently from the ones given';
   if ((m = /^computed (\S+); stored range (\S+)\.\.(\S+)/.exec(found))) return `worked out, it is ${num(m[1]!)}, outside the ${num(m[2]!)} to ${num(m[3]!)} given`;
   if ((m = /^stored (.*) computed (.*)$/s.exec(found))) return `worked out, it is ${num(m[2]!)}; the text has ${num(m[1]!)}`;
