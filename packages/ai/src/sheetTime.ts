@@ -10,6 +10,9 @@ interface Block {
   text?: string;
   lines?: number;
   rows?: string[][];
+  columns?: string[];
+  label?: string;
+  value?: string;
 }
 
 interface Sheet {
@@ -21,12 +24,27 @@ interface Sheet {
 /** Minutes a student needs to write one answer: a line or two is a short answer, a worked one more, a paragraph or a drawing most. */
 const answer = (lines: number): number => (lines <= 2 ? 1 : lines <= 7 ? 2 : 5);
 
+/**
+ * What a heading asks for, by its own form: a question, or a heading of four words or more ("What was true before? What
+ * after?", "Our reason, citing the passage"), is answered in a sentence; "Place", "Age", "Design" in a word or a number.
+ * An organizer of six rows under three questions was counted as forty-two quick cells, four minutes and a half, and
+ * passed for a segment of twelve; readers counted eighteen short answers and twenty-seven minutes.
+ */
+const sentence = (heading: string): boolean => heading.includes('?') || heading.trim().split(/\s+/).length >= 4;
+
+function tableMinutes(b: Block): number {
+  const rows = b.rows ?? [];
+  // Without named columns, a first row that is full is the headings.
+  const heads = b.columns?.length ? b.columns : rows[0]?.every((cell) => cell.trim()) ? rows[0] : [];
+  return rows.reduce((sum, row) => sum + row.reduce((n, cell, i) => n + (cell.trim() ? 0 : sentence(heads[i] ?? '') ? 1 : 0.25), 0), 0);
+}
+
 /** Minutes of writing a sheet asks for: its answer rooms, its blank fields, the empty cells of its tables. */
 export function sheetMinutes(sheet: Sheet): number {
   return sheet.blocks.reduce((sum, b) => {
     if (b.type === 'yours') return sum + answer(b.lines ?? 3);
-    if (b.type === 'field') return sum + (b.text?.trim() ? 0 : 0.5);
-    if (b.type === 'table') return sum + 0.25 * (b.rows ?? []).flat().filter((cell) => !cell.trim()).length;
+    if (b.type === 'field') return sum + ((b.value ?? b.text)?.trim() ? 0 : sentence(b.label ?? '') ? 1 : 0.5);
+    if (b.type === 'table') return sum + tableMinutes(b);
     return sum;
   }, 0);
 }

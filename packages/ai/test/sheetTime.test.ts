@@ -9,6 +9,20 @@ describe('a sheet against the minutes of its segment', () => {
     expect(sheetMinutes({ title: 'S', usedIn: 'Practice', blocks: [room(2), room(6), room(10), { type: 'field', text: '' }, { type: 'field', text: 'Given' }, { type: 'table', rows: [['x', '', ''], ['y', '', '']] }] })).toBe(1 + 2 + 5 + 0.5 + 1);
   });
 
+  it('counts a cell or a field by what its heading asks for: a sentence under a question, a word under a label', () => {
+    // An organizer of six rows: a line, a place and an age, then three questions each answered in a few words.
+    const columns = ['Moment (one line)', 'Place', 'Age', 'Can I name one day and place?', 'What was true before? What after?', 'Can I see it clearly enough to describe it?', 'Star'];
+    const organizer = { title: 'My moments', usedIn: 'Brainstorm', blocks: [{ type: 'table', columns, rows: Array.from({ length: 6 }, () => columns.map(() => '')) }] };
+    // Eighteen sentences and twenty-four quick cells: it passed as forty-two quick ones, ten minutes and a half, for a segment of twelve.
+    expect(sheetMinutes(organizer)).toBe(18 + 24 * 0.25);
+    expect(overfull([organizer], [{ title: 'Brainstorm', minutes: 12 }]).map((o) => o.asked)).toEqual([24]);
+    // A field the same way, and one already filled in asks nothing.
+    const field = (label: string, value = '') => ({ type: 'field', label, value });
+    expect(sheetMinutes({ title: 'S', usedIn: 'P', blocks: [field('Design'), field('Evidence that would convince me'), field('Title', 'Homework and achievement')] })).toBe(1.5);
+    // A table whose headings are its first row.
+    expect(sheetMinutes({ title: 'S', usedIn: 'P', blocks: [{ type: 'table', rows: [['Study', 'Our reason, citing the passage'], ['A', ''], ['B', '']] }] })).toBe(2);
+  });
+
   it('finds four cases of three answers in eleven minutes, and leaves a sheet that fits', () => {
     const segments = [{ title: 'Find the stage that went wrong', minutes: 11 }, { title: 'Exit ticket', minutes: 4 }];
     const heavy = { title: 'Four cases', usedIn: 'Find the stage that went wrong', blocks: cases(4, [3, 3, 3]) };
