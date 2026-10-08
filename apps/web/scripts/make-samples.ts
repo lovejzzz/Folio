@@ -379,7 +379,9 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
     if ((option('--redo') ?? '').split(',').includes('handouts')) {
       for (const id of store.getState().lessonOrder.slice(0, Number(option('--lessons') ?? 99))) {
         const lesson = store.getState().lessons[id]!;
-        const written = { commands: [cmd('section.fill', { lessonId: id, kind: 'plan', flags: lesson.gen.plan?.flags ?? [], content: { segments: lesson.segments, keyIdeas: lesson.keyIdeas, vocabulary: lesson.vocabulary } })], flagged: 0 };
+        // Notes on the old sheets' lines go with the old sheets: carried over, they were read as the new sheets' faults.
+        const sheets = new Set(lesson.handouts.map((h) => h.title));
+        const written = { commands: [cmd('section.fill', { lessonId: id, kind: 'plan', flags: (lesson.gen.plan?.flags ?? []).filter((f) => !(f.code === 'reviewNote' && sheets.has(f.values.where))), content: { segments: lesson.segments, keyIdeas: lesson.keyIdeas, vocabulary: lesson.vocabulary } })], flagged: 0 };
         store.apply((await withHandouts(inference, store.getState(), lesson, written, undefined, R ?? undefined)).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
       }
     }
