@@ -1,3 +1,4 @@
+import { plainNote } from './answerNote';
 import type { Flag, Task } from '@folio/core';
 import { RUNNER_ERRORS, type Runner } from '@folio/run';
 import { z } from 'zod';
@@ -190,7 +191,8 @@ export async function checkAnswers(inference: Inference, runner: Runner, tasks: 
       // What an explanation says of a wrong choice ("22.0 omits the initial velocity", when that gives 18.0) is put right when it
       // can be; when it cannot, the form misread the mistake as often as the item misstated it, and the teacher is not told.
       const loud = flags.filter((f) => !(f.code === 'answerCheck' && f.values.claim.startsWith(ORIGIN)));
-      if (loud.length) out.flags.set(task.id, loud);
+      // Said for the teacher, now that the writer who corrects has had the program's own words.
+      if (loud.length) out.flags.set(task.id, loud.map((f) => (f.code === 'answerCheck' ? plainNote(f) : f)));
     }
   };
   // The first alone: its call puts the instruction in the cache, and the rest, sent together after it, read it there

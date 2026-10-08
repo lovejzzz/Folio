@@ -35,7 +35,8 @@ describe('an answer that can be computed', () => {
     const model = fakeInference(() => FORM);
     // Twice on the key: a finding. Once, then a pass: the form was wrong, not the item. Twice, on different claims: not the same finding.
     const twice = await checkAnswers(model, scripted([fail('key'), fail('key')]), [wrong]);
-    expect(twice.flags.get('t_wrong')).toEqual([{ code: 'answerCheck', values: { claim: 'the key', found: 'stored 3.0 computed 4.0' } }]);
+    // And it is said in a teacher's words, not the program's.
+    expect(twice.flags.get('t_wrong')).toEqual([{ code: 'answerCheck', values: { claim: 'an answer or its explanation', found: 'worked out, it is 4; the text has 3' } }]);
     // Two forms, then one request to put the item right (which this model answers with nothing to place).
     expect(model.calls.map((c) => c.task)).toEqual(['folio_answer_check', 'folio_answer_check', 'folio_answer_fix']);
     expect(model.calls[0]!.prompt).toContain('"keyed": true');
@@ -63,14 +64,28 @@ describe('an answer that can be computed', () => {
 });
 
 // The checking program needs numpy: these run where the runtime has been fetched.
+describe('what the check found, said for a teacher', () => {
+  it('names where, what was worked out and what the text has, with none of the program\'s own marks', async () => {
+    const { plainNote } = await import('../src/answerNote');
+    const say = (claim: string, found: string) => Object.values(plainNote({ code: 'answerCheck', values: { claim, found } }).values).join(' | ');
+    expect(say('answerKey: …The sample SD calculations are √(', "computed [50.0] not among the stored ['50/5', '160/5', '3.', '2', '6', '2', '6']")).toBe('a value in the answer key, after “The sample SD calculations are √(” | worked out, it is 50; the text there has 50/5, 160/5, 3, 2, …');
+    expect(say('computed answer is stated by the keyed choice and by no other', "choices stating the computed value: []; keyed: 3; computed '74.0'")).toBe('the keyed choice is the right one | worked out, the answer is 74, which no choice states; choice 3 is keyed');
+    expect(say('stored code of the keyed choice, and of no other, does what is asked', 'choices whose stored code does the job: [2, 3]; keyed: 3; 1: NameError')).toBe('the keyed choice’s code does what is asked | run as written, choices 2 and 3 did it; choice 3 is keyed');
+    expect(say('computed truth of the statement equals the keyed choice', 'statement computed False; keyed true')).toBe('the keyed choice is the right one | worked out, the statement is false, and the key has it as true');
+    expect(say('stored answer runs as written and does what is asked', "stored answer does not run as written: NameError: name 'df' is not defined\n  File x")).toBe('the answer runs as written | it stops with NameError: name \'df\' is not defined');
+    // Anything unforeseen is still a sentence, never the program's own.
+    expect(say('something new', '{"a": [1]}')).toBe('an answer or its explanation | worked out by a program, it comes out differently');
+  });
+});
+
 describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checking program, really run', () => {
   it('passes a right key and fails a wrong one, reading the key from the item and never from the form', async () => {
     const model = fakeInference(() => FORM);
     const out = await checkAnswers(model, nodeRunner(), [right, wrong]);
     expect(out).toMatchObject({ checked: 2, unchecked: 0 });
     expect(out.flags.has('t_right')).toBe(false);
-    expect(out.flags.get('t_wrong')![0]).toMatchObject({ values: { claim: 'computed answer is stated by the keyed choice and by no other' } });
-    expect(JSON.stringify(out.flags.get('t_wrong'))).toContain('keyed: 3');
+    expect(out.flags.get('t_wrong')![0]).toMatchObject({ values: { claim: 'the keyed choice is the right one' } });
+    expect(JSON.stringify(out.flags.get('t_wrong'))).toMatch(/worked out, the answer is 4, which choice \d states; choice 3 is keyed/);
   }, 120_000);
 
   it('reads an answer of several parts, a list and a number, against the numbers the choice states', async () => {
