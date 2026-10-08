@@ -275,7 +275,7 @@ type Revision<T> = (value: T) => Promise<{ value: T; problems: Problem[] }>;
 /** The second read of a lesson plan, as `reviewed` takes it. */
 const readPlan = (reviewer: Inference, course: () => Course, lesson: Lesson, signal?: AbortSignal): Read<PlanDraft> => async (draft, since) => {
   const read = await reviewPlan(reviewer, course(), lesson, draft, { signal, since });
-  return { value: read.plan, fixes: read.issues.map((i) => i.why), notes: read.notes.map((n) => ({ code: 'reviewNote', values: { where: issuePlace(read.plan, n), text: n.why } })) };
+  return { value: read.plan, fixes: read.issues.map((i) => i.why), notes: [...read.notes.map((n) => ({ code: 'reviewNote' as const, values: { where: issuePlace(read.plan, n), text: n.why } })), ...read.over] };
 };
 
 /**

@@ -1,3 +1,4 @@
+import { PARTS_ASK, SegmentParts, overtime } from './segmentTime';
 import type { Course, Lesson } from '@folio/core';
 import { z } from 'zod';
 import type { Inference, ModelSettings, ProviderId } from './inference';
@@ -46,6 +47,7 @@ export const PlanReviewDraft = z.object({
     )
     .max(12)
     .default([]),
+  parts: SegmentParts,
 });
 export type PlanReviewDraft = z.infer<typeof PlanReviewDraft>;
 export type PlanIssue = PlanReviewDraft['issues'][number];
@@ -78,6 +80,7 @@ export function planReviewPrompt(course: Course, lesson: Lesson, plan: PlanDraft
       // The rubric, quiz and slides a plan mentions are written after it, from it: a reviewer not told so asked for them in most plans.
       'The course\'s other materials (the slides, quiz, assignment and its rubric, study guide and discussion questions) are written separately, from this plan: a plan that uses one need not contain it, so do not list it as missing.',
       'Do not list style preferences, activities you would add, timing you would change, or which terms the vocabulary list holds, and give no links. Return an empty list if the plan is sound.',
+      PARTS_ASK,
     ].join(' '),
   ]
     .filter(Boolean)
@@ -143,7 +146,7 @@ export async function reviewPlan(
   lesson: Lesson,
   plan: PlanDraft,
   options: { effort?: 'medium' | 'high'; signal?: AbortSignal; since?: Since } = {},
-): Promise<{ plan: PlanDraft; issues: PlanIssue[]; notes: PlanIssue[] }> {
+): Promise<{ plan: PlanDraft; issues: PlanIssue[]; notes: PlanIssue[]; over: ReturnType<typeof overtime> }> {
   const result = await runJob(inference, {
     task: 'folio_plan_review',
     system: systemPrompt(course.language, course.locale),
@@ -154,5 +157,6 @@ export async function reviewPlan(
     signal: options.signal,
   });
   const { plan: reviewed, applied, notes } = applyPlanReview(plan, result.value.issues);
-  return { plan: reviewed, issues: applied, notes };
+  // The reader counted; the sum and the verdict are done here.
+  return { plan: reviewed, issues: applied, notes, over: overtime(reviewed, result.value.parts) };
 }

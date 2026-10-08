@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { overfull, overfullNote, sheetMinutes } from '../src/sheetTime';
+import { overtime } from '../src/segmentTime';
 
 const room = (lines: number) => ({ type: 'yours', text: '', lines });
 const cases = (n: number, each: number[]) => Array.from({ length: n }, () => each.map(room)).flat();
@@ -34,5 +35,19 @@ describe('a sheet against the minutes of its segment', () => {
     expect(overfull([{ ...heavy, blocks: cases(2, [2, 2, 3]) }], segments)).toEqual([]);
     // A sheet used in no segment by that name is not judged.
     expect(overfull([{ ...heavy, usedIn: 'Somewhere else' }], segments)).toEqual([]);
+  });
+});
+
+describe('a segment without a sheet against its minutes', () => {
+  it('sums what the reader counted, by fixed rates, and notes a segment more than a quarter over', () => {
+    const seg = (kind: 'practice' | 'teach', title: string, minutes: number) => ({ kind, session: 1, title, minutes, description: 'd', teacherNotes: '' });
+    const plan = { segments: [seg('teach', 'Elasticity', 20), seg('practice', 'Three short problems', 9), seg('practice', 'Exit ticket', 4)] };
+    const three = [{ what: 'problems with working', kind: 'worked' as const, count: 3 }, { what: 'comparing with a partner', kind: 'pair' as const, count: 2 }, { what: 'answers heard', kind: 'hear' as const, count: 3 }];
+    const notes = overtime(plan, [{ segment: 2, parts: three }, { segment: 3, parts: [{ what: 'answers', kind: 'short', count: 4 }] }, { segment: 1, parts: [{ what: 'paragraphs', kind: 'paragraph', count: 9 }] }]);
+    // 3 × 2 + 2 × 2 + 3 × 1 = 13 for 9; the exit ticket fits; a teaching segment is not counted.
+    expect(notes.map((n) => n.values.where)).toEqual(['Segment 2, Three short problems']);
+    expect(notes[0]!.values.text).toMatch(/^Counted by its parts this needs about 13 minutes and has 9: 3 × problems with working \(6 min\), 2 × comparing with a partner \(4 min\), 3 × answers heard \(3 min\)\. Cut items or steps/);
+    // A quarter over is let be: 11 for 9.
+    expect(overtime(plan, [{ segment: 2, parts: [{ what: 'problems', kind: 'worked', count: 3 }, { what: 'pairs', kind: 'pair', count: 1 }, { what: 'heard', kind: 'hear', count: 3 }] }])).toEqual([]);
   });
 });
