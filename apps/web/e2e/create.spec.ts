@@ -41,7 +41,8 @@ test('describe, plan, build and land on a finished map', async ({ page }) => {
   const reviews = model.calls.filter((c) => c.messages[0]!.content.includes('Check this plan the way'));
   expect(reviews).toHaveLength(3);
   expect(reviews.every((c) => c.model === 'claude-opus-5-5')).toBe(true);
-  await expect(page.getByText(/That cost less than a cent\./)).toBeVisible();
+  // The outline here gives its graded components to no lesson, so it is asked for once more: a second request, and a cent.
+  await expect(page.getByText(/That cost about \$0\.01\./)).toBeVisible();
   expect(model.calls.some((c) => c.messages[0]!.content.includes('"Chloroplasts up close"'))).toBe(true);
   expect(model.calls.some((c) => c.messages[0]!.content.includes('Write one assignment'))).toBe(false);
 

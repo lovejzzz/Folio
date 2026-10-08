@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .rule { stroke: #CFC8B9 } .dot { fill: #CFC8B9 } .on { fill: #2B46C4 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E } .rule { stroke: #3A3B35 } .dot { fill: #3A3B35 } .on { fill: #8FA3FF }
+    }
+  </style>
+  <rect class="bg" width="800" height="360" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">WHAT A LESSON IS, AND HOW MANY THERE ARE</text>
+  <rect class="card" x="36" y="64" width="728" height="262" rx="14"/>
+  <text class="ink2" x="56" y="98" font-size="13">Your brief</text>
+  <text class="ink" x="56" y="122" font-size="15">A 15-week semester, three 50-minute lectures a week.</text>
+  <text class="ink2" x="56" y="152" font-size="13">Folio asks: what should one lesson be?   You answer:</text>
+  <text class="ink" x="56" y="176" font-size="15">“One lesson per lecture.”</text>
+  <line class="rule" x1="56" y1="200" x2="744" y2="200"/>
+  <text class="ink2" x="56" y="228" font-size="13">Before</text>
+  <rect class="dot" x="130" y="216" width="16" height="16" rx="4"/>
+  <text class="bad" x="160" y="229" font-size="13">a course of 1 lesson</text>
+  <text class="ink2" x="56" y="276" font-size="13">Now</text>
+  <g class="on">
+    <rect x="130" y="250" width="10" height="10" rx="2"/><rect x="144" y="250" width="10" height="10" rx="2"/><rect x="158" y="250" width="10" height="10" rx="2"/><rect x="172" y="250" width="10" height="10" rx="2"/><rect x="186" y="250" width="10" height="10" rx="2"/><rect x="200" y="250" width="10" height="10" rx="2"/><rect x="214" y="250" width="10" height="10" rx="2"/><rect x="228" y="250" width="10" height="10" rx="2"/><rect x="242" y="250" width="10" height="10" rx="2"/><rect x="256" y="250" width="10" height="10" rx="2"/><rect x="270" y="250" width="10" height="10" rx="2"/><rect x="284" y="250" width="10" height="10" rx="2"/><rect x="298" y="250" width="10" height="10" rx="2"/><rect x="312" y="250" width="10" height="10" rx="2"/><rect x="326" y="250" width="10" height="10" rx="2"/>
+    <rect x="130" y="264" width="10" height="10" rx="2"/><rect x="144" y="264" width="10" height="10" rx="2"/><rect x="158" y="264" width="10" height="10" rx="2"/><rect x="172" y="264" width="10" height="10" rx="2"/><rect x="186" y="264" width="10" height="10" rx="2"/><rect x="200" y="264" width="10" height="10" rx="2"/><rect x="214" y="264" width="10" height="10" rx="2"/><rect x="228" y="264" width="10" height="10" rx="2"/><rect x="242" y="264" width="10" height="10" rx="2"/><rect x="256" y="264" width="10" height="10" rx="2"/><rect x="270" y="264" width="10" height="10" rx="2"/><rect x="284" y="264" width="10" height="10" rx="2"/><rect x="298" y="264" width="10" height="10" rx="2"/><rect x="312" y="264" width="10" height="10" rx="2"/><rect x="326" y="264" width="10" height="10" rx="2"/>
+    <rect x="130" y="278" width="10" height="10" rx="2"/><rect x="144" y="278" width="10" height="10" rx="2"/><rect x="158" y="278" width="10" height="10" rx="2"/><rect x="172" y="278" width="10" height="10" rx="2"/><rect x="186" y="278" width="10" height="10" rx="2"/><rect x="200" y="278" width="10" height="10" rx="2"/><rect x="214" y="278" width="10" height="10" rx="2"/><rect x="228" y="278" width="10" height="10" rx="2"/><rect x="242" y="278" width="10" height="10" rx="2"/><rect x="256" y="278" width="10" height="10" rx="2"/><rect x="270" y="278" width="10" height="10" rx="2"/><rect x="284" y="278" width="10" height="10" rx="2"/><rect x="298" y="278" width="10" height="10" rx="2"/><rect x="312" y="278" width="10" height="10" rx="2"/><rect x="326" y="278" width="10" height="10" rx="2"/>
+  </g>
+  <text class="acc" x="356" y="273" font-size="13">45 lessons, one for each lecture</text>
+  <text class="ink2" x="56" y="310" font-size="13">And when the grading names a final exam that no lesson holds, the outline is asked for it again.</text>
+</svg>

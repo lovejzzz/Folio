@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.0.32",
+  "date": "October 7, 2026",
+  "title": "Three faults at the start of a course",
+  "lede": "Three things went wrong before a single lesson was written. Each was found by building the same courses several times over and comparing what came out.",
+  "sections": [
+   {
+    "heading": "“One lesson per lecture” is not a course of one lesson",
+    "body": "When Folio asks what a lesson should be and you answer “one lesson per lecture” or “one a week”, that says what a lesson is, not how many there are. It was sometimes read as a count, and a fifteen-week course came back as a single lesson. An answer like that now sets the kind of lesson, and the number comes from your weeks and meetings.",
+    "image": {
+     "src": "/changelog/0.0.32-count.svg",
+     "alt": "A brief for a 15-week semester of three lectures a week and the answer “one lesson per lecture”: before, a course of 1 lesson; now, 45 lessons, one for each lecture",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "Every graded piece has a lesson that holds it",
+    "body": "An outline could list a final exam at 25% in the grading and then give it to no lesson, so nothing was ever written for it. The outline is now checked against its own grading, and asked once more for any graded piece no lesson holds."
+   },
+   {
+    "heading": "One missing R package no longer stops the rest",
+    "body": "Before a lesson’s R is run, the packages it loads are fetched. They were fetched together, so one package we do not hold made the whole request fail, and a sheet that only needed the tidyverse was reported as not running. They are now fetched one at a time: what we hold is loaded, and only the line that needs the missing package is reported."
+   }
+  ]
+ },
+ {
   "version": "0.0.31",
   "date": "October 6, 2026",
   "title": "R is run before a lesson reaches you",
