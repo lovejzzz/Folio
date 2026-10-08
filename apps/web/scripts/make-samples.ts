@@ -76,16 +76,22 @@ const textOf = (content: unknown): string =>
 const jsonIn = (text: string) => text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1);
 const schemaNote = (schema: unknown) => `\n\nAnswer with one JSON object that matches this JSON Schema, and nothing else:\n${JSON.stringify(schema)}`;
 
-/** An Anthropic Messages request, answered by `claude -p` with the model and effort it names. */
+/**
+ * An Anthropic Messages request, answered by `claude -p` with the model and effort it names, and with none of the
+ * connectors of the machine it runs on: left in, every call carried some 44,000 tokens of their tool definitions, which no
+ * teacher's call does.
+ */
 async function viaClaude(body: Record<string, unknown>): Promise<string> {
   const system = textOf(body.system ?? '');
   const prompt = (body.messages as { content: unknown }[]).map((m) => textOf(m.content)).join('\n\n');
   const config = body.output_config as { effort?: string; format?: { schema?: unknown } } | undefined;
-  const args = ['-p', '--model', String(body.model), '--output-format', 'json', '--tools', '', '--no-session-persistence', '--max-turns', '1'];
+  const args = ['-p', '--model', String(body.model), '--output-format', 'json', '--tools', '', '--no-session-persistence', '--max-turns', '1', '--strict-mcp-config'];
   args.push('--system-prompt', system + (config?.format?.schema ? schemaNote(config.format.schema) : ''));
   if (config?.effort) args.push('--effort', config.effort);
-  const out = JSON.parse(await run('claude', args, prompt)) as { result?: string; is_error?: boolean };
+  const out = JSON.parse(await run('claude', args, prompt)) as { result?: string; is_error?: boolean; usage?: { output_tokens?: number; output_tokens_details?: { thinking_tokens?: number } } };
   if (out.is_error || !out.result) throw new Error('claude gave no answer');
+  // What the CLI itself counted: the answer's tokens with its thinking, which the estimate from characters cannot see.
+  appendFileSync(LOG, `${JSON.stringify({ usage: true, arm: process.env.ARM, task: asking.getStore(), model: body.model, effort: config?.effort, sent: system.length + prompt.length, out: out.usage?.output_tokens, thinking: out.usage?.output_tokens_details?.thinking_tokens, chars: out.result.length })}\n`);
   return jsonIn(out.result);
 }
 
