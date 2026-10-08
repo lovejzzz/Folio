@@ -71,6 +71,26 @@ describe('sheets that ask more than their segment holds', () => {
   });
 });
 
+describe('a key and the notes beside a sheet that was cut', () => {
+  it('drops what a key\'s writer says of itself, and asks again for notes left telling of the longer sheet', async () => {
+    const { withoutSelfReport } = await import('../src/tidy');
+    expect(withoutSelfReport('1. 10,000 rows. R execution verification remains pending because Rscript is unavailable in the checking environment. 2. `glimpse(NHANES)` lists the columns.')).toBe('1. 10,000 rows. 2. `glimpse(NHANES)` lists the columns.');
+    expect(withoutSelfReport('Run `Rscript lab.R` from the terminal.\nAccept any tidy answer.')).toBe('Run `Rscript lab.R` from the terminal.\nAccept any tidy answer.');
+    const { sheetLeads } = await import('../src/sheetLeads');
+    const { orderedLessons } = await import('@folio/core');
+    const { fakeInference, smallCourse } = await import('./fake');
+    const course = smallCourse();
+    const seg = { kind: 'practice' as const, session: 1, title: 'Five cases', minutes: 10, description: 'Students sort five cases.', teacherNotes: 'Answers: 1 trouble, 2 issue, 3 issue, 4 trouble, 5 issue.' };
+    const plan = { keyIdeas: ['k', 'k2'], vocabulary: [], segments: [seg] };
+    // The first mend changes the description and leaves the notes word for word; asked by name, the notes follow.
+    const model = fakeInference((_req, call) => ({ segments: [{ number: 1, ...seg, description: 'Students sort four cases, A to D.', teacherNotes: call === 1 ? seg.teacherNotes : 'Answers: A trouble, B issue, C issue, D trouble.' }], left: [] }));
+    const out = await sheetLeads(model, course, orderedLessons(course)[0]!, plan, [{ title: 'Cases', usedIn: 'Five cases', blocks: [] }], [{ segment: 'Five cases', minutes: 10, asked: 16, sheets: ['Cases'] }]);
+    expect(model.calls).toHaveLength(2);
+    expect(model.calls[1]!.prompt).toMatch(/its teacher's notes still tell of the longer one/);
+    expect(out.segments[0]).toMatchObject({ minutes: 10, description: 'Students sort four cases, A to D.', teacherNotes: 'Answers: A trouble, B issue, C issue, D trouble.' });
+  });
+});
+
 describe('an instruction that comes back as advice', () => {
   it('is taken out of the notes, and nothing else is', async () => {
     const { withoutEchoes } = await import('../src/tidy');

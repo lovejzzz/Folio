@@ -56,6 +56,19 @@ export function withoutEchoes(text: string): string {
   return kept.filter((row, i) => row.trim() || !text.split('\n')[i]!.trim()).join('\n').trim();
 }
 
+/**
+ * A key's writer reporting on itself. The keys to every R sheet carried "R execution verification remains pending
+ * because Rscript is unavailable in the checking environment": the writer's own state, printed for the teacher as if
+ * it were about the lesson. What a key says is the answers.
+ */
+const SELF = /\bRscript\b|\bchecking environment\b|\bexecution verification\b|\bverification (?:remains|is|was) (?:pending|not possible|unavailable)\b|\b(?:not |un)available in (?:the|this|my) (?:checking |current |present )?(?:environment|session)\b|\bI (?:could not|cannot|can't|was unable to|am unable to) (?:run|execute|verify)\b/i;
+
+/** The key without the sentences in which its writer reports on itself. Lines of code are never touched. */
+export function withoutSelfReport(text: string): string {
+  if (!SELF.test(text)) return text;
+  return text.split('\n').map((row) => (row.includes('`') && !SELF.test(row.replace(/`[^`]*`/g, '')) ? row : row.split(/(?<=[.!?])\s+/).filter((sentence) => !SELF.test(sentence)).join(' '))).filter((row, i, rows) => row.trim() || !text.split('\n')[i]!.trim() || rows.length === 1).join('\n').trim();
+}
+
 export function tidyPlanSources<T extends { segments: { description: string; teacherNotes: string }[] }>(v: T): T {
   const strip = (text: string) => withoutEchoes(text.replace(REF_IN_BRACKETS, '').replace(REF_SENTENCE, '$1').replace(REF_INLINE, '').trim());
   return { ...v, segments: v.segments.map((seg) => ({ ...seg, description: strip(seg.description), teacherNotes: strip(seg.teacherNotes) })) };
