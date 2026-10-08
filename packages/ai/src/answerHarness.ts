@@ -118,7 +118,26 @@ def strip_ticks(s):
     m = re.fullmatch(r'\x60\x60\x60(?:python)?\n?(.*?)\x60\x60\x60', s, re.S)
     if m: return m.group(1).strip()
     if len(s) > 1 and s[0] == '\x60' and s[-1] == '\x60' and '\x60' not in s[1:-1]: return s[1:-1]
+    # two statements, each on a line in its own ticks, are the code of both lines
+    rows = [r.strip() for r in s.split('\n') if r.strip()]
+    if len(rows) > 1 and all(len(r) > 1 and r[0] == '\x60' and r[-1] == '\x60' and '\x60' not in r[1:-1] for r in rows): return '\n'.join(r[1:-1] for r in rows)
     return s
+def all_code(texts):
+    """every choice is code and nothing else: a command to pick, not a value stated"""
+    return all(strip_ticks(t) != t.strip() for t in texts)
+def symbolic(text):
+    """the number a choice writes as an expression ("x = (ln 9 − 2)/4", "√5/2"), or None"""
+    import math
+    t = text.replace('\x60', '').replace('−', '-').replace('×', '*').replace('·', '*').replace('÷', '/').replace('^', '**').replace('π', ' pi ')
+    t = t.split('=')[-1].strip().rstrip('.')
+    t = re.sub(r'√\s*\(', 'sqrt(', t); t = re.sub(r'√\s*(\d+(?:\.\d+)?)', r'sqrt(\1)', t)
+    t = re.sub(r'\b(ln|log|sqrt|exp|sin|cos|tan)\s+(\d+(?:\.\d+)?)', r'\1(\2)', t)
+    t = re.sub(r'\be\s*\*\*', 'E**', t)
+    names = {'ln': math.log, 'log': math.log10, 'sqrt': math.sqrt, 'exp': math.exp, 'sin': math.sin, 'cos': math.cos, 'tan': math.tan, 'pi': math.pi, 'E': math.e}
+    if not re.fullmatch(r'[\d\s.+\-*/()a-zA-Z]+', t) or any(w not in names for w in re.findall(r'[a-zA-Z]+', t)) or not re.search(r'[a-zA-Z]', t): return None
+    try: v = eval(compile(t, '<choice>', 'eval'), {'__builtins__': {}}, names)
+    except BaseException: return None
+    return float(v) if isinstance(v, (int, float)) and v == v else None
 def run_code(code, ns, probe=None):
     """runs stored code exactly as stored; returns result, raised, error name, printed"""
     buf = io.StringIO(); result = None; err = None
@@ -217,6 +236,11 @@ def check_item(item, check):
                 # several values at once (two quartiles, a fence and a verdict) matched against choices that word them their own way:
                 # when none fits, it is the form that does not fit
                 if not hit and (len(flat(v) or []) > 1 or (isinstance(v, (tuple, list)) and len(v) > 1)): raise Invalid('computed several values and no choice states them in that form')
+                # choices written as expressions ("(ln 9 − 2)/4") state their values: worked out, the keyed one is the computed 0.0493
+                if not hit and fv and len(fv) == 1:
+                    hit = sorted(n for n in vals if (lambda x: x is not None and abs(x - fv[0]) <= 1e-6 * max(1.0, abs(fv[0])))(symbolic(ch[n - 1]['text'])))
+                # every choice a command to pick (which call returns the mean?): a value was computed, and none of them states one
+                if not hit and all_code([c['text'] for c in ch]): raise Invalid('the choices are code, and the form compared them as values')
                 return hit == [keyed], f'choices stating the computed value: {hit}; keyed: {keyed}; computed {str(v)[:80]!r}'
             guard('key', 'computed answer is stated by the keyed choice and by no other', f); key_checked = True
         if codes:
@@ -230,6 +254,8 @@ def check_item(item, check):
                     except BaseException as e: ok = False; notes.append(f'{n}: judge raised {type(e).__name__}')
                     if err is not None: notes.append(f'{n}: {type(err).__name__}')
                     if ok: hit.append(n)
+                # code that none of the choices could be read as is not their fault: nothing was tested
+                if not hit and sum('SyntaxError' in x for x in notes) >= len(codes): raise Invalid('no choice could be read as code')
                 return hit == [keyed], f'choices whose stored code does the job: {hit}; keyed: {keyed}; {"; ".join(notes)}'
             guard('key', 'stored code of the keyed choice, and of no other, does what is asked', f); key_checked = True
         for n in sorted(claims):
@@ -306,6 +332,10 @@ def check_item(item, check):
                 # the form's anchor ran past the value it was to find: the number is in the words it quoted
                 if bad and str(s.get('before') or '').rstrip()[-1:] not in ('=', '≈', ':', '') and all(any(num_ok(n[0], n[1], c, s.get('tolerance')) for n in numbers(str(s.get('before') or ''))) for c in bad): raise Invalid('the anchor already holds the value')
                 if bad and all(any(is_mantissa(n[2], c) for n in stored) for c in bad): raise Invalid('the form computed the digits of a number the text gives with its power of ten')
+                # several values computed, none of them there, and the sentence lists another number of values ("frequencies 3, 3, 1,
+                # 0, 0, 1" against a computed pair): the form worked out something else than the key states
+                said = len(numbers(re.split(r'\.\s|[;\n]', tail.replace('\x60', ''), maxsplit=1)[0]))
+                if len(fv) > 1 and len(bad) == len(fv) and said != len(fv): raise Invalid('the form computed another number of values than the text states there')
                 return not bad, (f'computed {bad[:6]} not among the stored {[n[2] for n in stored][:8]}' if bad else f'{len(fv)} numbers found in order')
             import numpy as np
             if isinstance(v, (bool, np.bool_)): return match_text(tail, v)

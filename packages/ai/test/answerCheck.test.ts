@@ -97,6 +97,26 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect([out.flags.has('t_sd_1.71'), out.flags.has('t_sd_1.2')]).toEqual([false, true]);
   }, 120_000);
 
+  it('reads choices as they are written: an expression, code on two lines, commands to choose among', async () => {
+    const run = async (task: Task, f: object) => {
+      const out = await checkAnswers(fakeInference(() => f), nodeRunner(), [task]);
+      return [out.checked, out.flags.size];
+    };
+    const values = [1, 2, 3, 4].map((n) => ({ n, kind: 'value' }));
+    // "(ln 9 − 2)/4" states 0.0493: it was reported as a key no choice states.
+    const logs = ['x = (ln 9 − 2)/4', 'x = (ln 9 + 2)/4', 'x = ln(7/4)', 'x = (9 − 2)/4'];
+    const solve = { checkable: true, setup: 'import math', answer_expr: '(math.log(9) - 2) / 4', choices: values };
+    expect(await run(choice('t_ln', 'Solve e^{4x + 2} = 9 for x.', logs, 1, 'Take the logarithm.'), solve)).toEqual([1, 0]);
+    // And a key on the wrong expression is still found.
+    expect(await run(choice('t_ln_wrong', 'Solve e^{4x + 2} = 9 for x.', logs, 2, 'Take the logarithm.'), solve)).toEqual([1, 1]);
+    // Which command returns the mean? A value was computed and the choices are commands: nothing to compare, nobody blamed.
+    const commands = ['`mean("pulse")`', '`mean(pulse[1])`', '`mean(pulse)`', '`mean(c(68, 76))`'];
+    expect(await run(choice('t_cmd', 'Which command returns the mean of `pulse`?', commands, 3, 'It averages all four.'), { checkable: true, setup: 'pulse = [68, 76, 80, 72]', answer_expr: 'sum(pulse) / len(pulse)', choices: values })).toEqual([0, 0]);
+    // Two statements, each on its own line in its own ticks, are run as two lines: all four came back as SyntaxError.
+    const two = ['`xs = [1]`\n`xs = xs + [9]`', '`xs = [1]`\n`xs.append(2)`', '`xs = [2]`\n`xs.append(1)`', '`xs = [1, 2, 3]`\n`xs.pop()`\n`xs.pop(0)`'];
+    expect(await run(choice('t_two', 'Which code leaves `xs` as `[1, 2]`?', two, 2, 'It appends 2.'), { checkable: true, setup: '', judge: 'xs == [1, 2]', choices: [1, 2, 3, 4].map((n) => ({ n, kind: 'code' })) })).toEqual([1, 0]);
+  }, 180_000);
+
   it('reads numbers as a class writes them: a fraction, a mixed number, and a number times a power of ten', async () => {
     const key = (id: string, answerKey: string): Task => ({ ...base, id, kind: 'assignment', title: 'Sheet', prompt: '', steps: ['Work out parts 1, 2, 3 and 4 with `len`.'], rubricId: null, answerKey, toward: '' });
     const form = (expr: string, before: string) => ({ checkable: true, setup: 'from fractions import Fraction\nmol = 0.500\navogadro = 6.022e23', stated: [{ where: 'answerKey', before, expr }] });
@@ -111,6 +131,15 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect(await run(key('t_frac', 'Line 2 is marked at 1/3, 2/3 and 3/3.'), form('[Fraction(k, 3) for k in (1, 2, 3)]', 'Line 2 is marked at '))).toBe(0);
     expect(await run(key('t_mixed', 'Together they make 1 1/2 strips.'), form('Fraction(3, 4) * 2', 'Together they make '))).toBe(0);
     // Results set among numbers that are not results: the 4 and the 9 are sample sizes.
+    // Six frequencies stated and a pair computed, none of it there: the form worked out something else, and the key is not blamed.
+    const bins = async (expr: string) => {
+      const out = await checkAnswers(fakeInference(() => form(expr, 'The 5 mg bins have frequencies ')), nodeRunner(), [key('t_bins', 'The 5 mg bins have frequencies 3, 3, 1, 0, 0, 1. The tallest bins hold 3.')]);
+      return [out.checked, out.flags.size];
+    };
+    expect(await bins('[len("ab"), len("cd")]')).toEqual([0, 0]);
+    // Six computed against the six stated are compared, and a wrong one is found.
+    expect(await bins('[len(x) for x in ("abc", "abc", "a", "", "", "a")]')).toEqual([1, 0]);
+    expect(await bins('[len(x) for x in ("abc", "ab", "a", "", "", "ab")]')).toEqual([1, 1]);
     // A quotient written out states its terms: the 50 of √(50/5) and the 438 of "438 / 8" are what a form computes on the way.
     expect(await run(key('t_top', 'The sample SD is √(50/5) = 3.16.'), form('sum((x - 10) ** 2 for x in (5, 10, 10, 10, 15))', 'The sample SD is √('))).toBe(0);
     expect(await run(key('t_top2', 'The variance is 438 / 8 = 54.75.'), form('sum(d * d for d in (3, 5, 20, 2))', 'The variance is '))).toBe(0);
