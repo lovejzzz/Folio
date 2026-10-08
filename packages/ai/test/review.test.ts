@@ -78,7 +78,8 @@ describe('a reviewed plan', () => {
     const { commands, flagged } = await generateSection(writer, course, lesson.id, 'plan', undefined, { reviewer });
     const fill = commands[0]!.payload as { flags: unknown[]; content: { segments: { teacherNotes: string }[] } };
     expect(fill.content.segments[1]!.teacherNotes).toBe('Balance the oxygen atoms together.');
-    expect(fill.flags).toEqual([{ code: 'reviewNote', values: { where: 'Segment 3, Exit ticket', text: 'The two questions are never given.' } }]);
+    // It was sent to be put right and is still there: said as that.
+    expect(fill.flags).toEqual([{ code: 'reviewNote', values: { where: 'Segment 3, Exit ticket', text: 'Folio could not fix this itself: The two questions are never given.' } }]);
     expect(flagged).toBe(1);
   });
 

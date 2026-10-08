@@ -20,6 +20,9 @@ export type ReadProgress =
 /** A mend and the reading of it are two calls: twice at most, so a text that will not come right does not hold up what waits for it. */
 const ROUNDS = 2;
 
+/** Before a note that was sent to be put right and is still there. */
+export const UNFIXED = 'Folio could not fix this itself:';
+
 const said = (note: ReviewNote) => `${note.values.where}: ${note.values.text}`;
 const stopped = (error: unknown) => error instanceof InferenceError && error.kind === 'aborted';
 
@@ -48,9 +51,11 @@ export async function reviewed<T>(read: Read<T>, draft: T, onProgress: ((progres
     const first = await read(draft);
     const fixes = [...first.fixes];
     let state: State<T> = { value: first.value, notes: first.notes, kept: [] };
+    let tried = false;
     for (let round = 0; round < ROUNDS && mend; round++) {
       const open = [...state.notes, ...checks(state.value)];
       if (!open.length) break;
+      tried = true;
       const next = await mendOnce(read, mend, state, open, open.length - state.notes.length).catch((error: unknown) => (stopped(error) ? Promise.reject(error) : null));
       // Kept unless it leaves more to put right than it found: what it was told of is fixed, and what the next
       // reading finds in the parts written again is found for the first time as often as it is new.
@@ -60,7 +65,10 @@ export async function reviewed<T>(read: Read<T>, draft: T, onProgress: ((progres
       state = next.state;
       fixes.push(...next.fixes);
     }
-    const notes = [...state.notes, ...state.kept];
+    // What a mend was tried on and did not put right is said as that, and first: the one true note of a lesson stood last
+    // among the false, worded as a reply to a correction the teacher never saw, and three readings running nobody acted on it.
+    const unfixed = state.notes.map((n) => (tried ? { code: 'reviewNote' as const, values: { where: n.values.where, text: `${UNFIXED} ${n.values.text}` } } : n));
+    const notes = [...unfixed, ...state.kept];
     onProgress?.({ type: 'reviewed', fixes, notes: notes.length });
     return { value: state.value, problems: notes.map((flag) => ({ index: null, flag })) };
   } catch (error) {
