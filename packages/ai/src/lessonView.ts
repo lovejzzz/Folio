@@ -78,11 +78,12 @@ function taskText(course: Course, t: Task, online: boolean, step = false): { stu
  * The sheets a lesson hands out, for the writers that come after them. They are written straight after the plan,
  * and the slides, the guide and the graded work were then written without them: a slide told students to "write
  * four claims" that their sheet printed, and a graded "lab worksheet" was another thing than the worksheet of the lab.
+ * And the sheet is the one source of its items: a slide showed six statements from the plan's notes beside a sheet of four.
  */
 export function sheetsText(lesson: Lesson, whole: boolean): string {
   if (!lesson.handouts.length) return '';
   const sheet = (h: Lesson['handouts'][number]) => `"${h.title}" (${h.kind}, used in "${h.usedIn}")${whole ? `:\n${h.blocks.map((b) => say(b as Loose)).join('\n')}` : ''}`;
-  return `The sheets students are handed in this lesson, already written${whole ? ' (what this material says of them agrees with them, and it asks for nothing they already hold)' : ''}:\n${lesson.handouts.map(sheet).join(whole ? '\n\n' : '; ')}`;
+  return `The sheets students are handed in this lesson, already written${whole ? ' (what this material says of them agrees with them, and it asks for nothing they already hold; where it shows or works a sheet\'s items, they are the sheet\'s own, as many and in its words, whatever the plan says of them)' : ''}:\n${lesson.handouts.map(sheet).join(whole ? '\n\n' : '; ')}`;
 }
 
 /** The lesson in two parts, each tagged by material so a reader can say where a fault lies. */
