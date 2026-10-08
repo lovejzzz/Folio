@@ -15,6 +15,8 @@ export interface Problem {
   flag: Flag;
   /** Worth one repair call, but not worth the teacher's attention if it remains (a style tell, not an error). */
   advisory?: boolean;
+  /** What stands on the piece for the teacher if the problem remains, when the flag itself is words for the writer. */
+  left?: Flag;
 }
 
 export interface JobSpec<T> {
@@ -87,7 +89,7 @@ function repairPrompt(prompt: string, raw: unknown, problems: Problem[]): string
 }
 
 /** Only real problems reach the teacher as "needs a look". */
-const shown = (problems: Problem[]) => problems.filter((p) => !p.advisory);
+const shown = (problems: Problem[]) => problems.filter((p) => !p.advisory).map((p) => (p.left ? { ...p, flag: p.left } : p));
 
 export async function runJob<T>(inference: Inference, spec: JobSpec<T>): Promise<JobResult<T>> {
   const request = { task: spec.task, system: spec.system, context: spec.context, effort: spec.effort, write: spec.write, schema: spec.schema, images: spec.images, signal: spec.signal, onText: spec.onText };

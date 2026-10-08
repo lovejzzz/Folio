@@ -49,7 +49,10 @@ function tooMuch(v: { prompt: string; steps: string[] }, course: Course, lesson:
   if (lesson.homework.kind !== 'inclass' || !lesson.homework.toward.trim()) return [];
   const minutes = minutesFor(course, lesson);
   if (!minutes) return [];
-  const issue = (text: string): Problem => ({ index: null, flag: { code: 'schemaIssue', values: { path: 'steps', issue: text } } });
+  // Asked of the writer once more in its own terms; if it stays, the teacher is told what is the matter, not that
+  // "part of this came back in the wrong shape" (which is what a request left unmet was shown as).
+  const left = { code: 'reviewNote' as const, values: { where: lesson.homework.toward, text: `This is set for ${minutes} minutes of class and asks for more than most groups will finish in that time. Cut a part of it, or give it more minutes.` } };
+  const issue = (text: string): Problem => ({ index: null, flag: { code: 'schemaIssue', values: { path: 'steps', issue: text } }, left });
   // A sheet told groups to "work for 20 minutes" in a segment of 13.
   const said = Math.max(0, ...[...`${v.prompt} ${v.steps.join(' ')}`.matchAll(/\b(\d{1,3})[- ]minutes?\b/gi)].map((m) => Number(m[1])));
   if (said > minutes) return [issue(`The plan gives this ${minutes} minutes, and the piece says ${said}: it says the plan's time, and asks only what fits it`)];
