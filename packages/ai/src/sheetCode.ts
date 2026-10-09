@@ -176,7 +176,7 @@ export const CodeFix = z.object({
 
 const ASK = [
   'The R below is given to students on a sheet or in a piece of work. It was run line by line in a new R session, in the working folder the course set, holding the files earlier lessons made; some lines stopped, with the messages shown.',
-  'Give the changes of text that make every line run as a student will run it: load or create what the line uses, name no folder of anyone\'s machine, correct a call that R refuses. Change as little as possible, and nothing that ran. A line the material itself presents as faulty, for students to find the mistake in or repair, is meant to stop: change nothing in it, and list it under "meant". A change replaces text exactly as it stands in the material, backticks included where they are part of it.',
+  'Give the changes of text that make every line run as a student will run it: load or create what the line uses, name no folder of anyone\'s machine, correct a call that R refuses. Change as little as possible, and nothing that ran. A line the material itself presents as faulty, for students to find the mistake in or repair, is meant to stop: change nothing in it, and list it under "meant". The sheet\'s own title and instructions say when that is so ("repair", "fix", "debug", "find the mistake", "what is wrong with"), and then every line it gives to be repaired is meant. A change replaces text exactly as it stands in the material, backticks included where they are part of it.',
 ].join(' ');
 
 /** The words to change so the lines run, or none. */

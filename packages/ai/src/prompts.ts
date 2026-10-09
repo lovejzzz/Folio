@@ -180,7 +180,7 @@ function rPackages(course: Course): string {
   // The tidyverse's own, named because writers load them one by one as often as together.
   const known = [...R_COURSE_PACKAGES, ...['ggplot2', 'dplyr', 'tidyr', 'readr', 'tibble', 'stringr', 'forcats', 'purrr', 'lubridate'].filter((p) => R_PACKAGES.includes(p))];
   // And the version: a tip said forgetting a library gives "object 'penguins' not found", false since R 4.5 ships that table itself.
-  return `The R that students are given is run before it reaches them, in R ${R_VERSION} with base R and these packages: ${known.join(', ')}. What is said of how R behaves (an error's words, a default, what is there without a library) is what holds in that version. Code keeps to them; where the brief names another package, it is used and the teacher is told Folio could not run those lines.`;
+  return `The R that students are given is run before it reaches them, in R ${R_VERSION} with base R and these packages: ${known.join(', ')}. What is said of how R behaves (an error's words, a default, what is there without a library) is what holds in that version. Students install whatever R is current: no material names a version they must have, and none checks for one. Code keeps to them; where the brief names another package, it is used and the teacher is told Folio could not run those lines.`;
 }
 
 export function courseBackground(course: Course): string {
