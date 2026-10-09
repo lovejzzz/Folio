@@ -1,4 +1,4 @@
-import { forTeacher } from './segmentTime';
+import { forTeacher, isCount } from './segmentTime';
 import type { Flag } from '@folio/core';
 import { InferenceError } from './inference';
 import type { Problem } from './jobs';
@@ -24,6 +24,8 @@ const ROUNDS = 2;
 /** Before a note that was sent to be put right and is still there. */
 export const UNFIXED = 'Folio could not fix this itself:';
 
+/** Where a note stands and of which sort it is: a count made in code, or what a reader found. */
+const placed = (note: ReviewNote) => `${note.values.where}|${isCount(note.values.text) ? 'count' : 'read'}`;
 const said = (note: ReviewNote) => `${note.values.where}: ${note.values.text}`;
 const stopped = (error: unknown) => error instanceof InferenceError && error.kind === 'aborted';
 
@@ -89,5 +91,13 @@ async function mendOnce<T>(read: Read<T>, mend: Mend<T>, state: State<T>, open: 
     const note = l.reason === 'teacher' ? state.notes[l.note - 1] : undefined;
     return note ? [{ code: 'reviewNote' as const, values: { where: note.values.where, text: `${note.values.text} ${l.why}` } }] : [];
   });
-  return { state: { value: again.value, notes: again.notes, kept: [...state.kept, ...asked] }, fixes: again.fixes, changed: mended.changed };
+  // A finding raised for the first time on a part the mend has just written again is the reader answering the mend, with
+  // nobody left to answer back: a mend moved the scoring of a peer review to after class so it would fit, and the next
+  // reading said it "must" be scored in class, a rule of its own, which went out as something Folio could not fix (and,
+  // sent to the next mend, would have undone the first). What was sent and is still there is kept. A count of minutes
+  // and a reader's finding are two things, though they stand at one place: after a count, a finding is new.
+  const sent = new Set(open.map(placed));
+  const rewritten = (where: string) => mended.changed.some((part) => where === part || where.startsWith(`${part},`) || where.startsWith(`${part} `));
+  const notes = again.notes.filter((n) => !(rewritten(n.values.where) && !sent.has(placed(n))));
+  return { state: { value: again.value, notes, kept: [...state.kept, ...asked] }, fixes: again.fixes, changed: mended.changed };
 }

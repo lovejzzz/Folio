@@ -95,3 +95,22 @@ describe('a reviewed plan', () => {
     expect(fill.flags).toEqual([{ code: 'unreviewed' }]);
   });
 });
+
+describe('what a second reading may pass on', () => {
+  it('keeps what was sent to the mend and is still there, and drops a first finding on what the mend has just written', async () => {
+    const { reviewed } = await import('../src/secondRead');
+    const note = (where: string, text: string) => ({ code: 'reviewNote' as const, values: { where, text } });
+    let reading = 0;
+    // First reading: a problem in segment 2, and a count that puts segment 5 over. After the mend of both: the first is still
+    // there, and the reader has an objection of its own to segment 5 as the mend wrote it.
+    const read = async (draft: string) => {
+      reading += 1;
+      const notes = reading === 1 ? [note('Segment 2, Sources', 'Turner is not a settler.'), note('Segment 5, Peer review', 'Counted by its parts this needs about 46 minutes and has 20: 11 × pairs scored. To fit: cut.')] : [note('Segment 2, Sources', 'Turner is still not a settler.'), note('Segment 5, Peer review', 'It must be scored in class.')];
+      return { value: draft, fixes: [], notes };
+    };
+    const mend = async (draft: string) => ({ value: `${draft}+`, changed: ['Segment 2', 'Segment 5'], left: [] });
+    const out = await reviewed(read, 'plan', undefined, mend);
+    const told = out.problems.map((p) => (p.flag.code === 'reviewNote' ? `${p.flag.values.where}: ${p.flag.values.text}` : p.flag.code));
+    expect(told).toEqual(['Segment 2, Sources: Folio could not fix this itself: Turner is still not a settler.']);
+  });
+});

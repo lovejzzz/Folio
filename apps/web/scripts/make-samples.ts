@@ -383,10 +383,11 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
       for (const id of store.getState().lessonOrder.slice(0, Number(option('--lessons') ?? 99))) {
         const lesson = store.getState().lessons[id]!;
         const sent: string[] = [];
-        const again = await planReadAgain(inference, inference, store.getState(), lesson, undefined, R ?? undefined, (p) => (p.type === 'mended' ? void sent.push(...p.open) : undefined));
+        const touched: string[] = [];
+        const again = await planReadAgain(inference, inference, store.getState(), lesson, undefined, R ?? undefined, (p) => (p.type === 'mended' ? void (sent.push(...p.open), p.kept && touched.push(...p.changed)) : undefined));
         store.apply(again.commands, { label: { key: 'built' }, source: 'ai', undoable: false });
         const flags = store.getState().lessons[id]!.gen.plan?.flags ?? [];
-        appendFileSync(LOG, `${JSON.stringify({ reread: name, arm: process.env.ARM, lesson: lesson.title, counted: sent.filter((t) => t.includes('Counted by its parts')).map((t) => t.slice(0, 300)), notes: flags.map((f) => (f.code === 'reviewNote' ? `${f.values.where}: ${f.values.text}`.slice(0, 400) : f.code)) })}\n`);
+        appendFileSync(LOG, `${JSON.stringify({ reread: name, arm: process.env.ARM, lesson: lesson.title, mended: [...new Set(touched)], counted: sent.filter((t) => t.includes('Counted by its parts')).map((t) => t.slice(0, 300)), notes: flags.map((f) => (f.code === 'reviewNote' ? `${f.values.where}: ${f.values.text}`.slice(0, 400) : f.code)) })}\n`);
       }
     } else if ((option('--redo') ?? '').split(',').includes('handouts')) {
       for (const id of store.getState().lessonOrder.slice(0, Number(option('--lessons') ?? 99))) {
