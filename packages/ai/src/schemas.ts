@@ -84,13 +84,25 @@ export const SegmentDraft = z.object({
   teacherNotes: z.string().describe('Tips, common misconceptions, or an empty string'),
 });
 
+/**
+ * The segments as the meetings hold them: one of no minutes is no part of a meeting and is left out, and sessions counted
+ * from 0 are the same sessions counted from 1 (read one by one, a lecture numbered 0 and a lab numbered 1 became one
+ * session of both, and the plan was sent back because the lab then had no minutes).
+ */
+function asMet(v: unknown): unknown {
+  if (!Array.isArray(v)) return v;
+  const kept = v.filter((x: unknown) => !(x && typeof x === 'object' && typeof (x as { minutes?: unknown }).minutes === 'number' && (x as { minutes: number }).minutes < 1));
+  const from0 = kept.some((x: unknown) => x && typeof x === 'object' && (x as { session?: unknown }).session === 0);
+  return from0 ? kept.map((x: unknown) => (x && typeof x === 'object' && typeof (x as { session?: unknown }).session === 'number' ? { ...x, session: (x as { session: number }).session + 1 } : x)) : kept;
+}
+
 export const PlanDraft = z.object({
   keyIdeas: z.array(line).min(2).max(5),
   // A plan could hold eight segments, and a week of a lecture and a lab came back with nine to eleven; given fourteen, a
   // week of 185 minutes came back with more, and one of no minutes among them (the homework, set as a segment). Each
   // time the plan was refused and written again whole, the dearest part of a lesson paid for twice. What has no minutes
   // is no part of the meeting and is left out; the rest is taken as it is.
-  segments: z.preprocess((v) => (Array.isArray(v) ? v.filter((x: unknown) => !(x && typeof x === 'object' && typeof (x as { minutes?: unknown }).minutes === 'number' && (x as { minutes: number }).minutes < 1)) : v), z.array(SegmentDraft).min(3).max(24)),
+  segments: z.preprocess(asMet, z.array(SegmentDraft).min(3).max(24)),
   // Up to eight in most lessons; a language lesson lists every word it teaches (a numbers lesson taught 31).
   vocabulary: z.array(z.object({ term: line, definition: line })).max(40),
 });
