@@ -1,5 +1,43 @@
 [
  {
+  "version": "0.0.33",
+  "date": "October 9, 2026",
+  "title": "Lessons that fit their minutes, and notes you can act on",
+  "lede": "Four days of reading whole lessons blind, the way a teacher would the night before, and changing one thing at a time. This release holds what the readers preferred when they saw both versions side by side. It does not hold a claim we could not show: the number of lessons with something that stops the class is about what it was.",
+  "sections": [
+   {
+    "heading": "Every segment is counted by what it asks",
+    "body": "A plan’s minutes always added up to the meeting, and a segment could still ask for more than its minutes hold: three problems with working, compared in pairs, three answers heard, in nine minutes. Now what each segment has students do is counted (a short answer, a worked one, a paragraph, a drawing, a turn with a partner, a group heard, a vote), the minutes are added up at fixed rates, and a segment more than a quarter over is trimmed before anything is written from it. The plan’s minutes never change. If it is less than half over, every item stays and each asks less; a practice is never left with fewer than three items, and a discussion keeps its questions, its rounds and its close. Sheets are counted the same way, by their answer rooms and the cells of their tables. Readers who saw the plans with and without this preferred the counted ones for fit in 10 lessons to 3, for substance in 17 to 9, and overall in 18 to 8, of 32.",
+    "image": {
+     "src": "/changelog/0.0.33-count.svg",
+     "alt": "A nine-minute practice as first written, whose parts come to thirteen minutes, and the same practice as it reaches the teacher: every problem kept, each asking less, about nine minutes",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "When a sheet changes, what is written from it follows",
+    "body": "A sheet shortened to fit its minutes used to leave the plan’s notes and the slides telling of the longer one: four items on paper, six on the screen, answers read aloud to items nobody had. Now the plan’s account of that segment is written again from the sheet as it stands, notes included, and the slides, study guide and work written afterwards take a sheet’s items from the sheet. Places where sheet, plan and slides disagreed fell from 34 to 26 in one reading of 32 lessons, and from 21 to 9 in another once plans were read again."
+   },
+   {
+    "heading": "Fewer notes, and each one says what is the matter",
+    "body": "On 32 lessons Folio used to leave ten notes for the teacher, nine of them false alarms. It now leaves two to five. The answer check no longer blames a right key for the way it is written (a quotient, an expression like (ln 9 − 2)/4, a choice that is a command, code on two lines), a line a sheet gives students to repair is not reported as broken, and what is left is said in plain words: where it is, what was worked out, what the text has. A note Folio tried to put right and could not begins “Folio could not fix this itself” and comes first. Keys no longer carry their writer’s remarks about itself."
+   },
+   {
+    "heading": "Slides, study guides, FAQ and discussion prompts are thought over",
+    "body": "These four are now written with more thinking. Readers given both versions of 16 lessons preferred the new one in 13, and help that would mislead a student was halved. It did not reduce the places where a slide and the plan disagree, which come from materials being written apart."
+   },
+   {
+    "heading": "What a lesson costs, counted honestly",
+    "body": "Our own figure had been 40 to 46 cents a lesson. It was estimated from the length of the text and left out the model’s thinking. Measured on the providers’ own bills, a lesson of this release costs about 60 cents (one course of a lecture and a lab, two lessons). The same measurement found five kinds of answer that were being refused for a detail and paid for twice, a quiz and a two-meeting plan on every lesson among them; they are read at the first asking now."
+   },
+   {
+    "heading": "What did not change",
+    "body": "About one lesson in three still has something a teacher would have to fix before class. The kinds have moved: sheets that overran and graded questions only the teacher could see are gone, and what remains is mostly a recurring piece of class work whose schedule the lessons disagree on, and a number in a key worked out wrongly, sometimes the same wrong number twice. Those are next: the first needs the course’s structure decided once and placed by rule, the second needs keys computed, not reread."
+   }
+  ]
+ },
+ {
   "version": "0.0.32",
   "date": "October 7, 2026",
   "title": "Three faults at the start of a course",
