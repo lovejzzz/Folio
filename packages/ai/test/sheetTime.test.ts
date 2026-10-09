@@ -44,13 +44,20 @@ describe('a segment without a sheet against its minutes', () => {
     const plan = { segments: [seg('teach', 'Elasticity', 20), seg('practice', 'Three short problems', 9), seg('practice', 'Exit ticket', 4)] };
     const three = [{ what: 'problems with working', kind: 'worked' as const, count: 3 }, { what: 'comparing with a partner', kind: 'pair' as const, count: 2 }, { what: 'answers heard', kind: 'hear' as const, count: 3 }];
     const notes = overtime(plan, [{ segment: 2, parts: three }, { segment: 3, parts: [{ what: 'answers', kind: 'short', count: 4 }] }, { segment: 1, parts: [{ what: 'paragraphs', kind: 'paragraph', count: 9 }] }]);
-    // 3 × 2 + 2 × 2 + 3 × 1 = 13 for 9; the exit ticket fits; a teaching segment is not counted.
-    expect(notes.map((n) => n.values.where)).toEqual(['Segment 2, Three short problems']);
-    expect(notes[0]!.values.text).toMatch(/^Counted by its parts this needs about 13 minutes and has 9: 3 × problems with working \(6 min\), 2 × comparing with a partner \(4 min\), 3 × answers heard \(3 min\)\. Cut items or steps/);
+    // 3 × 2 + 2 × 2 + 3 × 1 = 13 for 9; the exit ticket fits; and what students are set to write while being taught counts too.
+    expect(notes.map((n) => n.values.where)).toEqual(['Segment 2, Three short problems', 'Segment 1, Elasticity']);
+    expect(notes[0]!.values.text).toMatch(/^Counted by its parts this needs about 13 minutes and has 9: 3 × problems with working \(6 min\), 2 × comparing with a partner \(4 min\), 3 × answers heard \(3 min\)\. Bring it to about 9 minutes of work, here and in the notes that answer it; the minutes do not change\. It is under half over: keep every item and ask less of each .* at least three items stay in a practice/);
     // Three questions voted on once in six minutes fit (3 × 2 + 1 to set up = 7); voted on twice with talk between, they do not (10).
     const polls = { segments: [seg('practice', 'Clicker questions', 6)] };
     expect(overtime(polls, [{ segment: 1, parts: [{ what: 'questions', kind: 'vote', count: 3 }] }])).toEqual([]);
     expect(overtime(polls, [{ segment: 1, parts: [{ what: 'questions', kind: 'revote', count: 3 }] }]).map((n) => /about 10 minutes and has 6/.test(n.values.text))).toEqual([true]);
+    // More than half over, items may go, after each asks less; a discussion keeps its questions, rounds and close.
+    const talk = { segments: [{ ...seg('practice', 'Debate', 10), kind: 'discuss' as const }] };
+    expect(overtime(talk, [{ segment: 1, parts: [{ what: 'groups heard', kind: 'hear', count: 10 }, { what: 'paragraphs', kind: 'paragraph', count: 2 }] }])[0]!.values.text).toMatch(/Ask less of each item first, and only then take items out\. A discussion keeps its questions, its rounds and its close/);
+    // A drawing is two minutes, an item listed half a minute, a pair heard and scored a minute and a half; a break is never counted.
+    const rates = { segments: [seg('practice', 'Shells', 12), { ...seg('practice', 'Break', 5), kind: 'break' as const }] };
+    expect(overtime(rates, [{ segment: 1, parts: [{ what: 'diagrams', kind: 'drawing', count: 5 }, { what: 'names', kind: 'listed', count: 4 }] }, { segment: 2, parts: [{ what: 'x', kind: 'paragraph', count: 9 }] }])).toEqual([]);
+    expect(overtime({ segments: [seg('practice', 'Pairs read aloud', 11)] }, [{ segment: 1, parts: [{ what: 'pairs heard and scored', kind: 'scored', count: 11 }] }]).map((n) => /about 17 minutes and has 11/.test(n.values.text))).toEqual([true]);
     // A quarter over is let be: 11 for 9.
     expect(overtime(plan, [{ segment: 2, parts: [{ what: 'problems', kind: 'worked', count: 3 }, { what: 'pairs', kind: 'pair', count: 1 }, { what: 'heard', kind: 'hear', count: 3 }] }])).toEqual([]);
   });

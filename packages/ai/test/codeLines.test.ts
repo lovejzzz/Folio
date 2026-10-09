@@ -77,6 +77,7 @@ describe('a key and the notes beside a sheet that was cut', () => {
     expect(withoutSelfReport('1. 10,000 rows. R execution verification remains pending because Rscript is unavailable in the checking environment. 2. `glimpse(NHANES)` lists the columns.')).toBe('1. 10,000 rows. 2. `glimpse(NHANES)` lists the columns.');
     expect(withoutSelfReport('Run `Rscript lab.R` from the terminal.\nAccept any tidy answer.')).toBe('Run `Rscript lab.R` from the terminal.\nAccept any tidy answer.');
     expect(withoutSelfReport('Mean 43.9 mm. Data values checked against the Palmer penguins source data. R execution was unavailable during preparation; the R lines were not executed. Accept 43.9 or 44.')).toBe('Mean 43.9 mm. Accept 43.9 or 44.');
+    expect(withoutSelfReport('Verification note: R execution was unavailable, so outputs are from the documentation. The mean is 4.2.')).toBe('The mean is 4.2.');
     // What a teacher does with students' answers is not the writer's report.
     expect(withoutSelfReport('Check each answer against the printed output. A student who has not run the code will give 12.')).toBe('Check each answer against the printed output. A student who has not run the code will give 12.');
     const { sheetLeads } = await import('../src/sheetLeads');

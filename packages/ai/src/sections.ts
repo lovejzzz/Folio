@@ -272,10 +272,17 @@ const pageNote = (p: Problem): Problem => (p.flag.code === 'schemaIssue' && p.fl
 /** A revision of a section before it is saved, with any problems it leaves for the teacher. */
 type Revision<T> = (value: T) => Promise<{ value: T; problems: Problem[] }>;
 
+/**
+ * A second reading that finds a later material wanting. The quiz, the rubric, the slides and the work are written after the
+ * plan, and the reader is told so; read again after a mend, one still said "the plan delegates point allocations to the
+ * separately written quiz", and it went to the teacher as something Folio could not fix. It was false: the quiz had them.
+ */
+const LATER = /\b(?:quiz|rubric|slides?|assignment|study guide|answer key)\b[^.]*\b(?:missing|not (?:set|given|included|provided|specified|written)|delegat\w+|absent|lacks?|separately written)\b|\b(?:missing|delegat\w+|absent|lacks?)\b[^.]*\b(?:quiz|rubric|slides?|assignment|study guide)\b/i;
+
 /** The second read of a lesson plan, as `reviewed` takes it. */
 const readPlan = (reviewer: Inference, course: () => Course, lesson: Lesson, signal?: AbortSignal): Read<PlanDraft> => async (draft, since) => {
   const read = await reviewPlan(reviewer, course(), lesson, draft, { signal, since });
-  return { value: read.plan, fixes: read.issues.map((i) => i.why), notes: [...read.notes.map((n) => ({ code: 'reviewNote' as const, values: { where: issuePlace(read.plan, n), text: n.why } })), ...read.over] };
+  return { value: read.plan, fixes: read.issues.map((i) => i.why), notes: [...read.notes.filter((n) => !(since && LATER.test(n.why))).map((n) => ({ code: 'reviewNote' as const, values: { where: issuePlace(read.plan, n), text: n.why } })), ...read.over] };
 };
 
 /**
