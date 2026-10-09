@@ -158,5 +158,5 @@ export async function reviewPlan(
   });
   const { plan: reviewed, applied, notes } = applyPlanReview(plan, result.value.issues);
   // The reader counted; the sum and the verdict are done here.
-  return { plan: reviewed, issues: applied, notes, over: overtime(reviewed, result.value.parts) };
+  return { plan: reviewed, issues: applied, notes, over: overtime(reviewed, result.value.parts, Boolean(options.since)) };
 }

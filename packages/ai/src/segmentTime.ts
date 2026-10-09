@@ -41,19 +41,26 @@ export const PARTS_ASK =
 
 type ReviewNote = Extract<Flag, { code: 'reviewNote' }>;
 
+/** Between what is so and what the mend is to do about it: the first is for the teacher too, the second for the writer alone. */
+export const FOR_WRITER = ' To fit: ';
+/** A note as a teacher reads it, when the mend did not bring the segment down. */
+export const forTeacher = (text: string): string => (text.includes(FOR_WRITER) ? `${text.split(FOR_WRITER)[0]} Cut a part of it, or give it more minutes.` : text);
+
 /** Segments whose parts come to more than a quarter over their minutes, as notes for the mend: it trims, within a floor, and the minutes stand. */
-export function overtime(plan: Pick<PlanDraft, 'segments'>, counted: SegmentParts): ReviewNote[] {
+export function overtime(plan: Pick<PlanDraft, 'segments'>, counted: SegmentParts, again = false): ReviewNote[] {
   return counted.flatMap((c) => {
     const seg = plan.segments[c.segment - 1];
     if (!seg || seg.kind === 'break' || !c.parts.length) return [];
     const need = c.parts.reduce((sum, p) => sum + p.count * RATE[p.kind], 0) + (c.parts.some((p) => p.kind === 'vote' || p.kind === 'revote') ? VOTING : 0);
-    if (need <= 1.25 * seg.minutes) return [];
+    // Read again after its mend, a segment still a little over is let be: trimmed within the floor it will not come lower,
+    // and "needs 8 minutes and has 6" is no note for a teacher.
+    if (need <= (again ? 1.5 : 1.25) * seg.minutes) return [];
     const list = c.parts.map((p) => `${p.count} × ${p.what} (${p.count * RATE[p.kind]} min)`).join(', ');
     // How to cut, and how far: cut to a count that ran high, a practice came back as one atom, "find four faults" with
     // three, a discussion without its rounds and its close. Readers then preferred the plans as first written, 16 to 10.
     const over = need / seg.minutes;
     const how = over < 1.5 ? 'It is under half over: keep every item and ask less of each (drop a sub-part, a second sentence, a repeat), and say in the description what each item now asks.' : 'Ask less of each item first, and only then take items out.';
     const floor = `${seg.kind === 'discuss' ? 'A discussion keeps its questions, its rounds and its close: shorten the writing and the number heard. ' : ''}Whatever is cut, at least three items stay in a practice, at least one for each key idea the segment serves, and a number said anywhere of the items ("four statements") is made to fit.`;
-    return [{ code: 'reviewNote' as const, values: { where: `Segment ${c.segment}, ${seg.title}`, text: `Counted by its parts this needs about ${Math.round(need)} minutes and has ${seg.minutes}: ${list}. Bring it to about ${seg.minutes} minutes of work, here and in the notes that answer it; the minutes do not change. ${how} ${floor}` } }];
+    return [{ code: 'reviewNote' as const, values: { where: `Segment ${c.segment}, ${seg.title}`, text: `Counted by its parts this needs about ${Math.round(need)} minutes and has ${seg.minutes}: ${list}.${FOR_WRITER}Bring it to about ${seg.minutes} minutes of work, here and in the notes that answer it; the minutes do not change. ${how} ${floor}` } }];
   });
 }

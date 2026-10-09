@@ -1,3 +1,4 @@
+import { forTeacher } from './segmentTime';
 import type { Flag } from '@folio/core';
 import { InferenceError } from './inference';
 import type { Problem } from './jobs';
@@ -67,7 +68,7 @@ export async function reviewed<T>(read: Read<T>, draft: T, onProgress: ((progres
     }
     // What a mend was tried on and did not put right is said as that, and first: the one true note of a lesson stood last
     // among the false, worded as a reply to a correction the teacher never saw, and three readings running nobody acted on it.
-    const unfixed = state.notes.map((n) => (tried ? { code: 'reviewNote' as const, values: { where: n.values.where, text: `${UNFIXED} ${n.values.text}` } } : n));
+    const unfixed = state.notes.map((n) => (tried ? { code: 'reviewNote' as const, values: { where: n.values.where, text: `${UNFIXED} ${forTeacher(n.values.text)}` } } : { code: 'reviewNote' as const, values: { where: n.values.where, text: forTeacher(n.values.text) } }));
     const notes = [...unfixed, ...state.kept];
     onProgress?.({ type: 'reviewed', fixes, notes: notes.length });
     return { value: state.value, problems: notes.map((flag) => ({ index: null, flag })) };

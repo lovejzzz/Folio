@@ -107,6 +107,9 @@ describe('the R a lesson gives students, run as they run it', () => {
     const told = (reply: object) => sheetsRun(fakeInference(() => reply), fakeR(), loads, after, after.handouts).then((o) => o.flags.length);
     expect([await told({ changes: [], meant: ['setwd("~/stats")'] }), await told({ changes: [] })]).toEqual([0, 2]);
     expect(await sheetsRun(fixer, undefined, course, lesson, lesson.handouts)).toEqual({ handouts: lesson.handouts, flags: [] });
+    // A sheet that sets its code to be repaired: its lines that stop are the exercise, whether or not the fixer says so.
+    const broken = { ...lesson, handouts: [{ ...lesson.handouts[0]!, title: 'Comparing species and repairing a plot' }] };
+    expect((await sheetsRun(fakeInference(() => ({ changes: [] })), fakeR(), course, broken, broken.handouts)).flags).toEqual([]);
     // A reference sheet names functions and arguments, each alone on a line: named, not run.
     const named = labCourse(['hist()', 'breaks', 'mean(nothing_df$x)']);
     const refR = fakeR();

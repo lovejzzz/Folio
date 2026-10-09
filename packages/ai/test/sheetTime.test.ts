@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { overfull, overfullNote, sheetMinutes } from '../src/sheetTime';
-import { overtime } from '../src/segmentTime';
+import { forTeacher, overtime } from '../src/segmentTime';
 
 const room = (lines: number) => ({ type: 'yours', text: '', lines });
 const cases = (n: number, each: number[]) => Array.from({ length: n }, () => each.map(room)).flat();
@@ -46,7 +46,7 @@ describe('a segment without a sheet against its minutes', () => {
     const notes = overtime(plan, [{ segment: 2, parts: three }, { segment: 3, parts: [{ what: 'answers', kind: 'short', count: 4 }] }, { segment: 1, parts: [{ what: 'paragraphs', kind: 'paragraph', count: 9 }] }]);
     // 3 × 2 + 2 × 2 + 3 × 1 = 13 for 9; the exit ticket fits; and what students are set to write while being taught counts too.
     expect(notes.map((n) => n.values.where)).toEqual(['Segment 2, Three short problems', 'Segment 1, Elasticity']);
-    expect(notes[0]!.values.text).toMatch(/^Counted by its parts this needs about 13 minutes and has 9: 3 × problems with working \(6 min\), 2 × comparing with a partner \(4 min\), 3 × answers heard \(3 min\)\. Bring it to about 9 minutes of work, here and in the notes that answer it; the minutes do not change\. It is under half over: keep every item and ask less of each .* at least three items stay in a practice/);
+    expect(notes[0]!.values.text).toMatch(/^Counted by its parts this needs about 13 minutes and has 9: 3 × problems with working \(6 min\), 2 × comparing with a partner \(4 min\), 3 × answers heard \(3 min\)\. To fit: Bring it to about 9 minutes of work, here and in the notes that answer it; the minutes do not change\. It is under half over: keep every item and ask less of each .* at least three items stay in a practice/);
     // Three questions voted on once in six minutes fit (3 × 2 + 1 to set up = 7); voted on twice with talk between, they do not (10).
     const polls = { segments: [seg('practice', 'Clicker questions', 6)] };
     expect(overtime(polls, [{ segment: 1, parts: [{ what: 'questions', kind: 'vote', count: 3 }] }])).toEqual([]);
@@ -58,6 +58,10 @@ describe('a segment without a sheet against its minutes', () => {
     const rates = { segments: [seg('practice', 'Shells', 12), { ...seg('practice', 'Break', 5), kind: 'break' as const }] };
     expect(overtime(rates, [{ segment: 1, parts: [{ what: 'diagrams', kind: 'drawing', count: 5 }, { what: 'names', kind: 'listed', count: 4 }] }, { segment: 2, parts: [{ what: 'x', kind: 'paragraph', count: 9 }] }])).toEqual([]);
     expect(overtime({ segments: [seg('practice', 'Pairs read aloud', 11)] }, [{ segment: 1, parts: [{ what: 'pairs heard and scored', kind: 'scored', count: 11 }] }]).map((n) => /about 17 minutes and has 11/.test(n.values.text))).toEqual([true]);
+    // Read again after its mend, a little over is let be; well over is still said, and to the teacher without the writer's instructions.
+    const again = (count: number) => overtime(polls, [{ segment: 1, parts: [{ what: 'questions', kind: 'worked', count }] }], true);
+    expect(again(4)).toEqual([]);
+    expect(forTeacher(again(6)[0]!.values.text)).toBe('Counted by its parts this needs about 12 minutes and has 6: 6 × questions (12 min). Cut a part of it, or give it more minutes.');
     // A quarter over is let be: 11 for 9.
     expect(overtime(plan, [{ segment: 2, parts: [{ what: 'problems', kind: 'worked', count: 3 }, { what: 'pairs', kind: 'pair', count: 1 }, { what: 'heard', kind: 'hear', count: 3 }] }])).toEqual([]);
   });

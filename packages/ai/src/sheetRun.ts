@@ -55,6 +55,9 @@ async function mended<T>(inference: Inference, first: Material<T>, shown: (value
   return count(faults) < count(real(first.faults)) ? { value, faults } : { value: first.value, faults: real(first.faults) };
 }
 
+/** Words by which a sheet says its code is there to be put right. */
+const REPAIR = /\b(?:repair\w*|debug\w*|fix (?:the|this|each|it|them)|find (?:and fix |and correct )?the (?:mistake|error|bug|fault)s?|what(?: is|'s|’s) wrong|does not (?:run|work)|broken (?:code|line|plot|script))\b/i;
+
 const notes = (faults: CodeFault[]): Flag[] => faults.map((f) => ({ code: 'reviewNote', values: { where: f.title, text: faultNote(f) } }));
 
 /** The sheets as they run, with a note for each line that still stops. */
@@ -64,7 +67,9 @@ export async function sheetsRun(inference: Inference, runner: LineRunner | undef
     // The sheets alone: the lesson's work is written later and run when it is.
     const check = (sheets: Handout[]) => alone(runner, () => lessonCodeFaults(runner, course, { ...lesson, handouts: sheets, taskIds: [] })).then((f) => f.filter((x) => x.kind === 'handout'));
     const out = await mended(inference, { value: handouts, faults: await check(handouts) }, (v) => JSON.stringify(v.map((h) => ({ title: h.title, blocks: h.blocks })), null, 1), check, signal);
-    return { handouts: out.value, flags: notes(out.faults) };
+    // A sheet that sets students to repair its code has lines that stop by design; which ones, the fixer does not always say.
+    const repair = new Set(out.value.filter((h) => REPAIR.test(`${h.title} ${JSON.stringify(h.blocks)}`)).map((h) => h.title));
+    return { handouts: out.value, flags: notes(out.faults.filter((f) => !repair.has(f.title))) };
   } catch (error) {
     if (signal?.aborted) throw error;
     return { handouts, flags: [] };
