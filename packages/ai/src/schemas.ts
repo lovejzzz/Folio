@@ -88,7 +88,9 @@ export const PlanDraft = z.object({
       }),
     )
     .min(3)
-    .max(8),
+    // Eight was the most a meeting was given, and a week of a lecture and a lab has two: every plan of one came back with
+    // nine to eleven, was refused for it and written again whole, the dearest part of a lesson paid for twice.
+    .max(14),
   // Up to eight in most lessons; a language lesson lists every word it teaches (a numbers lesson taught 31).
   vocabulary: z.array(z.object({ term: line, definition: line })).max(40),
 });
@@ -143,7 +145,20 @@ export const QuestionDraft = z.object({
 });
 export type QuestionDraft = z.infer<typeof QuestionDraft>;
 
-export const QuizDraft = z.object({ questions: z.array(QuestionDraft).min(1) });
+/**
+ * A question whose kind was left out, told from what it holds. Asked through a provider that does not hold an answer to its
+ * schema, the quiz's writer left "format" off every question of every quiz: each quiz was sent back whole and paid for
+ * twice. Its choices say which it is; nothing is asked again for what can be read.
+ */
+export function withFormat(q: unknown): unknown {
+  if (!q || typeof q !== 'object' || ('format' in q && (q as { format?: unknown }).format)) return q;
+  const { choices, answer } = q as { choices?: unknown; answer?: unknown };
+  const options = Array.isArray(choices) ? choices.map((c) => String(c).trim().toLowerCase()) : [];
+  const format = options.length === 2 && options.includes('true') && options.includes('false') ? 'truefalse' : options.length >= 2 ? 'choice' : /^\s*[-+−]?[\d.,]+\s*%?\s*$/.test(String(answer ?? '')) ? 'numeric' : 'short';
+  return { ...q, format };
+}
+
+export const QuizDraft = z.object({ questions: z.array(z.preprocess(withFormat, QuestionDraft)).min(1) });
 export type QuizDraft = z.infer<typeof QuizDraft>;
 
 export const AssignmentDraft = z.object({
