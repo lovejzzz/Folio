@@ -31,7 +31,8 @@ export const SegmentParts = z
         .default([]),
     }),
   )
-  .max(8)
+  // As many as a plan has segments: at eight, the count of a week of two meetings was refused and asked for again.
+  .max(24)
   .default([]);
 export type SegmentParts = z.infer<typeof SegmentParts>;
 

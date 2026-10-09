@@ -5,7 +5,7 @@ import type { Inference } from './inference';
 import { runJob } from './jobs';
 import { BlockDraft, ModuleDraft, moduleAsk } from './online';
 import { courseBackground, lessonContext, sectionPrompt, systemPrompt } from './prompts';
-import { PlanDraft } from './schemas';
+import { PlanDraft, SegmentDraft } from './schemas';
 
 /**
  * Putting right what a review found, where it stands. A page with notes used to be written again whole: the
@@ -145,7 +145,7 @@ export async function mendModule(inference: Inference, course: Course, lesson: L
   return applyModuleMend(v, result.value);
 }
 
-const Segment = PlanDraft.shape.segments.element;
+const Segment = SegmentDraft;
 
 export const PlanMend = z.object({
   segments: z.array(Segment.extend({ number: z.number().int().min(1).describe('The segment\'s number, as in the plan given') })).default([]).describe('Every segment that changes, written again whole'),

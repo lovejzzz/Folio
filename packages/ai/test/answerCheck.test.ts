@@ -74,7 +74,10 @@ describe('a quiz or a plan that need not be asked for twice', () => {
     expect(JSON.stringify((await import('zod')).z.toJSONSchema(QuizDraft))).toMatch(/"required":\["format"/);
     const seg = { kind: 'teach', session: 1, title: 't', minutes: 10, description: 'd', teacherNotes: '' };
     const plan = (n: number) => PlanDraft.safeParse({ keyIdeas: ['a', 'b'], vocabulary: [], segments: Array.from({ length: n }, () => seg) }).success;
-    expect([plan(11), plan(15)]).toEqual([true, false]);
+    expect([plan(11), plan(16), plan(25)]).toEqual([true, true, false]);
+    // A segment of no minutes (the homework, set as one) is left out, and a session numbered 0 is the first: neither is a reason to write the plan again.
+    const loose = PlanDraft.parse({ keyIdeas: ['a', 'b'], vocabulary: [], segments: [seg, { ...seg, session: 0 }, seg, { ...seg, title: 'Homework', minutes: 0 }] });
+    expect(loose.segments.map((x) => [x.title, x.session])).toEqual([['t', 1], ['t', 1], ['t', 1]]);
   });
 });
 
