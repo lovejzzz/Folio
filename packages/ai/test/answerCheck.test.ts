@@ -64,6 +64,20 @@ describe('an answer that can be computed', () => {
 });
 
 // The checking program needs numpy: these run where the runtime has been fetched.
+describe('a quiz or a plan that need not be asked for twice', () => {
+  it('reads a question\'s kind from what it holds when it was left out, and takes the segments of two sessions', async () => {
+    const { QuizDraft, PlanDraft } = await import('../src/schemas');
+    const q = (more: object) => ({ prompt: 'p', answer: 'a', explanation: 'e', difficulty: 1, objective: 1, ...more });
+    const read = QuizDraft.parse({ questions: [q({ choices: ['x', 'y', 'z'], answer: 'y' }), q({ choices: ['True', 'False'], answer: 'True' }), q({ answer: '12.5' }), q({ answer: 'Because the sample is small.' }), q({ format: 'short', choices: ['x', 'y'] })] });
+    expect(read.questions.map((x) => x.format)).toEqual(['choice', 'truefalse', 'numeric', 'short', 'short']);
+    // The model is still told the field is required.
+    expect(JSON.stringify((await import('zod')).z.toJSONSchema(QuizDraft))).toMatch(/"required":\["format"/);
+    const seg = { kind: 'teach', session: 1, title: 't', minutes: 10, description: 'd', teacherNotes: '' };
+    const plan = (n: number) => PlanDraft.safeParse({ keyIdeas: ['a', 'b'], vocabulary: [], segments: Array.from({ length: n }, () => seg) }).success;
+    expect([plan(11), plan(15)]).toEqual([true, false]);
+  });
+});
+
 describe('what the check found, said for a teacher', () => {
   it('names where, what was worked out and what the text has, with none of the program\'s own marks', async () => {
     const { plainNote } = await import('../src/answerNote');
@@ -160,6 +174,9 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     // A form whose words to look after end on the value itself ("The limit is 14/9") found the next item's numbers: the 14 and the 9 are in those words.
     const past = await checkAnswers(fakeInference(() => form('[len("a" * 14), len("a" * 9), len("a" * 14) / len("a" * 9)]', 'The limit is 14/9')), nodeRunner(), [key('t_past', 'Numerator 14, denominator 9. The limit is 14/9.\n6. Both give 0/0, so factor: the limit is 8.')]);
     expect([past.checked, past.flags.size]).toEqual([0, 0]);
+    // Numbers and truths answered together are no one value to look for: the item is left unchecked, not blamed.
+    const mixed = await checkAnswers(fakeInference(() => form('(len("a" * 8), 0.0, 32.0, len("a") > 0, len("a") > 5)', 'IQR = ')), nodeRunner(), [key('t_mixed_kinds', 'IQR = 20 − 12 = 8 minutes. The fences are 0 and 32, so 40 is an outlier and 30 is not.')]);
+    expect([mixed.checked, mixed.flags.size]).toEqual([0, 0]);
     // A quotient written out states its terms: the 50 of √(50/5) and the 438 of "438 / 8" are what a form computes on the way.
     expect(await run(key('t_top', 'The sample SD is √(50/5) = 3.16.'), form('sum((x - 10) ** 2 for x in (5, 10, 10, 10, 15))', 'The sample SD is √('))).toBe(0);
     expect(await run(key('t_top2', 'The variance is 438 / 8 = 54.75.'), form('sum(d * d for d in (3, 5, 20, 2))', 'The variance is '))).toBe(0);

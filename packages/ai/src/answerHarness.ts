@@ -68,6 +68,8 @@ def flat(v):
     """numbers in a computed value, in order, or None when it is not numeric"""
     # a number the form wrote out as text ('82.0000') is that number: as words, no choice "stated" it
     if isinstance(v, str) and re.fullmatch(r'\s*[-+−]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?\s*', v): return [float(v.replace('−', '-'))]
+    # numbers and truths answered together (an IQR, two fences, "is 40 an outlier?") are no one value to find in a sentence
+    if isinstance(v, (list, tuple)) and any(isinstance(x, bool) for x in v) and any(not isinstance(x, bool) for x in v): raise Invalid('the form computed numbers and truths together')
     out = []
     try: _flatten(v, out)
     except Exception: return None

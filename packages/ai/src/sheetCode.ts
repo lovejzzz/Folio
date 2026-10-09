@@ -138,6 +138,10 @@ async function runUnit(runner: LineRunner, unit: CodeUnit): Promise<Stop[]> {
     }
     const missing = /object '([^']+)' not found/.exec(error)?.[1];
     if (missing && unmade.has(missing)) continue;
+    // A name set alone on a line of a reference sheet ("`hist()`", "`breaks`") is a function or an argument being
+    // named, not a line to run: it stops for want of what it was never given.
+    if (/^\s*[\w.]+\(\)\s*$/.test(line) && /argument .* is missing/.test(error)) continue;
+    if (/^\s*[\w.]+\s*$/.test(line) && missing === line.trim()) continue;
     faults.push({ line, error });
     // One fault a sheet is enough to act on: what follows a stopped line mostly fails because of it.
     if (faults.length >= 3) break;

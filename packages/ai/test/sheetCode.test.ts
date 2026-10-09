@@ -107,6 +107,12 @@ describe('the R a lesson gives students, run as they run it', () => {
     const told = (reply: object) => sheetsRun(fakeInference(() => reply), fakeR(), loads, after, after.handouts).then((o) => o.flags.length);
     expect([await told({ changes: [], meant: ['setwd("~/stats")'] }), await told({ changes: [] })]).toEqual([0, 2]);
     expect(await sheetsRun(fixer, undefined, course, lesson, lesson.handouts)).toEqual({ handouts: lesson.handouts, flags: [] });
+    // A reference sheet names functions and arguments, each alone on a line: named, not run.
+    const named = labCourse(['hist()', 'breaks', 'mean(nothing_df$x)']);
+    const refR = fakeR();
+    const run0 = refR.run;
+    refR.run = async (line: string) => (line === 'hist()' ? 'Error in `hist.default()`: argument "x" is missing, with no default' : line === 'breaks' ? "Error in `eval(ei, envir)`: object 'breaks' not found" : run0(line));
+    expect((await lessonCodeFaults(refR, named, orderedLessons(named)[1]!)).map((f) => f.line)).toEqual(['mean(nothing_df$x)']);
   });
 
   it('runs the work a lesson sets, and notes on the piece the line of its own that stops', async () => {
