@@ -1,7 +1,7 @@
 import { hasModulePages, lessonPieces, orderedLessons, type Course, type Lesson } from '@folio/core';
 import { filesSoFar } from './earlierFiles';
 import { moduleDigest, moduleSummary } from './online';
-import { EACH_TIME, otherPieces, workOf } from './workJobs';
+import { EACH_TIME, otherPieces, pieceTitle, workOf } from './workJobs';
 
 /** Whether a lesson holds a piece of this kind for this component, as its main piece or beside it. */
 const holds = (l: Lesson, kind: string, toward: string) => lessonPieces(l).some((p) => p.kind === kind && p.toward.trim() === toward);
@@ -253,7 +253,9 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
         .map((p) => {
           // By what was actually set: named by what it counts toward, a step's due day collected the whole paper.
           const set = workOf(course, l, p.toward.trim());
-          const what = set?.kind === 'assignment' ? `"${set.title}"` : p.kind === 'step' ? 'the short step' : `"${p.toward.trim() || 'the assignment'}"`;
+          // And by the name it will have, when it is not written yet: a plan is often written before the work of the lesson before it.
+          const named = pieceTitle(course, { ...l, homework: p });
+          const what = set?.kind === 'assignment' ? `"${set.title}"` : p.kind === 'step' ? 'the short step' : `"${named ?? (p.toward.trim() || 'the assignment')}"`;
           // A standing piece is about the lesson it is due at: told where it was set, plans collected papers "on last time's readings".
           if (p.standing) return `${what} (the one written for this lesson, on this lesson's reading or topic)`;
           return `${what} (set in "${l.title}"${p.kind === 'step' ? ', an ungraded step' : ''})`;

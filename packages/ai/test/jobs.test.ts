@@ -158,7 +158,8 @@ describe('parts of one graded piece', () => {
     await runBuild({ inference: inf, getCourse: store.getState, commit: (_t, c) => store.apply(c, { label: { key: 'b' }, source: 'ai', undoable: false }), signal: new AbortController().signal }, targets);
     expect(asked).toHaveLength(2);
     expect(asked[0]).not.toContain('The part before this one');
-    expect(asked[1]).toContain('The part before this one, \\"Response 1\\", asked: Write 400 words, part 1.');
+    // Each goes by the name settled for it, not the one its writer gave: what it counts toward and its lesson's title.
+    expect(asked[1]).toMatch(/The part before this one, \\"Weekly responses: [^"]+\\", asked: Write 400 words, part 1\./);
   });
 });
 
@@ -227,7 +228,7 @@ describe('two pieces of one component, each done in class', () => {
     store.apply((await generateSection(inf, store.getState(), second!.id, 'assignments')).commands, { label: { key: 'b' }, source: 'ai' });
     expect(inf.calls).toHaveLength(2);
     expect(inf.calls[0]!.prompt).not.toContain('write it once and whole');
-    expect(inf.calls[1]!.prompt).toContain('The part before this one, "Organizer", asked');
+    expect(inf.calls[1]!.prompt).toMatch(/The part before this one, "Organizer and drafts: [^"]+", asked/);
   });
 });
 

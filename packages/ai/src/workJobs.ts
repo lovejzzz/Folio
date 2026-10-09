@@ -77,13 +77,13 @@ export const assignments: SectionJob<AssignmentDraft> = {
       ? [{ index: null, flag: { code: 'schemaIssue' as const, values: { path: 'answerKey', issue: 'Give the worked answers or the expected results of what the steps ask for' } } }]
       : []),
   ],
-  toCommands: (v, problems, _course, lesson) => {
+  toCommands: (v, problems, course, lesson) => {
     const levels = v.rubric.levels.map((lv) => ({ id: newId('x'), label: lv.label, points: lv.points }));
     // A quiz of questions with one right answer each is scored by its answers: on a four-level rubric, none right earned 2 of 8.
     const scored = v.rubric.criteria.length > 0;
     const rubric: Rubric = {
       id: newId('r'),
-      title: v.title,
+      title: pieceTitle(course, lesson) ?? v.title,
       levels,
       criteria: v.rubric.criteria.map((c) => ({
         id: newId('x'),
@@ -97,7 +97,7 @@ export const assignments: SectionJob<AssignmentDraft> = {
       kind: 'assignment',
       objectiveIds: [...lesson.objectiveIds],
       flags: [],
-      title: v.title,
+      title: pieceTitle(course, lesson) ?? v.title,
       prompt: v.prompt,
       steps: v.steps,
       rubricId: scored ? rubric.id : null,
@@ -139,7 +139,7 @@ const withoutPoints = (text: string, points: number) => text.trim().replace(new 
  */
 export const test: SectionJob<TestDraft> = {
   schema: TestDraft,
-  toCommands: (v, problems, _course, lesson) => {
+  toCommands: (v, problems, course, lesson) => {
     const total = v.questions.reduce((n, q) => n + q.points, 0);
     const task: Task = {
       ...base(lesson),
@@ -147,7 +147,7 @@ export const test: SectionJob<TestDraft> = {
       kind: 'assignment',
       objectiveIds: [...lesson.objectiveIds],
       flags: [],
-      title: v.title,
+      title: pieceTitle(course, lesson) ?? v.title,
       prompt: v.instructions,
       steps: v.questions.map((q) => `${withoutPoints(q.question, q.points)} (${pointsOf(q.points)})`),
       rubricId: null,
@@ -170,6 +170,21 @@ export function otherPieces(lesson: Lesson, due: (piece: Lesson['homework']) => 
   // With when it is due, as the piece itself is told: untold, a page gave a step "by Sunday" that its own text set five weeks on.
   const others = (lesson.also ?? []).filter((p) => p.kind !== 'none').map((p) => `${PIECE[p.kind]}${p.toward.trim() ? ` "${p.toward.trim()}"` : ''} (${[moment(p), due(p)].filter(Boolean).join('; ')})`);
   return others.length ? ` The lesson also holds, each written separately: ${others.join('; ')}. The plan gives each its moment and writes none of them.` : '';
+}
+
+/**
+ * The name a piece of work goes by, settled before a word of it is written. Each piece was named by its own writer, after
+ * the plans of later lessons had already told students to hand it in: "collect last time's Problem sets" for a piece that
+ * came out as "Problem set 1: supply and demand", or under a third name in the slides. Readers found a lesson that
+ * collects work no earlier lesson gave out under that name in six courses of sixteen. A piece set once, or the same every
+ * time, goes by the name of what it counts toward; one of several by that name and the title of its lesson. Null for an
+ * ungraded step, which has no name of its own to collect by.
+ */
+export function pieceTitle(course: Course, lesson: Lesson): string | null {
+  const toward = lesson.homework.toward.trim();
+  if (!toward || lesson.homework.kind === 'step' || lesson.homework.kind === 'none') return null;
+  const holders = Object.values(course.lessons).filter((l) => lessonPieces(l).some((p) => p.kind !== 'step' && p.toward.trim() === toward));
+  return lesson.homework.standing || holders.length <= 1 ? toward : `${toward}: ${lesson.title}`;
 }
 
 /** The assignment a lesson holds for one component: the one written for it, else the lesson's first. */

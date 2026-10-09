@@ -130,10 +130,11 @@ describe('a lesson that holds more than one piece of work', () => {
     expect(model.calls).toHaveLength(4);
     const course: Course = store.getState();
     const titles = (n: number) => lessonAssignments(course, orderedLessons(course)[n]!).map((a) => [a.title, a.toward]);
-    expect(titles(0)).toEqual([['Response paper', 'Weekly response papers'], ['Presenting and leading', 'Presentation'], ['Seminar paper', 'Seminar paper']]);
+    // Each goes by a name settled before it was written: what it counts toward, with its lesson's title when the course has several.
+    expect(titles(0).map(([title, toward]) => [title!.split(':')[0], toward])).toEqual([['Weekly response papers', 'Weekly response papers'], ['Presentation', 'Presentation'], ['Seminar paper', 'Seminar paper']]);
     // The step toward the paper was written knowing the paper as the first lesson set it.
     expect(model.calls[3]!.prompt).toMatch(/The piece itself is already set, in "Dualism": Seminar paper: what to do\. Its tasks: Read \| Write/);
-    expect(titles(1)).toEqual([['Response paper', 'Weekly response papers'], ['Prospectus', 'Seminar paper']]);
+    expect(titles(1)).toEqual([['Weekly response papers', 'Weekly response papers'], ['Prospectus', 'Seminar paper']]);
     // A later lesson that runs the piece graded in class is told what its rubric scores, so its task can be scored with it.
     expect(courseBackground(course)).toMatch(/"Presentation" has its brief and rubric written with the lesson "Dualism" \(scored on: [^)]+\)/);
     expect(Object.keys(course.rubrics)).toHaveLength(4);
@@ -204,7 +205,7 @@ describe('a piece that is all questions with one right answer', () => {
     const store = new CourseStore(quiz);
     store.apply((await generateSection(model, quiz, third.id, 'assignments')).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
     const [task] = lessonAssignments(store.getState(), orderedLessons(store.getState())[2]!);
-    expect(task).toMatchObject({ title: 'Reading quiz', rubricId: null });
+    expect(task).toMatchObject({ title: `Weekly response papers: ${third.title}`, rubricId: null });
     expect(Object.keys(store.getState().rubrics)).toHaveLength(0);
   });
 });
@@ -286,5 +287,24 @@ describe('what students read beside the lesson’s work', () => {
     const lesson = orderedLessons(store.getState())[0]!;
     for (const kind of ['study', 'faq'] as const) expect(sectionPrompt(store.getState(), lesson, kind)).toMatch(/with their keys, already written:[\s\S]*a \$1 rise is a small share of a high price[\s\S]*agrees with these keys/);
     expect(sectionPrompt(store.getState(), lesson, 'slides')).not.toMatch(/with their keys, already written/);
+  });
+});
+
+describe('the name a piece of work goes by', () => {
+  it('is settled before the piece is written, so the lesson that collects it and the piece itself say the same', async () => {
+    const { pieceTitle } = await import('../src/workJobs');
+    const { homeworkLine } = await import('../src/continuity');
+    const { smallCourse } = await import('./fake');
+    const { orderedLessons } = await import('@folio/core');
+    const course = smallCourse();
+    const [first, second] = orderedLessons(course);
+    const sets = { ...course, lessons: { ...course.lessons, [first!.id]: { ...first!, homework: { kind: 'assignment' as const, toward: 'Problem sets', standing: false, due: second!.id } }, [second!.id]: { ...second!, homework: { kind: 'assignment' as const, toward: 'Problem sets', standing: false } } } };
+    // One of several by that name: the component and the lesson's title. Set once, or the same every time: the component alone.
+    expect(pieceTitle(sets, sets.lessons[first!.id]!)).toBe(`Problem sets: ${first!.title}`);
+    expect(pieceTitle(sets, { ...sets.lessons[first!.id]!, homework: { kind: 'assignment', toward: 'Final paper', standing: false } })).toBe('Final paper');
+    expect(pieceTitle(sets, { ...sets.lessons[first!.id]!, homework: { kind: 'assignment', toward: 'Problem sets', standing: true } })).toBe('Problem sets');
+    expect(pieceTitle(sets, { ...sets.lessons[first!.id]!, homework: { kind: 'step', toward: 'Final paper', standing: false } })).toBeNull();
+    // The second lesson's plan is told to collect it by that name though nothing of it is written yet.
+    expect(homeworkLine(sets, sets.lessons[second!.id]!)).toContain(`Due at the start of this lesson: "Problem sets: ${first!.title}"`);
   });
 });
