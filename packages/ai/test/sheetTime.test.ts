@@ -47,6 +47,10 @@ describe('a segment without a sheet against its minutes', () => {
     // 3 × 2 + 2 × 2 + 3 × 1 = 13 for 9; the exit ticket fits; a teaching segment is not counted.
     expect(notes.map((n) => n.values.where)).toEqual(['Segment 2, Three short problems']);
     expect(notes[0]!.values.text).toMatch(/^Counted by its parts this needs about 13 minutes and has 9: 3 × problems with working \(6 min\), 2 × comparing with a partner \(4 min\), 3 × answers heard \(3 min\)\. Cut items or steps/);
+    // Three questions voted on once in six minutes fit (3 × 2 + 1 to set up = 7); voted on twice with talk between, they do not (10).
+    const polls = { segments: [seg('practice', 'Clicker questions', 6)] };
+    expect(overtime(polls, [{ segment: 1, parts: [{ what: 'questions', kind: 'vote', count: 3 }] }])).toEqual([]);
+    expect(overtime(polls, [{ segment: 1, parts: [{ what: 'questions', kind: 'revote', count: 3 }] }]).map((n) => /about 10 minutes and has 6/.test(n.values.text))).toEqual([true]);
     // A quarter over is let be: 11 for 9.
     expect(overtime(plan, [{ segment: 2, parts: [{ what: 'problems', kind: 'worked', count: 3 }, { what: 'pairs', kind: 'pair', count: 1 }, { what: 'heard', kind: 'hear', count: 3 }] }])).toEqual([]);
   });

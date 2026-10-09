@@ -13,6 +13,7 @@
 import { MATERIAL_KINDS, CourseStore, OnlineSchema, cmd, orderedLessons, parseCourse, type Course, type Delivery, type GeneratedKind, type Online } from '@folio/core';
 import { FOLIO_MIX } from '../../../packages/ai/src/adapters/mix';
 import { withHandouts } from '../../../packages/ai/src/handouts';
+import { planReadAgain } from '../../../packages/ai/src/sections';
 import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, supportedHandout, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawn } from 'node:child_process';
@@ -373,10 +374,21 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
     const saved = JSON.parse(readFileSync(join(OUT, `${name}.json`), 'utf8')) as { lessonOrder: string[]; lessons: Record<string, { gen: Record<string, unknown> }> };
     // --redo quiz,assignments: those parts of the first lessons are written again from the plans as they stand, to
     // compare ways of writing one part on the same lessons.
-    for (const id of saved.lessonOrder.slice(0, Number(option('--lessons') ?? saved.lessonOrder.length))) for (const kind of (option('--redo') ?? '').split(',').filter((k) => k && k !== 'handouts')) delete saved.lessons[id]!.gen[kind];
+    for (const id of saved.lessonOrder.slice(0, Number(option('--lessons') ?? saved.lessonOrder.length))) for (const kind of (option('--redo') ?? '').split(',').filter((k) => k && k !== 'handouts' && k !== 'review')) delete saved.lessons[id]!.gen[kind];
     store = new CourseStore(parseCourse(saved));
     // --redo handouts: the sheets alone, written again from the plan as it stands.
-    if ((option('--redo') ?? '').split(',').includes('handouts')) {
+    // --redo review: the plan as it stands read and mended again (and its sheets written from what comes of it), to try a
+    // change to the reading on plans already written.
+    if ((option('--redo') ?? '').split(',').includes('review')) {
+      for (const id of store.getState().lessonOrder.slice(0, Number(option('--lessons') ?? 99))) {
+        const lesson = store.getState().lessons[id]!;
+        const sent: string[] = [];
+        const again = await planReadAgain(inference, inference, store.getState(), lesson, undefined, R ?? undefined, (p) => (p.type === 'mended' ? void sent.push(...p.open) : undefined));
+        store.apply(again.commands, { label: { key: 'built' }, source: 'ai', undoable: false });
+        const flags = store.getState().lessons[id]!.gen.plan?.flags ?? [];
+        appendFileSync(LOG, `${JSON.stringify({ reread: name, arm: process.env.ARM, lesson: lesson.title, counted: sent.filter((t) => t.includes('Counted by its parts')).map((t) => t.slice(0, 300)), notes: flags.map((f) => (f.code === 'reviewNote' ? `${f.values.where}: ${f.values.text}`.slice(0, 400) : f.code)) })}\n`);
+      }
+    } else if ((option('--redo') ?? '').split(',').includes('handouts')) {
       for (const id of store.getState().lessonOrder.slice(0, Number(option('--lessons') ?? 99))) {
         const lesson = store.getState().lessons[id]!;
         // Notes on the old sheets' lines go with the old sheets: carried over, they were read as the new sheets' faults.

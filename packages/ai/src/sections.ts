@@ -30,7 +30,7 @@ import { issuePlace, reviewPlan } from './review';
 import { PREPARATION_GRADING, checkRunOfShow, isLiveOnline, isMixedOnline } from './live';
 import { FORUM_GRADING, checkModule, moduleJob, type ModuleDraft } from './online';
 import { mendModule, mendPlan } from './mend';
-import { reviewed, type Mend, type Read } from './secondRead';
+import { reviewed, type Mend, type Read, type ReadProgress } from './secondRead';
 import { reviewModule } from './moduleReview';
 import { placeFigures, running, standing, type RunOptions } from './runCells';
 import { stuckClaims } from './stuckCheck';
@@ -277,6 +277,24 @@ const readPlan = (reviewer: Inference, course: () => Course, lesson: Lesson, sig
   const read = await reviewPlan(reviewer, course(), lesson, draft, { signal, since });
   return { value: read.plan, fixes: read.issues.map((i) => i.why), notes: [...read.notes.map((n) => ({ code: 'reviewNote' as const, values: { where: issuePlace(read.plan, n), text: n.why } })), ...read.over] };
 };
+
+/**
+ * A plan already written, read and mended again and its sheets written from it. For trying a change to the reading on plans
+ * that stand: the outline and the plan's first writing stay as they were, so two readings are compared on the same plans.
+ */
+export async function planReadAgain(inference: Inference, reviewer: Inference, course: Course, lesson: Lesson, signal?: AbortSignal, r?: LineRunner, onProgress?: (progress: ReadProgress) => void): Promise<{ commands: Command[]; flagged: number }> {
+  const draft: PlanDraft = {
+    keyIdeas: lesson.keyIdeas,
+    vocabulary: lesson.vocabulary.map(({ term, definition }) => ({ term, definition })),
+    segments: lesson.segments.map(({ kind, session, title, minutes, description, teacherNotes }) => ({ kind, session: session + 1, title, minutes, description, teacherNotes })),
+  };
+  const mend: Mend<PlanDraft> = async (value, notes) => {
+    const mended = await mendPlan(inference, course, lesson, value, notes, signal);
+    return { ...mended, value: plan.tidy!(mended.value, course, lesson) };
+  };
+  const read = await reviewed(readPlan(reviewer, () => course, lesson, signal), draft, onProgress, mend, codeFaults);
+  return withHandouts(inference, course, lesson, { commands: plan.toCommands(read.value, read.problems, course, lesson), flagged: read.problems.length }, signal, r);
+}
 
 /**
  * The work a lesson holds, piece by piece: each is written as if it were the lesson's only one, a piece that is
