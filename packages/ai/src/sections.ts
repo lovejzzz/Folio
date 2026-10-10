@@ -116,7 +116,10 @@ function slideVisual(table: SlideDraft['table'], chart: SlideDraft['chart']): { 
 function unshown(v: SlidesDraft, lesson: Lesson): Problem[] {
   const plain = (text: string) => text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
   const deck = plain(JSON.stringify(v.slides.map(({ notes: _notes, ...slide }) => slide)));
-  const missing = lesson.segments.flatMap((s) => s.shown ?? []).filter((item) => plain(item).length >= 12 && !deck.includes(plain(item).slice(0, 40)));
+  // Code the teacher types and runs before the class is on the screen too, and is not a slide's to carry: a lab's forty
+  // commands sent both decks of a first paid run back to be written again.
+  const code = (item: string) => /^\s*(?:#|[\w.$]+\s*(?:<-|=[^=]|\()|.*(?:\|>|%>%)\s*$)/.test(item) || /^`[^`]+`$/.test(item.trim());
+  const missing = lesson.segments.flatMap((s) => s.shown ?? []).filter((item) => !code(item) && plain(item).length >= 12 && !deck.includes(plain(item).slice(0, 40)));
   return missing.length ? [{ index: null, advisory: true, flag: { code: 'schemaIssue', values: { path: 'slides', issue: `The plan puts these on the screen, and no slide carries them in the plan's words: ${missing.map((m) => `"${m.length > 140 ? `${m.slice(0, 140)}…` : m}"`).join('; ')}. Give each a slide, whole` } } }] : [];
 }
 

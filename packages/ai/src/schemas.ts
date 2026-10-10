@@ -85,7 +85,7 @@ export const SegmentDraft = z.object({
   teacherNotes: z.string().describe('Tips, common misconceptions, or an empty string'),
   // The slides were written from the plan's prose and guessed what was to be on the screen: 19 of 33 faults a reading found
   // outside the plan's own were a slide that showed another thing than the plan had, or showed its answer. Said once, here.
-  shown: z.array(z.string()).max(12).optional().describe('What is put on the screen for students in this segment, each item written out in full exactly as they will see it: a question with its choices, a prompt, the rows of a table, the numbers of a figure, a short passage. Never an answer students are to work out. Leave out when nothing is shown'),
+  shown: z.array(z.string()).max(12).optional().describe('What is put on the screen for students in this segment, each item written out in full exactly as they will see it: a question with its choices, a prompt, the rows of a table, the numbers of a figure, a short passage. Never an answer students are to work out, and not code that is typed and run live. Leave out when nothing is shown'),
 });
 
 /**

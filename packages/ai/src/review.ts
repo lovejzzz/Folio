@@ -45,7 +45,8 @@ export const PlanReviewDraft = z.object({
         replace: z.string().describe('What should stand in their place; empty when "find" is empty'),
       }),
     )
-    .max(12)
+    // A week of two meetings has twice the segments: at twelve, a reading of one came back with more and was asked for again.
+    .max(24)
     .default([]),
   parts: SegmentParts,
 });

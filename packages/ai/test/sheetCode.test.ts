@@ -110,6 +110,10 @@ describe('the R a lesson gives students, run as they run it', () => {
     // A sheet that sets its code to be repaired: its lines that stop are the exercise, whether or not the fixer says so.
     const broken = { ...lesson, handouts: [{ ...lesson.handouts[0]!, title: 'Comparing species and repairing a plot' }] };
     expect((await sheetsRun(fakeInference(() => ({ changes: [] })), fakeR(), course, broken, broken.handouts)).flags).toEqual([]);
+    // A call left open over several lines is one statement until its brackets close.
+    const { joined } = await import('../src/sheetCode');
+    expect(joined(['setup <- tibble(', 'method = c("Manual", "Auto"),', 'time_min = c(12, 9)', ')', 'mean(setup$time_min)'])).toEqual(['setup <- tibble(\nmethod = c("Manual", "Auto"),\ntime_min = c(12, 9)\n)', 'mean(setup$time_min)']);
+    expect(joined(['x <- c(1, 2)', 'paste("(", x)'])).toEqual(['x <- c(1, 2)', 'paste("(", x)']);
     // A reference sheet names functions and arguments, each alone on a line: named, not run.
     const named = labCourse(['hist()', 'breaks', 'mean(nothing_df$x)']);
     const refR = fakeR();

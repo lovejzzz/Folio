@@ -103,7 +103,10 @@ export function joined(lines: string[], apart: (line: string) => boolean = () =>
   const out: string[] = [];
   for (const line of lines) {
     const last = out.at(-1);
-    const open = last !== undefined && !apart(last) && !apart(line) && /(?:[+,({]|\|>|%>%|%in%|<-|=|&&|\|\||[-*/~])\s*$/.test(last);
+    // And a call left open over several lines is one statement until its brackets close: a table typed a column a line
+    // ended on a line of its own, `)`, which was run alone and reported.
+    const depth = (text: string) => [...text.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, '')].reduce((n, c) => n + ('([{'.includes(c) ? 1 : ')]}'.includes(c) ? -1 : 0), 0);
+    const open = last !== undefined && !apart(last) && !apart(line) && (/(?:[+,({]|\|>|%>%|%in%|<-|=|&&|\|\||[-*/~])\s*$/.test(last) || depth(last) > 0);
     if (open) out[out.length - 1] = `${last}\n${line}`;
     else out.push(line);
   }

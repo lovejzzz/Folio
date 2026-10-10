@@ -147,8 +147,14 @@ export async function mendModule(inference: Inference, course: Course, lesson: L
 
 const Segment = SegmentDraft;
 
+/** Segments numbered from 0 are the same segments numbered from 1: a mend that counted so was refused and asked for again. */
+function from1(v: unknown): unknown {
+  if (!Array.isArray(v) || !v.some((x: unknown) => x && typeof x === 'object' && (x as { number?: unknown }).number === 0)) return v;
+  return v.map((x: unknown) => (x && typeof x === 'object' && typeof (x as { number?: unknown }).number === 'number' ? { ...x, number: (x as { number: number }).number + 1 } : x));
+}
+
 export const PlanMend = z.object({
-  segments: z.array(Segment.extend({ number: z.number().int().min(1).describe('The segment\'s number, as in the plan given') })).default([]).describe('Every segment that changes, written again whole'),
+  segments: z.preprocess(from1, z.array(Segment.extend({ number: z.number().int().min(1).describe('The segment\'s number, as in the plan given') }))).default([]).describe('Every segment that changes, written again whole'),
   keyIdeas: z.array(line).max(5).default([]).describe('All the key ideas again, only when one changes'),
   vocabulary: z.array(z.object({ term: line, definition: line })).max(40).default([]).describe('The whole vocabulary again, only when an entry changes'),
   left: Left,
