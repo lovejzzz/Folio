@@ -19,8 +19,7 @@ import {
   type GeneratedKind,
   type Lesson,
   type Question,
-  type SlideVisual,
-} from '@folio/core';
+  type SlideVisual, orderedLessons } from '@folio/core';
 import type { Inference } from './inference';
 import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
@@ -73,6 +72,22 @@ function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flags:
     explanation: draft.explanation,
     difficulty: Math.min(3, Math.max(1, draft.difficulty)) as 1 | 2 | 3,
   };
+}
+
+/**
+ * A test sat at the next lesson that this plan never tells students of. Told to announce it, a plan closed on "next time
+ * extends the comparison", and the first quiz of the course opened a class nobody had warned. Said to the mend, which
+ * adds it to the close.
+ */
+function unannounced(v: PlanDraft, course: Course, lesson: Lesson): Problem[] {
+  const next = orderedLessons(course)[course.lessonOrder.indexOf(lesson.id) + 1];
+  const test = next ? lessonPieces(next).find((p) => p.kind === 'test') : undefined;
+  if (!test) return [];
+  const text = v.segments.map((x) => `${x.description} ${x.teacherNotes}`).join(' ').toLowerCase();
+  const named = test.toward.trim().toLowerCase();
+  if (/\b(?:quiz(?:zes)?|tests?|exams?|midterms?|final)\b/.test(text) && /\bnext (?:time|class|lesson|week|meeting)\b/.test(text)) return [];
+  if (named && text.includes(named)) return [];
+  return [{ index: null, flag: { code: 'schemaIssue', values: { path: 'segments', issue: `Next time students sit ${named ? `"${test.toward.trim()}"` : 'a graded test'}, and nothing in this plan tells them. The last segment says so before they leave, in a sentence or two: that it is sat next time and what it covers` } } }];
 }
 
 const plan: SectionJob<PlanDraft> = {
@@ -455,7 +470,7 @@ export async function generateSection(
     case 'plan':
       if (hasModulePages(course)) return withStart(inference, course, lesson, signal, pageWithRuns(run, moduleJob, { writer: inference, reviewer, now, lesson, signal, options, mendPage }));
       // The sheets the plan hands out are written from the plan as it stands after its review.
-      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, (v) => [...codeFaults(v), ...(plan.check?.(v, now(), lesson) ?? [])]) : undefined), signal, options.run?.r, options.run?.runner);
+      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, (v) => [...codeFaults(v), ...(plan.check?.(v, now(), lesson) ?? []), ...unannounced(v, now(), lesson)]) : undefined), signal, options.run?.r, options.run?.runner);
     case 'slides':
       return run(slides);
     case 'study':

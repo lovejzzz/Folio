@@ -16,6 +16,11 @@ describe('where a course’s recurring work and its tests fall', () => {
     expect([methods['Final proposal'], methods['Take-home midterm'], methods['Seminar leadership']]).toEqual([['assignment', false, true], ['assignment', false, true], ['inclass', true, false]]);
   });
 
+  it('has every lesson hold what runs in every lesson, so each lesson’s writers are told of it', () => {
+    const held = placedWork(gradingIn('Reading quizzes at the start of most classes 15%, a midterm 35%, a final exam 40%, participation in discussion 10%.'), 4);
+    expect(held.map((l) => l.filter((p) => p.kind === 'inclass').map((p) => [p.toward, p.standing]))).toEqual(Array.from({ length: 4 }, () => [['Participation in discussion', true]]));
+  });
+
   it('spreads each run of tests through the course on its own, the final last, none in the first lesson', () => {
     expect(tests(PHYSICS, 14)).toEqual(['5 Midterm 1', '9 Midterm 2', '14 Final exam']);
     expect(tests('Homework problems each week 20%, four in-class quizzes 20%, two exams 20% each, a final exam 20%.', 30)).toEqual(['6 In-class quizzes', '10 Exam 1', '12 In-class quizzes', '18 In-class quizzes', '20 Exam 2', '24 In-class quizzes', '30 Final exam']);
@@ -33,6 +38,10 @@ describe('where a course’s recurring work and its tests fall', () => {
     const other = held([lesson({ homework: 'assignment', homeworkToward: 'Lab worksheets', homeworkDue: 2 }), lesson({ homework: 'test', homeworkToward: 'Midterm exam', also: [{ kind: 'assignment', toward: 'Project', due: 4 }] }), lesson({ homework: 'none' }), lesson({ homework: 'test', homeworkToward: 'Final' })]);
     expect(one).toEqual([['inclass Weekly lab worksheets'], ['test Midterm', 'inclass Weekly lab worksheets', 'assignment Data analysis project'], ['inclass Weekly lab worksheets'], ['test Final exam', 'inclass Weekly lab worksheets']]);
     expect(other).toEqual(one);
+    // A paper the outline made due in the lesson before the final moves on to the first lesson clear of a test and its eve.
+    const late = orderedLessons(courseFromOutline({ ...req, lessonCount: 6 }, outline([lesson({ homework: 'assignment', homeworkToward: 'Project', homeworkDue: 2 }), lesson({}), lesson({}), lesson({}), lesson({}), lesson({})])));
+    const project = [late[0]!.homework, ...late[0]!.also].find((p) => p.toward === 'Data analysis project')!;
+    expect(late.findIndex((l) => l.id === project.due) + 1).toBe(4);
     expect(outlinePrompt(req)).toContain('every lesson holds "Weekly lab worksheets"; the tests are sat in these lessons, and nowhere else: lesson 2: "Midterm"; lesson 4: "Final exam".');
     expect(outlinePrompt(req)).toContain('Under "homework" and "also" you place only "Data analysis project"');
     // An outline that leaves out the one piece it was to place is asked once more, by that piece's name and no other.

@@ -99,6 +99,8 @@ describe('a graded piece set in several lessons', () => {
     store.apply(lessons.map((l) => cmd('lesson.homework', { lessonId: l.id, homework: { kind: 'assignment', toward: 'Problem sets' } })), { label: { key: 'b' }, source: 'teacher' });
     const levels = (top: number) => [top, top - 1, top - 2, top - 3].map((points, i) => ({ label: ['Excellent', 'Good', 'Developing', 'Beginning'][i]!, points }));
     const piece = (top: number, criteria: string[]) => ({ title: 'Set', prompt: 'Do it.', steps: ['Read the case', 'Write up your method'], answerKey: '', rubric: { levels: levels(top), criteria: criteria.map((name) => ({ name, descriptors: ['a', 'b', 'c', 'd'] })) } });
+    // The first piece is told its rubric serves every later one, so its criteria are not named for its own topic.
+    expect(sectionPrompt(store.getState(), store.getState().lessons[lessons[0]!.id]!, 'assignments')).toContain('its criteria are named for what any part of the component shows');
     const first = await generateSection(fakeInference(() => piece(4, ['Method', 'Accuracy', 'Explanation'])), store.getState(), lessons[0]!.id, 'assignments');
     store.apply(first.commands, { label: { key: 'b' }, source: 'ai' });
     const second = store.getState().lessons[lessons[1]!.id]!;

@@ -146,18 +146,21 @@ export function sharedComponent(course: Course, lesson: Lesson): string {
   const sharing = orderedLessons(course).filter((l) => holds(l, lesson.homework.kind, toward));
   if (sharing.length < 2) return '';
   const place = sharing.findIndex((l) => l.id === lesson.id) + 1;
-  if (lesson.homework.kind === 'inclass' && lesson.homework.standing !== false) return `"${toward}" is taken over ${sharing.length} lessons, a group in each: write it once and whole, since the later lessons use it as it stands, with running notes that say who goes in which lesson: so it names nothing only this lesson has (its reading, its case, its volunteer), and what students do each time is left to each lesson: it speaks of "the questions (or problems) handed out or shown at that meeting", never of a lesson plan, which students do not hold.`;
+  if (lesson.homework.kind === 'inclass' && lesson.homework.standing !== false) return `"${toward}" is taken over ${sharing.length} lessons, a group in each: write it once and whole, since the later lessons use it as it stands, with running notes that say who goes in which lesson: so it names nothing only this lesson has (its reading, its case, its volunteer) and says nothing of "today" or "next time" (that a turn is modelled today, or that scoring begins next time, is for this lesson's plan to say: copied into the later lessons, students read it on the day they were scored), and what students do each time is left to each lesson: it speaks of "the questions (or problems) handed out or shown at that meeting", never of a lesson plan, which students do not hold.`;
   // Papers of one component (two quizzes) told only "cover the lessons so far" came out alike, title and half the questions.
   if (lesson.homework.kind === 'test') {
     const earlier = workOf(course, sharing[place - 2], toward);
     const before = earlier?.kind === 'assignment' ? ` The paper before it, "${earlier.title}", asked: ${clipNote(earlier.steps.join(' | '), 900)} Repeat none of it.` : '';
     return `"${toward}" is ${sharing.length} papers, and this is number ${place}: title it so (for example "Quiz ${place}" with what it covers), and test what was taught since the paper before it, not the same ground again.${before}`;
   }
+  // Every piece is scored on the first one's rubric: named for the first lesson's topic, a rubric for a pH problem set still
+  // read "Atomic identity and isotope reasoning".
+  const neutral = place === 1 ? ' Every later part is scored on the rubric written here, criteria and levels: so its criteria are named for what any part of the component shows (such as accuracy of results, reasoning shown, clear presentation), never for this lesson\'s topic; what is particular to this part goes in the descriptors.' : '';
   const told = `"${toward}" is set as an assignment in ${sharing.length} lessons, and this is part ${place} of ${sharing.length}: write only the part that belongs to this lesson (when the brief names the component's parts and when each is due, this is the part the brief places here, as the brief describes it, and it may ask for everything taught so far), title it so it can be told apart from the other parts (for example "${toward}: " followed by what this part is), and never say this part alone carries the component's whole weight. Students read it as an assignment in its own right: no "part", "component" or count of parts in its text.`;
   // Written each on its own, weekly responses in one course asked for 300, 400 and 600 words.
   const before = sharing[place - 2];
   const last = workOf(course, before, toward);
-  if (!last || last.kind !== 'assignment') return told;
+  if (!last || last.kind !== 'assignment') return `${told}${neutral}`;
   // Its tasks too: told only the prompt, the fourth problem set repeated a problem from the third.
   const tasks = clipNote(last.steps.join(' | '), 700);
   return `${told} The part before this one, "${last.title}", asked: ${last.prompt}${tasks ? ` Its tasks: ${tasks}` : ''} Keep this part's length, format and demand in line with it, and repeat none of its tasks.${sameRubric(course, sharing[0], toward)}`;
@@ -392,5 +395,5 @@ export function inClassPieces(course: Course): string {
       return [`"${toward}" has its brief and rubric written with the lesson "${l.title}"${rubric ? ` (scored on: ${rubric.criteria.map((c) => c.name).join('; ')})` : ''}`];
     }),
   );
-  return lines.length ? `${lines.join('; ')}. A lesson that runs one of these says so and scores with that rubric; it writes no criteria of its own, gives students a task in which every criterion has something to show, and puts the brief and rubric before them again (on the screen or as copies).` : '';
+  return lines.length ? `${lines.join('; ')}. A lesson that runs one of these says so and scores with that rubric; it writes no criteria of its own, gives students a task in which every criterion has something to show, and puts the brief and rubric before them again as copies in their hands: a slide is never a stand-in for a document ("the brief and rubric, in full"), and carries a line of one only when the line is written out on it.` : '';
 }

@@ -46,6 +46,16 @@ describe('a section taking shape', () => {
     expect(JSON.stringify(result.commands)).toContain('Walk through 6CO2 + 6H2O.');
   });
 
+  it('is sent to the mend when the next lesson sits a test it never tells students of', async () => {
+    const store = new CourseStore(smallCourse());
+    const [lesson, next] = orderedLessons(store.getState());
+    store.apply([cmd('lesson.homework', { lessonId: next!.id, homework: { kind: 'test', toward: 'Unit quizzes' } })], { label: { key: 'b' }, source: 'teacher' });
+    const writer = fakeInference((req) => (req.task === 'folio_plan_mend' ? mended : planDraft));
+    await generateSection(writer, store.getState(), lesson!.id, 'plan', undefined, { reviewer: fakeInference(() => ({ issues: [] })) });
+    expect(writer.calls.map((c) => c.task).slice(0, 2)).toEqual(['folio_plan', 'folio_plan_mend']);
+    expect(writer.calls[1]!.prompt).toContain('Next time students sit "Unit quizzes", and nothing in this plan tells them.');
+  });
+
   it('keeps the plan as it was when a mend leaves more to put right than it found', async () => {
     const course = smallCourse();
     const lesson = orderedLessons(course)[0]!;

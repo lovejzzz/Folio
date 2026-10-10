@@ -306,9 +306,9 @@ describe('how each graded piece runs', () => {
     expect(told).toContain('- Weekly response papers (20%): each student\'s own work, done and scored alone; submitted online before the lesson it is due at, and never collected in class; how it is scored is given on the piece itself; length: 400 to 500 words.');
     expect(told).toContain('- Presentation (20%): done in groups of 3, one piece from each group; a student prepares their turn ahead: the first lesson to run it gives out its brief and rubric and the teacher models a turn that is not scored, and scored turns begin at the next lesson that runs it; nothing is handed in: it is scored as it happens;');
     expect(told).toContain('its data or material: a question the student chooses.');
-    expect(told).toContain('Nothing else is said of who does a graded piece');
+    expect(told).toContain('These lines are for you, the writer, and are not passed on as advice to the teacher or to students.');
     // What the brief left open is said to be open: an invented way, said the same in every lesson, is still invented.
-    expect(told).toContain('- Seminar paper (60%): each student\'s own work, done and scored alone; how it is handed in is the teacher\'s to say, and no material names a way (on paper, online, a folder, a site);');
+    expect(told).toContain('- Seminar paper (60%): each student\'s own work, done and scored alone; the brief does not say how it is handed in, so no material says how, where or when it is collected');
     const [opening] = orderedLessons(course);
     expect(checklistLines(lessonChecklist(course, opening!)).look).toContain('Your brief does not say how “Seminar paper” is handed in, so no page names a way: set it in the grading table on the syllabus.');
     // A test says what may be used, or that no material settles it.

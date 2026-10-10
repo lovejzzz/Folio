@@ -30,7 +30,9 @@ const OFTEN = /\bweekly\b|\beach\b|\bevery\b|\bmost\b|\bdaily\b|\bpre-?lab\b/i;
 export function formOf(st: StatedItem): Form {
   const said = `${st.item} ${st.said}`;
   const base = { every: false, standing: false, fromSecond: false, last: false, nominated: false };
-  if (/\bparticipation\b|\battendance\b|\bclickers?\b/i.test(said)) return { ...base, kind: 'inclass', standing: true };
+  // (every lesson holds it, so every lesson's writers are told of it: held by the first lesson only, a later lesson made up
+  // how taking part was observed, or said nothing of the rotation)
+  if (/\bparticipation\b|\battendance\b|\bclickers?\b/i.test(said)) return { ...base, kind: 'inclass', every: true, standing: true };
   if (/\bpresentations?\b|\bleadership\b|\bdebates?\b/i.test(said)) return { ...base, kind: 'inclass', every: true, standing: true };
   // (a "final proposal" is a paper: only a final that is the last word of its name, or an exam, is sat)
   if (/\bquiz(?:zes)?\b|\bexams?\b|\bmidterms?\b|\bfinal$|\btests?\b/i.test(st.item)) {
@@ -94,8 +96,17 @@ export function withPlacement(course: Course, stated: StatedItem[], tests: boole
   const placed = placedWork(stated, n, tests);
   // Where the outline was not told the tests' lessons beforehand (its count of lessons was its own), its tests stand.
   const nominated = new Set(stated.filter((st) => formOf(st).nominated || (!tests && formOf(st).kind === 'test' && !formOf(st).every)).map((st) => st.item));
+  // A paper is not due in the lesson of a test, nor in the one before it: the week students sit an exam is the week a
+  // teacher most often moves a deadline out of. It moves on to the first lesson that is clear.
+  const sat = new Set(placed.flatMap((held, i) => (held.some((p) => p.kind === 'test' && !formOf(stated.find((st) => st.item === p.toward)!).every) ? [i] : [])));
+  const clear = (at: number) => {
+    let to = at;
+    while ((sat.has(to) || sat.has(to + 1)) && to < n - 1) to += 1;
+    return to;
+  };
   course.lessonOrder.forEach((id, i) => {
     const lesson = course.lessons[id]!;
+    for (const p of [lesson.homework, ...lesson.also]) if (tests && p.due && nominated.has(p.toward)) p.due = course.lessonOrder[clear(course.lessonOrder.indexOf(p.due))] ?? p.due;
     const kept = [lesson.homework, ...lesson.also].filter((p) => p.kind !== 'none' && (nominated.has(p.toward) || !p.toward.trim() || p.kind === 'step'));
     const ruled = placed[i]!.map((p) => (p.kind === 'assignment' && course.lessonOrder[i + 1] ? { ...p, due: course.lessonOrder[i + 1]! } : p));
     const all = [...ruled, ...kept].sort((a, b) => ORDER[a.kind] - ORDER[b.kind]);

@@ -26,7 +26,7 @@ function handIn(g: GradeItem, kinds: Set<string>): string {
   if (kinds.has('test')) return '';
   if (card.handIn === 'none') return 'nothing is handed in: it is scored as it happens';
   // What the brief left open is not settled here: said the same in every lesson, an invented way is still invented.
-  if (card.handIn === 'unsaid') return 'how it is handed in is the teacher\'s to say, and no material names a way (on paper, online, a folder, a site)';
+  if (card.handIn === 'unsaid') return 'the brief does not say how it is handed in, so no material says how, where or when it is collected (not "hand it in before you leave", not "submit online"): a piece is "due" at its lesson and no more is written';
   if (kinds.has('inclass')) return card.handIn === 'online' ? 'what is written is submitted online after the lesson it is done in, and nothing is collected in the room' : 'what is written is handed in on paper at the end of the lesson it is done in';
   return card.handIn === 'online' ? 'submitted online before the lesson it is due at, and never collected in class' : 'handed in on paper at the start of the lesson it is due at';
 }
@@ -66,7 +66,7 @@ export function pieceFactsOf(course: Course, g: GradeItem): string {
 export function pieceFacts(course: Course): string {
   const lines = course.grading.map((g) => pieceFactsOf(course, g)).filter(Boolean);
   if (!lines.length) return '';
-  return `How each graded piece runs, the same in every lesson and in every material:\n${lines.join('\n')}\nWhere one of these facts comes up it is said as it is here. Nothing else is said of who does a graded piece, whether and how it is handed in, what may be used for it or how it is scored: not in other words, and not for one lesson only.`;
+  return `How each graded piece runs, the same in every lesson and in every material:\n${lines.join('\n')}\nThese lines are for you, the writer, and are not passed on as advice to the teacher or to students. Where one of the facts comes up in what you write, it is said as it is here; of who does a graded piece, whether and how it is handed in, what may be used for it and how it is scored, what you write says nothing more.`;
 }
 
 /** Whether a piece's first lesson scores it: no where a student prepares a turn, as the card has it. Undefined for a course with no card. */
