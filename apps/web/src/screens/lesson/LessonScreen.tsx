@@ -13,6 +13,7 @@ import { lessonEditors } from '../../materials/editors';
 import { edit } from '../../state/edit';
 import { useCourse } from '../../state/session';
 import { EdgeTabs } from './EdgeTabs';
+import { LessonChecks } from './LessonChecks';
 import { LessonRail } from './LessonRail';
 import { LessonNotFound } from '../../app/errors';
 import { useObjectiveDraft } from '../plan/useObjectiveDraft';
@@ -71,6 +72,7 @@ function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
         <WellReadings course={course} lesson={lesson} n={n} readings={readings} />
         <SuggestedReadings course={course} lesson={lesson} n={n} readings={readings} />
       </div>
+      <LessonChecks course={course} lesson={lesson} />
     </header>
   );
 }
@@ -78,7 +80,12 @@ function LessonHead({ course, lesson }: { course: Course; lesson: Lesson }) {
 function usePosition(kinds: MaterialKind[], initial: MaterialKind | undefined, lessonId: string): MaterialKind | null {
   const [active, setActive] = useState<MaterialKind | null>(kinds[0] ?? null);
   useEffect(() => {
-    if (!initial) return window.scrollTo({ top: 0 });
+    // Not returned: in browsers where a scroll gives back a promise, React took it for the effect's clean-up, could not
+    // call it when the lesson was left, and the whole page fell to "Something went wrong".
+    if (!initial) {
+      window.scrollTo({ top: 0 });
+      return;
+    }
     // Opened from a link or after a reload, the page is still filling when this first runs: the material was not there
     // yet, or what stands above it had no height, and the link to a quiz opened on the top of the plan. So it is found
     // again as the page fills, and never once the reader has started to move the page themselves. A link opened in a
