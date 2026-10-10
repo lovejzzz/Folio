@@ -62,7 +62,9 @@ function tooMuch(v: { prompt: string; steps: string[] }, course: Course, lesson:
   const said = Math.max(0, ...[...`${v.prompt} ${v.steps.join(' ')}`.matchAll(/\b(\d{1,3})[- ]minutes?\b/gi)].map((m) => Number(m[1])));
   if (said > minutes) return [issue(`The plan gives this ${minutes} minutes, and the piece says ${said}: it says the plan's time, and asks only what fits it`)];
   const words = v.steps.join(' ').split(/\s+/).filter(Boolean).length;
-  return words > WORDS_A_MINUTE * minutes ? [issue(`The plan gives this ${minutes} minutes: ask for about half as much, the parts that matter most, so every group finishes`)] : [];
+  // A count of words is a reason to ask once more, and no more than that: left as a note, it was wrong in three readings
+  // running (a brief of 12 minutes a reader timed at 8 or 9). What a segment asks is counted by its parts when the plan is read.
+  return words > WORDS_A_MINUTE * minutes ? [{ ...issue(`The plan gives this ${minutes} minutes: ask for about half as much, the parts that matter most, so every group finishes`), advisory: true }] : [];
 }
 
 /**

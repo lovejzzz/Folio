@@ -245,8 +245,11 @@ describe('work done in class that is more than its minutes hold', () => {
     // Still too long after it was asked again: the teacher is told what is the matter, in their words, not that a shape was wrong.
     const stubborn = fakeInference(() => ({ ...(answer('"Presentation"') as object), steps: [long, long], answerKey: 'Run it in turn.' }));
     const kept = await generateSection(stubborn, timed, first.id, 'assignments');
-    expect(JSON.stringify(kept.commands)).toMatch(/"code":"reviewNote","values":\{"where":"Presentation","text":"The plan.s segments that run this come to 5 minutes, and it asks for more than most groups will finish in that time\./);
-    expect(JSON.stringify(kept.commands)).not.toContain('ask for about half as much');
+    // Still long after it was asked again: a count of words is no ground for a note, and none is left.
+    expect(JSON.stringify(kept.commands)).not.toMatch(/asks for more than most groups|ask for about half as much/);
+    // A piece that still names more minutes than it has is said to the teacher, in their words.
+    const late = await generateSection(fakeInference(() => ({ ...(answer('"Presentation"') as object), prompt: 'Work with your neighbors for 20 minutes.', answerKey: 'Run it in turn.' })), timed, first.id, 'assignments');
+    expect(JSON.stringify(late.commands)).toMatch(/"code":"reviewNote","values":\{"where":"Presentation","text":"The plan.s segments that run this come to 5 minutes, and it asks for more than most groups will finish in that time\./);
     // A piece taken a group at a time over the term is its brief: the minutes one lesson hands it out in are not its time.
     const term = { ...timed, lessons: { ...timed.lessons, [first.id]: { ...timed.lessons[first.id]!, homework: { kind: 'inclass' as const, toward: 'Presentation', standing: true } } } };
     const brief = fakeInference(() => ({ ...(answer('"Presentation"') as object), steps: [long, long], answerKey: 'Run it in turn.' }));
