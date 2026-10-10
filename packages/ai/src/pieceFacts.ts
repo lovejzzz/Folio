@@ -36,7 +36,9 @@ function scoring(g: GradeItem, kinds: Set<string>): string {
   if (g.judged === 'complete') return 'graded complete or incomplete';
   if (card.points) return `marked out of ${card.points} points each time`;
   if (kinds.has('test')) return 'marked in points';
-  return kinds.size ? 'scored with a rubric, which has the same criteria and the same levels every time the piece is set' : '';
+  // Not read from the brief, so not asserted: told it was "scored with a rubric", a plan had the teacher show the rubric
+  // of an online quiz marked a point a question, and no rubric existed.
+  return kinds.size ? 'how it is scored is given on the piece itself' : '';
 }
 
 /** One component's facts, as a line. */
@@ -47,7 +49,9 @@ export function pieceFactsOf(course: Course, g: GradeItem): string {
   const test = kinds.has('test');
   const parts = [
     test && card.who === 'individual' ? '' : who(g),
-    card.prepared ? 'a student prepares their turn ahead: the first lesson to run it gives out its brief and rubric and the teacher models a turn that is not scored, and scored turns begin at the next lesson that runs it' : kinds.has('inclass') && [...kinds].length === 1 ? 'scored from the first lesson that runs it' : '',
+    // (nothing is said of when an unprepared piece is first scored: "from the first lesson that runs it" came back with the
+    // course's first lesson named, which did not run it)
+    card.prepared ? 'a student prepares their turn ahead: the first lesson to run it gives out its brief and rubric and the teacher models a turn that is not scored, and scored turns begin at the next lesson that runs it' : '',
     handIn(g, kinds),
     scoring(g, kinds),
     // Unsaid, one lesson allowed "a calculator and pencils only" and the next a formula sheet: what the brief leaves open no material settles.

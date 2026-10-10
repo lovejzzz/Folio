@@ -299,7 +299,7 @@ describe('how each graded piece runs', () => {
     draft.grading[2] = { ...draft.grading[2]!, source: 'a question the student chooses' };
     const course = courseFromOutline(req, draft);
     const told = courseBackground(course);
-    expect(told).toContain('- Weekly response papers (20%): each student\'s own work, done and scored alone; submitted online before the lesson it is due at, and never collected in class; scored with a rubric, which has the same criteria and the same levels every time the piece is set; length: 400 to 500 words.');
+    expect(told).toContain('- Weekly response papers (20%): each student\'s own work, done and scored alone; submitted online before the lesson it is due at, and never collected in class; how it is scored is given on the piece itself; length: 400 to 500 words.');
     expect(told).toContain('- Presentation (20%): done in groups of 3, one piece from each group; a student prepares their turn ahead: the first lesson to run it gives out its brief and rubric and the teacher models a turn that is not scored, and scored turns begin at the next lesson that runs it; nothing is handed in: it is scored as it happens;');
     expect(told).toContain('its data or material: a question the student chooses.');
     expect(told).toContain('Nothing else is said of who does a graded piece');
