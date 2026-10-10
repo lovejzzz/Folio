@@ -3,6 +3,7 @@ import { MATERIAL_KINDS, OnlineSchema, SHAPE_LIMITS, createCourse, materialsForL
 import type { Inference } from './inference';
 import { runJob, type Problem } from './jobs';
 import { filesBlock, sameTitle } from './files';
+import { gradingIn } from './gradingIn';
 import { onlineOutlineRules } from './online';
 import { sessionList, systemPrompt, type OutlineInput } from './prompts';
 import { OutlineDraft } from './schemas';
@@ -47,6 +48,7 @@ function lessonsLine(input: OutlineInput): string {
 }
 
 export function outlinePrompt(input: OutlineInput): string {
+  const stated = input.sources.length ? [] : gradingIn(input.brief);
   const parts = [
     `The teacher wrote: """${input.brief.trim()}"""`,
     lessonsLine(input),
@@ -56,7 +58,11 @@ export function outlinePrompt(input: OutlineInput): string {
     'When the brief or the sources name standards by code (3.NF.A.2, MS-LS1-6, TEKS 8.5A), give under "standards" the codes each lesson serves, copied exactly, every code under at least one lesson; never a code they do not name.',
     'Under "readings", list what students read before each lesson, taken from the brief or the attached sources. When the brief names a textbook but not its chapters, name the chapter that matches the lesson, by its topic if you are unsure of the number. For each reading, copy into "namedIn" the exact words of the brief, or the title of the attached source, that name the work: Folio keeps only readings it can find there. Never invent works, authors or page numbers, and never describe a reading in general terms; leave the readings empty when the brief and sources name nothing to read. A file the teacher attached for you to follow in writing the course (their notes on a tool\'s version, a style to keep to) is not a reading for students.',
     'Under "suggestedReadings", for a university course only, suggest up to three well-known further readings per lesson that the brief does not already list: established works a lecturer would recognise on that lesson\'s topic, with author, title and year, and a chapter only when you are sure of it. When the brief asks for readings by author or by kind without naming the works (two articles a week by named philosophers), propose here the works a teacher of the field would assign: the plans are written from them until the teacher confirms. Suggest each work once in the course, for the lesson it fits best. The teacher checks them before anything is assigned, so leave the list empty rather than guess.',
-    'Under "grading", list every graded component the brief or an attached syllabus names, such as weekly quizzes and a final essay, with the weight it gives each; when it gives no weight, set it to null rather than guess. Leave the list empty if neither says how the course is graded.',
+    // The brief's own list, read by rule, is given and not read again: read by the model, the same brief named its
+    // components three ways in three runs, and every piece of work is tied to these names.
+    stated.length
+      ? `Under "grading", the brief lists the graded components with their weights. They are these, in this order and by these names exactly: ${stated.map((g) => `"${g.item}" (${g.weight}%)`).join(', ')}. Return these and no others, each with its weight, and use these names wherever a lesson's work counts toward one.`
+      : 'Under "grading", list every graded component the brief or an attached syllabus names, such as weekly quizzes and a final essay, with the weight it gives each; when it gives no weight, set it to null rather than guess. Leave the list empty if neither says how the course is graded.',
     'Under "setup", give what the brief or an attached syllabus says is the same at every meeting, one fact a line in its words (the size of the class, how students are grouped, the software and its version, what students have or bring, what is not allowed); leave it empty when they say none, and add nothing of your own.',
     'Under "policies", copy the class policies the brief or an attached syllabus states, in their words, one policy per paragraph separated by a blank line; leave it empty when they state none, and never write policies of your own.',
     'A lesson can hold more than one piece. Under "also", list what it holds beside its main piece: the weekly work in a week where a larger piece is set; a prospectus, outline or draft on the way to a paper, as a "step" toward it; a piece run in class while another is set. A piece students work toward for weeks (a term paper, a project, a presentation each student gives in turn) is set in the first lesson, under "also" if that lesson has other work, so its brief exists from the start. A milestone the brief names on the way to a larger piece (a proposal, a prospectus, an outline, a draft) is a "step" toward it in the lesson that sets it, due when the brief says: a milestone named only in a summary has no task, and nobody can do it. Add no step of your own that falls due in the same lesson as one the brief names, and none after the last one the piece could still use. A piece handed in at the last lesson asks for nothing that lesson teaches. Say "homeworkStanding" (or "standing" under "also") is true only for a piece whose instructions are the same words every time (a weekly response to the reading, a preparation memo, a journal entry): Folio writes it once and every later lesson shows that one text, and such a piece prepares for the lesson it is due at. Work that has its own questions, problems, data or cases each time (problem sets, worksheets, lab assignments, quizzes) is never standing: each is written for its lesson.',
@@ -153,6 +159,22 @@ function piecesOf(draft: OutlineDraft['lessons'][number], i: number, counts: (to
 /** How a brief says work is graded on being done, not on how well. */
 const COMPLETION = /\bincomplete\b|\bcompletion\b|\bpass(ed)?\s*(\/|or|-)\s*fail|\bcredit\s*(\/|or)\s*no[ -]credit|\bfor credit\b|\bungraded\b|完成/i;
 
+/**
+ * The graded components of the course. The names and weights the brief's own list gives stand, and the outline's reading
+ * of each (how it is scored, its card) rides on them: by its name, or by its place when the outline named it otherwise.
+ * `names` gives the brief's name for each of the outline's, so a piece tied to the outline's name is tied to the brief's.
+ */
+function gradedBy(req: NewCourseRequest, outline: OutlineDraft): { graded: OutlineDraft['grading']; names: Map<string, string> } {
+  const stated = req.sources.length ? [] : gradingIn(req.brief);
+  const read = outline.grading.filter((g) => g.item.trim());
+  if (!stated.length) return { graded: read, names: new Map() };
+  const blank = (item: string) => OutlineDraft.parse({ title: '-', summary: '-', subject: '-', level: '-', lessons: [{ title: '-', summary: '-', objectives: ['-'] }], grading: [{ item }] }).grading[0]!;
+  const byName = (item: string) => read.findIndex((g) => plain(g.item) === plain(item));
+  const placeOf = (item: string, i: number) => (byName(item) >= 0 ? byName(item) : read.length === stated.length ? i : -1);
+  const graded = stated.map((st, i) => ({ ...(read[placeOf(st.item, i)] ?? blank(st.item)), item: st.item, weight: st.weight }));
+  return { graded, names: new Map(stated.flatMap((st, i) => (read[placeOf(st.item, i)] ? [[plain(read[placeOf(st.item, i)]!.item), st.item] as [string, string]] : []))) };
+}
+
 /** A component's card, as the outline read it from the brief: what was not said keeps its default and is said to no writer. */
 function cardOf(g: OutlineDraft['grading'][number]): GradeCard {
   return { who: g.who ?? 'individual', ...(g.who === 'group' && g.groupSize ? { groupSize: g.groupSize } : {}), prepared: g.prepared ?? false, handIn: g.handIn ?? 'unsaid', ...(g.points ? { points: g.points } : {}), allowed: (g.allowed ?? '').trim(), length: (g.length ?? '').trim(), source: (g.source ?? '').trim() };
@@ -195,9 +217,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
     const lesson = emptyLesson(newId('l'), draft.title, draft.summary);
     lesson.readings = readings[i] ?? [];
     Object.assign(lesson, piecesOf(draft, i, counts, dueAt));
-    lesson.suggestedReadings = draft.suggestedReadings
-      .map(clean)
-      .filter((r) => r && !seen.has(key(r)) && seen.add(key(r)));
+    lesson.suggestedReadings = draft.suggestedReadings.map(clean).filter((r) => r && !seen.has(key(r)) && seen.add(key(r)));
     // Only codes the teacher gave: one that is nowhere in the brief or the sources was made up.
     lesson.standards = [...new Set(draft.standards.map((c) => c.trim()).filter((c) => c && given.includes(squash(c))))];
     for (const text of draft.objectives) {
@@ -208,9 +228,8 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
     course.lessons[lesson.id] = lesson;
     course.lessonOrder.push(lesson.id);
   }
-  const graded = outline.grading.filter((g) => g.item.trim());
-  // A course graded one way only is graded 100% that way; with several, a missing weight stays for the teacher to give.
-  const whole = graded.length === 1 && graded[0]!.weight === null;
+  const { graded, names } = gradedBy(req, outline);
+  const whole = graded.length === 1 && graded[0]!.weight === null; // one way only: 100% that way
   for (const [piece, n] of dueAt) {
     const due = course.lessonOrder[n - 1];
     if (due) piece.due = due;
@@ -223,6 +242,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   // Held to the teacher's own words as well: no component is graded on completion in a course whose brief and files never speak of it.
   const spoken = COMPLETION.test(`${req.brief}\n${req.sources.map((s) => s.text).join('\n')}`);
   course.grading = graded.map((g) => ({ id: newId('g'), item: g.item.trim(), weight: whole ? 100 : (g.weight ?? 0), judged: g.scoring === 'completion' && spoken ? ('complete' as const) : ('levels' as const), card: cardOf(g) }));
+  for (const lesson of Object.values(course.lessons)) for (const piece of [lesson.homework, ...lesson.also]) piece.toward = names.get(plain(piece.toward)) ?? piece.toward;
   for (const s of req.sources) {
     const source = createSource(s.title, s.text, 'file');
     course.sources[source.id] = source;

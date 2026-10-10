@@ -184,9 +184,23 @@ describe('the outline', () => {
 
   it('gives the only graded component the whole grade when the brief gives no weight', () => {
     const one = OutlineDraft.parse({ title: 'W', summary: 'S.', subject: 'Science', level: 'Grade 5', lessons, grading: [{ item: 'Lesson quizzes', weight: null }] });
-    expect(courseFromOutline(req, one).grading.map((g) => g.weight)).toEqual([100]);
+    // (a brief that lists no weights: one that does gives its own components, as the next test has it)
+    const bare = { ...req, brief: 'Political philosophy for second-year undergraduates.' };
+    expect(courseFromOutline(bare, one).grading.map((g) => g.weight)).toEqual([100]);
     const two = OutlineDraft.parse({ title: 'W', summary: 'S.', subject: 'Science', level: 'Grade 5', lessons, grading: [{ item: 'Quizzes', weight: null }, { item: 'Project', weight: null }] });
-    expect(courseFromOutline(req, two).grading.map((g) => g.weight)).toEqual([0, 0]);
+    expect(courseFromOutline(bare, two).grading.map((g) => g.weight)).toEqual([0, 0]);
+  });
+
+  it('takes the names and weights of the graded components from the brief’s own list, however the outline named them', () => {
+    const renamed = OutlineDraft.parse({ title: 'W', summary: 'S.', subject: 'Science', level: 'Grade 5', lessons, grading: [{ item: 'Weekly problem sets', weight: 30, handIn: 'online' }, { item: 'Midterm exam', weight: 30 }, { item: 'Final', weight: 40 }] });
+    renamed.lessons[0] = { ...renamed.lessons[0]!, homework: 'assignment', homeworkToward: 'Weekly problem sets' };
+    const course = courseFromOutline(req, renamed);
+    expect(course.grading.map((g) => [g.item, g.weight, g.card?.handIn])).toEqual([['Problem sets', 30, 'online'], ['Midterm', 30, 'unsaid'], ['Final exam', 40, 'unsaid']]);
+    // And a piece the outline tied to its own name is tied to the brief's.
+    expect(orderedLessons(course)[0]!.homework.toward).toBe('Problem sets');
+    expect(outlinePrompt(req)).toContain('They are these, in this order and by these names exactly: "Problem sets" (30%), "Midterm" (30%), "Final exam" (40%).');
+    // A course planned from a syllabus is read by the outline, as before.
+    expect(outlinePrompt({ ...req, sources: [{ title: 'Syllabus', text: 'Week 1' }] })).toContain('list every graded component the brief or an attached syllabus names');
   });
 
   it('lets homework count only toward a graded component the course has', () => {
