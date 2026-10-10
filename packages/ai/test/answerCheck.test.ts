@@ -282,3 +282,26 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     expect(JSON.stringify(out.flags.get('t_code'))).toContain('SyntaxError');
   }, 120_000);
 });
+
+describe('the keys to a lesson\'s sheets', () => {
+  it('are checked as a quiz is: a key that is wrong is put right, its number with it, and a key that holds is left', async () => {
+    const { keysChecked, changedNumbers } = await import('../src/keyCheck');
+    const sheet = (id: string, title: string, key: string) => ({ id, title, kind: 'worksheet' as const, usedIn: 'Practice', copies: 'One each', blocks: [{ type: 'para' as const, text: 'Fill in (e^h − 1)/h for h = 0.01, 0.001 and the mean of `[3, 4, 5]`.' }], key, supports: false });
+    const sheets = [sheet('x_1', 'Secants', 'h = 0.01 gives 1.01005 and h = 0.001 gives 1.00050; the mean is 4.'), sheet('x_2', 'No key', '')];
+    const lesson = { id: 'l_1' } as never;
+    // Two forms fail on the same claim, the correction is made, and the corrected key holds.
+    const model = fakeInference((req) => (req.task === 'folio_answer_fix' ? { changes: [{ find: '1.01005', replace: '1.00502' }] } : FORM));
+    const out = await keysChecked(model, scripted([fail('key'), fail('key'), PASS]), lesson, sheets as never);
+    expect(out.handouts.map((h) => h.key)).toEqual(['h = 0.01 gives 1.00502 and h = 0.001 gives 1.00050; the mean is 4.', '']);
+    expect(out.flags).toEqual([]);
+    // The number that changed, for the plan that carried it too.
+    expect(out.changed).toEqual([{ find: '1.01005', replace: '1.00502' }]);
+    expect(changedNumbers('IQR = 8 minutes.', 'The IQR is 8 minutes.')).toEqual([]);
+    // A correction that does not hold leaves the key as written, with a note that says which key.
+    const stuck = await keysChecked(model, scripted([fail('key'), fail('key'), fail('key'), fail('key')]), lesson, sheets as never);
+    expect(stuck.handouts[0]!.key).toContain('1.01005');
+    expect(stuck.flags).toEqual([{ code: 'answerCheck', values: { claim: 'the key to “Secants”: an answer or its explanation', found: 'worked out, it is 4; the text has 3' } }]);
+    // No runner, no check, and the keys as they are.
+    expect((await keysChecked(model, undefined, lesson, sheets as never)).handouts).toEqual(sheets);
+  });
+});

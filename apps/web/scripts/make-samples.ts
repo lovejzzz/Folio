@@ -384,7 +384,7 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
         const lesson = store.getState().lessons[id]!;
         const sent: string[] = [];
         const touched: string[] = [];
-        const again = await planReadAgain(inference, inference, store.getState(), lesson, undefined, R ?? undefined, (p) => (p.type === 'mended' ? void (sent.push(...p.open), p.kept && touched.push(...p.changed)) : undefined));
+        const again = await planReadAgain(inference, inference, store.getState(), lesson, undefined, R ?? undefined, (p) => (p.type === 'mended' ? void (sent.push(...p.open), p.kept && touched.push(...p.changed)) : undefined), RUN ? RUNNER : undefined);
         store.apply(again.commands, { label: { key: 'built' }, source: 'ai', undoable: false });
         const flags = store.getState().lessons[id]!.gen.plan?.flags ?? [];
         appendFileSync(LOG, `${JSON.stringify({ reread: name, arm: process.env.ARM, lesson: lesson.title, mended: [...new Set(touched)], counted: sent.filter((t) => t.includes('Counted by its parts')).map((t) => t.slice(0, 300)), notes: flags.map((f) => (f.code === 'reviewNote' ? `${f.values.where}: ${f.values.text}`.slice(0, 400) : f.code)) })}\n`);
@@ -395,7 +395,7 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
         // Notes on the old sheets' lines go with the old sheets: carried over, they were read as the new sheets' faults.
         const sheets = new Set(lesson.handouts.map((h) => h.title));
         const written = { commands: [cmd('section.fill', { lessonId: id, kind: 'plan', flags: (lesson.gen.plan?.flags ?? []).filter((f) => !(f.code === 'reviewNote' && sheets.has(f.values.where))), content: { segments: lesson.segments, keyIdeas: lesson.keyIdeas, vocabulary: lesson.vocabulary } })], flagged: 0 };
-        store.apply((await withHandouts(inference, store.getState(), lesson, written, undefined, R ?? undefined)).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
+        store.apply((await withHandouts(inference, store.getState(), lesson, written, undefined, R ?? undefined, RUN ? RUNNER : undefined)).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
       }
     }
   } else {

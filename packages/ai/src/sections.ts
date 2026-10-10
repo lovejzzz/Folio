@@ -25,6 +25,7 @@ import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
 import { workRun } from './sheetRun';
 import type { LineRunner } from './sheetCode';
+import type { Runner } from '@folio/run';
 import { alreadySet, assignments, base, continuedInClass, flagsAt, step, test, type SectionJob } from './workJobs';
 import { issuePlace, reviewPlan } from './review';
 import { PREPARATION_GRADING, checkRunOfShow, isLiveOnline, isMixedOnline } from './live';
@@ -289,7 +290,7 @@ const readPlan = (reviewer: Inference, course: () => Course, lesson: Lesson, sig
  * A plan already written, read and mended again and its sheets written from it. For trying a change to the reading on plans
  * that stand: the outline and the plan's first writing stay as they were, so two readings are compared on the same plans.
  */
-export async function planReadAgain(inference: Inference, reviewer: Inference, course: Course, lesson: Lesson, signal?: AbortSignal, r?: LineRunner, onProgress?: (progress: ReadProgress) => void): Promise<{ commands: Command[]; flagged: number }> {
+export async function planReadAgain(inference: Inference, reviewer: Inference, course: Course, lesson: Lesson, signal?: AbortSignal, r?: LineRunner, onProgress?: (progress: ReadProgress) => void, runner?: Runner): Promise<{ commands: Command[]; flagged: number }> {
   const draft: PlanDraft = {
     keyIdeas: lesson.keyIdeas,
     vocabulary: lesson.vocabulary.map(({ term, definition }) => ({ term, definition })),
@@ -300,7 +301,7 @@ export async function planReadAgain(inference: Inference, reviewer: Inference, c
     return { ...mended, value: plan.tidy!(mended.value, course, lesson) };
   };
   const read = await reviewed(readPlan(reviewer, () => course, lesson, signal), draft, onProgress, mend, codeFaults);
-  return withHandouts(inference, course, lesson, { commands: plan.toCommands(read.value, read.problems, course, lesson), flagged: read.problems.length }, signal, r);
+  return withHandouts(inference, course, lesson, { commands: plan.toCommands(read.value, read.problems, course, lesson), flagged: read.problems.length }, signal, r, runner);
 }
 
 /**
@@ -427,7 +428,7 @@ export async function generateSection(
     case 'plan':
       if (hasModulePages(course)) return withStart(inference, course, lesson, signal, pageWithRuns(run, moduleJob, { writer: inference, reviewer, now, lesson, signal, options, mendPage }));
       // The sheets the plan hands out are written from the plan as it stands after its review.
-      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, codeFaults) : undefined), signal, options.run?.r);
+      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, codeFaults) : undefined), signal, options.run?.r, options.run?.runner);
     case 'slides':
       return run(slides);
     case 'study':

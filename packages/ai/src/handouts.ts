@@ -3,6 +3,8 @@ import type { LineRunner } from './sheetCode';
 import { cmd, lessonPieces, newId, type Command, type Course, type Handout, type Lesson, type Segment } from '@folio/core';
 import { z } from 'zod';
 import { codeFaults } from './codeLines';
+import { keysChecked } from './keyCheck';
+import type { Runner } from '@folio/run';
 import { sheetLeads } from './sheetLeads';
 import { overfull, overfullNote } from './sheetTime';
 import { ExhibitBlockDraft, exhibitPart } from './exhibit';
@@ -119,11 +121,9 @@ function toHandout(d: HandoutsDraft['handouts'][number]): Handout {
 
 /**
  * The plan's commands with its sheets written. A lesson online has a page instead; and sheets that cannot be had
- * never cost the plan. Their keys are not put through the answer check: on the first forty sheets it raised
- * eleven notes and every one was a false alarm (fractions, powers of ten, a constant with one more digit), while
- * a reviewer who worked all 94 answers by hand found none wrong.
+ * never cost the plan. Their keys are put through the answer check (see keyCheck.ts for why again, and why not before).
  */
-export async function withHandouts(inference: Inference, course: Course, lesson: Lesson, written: { commands: Command[]; flagged: number }, signal?: AbortSignal, r?: LineRunner): Promise<{ commands: Command[]; flagged: number }> {
+export async function withHandouts(inference: Inference, course: Course, lesson: Lesson, written: { commands: Command[]; flagged: number }, signal?: AbortSignal, r?: LineRunner, runner?: Runner): Promise<{ commands: Command[]; flagged: number }> {
   const fill = written.commands.find((c) => c.type === 'section.fill' && c.payload.kind === 'plan');
   if (!fill || fill.type !== 'section.fill' || fill.payload.kind !== 'plan' || !fill.payload.content.segments.length) return written;
   const content = fill.payload.content;
@@ -153,10 +153,16 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
       const got = placed(now, fix.find, fix.replace);
       return got.hits === 1 ? got.value : now;
     }, { segments: led.segments, keyIdeas: led.keyIdeas, vocabulary: led.vocabulary });
+    // The keys' numbers are worked out by a program; a key put right carries its number to the plan, which had it too.
+    const sure = await keysChecked(inference, runner, lesson, handouts, signal);
+    const settled = sure.changed.reduce((now, fix) => {
+      const got = placed(now, fix.find, fix.replace);
+      return got.hits === 1 ? got.value : now;
+    }, plan);
     // Code on a sheet is run as a student runs it; what stops is corrected once, and what still stops is said to the teacher.
-    const run = await sheetsRun(inference, r, course, { ...lesson, segments: plan.segments as Lesson['segments'] }, handouts, signal);
-    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [...fill.payload.flags, ...run.flags], content: { ...content, ...plan, handouts: run.handouts } }) : c));
-    return { commands, flagged: written.flagged + run.flags.length };
+    const run = await sheetsRun(inference, r, course, { ...lesson, segments: settled.segments as Lesson['segments'] }, sure.handouts, signal);
+    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [...fill.payload.flags, ...sure.flags, ...run.flags], content: { ...content, ...settled, handouts: run.handouts } }) : c));
+    return { commands, flagged: written.flagged + sure.flags.length + run.flags.length };
   } catch (error) {
     if (signal?.aborted) throw error;
     return written;
