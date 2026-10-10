@@ -1,5 +1,39 @@
 [
  {
+  "version": "0.0.35",
+  "date": "October 10, 2026",
+  "title": "What was checked, what is yours to check",
+  "lede": "With few notes left on a lesson, no note had started to look like no problem. Folio knew which answers a program had worked out and which it never reached, which chapters you gave and which it guessed, and said none of it. Now it does, at the top of every lesson.",
+  "sections": [
+   {
+    "heading": "A list at the top of each lesson",
+    "body": "Five lines at most, made from what the lesson holds and not from another reading of it by a model: how many answers and sheet keys a program worked out (and which key it corrected), which it could not reach, which chapters, pages and addresses are not in your brief or files, and how many notes Folio left. It says what was done, never that something is correct. A key you change by hand goes back to unchecked.",
+    "image": {
+     "src": "/changelog/0.0.35-check.svg",
+     "alt": "The list at the top of a lesson: one note, one sheet key no program worked out, two references to confirm; and, folded below, seven answers and two sheet keys a program worked out, one of them corrected",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "What is on the screen is said once",
+    "body": "Slides were written from the plan’s prose and had to guess what belonged on the screen; most of the disagreements between a deck and its plan came from there. A plan’s segment can now list what students see, each item in full: a question with its choices, a prompt, a table’s rows. The slides take those items in the plan’s words, and a deck that leaves one out is asked for once more. Code that is typed and run in front of the class is not a slide’s to carry."
+   },
+   {
+    "heading": "Short practices are counted as they run",
+    "body": "The last release counted every segment by what it asks, and five short practices still ran four to six minutes over. The count had taken “three decisions, each with a reason” as three one-minute answers, six costs worked out from a table as six, and three groups reporting as three things heard. An answer that is calculated or reasoned is now two minutes, and a group’s report two."
+   },
+   {
+    "heading": "What a course will cost, before you write it",
+    "body": "The estimate shown before writing was a third of the truth: it came from a count of characters that left out the models’ thinking, and from before the checks added since. It now uses what each part cost on paid runs, 66 to 73 cents a lesson with every material, and with your own key you see it in dollars before anything is written. With Folio credits the same lesson is about 200 credits, so the 750 free credits cover about three lessons, where this page used to say eighteen."
+   },
+   {
+    "heading": "Two faults put right",
+    "body": "Leaving a lesson page could bring up “Something went wrong” in current browsers, where a scroll returns a promise that the page handed on by mistake. And a sheet’s code now uses the names of the lesson’s own data, with a blank where a student puts theirs; a table typed over several lines is run as one statement, not line by line."
+   }
+  ]
+ },
+ {
   "version": "0.0.34",
   "date": "October 9, 2026",
   "title": "Keys that are computed, names that hold, chapters that own up",

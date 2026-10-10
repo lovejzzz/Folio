@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .well { fill: #F0ECE2 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .rule { stroke: #CFC8B9 } .dot { fill: #8A857A }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .well { fill: #262722 } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .rule { stroke: #3A3B35 } .dot { fill: #8A857A }
+    }
+  </style>
+  <rect class="bg" width="800" height="360" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">AT THE TOP OF EVERY LESSON</text>
+  <rect class="card" x="36" y="64" width="728" height="262" rx="14"/>
+  <rect class="well" x="56" y="84" width="688" height="222" rx="10"/>
+  <text class="ink" x="76" y="116" font-size="15" font-weight="600">Yours to check</text>
+  <circle class="dot" cx="84" cy="142" r="2.5"/><text class="ink2" x="96" y="147" font-size="14">1 note from Folio below, at the part it is about.</text>
+  <circle class="dot" cx="84" cy="170" r="2.5"/><text class="ink2" x="96" y="175" font-size="14">Sheet keys no program worked out: “Reading a boxplot”.</text>
+  <circle class="dot" cx="84" cy="198" r="2.5"/><text class="ink2" x="96" y="203" font-size="14">Not in your brief or files, to confirm: OpenStax Statistics, ch. 2; section 2.3.</text>
+  <line class="rule" x1="76" y1="224" x2="724" y2="224"/>
+  <text class="acc" x="76" y="250" font-size="14">▾ What Folio worked out</text>
+  <circle class="dot" cx="84" cy="272" r="2.5"/><text class="ink2" x="96" y="277" font-size="14">7 answers in the quiz and graded work worked out by a program, as written.</text>
+  <circle class="dot" cx="84" cy="294" r="2.5"/><text class="ink2" x="96" y="299" font-size="14">2 sheet keys worked out by a program; corrected in “Secants and one-sided limits”.</text>
+</svg>

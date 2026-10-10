@@ -104,15 +104,16 @@ export const creditsText = {
 /**
  * Credits a lesson's parts use with Folio's mix (packages/ai/src/adapters/mix.ts): what each part's calls cost at the
  * providers' prices, times the markup (server/src/credits.ts), a credit being a cent. Measured on 9 October 2026 on a
- * paid run of one course of a lecture and a lab, two lessons, 66 cents of calls a lesson:
- * - the plan with its reading, its mend, its sheets, their keys and the check of the keys: 28 cents;
+ * paid runs of one course of a lecture and a lab, two lessons each, 66 to 73 cents of calls a lesson:
+ * - the plan with its reading, its mends, its sheets, their keys and the check of the keys: 28 to 39 cents, by how
+ *   many of its segments are counted over their minutes and written again;
  * - slides 8, study guide 5, FAQ 3, discussion prompts 2 (written with more thought since 0.0.33);
  * - the quiz with the check of its answers 5, the graded work with its check 11.
  * The numbers here before were a third of these: they came from a count of characters that left out the models' thinking,
  * and from before the checks and mends that have been added since. Rubrics come with the assignments. Overview and
  * syllabus are built from the rest and cost nothing.
  */
-const PER_LESSON: Partial<Record<string, number>> = { plan: 85, slides: 25, quiz: 16, study: 14, faq: 10, discussions: 7, assignments: 32, rubrics: 0 };
+const PER_LESSON: Partial<Record<string, number>> = { plan: 100, slides: 25, quiz: 16, study: 14, faq: 10, discussions: 7, assignments: 32, rubrics: 0 };
 
 /** About what the same lessons cost a teacher who writes with their own key, in dollars at the providers' prices. */
 export function estimateDollars(lessons: number, kinds: readonly string[]): number {
