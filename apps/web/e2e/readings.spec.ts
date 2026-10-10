@@ -51,4 +51,15 @@ test('readings and the grading scheme carry from the brief to the plan and the s
   await expect(grading.getByRole('textbox', { name: 'Weight of Presentation' })).toHaveValue('10');
   await expect(grading.getByRole('row', { name: /Total/ })).toContainText('100%');
   await expect(grading.getByText('Weights usually add up to 100%.')).toHaveCount(0);
+
+  // How a component runs is shown as every page was told it, and changed with a press; it is still there after a reload.
+  const who = grading.getByRole('button', { name: 'Who does Lab notebook: each student alone, pairs, or groups' });
+  await expect(who).toHaveText('Each student alone');
+  await who.click();
+  await expect(who).toHaveText('In pairs');
+  const handIn = grading.getByRole('button', { name: 'How Lab notebook is handed in: on paper, online, or not at all' });
+  await handIn.click();
+  await expect(handIn).toHaveText('Submitted online');
+  await page.reload();
+  await expect(page.getByRole('table', { name: 'Grading' }).getByRole('button', { name: 'Who does Lab notebook: each student alone, pairs, or groups' })).toHaveText('In pairs');
 });

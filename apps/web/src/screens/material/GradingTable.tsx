@@ -1,4 +1,4 @@
-import { cmd, componentPieces, newId, type Course, type GradeItem, type Label } from '@folio/core';
+import { GradeCardSchema, cmd, componentPieces, newId, type Course, type GradeCard, type GradeItem, type Label } from '@folio/core';
 import { IconButton, InlineNumber, cx } from '@folio/ui';
 import { X } from 'lucide-react';
 import { EditableText } from '../../components/editing/EditableText';
@@ -33,6 +33,31 @@ export function addGradeItem(course: Course): void {
 export function AddGradeItem({ course }: { course: Course }) {
   const t = useT();
   return <AddButton label={t.tasks.addGradeItem} onPress={() => addGradeItem(course)} />;
+}
+
+const WHO = ['individual', 'pair', 'group'] as const;
+const HAND_IN = ['paper', 'online', 'none'] as const;
+const next = <T,>(all: readonly T[], now: T): T => all[(all.indexOf(now) + 1) % all.length]!;
+
+/**
+ * How the component runs, as every page Folio writes is told it: who does a piece and how it is handed in. Shown so a
+ * teacher who means otherwise sees it, and changed with a press, as scoring is.
+ */
+function Runs({ item, name, set }: { item: GradeItem; name: string; set: (fields: Partial<GradeItem>) => void }) {
+  const t = useT();
+  const card: GradeCard = item.card ?? GradeCardSchema.parse({});
+  const link = 'underline decoration-rule-strong underline-offset-2 hover:text-ink';
+  return (
+    <span className="no-print mt-0.5 block text-12 font-normal text-ink-2">
+      <button type="button" aria-label={t.tasks.gradeWhoOf(name)} className={link} onClick={() => set({ card: { ...card, who: next(WHO, card.who), groupSize: undefined } })}>
+        {t.tasks.gradeWho[card.who]}
+      </button>
+      {' · '}
+      <button type="button" aria-label={t.tasks.gradeHandInOf(name)} className={link} onClick={() => set({ card: { ...card, handIn: next(HAND_IN, card.handIn) } })}>
+        {t.tasks.gradeHandIn[card.handIn]}
+      </button>
+    </span>
+  );
 }
 
 function Row({ course, item, i }: { course: Course; item: GradeItem; i: number }) {
@@ -73,6 +98,7 @@ function Row({ course, item, i }: { course: Course; item: GradeItem; i: number }
         >
           {item.judged === 'complete' ? t.tasks.gradeComplete : t.tasks.gradeScored}
         </button>
+        <Runs item={item} name={name} set={set} />
         {/* What Folio told every writer: the pieces of one component count equally. Shown, so a teacher who means otherwise sees it. */}
         {pieces > 1 && <span className="mt-0.5 block text-12 font-normal text-ink-2">{t.tasks.gradePieces(pieces, item.weight > 0 ? String(Math.round((item.weight / pieces) * 10) / 10) : '')}</span>}
       </td>
