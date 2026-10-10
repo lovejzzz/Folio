@@ -4,6 +4,7 @@ import type { Inference } from './inference';
 import { runJob, type Problem } from './jobs';
 import { filesBlock, sameTitle } from './files';
 import { cardIn, gradingIn } from './gradingIn';
+import { placementLine, withPlacement } from './placement';
 import { onlineOutlineRules } from './online';
 import { sessionList, systemPrompt, type OutlineInput } from './prompts';
 import { OutlineDraft } from './schemas';
@@ -67,6 +68,8 @@ export function outlinePrompt(input: OutlineInput): string {
     'Under "policies", copy the class policies the brief or an attached syllabus states, in their words, one policy per paragraph separated by a blank line; leave it empty when they state none, and never write policies of your own.',
     'A lesson can hold more than one piece. Under "also", list what it holds beside its main piece: the weekly work in a week where a larger piece is set; a prospectus, outline or draft on the way to a paper, as a "step" toward it; a piece run in class while another is set. A piece students work toward for weeks (a term paper, a project, a presentation each student gives in turn) is set in the first lesson, under "also" if that lesson has other work, so its brief exists from the start. A milestone the brief names on the way to a larger piece (a proposal, a prospectus, an outline, a draft) is a "step" toward it in the lesson that sets it, due when the brief says: a milestone named only in a summary has no task, and nobody can do it. Add no step of your own that falls due in the same lesson as one the brief names, and none after the last one the piece could still use. A piece handed in at the last lesson asks for nothing that lesson teaches. Say "homeworkStanding" (or "standing" under "also") is true only for a piece whose instructions are the same words every time (a weekly response to the reading, a preparation memo, a journal entry): Folio writes it once and every later lesson shows that one text, and such a piece prepares for the lesson it is due at. Work that has its own questions, problems, data or cases each time (problem sets, worksheets, lab assignments, quizzes) is never standing: each is written for its lesson.',
     'Under "homework", decide the graded or handed-in work each lesson holds, from how the brief or syllabus says the course is assessed. "assignment" is a graded piece set in that lesson to be done outside class: every lesson when the brief sets weekly problem sets or homework, and only as many lessons as the brief says when it says how often (twice a week is two lessons in five); only the lesson where it is set when there is one final essay, project or portfolio. "step" is a short ungraded step toward a larger graded piece, such as choosing a question, an outline or a draft section; use it in the lessons leading up to that piece. "test" is a written quiz, test or exam taken in that lesson: Folio writes its paper, key and points. "inclass" is other work done and graded in that lesson with a rubric: a presentation, a seminar, an oral interview, an essay or a piece made in class. A piece students take in turns (one presenter each week) begins in the second lesson at the earliest: nobody can prepare a graded turn before the course has met. "none" is for a lesson where nothing is handed in or graded. Every graded component is held by at least one lesson, as "assignment", "test" or "inclass", except one spread through every lesson with nothing to write for it (exit tickets). Participation that carries a share of the grade is "inclass" in the first lesson, so that how it is judged and recorded is written once. A rubric-graded piece that students take turns at through the term (leading a seminar, presenting) is "inclass" in the first lesson where it happens, so its brief and rubric are written once. When the course has both weekly work and larger graded pieces such as papers or projects, each larger piece is still set in the lesson where it is set, with "homeworkToward" naming it, and that lesson\'s weekly work goes under "also": a graded paper that no lesson sets is never written, and weekly work is set every week. Set a larger piece only once the lessons it draws on have been taught. When neither says how the course is assessed, use "assignment" for every lesson. Under "homeworkToward", name the graded component the work counts toward, as you named it under "grading". Under "homeworkDue", give the number of the lesson at whose start an assignment or step is handed in: usually the next lesson for a weekly set or a step; for a larger piece, the week the brief gives, or a lesson late enough that everything it asks for has been taught and students have had time to write it.',
+    // Said last: it takes back, for the components it names, what the lines above leave to the outline.
+    placementLine(stated, input.lessonCount),
   ];
   if (weekly(input)) parts.push(onlineOutlineRules(input.online?.hoursPerWeek ?? 9));
   if (input.sources.length) {
@@ -99,7 +102,8 @@ export async function generateOutline(inference: Inference, req: NewCourseReques
     tidy: (v) => tidyOutline({ ...v, lessons: v.lessons.slice(0, SHAPE_LIMITS.lessons.max) }),
     check: (v): Problem[] => [
       ...(req.lessonCount === null || v.lessons.length === req.lessonCount ? [] : [{ index: null, flag: { code: 'lessonCount' as const, values: { got: v.lessons.length, want: req.lessonCount } } }]),
-      ...unheld(v),
+      // (what the rules place is held by no lesson of the outline's, rightly)
+      ...unheld(v).filter(() => !(req.sources.length ? [] : gradingIn(req.brief)).length),
     ],
     signal,
   });
@@ -244,6 +248,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   const spoken = COMPLETION.test(`${req.brief}\n${req.sources.map((s) => s.text).join('\n')}`);
   course.grading = graded.map((g) => ({ id: newId('g'), item: g.item.trim(), weight: whole ? 100 : (g.weight ?? 0), judged: g.scoring === 'completion' && spoken ? ('complete' as const) : ('levels' as const), card: cardOf(g) }));
   for (const lesson of Object.values(course.lessons)) for (const piece of [lesson.homework, ...lesson.also]) piece.toward = names.get(plain(piece.toward)) ?? piece.toward;
+  withPlacement(course, req.sources.length ? [] : gradingIn(req.brief), req.lessonCount === course.lessonOrder.length);
   for (const s of req.sources) {
     const source = createSource(s.title, s.text, 'file');
     course.sources[source.id] = source;

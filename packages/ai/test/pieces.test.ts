@@ -4,7 +4,8 @@ import { OutlineDraft, courseBackground, courseFromOutline, generateSection, les
 import { fakeInference } from './fake';
 
 const req: NewCourseRequest = {
-  brief: 'A graduate seminar: weekly response papers 20%, a presentation each student gives once 20%, a seminar paper 60% with a prospectus due in week 3.',
+  // No weights in the brief: the outline's own reading of what each lesson holds is what these tests are about.
+  brief: 'A graduate seminar: weekly response papers, a presentation each student gives once, and a seminar paper with a prospectus due in week 3.',
   lessonCount: 3,
   minutesPerLesson: 180,
   quizSize: 5,

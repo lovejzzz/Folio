@@ -3,7 +3,7 @@ import { MATERIAL_KINDS, orderedLessons } from '@folio/core';
 import { OutlineDraft, courseBackground, courseFromOutline, groundedIn, lessonContext, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
 
 const req: NewCourseRequest = {
-  brief: 'Political philosophy for second-year undergraduates. Readings from Hobbes and Locke. Problem sets 30%, midterm 30%, final exam 40%.',
+  brief: 'Political philosophy for second-year undergraduates. Readings from Hobbes and Locke. Problem sets, a midterm and a final exam.',
   lessonCount: 2,
   minutesPerLesson: 90,
   quizSize: 5,
@@ -194,13 +194,14 @@ describe('the outline', () => {
   it('takes the names, weights and cards of the graded components from the brief’s own list, however the outline read them', () => {
     const renamed = OutlineDraft.parse({ title: 'W', summary: 'S.', subject: 'Science', level: 'Grade 5', lessons, grading: [{ item: 'Weekly problem sets', weight: 30, handIn: 'online' }, { item: 'Midterm exam', weight: 30 }, { item: 'Final', weight: 40 }] });
     renamed.lessons[0] = { ...renamed.lessons[0]!, homework: 'assignment', homeworkToward: 'Weekly problem sets' };
-    const course = courseFromOutline(req, renamed);
+    const listed = { ...req, brief: `${req.brief} Problem sets 30%, midterm 30%, final exam 40%.` };
+    const course = courseFromOutline(listed, renamed);
     expect(course.grading.map((g) => [g.item, g.weight, g.card?.handIn])).toEqual([['Problem sets', 30, 'unsaid'], ['Midterm', 30, 'unsaid'], ['Final exam', 40, 'unsaid']]);
     // And a piece the outline tied to its own name is tied to the brief's.
     expect(orderedLessons(course)[0]!.homework.toward).toBe('Problem sets');
-    expect(outlinePrompt(req)).toContain('They are these, in this order and by these names exactly: "Problem sets" (30%), "Midterm" (30%), "Final exam" (40%).');
+    expect(outlinePrompt(listed)).toContain('They are these, in this order and by these names exactly: "Problem sets" (30%), "Midterm" (30%), "Final exam" (40%).');
     // A course planned from a syllabus is read by the outline, as before.
-    expect(outlinePrompt({ ...req, sources: [{ title: 'Syllabus', text: 'Week 1' }] })).toContain('list every graded component the brief or an attached syllabus names');
+    expect(outlinePrompt({ ...listed, sources: [{ title: 'Syllabus', text: 'Week 1' }] })).toContain('list every graded component the brief or an attached syllabus names');
   });
 
   it('lets homework count only toward a graded component the course has', () => {
@@ -220,7 +221,7 @@ describe('an outline that leaves a graded component out', () => {
     const draft = (withExam: boolean) => ({ title: 'Biology', summary: 'S.', subject: 'Biology', level: 'Undergraduate', grading: [{ item: 'Problem sets', weight: 20 }, { item: 'Final exam', weight: 80 }], lessons: [lesson('Cells', 'Problem sets'), withExam ? { ...lesson('Review', ''), homework: 'test' as const, homeworkToward: 'Final exam' } : lesson('Review', '')] });
     const { fakeInference } = await import('./fake');
     const model = fakeInference((_r, call) => draft(call > 1));
-    const out = await generateOutline(model, { brief: 'Biology: problem sets 20%, a final exam 80%.', lessonCount: 2, minutesPerLesson: 50, quizSize: 5, level: '', language: 'en', materials: ['plan'], sources: [] });
+    const out = await generateOutline(model, { brief: 'Biology, graded by problem sets and a final exam.', lessonCount: 2, minutesPerLesson: 50, quizSize: 5, level: '', language: 'en', materials: ['plan'], sources: [] });
     expect(model.calls).toHaveLength(2);
     expect(model.calls[1]!.prompt).toMatch(/No lesson holds these graded components, named exactly as under "grading": Final exam/);
     expect(out.lessons[1]!.homeworkToward).toBe('Final exam');
