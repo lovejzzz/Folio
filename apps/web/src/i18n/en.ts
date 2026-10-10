@@ -412,6 +412,16 @@ export const en = {
     },
   },
   lesson: {
+    checks: {
+      title: 'Yours to check',
+      worked: 'What Folio worked out',
+      answersHeld: (v: { count: number }) => `${v.count} ${v.count === 1 ? 'answer' : 'answers'} in the quiz and graded work worked out by a program, as written.`,
+      keysHeld: (v: { count: number; fixed: string[] }) => `${v.count} ${v.count === 1 ? 'sheet key' : 'sheet keys'} worked out by a program${v.fixed.length ? `; corrected in ${v.fixed.map((x) => `“${x}”`).join(', ')}` : ''}.`,
+      notes: (v: { count: number }) => `${v.count} ${v.count === 1 ? 'note' : 'notes'} from Folio below, each at the part it is about.`,
+      answersUnchecked: (v: { titles: string[]; more: number }) => `Answers no program worked out: ${v.titles.map((x) => `“${x}”`).join('; ')}${v.more ? `, and ${v.more} more` : ''}.`,
+      keysUnchecked: (v: { titles: string[]; more: number }) => `Sheet keys no program worked out: ${v.titles.map((x) => `“${x}”`).join('; ')}${v.more ? `, and ${v.more} more` : ''}.`,
+      toConfirm: (v: { found: string[] }) => `Not in your brief or files, to confirm: ${v.found.join('; ')}.`,
+    },
     objectives: 'Objectives',
     standards: 'Standards',
     objectivesOf: (n: number) => `Objectives of lesson ${n}`,

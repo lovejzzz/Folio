@@ -113,6 +113,8 @@ export const HandoutSchema = z.object({
   key: text.default(''),
   /** A copy of the sheet before it, with supports for students still learning the language. Said to the teacher, never on the sheet. */
   supports: z.boolean().default(false),
+  /** What became of the key when a program worked its numbers out: they held, or one was wrong and was put right. Absent when it was not reached. */
+  keyChecked: z.enum(['held', 'fixed']).optional(),
 });
 export type Handout = z.infer<typeof HandoutSchema>;
 

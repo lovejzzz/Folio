@@ -1,3 +1,4 @@
+import { worthChecking } from '@folio/core';
 import { plainNote } from './answerNote';
 import type { Flag, Task } from '@folio/core';
 import { RUNNER_ERRORS, type Runner } from '@folio/run';
@@ -89,13 +90,7 @@ interface Verdict {
   checks: Check[];
 }
 
-/** Worth a form: an item with code in it, or with enough numbers that something was worked out. */
-export function worthChecking(task: Task): boolean {
-  if (task.kind === 'discussion') return false;
-  const text = task.kind === 'question' ? [task.prompt, ...task.choices.map((c) => c.text), task.answer, task.explanation].join(' ') : [...task.steps, task.answerKey].join(' ');
-  if (task.kind === 'assignment' && !task.answerKey.trim()) return false;
-  return /`[^`]+`|\b(print|def|import|return)\b|[=<>]=|\w\(.*\)/.test(text) || (text.match(/\d+(\.\d+)?/g) ?? []).length >= 4;
-}
+export { worthChecking };
 
 /** The item as the form's writer sees it: choices by number, the keyed one marked. */
 function shownItem(task: Task): unknown {

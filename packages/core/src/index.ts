@@ -19,3 +19,5 @@ export * from './spokenIn';
 export * from './sources';
 export * from './inlineCode';
 export { project } from './projections';
+export * from './locators';
+export * from './checklist';

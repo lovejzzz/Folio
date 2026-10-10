@@ -245,7 +245,11 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     if (p.vocabulary !== undefined) lesson.vocabulary = p.vocabulary;
     if (p.page !== undefined) lesson.page = p.page;
     if (p.facilitation !== undefined) lesson.facilitation = p.facilitation;
-    if (p.handouts !== undefined) lesson.handouts = p.handouts;
+    // What was worked out is the key and the sheet as they were: changed by hand, the key is unchecked again.
+    if (p.handouts !== undefined) {
+      const was = new Map(lesson.handouts.map((h) => [h.id, JSON.stringify([h.key, h.blocks])]));
+      lesson.handouts = p.handouts.map((h) => (h.keyChecked && was.get(h.id) !== JSON.stringify([h.key, h.blocks]) ? { ...h, keyChecked: undefined } : h));
+    }
     markEdited(lesson, 'plan');
   },
   'slides.update': (draft, p) => {
