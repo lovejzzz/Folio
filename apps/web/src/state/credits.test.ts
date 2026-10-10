@@ -34,3 +34,14 @@ describe('the balance', () => {
     expect(useCredits.getState()).toMatchObject({ balance: 640, failed: true });
   });
 });
+
+describe('what a course is said to cost before it is written', () => {
+  it('is the measured cost: in credits at the markup, and in dollars for a teacher with a key of their own', async () => {
+    const { estimateDollars } = await import('./credits');
+    const all = [...MATERIAL_KINDS];
+    // A lesson with every material: 189 credits, 63 cents of calls. Fourteen of them: about nine dollars.
+    expect(estimateCredits(1, all)).toBe(190);
+    expect(estimateDollars(1, all)).toBeCloseTo(0.63, 2);
+    expect(creditsText.ownKey(estimateDollars(14, all))).toBe('About $8.8 at your provider’s prices, as measured on courses like this one.');
+  });
+});

@@ -12,7 +12,10 @@ export const MILLI = 1000;
 export const CREDIT_USD = 0.01;
 export const MARKUP = 3;
 
-/** New school accounts start with enough for about 25 lessons with every material: a 15-week course and most of a second. */
+/**
+ * What new school accounts start with. It was set to cover about 25 lessons with every material; at what a lesson is now
+ * measured to cost (66 cents of calls, 198 credits at the markup) it covers 3. Whether to give more is the owner's to decide.
+ */
 export const FREE_CREDITS = 750;
 /** A wave of new accounts can't farm the free credits: so many a day per network address, so many a month in all. */
 export const FREE_PER_ADDRESS_PER_DAY = 3;

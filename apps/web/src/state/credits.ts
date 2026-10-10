@@ -77,7 +77,7 @@ export const creditsText = {
   notEnough: 'Not enough credits',
   addCredits: 'Add credits',
   youHave: (n: number) => `You have ${n.toLocaleString('en-US')} credits.`,
-  signInToStart: 'Sign in with Google to start. Sign in with a school email (ending in .edu) and you get 750 free credits, enough for about 18 lessons with every material.',
+  signInToStart: 'Sign in with Google to start. Sign in with a school email (ending in .edu) and you get 750 free credits, enough for about 3 lessons with every material.',
   notSchool: 'Free credits come with school email addresses, ending in .edu. Buy credits below, or use your own AI key.',
   signIn: 'Sign in with Google',
   how: 'Claude Sonnet 5.5 writes the plans, slides, study guides, discussions and FAQ; GPT-6.1 Sol writes the quizzes, the assignments and the answer keys, and checks every lesson plan. Each part uses the model that did it best for a fair price. A lesson with every material uses about 40 credits.',
@@ -97,18 +97,28 @@ export const creditsText = {
   thanks: 'Thank you. Your credits are added as soon as Stripe confirms the payment.',
   unavailable: 'Folio credits aren’t switched on yet. Use your own key for now.',
   signInFirst: 'Sign in with Google first.',
+  ownKey: (usd: number) => `About $${usd < 10 ? usd.toFixed(1) : Math.round(usd)} at your provider’s prices, as measured on courses like this one.`,
   estimate: (n: number, have: number | null) => (have === null ? `About ${n.toLocaleString('en-US')} credits.` : `About ${n.toLocaleString('en-US')} credits; you have ${have.toLocaleString('en-US')}.`),
 };
 
 /**
- * Credits a lesson's parts use with Folio's mix (packages/ai/src/adapters/mix.ts), measured in September 2026:
- * the plan by Sonnet 5.5 with its check by GPT-6.1 Sol, quizzes and assignments by GPT-6.1 Sol too, the rest by
- * Sonnet. Rubrics come with the assignments. Overview and syllabus are built from the rest and cost nothing.
- * Since October the slides and the study guide are also shown the lesson's sheets, about a credit more each, and
- * quizzes and assignments are written by GPT-6.1 Sol (three and five credits, where Luna's were one), as are the keys
- * to a lesson's sheets (two credits more on the plan).
+ * Credits a lesson's parts use with Folio's mix (packages/ai/src/adapters/mix.ts): what each part's calls cost at the
+ * providers' prices, times the markup (server/src/credits.ts), a credit being a cent. Measured on 9 October 2026 on a
+ * paid run of one course of a lecture and a lab, two lessons, 66 cents of calls a lesson:
+ * - the plan with its reading, its mend, its sheets, their keys and the check of the keys: 28 cents;
+ * - slides 8, study guide 5, FAQ 3, discussion prompts 2 (written with more thought since 0.0.33);
+ * - the quiz with the check of its answers 5, the graded work with its check 11.
+ * The numbers here before were a third of these: they came from a count of characters that left out the models' thinking,
+ * and from before the checks and mends that have been added since. Rubrics come with the assignments. Overview and
+ * syllabus are built from the rest and cost nothing.
  */
-const PER_LESSON: Partial<Record<string, number>> = { plan: 13, slides: 7, quiz: 3, study: 6, faq: 3, discussions: 3, assignments: 5, rubrics: 0 };
+const PER_LESSON: Partial<Record<string, number>> = { plan: 85, slides: 25, quiz: 16, study: 14, faq: 10, discussions: 7, assignments: 32, rubrics: 0 };
+
+/** About what the same lessons cost a teacher who writes with their own key, in dollars at the providers' prices. */
+export function estimateDollars(lessons: number, kinds: readonly string[]): number {
+  const each = kinds.reduce((sum, k) => sum + (PER_LESSON[k] ?? 0), 0);
+  return (lessons * each) / MARKUP / 100;
+}
 
 /** About how many credits writing these lessons with these materials takes, rounded up to ten. */
 export function estimateCredits(lessons: number, kinds: readonly string[]): number {
