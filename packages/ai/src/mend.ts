@@ -171,7 +171,8 @@ export function applyPlanMend(plan: PlanDraft, mend: PlanMend): Mended<PlanDraft
   const changed = [...[...segments.keys()].sort((a, b) => a - b).map((n) => `Segment ${n}`), ...(mend.keyIdeas.length >= 2 ? ['the key ideas'] : []), ...(mend.vocabulary.length ? ['the vocabulary'] : [])];
   const value: PlanDraft = {
     keyIdeas: mend.keyIdeas.length >= 2 ? mend.keyIdeas : plan.keyIdeas,
-    segments: plan.segments.map((s, i) => segments.get(i + 1) ?? s),
+    // A segment written again without saying what is on the screen keeps what it had: left out is not taken away.
+    segments: plan.segments.map((s, i) => (segments.has(i + 1) ? { ...segments.get(i + 1)!, shown: segments.get(i + 1)!.shown ?? s.shown } : s)),
     vocabulary: mend.vocabulary.length ? mend.vocabulary : plan.vocabulary,
   };
   return { value, changed, left: mend.left };

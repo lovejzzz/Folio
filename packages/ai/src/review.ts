@@ -55,7 +55,7 @@ export type PlanIssue = PlanReviewDraft['issues'][number];
 function planText(plan: PlanDraft): string {
   const ideas = plan.keyIdeas.map((k, i) => `Key idea ${i + 1}: ${k}`).join('\n');
   const segments = plan.segments
-    .map((s, i) => `Segment ${i + 1} (${s.kind}, ${s.minutes} min): ${s.title}\nDescription: ${s.description}\nTeacher notes: ${s.teacherNotes || '(none)'}`)
+    .map((s, i) => `Segment ${i + 1} (${s.kind}, ${s.minutes} min): ${s.title}\nDescription: ${s.description}${s.shown?.length ? `\nOn the screen: ${s.shown.join(' | ')}` : ''}\nTeacher notes: ${s.teacherNotes || '(none)'}`)
     .join('\n\n');
   const vocabulary = plan.vocabulary.map((v, i) => `Vocabulary ${i + 1}: ${v.term}: ${v.definition}`).join('\n');
   return [ideas, segments, vocabulary].filter(Boolean).join('\n\n');

@@ -63,6 +63,8 @@ export const SegmentSchema = z.object({
   minutes: z.number().int().min(0).max(600),
   description: text,
   teacherNotes: text,
+  /** What students see on the screen in this segment, each item in full; the slides take them from here. Absent in plans written before this. */
+  shown: z.array(text).optional(),
 });
 export type Segment = z.infer<typeof SegmentSchema>;
 

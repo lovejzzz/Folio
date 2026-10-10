@@ -109,9 +109,21 @@ function slideVisual(table: SlideDraft['table'], chart: SlideDraft['chart']): { 
   return {};
 }
 
+/**
+ * What the plan puts on the screen and no slide carries. Asked for once more, and let be after that: the deck is the
+ * teacher's to change, and a slide that words an item its own way is not a fault worth a note.
+ */
+function unshown(v: SlidesDraft, lesson: Lesson): Problem[] {
+  const plain = (text: string) => text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+  const deck = plain(JSON.stringify(v.slides.map(({ notes: _notes, ...slide }) => slide)));
+  const missing = lesson.segments.flatMap((s) => s.shown ?? []).filter((item) => plain(item).length >= 12 && !deck.includes(plain(item).slice(0, 40)));
+  return missing.length ? [{ index: null, advisory: true, flag: { code: 'schemaIssue', values: { path: 'slides', issue: `The plan puts these on the screen, and no slide carries them in the plan's words: ${missing.map((m) => `"${m.length > 140 ? `${m.slice(0, 140)}…` : m}"`).join('; ')}. Give each a slide, whole` } } }] : [];
+}
+
 const slides: SectionJob<SlidesDraft> = {
   schema: SlidesDraft,
   tidy: (v, course) => tidySlides(v, course.language),
+  check: (v, _course, lesson) => unshown(v, lesson),
   toCommands: (v, problems, _course, lesson) => [
     cmd('section.fill', {
       lessonId: lesson.id,
@@ -302,7 +314,7 @@ export async function planReadAgain(inference: Inference, reviewer: Inference, c
   const draft: PlanDraft = {
     keyIdeas: lesson.keyIdeas,
     vocabulary: lesson.vocabulary.map(({ term, definition }) => ({ term, definition })),
-    segments: lesson.segments.map(({ kind, session, title, minutes, description, teacherNotes }) => ({ kind, session: session + 1, title, minutes, description, teacherNotes })),
+    segments: lesson.segments.map(({ kind, session, title, minutes, description, teacherNotes, shown }) => ({ kind, session: session + 1, title, minutes, description, teacherNotes, ...(shown ? { shown } : {}) })),
   };
   const mend: Mend<PlanDraft> = async (value, notes) => {
     const mended = await mendPlan(inference, course, lesson, value, notes, signal);
