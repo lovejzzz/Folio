@@ -4,6 +4,7 @@ import { cmd, lessonPieces, newId, type Command, type Course, type Handout, type
 import { z } from 'zod';
 import { codeFaults } from './codeLines';
 import { keysChecked } from './keyCheck';
+import { groundsOf, markedForStudents } from './locators';
 import type { Runner } from '@folio/run';
 import { sheetLeads } from './sheetLeads';
 import { overfull, overfullNote } from './sheetTime';
@@ -146,7 +147,7 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
     const keyOf = (title: string) => withoutSelfReport(keyed?.keys.find((k) => k.title.trim() === title.trim())?.key ?? '');
     // A sheet said "the average is 2.5, make it print 2.5" where it is 3.5; its key warned the teacher and the sheet was printed as it was.
     const mended = (keyed?.corrections ?? []).reduce((now, fix) => (fix.find.trim() && now.includes(JSON.stringify(fix.find).slice(1, -1)) ? now.split(JSON.stringify(fix.find).slice(1, -1)).join(JSON.stringify(fix.replace).slice(1, -1)) : now), JSON.stringify(result.value.handouts));
-    const handouts = (JSON.parse(mended) as HandoutsDraft['handouts']).map((h) => toHandout({ ...h, key: keyOf(h.title) }));
+    const handouts = (JSON.parse(mended) as HandoutsDraft['handouts']).map((h) => toHandout({ ...markedForStudents(h, groundsOf(course)), key: keyOf(h.title) }));
     // Working every answer makes the keys' writer the second to compute the plan's numbers: a key said "correction to the
     // plan: the standard deviation is 25.79, not 25.70", and the plan, its slides and the study guide kept 25.70.
     const plan = (keyed?.corrections ?? []).reduce((now, fix) => {

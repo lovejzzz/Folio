@@ -1,3 +1,4 @@
+import { groundsOf, markedForStudents } from './locators';
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
 import { tidyFaq, tidyFollowUps, tidyLessonNames, tidyPlanSources, tidySlides, tidyTrueFalse } from './tidy';
@@ -401,7 +402,8 @@ export async function generateSection(
       effort: SECTION_EFFORT[kind],
       write: planTask(kind) === 'folio_module',
       schema: job.schema,
-      tidy: job.tidy ? (v) => job.tidy!(v, course, of) : undefined,
+      // A chapter, a page or an address the teacher did not give is marked wherever students will read it.
+      tidy: (v) => (kind === 'plan' ? (job.tidy ? job.tidy(v, course, of) : v) : markedForStudents(job.tidy ? job.tidy(v, course, of) : v, groundsOf(course))),
       check: job.check ? (v) => job.check!(v, course, of) : undefined,
       repair: !(revise && kind === 'plan' && hasModulePages(course)),
       signal,

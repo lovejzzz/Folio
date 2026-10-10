@@ -72,7 +72,8 @@ describe('the outline', () => {
       ],
     });
     const course = courseFromOutline(req, draft);
-    expect(orderedLessons(course).map((l) => l.readings)).toEqual([['Hobbes, Leviathan, ch. 13–17'], []]);
+    // The work is the teacher's; the chapters are the outline's guess, and say so.
+    expect(orderedLessons(course).map((l) => l.readings)).toEqual([['Hobbes, Leviathan, ch. 13–17 (to confirm)'], []]);
     expect(course.grading.map((g) => [g.item, g.weight])).toEqual([
       ['Problem sets', 30],
       ['Midterm', 30],
@@ -161,7 +162,7 @@ describe('the outline', () => {
     });
     const sources = [{ title: 'Field notes', text: 'What we saw at the pond.' }];
     const course = courseFromOutline({ ...req, sources }, draft);
-    expect(orderedLessons(course).map((l) => l.readings)).toEqual([['Locke, Second Treatise, ch. 5'], ['Field notes, week 2']]);
+    expect(orderedLessons(course).map((l) => l.readings)).toEqual([['Locke, Second Treatise, ch. 5 (to confirm)'], ['Field notes, week 2']]);
   });
 
   it('matches whole words, not fragments of them', () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { unsourcedLocators, withoutUnsourced } from '../src/locators';
+import { markedForStudents, unsourcedLocators, withUnsourcedMarked } from '../src/locators';
 
 describe('where a material sends its reader', () => {
   const brief = 'Principles of microeconomics. Textbook: Mankiw, Principles of Microeconomics, chapters 4 and 5 in the first two weeks. Readings at https://openstax.org/details/books/principles-economics-3e.';
@@ -8,8 +8,10 @@ describe('where a material sends its reader', () => {
     // What the brief holds is the teacher's; a bare "Section 8" or "page 2" is a part of the document in hand.
     expect(unsourcedLocators(text, brief)).toEqual(['Section 6.2', 'pp. 112–118', 'ch. 7', 'https://example.org/elasticity']);
   });
-  it('puts a place to fill where one stood, and leaves the rest as written', () => {
-    expect(withoutUnsourced('Before class: Mankiw, ch. 7, pp. 140-152. Also chapters 4 and 5.', brief)).toBe('Before class: Mankiw, (chapter to confirm), (pages to confirm). Also chapters 4 and 5.');
-    expect(withoutUnsourced('Nothing to find here in 3 steps.', brief)).toBe('Nothing to find here in 3 steps.');
+  it('marks one where students read it, once, and leaves what only the teacher reads', () => {
+    expect(withUnsourcedMarked('Before class: Mankiw, ch. 7, pp. 140-152. Also chapters 4 and 5.', brief)).toBe('Before class: Mankiw, ch. 7 (to confirm), pp. 140-152 (to confirm). Also chapters 4 and 5.');
+    expect(withUnsourcedMarked('Mankiw, ch. 7 (to confirm) and ch. 7 again.', brief)).toBe('Mankiw, ch. 7 (to confirm) and ch. 7 (to confirm) again.');
+    const slides = { slides: [{ title: 'Read ch. 9', bullets: ['Section 9.1'], notes: 'From ch. 9, where the argument is fullest.' }] };
+    expect(markedForStudents(slides, brief)).toEqual({ slides: [{ title: 'Read ch. 9 (to confirm)', bullets: ['Section 9.1 (to confirm)'], notes: 'From ch. 9, where the argument is fullest.' }] });
   });
 });

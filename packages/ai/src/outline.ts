@@ -1,3 +1,4 @@
+import { TO_CONFIRM, withUnsourcedMarked } from './locators';
 import { MATERIAL_KINDS, OnlineSchema, SHAPE_LIMITS, createCourse, materialsForLevel, createSource, emptyLesson, newId, type Course, type Delivery, type Homework, type Lesson, type Language, type MaterialKind, type Online, type Session } from '@folio/core';
 import type { Inference } from './inference';
 import { runJob, type Problem } from './jobs';
@@ -176,8 +177,11 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   const key = (r: string) => r.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
   const named = groundedIn(req);
   const counts = towardGraded(outline);
-  const readings = outline.lessons.map((d) => d.readings.filter((r) => named(r.namedIn)).map((r) => clean(r.work)).filter(Boolean));
-  const seen = new Set(readings.flat().map(key));
+  // The work is the teacher's; the chapter the outline put to it is not, unless the teacher gave it.
+  const grounds = [req.brief, ...req.sources.flatMap((x) => [x.title, x.text])].join('\n');
+  const readings = outline.lessons.map((d) => d.readings.filter((r) => named(r.namedIn)).map((r) => withUnsourcedMarked(clean(r.work), grounds)).filter(Boolean));
+  // A work is the same work with or without the mark on its chapter.
+  const seen = new Set(readings.flat().map((r) => key(r.split(` ${TO_CONFIRM}`).join(''))));
   const squash = (text: string) => text.toLowerCase().replace(/\s+/g, '');
   const given = squash([req.brief, ...req.sources.map((x) => x.text)].join('\n'));
   const dueAt: [Homework, number][] = [];
