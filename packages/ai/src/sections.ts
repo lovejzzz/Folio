@@ -75,19 +75,21 @@ function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flags:
 }
 
 /**
- * A test sat at the next lesson that this plan never tells students of. Told to announce it, a plan closed on "next time
- * extends the comparison", and the first quiz of the course opened a class nobody had warned. Said to the mend, which
- * adds it to the close.
+ * A test sat at the next lesson, said in the plan's close when the plan does not say it. Told to announce it, a plan closed
+ * on "next time extends the comparison"; sent to the mend, it came back the same, and the first quiz of a course opened a
+ * class nobody had warned. Where the next lesson's test is known, the sentence is Folio's own, added to the last segment.
  */
-function unannounced(v: PlanDraft, course: Course, lesson: Lesson): Problem[] {
+export function announced(v: PlanDraft, course: Course, lesson: Lesson): PlanDraft {
   const next = orderedLessons(course)[course.lessonOrder.indexOf(lesson.id) + 1];
-  const test = next ? lessonPieces(next).find((p) => p.kind === 'test') : undefined;
-  if (!test) return [];
+  const test = next ? lessonPieces(next).find((p) => p.kind === 'test' && p.toward.trim()) : undefined;
+  if (!test || course.language !== 'en') return v;
   const named = test.toward.trim().toLowerCase();
   // In one sentence: "a practice quiz on this lesson" beside "next time extends the comparison" announced nothing.
   const sentences = v.segments.flatMap((x) => `${x.description}\n${x.teacherNotes}`.toLowerCase().split(/(?<=[.!?])\s+|\n+/));
-  if (sentences.some((x) => /\bnext (?:time|class|lesson|week|meeting|session)\b/.test(x) && (/\b(?:quiz(?:zes)?|tests?|exams?|midterms?|final)\b/.test(x) || (named && x.includes(named))))) return [];
-  return [{ index: null, flag: { code: 'schemaIssue', values: { path: 'segments', issue: `Next time students sit ${named ? `"${test.toward.trim()}"` : 'a graded test'}, and nothing in this plan tells them. The last segment says so before they leave, in a sentence or two: that it is sat next time and what it covers` } } }];
+  if (sentences.some((x) => /\bnext (?:time|class|lesson|week|meeting|session)\b/.test(x) && (/\b(?:quiz(?:zes)?|tests?|exams?|midterms?|final)\b/.test(x) || x.includes(named)))) return v;
+  const last = v.segments.findLastIndex((x) => x.kind !== 'break');
+  if (last < 0) return v;
+  return { ...v, segments: v.segments.map((x, i) => (i === last ? { ...x, description: `${x.description.trimEnd()}\nBefore students leave, tell them that next time they sit "${test.toward.trim()}", and what it covers.` } : x)) };
 }
 
 const plan: SectionJob<PlanDraft> = {
@@ -470,7 +472,7 @@ export async function generateSection(
     case 'plan':
       if (hasModulePages(course)) return withStart(inference, course, lesson, signal, pageWithRuns(run, moduleJob, { writer: inference, reviewer, now, lesson, signal, options, mendPage }));
       // The sheets the plan hands out are written from the plan as it stands after its review.
-      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, (v) => [...codeFaults(v), ...(plan.check?.(v, now(), lesson) ?? []), ...unannounced(v, now(), lesson)]) : undefined), signal, options.run?.r, options.run?.runner);
+      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, (v) => [...codeFaults(v), ...(plan.check?.(v, now(), lesson) ?? [])]).then((read) => ({ ...read, value: announced(read.value, now(), lesson) })) : undefined), signal, options.run?.r, options.run?.runner);
     case 'slides':
       return run(slides);
     case 'study':

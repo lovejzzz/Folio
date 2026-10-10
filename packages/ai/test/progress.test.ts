@@ -46,14 +46,18 @@ describe('a section taking shape', () => {
     expect(JSON.stringify(result.commands)).toContain('Walk through 6CO2 + 6H2O.');
   });
 
-  it('is sent to the mend when the next lesson sits a test it never tells students of', async () => {
+  it('says in its close that a test is sat next time, when the plan as written does not', async () => {
     const store = new CourseStore(smallCourse());
     const [lesson, next] = orderedLessons(store.getState());
     store.apply([cmd('lesson.homework', { lessonId: next!.id, homework: { kind: 'test', toward: 'Unit quizzes' } })], { label: { key: 'b' }, source: 'teacher' });
-    const writer = fakeInference((req) => (req.task === 'folio_plan_mend' ? mended : planDraft));
-    await generateSection(writer, store.getState(), lesson!.id, 'plan', undefined, { reviewer: fakeInference(() => ({ issues: [] })) });
-    expect(writer.calls.map((c) => c.task).slice(0, 2)).toEqual(['folio_plan', 'folio_plan_mend']);
-    expect(writer.calls[1]!.prompt).toContain('Next time students sit "Unit quizzes", and nothing in this plan tells them.');
+    const writer = fakeInference(() => planDraft);
+    const out = await generateSection(writer, store.getState(), lesson!.id, 'plan', undefined, { reviewer: fakeInference(() => ({ issues: [] })) });
+    expect(writer.calls.map((c) => c.task)).toEqual(['folio_plan']);
+    expect(JSON.stringify(out.commands)).toMatch(/Before students leave, tell them that next time they sit .{1,2}Unit quizzes.{1,2}, and what it covers\./);
+    // A plan that says so itself is left as written.
+    const told = { ...planDraft, segments: planDraft.segments.map((x, i) => (i === planDraft.segments.length - 1 ? { ...x, description: `${x.description} Next time there is a quiz on today's work.` } : x)) };
+    const kept = await generateSection(fakeInference(() => told), store.getState(), lesson!.id, 'plan', undefined, { reviewer: fakeInference(() => ({ issues: [] })) });
+    expect(JSON.stringify(kept.commands)).not.toContain('Before students leave, tell them that next time they sit');
   });
 
   it('keeps the plan as it was when a mend leaves more to put right than it found', async () => {
