@@ -427,7 +427,10 @@ export async function generateSection(
       // A chapter, a page or an address the teacher did not give is marked wherever students will read it.
       tidy: (v) => (kind === 'plan' ? (job.tidy ? job.tidy(v, course, of) : v) : markedForStudents(job.tidy ? job.tidy(v, course, of) : v, groundsOf(course))),
       check: job.check ? (v) => job.check!(v, course, of) : undefined,
-      repair: !(revise && kind === 'plan' && hasModulePages(course)),
+      // A plan that is read and mended afterwards is not written again whole for what its own checks find: minutes that do
+      // not add up go to the mend with the reader's notes, which changes the segments at fault. Written again, the dearest
+      // part of a lesson was paid for twice, once in every two lessons of a paid run.
+      repair: !(revise && kind === 'plan'),
       signal,
       onText: partials(options.onProgress),
     });
@@ -452,7 +455,7 @@ export async function generateSection(
     case 'plan':
       if (hasModulePages(course)) return withStart(inference, course, lesson, signal, pageWithRuns(run, moduleJob, { writer: inference, reviewer, now, lesson, signal, options, mendPage }));
       // The sheets the plan hands out are written from the plan as it stands after its review.
-      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, codeFaults) : undefined), signal, options.run?.r, options.run?.runner);
+      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, (v) => [...codeFaults(v), ...(plan.check?.(v, now(), lesson) ?? [])]) : undefined), signal, options.run?.r, options.run?.runner);
     case 'slides':
       return run(slides);
     case 'study':

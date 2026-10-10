@@ -64,6 +64,8 @@ describe('sheets that ask more than their segment holds', () => {
     const store = new CourseStore(course);
     store.apply(out.commands, { label: { key: 'b' }, source: 'ai' });
     expect(model.sheets).toHaveLength(2);
+    // The room each segment has was said before the first writing, by the count that is made after it.
+    expect(model.sheets[0]!.prompt).toMatch(/the writing a segment's sheets ask comes to no more than these minutes: "Four cases": 8\./);
     expect(model.sheets[1]!.prompt).toMatch(/"Cases" asks for about 24 minutes of writing in "Four cases", which has 10/);
     expect(store.getState().lessons[lesson.id]!.handouts[0]!.blocks.filter((b) => b.type === 'yours')).toHaveLength(4);
     expect(model.calls.filter((c) => c.task === 'folio_plan_mend').map((c) => /Four cases: The sheet students are handed here was shortened to fit the segment's 10 minutes/.test(c.prompt))).toEqual([true]);

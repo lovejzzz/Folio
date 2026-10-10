@@ -47,7 +47,13 @@ interface State<T> {
  */
 export async function reviewed<T>(read: Read<T>, draft: T, onProgress: ((progress: ReadProgress) => void) | undefined, mend?: Mend<T>, check?: (value: T) => Problem[]): Promise<{ value: T; problems: Problem[] }> {
   // What the checks find goes to the same mend as the reader's notes: a caption that is missing is put right where it is missing.
-  const checks = (value: T): ReviewNote[] => (check?.(value) ?? []).flatMap((p) => (p.flag.code === 'schemaIssue' ? [{ code: 'reviewNote' as const, values: { where: 'The page', text: String(p.flag.values.issue) } }] : []));
+  const checks = (value: T): ReviewNote[] =>
+    (check?.(value) ?? []).flatMap((p) => {
+      if (p.flag.code === 'schemaIssue') return [{ code: 'reviewNote' as const, values: { where: 'The page', text: String(p.flag.values.issue) } }];
+      // Minutes that do not add up are put right in the segments, like any other fault of the plan.
+      if (p.flag.code === 'minutesMismatch') return [{ code: 'reviewNote' as const, values: { where: 'The plan', text: `The segments of one meeting add up to ${p.flag.values.total} minutes, and the meeting has ${p.flag.values.target}. Change the minutes of its segments so they add up to ${p.flag.values.target}, and what a shortened segment asks with them; this is the one case in which minutes change.` } }];
+      return [];
+    });
   const count = (s: State<T>) => s.notes.length + s.kept.length + checks(s.value).length;
   try {
     onProgress?.({ type: 'checking' });
