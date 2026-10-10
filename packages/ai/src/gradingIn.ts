@@ -48,7 +48,7 @@ function singular(name: string): string {
   return name.replace(/(\w+)$/, (word) => (/(?:zz|ss|x|ch|sh)es$/i.test(word) ? word.replace(/(?<=zz|ss|x|ch|sh)es$/i, '').replace(/zz$/i, 'z') : /ies$/i.test(word) ? word.replace(/ies$/i, 'y') : /[^s]s$/i.test(word) && !/(?:sis|us|is)$/i.test(word) ? word.slice(0, -1) : word));
 }
 
-const tidy = (name: string) => name.replace(/^(?:and|plus)\s+/i, '').replace(/^(?:an?|the)\s+/i, '').replace(/^\d[\d,]*-word\s+/i, '').replace(QUALIFIER, '').replace(/\s+/g, ' ').trim();
+const tidy = (name: string) => name.replace(/\s*\([^)]*\)/g, '').replace(/^(?:and|plus)\s+/i, '').replace(/^(?:an?|the)\s+/i, '').replace(/^\d[\d,]*-word\s+/i, '').replace(QUALIFIER, '').replace(/\s+/g, ' ').trim();
 /** The first letter raised, unless the word has its own capitals ("iClicker"). */
 const capital = (name: string) => (/^[a-z][A-Z]/.test(name) ? name : name.charAt(0).toUpperCase() + name.slice(1));
 
@@ -68,7 +68,9 @@ function clause(words: string, weights: number[], each: boolean): StatedItem[] {
 export function gradingIn(brief: string): StatedItem[] {
   for (const sentence of brief.split(/(?<=[.;])\s+|\n+/)) {
     if ((sentence.match(/%/g) ?? []).length < 2) continue;
-    const text = sentence.replace(/^[^:]{0,80}:\s*/, '').replace(/[.;]\s*$/, '');
+    // What leads up to the list goes ("Grading:", "Each student builds a proposal across the term:"); a name with its own
+    // colon stays, since that is how the teacher tells four essays apart ("Essay 1: personal narrative").
+    const text = sentence.replace(/^(?:[^:%]*\b(?:grading|graded|assessment|evaluation|grade)\b[^:%]*|(?:[^\s:%]+\s+){4,}[^\s:%]+):\s*/i, '').replace(/[.;]\s*$/, '');
     const items: StatedItem[] = [];
     let from = 0;
     let failed = false;

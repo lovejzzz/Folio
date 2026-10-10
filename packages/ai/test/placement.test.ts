@@ -24,7 +24,7 @@ describe('where a course’s recurring work and its tests fall', () => {
     expect(calc.map((held) => held.filter((p) => p.kind === 'test').map((p) => p.toward))).toEqual([[], ['Midterm 1'], ['Weekly recitation quizzes'], ['Midterm 2'], ['Weekly recitation quizzes'], ['Final exam']]);
   });
 
-  it('gives a course the same work in every lesson however the outline placed it, and keeps the outline’s lessons for a paper', () => {
+  it('gives a course the same work in every lesson however the outline placed it, and keeps the outline’s lessons for a paper', async () => {
     const req: NewCourseRequest = { brief: 'Statistics. Weekly lab worksheets 20%, a midterm 25%, a final exam 30%, and a data analysis project with a short report 25%.', lessonCount: 4, minutesPerLesson: 75, quizSize: 5, level: 'Undergraduate', language: 'en', materials: ['plan', 'assignments'], sources: [] };
     const lesson = (more: object) => ({ title: 'T', summary: 'S.', objectives: ['Do it'], ...more });
     const outline = (lessons: object[]) => OutlineDraft.parse({ title: 'S', summary: 'S.', subject: 'Statistics', level: 'Undergraduate', grading: [{ item: 'Lab worksheets', weight: 20 }, { item: 'Midterm exam', weight: 25 }, { item: 'Final', weight: 30 }, { item: 'Project', weight: 25 }], lessons });
@@ -35,5 +35,13 @@ describe('where a course’s recurring work and its tests fall', () => {
     expect(other).toEqual(one);
     expect(outlinePrompt(req)).toContain('every lesson holds "Weekly lab worksheets"; the tests are sat in these lessons, and nowhere else: lesson 2: "Midterm"; lesson 4: "Final exam".');
     expect(outlinePrompt(req)).toContain('Under "homework" and "also" you place only "Data analysis project"');
+    // An outline that leaves out the one piece it was to place is asked once more, by that piece's name and no other.
+    const { generateOutline } = await import('../src');
+    const { fakeInference } = await import('./fake');
+    const bare = [lesson({ homework: 'none' }), lesson({ homework: 'none' }), lesson({ homework: 'none' }), lesson({ homework: 'none' })];
+    const model = fakeInference((_r, call) => outline(call > 1 ? [bare[0]!, lesson({ homework: 'assignment', homeworkToward: 'Data analysis project', homeworkDue: 4 }), bare[2]!, bare[3]!] : bare));
+    await generateOutline(model, req);
+    expect(model.calls).toHaveLength(2);
+    expect(model.calls[1]!.prompt).toMatch(/No lesson holds these graded components, named exactly as under "grading": Data analysis project\./);
   });
 });

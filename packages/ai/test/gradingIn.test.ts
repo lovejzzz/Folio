@@ -20,6 +20,11 @@ describe('the graded components a brief states', () => {
     expect(read('Weekly programming labs 25%, six programming assignments 25%, two midterm exams on paper 15% each, final exam 20%.')).toEqual(['Weekly programming labs 25', 'Programming assignments 25 x6', 'Midterm exam 1 15', 'Midterm exam 2 15', 'Final exam 20']);
   });
 
+  it('keeps what follows a colon in a name, and drops what stands in brackets', () => {
+    expect(read('Essay 1: personal narrative 15%, Essay 2: rhetorical analysis 20%, Essay 3: researched argument 25%, a portfolio 20%, participation 20%.')).toEqual(['Essay 1: personal narrative 15', 'Essay 2: rhetorical analysis 20', 'Essay 3: researched argument 25', 'Portfolio 20', 'Participation 20']);
+    expect(read('Assessment: homework 40%, a final exam (cumulative) 60%.')).toEqual(['Homework 40', 'Final exam 60']);
+  });
+
   it('reads how each runs from the brief’s own clause for it, and leaves unsaid what the clause does not say', () => {
     const cards = (brief: string) => Object.fromEntries(gradingIn(brief).map((g) => [g.item, cardIn(g.said)]));
     const bio = cards('Online reading quizzes before each lecture 10%, in-class group worksheets 10%, three exams 20% each, a cumulative final 20%.');

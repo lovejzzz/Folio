@@ -4,7 +4,7 @@ import type { Inference } from './inference';
 import { runJob, type Problem } from './jobs';
 import { filesBlock, sameTitle } from './files';
 import { cardIn, gradingIn } from './gradingIn';
-import { placementLine, withPlacement } from './placement';
+import { formOf, placementLine, withPlacement } from './placement';
 import { onlineOutlineRules } from './online';
 import { sessionList, systemPrompt, type OutlineInput } from './prompts';
 import { OutlineDraft } from './schemas';
@@ -84,9 +84,9 @@ export function outlinePrompt(input: OutlineInput): string {
  * test in any lesson: nothing asked that each component be somewhere. Asked for once more; what is still unheld is
  * left as it is, since a component with nothing to write (attendance) is held by no lesson rightly.
  */
-function unheld(v: OutlineDraft): Problem[] {
+function unheld(v: OutlineDraft, mine: string[] = [], placed = false): Problem[] {
   const held = new Set(v.lessons.flatMap((l) => [l.homeworkToward, ...(l.also ?? []).map((p) => p.toward)]).map(plain));
-  const missing = v.grading.map((g) => g.item).filter((item) => item.trim() && !held.has(plain(item)));
+  const missing = (placed ? mine : v.grading.map((g) => g.item)).filter((item) => item.trim() && !held.has(plain(item)));
   return missing.length ? [{ index: null, advisory: true, flag: { code: 'schemaIssue', values: { path: 'lessons', issue: `No lesson holds these graded components, named exactly as under "grading": ${missing.join('; ')}. Each is held by the lessons where it is set, sat or done` } } }] : [];
 }
 
@@ -102,8 +102,8 @@ export async function generateOutline(inference: Inference, req: NewCourseReques
     tidy: (v) => tidyOutline({ ...v, lessons: v.lessons.slice(0, SHAPE_LIMITS.lessons.max) }),
     check: (v): Problem[] => [
       ...(req.lessonCount === null || v.lessons.length === req.lessonCount ? [] : [{ index: null, flag: { code: 'lessonCount' as const, values: { got: v.lessons.length, want: req.lessonCount } } }]),
-      // (what the rules place is held by no lesson of the outline's, rightly)
-      ...unheld(v).filter(() => !(req.sources.length ? [] : gradingIn(req.brief)).length),
+      // (what the rules place is held by no lesson of the outline's, rightly: only what is the outline's to place is asked for)
+      ...unheld(v, req.sources.length ? [] : gradingIn(req.brief).filter((st) => formOf(st).nominated).map((st) => st.item), (req.sources.length ? [] : gradingIn(req.brief)).length > 0),
     ],
     signal,
   });
