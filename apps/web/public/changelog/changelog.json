@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.1.0",
+  "date": "October 10, 2026",
+  "title": "Checkpoint 1",
+  "lede": "Nothing in how Folio writes a course changes in this release. It marks the state the work of the last weeks has reached, with the numbers it was measured at, so that what comes next can be compared against it.",
+  "sections": [
+   {
+    "heading": "Where a lesson stands",
+    "body": "Sixteen university courses were written afresh and the first two lessons of each were read by independent readers who did not know the version: thirty-two lessons. Fourteen had nothing a teacher would trip over in class. Eleven faults that would stop a lesson were counted across the other lessons: three of time, eight where two materials disagree, none of a wrong answer key or a missing piece. The same reading two releases back counted nine, and one release back twenty-one; that release was repaired within the day.",
+    "image": {
+     "src": "/changelog/0.1.0-checkpoint.svg",
+     "alt": "Three readings of thirty-two fresh lessons. Faults that stop a lesson: 9, 21, 11. Lessons with nothing to trip over: 12, 6, 14. Notes from Folio that were true and false: 5 and 5, 3 and 8, 6 and 2",
+     "width": 800,
+     "height": 320
+    }
+   },
+   {
+    "heading": "What is checked by a program",
+    "body": "Numbers in quizzes, graded work and sheet keys are worked out by a program and a wrong one is put right. Python and R that a lesson gives students is run as a student runs it. What a segment asks of students is counted against its minutes. Each lesson opens with a list of what was checked and what is yours to check. On a paid run of two lessons with every material, a lesson cost 65 to 84 cents at the providers’ prices and no answer came back in the wrong shape."
+   },
+   {
+    "heading": "What is not solved",
+    "body": "Seven of the eight disagreements are of one kind: the running of a graded piece told differently by its brief, its key, the plan and the lesson next to it. Who leads today, whether it is scored alone or in pairs, when it is collected. A reading of six lessons in a row found the same across weeks: one weekly worksheet scored out of 12 in some weeks and 16 in others, a midterm’s rules told two ways. A course written twice from one brief can come out with a different number of lessons. Two kinds of note from Folio are still wrong too often. These are what the next releases are for."
+   }
+  ]
+ },
+ {
   "version": "0.0.36",
   "date": "October 10, 2026",
   "title": "One exercise, one version",
