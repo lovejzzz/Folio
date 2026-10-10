@@ -10,9 +10,10 @@ test('readings and the grading scheme carry from the brief to the plan and the s
   await page.getByRole('button', { name: 'Continue' }).click();
 
   // The plan shows each lesson's reading under its objectives; a lesson without one just offers to add it.
-  // A reading the brief never names (the model's handout) is left out.
+  // A reading the brief never names (the model's handout) is left out; the book is the brief's, and its sections, which the
+  // brief did not give, say they are still to be confirmed.
   const second = page.getByRole('region', { name: 'Reading for lesson 2' });
-  await expect(second.getByRole('textbox', { name: 'Reading 1 for lesson 2' })).toHaveText('Campbell Biology, ch. 10.2–10.3');
+  await expect(second.getByRole('textbox', { name: 'Reading 1 for lesson 2' })).toHaveText('Campbell Biology, ch. 10.2–10.3 (to confirm)');
   await expect(second.getByRole('textbox')).toHaveCount(1);
   await expect(page.getByRole('region', { name: 'Reading for lesson 3' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Add a reading' }).nth(2).click();

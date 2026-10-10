@@ -8,6 +8,11 @@ describe('where a material sends its reader', () => {
     // What the brief holds is the teacher's; a bare "Section 8" or "page 2" is a part of the document in hand.
     expect(unsourcedLocators(text, brief)).toEqual(['Section 6.2', 'pp. 112–118', 'ch. 7', 'https://example.org/elasticity']);
   });
+  it('takes a chapter with its sections as one place', () => {
+    // Marked in the middle, "ch. 10.2–10.3" came out as "ch. 10 (to confirm).2–10.3".
+    expect(withUnsourcedMarked('Campbell Biology, ch. 10.2–10.3', brief)).toBe('Campbell Biology, ch. 10.2–10.3 (to confirm)');
+    expect(withUnsourcedMarked('Campbell Biology, ch. 10.2–10.3', `${brief} Campbell Biology, ch. 10.2–10.3.`)).toBe('Campbell Biology, ch. 10.2–10.3');
+  });
   it('marks one where students read it, once, and leaves what only the teacher reads', () => {
     expect(withUnsourcedMarked('Before class: Mankiw, ch. 7, pp. 140-152. Also chapters 4 and 5.', brief)).toBe('Before class: Mankiw, ch. 7 (to confirm), pp. 140-152 (to confirm). Also chapters 4 and 5.');
     expect(withUnsourcedMarked('Mankiw, ch. 7 (to confirm) and ch. 7 again.', brief)).toBe('Mankiw, ch. 7 (to confirm) and ch. 7 (to confirm) again.');

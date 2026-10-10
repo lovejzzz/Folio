@@ -7,7 +7,7 @@
  * document in hand (a safety sheet, the worksheet) as often as a place in a book, and is left alone.
  */
 
-const LOCATOR = /\b(?:chapters?|chs?\.)\s*\d+(?:\s*(?:[-–]|and|to|,)\s*\d+)*|(?:\bsections?|\bsecs?\.|§)\s*\d+\.\d+(?:\.\d+)?(?:\s*(?:[-–]|and|to|,)\s*\d+\.\d+)*|\bpp?\.\s*\d+(?:\s*[-–]\s*\d+)?|\bpages\s+\d+\s*[-–]\s*\d+|https?:\/\/[^\s)"'<>\]]+|\bwww\.[^\s)"'<>\]]+/gi;
+const LOCATOR = /\b(?:chapters?|chs?\.)\s*\d+(?:\.\d+)*(?:\s*(?:[-–]|and|to|,)\s*\d+(?:\.\d+)*)*|(?:\bsections?|\bsecs?\.|§)\s*\d+\.\d+(?:\.\d+)?(?:\s*(?:[-–]|and|to|,)\s*\d+\.\d+)*|\bpp?\.\s*\d+(?:\s*[-–]\s*\d+)?|\bpages\s+\d+\s*[-–]\s*\d+|https?:\/\/[^\s)"'<>\]]+|\bwww\.[^\s)"'<>\]]+/gi;
 
 const plain = (text: string) => text.toLowerCase().replace(/[–—]/g, '-').replace(/\s+/g, ' ');
 

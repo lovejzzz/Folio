@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .bad { fill: #B4472E } .rule { stroke: #CFC8B9 } .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .bad { fill: #E08A6E } .rule { stroke: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="360" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">A KEY, WORKED OUT BY A PROGRAM</text>
+  <rect class="card" x="36" y="64" width="728" height="262" rx="14"/>
+  <text class="ink2" x="56" y="98" font-size="13">Recitation worksheet: fill in (e^h − 1) / h. The key, as first written:</text>
+  <text class="ink2 mono" x="56" y="128">h</text><text class="ink2 mono" x="200" y="128">value</text>
+  <text class="ink mono" x="56" y="152">0.1</text><text class="ink mono" x="200" y="152">1.05171</text>
+  <text class="ink mono" x="56" y="176">0.01</text><text class="bad mono" x="200" y="176">1.01005</text>
+  <text class="bad" x="300" y="176" font-size="13">that is e^0.01 itself: written the same way three times over</text>
+  <text class="ink mono" x="56" y="200">0.001</text><text class="ink mono" x="200" y="200">1.00050</text>
+  <line class="rule" x1="56" y1="222" x2="744" y2="222"/>
+  <text class="ink2" x="56" y="250" font-size="13">A second writer says how each number is worked out; a program works it out.</text>
+  <text class="ink mono" x="56" y="278">(exp(0.01) - 1) / 0.01</text><text class="acc mono" x="290" y="278">= 1.00502</text>
+  <text class="acc" x="400" y="278" font-size="13">the key and the plan’s notes are put right before you see them</text>
+  <text class="ink2" x="56" y="306" font-size="13">Of 101 keys on 32 lessons it reached half, corrected the two that were wrong, and raised no false alarm.</text>
+</svg>

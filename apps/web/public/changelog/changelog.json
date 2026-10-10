@@ -1,5 +1,39 @@
 [
  {
+  "version": "0.0.34",
+  "date": "October 9, 2026",
+  "title": "Keys that are computed, names that hold, chapters that own up",
+  "lede": "The last release said what was next: a number in a key worked out wrongly, sometimes the same wrong number twice. This one starts on what a teacher has to be able to trust without rereading everything.",
+  "sections": [
+   {
+    "heading": "The keys to your sheets are worked out by a program",
+    "body": "A sheet’s answer key had no check of its numbers. Asked to look again, a writer makes the same slip: three separate writings of one calculus lesson all gave e^0.01 where the table wanted (e^0.01 − 1)/0.01. Now a second writer says how each number in a key is worked out from the sheet, a program works it out, and a key that disagrees is corrected and kept only if it then holds; the same number in the plan’s notes is corrected with it. Tried on the 101 keys of 32 lessons, it reached half of them, put right the two that were wrong and raised no false alarm. The other half are not yet reached, and nothing is claimed for them.",
+    "image": {
+     "src": "/changelog/0.0.34-key.svg",
+     "alt": "A worksheet key whose value for h = 0.01 is e to the 0.01 itself; a program works out (exp(0.01) − 1) / 0.01 = 1.00502 and the key and the plan’s notes are corrected",
+     "width": 800,
+     "height": 360
+    }
+   },
+   {
+    "heading": "A piece of work has one name",
+    "body": "Each assignment used to be named by its own writer, often after the next lesson’s plan had already told students to hand it in. Its name is now settled before a word of it is written: what it counts toward, with the lesson’s title when the course has several of the kind. The lesson that sets it, the piece and its rubric, and the lesson that collects it all use that name."
+   },
+   {
+    "heading": "A chapter you did not give says so",
+    "body": "When your brief names a book but not its chapters, Folio suggests them, and of the ones our readers looked up about half were wrong. In the readings, the sheets, the slides and everything else students are handed, a chapter, section, page range or web address that is not in your brief or your files now reads “ch. 7 (to confirm)”. The number stays, since you can confirm it in seconds; the mark tells a student it is not yet your word. On 32 lessons, half had at least one."
+   },
+   {
+    "heading": "What is the same at every meeting is told to every writer",
+    "body": "A brief said Java 21 in IntelliJ and four lessons wrote “a terminal and a text editor”; one lesson told students to bring a calculator to a quiz the next lesson forbade it in. Folio now copies out of your brief what holds at every meeting (the size of the class, how it is grouped, the software and its version, what students have, what is not allowed) and gives it to every writer as what no material may contradict."
+   },
+   {
+    "heading": "Three more false notes gone",
+    "body": "A lab that runs across three segments is measured against all of them, not the longest; a finding that rested on one of Folio’s own instructions and not on your brief is no longer passed to you; and a note about in-class work says which minutes it means."
+   }
+  ]
+ },
+ {
   "version": "0.0.33",
   "date": "October 9, 2026",
   "title": "Lessons that fit their minutes, and notes you can act on",
