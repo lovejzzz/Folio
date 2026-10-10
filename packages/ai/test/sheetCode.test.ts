@@ -67,6 +67,14 @@ describe('the R a lesson gives students, run as they run it', () => {
     expect(r.ran).not.toContain('answer <- c(...)');
   });
 
+  it('takes a class as one sitting: a sheet that goes on from the one before it is not at fault for what that one made', async () => {
+    const course = labCourse(['mean(cars_df$mpg)']);
+    const lesson = orderedLessons(course)[1]!;
+    const two = { ...lesson, handouts: [sheet('Load', ['cars_df <- read.csv("cars.csv")']), sheet('Summaries', ['mean(cars_df$mpg)', 'mean(never_made$x)'])] };
+    const faults = await lessonCodeFaults(fakeR(), { ...course, lessons: { ...course.lessons, [lesson.id]: two } }, two);
+    expect(faults.map((f) => [f.title, f.line])).toEqual([['Summaries', 'mean(never_made$x)']]);
+  });
+
   it('runs a statement set inside a sentence, and leaves a file the teacher hands out to the teacher', async () => {
     const course = labCourse(['x <- 1']);
     const lesson = orderedLessons(course)[1]!;

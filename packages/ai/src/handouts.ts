@@ -37,7 +37,8 @@ export const HandoutsDraft = z.object({
         key: z.string().default('').describe('Leave empty: the key is written from the finished sheet'),
       }),
     )
-    .max(6)
+    // A lab of seven short sheets was sent back whole for being one over six.
+    .max(10)
     .default([]),
 });
 export type HandoutsDraft = z.infer<typeof HandoutsDraft>;

@@ -113,9 +113,10 @@ export function joined(lines: string[], apart: (line: string) => boolean = () =>
   return out;
 }
 
-async function runUnit(runner: LineRunner, unit: CodeUnit): Promise<Stop[]> {
+async function runUnit(runner: LineRunner, unit: CodeUnit, lead: string[] = []): Promise<Stop[]> {
   await runner.fresh();
-  await runner.need(unit.lines.flatMap((l) => [...l.matchAll(/\b(?:library|require)\(\s*["']?([\w.]+)/g)].map((m) => m[1]!)));
+  await runner.need([...lead, ...unit.lines].flatMap((l) => [...l.matchAll(/\b(?:library|require)\(\s*["']?([\w.]+)/g)].map((m) => m[1]!)));
+  for (const line of joined(lead)) if (!SKIPPED.test(line)) await runner.run(line);
   const faults: Stop[] = [];
   const inline = new Set(unit.inline ?? []);
   // What a skipped line would have made is missing for the lines after it: that is the template's doing, not a fault.
@@ -165,8 +166,14 @@ export async function lessonCodeFaults(runner: LineRunner, course: Course, lesso
   const before = orderedLessons(course).slice(0, course.lessonOrder.indexOf(lesson.id));
   for (const unit of before.flatMap((l) => codeUnits(course, l))) await runUnit(runner, unit);
   const faults: CodeFault[] = [];
+  // A class is one sitting: a sheet that says "add these lines to your script" goes on from the sheets before it. Run
+  // alone it stopped for the package the first sheet had loaded, three notes on a first lab. A line that stops for a
+  // name nobody made is run again after the lesson's earlier sheets, and what then runs was never at fault.
+  const sat: string[] = [];
   for (const unit of mine) {
-    const found = await runUnit(runner, unit);
+    const alone = await runUnit(runner, unit);
+    const found = unit.kind === 'handout' && sat.length && alone.some((f) => /could not find function|object '[^']+' not found/.test(f.error)) ? await runUnit(runner, unit, sat) : alone;
+    if (unit.kind === 'handout') sat.push(...unit.lines.filter((l) => !(unit.inline ?? []).includes(l)));
     if (unit.kind !== 'notes') faults.push(...found.map((f) => ({ kind: unit.kind as 'handout' | 'assignment', title: unit.title, ...f })));
   }
   return faults;
