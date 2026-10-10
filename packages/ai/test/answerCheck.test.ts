@@ -93,6 +93,7 @@ describe('what the check found, said for a teacher', () => {
     expect(say('stored answer runs as written and does what is asked', "stored answer does not run as written: NameError: name 'df' is not defined\n  File x")).toBe('the answer runs as written | it stops with NameError: name \'df\' is not defined');
     // The program's words are cut at 300 characters: a long list that lost its closing bracket is still read.
     expect(say('answerKey: …The limit is', "computed [1.5] not among the stored ['6', '0', '15', '3', '5', '8")).toBe('a value in the answer key, after “The limit is” | worked out, it is 1.5; the text there has 6, 0, 15, 3, …');
+    expect(say('answerKey: …the median of $', "computed [48.5] not among the stored ['48,000', '22,000']")).toBe('a value in the answer key, after “the median of $” | worked out, it is 48.5; the text there has 48,000, 22,000');
     // Anything unforeseen is still a sentence, never the program's own.
     expect(say('something new', '{"a": [1]}')).toBe('an answer or its explanation | worked out by a program, it comes out differently');
   });
@@ -181,6 +182,9 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     // Numbers and truths answered together are no one value to look for: the item is left unchecked, not blamed.
     const mixed = await checkAnswers(fakeInference(() => form('(len("a" * 8), 0.0, 32.0, len("a") > 0, len("a") > 5)', 'IQR = ')), nodeRunner(), [key('t_mixed_kinds', 'IQR = 20 − 12 = 8 minutes. The fences are 0 and 32, so 40 is an outlier and 30 is not.')]);
     expect([mixed.checked, mixed.flags.size]).toEqual([0, 0]);
+    // A form that worked in thousands where the key gives dollars is the form's doing: unchecked, not blamed.
+    const thousands = await checkAnswers(fakeInference(() => form('len("a" * 48)', 'so the median of $')), nodeRunner(), [key('t_thousands', 'Salaries are right-skewed, so the median of $48,000 and IQR of $22,000 fit best.')]);
+    expect([thousands.checked, thousands.flags.size]).toEqual([0, 0]);
     // A quotient written out states its terms: the 50 of √(50/5) and the 438 of "438 / 8" are what a form computes on the way.
     expect(await run(key('t_top', 'The sample SD is √(50/5) = 3.16.'), form('sum((x - 10) ** 2 for x in (5, 10, 10, 10, 15))', 'The sample SD is √('))).toBe(0);
     expect(await run(key('t_top2', 'The variance is 438 / 8 = 54.75.'), form('sum(d * d for d in (3, 5, 20, 2))', 'The variance is '))).toBe(0);

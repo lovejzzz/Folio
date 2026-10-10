@@ -334,6 +334,8 @@ def check_item(item, check):
                 # the form's anchor ran past the value it was to find: the number is in the words it quoted
                 if bad and str(s.get('before') or '').rstrip()[-1:] not in ('=', '≈', ':', '') and all(any(num_ok(n[0], n[1], c, s.get('tolerance')) for n in [x for m in numbers(str(s.get('before') or '')) for x in (terms(m[2]) + [m])]) for c in bad): raise Invalid('the anchor already holds the value')
                 if bad and all(any(is_mantissa(n[2], c) for n in stored) for c in bad): raise Invalid('the form computed the digits of a number the text gives with its power of ten')
+                # a table in thousands: the form worked out 48 where the key says $48,000. The form's unit, not the key's fault
+                if bad and all(any(n[0] != 0 and abs(n[0]) in (abs(c) * 1e3, abs(c) * 1e6, abs(c) / 1e3, abs(c) / 1e6) for n in stored) for c in bad): raise Invalid('the form worked in thousands or millions of what the text states')
                 # several values computed, none of them there, and the sentence lists another number of values ("frequencies 3, 3, 1,
                 # 0, 0, 1" against a computed pair): the form worked out something else than the key states
                 said = len(numbers(re.split(r'\.\s|[;\n]', tail.replace('\x60', ''), maxsplit=1)[0]))

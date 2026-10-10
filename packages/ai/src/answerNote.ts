@@ -15,7 +15,9 @@ const WHERE: Record<string, string> = { answerKey: 'answer key', answer: 'answer
 /** A number as a class writes it: 50, not 50.0; and a list of them without the program's brackets. */
 const num = (text: string): string => text.trim().replace(/^['"]|['"]$/g, '').replace(/\.$/, '').replace(/^(-?\d+)\.0$/, '$1');
 const list = (text: string, most = 4): string => {
-  const items = text.split(',').map(num).filter(Boolean);
+  // The program quotes each number it read: split on the quotes, so "48,000" is one number and not 48 and 000.
+  const quoted = [...text.matchAll(/'([^']*)'|"([^"]*)"/g)].map((m) => m[1] ?? m[2] ?? '');
+  const items = (quoted.length ? quoted : text.split(',')).map(num).filter(Boolean);
   return items.slice(0, most).join(', ') + (items.length > most ? ', …' : '');
 };
 const choices = (text: string): string => {

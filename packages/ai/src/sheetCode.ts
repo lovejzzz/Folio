@@ -130,6 +130,9 @@ async function runUnit(runner: LineRunner, unit: CodeUnit): Promise<Stop[]> {
     if (inline.has(line) && (await runner.run(STATEMENT(line)))) continue;
     const error = await runner.run(line);
     if (!error) continue;
+    // A call set in a sentence with the names of its arguments for arguments (`pnorm(x, mean, sd)`) is the form of the call
+    // being told, not a line to run: it stops for a name nobody made.
+    if (inline.has(line) && /object '[^']+' not found|argument .* is missing|non-numeric argument/.test(error)) continue;
     // A package Folio's R does not hold: the lesson is not wrong, and from here on nothing can be told of it.
     if (/there is no package called/i.test(error)) return [...faults, { line, error, unchecked: true }];
     // A file nothing in the course made is one the teacher hands out: the line is theirs to make work, and what it would
