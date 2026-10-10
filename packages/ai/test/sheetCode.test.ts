@@ -67,6 +67,13 @@ describe('the R a lesson gives students, run as they run it', () => {
     expect(r.ran).not.toContain('answer <- c(...)');
   });
 
+  it('fetches a package named before "::" as it does one loaded by library()', async () => {
+    const course = labCourse(['library(dplyr)', 'dplyr::glimpse(NHANES::NHANES)']);
+    const asked: string[] = [];
+    await lessonCodeFaults({ ...fakeR(), need: async (names: string[]) => void asked.push(...names) }, course, orderedLessons(course)[1]!);
+    expect([...new Set(asked)].sort()).toEqual(['NHANES', 'dplyr']);
+  });
+
   it('takes a class as one sitting: a sheet that goes on from the one before it is not at fault for what that one made', async () => {
     const course = labCourse(['mean(cars_df$mpg)']);
     const lesson = orderedLessons(course)[1]!;

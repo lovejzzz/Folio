@@ -115,7 +115,9 @@ export function joined(lines: string[], apart: (line: string) => boolean = () =>
 
 async function runUnit(runner: LineRunner, unit: CodeUnit, lead: string[] = []): Promise<Stop[]> {
   await runner.fresh();
-  await runner.need([...lead, ...unit.lines].flatMap((l) => [...l.matchAll(/\b(?:library|require)\(\s*["']?([\w.]+)/g)].map((m) => m[1]!)));
+  // A package is asked for by `library()` or by its name before "::": `NHANES::NHANES` was never fetched, and its sheet
+  // was said to use a package Folio's R does not have.
+  await runner.need([...lead, ...unit.lines].flatMap((l) => [...l.matchAll(/\b(?:library|require)\(\s*["']?([\w.]+)|\b([A-Za-z][\w.]*):::?[\w.]/g)].map((m) => (m[1] ?? m[2])!)));
   for (const line of joined(lead)) if (!SKIPPED.test(line)) await runner.run(line);
   const faults: Stop[] = [];
   const inline = new Set(unit.inline ?? []);
