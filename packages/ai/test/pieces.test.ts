@@ -276,10 +276,39 @@ describe('the first lesson to run a turn students prepare', () => {
     draft.lessons[0]!.also = [];
     draft.lessons[1] = { ...draft.lessons[1]!, homework: 'inclass', homeworkToward: 'Presentation', homeworkStanding: true, also: [] };
     draft.lessons[2] = { ...draft.lessons[2]!, homework: 'inclass', homeworkToward: 'Presentation', homeworkStanding: true };
+    // Whether a turn is prepared ahead is read once, when the course is outlined, and every lesson is told the same.
+    draft.grading[1] = { ...draft.grading[1]!, prepared: true, handIn: 'none' };
     const course = courseFromOutline(req, draft);
     const [, second, third] = orderedLessons(course);
-    expect(lessonContext(course, second!)).toMatch(/This is the first lesson to run it.*scored turns begin next time/);
+    expect(lessonContext(course, second!)).toMatch(/This is the first lesson to run it.*scored turns begin at the next lesson that runs it/);
     expect(lessonContext(course, third!)).not.toMatch(/This is the first lesson to run it/);
+    draft.grading[1] = { ...draft.grading[1]!, prepared: false };
+    const plain = courseFromOutline(req, draft);
+    expect(lessonContext(plain, orderedLessons(plain)[1]!)).toMatch(/nothing is prepared ahead for it, so it is scored from today/);
+  });
+});
+
+describe('how each graded piece runs', () => {
+  it('is one text for every writer, made from the course’s record', () => {
+    const draft = outline();
+    draft.grading[0] = { ...draft.grading[0]!, handIn: 'online', length: '400 to 500 words' };
+    draft.grading[1] = { ...draft.grading[1]!, who: 'group', groupSize: 3, prepared: true, handIn: 'none' };
+    draft.grading[2] = { ...draft.grading[2]!, source: 'a question the student chooses' };
+    const course = courseFromOutline(req, draft);
+    const told = courseBackground(course);
+    expect(told).toContain('- Weekly response papers (20%): each student\'s own work, done and scored alone; submitted online before the lesson it is due at, and never collected in class; scored with a rubric, which has the same criteria and the same levels every time the piece is set; length: 400 to 500 words.');
+    expect(told).toContain('- Presentation (20%): done in groups of 3, one piece from each group; a student prepares their turn ahead: the first lesson to run it gives out its brief and rubric and the teacher models a turn that is not scored, and scored turns begin at the next lesson that runs it; nothing is handed in: it is scored as it happens;');
+    expect(told).toContain('its data or material: a question the student chooses.');
+    expect(told).toContain('Nothing else is said of who does a graded piece');
+    // A test says what may be used, or that no material settles it.
+    draft.lessons[2] = { ...draft.lessons[2]!, homework: 'test', homeworkToward: 'Seminar paper' };
+    draft.lessons[0]!.also = [];
+    expect(courseBackground(courseFromOutline(req, draft))).toContain('marked in points; what students may bring or use is the teacher\'s to announce, and no material names anything');
+    draft.grading[2] = { ...draft.grading[2]!, allowed: 'closed book, a calculator', points: 50 };
+    expect(courseBackground(courseFromOutline(req, draft))).toContain('marked out of 50 points each time; students may use: closed book, a calculator');
+    // A course outlined before components carried a card is told nothing of the kind.
+    const old = courseFromOutline(req, outline());
+    expect(courseBackground({ ...old, grading: old.grading.map(({ card: _card, ...g }) => g) })).not.toContain('How each graded piece runs');
   });
 });
 

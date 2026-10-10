@@ -5,6 +5,7 @@ import { courseSoFar, dueLesson, dueWords, inClassPieces, ownPiece, planSummary,
 import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, judgedLine, testAsk, trueFalseOrder, universityRubric } from './scales';
 import type { Effort } from './inference';
 import { LIVE_ASKS, MIXED_ASKS, isLiveOnline, isMixedOnline, liveBackground, runOfShow } from './live';
+import { pieceFacts } from './pieceFacts';
 import { sheetsText } from './lessonView';
 import { ONLINE_ASKS, moduleAsk, onlineBackground, onlineHomeworkLine } from './online';
 
@@ -159,7 +160,9 @@ function gradingLine(course: Course): string {
     inClassPieces(course),
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(' ')
+    // A room course's pieces: a week's page has its own rules for when work is in.
+    .concat(hasModulePages(course) || !pieceFacts(course) ? '' : `\n\n${pieceFacts(course)}`);
 }
 
 /**

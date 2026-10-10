@@ -65,6 +65,33 @@ function tooMuch(v: { prompt: string; steps: string[] }, course: Course, lesson:
   return words > WORDS_A_MINUTE * minutes ? [issue(`The plan gives this ${minutes} minutes: ask for about half as much, the parts that matter most, so every group finishes`)] : [];
 }
 
+/**
+ * The rubric of a component's first piece, for the pieces after it. Written each on its own, one weekly worksheet was
+ * scored out of 12 in two weeks and out of 16 in four.
+ */
+export function firstRubric(course: Course, first: Lesson | undefined, toward: string) {
+  const piece = workOf(course, first, toward);
+  return piece?.kind === 'assignment' && piece.rubricId ? course.rubrics[piece.rubricId] : undefined;
+}
+
+/** The rubric a lesson's piece is to match: that of the first piece of its component, when this is a later one of several each written on its own. */
+export function rubricToMatch(course: Course, lesson: Lesson) {
+  const toward = lesson.homework.toward.trim();
+  if (!toward || lesson.homework.kind === 'test' || lesson.homework.standing) return undefined;
+  const first = course.lessonOrder.map((id) => course.lessons[id]!).find((l) => lessonPieces(l).some((p) => p.kind === lesson.homework.kind && p.toward.trim() === toward));
+  return first && first.id !== lesson.id ? firstRubric(course, first, toward) : undefined;
+}
+
+/** A later piece whose rubric is not the first one's in its criteria and levels: asked for once more, then said to the teacher. */
+function otherRubric(v: AssignmentDraft, course: Course, lesson: Lesson): Problem[] {
+  const first = rubricToMatch(course, lesson);
+  if (!first || !first.criteria.length || !v.rubric.criteria.length) return [];
+  const same = first.criteria.length === v.rubric.criteria.length && first.levels.length === v.rubric.levels.length && first.levels.every((l, i) => l.points === v.rubric.levels[i]!.points);
+  if (same) return [];
+  const shape = `${first.criteria.length} criteria (${first.criteria.map((c) => c.name).join('; ')}) and the levels ${first.levels.map((l) => `${l.label} ${l.points}`).join(', ')}`;
+  return [{ index: null, flag: { code: 'schemaIssue', values: { path: 'rubric', issue: `Every piece of "${lesson.homework.toward.trim()}" is scored on the first one's rubric: ${shape}. Keep those criteria and levels; only the descriptors are this piece's own` } }, left: { code: 'reviewNote', values: { where: lesson.homework.toward, text: `This piece's rubric is not the one the first piece of "${lesson.homework.toward.trim()}" was scored on (${shape}): students would be scored out of a different total from one week to the next. Make the two agree.` } } }];
+}
+
 export const assignments: SectionJob<AssignmentDraft> = {
   schema: AssignmentDraft,
   tidy: tidySteps,
@@ -77,6 +104,7 @@ export const assignments: SectionJob<AssignmentDraft> = {
       ? [{ index: null, flag: { code: 'schemaIssue' as const, values: { path: 'answerKey', issue: 'Say how the teacher runs and scores this for a whole class in the lesson' } } }]
       : []),
     ...tooMuch(v, course, lesson),
+    ...otherRubric(v, course, lesson),
     // A program with a fixed test run, or a problem with numbers, has results a marker needs: one came with no key at all.
     ...(lesson.homework.kind === 'assignment' && !lesson.homework.standing && !v.answerKey.trim() && v.steps.some((s) => /`[^`]+`|\d+(?:\.\d+)?\s*[×x*/÷+−-]\s*\d/.test(s))
       ? [{ index: null, flag: { code: 'schemaIssue' as const, values: { path: 'answerKey', issue: 'Give the worked answers or the expected results of what the steps ask for' } } }]

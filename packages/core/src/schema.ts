@@ -311,7 +311,30 @@ export type Override = z.infer<typeof OverrideSchema>;
 /** One component of the course grade, e.g. "Midterm exam" at 30%. */
 /** A weight of 0 is one the brief didn't state: the component is shown without a share until the teacher gives one. */
 /** "complete" when its pieces are graded complete or incomplete; otherwise they are scored (points, rubric levels). One fact, so every page says the same. */
-export const GradeItemSchema = z.object({ id, item: text, weight: z.number().min(0).max(100), judged: z.enum(['levels', 'complete']).optional() });
+/**
+ * How one graded piece runs, the same in every lesson that sets, runs or collects it. Left to each writer, a seminar turn
+ * was "with your assigned group" in its brief and one student's in the plan; a lab notebook was handed in at the end of
+ * class and "not collected in class"; an exam allowed "a calculator and pencils only" one week and a formula sheet the
+ * next. Read once from the teacher's brief when the course is outlined, and said to every writer in the same words.
+ */
+export const GradeCardSchema = z.object({
+  who: z.enum(['individual', 'pair', 'group']).default('individual'),
+  groupSize: z.number().int().min(2).max(12).optional(),
+  /** A student prepares their turn ahead (leads a seminar, presents): the first lesson to run it models a turn and scores none. */
+  prepared: z.boolean().default(false),
+  handIn: z.enum(['paper', 'online', 'none']).default('paper'),
+  /** What a piece marked in points is out of, each time. */
+  points: z.number().int().min(1).optional(),
+  /** What students may use in a test, in the brief's words; empty when it does not say. */
+  allowed: text.default(''),
+  /** The length the brief sets ("750 to 1,000 words"). */
+  length: text.default(''),
+  /** Where its data or material comes from, as the brief says. */
+  source: text.default(''),
+});
+export type GradeCard = z.infer<typeof GradeCardSchema>;
+
+export const GradeItemSchema = z.object({ id, item: text, weight: z.number().min(0).max(100), judged: z.enum(['levels', 'complete']).optional(), card: GradeCardSchema.optional() });
 export type GradeItem = z.infer<typeof GradeItemSchema>;
 
 export const CourseStatusSchema = z.enum(['planning', 'building', 'ready']);

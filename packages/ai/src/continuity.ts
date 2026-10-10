@@ -1,7 +1,8 @@
 import { hasModulePages, lessonPieces, orderedLessons, type Course, type Lesson } from '@folio/core';
 import { filesSoFar } from './earlierFiles';
 import { moduleDigest, moduleSummary } from './online';
-import { EACH_TIME, otherPieces, pieceTitle, workOf } from './workJobs';
+import { preparedTurn } from './pieceFacts';
+import { EACH_TIME, firstRubric, otherPieces, pieceTitle, workOf } from './workJobs';
 
 /** Whether a lesson holds a piece of this kind for this component, as its main piece or beside it. */
 const holds = (l: Lesson, kind: string, toward: string) => lessonPieces(l).some((p) => p.kind === kind && p.toward.trim() === toward);
@@ -159,7 +160,13 @@ export function sharedComponent(course: Course, lesson: Lesson): string {
   if (!last || last.kind !== 'assignment') return told;
   // Its tasks too: told only the prompt, the fourth problem set repeated a problem from the third.
   const tasks = clipNote(last.steps.join(' | '), 700);
-  return `${told} The part before this one, "${last.title}", asked: ${last.prompt}${tasks ? ` Its tasks: ${tasks}` : ''} Keep this part's length, format and demand in line with it, and repeat none of its tasks.`;
+  return `${told} The part before this one, "${last.title}", asked: ${last.prompt}${tasks ? ` Its tasks: ${tasks}` : ''} Keep this part's length, format and demand in line with it, and repeat none of its tasks.${sameRubric(course, sharing[0], toward)}`;
+}
+
+function sameRubric(course: Course, first: Lesson | undefined, toward: string): string {
+  const rubric = firstRubric(course, first, toward);
+  if (!rubric?.criteria.length) return '';
+  return ` Its rubric has the criteria and the levels of the first one set, name for name and point for point (criteria: ${rubric.criteria.map((c) => c.name).join('; ')}; levels: ${rubric.levels.map((l) => `${l.label} ${l.points}`).join(', ')}): only the descriptors are this piece's own.`;
 }
 
 /**
@@ -240,6 +247,11 @@ function firstTurn(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   const before = orderedLessons(course).slice(0, course.lessonOrder.indexOf(lesson.id));
   if (!toward || lesson.homework.standing === false || before.some((l) => holds(l, 'inclass', toward))) return '';
+  // Whether a turn is prepared is the course's fact where it has one: guessed lesson by lesson, one said "scored turns begin
+  // next time" and the next "today's discussion is not scored".
+  const prepared = preparedTurn(course, toward);
+  if (prepared === true) return ' This is the first lesson to run it, and its brief is written with this lesson: today the brief and rubric are given out, the teacher models a turn that is not scored, and who goes first next time is settled; scored turns begin at the next lesson that runs it.';
+  if (prepared === false) return ' This is the first lesson to run it, and its brief is written with this lesson: nothing is prepared ahead for it, so it is scored from today.';
   return ' This is the first lesson to run it, and its brief is written with this lesson: where a student prepares their turn (leading, presenting), today the brief and rubric are given out, the teacher models a turn that is not scored, and who goes first next time is settled; scored turns begin next time. Where nothing is prepared (taking part, answering in class), it is scored from today.';
 }
 

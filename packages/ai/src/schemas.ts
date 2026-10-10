@@ -66,6 +66,16 @@ export const OutlineDraft = z.object({
           .enum(['scored', 'completion'])
           .default('scored')
           .describe('"completion" only when the brief or syllabus says in so many words that this component is graded complete or incomplete, pass or fail, or for credit on doing it. Otherwise "scored": by points or a rubric, as papers, projects, tests and exams are'),
+        // How the piece runs, read once: each writer guessing it, seven of eleven faults that stopped a lesson were one graded
+        // piece told two ways by its brief, its key, the plan and the lesson next to it.
+        who: z.enum(['individual', 'pair', 'group']).default('individual').describe('Who does one piece of it, as the brief says: "pair" or "group" only when the brief says it is done or handed in by pairs or groups; otherwise "individual"'),
+        groupSize: z.number().int().min(2).max(12).nullable().default(null).describe('The size of a group when the brief gives it; otherwise null'),
+        prepared: z.boolean().default(false).describe('True only for a piece where a student prepares a turn ahead of the meeting: leading a seminar, presenting, a debate role'),
+        handIn: z.enum(['paper', 'online', 'none']).default('paper').describe('"online" when the brief says it is submitted online or through a site; "none" when nothing is handed in (participation, a talk, a discussion led); otherwise "paper"'),
+        points: z.number().int().min(1).nullable().default(null).describe('The points one piece of it is out of, when the brief says; otherwise null'),
+        allowed: z.string().default('').describe('For a quiz, test or exam: what the brief says students may use (for example "closed book, a calculator"), in its words; empty when it does not say'),
+        length: z.string().default('').describe('The length the brief sets for one piece of it (for example "750 to 1,000 words"); empty when it sets none'),
+        source: z.string().default('').describe('Where the brief says its data, texts or cases come from (for example "a data set the student chooses"); empty when it does not say'),
       }),
     )
     .default([])

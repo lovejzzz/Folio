@@ -1,5 +1,5 @@
 import { TO_CONFIRM, withUnsourcedMarked } from './locators';
-import { MATERIAL_KINDS, OnlineSchema, SHAPE_LIMITS, createCourse, materialsForLevel, createSource, emptyLesson, newId, type Course, type Delivery, type Homework, type Lesson, type Language, type MaterialKind, type Online, type Session } from '@folio/core';
+import { MATERIAL_KINDS, OnlineSchema, SHAPE_LIMITS, createCourse, materialsForLevel, createSource, emptyLesson, newId, type Course, type Delivery, type GradeCard, type Homework, type Lesson, type Language, type MaterialKind, type Online, type Session } from '@folio/core';
 import type { Inference } from './inference';
 import { runJob, type Problem } from './jobs';
 import { filesBlock, sameTitle } from './files';
@@ -153,6 +153,11 @@ function piecesOf(draft: OutlineDraft['lessons'][number], i: number, counts: (to
 /** How a brief says work is graded on being done, not on how well. */
 const COMPLETION = /\bincomplete\b|\bcompletion\b|\bpass(ed)?\s*(\/|or|-)\s*fail|\bcredit\s*(\/|or)\s*no[ -]credit|\bfor credit\b|\bungraded\b|完成/i;
 
+/** A component's card, as the outline read it from the brief: what was not said keeps its default and is said to no writer. */
+function cardOf(g: OutlineDraft['grading'][number]): GradeCard {
+  return { who: g.who ?? 'individual', ...(g.who === 'group' && g.groupSize ? { groupSize: g.groupSize } : {}), prepared: g.prepared ?? false, handIn: g.handIn ?? 'paper', ...(g.points ? { points: g.points } : {}), allowed: (g.allowed ?? '').trim(), length: (g.length ?? '').trim(), source: (g.source ?? '').trim() };
+}
+
 export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft): Course {
   const course = createCourse({
     title: outline.title,
@@ -217,7 +222,7 @@ export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft):
   course.setup = (outline.setup ?? []).map((f) => f.trim()).filter(Boolean);
   // Held to the teacher's own words as well: no component is graded on completion in a course whose brief and files never speak of it.
   const spoken = COMPLETION.test(`${req.brief}\n${req.sources.map((s) => s.text).join('\n')}`);
-  course.grading = graded.map((g) => ({ id: newId('g'), item: g.item.trim(), weight: whole ? 100 : (g.weight ?? 0), judged: g.scoring === 'completion' && spoken ? ('complete' as const) : ('levels' as const) }));
+  course.grading = graded.map((g) => ({ id: newId('g'), item: g.item.trim(), weight: whole ? 100 : (g.weight ?? 0), judged: g.scoring === 'completion' && spoken ? ('complete' as const) : ('levels' as const), card: cardOf(g) }));
   for (const s of req.sources) {
     const source = createSource(s.title, s.text, 'file');
     course.sources[source.id] = source;

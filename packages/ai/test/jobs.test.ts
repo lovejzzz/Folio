@@ -92,6 +92,27 @@ describe('a graded piece set in several lessons', () => {
     store.apply([cmd('lesson.homework', { lessonId: lessons[1]!.id, homework: { kind: 'assignment', toward: 'Lab report' } })], { label: { key: 'b' }, source: 'teacher' });
     expect(sectionPrompt(store.getState(), store.getState().lessons[lessons[1]!.id]!, 'assignments')).not.toContain('part ');
   });
+
+  it('scores every piece of a component on the first one’s rubric: its criteria and levels are asked for, and another shape is sent back', async () => {
+    const store = new CourseStore(smallCourse());
+    const lessons = orderedLessons(store.getState());
+    store.apply(lessons.map((l) => cmd('lesson.homework', { lessonId: l.id, homework: { kind: 'assignment', toward: 'Problem sets' } })), { label: { key: 'b' }, source: 'teacher' });
+    const levels = (top: number) => [top, top - 1, top - 2, top - 3].map((points, i) => ({ label: ['Excellent', 'Good', 'Developing', 'Beginning'][i]!, points }));
+    const piece = (top: number, criteria: string[]) => ({ title: 'Set', prompt: 'Do it.', steps: ['Read the case', 'Write up your method'], answerKey: '', rubric: { levels: levels(top), criteria: criteria.map((name) => ({ name, descriptors: ['a', 'b', 'c', 'd'] })) } });
+    const first = await generateSection(fakeInference(() => piece(4, ['Method', 'Accuracy', 'Explanation'])), store.getState(), lessons[0]!.id, 'assignments');
+    store.apply(first.commands, { label: { key: 'b' }, source: 'ai' });
+    const second = store.getState().lessons[lessons[1]!.id]!;
+    expect(sectionPrompt(store.getState(), second, 'assignments')).toContain('Its rubric has the criteria and the levels of the first one set, name for name and point for point (criteria: Method; Accuracy; Explanation; levels: Excellent 4, Good 3, Developing 2, Beginning 1)');
+    // Four criteria where the first piece had three: asked for once more, and then said to the teacher in their words.
+    const model = fakeInference(() => piece(4, ['Method', 'Accuracy', 'Explanation', 'Units']));
+    const out = await generateSection(model, store.getState(), second.id, 'assignments');
+    expect(model.calls).toHaveLength(2);
+    expect(model.calls[1]!.prompt).toContain('Every piece of "Problem sets" is scored on the first one\'s rubric: 3 criteria');
+    expect(JSON.stringify(out.commands)).toContain('students would be scored out of a different total from one week to the next');
+    // The same shape with descriptors of its own is taken as it is.
+    const same = fakeInference(() => piece(4, ['Method', 'Accuracy', 'Explanation']));
+    expect([(await generateSection(same, store.getState(), second.id, 'assignments')).flagged, same.calls.length]).toEqual([0, 1]);
+  });
 });
 
 describe('rubric levels in a plan', () => {
