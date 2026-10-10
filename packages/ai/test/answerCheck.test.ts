@@ -192,6 +192,8 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     // An equation whose left side the form computed: what follows "=" is its other side, and the key is not blamed.
     const equation = await checkAnswers(fakeInference(() => form('len("a" * 80)', 'Then 80 =')), nodeRunner(), [key('t_equation', 'At equilibrium supply equals demand. Then 80 = 5P, so P = 16 and Q = 90 − 16 = 74.')]);
     expect([equation.checked, equation.flags.size]).toEqual([0, 0]);
+    // An expression a key writes with a superscript is the one a program prints with "**".
+    expect(await run(key('t_power', 'The new numerator is (t² + 9) − 9 = t². The new denominator is larger.'), form('"t**" + str(len("ab"))', 'The new numerator is (t² + 9) − 9 ='))).toBe(0);
     // A vector with a bare unit: −9î − ĵ − 14k̂ states −9, −1 and −14.
     expect(await run(key('t_vector', 'B×A = −9î − ĵ − 14k̂, of magnitude 16.7.'), form('[len("a" * 9) * -1, len("a") * -1, len("a" * 14) * -1]', 'B×A ='))).toBe(0);
     // A quotient written out states its terms: the 50 of √(50/5) and the 438 of "438 / 8" are what a form computes on the way.

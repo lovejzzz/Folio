@@ -357,7 +357,14 @@ def check_item(item, check):
             import numpy as np
             if isinstance(v, (bool, np.bool_)): return match_text(tail, v)
             want = ' '.join(str(v).split()); got = ' '.join(tail.replace('\x60', '').split()).lstrip('"\'“‘ ')
-            return got.startswith(want), f'stored {got[:60]!r} computed {want[:60]!r}'
+            if got.startswith(want): return True, f'stored {got[:60]!r} computed {want[:60]!r}'
+            # an expression is written many ways: t² for t**2, 2x for 2*x. The same once powers and products are written one
+            # way holds; any other difference in an expression a program printed is its notation, and nobody's mistake
+            sup = str.maketrans('⁰¹²³⁴⁵⁶⁷⁸⁹', '0123456789')
+            one = lambda t: re.sub(r'[\s*·×]', '', re.sub(r'([⁰¹²³⁴⁵⁶⁷⁸⁹]+)', lambda m: '^' + m.group(1).translate(sup), t.replace('**', '^').replace('−', '-')))
+            if one(got).startswith(one(want)): return True, 'the same expression, written another way'
+            if not isinstance(v, str): raise Invalid('the form computed an expression, which the text may write another way')
+            return False, f'stored {got[:60]!r} computed {want[:60]!r}'
         guard(f'stated{k + 1}', f"{s.get('where')}: …{str(s.get('before'))[-50:]}", f)
         if s.get('where') in ('answerKey', 'answer'): key_checked = True
     # ---- code in the stored text that must run as written ----

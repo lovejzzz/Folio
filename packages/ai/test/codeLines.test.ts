@@ -120,6 +120,8 @@ describe('an instruction that comes back as advice', () => {
     expect(withoutEchoes('Score with the rubric from last time; write no criteria of your own. Hear two pairs.')).toBe('Hear two pairs.');
     expect(withoutEchoes('Groups hand in one sheet. Use new cases and numbers, not those from the examples in class. Post solutions after class.')).toBe('Groups hand in one sheet. Post solutions after class.');
     expect(withoutEchoes('Students take the quiz. The quiz is scored by points. Collect the papers.')).toBe('Students take the quiz. Collect the papers.');
+    expect(withoutEchoes('Set the final proposal. Use the deadline wording exactly. Say what builds toward it.')).toBe('Set the final proposal. Say what builds toward it.');
+    expect(withoutEchoes('Keep a roster. Divide the class across the groups without assuming a class size. Assign nothing more.')).toBe('Keep a roster. Assign nothing more.');
     expect(withoutEchoes('Hand out the sheet.\n`x = 1  # written separately`\nThe handout is written separately; do not model it.')).toBe('Hand out the sheet.\n`x = 1  # written separately`');
     expect(withoutEchoes('Each criterion is scored from 1 to 4 points.')).toBe('Each criterion is scored from 1 to 4 points.');
   });
