@@ -41,6 +41,9 @@ export const HandoutsDraft = z.object({
     // A lab of seven short sheets was sent back whole for being one over six.
     .max(10)
     .default([]),
+  // Told its room beforehand, the writer gave fewer items than the plan listed and said nothing: the plan went on telling
+  // of "three conversions" beside a sheet of one, and read out answers to items nobody had (four lessons of thirty-two).
+  fewer: z.array(z.string()).max(12).default([]).describe('The titles of the segments whose sheet gives fewer items than the plan lists for it, or other items; empty when every sheet holds what the plan lists'),
 });
 export type HandoutsDraft = z.infer<typeof HandoutsDraft>;
 
@@ -75,7 +78,7 @@ function graded(lesson: Lesson): string {
 function budget(plan: Content): string {
   const rooms = plan.segments.filter((s) => s.kind !== 'teach' && s.kind !== 'break').map((s) => `"${s.title}": ${Math.max(1, s.minutes - 2)}`);
   if (!rooms.length) return '';
-  return `A sheet is sized to the segment it is used in. Counted as a minute for a short answer or a cell under a question, two for an answer with its working, five for a paragraph, and a quarter of a minute for a blank cell under a one-word heading, the writing a segment's sheets ask comes to no more than these minutes: ${rooms.join('; ')}. A sheet that would ask more gives fewer items, each as full as the plan has it.`;
+  return `A sheet is sized to the segment it is used in. Counted as a minute for a short answer or a cell under a question, two for an answer with its working, five for a paragraph, and a quarter of a minute for a blank cell under a one-word heading, the writing a segment's sheets ask comes to no more than these minutes: ${rooms.join('; ')}. A sheet that would ask more gives fewer items, each as full as the plan has it, and its segment is named under "fewer": the plan is then written again to the sheet.`;
 }
 
 export function handoutsPrompt(course: Course, lesson: Lesson, plan: Content): string {
@@ -154,7 +157,14 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
     const again = fault ? await write(`\n\nA first answer was not usable: ${fault}.`).catch(() => null) : null;
     const result = again && !sheetFault(again.value) && over(again.value).length <= over(first.value).length ? again : first;
     // The shorter sheets kept, the plan's account of those segments is written again from them: it told of the longer ones.
-    const cut = result === again ? over(first.value).filter((o) => !over(again.value).some((still) => still.segment === o.segment)) : [];
+    const shortened = result === again ? over(first.value).filter((o) => !over(again.value).some((still) => still.segment === o.segment)) : [];
+    // And the segments the writer says it gave fewer items for, having been told their room beforehand.
+    const told = (result.value.fewer ?? []).flatMap((title) => {
+      const seg = content.segments.find((x) => x.title.trim().toLowerCase() === title.trim().toLowerCase());
+      const sheets = result.value.handouts.filter((h) => h.usedIn.trim().toLowerCase() === title.trim().toLowerCase()).map((h) => h.title);
+      return seg && sheets.length && !shortened.some((o) => o.segment === seg.title) ? [{ segment: seg.title, minutes: seg.minutes, asked: seg.minutes, sheets }] : [];
+    });
+    const cut = [...shortened, ...told];
     const led = cut.length ? await sheetLeads(inference, course, lesson, content, result.value.handouts, cut, signal).catch(() => content) : content;
     // A key that cannot be had leaves the sheets without one, never the lesson without its sheets.
     const keyed = result.value.handouts.length

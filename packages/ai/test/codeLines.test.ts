@@ -90,6 +90,25 @@ describe('sheets that ask more than their segment holds', () => {
   });
 });
 
+describe('a sheet its writer made shorter than the plan lists', () => {
+  it('is named by its writer, and the plan is written again to it without a second sheet', async () => {
+    const { withHandouts } = await import('../src/handouts');
+    const { CourseStore, cmd, orderedLessons, newId } = await import('@folio/core');
+    const { fakeInference, smallCourse } = await import('./fake');
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const segments = [{ id: newId('x'), session: 0, kind: 'practice' as const, title: 'Three conversions', minutes: 6, description: 'Students work three conversions.', teacherNotes: '1. 2.5 km. 2. 40 g. 3. 0.3 L.' }];
+    const written = { commands: [cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [], content: { segments, keyIdeas: ['k'], vocabulary: [] } })], flagged: 0 };
+    const sheet = { title: 'Conversions', kind: 'worksheet', usedIn: 'Three conversions', copies: 'One each', blocks: [{ type: 'para', text: 'Convert 2,500 m to km.' }, { type: 'yours', text: '', lines: 2 }] };
+    const model = fakeInference((req) => (req.task === 'folio_plan_mend' ? { segments: [{ number: 1, kind: 'practice', session: 1, title: 'Three conversions', minutes: 6, description: 'Students work one conversion.', teacherNotes: '1. 2.5 km.' }], left: [] } : {}), { handouts: [sheet], fewer: ['Three conversions'], keyed: { keys: [], corrections: [] } });
+    const out = await withHandouts(model, course, lesson, written);
+    const store = new CourseStore(course);
+    store.apply(out.commands, { label: { key: 'b' }, source: 'ai' });
+    expect(model.sheets).toHaveLength(1);
+    expect(store.getState().lessons[lesson.id]!.segments[0]).toMatchObject({ description: 'Students work one conversion.', teacherNotes: '1. 2.5 km.' });
+  });
+});
+
 describe('a key and the notes beside a sheet that was cut', () => {
   it('drops what a key\'s writer says of itself, and asks again for notes left telling of the longer sheet', async () => {
     const { withoutSelfReport } = await import('../src/tidy');
