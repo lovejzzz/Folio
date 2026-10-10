@@ -1,5 +1,5 @@
 import { worthChecking } from '@folio/core';
-import { plainNote } from './answerNote';
+import { ANSWER_NOTES, plainNote } from './answerNote';
 import type { Flag, Task } from '@folio/core';
 import { RUNNER_ERRORS, type Runner } from '@folio/run';
 import { z } from 'zod';
@@ -205,8 +205,8 @@ export async function withAnswerChecks<C extends { type: string; payload: unknow
   const tasks = written.commands.flatMap((c) => (c.type === 'tasks.fill' ? ((c as Fill).payload.tasks ?? []) : []));
   if (!runner || !tasks.some(worthChecking)) return written;
   const checked = await checkAnswers(inference, runner, tasks, signal);
-  const { flags, held } = checked;
-  const { fixed } = checked;
+  const { held, fixed } = checked;
+  const flags = ANSWER_NOTES ? checked.flags : new Map<string, Flag[]>();
   if (!flags.size && !held.size && !fixed.size) return written;
   const mark = (t: Task): Task => (fixed.has(t.id) ? { ...fixed.get(t.id)!, checked: true } : flags.has(t.id) ? { ...t, flags: [...t.flags, ...flags.get(t.id)!] } : held.has(t.id) ? { ...t, checked: true } : t);
   const noted = (c: C): C => (c.type === 'tasks.fill' ? { ...c, payload: { ...(c.payload as object), tasks: ((c as Fill).payload.tasks ?? []).map(mark) } } : c);

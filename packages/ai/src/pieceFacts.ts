@@ -26,7 +26,7 @@ function handIn(g: GradeItem, kinds: Set<string>): string {
   if (kinds.has('test')) return '';
   if (card.handIn === 'none') return 'nothing is handed in: it is scored as it happens';
   // What the brief left open is not settled here: said the same in every lesson, an invented way is still invented.
-  if (card.handIn === 'unsaid') return 'the brief does not say how it is handed in, so no material says how, where or when it is collected (not "hand it in before you leave", not "submit online"): a piece is "due" at its lesson and no more is written';
+  if (card.handIn === 'unsaid') return 'the brief does not say how it is handed in, so no material says how, where or when it is collected (not "hand it in before you leave", not "submit online"): a piece is "due at the start of" its lesson, in those words, and no more is written';
   if (kinds.has('inclass')) return card.handIn === 'online' ? 'what is written is submitted online after the lesson it is done in, and nothing is collected in the room' : 'what is written is handed in on paper at the end of the lesson it is done in';
   return card.handIn === 'online' ? 'submitted online before the lesson it is due at, and never collected in class' : 'handed in on paper at the start of the lesson it is due at';
 }

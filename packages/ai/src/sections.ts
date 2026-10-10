@@ -83,10 +83,10 @@ function unannounced(v: PlanDraft, course: Course, lesson: Lesson): Problem[] {
   const next = orderedLessons(course)[course.lessonOrder.indexOf(lesson.id) + 1];
   const test = next ? lessonPieces(next).find((p) => p.kind === 'test') : undefined;
   if (!test) return [];
-  const text = v.segments.map((x) => `${x.description} ${x.teacherNotes}`).join(' ').toLowerCase();
   const named = test.toward.trim().toLowerCase();
-  if (/\b(?:quiz(?:zes)?|tests?|exams?|midterms?|final)\b/.test(text) && /\bnext (?:time|class|lesson|week|meeting)\b/.test(text)) return [];
-  if (named && text.includes(named)) return [];
+  // In one sentence: "a practice quiz on this lesson" beside "next time extends the comparison" announced nothing.
+  const sentences = v.segments.flatMap((x) => `${x.description}\n${x.teacherNotes}`.toLowerCase().split(/(?<=[.!?])\s+|\n+/));
+  if (sentences.some((x) => /\bnext (?:time|class|lesson|week|meeting|session)\b/.test(x) && (/\b(?:quiz(?:zes)?|tests?|exams?|midterms?|final)\b/.test(x) || (named && x.includes(named))))) return [];
   return [{ index: null, flag: { code: 'schemaIssue', values: { path: 'segments', issue: `Next time students sit ${named ? `"${test.toward.trim()}"` : 'a graded test'}, and nothing in this plan tells them. The last segment says so before they leave, in a sentence or two: that it is sat next time and what it covers` } } }];
 }
 

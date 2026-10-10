@@ -1,6 +1,7 @@
 import type { Flag, Handout, Lesson, Task } from '@folio/core';
 import type { Runner } from '@folio/run';
 import { checkAnswers } from './answerCheck';
+import { ANSWER_NOTES } from './answerNote';
 import type { Inference } from './inference';
 import { say } from './lessonView';
 
@@ -34,7 +35,7 @@ export async function keysChecked(inference: Inference, runner: Runner | undefin
       return t?.kind === 'assignment' ? t.answerKey : null;
     };
     // Where it is: a note on a key is read on the plan, beside the notes on its segments.
-    const flags = keyed.flatMap((h) => (out.flags.get(h.id) ?? []).map((f): Flag => (f.code === 'answerCheck' ? { code: 'answerCheck', values: { claim: `the key to “${h.title}”: ${f.values.claim}`, found: f.values.found } } : f)));
+    const flags = !ANSWER_NOTES ? [] : keyed.flatMap((h) => (out.flags.get(h.id) ?? []).map((f): Flag => (f.code === 'answerCheck' ? { code: 'answerCheck', values: { claim: `the key to “${h.title}”: ${f.values.claim}`, found: f.values.found } } : f)));
     // What became of each key is kept with it: the teacher is told which were worked out, and which were not reached.
     const fate = (h: Handout): Handout['keyChecked'] => (fixed(h) ? 'fixed' : out.held.has(h.id) ? 'held' : undefined);
     return { handouts: handouts.map((h) => ({ ...h, key: fixed(h) ?? h.key, ...(fate(h) ? { keyChecked: fate(h) } : {}) })), flags, changed: keyed.flatMap((h) => (fixed(h) ? changedNumbers(h.key, fixed(h)!) : [])) };

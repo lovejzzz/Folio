@@ -312,10 +312,11 @@ describe('the keys to a lesson\'s sheets', () => {
     // The number that changed, for the plan that carried it too.
     expect(out.changed).toEqual([{ find: '1.01005', replace: '1.00502' }]);
     expect(changedNumbers('IQR = 8 minutes.', 'The IQR is 8 minutes.')).toEqual([]);
-    // A correction that does not hold leaves the key as written, with a note that says which key.
+    // A correction that does not hold leaves the key as written and unmarked. No note is left while the check's notes are off
+    // (all seven on one reading were wrong); the lesson's list counts the key among those no program worked out.
     const stuck = await keysChecked(model, scripted([fail('key'), fail('key'), fail('key'), fail('key')]), lesson, sheets as never);
     expect(stuck.handouts[0]!.key).toContain('1.01005');
-    expect(stuck.flags).toEqual([{ code: 'answerCheck', values: { claim: 'the key to “Secants”: an answer or its explanation', found: 'worked out, it is 4; the text has 3' } }]);
+    expect([stuck.flags, stuck.handouts[0]!.keyChecked]).toEqual([[], undefined]);
     // No runner, no check, and the keys as they are.
     expect((await keysChecked(model, undefined, lesson, sheets as never)).handouts).toEqual(sheets);
   });

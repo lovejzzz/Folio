@@ -57,3 +57,12 @@ function foundOf(found: string): string {
 
 /** The note as a teacher reads it: no brackets, no quotes of the program's own, a message's first line only. */
 export const plainNote = (flag: Found): Found => ({ code: 'answerCheck', values: { claim: claimOf(flag.values.claim), found: foundOf(flag.values.found).replace(/[[\]{}]/g, '') } });
+
+/**
+ * Whether what the answer check could not put right is said to the teacher. Off: on one reading of thirty-two fresh lessons
+ * all seven notes it left were wrong ("∞" against a program's "oo", "from 5% to 8%" read past the "to", a choice that
+ * states −1.5 in words). The check still runs and still corrects a key the numbers contradict when the correction holds;
+ * an item it fails and cannot correct is left unmarked, and the lesson's list counts it among the answers no program
+ * worked out. Back on when the readings behind those notes are measured on kept lessons and come to one false in thirty-two.
+ */
+export const ANSWER_NOTES: boolean = false;

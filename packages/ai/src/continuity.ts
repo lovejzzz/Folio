@@ -146,7 +146,7 @@ export function sharedComponent(course: Course, lesson: Lesson): string {
   const sharing = orderedLessons(course).filter((l) => holds(l, lesson.homework.kind, toward));
   if (sharing.length < 2) return '';
   const place = sharing.findIndex((l) => l.id === lesson.id) + 1;
-  if (lesson.homework.kind === 'inclass' && lesson.homework.standing !== false) return `"${toward}" is taken over ${sharing.length} lessons, a group in each: write it once and whole, since the later lessons use it as it stands, with running notes that say who goes in which lesson: so it names nothing only this lesson has (its reading, its case, its volunteer) and says nothing of "today" or "next time" (that a turn is modelled today, or that scoring begins next time, is for this lesson's plan to say: copied into the later lessons, students read it on the day they were scored), and what students do each time is left to each lesson: it speaks of "the questions (or problems) handed out or shown at that meeting", never of a lesson plan, which students do not hold.`;
+  if (lesson.homework.kind === 'inclass' && lesson.homework.standing !== false) return `"${toward}" is taken over ${sharing.length} lessons, a group in each: write it once and whole, since the later lessons use it as it stands, with running notes that say who goes in which lesson: so it names nothing only this lesson has (its reading, its case, its volunteer) and says nothing of "today" or "next time" (that a turn is modelled today, or that scoring begins next time, is for this lesson's plan to say: copied into the later lessons, students read it on the day they were scored); its notes for the teacher are copied on too, so they give no count that is this lesson's (how many pairs or questions, how many minutes, how many students are scored today) and tie no score to a number of items: each lesson's plan gives those; and what students do each time is left to each lesson: it speaks of "the questions (or problems) handed out or shown at that meeting", never of a lesson plan, which students do not hold.`;
   // Papers of one component (two quizzes) told only "cover the lessons so far" came out alike, title and half the questions.
   if (lesson.homework.kind === 'test') {
     const earlier = workOf(course, sharing[place - 2], toward);
@@ -392,7 +392,9 @@ export function inClassPieces(course: Course): string {
       // Told only where the rubric was, a later lesson ran a five-minute "peer review" that two of its three criteria could not score.
       const brief = workOf(course, l, toward);
       const rubric = brief?.kind === 'assignment' && brief.rubricId ? course.rubrics[brief.rubricId] : undefined;
-      return [`"${toward}" has its brief and rubric written with the lesson "${l.title}"${rubric ? ` (scored on: ${rubric.criteria.map((c) => c.name).join('; ')})` : ''}`];
+      // A piece scored as its brief says, with no rubric written: told of "the brief and rubric", materials handed students a rubric that did not exist.
+      const scored = rubric?.criteria.length ? ` (scored on: ${rubric.criteria.map((c) => c.name).join('; ')})` : brief?.kind === 'assignment' ? ' (it has no rubric: it is scored as its brief says, and nothing speaks of a rubric for it)' : '';
+      return [`"${toward}" has its brief${rubric?.criteria.length || brief?.kind !== 'assignment' ? ' and rubric' : ''} written with the lesson "${l.title}"${scored}`];
     }),
   );
   return lines.length ? `${lines.join('; ')}. A lesson that runs one of these says so and scores with that rubric; it writes no criteria of its own, gives students a task in which every criterion has something to show, and puts the brief and rubric before them again as copies in their hands: a slide is never a stand-in for a document ("the brief and rubric, in full"), and carries a line of one only when the line is written out on it.` : '';
