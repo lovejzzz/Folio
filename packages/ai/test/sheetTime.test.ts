@@ -64,6 +64,8 @@ describe('a segment without a sheet against its minutes', () => {
     expect(forTeacher(again(6)[0]!.values.text)).toBe('Counted by its parts this needs about 12 minutes and has 6: 6 × questions (12 min). Cut a part of it, or give it more minutes.');
     // A short practice by its items: six classified, checked once with a neighbor and two heard is 9 for a slot of 6.
     expect(overtime({ segments: [seg('practice', 'Classify', 6)] }, [{ segment: 1, parts: [{ what: 'items', kind: 'short', count: 6 }, { what: 'check', kind: 'compare', count: 1 }, { what: 'heard', kind: 'hear', count: 2 }] }]).map((n) => /about 9 minutes and has 6/.test(n.values.text) && /the number is changed: items are never added/.test(n.values.text))).toEqual([true]);
+    // Three groups reporting and three students answered in seven minutes: 3 × 2 + 3 × 1 = 9, and it is cut.
+    expect(overtime({ segments: [{ ...seg('practice', 'Groups report', 7), kind: 'discuss' as const }] }, [{ segment: 1, parts: [{ what: 'reports', kind: 'report', count: 3 }, { what: 'answers', kind: 'hear', count: 3 }] }]).map((n) => /about 9 minutes and has 7/.test(n.values.text))).toEqual([true]);
     // A quarter over is let be: 11 for 9.
     expect(overtime(plan, [{ segment: 2, parts: [{ what: 'problems', kind: 'worked', count: 3 }, { what: 'pairs', kind: 'pair', count: 1 }, { what: 'heard', kind: 'hear', count: 3 }] }])).toEqual([]);
   });

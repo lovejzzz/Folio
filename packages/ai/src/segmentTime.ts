@@ -10,14 +10,17 @@ import type { PlanDraft } from './schemas';
  * model measures and does not judge.
  */
 
-const KINDS = ['short', 'worked', 'paragraph', 'drawing', 'listed', 'read', 'compare', 'pair', 'hear', 'scored', 'vote', 'revote'] as const;
+const KINDS = ['short', 'worked', 'paragraph', 'drawing', 'listed', 'read', 'compare', 'pair', 'hear', 'report', 'scored', 'vote', 'revote'] as const;
 
 /** Minutes for one of each. */
+// A decision "with a reason" and a cost worked out from a table are worked answers, and a group's report is two minutes
+// where one student's answer is one: counted as short answers and things heard, five short practices that readers found
+// four to six minutes over (three reports and a class reply in seven minutes; six costs from a table in eight) all passed.
 // A question voted on once and explained is two minutes; talked over with neighbors and voted on again, three: three
 // questions in six minutes were sound by every reader, and counted at three each they were sent to be cut. A drawing
 // is two minutes, not a paragraph's five (five shell diagrams came to twenty-five minutes, and the practice was cut to
 // one atom); an item of a list half a minute; a pair heard and given a score a minute and a half.
-const RATE: Record<(typeof KINDS)[number], number> = { short: 1, worked: 2, paragraph: 5, drawing: 2, listed: 0.5, read: 2, compare: 1, pair: 2, hear: 1, scored: 1.5, vote: 2, revote: 3 };
+const RATE: Record<(typeof KINDS)[number], number> = { short: 1, worked: 2, paragraph: 5, drawing: 2, listed: 0.5, read: 2, compare: 1, pair: 2, hear: 1, report: 2, scored: 1.5, vote: 2, revote: 3 };
 /** Once in a segment that votes: the question put up, the devices out, everyone seen to have answered. */
 const VOTING = 1;
 
@@ -38,7 +41,7 @@ export type SegmentParts = z.infer<typeof SegmentParts>;
 
 /** Asked of the plan's reader, after the problems: a count, not a judgment. */
 export const PARTS_ASK =
-  'Then, apart from the problems, count under "parts" what each segment (a break aside) has every student do, as its description and notes say it, one entry for each kind of thing with how many: "short" an answer of a word, a number or a line, or a command typed and run (a set of six short items is six); "worked" an answer with its working shown, or an output read and explained in a sentence; "paragraph" a paragraph written; "drawing" a diagram, sketch or graph drawn by hand; "listed" one item of a list of things named; "read" a page read; "compare" answers checked once against a neighbor\'s; "pair" one turn of telling or explaining to a partner or another group; "hear" one student, pair or group heard by the class; "scored" one student or pair heard and given a score in turn while the class waits (talk in groups going on at once, marked as the teacher passes, is not counted); "vote" one question voted on once and explained, with no talk after it; "revote" one question voted on, talked over with neighbors, then explained or voted on again, all in that one count. A segment in which the teacher only presents has no parts. Count what the words ask for and do not judge the time.';
+  'Then, apart from the problems, count under "parts" what each segment (a break aside) has every student do, as its description and notes say it, one entry for each kind of thing with how many: "short" an answer of a word, a number or a line that needs no working and no reason, or a command typed and run (a set of six short items is six); "worked" an answer that is calculated, or given with its reason, or an output read and explained in a sentence; "paragraph" a paragraph written; "drawing" a diagram, sketch or graph drawn by hand; "listed" one item of a list of things named; "read" a page read; "compare" answers checked once against a neighbor\'s; "pair" one turn of telling or explaining to a partner or another group; "hear" one student\'s answer heard by the class; "report" one pair or group telling the class what it did or found; "scored" one student or pair heard and given a score in turn while the class waits (talk in groups going on at once, marked as the teacher passes, is not counted); "vote" one question voted on once and explained, with no talk after it; "revote" one question voted on, talked over with neighbors, then explained or voted on again, all in that one count. A segment in which the teacher only presents has no parts. Count what the words ask for and do not judge the time.';
 
 type ReviewNote = Extract<Flag, { code: 'reviewNote' }>;
 
