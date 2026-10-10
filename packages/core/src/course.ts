@@ -92,6 +92,7 @@ export function createCourse(input: NewCourseInput, now = new Date().toISOString
     ...(input.online ? { online: input.online } : {}),
     pages: [],
     policies: '',
+    setup: [],
     grading: [],
     objectives: {},
     lessons: {},

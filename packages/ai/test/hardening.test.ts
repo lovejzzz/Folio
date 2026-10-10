@@ -202,7 +202,7 @@ describe('Translate', () => {
 
 describe('the teacher’s own syllabus', () => {
   const req = (syllabus: string): NewCourseRequest => ({ brief: 'Ecology', lessonCount: 1, minutesPerLesson: 50, quizSize: 5, level: '', language: 'en', materials: [], sources: [{ title: 'ENVS110', text: 'Week 1' }, { title: 'Reading', text: 'A chapter' }], syllabus });
-  const outline = { title: 'Ecology', summary: '', subject: '', level: '', grading: [], policies: "", lessons: [] };
+  const outline = { title: 'Ecology', summary: '', subject: '', level: '', grading: [], policies: "", setup: [], lessons: [] };
 
   it('is found by its title however the model wrote it back', () => {
     for (const title of ['ENVS110.pdf', '"ENVS110"', '## ENVS110', ' envs110 ']) {

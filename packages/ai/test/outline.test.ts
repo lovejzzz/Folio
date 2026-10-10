@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MATERIAL_KINDS, orderedLessons } from '@folio/core';
-import { OutlineDraft, courseFromOutline, groundedIn, lessonContext, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
+import { OutlineDraft, courseBackground, courseFromOutline, groundedIn, lessonContext, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
 
 const req: NewCourseRequest = {
   brief: 'Political philosophy for second-year undergraduates. Readings from Hobbes and Locke. Problem sets 30%, midterm 30%, final exam 40%.',
@@ -150,6 +150,15 @@ describe('the outline', () => {
     const [first, second] = orderedLessons(course);
     expect(lessonContext(course, first!)).toContain('Students read before this lesson:\n- Hobbes, Leviathan, ch. 13');
     expect(lessonContext(course, second!)).not.toContain('Students read');
+  });
+
+  it('carries what is the same at every meeting to every writer', () => {
+    const draft = OutlineDraft.parse({ title: 'Intro to programming', summary: 's', subject: 'CS', level: 'Undergraduate', grading: [], lessons: [{ title: 'Variables', summary: 's', objectives: ['o'] }], setup: [' Java 21 in IntelliJ IDEA ', '120 students, seated in fixed groups of four', ''] });
+    const course = courseFromOutline({ ...req, brief: 'Java 21 in IntelliJ IDEA; 120 students in groups of four.' }, draft);
+    expect(course.setup).toEqual(['Java 21 in IntelliJ IDEA', '120 students, seated in fixed groups of four']);
+    expect(courseBackground(course)).toContain('The same at every meeting, as the teacher set it (every material agrees with these, and none says otherwise):\n- Java 21 in IntelliJ IDEA\n- 120 students, seated in fixed groups of four');
+    // A course saved before this has none, and its background says nothing of it.
+    expect(courseBackground({ ...course, setup: [] })).not.toContain('The same at every meeting');
   });
 
   it('keeps only readings named in the brief or an attached source', () => {

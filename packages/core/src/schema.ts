@@ -350,6 +350,8 @@ export const CourseSchema = z.object({
   /** Pages that belong to no week: Start here and the like. */
   pages: z.array(CoursePageSchema).default([]),
   policies: text,
+  /** What is the same at every meeting, as the teacher stated it: class size, grouping, software, what students have. */
+  setup: z.array(text).default([]),
   /** How the course is graded, as the teacher stated it. Empty when not stated. */
   grading: z.array(GradeItemSchema).default([]),
   objectives: z.record(z.string(), ObjectiveSchema),

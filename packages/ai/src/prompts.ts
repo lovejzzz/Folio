@@ -198,6 +198,7 @@ export function courseBackground(course: Course): string {
     briefLine(course),
     // The teacher's rules reach every writer: late days and integrity appeared in one assignment of five.
     course.policies.trim() ? `Class policies, as the teacher set them:\n${clip(course.policies.trim(), 1500)}` : '',
+    course.setup.length ? `The same at every meeting, as the teacher set it (every material agrees with these, and none says otherwise):\n${course.setup.map((f) => `- ${f}`).join('\n')}` : '',
     gradingLine(course),
     sourcesBlock(course),
   ]

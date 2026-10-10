@@ -70,6 +70,7 @@ export const OutlineDraft = z.object({
     )
     .default([])
     .describe('Every graded component the brief names, with the weights it states; empty if it does not say how the course is graded'),
+  setup: z.array(z.string()).max(12).default([]).describe('What is the same at every meeting, as the brief or attached syllabus states it, one fact a line: how many students, how they are seated or grouped, the software and its version, the devices and materials students have, what is not allowed; empty when they state none'),
   policies: z.string().default('').describe('The class policies (late work, attendance, integrity, accommodations) as the brief or attached syllabus states them, one per paragraph; empty when they state none'),
 });
 export type OutlineDraft = z.infer<typeof OutlineDraft>;
