@@ -14,7 +14,10 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
-  retries: 0,
+  // On the shared runners a run of the suite took six minutes where it takes one, and three releases running a different
+  // test failed on main that had passed on the branch for the same commit. There a test is tried once more and reported as
+  // flaky if it then passes; here, where the machine is ours, once is all it gets.
+  retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: `http://localhost:${port}`,

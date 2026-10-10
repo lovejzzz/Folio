@@ -4,9 +4,15 @@ import { expect, test } from './fixtures';
 import { openSample, settled } from './helpers';
 
 async function audit(page: Page, label: string) {
-  await settled(page);
-  const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
-  const summary = results.violations.map((v) => `${label}: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target.join(' ')}`);
+  const read = async () => {
+    await settled(page);
+    const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+    return results.violations.map((v) => `${label}: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target.join(' ')}`);
+  };
+  // Forty-nine elements low in contrast at once is a page measured while it was still fading in, on a runner slow enough that
+  // the fade began after the page had looked still. Contrast alone is looked at once more; anything else stands as found.
+  const first = await read();
+  const summary = first.length && first.every((v) => v.includes(': color-contrast ')) ? await read() : first;
   expect(summary).toEqual([]);
 }
 
