@@ -195,7 +195,7 @@ export const test: SectionJob<TestDraft> = {
 };
 
 // A graded clicker round had a brief ("answer the instructor's questions") and a plan that ran "the clicker questions": nobody wrote one.
-export const EACH_TIME = '; its brief and rubric are one text for every time and hold no questions or problems, so the ones of this time are written out in full, with their answers in the notes, in the segment that runs it';
+export const EACH_TIME = '; its brief (with its rubric, where it has one) is one text for every time and holds no questions or problems, so the ones of this time are written out in full, with their answers in the notes, in the segment that runs it';
 
 const PIECE: Record<string, string> = { assignment: 'the graded assignment', step: 'a short ungraded step toward', test: 'the graded test', inclass: 'the piece graded in class', none: '' };
 

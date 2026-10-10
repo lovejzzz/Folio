@@ -51,7 +51,7 @@ export function pieceFactsOf(course: Course, g: GradeItem): string {
     test && card.who === 'individual' ? '' : who(g),
     // (nothing is said of when an unprepared piece is first scored: "from the first lesson that runs it" came back with the
     // course's first lesson named, which did not run it)
-    card.prepared ? 'a student prepares their turn ahead: the first lesson to run it gives out its brief and rubric and the teacher models a turn that is not scored, and scored turns begin at the next lesson that runs it' : '',
+    card.prepared ? 'a student prepares their turn ahead: the first lesson to run it gives out its brief and the teacher models a turn that is not scored, and scored turns begin at the next lesson that runs it' : '',
     handIn(g, kinds),
     scoring(g, kinds),
     // Unsaid, one lesson allowed "a calculator and pencils only" and the next a formula sheet: what the brief leaves open no material settles.

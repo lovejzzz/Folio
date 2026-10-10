@@ -53,7 +53,7 @@ describe('a section taking shape', () => {
     const writer = fakeInference(() => planDraft);
     const out = await generateSection(writer, store.getState(), lesson!.id, 'plan', undefined, { reviewer: fakeInference(() => ({ issues: [] })) });
     expect(writer.calls.map((c) => c.task)).toEqual(['folio_plan']);
-    expect(JSON.stringify(out.commands)).toMatch(/Before students leave, tell them that next time they sit .{1,2}Unit quizzes.{1,2}, and what it covers\./);
+    expect(JSON.stringify(out.commands)).toMatch(/Before students leave, tell them that next time they sit [^.]*Unit quiz[^.]*, and what it covers\./);
     // A plan that says so itself is left as written.
     const told = { ...planDraft, segments: planDraft.segments.map((x, i) => (i === planDraft.segments.length - 1 ? { ...x, description: `${x.description} Next time there is a quiz on today's work.` } : x)) };
     const kept = await generateSection(fakeInference(() => told), store.getState(), lesson!.id, 'plan', undefined, { reviewer: fakeInference(() => ({ issues: [] })) });

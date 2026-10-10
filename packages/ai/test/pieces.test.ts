@@ -112,7 +112,7 @@ describe('a lesson that holds more than one piece of work', () => {
     expect(model.calls).toHaveLength(2);
     const inclass = { ...first!, also: [], homework: { kind: 'inclass' as const, toward: 'Presentation', standing: true } };
     expect(sectionPrompt(quizzes, inclass, 'assignments')).not.toMatch(/due at the start of the lesson after the one that sets it/);
-    expect(sectionPrompt(quizzes, inclass, 'assignments')).toMatch(/done in class and graded with a rubric written separately.*scored after class/);
+    expect(sectionPrompt(quizzes, inclass, 'assignments')).toMatch(/done in class and graded as its brief says \(with a rubric, where the brief has one\), written separately.*scored after class/);
   });
 
   it('writes each piece once, sets a standing piece again as it stands, and labels each by its component', async () => {
@@ -170,7 +170,7 @@ describe('a piece graded in class every time, with new questions each time', () 
     draft.lessons[2] = { ...draft.lessons[2]!, homework: 'inclass', homeworkToward: 'Presentation', homeworkStanding: true };
     const course = courseFromOutline(req, draft);
     const [first, , third] = orderedLessons(course);
-    for (const lesson of [first!, third!]) expect(lessonContext(course, lesson)).toMatch(/brief and rubric are one text for every time and hold no questions or problems, so the ones of this time are written out in full/);
+    for (const lesson of [first!, third!]) expect(lessonContext(course, lesson)).toMatch(/brief \(with its rubric, where it has one\) is one text for every time and holds no questions or problems, so the ones of this time are written out in full/);
     // A piece run once (a presentation each student gives) scripts nothing for them.
     expect(lessonContext(courseFromOutline(req, outline()), orderedLessons(courseFromOutline(req, outline()))[0]!)).not.toMatch(/the ones of this time/);
   });
@@ -304,7 +304,7 @@ describe('how each graded piece runs', () => {
     const course = courseFromOutline(bare, draft);
     const told = courseBackground(course);
     expect(told).toContain('- Weekly response papers (20%): each student\'s own work, done and scored alone; submitted online before the lesson it is due at, and never collected in class; how it is scored is given on the piece itself; length: 400 to 500 words.');
-    expect(told).toContain('- Presentation (20%): done in groups of 3, one piece from each group; a student prepares their turn ahead: the first lesson to run it gives out its brief and rubric and the teacher models a turn that is not scored, and scored turns begin at the next lesson that runs it; nothing is handed in: it is scored as it happens;');
+    expect(told).toContain('- Presentation (20%): done in groups of 3, one piece from each group; a student prepares their turn ahead: the first lesson to run it gives out its brief and the teacher models a turn that is not scored, and scored turns begin at the next lesson that runs it; nothing is handed in: it is scored as it happens;');
     expect(told).toContain('its data or material: a question the student chooses.');
     expect(told).toContain('These lines are for you, the writer, and are not passed on as advice to the teacher or to students.');
     // What the brief left open is said to be open: an invented way, said the same in every lesson, is still invented.
