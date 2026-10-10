@@ -148,6 +148,10 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     // Which command returns the mean? A value was computed and the choices are commands: nothing to compare, nobody blamed.
     const commands = ['`mean("pulse")`', '`mean(pulse[1])`', '`mean(pulse)`', '`mean(c(68, 76))`'];
     expect(await run(choice('t_cmd', 'Which command returns the mean of `pulse`?', commands, 3, 'It averages all four.'), { checkable: true, setup: 'pulse = [68, 76, 80, 72]', answer_expr: 'sum(pulse) / len(pulse)', choices: values })).toEqual([0, 0]);
+    // A line out of a method does not run alone: what the explanation says of it cannot be tested, and it is not blamed.
+    const lines = ['`return self._items.pop()`', '`return self._items[-1]`', '`return self._items[0]`', '`return self._items.pop(0)`'];
+    const said = { checkable: true, setup: '', choices: [1, 3].map((n) => ({ n, kind: 'code', says_expr: 'raised == False and len(printed) == 0' })) };
+    expect((await run(choice('t_lines', 'Which return statement reads the top without changing the stack?', lines, 2, 'It reads the last item.'), said))[1]).toBe(0);
     // Two statements, each on its own line in its own ticks, are run as two lines: all four came back as SyntaxError.
     const two = ['`xs = [1]`\n`xs = xs + [9]`', '`xs = [1]`\n`xs.append(2)`', '`xs = [2]`\n`xs.append(1)`', '`xs = [1, 2, 3]`\n`xs.pop()`\n`xs.pop(0)`'];
     expect(await run(choice('t_two', 'Which code leaves `xs` as `[1, 2]`?', two, 2, 'It appends 2.'), { checkable: true, setup: '', judge: 'xs == [1, 2]', choices: [1, 2, 3, 4].map((n) => ({ n, kind: 'code' })) })).toEqual([1, 0]);

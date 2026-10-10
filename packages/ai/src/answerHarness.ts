@@ -280,7 +280,10 @@ def check_item(item, check):
             if e.get('says_expr') and e.get('kind') == 'code':
                 def f(n=n, e=e):
                     ns = fresh()
-                    if e.get('kind') == 'code': run_code(strip_ticks(ch[n - 1]['text']), ns, check.get('probe'))
+                    err = run_code(strip_ticks(ch[n - 1]['text']), ns, check.get('probe')) if e.get('kind') == 'code' else None
+                    # a line out of a method (return self._items[-1]) is not a program: run alone it stops for where it stands,
+                    # and nothing is learned of what it does
+                    if (isinstance(err, SyntaxError) and 'outside' in str(err)) or (isinstance(err, NameError) and "'self'" in str(err)): raise Invalid('the choice is a line out of a function and does not run alone')
                     if not not_literal(e['says_expr']): raise Invalid('says_expr is a literal')
                     try: return bool(eval(compile(e['says_expr'], '<cell says>', 'eval'), ns)), f"choice {n}, tested as: {e['says_expr'][:160]}"
                     except BaseException as x: raise Invalid(f'says_expr raised {type(x).__name__}: {x}')
