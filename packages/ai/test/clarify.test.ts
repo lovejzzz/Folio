@@ -32,6 +32,10 @@ describe('reading the brief before planning', () => {
     // Its first answer is a count the plan can take; "one lesson a week" names no count and is left to the outline.
     expect(lessonsToPlan(req, read, [{ question: read.questions[0]!.question, answer: read.questions[0]!.options[0]! }])).toBe(40);
     expect(lessonsToPlan(req, read, [{ question: read.questions[0]!.question, answer: read.questions[0]!.options[1]! }])).toBe(null);
+    // The model reported no count and asked in its own words: the brief's own arithmetic stands, and the question is Folio's.
+    const chem = { ...req, sources: [], brief: 'General Chemistry I: 14 weeks, three 50-minute lectures a week in a large lecture hall.' };
+    const unread = await clarifyCourse(fakeInference(() => ({ lessonCount: null, minutesPerLesson: 50, level: '', questions: [{ ...asked, question: 'Fourteen weeks of three lectures is 42, but Folio plans at most 40. How should it fit?' }] })), chem);
+    expect([unread.lessonCount, unread.questions.length, unread.questions[0]!.options[0]!.slice(0, 10)]).toEqual([42, 1, '40 lessons']);
     // A class that meets daily for a year keeps the model's own question, and so does a count within the limit.
     const year = await clarifyCourse(fakeInference(() => ({ lessonCount: 180, minutesPerLesson: 50, level: '', questions: [asked] })), req);
     expect(year.questions[0]!.question).toBe(asked.question);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { gradingIn } from '../src/gradingIn';
+import { cardIn, gradingIn } from '../src/gradingIn';
 
 const read = (brief: string) => gradingIn(brief).map((g) => `${g.item} ${g.weight}${g.count ? ` x${g.count}` : ''}`);
 
@@ -18,6 +18,17 @@ describe('the graded components a brief states', () => {
     expect(read('Homework problems each week 20%, four in-class quizzes 20%, two exams 20% each, a final exam 20%.')).toEqual(['Homework problems 20', 'In-class quizzes 20 x4', 'Exam 1 20', 'Exam 2 20', 'Final exam 20']);
     expect(read('Reading quizzes at the start of most classes 15%, two short analysis papers 15% each, a midterm 20%, a final exam 25%, participation in discussion 10%.')).toEqual(['Reading quizzes 15', 'Short analysis paper 1 15', 'Short analysis paper 2 15', 'Midterm 20', 'Final exam 25', 'Participation in discussion 10']);
     expect(read('Weekly programming labs 25%, six programming assignments 25%, two midterm exams on paper 15% each, final exam 20%.')).toEqual(['Weekly programming labs 25', 'Programming assignments 25 x6', 'Midterm exam 1 15', 'Midterm exam 2 15', 'Final exam 20']);
+  });
+
+  it('reads how each runs from the brief’s own clause for it, and leaves unsaid what the clause does not say', () => {
+    const cards = (brief: string) => Object.fromEntries(gradingIn(brief).map((g) => [g.item, cardIn(g.said)]));
+    const bio = cards('Online reading quizzes before each lecture 10%, in-class group worksheets 10%, three exams 20% each, a cumulative final 20%.');
+    expect([bio['Online reading quizzes']!.handIn, bio['In-class group worksheets']!.who, bio['Exam 1']!.handIn]).toEqual(['online', 'group', 'unsaid']);
+    const methods = cards('An annotated bibliography 15%, a literature review draft 20%, a methods section 20%, peer review of two classmates\' drafts 10%, the final proposal of 4,000 words 25%, and seminar leadership of one week\'s discussion 10%.');
+    expect([methods['Final proposal']!.length, methods['Seminar leadership']!.prepared, methods['Seminar leadership']!.handIn]).toEqual(['4,000 words', true, 'none']);
+    const java = cards('Weekly programming labs 25%, six programming assignments 25%, two midterm exams on paper 15% each, final exam 20%.');
+    expect([java['Midterm exam 1']!.handIn, java['Weekly programming labs']!.handIn]).toEqual(['paper', 'unsaid']);
+    expect(cards('Homework 40%, a final exam 60% that is closed book with a calculator and one formula sheet.')['Final exam']!.allowed).toBe('closed book, a calculator, one formula sheet');
   });
 
   it('reads nothing where the weights do not come to 100 or no list is given: the outline’s reading stands', () => {

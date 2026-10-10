@@ -85,14 +85,23 @@ export function clarifyPrompt(req: ClarifyRequest): string {
     .join('\n\n');
 }
 
+/** The meetings a brief counts out itself: so many weeks of so many classes a week. Null when it does not say both. */
+export function meetingsIn(brief: string): number | null {
+  const text = digits(brief);
+  const weeks = text.match(/\b(\d{1,2})\s*-?\s*weeks?\b/i)?.[1];
+  const rate = text.match(new RegExp(`\\b(\\d{1,2})\\s+(?:\\d{1,3}-minute\\s+)?${MEETING}\\s+(?:a|per|each|every)\\s+week\\b`, 'i'))?.[1];
+  return weeks && rate ? Number(weeks) * Number(rate) : null;
+}
+
 /**
  * A course a few meetings over what Folio plans is asked about in Folio's own words, the same every time. Left to the
  * model, one brief of 42 lectures was offered "39 lessons", "40 lessons", "one lesson per week, 14 lessons" and "40
  * lessons" as its first answer in four runs, and came out as four courses of 39, 40, 14 and 40 lessons.
  */
-export function overTheLimit(read: ClarifyDraft, req: Pick<ClarifyRequest, 'lessonCount' | 'language'>): ClarifyDraft {
+export function overTheLimit(read: ClarifyDraft, req: Pick<ClarifyRequest, 'lessonCount' | 'language' | 'brief' | 'sessions'>): ClarifyDraft {
   const max = SHAPE_LIMITS.lessons.max;
-  const count = read.lessonCount ?? 0;
+  // The brief's own arithmetic, when the model reported no count: "14 weeks, three lectures a week" is 42 every time.
+  const count = read.lessonCount ?? (req.sessions && req.sessions.length > 1 ? 0 : (meetingsIn(req.brief) ?? 0));
   // A class that meets daily for a year is another question, and the model's own; so is one in another language.
   if (req.lessonCount || req.language !== 'en' || count <= max || count > max * 1.25) return read;
   const over = count - max;
@@ -101,7 +110,7 @@ export function overTheLimit(read: ClarifyDraft, req: Pick<ClarifyRequest, 'less
     question: `Folio plans at most ${max} lessons, and this course has ${count} meetings. How should it fit?`,
     options: [`${max} lessons, one for each meeting, with the ${over} left over (review or exam days) kept inside the lessons beside them`, 'One lesson a week, each holding all of that week\'s meetings', `Only the first ${max} meetings`],
   };
-  return { ...read, questions: [ours, ...read.questions.filter((q) => q.topic !== 'lessons' && !/\b(?:at most|fit|fitted)\b.*\b(?:lessons?|lectures?|meetings?)\b|\b(?:lessons?|lectures?|meetings?)\b.*\b(?:fit|fitted)\b/i.test(q.question))].slice(0, 8) };
+  return { ...read, lessonCount: count, questions: [ours, ...read.questions.filter((q) => q.topic !== 'lessons' && !/\b(?:at most|fit|fitted)\b.*\b(?:lessons?|lectures?|meetings?)\b|\b(?:lessons?|lectures?|meetings?)\b.*\b(?:fit|fitted)\b/i.test(q.question))].slice(0, 8) };
 }
 
 /** Read the brief and files, and ask what is unclear. */

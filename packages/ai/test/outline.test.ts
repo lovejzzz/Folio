@@ -191,11 +191,11 @@ describe('the outline', () => {
     expect(courseFromOutline(bare, two).grading.map((g) => g.weight)).toEqual([0, 0]);
   });
 
-  it('takes the names and weights of the graded components from the brief’s own list, however the outline named them', () => {
+  it('takes the names, weights and cards of the graded components from the brief’s own list, however the outline read them', () => {
     const renamed = OutlineDraft.parse({ title: 'W', summary: 'S.', subject: 'Science', level: 'Grade 5', lessons, grading: [{ item: 'Weekly problem sets', weight: 30, handIn: 'online' }, { item: 'Midterm exam', weight: 30 }, { item: 'Final', weight: 40 }] });
     renamed.lessons[0] = { ...renamed.lessons[0]!, homework: 'assignment', homeworkToward: 'Weekly problem sets' };
     const course = courseFromOutline(req, renamed);
-    expect(course.grading.map((g) => [g.item, g.weight, g.card?.handIn])).toEqual([['Problem sets', 30, 'online'], ['Midterm', 30, 'unsaid'], ['Final exam', 40, 'unsaid']]);
+    expect(course.grading.map((g) => [g.item, g.weight, g.card?.handIn])).toEqual([['Problem sets', 30, 'unsaid'], ['Midterm', 30, 'unsaid'], ['Final exam', 40, 'unsaid']]);
     // And a piece the outline tied to its own name is tied to the brief's.
     expect(orderedLessons(course)[0]!.homework.toward).toBe('Problem sets');
     expect(outlinePrompt(req)).toContain('They are these, in this order and by these names exactly: "Problem sets" (30%), "Midterm" (30%), "Final exam" (40%).');

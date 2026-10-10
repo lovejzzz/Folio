@@ -3,7 +3,7 @@ import { MATERIAL_KINDS, OnlineSchema, SHAPE_LIMITS, createCourse, materialsForL
 import type { Inference } from './inference';
 import { runJob, type Problem } from './jobs';
 import { filesBlock, sameTitle } from './files';
-import { gradingIn } from './gradingIn';
+import { cardIn, gradingIn } from './gradingIn';
 import { onlineOutlineRules } from './online';
 import { sessionList, systemPrompt, type OutlineInput } from './prompts';
 import { OutlineDraft } from './schemas';
@@ -171,7 +171,8 @@ function gradedBy(req: NewCourseRequest, outline: OutlineDraft): { graded: Outli
   const blank = (item: string) => OutlineDraft.parse({ title: '-', summary: '-', subject: '-', level: '-', lessons: [{ title: '-', summary: '-', objectives: ['-'] }], grading: [{ item }] }).grading[0]!;
   const byName = (item: string) => read.findIndex((g) => plain(g.item) === plain(item));
   const placeOf = (item: string, i: number) => (byName(item) >= 0 ? byName(item) : read.length === stated.length ? i : -1);
-  const graded = stated.map((st, i) => ({ ...(read[placeOf(st.item, i)] ?? blank(st.item)), item: st.item, weight: st.weight }));
+  // (and its card is what the brief's own clause for it says, read by rule: the same brief, the same card)
+  const graded = stated.map((st, i) => ({ ...(read[placeOf(st.item, i)] ?? blank(st.item)), ...cardIn(st.said), groupSize: cardIn(st.said).groupSize ?? null, points: cardIn(st.said).points ?? null, item: st.item, weight: st.weight }));
   return { graded, names: new Map(stated.flatMap((st, i) => (read[placeOf(st.item, i)] ? [[plain(read[placeOf(st.item, i)]!.item), st.item] as [string, string]] : []))) };
 }
 
