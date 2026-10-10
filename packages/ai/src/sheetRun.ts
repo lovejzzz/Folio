@@ -69,11 +69,7 @@ export async function sheetsRun(inference: Inference, runner: LineRunner | undef
     const out = await mended(inference, { value: handouts, faults: await check(handouts) }, (v) => JSON.stringify(v.map((h) => ({ title: h.title, blocks: h.blocks })), null, 1), check, signal);
     // A sheet that sets students to repair its code has lines that stop by design; which ones, the fixer does not always say.
     const repair = new Set(out.value.filter((h) => REPAIR.test(`${h.title} ${JSON.stringify(h.blocks)}`)).map((h) => h.title));
-    // A reference sheet shows the form of a call with stand-ins for the student's own names (`filter(!is.na(x))`,
-    // `group_by(g)`): a line of it that stops for a name nobody made, or an argument nobody gave, is that form.
-    const forms = new Set(out.value.filter((h) => h.kind === 'reference').map((h) => h.title));
-    const standIn = (f: CodeFault) => forms.has(f.title) && /object '[^']+' not found|argument .* is missing|could not find function/.test(f.error);
-    return { handouts: out.value, flags: notes(out.faults.filter((f) => !repair.has(f.title) && !standIn(f))) };
+    return { handouts: out.value, flags: notes(out.faults.filter((f) => !repair.has(f.title))) };
   } catch (error) {
     if (signal?.aborted) throw error;
     return { handouts, flags: [] };
