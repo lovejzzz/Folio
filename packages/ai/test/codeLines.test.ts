@@ -47,6 +47,23 @@ describe('the keys to a lesson\'s sheets, written from the sheets by another wri
   });
 });
 
+describe('what a segment puts on the screen', () => {
+  it('is left to the sheet where a sheet sets the work, and stands where the sheet is only read from', async () => {
+    const { withHandouts } = await import('../src/handouts');
+    const { CourseStore, cmd, orderedLessons, newId } = await import('@folio/core');
+    const { fakeInference, planDraft, smallCourse } = await import('./fake');
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const segments = planDraft.segments.map((s) => ({ ...s, id: newId('x'), session: 1, kind: s.kind as 'teach', shown: ['1. Sort these six statements.'] }));
+    const written = { commands: [cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [], content: { segments, keyIdeas: ['Light drives it'], vocabulary: [] } })], flagged: 0 };
+    const sheets = [{ title: 'Sort', kind: 'worksheet', usedIn: segments[0]!.title, copies: 'One each', blocks: [{ type: 'para', text: 'Sort the statements below.' }] }, { title: 'Source', kind: 'reading', usedIn: segments[1]!.title, copies: 'One each', blocks: [{ type: 'para', text: 'A page to read.' }] }];
+    const out = await withHandouts(fakeInference(() => ({}), { handouts: sheets, keyed: { keys: [], corrections: [] } }), course, lesson, written);
+    const store = new CourseStore(course);
+    store.apply(out.commands, { label: { key: 'b' }, source: 'ai' });
+    expect(store.getState().lessons[lesson.id]!.segments.slice(0, 2).map((s) => s.shown?.length ?? 0)).toEqual([0, 1]);
+  });
+});
+
 describe('sheets that ask more than their segment holds', () => {
   it('are written once more, shorter, and the shorter ones are kept', async () => {
     const { withHandouts } = await import('../src/handouts');

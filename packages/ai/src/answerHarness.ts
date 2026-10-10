@@ -235,6 +235,10 @@ def check_item(item, check):
                 # a word answer two choices contain ("elastic", "unit elastic"): the choice that is the answer and no more states it
                 same = [n for n in hit if isinstance(v, str) and ' '.join(nloc(ch[n - 1]['text']).replace('\x60', '').split()).casefold().strip(' .') == ' '.join(v.split()).casefold().strip(' .')]
                 hit = same or hit
+                # several values computed, and two choices that hold them among others: the one that states just those, in that order
+                if len(hit) > 1 and fv and len(fv) > 1:
+                    exact = [n for n in hit if len(numbers(ch[n - 1]['text'].replace('\x60', ''))) == len(fv) and all(num_ok(x[0], x[1], c, tol) for x, c in zip(numbers(ch[n - 1]['text'].replace('\x60', '')), fv))]
+                    hit = exact or hit
                 # several values at once (two quartiles, a fence and a verdict) matched against choices that word them their own way:
                 # when none fits, it is the form that does not fit
                 if not hit and (len(flat(v) or []) > 1 or (isinstance(v, (tuple, list)) and len(v) > 1)): raise Invalid('computed several values and no choice states them in that form')
@@ -328,11 +332,17 @@ def check_item(item, check):
                 if tail.lstrip().startswith('%'): raise Invalid('the anchor points into a format string')
                 stored, bad = missed(tail)
                 # components of a vector or terms of a sum are written with the sign set off: "3î − 5ĵ − 7k̂" states −5 and −7
-                if bad and not missed(re.sub(r'([−-])\s+(?=[\d.])', r'\1', tail))[1]: bad = []
+                # and a component of one is written without its 1: "−9î − ĵ − 14k̂" states −9, −1 and −14
+                vec = lambda t: re.sub(r'([−-])\s+(?=[\d.])', r'\1', re.sub(r'(?<![\d.])([+−-]?)\s*(?=[îĵ]|k̂|[ijk]\u0302)', r' \g<1>1 ', t))
+                if bad and (not missed(re.sub(r'([−-])\s+(?=[\d.])', r'\1', tail))[1] or not missed(vec(tail))[1]): bad = []
                 # a count a key spells out ("totaling four", "more than eight of the 16") is that number
                 bad = [c for c in bad if not (float(c).is_integer() and 0 <= c <= 20 and re.search(r'(?<![\w-])' + WORDS[int(c)] + r'(?![\w-])', tail[:120], re.I))]
                 # the form's anchor ran past the value it was to find: the number is in the words it quoted
-                if bad and str(s.get('before') or '').rstrip()[-1:] not in ('=', '≈', ':', '') and all(any(num_ok(n[0], n[1], c, s.get('tolerance')) for n in [x for m in numbers(str(s.get('before') or '')) for x in (terms(m[2]) + [m])]) for c in bad): raise Invalid('the anchor already holds the value')
+                # (also when those words end on "=" and an expression follows: "Then 80 = 5P" is an equation whose left side the
+                # form computed, and what comes after is its other side, not a value to compare)
+                ends = str(s.get('before') or '').rstrip()[-1:]
+                algebra = re.match(r'\s*[-−]?\d+(?:\.\d+)?(?:[A-Za-z](?![A-Za-z])|\(|\s*[*/×·])', tail) is not None
+                if bad and (ends not in ('=', '≈', ':', '') or (ends == '=' and algebra)) and all(any(num_ok(n[0], n[1], c, s.get('tolerance')) for n in [x for m in numbers(str(s.get('before') or '')) for x in (terms(m[2]) + [m])]) for c in bad): raise Invalid('the anchor already holds the value')
                 if bad and all(any(is_mantissa(n[2], c) for n in stored) for c in bad): raise Invalid('the form computed the digits of a number the text gives with its power of ten')
                 # a table in thousands: the form worked out 48 where the key says $48,000. The form's unit, not the key's fault
                 if bad and all(any(n[0] != 0 and abs(n[0]) in (abs(c) * 1e3, abs(c) * 1e6, abs(c) / 1e3, abs(c) / 1e6) for n in stored) for c in bad): raise Invalid('the form worked in thousands or millions of what the text states')

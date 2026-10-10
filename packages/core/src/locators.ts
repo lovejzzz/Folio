@@ -25,7 +25,12 @@ export const TO_CONFIRM = '(to confirm)';
  * one in seconds; the mark tells a student it is not yet the teacher's word, and gives the teacher something to find.
  */
 export function withUnsourcedMarked(text: string, grounds: string): string {
-  return unsourcedLocators(text, grounds).reduce((now, found) => now.split(found).map((part, i, all) => (i < all.length - 1 && !all[i + 1]!.startsWith(` ${TO_CONFIRM}`) ? `${part}${found} ${TO_CONFIRM}` : i < all.length - 1 ? `${part}${found}` : part)).join(''), text);
+  // Never an address, and never inside code or a link's target: marked there, "…/2-2-water (to confirm))" was a link that
+  // no longer opened. An address the teacher did not give is listed for them, not written on.
+  const found = unsourcedLocators(text, grounds).filter((f) => !/^(?:https?:|www\.)/i.test(f));
+  const mark = (plain: string) => found.reduce((now, f) => now.split(f).map((part, i, all) => (i < all.length - 1 && !all[i + 1]!.startsWith(` ${TO_CONFIRM}`) ? `${part}${f} ${TO_CONFIRM}` : i < all.length - 1 ? `${part}${f}` : part)).join(''), plain);
+  // Code between backticks and what stands in the round brackets of a link are passed over.
+  return text.split(/(`[^`]*`|\]\([^)]*\)|https?:\/\/\S+)/).map((part, i) => (i % 2 ? part : mark(part))).join('');
 }
 
 /** Fields only the teacher reads: a locator there is the teacher's to weigh, and is listed for them, not marked. */

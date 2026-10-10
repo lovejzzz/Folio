@@ -247,6 +247,11 @@ describe('work done in class that is more than its minutes hold', () => {
     const kept = await generateSection(stubborn, timed, first.id, 'assignments');
     expect(JSON.stringify(kept.commands)).toMatch(/"code":"reviewNote","values":\{"where":"Presentation","text":"The plan.s segments that run this come to 5 minutes, and it asks for more than most groups will finish in that time\./);
     expect(JSON.stringify(kept.commands)).not.toContain('ask for about half as much');
+    // A piece taken a group at a time over the term is its brief: the minutes one lesson hands it out in are not its time.
+    const term = { ...timed, lessons: { ...timed.lessons, [first.id]: { ...timed.lessons[first.id]!, homework: { kind: 'inclass' as const, toward: 'Presentation', standing: true } } } };
+    const brief = fakeInference(() => ({ ...(answer('"Presentation"') as object), steps: [long, long], answerKey: 'Run it in turn.' }));
+    const whole = await generateSection(brief, term, first.id, 'assignments');
+    expect([brief.calls.length, JSON.stringify(whole.commands).includes('asks for more than')]).toEqual([1, false]);
   });
 });
 

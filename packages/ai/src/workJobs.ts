@@ -49,6 +49,9 @@ export function minutesFor(course: Course, lesson: Lesson): number {
 
 function tooMuch(v: { prompt: string; steps: string[] }, course: Course, lesson: Lesson): Problem[] {
   if (lesson.homework.kind !== 'inclass' || !lesson.homework.toward.trim()) return [];
+  // A piece taken a group at a time over the term is its brief, written once: the ten minutes in which one lesson hands
+  // it out are not the time it is done in, and a seminar's teacher was told its brief asked too much for them.
+  if (lesson.homework.standing === true) return [];
   const minutes = minutesFor(course, lesson);
   if (!minutes) return [];
   // Asked of the writer once more in its own terms; if it stays, the teacher is told what is the matter, not that

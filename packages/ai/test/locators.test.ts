@@ -8,6 +8,10 @@ describe('where a material sends its reader', () => {
     // What the brief holds is the teacher's; a bare "Section 8" or "page 2" is a part of the document in hand.
     expect(unsourcedLocators(text, brief)).toEqual(['Section 6.2', 'pp. 112–118', 'ch. 7', 'https://example.org/elasticity']);
   });
+  it('never writes on an address, a link or code', () => {
+    const text = 'Read [2.2 Water](https://openstax.org/books/biology-2e/pages/2-2-water) and ch. 9, then run `read_csv("ch. 9 data.csv")`; see https://example.org/ch. 9.';
+    expect(withUnsourcedMarked(text, brief)).toBe('Read [2.2 Water](https://openstax.org/books/biology-2e/pages/2-2-water) and ch. 9 (to confirm), then run `read_csv("ch. 9 data.csv")`; see https://example.org/ch. 9.');
+  });
   it('takes a chapter with its sections as one place', () => {
     // Marked in the middle, "ch. 10.2–10.3" came out as "ch. 10 (to confirm).2–10.3".
     expect(withUnsourcedMarked('Campbell Biology, ch. 10.2–10.3', brief)).toBe('Campbell Biology, ch. 10.2–10.3 (to confirm)');

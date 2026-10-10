@@ -175,8 +175,14 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
       return got.hits === 1 ? got.value : now;
     }, plan);
     // Code on a sheet is run as a student runs it; what stops is corrected once, and what still stops is said to the teacher.
-    const run = await sheetsRun(inference, r, course, { ...lesson, segments: settled.segments as Lesson['segments'] }, sure.handouts, signal);
-    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [...fill.payload.flags, ...sure.flags, ...run.flags], content: { ...content, ...settled, handouts: run.handouts } }) : c));
+    // A segment that hands out a sheet takes what it shows from the sheet. The plan listed a practice's items "on the screen",
+    // the sheet's writer wrote the same practice in its own words, the slides followed the plan's list and the key the sheet:
+    // one exercise in two versions, in nine lessons of a reading of thirty-two. The list stands where no sheet sets the work:
+    // a reading or a reference sheet in students' hands leaves the screen its own questions.
+    const sheeted = new Set(sure.handouts.filter((h) => h.kind !== 'reading' && h.kind !== 'reference').map((h) => h.usedIn.trim().toLowerCase()));
+    const single = { ...settled, segments: settled.segments.map((seg) => (seg.shown?.length && sheeted.has(seg.title.trim().toLowerCase()) ? { ...seg, shown: undefined } : seg)) };
+    const run = await sheetsRun(inference, r, course, { ...lesson, segments: single.segments as Lesson['segments'] }, sure.handouts, signal);
+    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [...fill.payload.flags, ...sure.flags, ...run.flags], content: { ...content, ...single, handouts: run.handouts } }) : c));
     return { commands, flagged: written.flagged + sure.flags.length + run.flags.length };
   } catch (error) {
     if (signal?.aborted) throw error;

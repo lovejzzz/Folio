@@ -1,5 +1,35 @@
 [
  {
+  "version": "0.0.36",
+  "date": "October 10, 2026",
+  "title": "One exercise, one version",
+  "lede": "A reading of thirty-two fresh lessons found the last release worse than the one before it: the same practice stood in two versions in nine lessons, and a mark meant for a chapter number had broken links. This release repairs what that reading found.",
+  "sections": [
+   {
+    "heading": "A practice on a sheet is shown from the sheet",
+    "body": "The last release let a plan list what a segment puts on the screen. Where the segment also handed out a worksheet, the plan listed the items one way and the sheet’s writer wrote them another; the slides followed the plan and the key followed the sheet. A segment whose work is set on a sheet no longer carries a list of its own: the slides take the items from the sheet. A list stands where there is no sheet, or where the sheet is only read from.",
+    "image": {
+     "src": "/changelog/0.0.36-one.svg",
+     "alt": "Before: a slide with items A, B, C and a worksheet with items A, D, E for the same practice. After: the slide and the worksheet carry the same three items",
+     "width": 800,
+     "height": 300
+    }
+   },
+   {
+    "heading": "“(to confirm)” stays out of links and code",
+    "body": "The mark after a chapter or page number you did not give was also written inside web addresses and file names, and thirteen lessons had links that no longer opened. An address is now never marked, nor anything inside code or a link; addresses you did not give are still listed for you at the top of the lesson. That list names whose chapter it is (“OpenStax Statistics, ch. 3”) and no longer runs words together."
+   },
+   {
+    "heading": "Fewer false notes on answer keys",
+    "body": "All five notes the key check left in that reading were wrong. It read “1,046” as two numbers, took the right side of “Then 80 = 5P” for a value to compare, matched a pair of numbers to two choices at once, and could not read a vector written −ȷ for −1. Each is fixed where the check reads the key."
+   },
+   {
+    "heading": "A term-long brief is not timed by the day it is handed out",
+    "body": "Seminar leadership, taken a group at a time over the term, was said to ask too much for the ten minutes in which its brief is given out. A piece taken over the term is no longer measured against one lesson’s minutes. Hands raised to open a discussion are no longer counted as a vote."
+   }
+  ]
+ },
+ {
   "version": "0.0.35",
   "date": "October 10, 2026",
   "title": "What was checked, what is yours to check",

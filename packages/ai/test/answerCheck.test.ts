@@ -185,6 +185,11 @@ describe.skipIf(!existsSync(join(RUNTIME_DIR, 'pyodide-lock.json')))('the checki
     // A form that worked in thousands where the key gives dollars is the form's doing: unchecked, not blamed.
     const thousands = await checkAnswers(fakeInference(() => form('len("a" * 48)', 'so the median of $')), nodeRunner(), [key('t_thousands', 'Salaries are right-skewed, so the median of $48,000 and IQR of $22,000 fit best.')]);
     expect([thousands.checked, thousands.flags.size]).toEqual([0, 0]);
+    // An equation whose left side the form computed: what follows "=" is its other side, and the key is not blamed.
+    const equation = await checkAnswers(fakeInference(() => form('len("a" * 80)', 'Then 80 =')), nodeRunner(), [key('t_equation', 'At equilibrium supply equals demand. Then 80 = 5P, so P = 16 and Q = 90 − 16 = 74.')]);
+    expect([equation.checked, equation.flags.size]).toEqual([0, 0]);
+    // A vector with a bare unit: −9î − ĵ − 14k̂ states −9, −1 and −14.
+    expect(await run(key('t_vector', 'B×A = −9î − ĵ − 14k̂, of magnitude 16.7.'), form('[len("a" * 9) * -1, len("a") * -1, len("a" * 14) * -1]', 'B×A ='))).toBe(0);
     // A quotient written out states its terms: the 50 of √(50/5) and the 438 of "438 / 8" are what a form computes on the way.
     expect(await run(key('t_top', 'The sample SD is √(50/5) = 3.16.'), form('sum((x - 10) ** 2 for x in (5, 10, 10, 10, 15))', 'The sample SD is √('))).toBe(0);
     expect(await run(key('t_top2', 'The variance is 438 / 8 = 54.75.'), form('sum(d * d for d in (3, 5, 20, 2))', 'The variance is '))).toBe(0);

@@ -50,10 +50,12 @@ export function lessonChecklist(course: Course, lesson: Lesson): Checklist {
   const keysUnreached = keyed.filter((h) => !h.keyChecked && numbers(h.key) >= 4);
   const grounds = groundsOf(course);
   const all = JSON.stringify([lesson.readings, lesson.segments, lesson.slides, lesson.study, lesson.handouts, tasks, lesson.faqIds.map((id) => course.faq[id])]);
-  // Each with the words before it, so the teacher sees whose chapter it is: "OpenStax Statistics, ch. 3".
-  const marked = [...new Set([...all.matchAll(new RegExp(`([^"\\\\]{1,48})\\s${TO_CONFIRM.replace(/[()]/g, '\\$&')}`, 'g'))].map((m) => m[1]!.replace(/^\S*\s/, (cut) => (m[1]!.length >= 48 ? '' : cut)).trim()).filter(Boolean))];
-  const unmarked = unsourcedLocators(all.split(` ${TO_CONFIRM}`).join(''), grounds).filter((f) => !marked.some((m) => m.endsWith(f)));
-  const toConfirm = [...marked, ...unmarked].filter((f) => !/^(?:https?:|www\.)/i.test(f) || f.length < 80);
+  // Each as it is written, whether marked or (in what only the teacher reads, and for addresses) not, and with the name
+  // that stands right before it, so the teacher sees whose chapter it is: "OpenStax Statistics, ch. 3". Only a name: taken
+  // with any words before it, a line read "ch. 2; , sections 2.1–2.5".
+  const clean = all.split(` ${TO_CONFIRM}`).join('');
+  const named = (f: string) => new RegExp(`((?:[A-Z][\\p{L}\\d’'&-]*\\s+(?:(?:of|and|the|in|to|for)\\s+)*){1,6}?[A-Z][\\p{L}\\d’'&-]*),?\\s+${f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'u').exec(clean)?.[1]?.replace(/^(?:(?:Read|Reread|See|Skim|Review|Finish|Open|Use|From|In|And|Then)\s+)+/, '').replace(/^(?:Read|Reread|See|Skim|Review|Finish|Open|Use|From|In|And|Then)$/, '');
+  const toConfirm = [...new Set(unsourcedLocators(clean, grounds).map((f) => (/^(?:https?:|www\.)/i.test(f) ? f : named(f) ? `${named(f)}, ${f}` : f)).map((f) => (f.length > 70 ? `${f.slice(0, 67)}…` : f)))];
   const notes = tasks.reduce((n, t) => n + t.flags.length, 0) + Object.values(lesson.gen).reduce((n, g) => n + (g?.flags.length ?? 0), 0);
   const titleOf = (t: (typeof tasks)[number]) => short(t.kind === 'assignment' ? t.title : t.prompt);
   return {
