@@ -6,6 +6,7 @@ import { ANSWER_KEY, IN_CLASS, UNIVERSITY_TEACHING, gradedPapers, judgedLine, te
 import type { Effort } from './inference';
 import { LIVE_ASKS, MIXED_ASKS, isLiveOnline, isMixedOnline, liveBackground, runOfShow } from './live';
 import { pieceFacts } from './pieceFacts';
+import { packagesLine } from './rLedger';
 import { sheetsText } from './lessonView';
 import { ONLINE_ASKS, moduleAsk, onlineBackground, onlineHomeworkLine } from './online';
 
@@ -226,6 +227,7 @@ export function lessonContext(course: Course, lesson: Lesson): string {
     hasModulePages(course) ? onlineHomeworkLine(course, lesson) : homeworkLine(course, lesson),
     // A lab opened its first meeting with a graded quiz on a reading and a check of pre-lab pages nobody had been told of.
     !hasModulePages(course) && course.lessonOrder[0] === lesson.id ? 'This is the first meeting: nobody could be told anything before it, so nothing in it rests on reading or preparation done beforehand, and a routine that needs either (a quiz on the reading, a page prepared at home, a turn a student prepares) is explained here and begins next time.' : '',
+    packagesLine(course, lesson),
     // Called "proposed, for the teacher to confirm", the words came back in teacher notes and slide notes.
     readings ? `${readingsLead(course, before)}:\n${readings}` : '',
   ]

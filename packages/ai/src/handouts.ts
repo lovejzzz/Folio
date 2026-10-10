@@ -13,6 +13,7 @@ import type { Inference } from './inference';
 import { runJob } from './jobs';
 import { placed } from './lastRead';
 import { say } from './lessonView';
+import { neverInstalled } from './rLedger';
 import { withoutSelfReport } from './tidy';
 import { courseBackground, lessonContext, systemPrompt } from './prompts';
 
@@ -183,8 +184,10 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
     const sheeted = new Set(sure.handouts.filter((h) => h.kind !== 'reading' && h.kind !== 'reference').map((h) => h.usedIn.trim().toLowerCase()));
     const single = { ...settled, segments: settled.segments.map((seg) => (seg.shown?.length && sheeted.has(seg.title.trim().toLowerCase()) ? { ...seg, shown: undefined } : seg)) };
     const run = await sheetsRun(inference, r, course, { ...lesson, segments: single.segments as Lesson['segments'] }, sure.handouts, signal);
-    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [...fill.payload.flags, ...sure.flags, ...run.flags], content: { ...content, ...single, handouts: run.handouts } }) : c));
-    return { commands, flagged: written.flagged + sure.flags.length + run.flags.length };
+    // A package the sheets load that no lesson has had students install stops on every laptop: said, since the run here has it.
+    const unhad = neverInstalled(course, { ...lesson, segments: single.segments as Lesson['segments'] }, run.handouts);
+    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [...fill.payload.flags, ...sure.flags, ...run.flags, ...unhad], content: { ...content, ...single, handouts: run.handouts } }) : c));
+    return { commands, flagged: written.flagged + sure.flags.length + run.flags.length + unhad.length };
   } catch (error) {
     if (signal?.aborted) throw error;
     return written;
