@@ -245,7 +245,7 @@ describe('work done in class that is more than its minutes hold', () => {
     // Still too long after it was asked again: the teacher is told what is the matter, in their words, not that a shape was wrong.
     const stubborn = fakeInference(() => ({ ...(answer('"Presentation"') as object), steps: [long, long], answerKey: 'Run it in turn.' }));
     const kept = await generateSection(stubborn, timed, first.id, 'assignments');
-    expect(JSON.stringify(kept.commands)).toMatch(/"code":"reviewNote","values":\{"where":"Presentation","text":"This is set for 5 minutes of class and asks for more than most groups will finish in that time\./);
+    expect(JSON.stringify(kept.commands)).toMatch(/"code":"reviewNote","values":\{"where":"Presentation","text":"The plan.s segments that run this come to 5 minutes, and it asks for more than most groups will finish in that time\./);
     expect(JSON.stringify(kept.commands)).not.toContain('ask for about half as much');
   });
 });

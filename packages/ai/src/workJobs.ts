@@ -41,7 +41,9 @@ export function minutesFor(course: Course, lesson: Lesson): number {
   const mine = lesson.segments.filter((seg) => !others.some((item) => text(seg).includes(item)));
   const whole = mine.filter((seg) => stems(toward).every((w) => text(seg).includes(w))).reduce((n, seg) => n + seg.minutes, 0);
   // The longer reading wins: "Lab notebook" was tied to nine minutes of "preparing for the lab", not to the 95 of "Graded notebook".
-  const part = Math.max(0, ...mine.filter((seg) => stems(toward).some((w) => text(seg).includes(w))).map((seg) => seg.minutes));
+  // And a piece run over several segments has all of them: a lab of 69 minutes in three parts was held to the 25 of its longest,
+  // and its teacher told it asked too much.
+  const part = mine.filter((seg) => stems(toward).some((w) => text(seg).includes(w))).reduce((n, seg) => n + seg.minutes, 0);
   return Math.max(whole, part);
 }
 
@@ -51,7 +53,7 @@ function tooMuch(v: { prompt: string; steps: string[] }, course: Course, lesson:
   if (!minutes) return [];
   // Asked of the writer once more in its own terms; if it stays, the teacher is told what is the matter, not that
   // "part of this came back in the wrong shape" (which is what a request left unmet was shown as).
-  const left = { code: 'reviewNote' as const, values: { where: lesson.homework.toward, text: `This is set for ${minutes} minutes of class and asks for more than most groups will finish in that time. Cut a part of it, or give it more minutes.` } };
+  const left = { code: 'reviewNote' as const, values: { where: lesson.homework.toward, text: `The plan's segments that run this come to ${minutes} minutes, and it asks for more than most groups will finish in that time. Cut a part of it, or give it more minutes.` } };
   const issue = (text: string): Problem => ({ index: null, flag: { code: 'schemaIssue', values: { path: 'steps', issue: text } }, left });
   // A sheet told groups to "work for 20 minutes" in a segment of 13.
   const said = Math.max(0, ...[...`${v.prompt} ${v.steps.join(' ')}`.matchAll(/\b(\d{1,3})[- ]minutes?\b/gi)].map((m) => Number(m[1])));
