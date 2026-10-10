@@ -12,7 +12,7 @@
   <rect class="card" x="36" y="64" width="728" height="226" rx="14"/>
   <text class="ink" x="470" y="100" font-size="14" font-weight="600" text-anchor="end">0.0.33</text>
   <text class="ink" x="590" y="100" font-size="14" font-weight="600" text-anchor="end">0.0.35</text>
-  <text class="ink" x="720" y="100" font-size="14" font-weight="600" text-anchor="end">0.1.0</text>
+  <text class="ink" x="720" y="100" font-size="14" font-weight="600" text-anchor="end">0.0.36</text>
   <line class="rule" x1="56" y1="124" x2="744" y2="124"/><text class="ink2" x="56" y="150" font-size="15">Faults that stop a lesson</text><text class="ink2" x="470" y="150" font-size="15" text-anchor="end">9</text><text class="ink2" x="590" y="150" font-size="15" text-anchor="end">21</text><text class="acc" x="720" y="150" font-size="16" font-weight="700" text-anchor="end">11</text>
   <line class="rule" x1="56" y1="166" x2="744" y2="166"/><text class="ink2" x="56" y="192" font-size="15">Lessons with nothing to trip over</text><text class="ink2" x="470" y="192" font-size="15" text-anchor="end">12</text><text class="ink2" x="590" y="192" font-size="15" text-anchor="end">6</text><text class="acc" x="720" y="192" font-size="16" font-weight="700" text-anchor="end">14</text>
   <line class="rule" x1="56" y1="208" x2="744" y2="208"/><text class="ink2" x="56" y="234" font-size="15">Notes from Folio: true / false</text><text class="ink2" x="470" y="234" font-size="15" text-anchor="end">5 / 5</text><text class="ink2" x="590" y="234" font-size="15" text-anchor="end">3 / 8</text><text class="acc" x="720" y="234" font-size="16" font-weight="700" text-anchor="end">6 / 2</text>
