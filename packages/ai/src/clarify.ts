@@ -85,6 +85,25 @@ export function clarifyPrompt(req: ClarifyRequest): string {
     .join('\n\n');
 }
 
+/**
+ * A course a few meetings over what Folio plans is asked about in Folio's own words, the same every time. Left to the
+ * model, one brief of 42 lectures was offered "39 lessons", "40 lessons", "one lesson per week, 14 lessons" and "40
+ * lessons" as its first answer in four runs, and came out as four courses of 39, 40, 14 and 40 lessons.
+ */
+export function overTheLimit(read: ClarifyDraft, req: Pick<ClarifyRequest, 'lessonCount' | 'language'>): ClarifyDraft {
+  const max = SHAPE_LIMITS.lessons.max;
+  const count = read.lessonCount ?? 0;
+  // A class that meets daily for a year is another question, and the model's own; so is one in another language.
+  if (req.lessonCount || req.language !== 'en' || count <= max || count > max * 1.25) return read;
+  const over = count - max;
+  const ours = {
+    topic: 'lessons' as const,
+    question: `Folio plans at most ${max} lessons, and this course has ${count} meetings. How should it fit?`,
+    options: [`${max} lessons, one for each meeting, with the ${over} left over (review or exam days) kept inside the lessons beside them`, 'One lesson a week, each holding all of that week\'s meetings', `Only the first ${max} meetings`],
+  };
+  return { ...read, questions: [ours, ...read.questions.filter((q) => q.topic !== 'lessons' && !/\b(?:at most|fit|fitted)\b.*\b(?:lessons?|lectures?|meetings?)\b|\b(?:lessons?|lectures?|meetings?)\b.*\b(?:fit|fitted)\b/i.test(q.question))].slice(0, 8) };
+}
+
 /** Read the brief and files, and ask what is unclear. */
 export async function clarifyCourse(inference: Inference, req: ClarifyRequest, signal?: AbortSignal): Promise<ClarifyDraft> {
   const result = await runJob(inference, {
@@ -96,7 +115,7 @@ export async function clarifyCourse(inference: Inference, req: ClarifyRequest, s
     signal,
   });
   // The teacher's own choices stand: a question about them would only repeat what they said.
-  return { ...result.value, lessonCount: req.lessonCount ?? result.value.lessonCount, level: req.level || result.value.level };
+  return overTheLimit({ ...result.value, lessonCount: req.lessonCount ?? result.value.lessonCount, level: req.level || result.value.level }, req);
 }
 
 /** The teacher's answers to questions on these topics, in order. */

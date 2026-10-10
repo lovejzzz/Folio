@@ -23,6 +23,20 @@ describe('reading the brief before planning', () => {
     expect((await clarifyCourse(inf, req)).lessonCount).toBe(14);
   });
 
+  it('asks how to fit a course a few meetings over the limit in its own words, the same every time', async () => {
+    const asked = { topic: 'lessons', question: 'Folio plans at most 40 lessons; how should the 42 lectures be fitted?', options: ['One lesson per week, 14 lessons', 'Plan the first 40 lectures only', 'Plan 3 units'] };
+    const other = { topic: 'content', question: 'Which chapters should the bonding weeks cover?', options: ['6 to 8', '6 to 9', '6 to 7'] };
+    const read = await clarifyCourse(fakeInference(() => ({ lessonCount: 42, minutesPerLesson: 50, level: '', questions: [asked, other] })), req);
+    expect(read.questions.map((q) => q.question)).toEqual(['Folio plans at most 40 lessons, and this course has 42 meetings. How should it fit?', other.question]);
+    expect(read.questions[0]!.options[0]).toBe('40 lessons, one for each meeting, with the 2 left over (review or exam days) kept inside the lessons beside them');
+    // Its first answer is a count the plan can take; "one lesson a week" names no count and is left to the outline.
+    expect(lessonsToPlan(req, read, [{ question: read.questions[0]!.question, answer: read.questions[0]!.options[0]! }])).toBe(40);
+    expect(lessonsToPlan(req, read, [{ question: read.questions[0]!.question, answer: read.questions[0]!.options[1]! }])).toBe(null);
+    // A class that meets daily for a year keeps the model's own question, and so does a count within the limit.
+    const year = await clarifyCourse(fakeInference(() => ({ lessonCount: 180, minutesPerLesson: 50, level: '', questions: [asked] })), req);
+    expect(year.questions[0]!.question).toBe(asked.question);
+  });
+
   it('plans the teacher’s answer, else their number, else what was read, else the syllabus or the default', () => {
     const read = { lessonCount: 14, minutesPerLesson: null, level: '', syllabus: '', questions: [{ topic: 'lessons' as const, question: 'How many lessons?', options: ['a', 'b', 'c'] }] };
     expect(lessonsToPlan({ ...req, lessonCount: 6 }, read, [{ question: 'How many lessons?', answer: '10' }])).toBe(10);
