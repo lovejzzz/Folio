@@ -274,7 +274,7 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
         }),
     );
   // Set, due and collected were three guesses: one piece had two due dates and a close that said "give its due date".
-  const due = `${otherPieces(lesson, (p) => dueWhen(course, { ...lesson, homework: p }))}${collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan collects it by name: its tasks were written apart from this plan, so no segment counts on their details (how many items, which terms).` : ''}`;
+  const due = `${otherPieces(lesson, (p) => dueWhen(course, { ...lesson, homework: p }))}${collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan takes it in by name, in the way the course's facts on graded pieces give (where they give none, it says only that the piece is due now, and names no way): its tasks were written apart from this plan, so no segment counts on their details (how many items, which terms).` : ''}`;
   // "Sets no homework" beside a standing weekly paper had half the plans run the paper in class instead.
   // A close \"handed out the brief\" of a 20% paper that this lesson did not hold, and no brief existed.
   const only = ' No other graded piece is set, handed out or collected in this lesson than those named here.';

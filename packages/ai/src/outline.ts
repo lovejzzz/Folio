@@ -155,7 +155,7 @@ const COMPLETION = /\bincomplete\b|\bcompletion\b|\bpass(ed)?\s*(\/|or|-)\s*fail
 
 /** A component's card, as the outline read it from the brief: what was not said keeps its default and is said to no writer. */
 function cardOf(g: OutlineDraft['grading'][number]): GradeCard {
-  return { who: g.who ?? 'individual', ...(g.who === 'group' && g.groupSize ? { groupSize: g.groupSize } : {}), prepared: g.prepared ?? false, handIn: g.handIn ?? 'paper', ...(g.points ? { points: g.points } : {}), allowed: (g.allowed ?? '').trim(), length: (g.length ?? '').trim(), source: (g.source ?? '').trim() };
+  return { who: g.who ?? 'individual', ...(g.who === 'group' && g.groupSize ? { groupSize: g.groupSize } : {}), prepared: g.prepared ?? false, handIn: g.handIn ?? 'unsaid', ...(g.points ? { points: g.points } : {}), allowed: (g.allowed ?? '').trim(), length: (g.length ?? '').trim(), source: (g.source ?? '').trim() };
 }
 
 export function courseFromOutline(req: NewCourseRequest, outline: OutlineDraft): Course {

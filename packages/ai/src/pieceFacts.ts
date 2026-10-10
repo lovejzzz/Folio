@@ -25,6 +25,8 @@ function handIn(g: GradeItem, kinds: Set<string>): string {
   const card = g.card!;
   if (kinds.has('test')) return '';
   if (card.handIn === 'none') return 'nothing is handed in: it is scored as it happens';
+  // What the brief left open is not settled here: said the same in every lesson, an invented way is still invented.
+  if (card.handIn === 'unsaid') return 'how it is handed in is the teacher\'s to say, and no material names a way (on paper, online, a folder, a site)';
   if (kinds.has('inclass')) return card.handIn === 'online' ? 'what is written is submitted online after the lesson it is done in, and nothing is collected in the room' : 'what is written is handed in on paper at the end of the lesson it is done in';
   return card.handIn === 'online' ? 'submitted online before the lesson it is due at, and never collected in class' : 'handed in on paper at the start of the lesson it is due at';
 }

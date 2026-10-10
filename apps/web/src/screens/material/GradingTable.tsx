@@ -36,7 +36,7 @@ export function AddGradeItem({ course }: { course: Course }) {
 }
 
 const WHO = ['individual', 'pair', 'group'] as const;
-const HAND_IN = ['paper', 'online', 'none'] as const;
+const HAND_IN = ['unsaid', 'paper', 'online', 'none'] as const;
 const next = <T,>(all: readonly T[], now: T): T => all[(all.indexOf(now) + 1) % all.length]!;
 
 /**

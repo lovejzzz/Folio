@@ -109,6 +109,10 @@ describe('a graded piece set in several lessons', () => {
     expect(model.calls).toHaveLength(2);
     expect(model.calls[1]!.prompt).toContain('Every piece of "Problem sets" is scored on the first one\'s rubric: 3 criteria');
     expect(JSON.stringify(out.commands)).toContain('students would be scored out of a different total from one week to the next');
+    // The same count under other names is another rubric: asked for once more.
+    const renamed = fakeInference(() => piece(4, ['Method', 'Correctness', 'Explanation']));
+    await generateSection(renamed, store.getState(), second.id, 'assignments');
+    expect(renamed.calls).toHaveLength(2);
     // The same shape with descriptors of its own is taken as it is.
     const same = fakeInference(() => piece(4, ['Method', 'Accuracy', 'Explanation']));
     expect([(await generateSection(same, store.getState(), second.id, 'assignments')).flagged, same.calls.length]).toEqual([0, 1]);

@@ -88,7 +88,8 @@ export function rubricToMatch(course: Course, lesson: Lesson) {
 function otherRubric(v: AssignmentDraft, course: Course, lesson: Lesson): Problem[] {
   const first = rubricToMatch(course, lesson);
   if (!first || !first.criteria.length || !v.rubric.criteria.length) return [];
-  const same = first.criteria.length === v.rubric.criteria.length && first.levels.length === v.rubric.levels.length && first.levels.every((l, i) => l.points === v.rubric.levels[i]!.points);
+  const plain = (name: string) => name.trim().toLowerCase().replace(/\s+/g, ' ');
+  const same = first.criteria.length === v.rubric.criteria.length && first.criteria.every((c, i) => plain(c.name) === plain(v.rubric.criteria[i]!.name)) && first.levels.length === v.rubric.levels.length && first.levels.every((l, i) => l.points === v.rubric.levels[i]!.points);
   if (same) return [];
   const shape = `${first.criteria.length} criteria (${first.criteria.map((c) => c.name).join('; ')}) and the levels ${first.levels.map((l) => `${l.label} ${l.points}`).join(', ')}`;
   return [{ index: null, flag: { code: 'schemaIssue', values: { path: 'rubric', issue: `Every piece of "${lesson.homework.toward.trim()}" is scored on the first one's rubric: ${shape}. Keep those criteria and levels; only the descriptors are this piece's own` } }, left: { code: 'reviewNote', values: { where: lesson.homework.toward, text: `This piece's rubric is not the one the first piece of "${lesson.homework.toward.trim()}" was scored on (${shape}): students would be scored out of a different total from one week to the next. Make the two agree.` } } }];

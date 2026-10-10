@@ -1,4 +1,4 @@
-import { CourseStore, lessonAssignments, lessonPieces, orderedLessons, project, setsWork, type Course } from '@folio/core';
+import { CourseStore, checklistLines, lessonAssignments, lessonChecklist, lessonPieces, orderedLessons, project, setsWork, type Course } from '@folio/core';
 import { describe, expect, it } from 'vitest';
 import { OutlineDraft, courseBackground, courseFromOutline, generateSection, lessonContext, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
 import { fakeInference } from './fake';
@@ -303,6 +303,10 @@ describe('how each graded piece runs', () => {
     expect(told).toContain('- Presentation (20%): done in groups of 3, one piece from each group; a student prepares their turn ahead: the first lesson to run it gives out its brief and rubric and the teacher models a turn that is not scored, and scored turns begin at the next lesson that runs it; nothing is handed in: it is scored as it happens;');
     expect(told).toContain('its data or material: a question the student chooses.');
     expect(told).toContain('Nothing else is said of who does a graded piece');
+    // What the brief left open is said to be open: an invented way, said the same in every lesson, is still invented.
+    expect(told).toContain('- Seminar paper (60%): each student\'s own work, done and scored alone; how it is handed in is the teacher\'s to say, and no material names a way (on paper, online, a folder, a site);');
+    const [opening] = orderedLessons(course);
+    expect(checklistLines(lessonChecklist(course, opening!)).look).toContain('Your brief does not say how “Seminar paper” is handed in, so no page names a way: set it in the grading table on the syllabus.');
     // A test says what may be used, or that no material settles it.
     draft.lessons[2] = { ...draft.lessons[2]!, homework: 'test', homeworkToward: 'Seminar paper' };
     draft.lessons[0]!.also = [];

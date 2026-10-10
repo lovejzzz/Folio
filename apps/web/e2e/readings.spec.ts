@@ -57,9 +57,10 @@ test('readings and the grading scheme carry from the brief to the plan and the s
   await expect(who).toHaveText('Each student alone');
   await who.click();
   await expect(who).toHaveText('In pairs');
-  const handIn = grading.getByRole('button', { name: 'How Lab notebook is handed in: on paper, online, or not at all' });
+  const handIn = grading.getByRole('button', { name: 'How Lab notebook is handed in: not said, on paper, online, or not at all' });
+  await expect(handIn).toHaveText('How it is handed in: not said');
   await handIn.click();
-  await expect(handIn).toHaveText('Submitted online');
+  await expect(handIn).toHaveText('Handed in on paper');
   await page.reload();
   await expect(page.getByRole('table', { name: 'Grading' }).getByRole('button', { name: 'Who does Lab notebook: each student alone, pairs, or groups' })).toHaveText('In pairs');
 });

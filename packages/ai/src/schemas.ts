@@ -71,7 +71,7 @@ export const OutlineDraft = z.object({
         who: z.enum(['individual', 'pair', 'group']).default('individual').describe('Who does one piece of it, as the brief says: "pair" or "group" only when the brief says it is done or handed in by pairs or groups; otherwise "individual"'),
         groupSize: z.number().int().min(2).max(12).nullable().default(null).describe('The size of a group when the brief gives it; otherwise null'),
         prepared: z.boolean().default(false).describe('True only for a piece where a student prepares a turn ahead of the meeting: leading a seminar, presenting, a debate role'),
-        handIn: z.enum(['paper', 'online', 'none']).default('paper').describe('"online" when the brief says it is submitted online or through a site; "none" when nothing is handed in (participation, a talk, a discussion led); otherwise "paper"'),
+        handIn: z.enum(['paper', 'online', 'none', 'unsaid']).default('unsaid').describe('"online" when the brief says it is submitted online or through a site; "paper" when the brief says it is handed in on paper or in class; "none" when nothing is handed in (participation, a talk, a discussion led); "unsaid" when the brief does not say'),
         points: z.number().int().min(1).nullable().default(null).describe('The points one piece of it is out of, when the brief says; otherwise null'),
         allowed: z.string().default('').describe('For a quiz, test or exam: what the brief says students may use (for example "closed book, a calculator"), in its words; empty when it does not say'),
         length: z.string().default('').describe('The length the brief sets for one piece of it (for example "750 to 1,000 words"); empty when it sets none'),

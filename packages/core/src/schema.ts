@@ -322,7 +322,8 @@ export const GradeCardSchema = z.object({
   groupSize: z.number().int().min(2).max(12).optional(),
   /** A student prepares their turn ahead (leads a seminar, presents): the first lesson to run it models a turn and scores none. */
   prepared: z.boolean().default(false),
-  handIn: z.enum(['paper', 'online', 'none']).default('paper'),
+  /** How it reaches the teacher. Unsaid when the brief did not say: then no material names a way, and the teacher is asked. */
+  handIn: z.enum(['paper', 'online', 'none', 'unsaid']).default('unsaid'),
   /** What a piece marked in points is out of, each time. */
   points: z.number().int().min(1).optional(),
   /** What students may use in a test, in the brief's words; empty when it does not say. */

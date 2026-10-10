@@ -92,7 +92,7 @@ describe('the outline', () => {
     const [first, second] = orderedLessons(course);
     expect(first!.homework.due).toBe(second!.id);
     expect(sectionPrompt(course, first!, 'plan')).toContain('It is due at the start of the next lesson.');
-    expect(sectionPrompt(course, second!, 'plan')).toContain(`Due at the start of this lesson: "Final essay" (set in "${first!.title}"). The plan collects it by name`);
+    expect(sectionPrompt(course, second!, 'plan')).toContain(`Due at the start of this lesson: "Final essay" (set in "${first!.title}"). The plan takes it in by name`);
     // A step is collected as a step, not as the piece it leads to.
     const stepped = { ...course, lessons: { ...course.lessons, [first!.id]: { ...first!, homework: { ...first!.homework, kind: 'step' as const } } } };
     expect(sectionPrompt(stepped, second!, 'plan')).toContain(`Due at the start of this lesson: the short step (set in "${first!.title}", an ungraded step).`);
