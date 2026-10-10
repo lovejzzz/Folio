@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .rule { stroke: #CFC8B9 } .u { stroke: #8A857A }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .rule { stroke: #3A3B35 } .u { stroke: #8A857A }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">GRADING, ON THE SYLLABUS</text>
+  <rect class="card" x="36" y="64" width="728" height="206" rx="14"/>
+  <text class="ink2" x="60" y="96" font-size="13" font-weight="600">Component</text>
+  <text class="ink2" x="740" y="96" font-size="13" font-weight="600" text-anchor="end">Weight</text>
+  <line class="rule" x1="56" y1="108" x2="744" y2="108"/>
+  <text class="ink" x="60" y="134" font-size="15" font-weight="600">Weekly lab worksheets</text>
+  <text class="ink2" x="740" y="134" font-size="15" text-anchor="end">20%</text>
+  <text class="ink2" x="60" y="154" font-size="13">Scored</text>
+  <text class="acc" x="60" y="174" font-size="13">Each student alone  ·  How it is handed in: not said</text>
+  <line class="rule" x1="56" y1="188" x2="744" y2="188"/>
+  <text class="ink" x="60" y="214" font-size="15" font-weight="600">Seminar leadership</text>
+  <text class="ink2" x="740" y="214" font-size="15" text-anchor="end">10%</text>
+  <text class="ink2" x="60" y="234" font-size="13">Scored</text>
+  <text class="acc" x="60" y="254" font-size="13">In groups  ·  Nothing handed in</text>
+</svg>

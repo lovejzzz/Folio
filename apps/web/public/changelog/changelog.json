@@ -1,5 +1,35 @@
 [
  {
+  "version": "0.0.38",
+  "date": "October 10, 2026",
+  "title": "How each graded piece runs is said once",
+  "lede": "The fault that most often stopped a lesson was not in what was taught. It was one graded piece told two ways: led by a group in its brief and by one student in the plan, handed in at the end of class on one page and not collected on another. This release has Folio read those facts once and give them to every page in the same words.",
+  "sections": [
+   {
+    "heading": "A card for each graded component",
+    "body": "When a course is outlined, Folio reads from your brief who does each graded piece (alone, in pairs, in groups), whether a turn is prepared ahead, how it is handed in, what a test allows, its length. Every page of every lesson is then told the same lines, and told to say nothing else of these. What your brief does not say is left unsaid: no page invents a way of handing work in, and the list at the top of the lesson asks you to set it. The grading table on the syllabus shows who does each component and how it is handed in, and a press changes either.",
+    "image": {
+     "src": "/changelog/0.0.38-card.svg",
+     "alt": "The grading table: under Weekly lab worksheets, 20%, the lines Scored, and Each student alone, How it is handed in: not said; under Seminar leadership, 10%, In groups, Nothing handed in",
+     "width": 800,
+     "height": 300
+    }
+   },
+   {
+    "heading": "What a reading found",
+    "body": "Thirty-two fresh lessons were read by independent readers before this release went out. Faults of this kind fell from seven to two, and eight components written anew in each lesson kept one rubric, criteria and points, where a weekly worksheet had been scored out of 12 in some weeks and 16 in others. One fault the first version of the card made itself was found by that reading and removed: it had told every page that a piece was “scored with a rubric” when your brief had not said so."
+   },
+   {
+    "heading": "Smaller things",
+    "body": "A course in R keeps count of the packages students have installed: a lesson that loads another has them install it first, and a sheet that still loads one nobody installed is said to you. A course a few meetings over the forty Folio plans is asked about in fixed words, so the same brief no longer comes out as 39, 40 or 14 lessons. The answer check reads t² as t**2 and no longer judges a single return statement as a program. The note that a piece done in class “asks for more than most groups will finish” was wrong in three readings running and is no longer left."
+   },
+   {
+    "heading": "Still open",
+    "body": "Ten faults that would stop a lesson remain in thirty-two lessons, four of them of a kind this release does not touch: a plan that lists three items with their answers beside a sheet that holds two. That is next."
+   }
+  ]
+ },
+ {
   "version": "0.0.37",
   "date": "October 10, 2026",
   "title": "Where Folio stands",

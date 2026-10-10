@@ -132,7 +132,8 @@ export const SlidesDraft = z.object({
         bullets: z.array(line).max(10).describe('At most five'),
         notes: z.string().describe('Speaker notes for the teacher'),
         table: z
-          .object({ columns: z.array(z.string()).max(6), rows: z.array(z.array(z.string())).max(10) })
+          // (eight: a table of seven columns sent a whole deck back to be written again on a paid run)
+          .object({ columns: z.array(z.string()).max(8), rows: z.array(z.array(z.string())).max(10) })
           .optional()
           .describe('Only for a slide that compares things under the same headings: the table itself, cells of a few words; the slide then has two bullets at most'),
         chart: z
