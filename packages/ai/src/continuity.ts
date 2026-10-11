@@ -274,8 +274,6 @@ function ownWork(course: Course, lesson: Lesson): string {
 }
 
 export function homeworkLine(course: Course, lesson: Lesson): string {
-  const own = ownWork(course, lesson);
-  if (own) return own;
   const toward = lesson.homework.toward.trim();
   const collected = orderedLessons(course)
     .filter((l) => l.id !== lesson.id)
@@ -299,6 +297,9 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
   // A close \"handed out the brief\" of a 20% paper that this lesson did not hold, and no brief existed.
   const only = ' No other graded piece is set, handed out or collected in this lesson than those named here.';
   if (lesson.homework.kind === 'none') return `${(lesson.also ?? []).some((p) => p.kind !== 'none') ? '' : 'This lesson sets no homework.'}${due}${only}`.trim();
+  // Where no graded work is written the piece is the teacher's own: its name, its time and when it is due are said, and nothing of a brief.
+  const own = ownWork(course, lesson);
+  if (own) return `${own}${lesson.homework.kind === 'assignment' || lesson.homework.kind === 'step' ? ` ${dueWords(course, lesson)}` : ''}${due}${only}`;
   const named = toward ? `"${toward}"` : 'a graded piece';
   // The paper and the rubric are their own material: a plan that also wrote them gave the lesson two.
   if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions (or, when the summary says it is sat after the course ends, reviews for it and says when and how it is sat), and writes no questions.${due}${only}`;
