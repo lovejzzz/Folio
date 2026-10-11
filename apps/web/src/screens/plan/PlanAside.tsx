@@ -145,7 +145,7 @@ export function PlanAside() {
         </Button>
         {/* Measured: four lessons take two to three minutes; lessons are written a few at a time. */}
         <p className="mt-2 font-ui text-13 leading-5 text-ink-2">{count === 0 ? t.plan.noLessons : t.plan.buildTime(Math.max(2, Math.ceil(count * 0.6)))}</p>
-        <CreditsNote lessons={count} kinds={enabled} />
+        <CreditsNote course={course} />
       </div>
     </aside>
   );

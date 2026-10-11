@@ -100,6 +100,8 @@ export const creditsText = {
   signInFirst: 'Sign in with Google first.',
   /** Said when a choice has more written than was ticked: never charged for in silence. */
   alsoWritten: 'This includes the graded work the rubrics score: a rubric is written with its assignment.',
+  /** Nothing is left to write: said, and no figure given. */
+  nothingLeft: 'Everything chosen is written: there is nothing left to pay for.',
   ownKey: (usd: number) => `About $${usd < 10 ? usd.toFixed(1) : Math.round(usd)} at your provider’s prices, as measured on courses like this one.`,
   estimate: (n: number, have: number | null) => (have === null ? `About ${n.toLocaleString('en-US')} credits.` : `About ${n.toLocaleString('en-US')} credits; you have ${have.toLocaleString('en-US')}.`),
 };
@@ -124,12 +126,22 @@ const perLesson = (kinds: readonly string[]): number => runKinds((k) => kinds.in
 /** The materials a choice has written that the teacher did not choose, each with the chosen one that needs it. */
 export const neededToo = (kinds: readonly string[]): { kind: string; neededBy: string }[] => runKinds((k) => kinds.includes(k)).flatMap((r) => (r.neededBy ? [{ kind: r.kind, neededBy: r.neededBy }] : []));
 
-/** About what the same lessons cost a teacher who writes with their own key, in dollars at the providers' prices. */
+/** Before a course has lessons: about what so many lessons with these materials cost with one's own key, in dollars. */
 export function estimateDollars(lessons: number, kinds: readonly string[]): number {
   return (lessons * perLesson(kinds)) / MARKUP / 100;
 }
 
-/** About how many credits writing these lessons with these materials takes, rounded up to ten. */
+/** Before a course has lessons: about how many credits so many lessons with these materials take, rounded up to ten. */
 export function estimateCredits(lessons: number, kinds: readonly string[]): number {
   return Math.ceil((lessons * perLesson(kinds)) / 10) * 10;
+}
+
+/**
+ * What the parts still to be written take, from the build's own plan of them: nothing for what is written already,
+ * nothing for a lesson that sets no such work, and the work a chosen material needs counted with it.
+ */
+export function planEstimate(tasks: readonly { kind: string; state: string; neededBy?: string }[]): { credits: number; dollars: number; parts: number; needed: number } {
+  const run = tasks.filter((t) => t.state === 'run');
+  const cents = run.reduce((sum, t) => sum + (PER_LESSON[t.kind] ?? 0), 0);
+  return { credits: Math.ceil(cents / 10) * 10, dollars: cents / MARKUP / 100, parts: run.length, needed: run.filter((t) => t.neededBy).length };
 }

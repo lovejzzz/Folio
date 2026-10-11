@@ -72,16 +72,34 @@ export function runKinds(enabled: (kind: MaterialKind) => boolean): RunKind[] {
   });
 }
 
-function wantedKinds(course: Course): GeneratedKind[] {
-  return runKinds((k) => course.materials[k].enabled).map((r) => r.kind);
+/** One part of one lesson in a build's plan: whether it is to be written, and why it is there or is not. */
+export interface PlannedTask extends BuildTarget {
+  /** The lesson's number, counted from 1. */
+  lesson: number;
+  /** The chosen material that needs it, when the teacher did not choose it themselves. */
+  neededBy?: MaterialKind;
+  /** "run": to be written. "done": written already. "noWork": the lesson sets no work of this kind, so there is nothing to write. */
+  state: 'run' | 'done' | 'noWork';
+}
+
+/**
+ * What a build of this course would do, lesson by lesson: the one account that the build's queue, the count of what
+ * is left, and the estimate of its cost are all read from. Each of them had its own: the estimate multiplied the
+ * lessons by the ticked materials, so it charged again for parts already written, charged for graded work in lessons
+ * that set none, and charged nothing for work a chosen material needs.
+ */
+export function executionPlan(course: Course, lessonIds?: readonly string[]): PlannedTask[] {
+  const kinds = runKinds((k) => course.materials[k].enabled);
+  return orderedLessons(course).flatMap((l, i) =>
+    !lessonIds || lessonIds.includes(l.id)
+      ? kinds.map(({ kind, neededBy }): PlannedTask => ({ lessonId: l.id, lesson: i + 1, kind, ...(neededBy ? { neededBy } : {}), state: !setsWork(l, kind) ? 'noWork' : l.gen[kind] ? 'done' : 'run' }))
+      : [],
+  );
 }
 
 /** Every enabled section that has not been built yet, lesson by lesson. */
 export function missingTargets(course: Course, lessonIds?: readonly string[]): BuildTarget[] {
-  const kinds = wantedKinds(course);
-  const lessons = orderedLessons(course).filter((l) => !lessonIds || lessonIds.includes(l.id));
-  // A lesson that sets no homework has no assignment to write.
-  return lessons.flatMap((l) => kinds.filter((kind) => !l.gen[kind] && setsWork(l, kind)).map((kind) => ({ lessonId: l.id, kind })));
+  return executionPlan(course, lessonIds).filter((t) => t.state === 'run').map(({ lessonId, kind }) => ({ lessonId, kind }));
 }
 
 // Out of credits stops the build too: every other part would fail the same way, and Resume carries on later.

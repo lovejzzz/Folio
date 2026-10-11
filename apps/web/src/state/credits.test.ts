@@ -57,5 +57,20 @@ describe('what a course is said to cost before it is written', () => {
     expect(neededToo(['assignments', 'rubrics'])).toEqual([]);
     expect(neededToo(['slides'])).toEqual([]);
   });
+
+  it('reckons a build from its own plan: what is written, and a lesson with no such work, cost nothing more', async () => {
+    const { planEstimate } = await import('./credits');
+    const task = (kind: string, state: string, neededBy?: string) => ({ kind, state, ...(neededBy ? { neededBy } : {}) });
+    // Four lessons of slides, two written: half of what four lessons were counted at.
+    const half = planEstimate([task('slides', 'done'), task('slides', 'done'), task('slides', 'run'), task('slides', 'run')]);
+    expect(half).toMatchObject({ credits: 50, parts: 2, needed: 0 });
+    expect(estimateCredits(4, ['slides'])).toBe(100);
+    // Graded work chosen in a course where one lesson of three sets none.
+    expect(planEstimate([task('assignments', 'run'), task('assignments', 'noWork'), task('assignments', 'run')]).credits).toBe(70);
+    // Rubrics alone: the work they need is counted and named; with that work written, nothing is left.
+    expect(planEstimate([task('assignments', 'run', 'rubrics')])).toMatchObject({ credits: 40, needed: 1 });
+    expect(planEstimate([task('assignments', 'done', 'rubrics')])).toMatchObject({ credits: 0, dollars: 0, parts: 0 });
+    expect(planEstimate([])).toMatchObject({ credits: 0, parts: 0 });
+  });
 });
 
