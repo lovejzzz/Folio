@@ -199,6 +199,15 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
 
+  packages/figures:
+    dependencies:
+      '@folio/core':
+        specifier: workspace:*
+        version: link:../core
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
+
   packages/run:
     dependencies:
       pyodide:
