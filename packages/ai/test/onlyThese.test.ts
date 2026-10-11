@@ -40,4 +40,13 @@ describe('what a writer is told exists', () => {
     expect(quiz).not.toContain('The sheets students are handed in this lesson');
     expect(sectionPrompt(chosen(['plan', 'study']), lesson, 'study')).toContain('The sheets students are handed in this lesson');
   });
+
+  it('leaves a graded piece to the teacher where no graded work is written: named, its brief and rubric never described (as slides written alone did)', () => {
+    const said = onlyThese(chosen(['slides']));
+    expect(said).toContain('The graded pieces of this course are the teacher\'s own to write out');
+    expect(said).toContain('nothing is said of what its brief, paper, answer key or rubric holds');
+    expect(onlyThese(chosen(['slides', 'assignments']))).not.toContain('the teacher\'s own to write out');
+    expect(onlyThese(chosen(['slides', 'rubrics']))).not.toContain('the teacher\'s own to write out');
+  });
 });
+

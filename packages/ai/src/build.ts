@@ -121,6 +121,19 @@ export function rubricLacking(course: Course, lesson: Lesson): boolean {
 }
 
 /**
+ * Lessons that set or run graded work in a course where no graded work is to be written: what the chosen materials
+ * lean on and will not find. Said to the teacher before anything is written, with the pieces by name; the materials
+ * then name the piece and leave its instructions to the teacher.
+ */
+export function ownToWrite(course: Course, lessonIds?: readonly string[]): { lesson: number; pieces: string[] }[] {
+  if (runKinds((k) => course.materials[k].enabled).some((r) => r.kind === 'assignments')) return [];
+  return orderedLessons(course).flatMap((l, i) => {
+    const pieces = [...new Set(lessonPieces(l).filter((p) => p.kind !== 'none').map((p) => p.toward.trim()).filter(Boolean))];
+    return pieces.length && (!lessonIds || lessonIds.includes(l.id)) ? [{ lesson: i + 1, pieces }] : [];
+  });
+}
+
+/**
  * The plan of a build asked for part by part (one part written again, the failed ones tried again): those parts and
  * no others, each to be written whether or not it was before. Its cost is reckoned from this, not from what the
  * whole course still lacks.

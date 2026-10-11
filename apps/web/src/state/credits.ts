@@ -102,6 +102,8 @@ export const creditsText = {
   alsoWritten: 'This includes the graded work the rubrics score: a rubric is written with its assignment.',
   /** Written graded work that has no rubric though rubrics are chosen: said, and not written over. */
   noRubric: (n: number) => `${n === 1 ? 'One lesson’s graded work has' : `${n} lessons’ graded work have`} no rubric. Folio writes a rubric with its assignment and will not write your assignment again for it: add the rubric by hand, or write that assignment again yourself.`,
+  /** Graded work the chosen materials lean on and that is not being written: named before the build. */
+  ownToWrite: (pieces: string[], lessons: number) => `${lessons === 1 ? 'One lesson sets' : `${lessons} lessons set`} graded work (${pieces.map((x) => `“${x}”`).join(', ')}) that is not among what you chose: what is written names it and leaves its instructions, paper and rubric to you.`,
   /** Nothing is left to write: said, and no figure given. */
   nothingLeft: 'Everything chosen is written: there is nothing left to pay for.',
   ownKey: (usd: number) => `About $${usd < 10 ? usd.toFixed(1) : Math.round(usd)} at your provider’s prices, as measured on courses like this one.`,

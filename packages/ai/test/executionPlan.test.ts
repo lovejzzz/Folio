@@ -1,6 +1,6 @@
 import { MATERIAL_KINDS, type Course, type MaterialKind } from '@folio/core';
 import { describe, expect, it } from 'vitest';
-import { executionPlan, missingTargets, planOf } from '../src/build';
+import { executionPlan, missingTargets, ownToWrite, planOf } from '../src/build';
 import { smallCourse } from './fake';
 
 /** The small course with only these materials chosen, and these parts of its first lesson written already. */
@@ -90,6 +90,14 @@ describe('what a build of a course would do', () => {
     // The rest of the course still lacks four parts: none of them is in it.
     expect(missingTargets(c)).toHaveLength(4);
     expect(planOf(c, [{ lessonId: 'gone', kind: 'quiz' }])).toEqual([]);
+  });
+
+  it('says which lessons lean on graded work that is not being written, by the pieces\' names', () => {
+    const c = chosen(['slides']);
+    const named: Course = { ...c, lessons: Object.fromEntries(Object.entries(c.lessons).map(([id, l]) => [id, { ...l, homework: { kind: 'inclass' as const, toward: 'Participation' } }])) };
+    expect(ownToWrite(named)).toEqual([{ lesson: 1, pieces: ['Participation'] }, { lesson: 2, pieces: ['Participation'] }]);
+    expect(ownToWrite({ ...named, materials: { ...named.materials, rubrics: { enabled: true, options: {} } } })).toEqual([]);
+    expect(ownToWrite(chosen(['slides'], [], 'none')).map((x) => x.lesson)).toEqual([]);
   });
 });
 

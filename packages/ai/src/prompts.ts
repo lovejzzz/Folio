@@ -418,7 +418,12 @@ export function onlyThese(course: Course): string {
   const off = kinds.filter((k) => !on(k));
   if (!off.length) return '';
   const list = (ks: string[]) => ks.map((k) => MATERIAL_NAMES[k]).join('; ');
-  return `The teacher has chosen to have only these written for this course: ${list(kinds.filter(on))}. Not written, and not to be had by anyone: ${list(off)}. So nothing you write sends a student or the teacher to one of those, names one, or leaves to one something a reader of yours needs: what your material needs (its questions, its data, its figures given by their numbers, its instructions) it holds itself, in full. Where the course's own facts name a graded piece, it is still named: only its written-out paper may be absent.`;
+  // Slides written alone told the teacher "the brief and rubric are in your hands" and to hand a copy to every student:
+  // the course's facts say such a piece has a brief, and nothing said that Folio was not writing it.
+  const own = on('assignments') ? '' : ' The graded pieces of this course are the teacher\'s own to write out: where this lesson sets or runs one, it is called by its name and its instructions are said to be the teacher\'s to give; nothing is said of what its brief, paper, answer key or rubric holds, of levels or criteria it is scored on, or of copies of them being handed out or in anyone\'s hands.';
+  // A plan written alone had students answer "the prompt on the screen" with no deck to hold it.
+  const board = on('slides') ? '' : ' With no slide deck, nothing is prepared for a screen: what a class is to see, the teacher writes on the board or reads out, and it is said that way, with its words given in full where they are used.';
+  return `The teacher has chosen to have only these written for this course: ${list(kinds.filter(on))}.${own}${board} Not written, and not to be had by anyone: ${list(off)}. So nothing you write sends a student or the teacher to one of those, names one, or leaves to one something a reader of yours needs: what your material needs (its questions, its data, its figures given by their numbers, its instructions) it holds itself, in full.`;
 }
 
 /** The per-call part of a section request; the course itself goes in courseBackground. */

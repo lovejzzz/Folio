@@ -1,4 +1,4 @@
-import { executionPlan, planOf, type BuildTarget } from '@folio/ai';
+import { executionPlan, ownToWrite, planOf, type BuildTarget } from '@folio/ai';
 import type { Course } from '@folio/core';
 import { useEffect } from 'react';
 import { creditsText, planEstimate, refreshCredits, useCredits } from '../../state/credits';
@@ -18,7 +18,13 @@ export function CreditsNote({ course, targets }: { course: Course; targets?: rea
   if (course.lessonOrder.length === 0) return null;
   const need = planEstimate(targets ? planOf(course, targets) : executionPlan(course));
   const quiet = 'mt-1 font-ui text-13 leading-5 text-ink-2';
-  const lacking = need.noRubric ? <span className="block text-attention">{creditsText.noRubric(need.noRubric)}</span> : null;
+  const own = ownToWrite(course, targets?.map((x) => x.lessonId));
+  const lacking = (
+    <>
+      {need.noRubric > 0 && <span className="block text-attention">{creditsText.noRubric(need.noRubric)}</span>}
+      {own.length > 0 && <span className="block">{creditsText.ownToWrite([...new Set(own.flatMap((x) => x.pieces))], own.length)}</span>}
+    </>
+  );
   if (need.parts === 0) return <p className={quiet}>{creditsText.nothingLeft}{lacking}</p>;
   const also = need.needed ? ` ${creditsText.alsoWritten}` : '';
   // With a key of their own a teacher pays the provider: said in dollars, before anything is written.
