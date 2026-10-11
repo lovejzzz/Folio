@@ -64,13 +64,34 @@ export function factsCheckPrompt(course: Course, lesson: Lesson, v: FactsDraft):
     lessonContext(course, lesson),
     `What the lesson teaches:\n${v.keyIdeas.map((k) => `- ${k}`).join('\n')}`,
     cases,
-    'Read each answer against what its case gives, as a careful examiner would. List every statement in the answer that says something is so about the case (a number, a cause, a circumstance, how many jobs or people or units there are, what someone did or will do) when that is neither written under "Given" nor follows from it by the lesson\'s own reasoning or by arithmetic. A definition, a law or a method the lesson teaches is not such a statement, and neither is one the answer marks as a possibility ("may", "one would need to know"). Copy the words from the answer.',
+    'Read each answer against what its case gives, as a careful examiner would, and answer for every case, each once by its number, with an empty list where you find nothing. List every statement in the answer that says something is so about the case (a number, a cause, a circumstance, how many jobs or people or units there are, what someone did or will do) when that is neither written under "Given" nor follows from it by the lesson\'s own reasoning or by arithmetic. A definition, a law or a method the lesson teaches is not such a statement, and neither is one the answer marks as a possibility ("may", "one would need to know"). Copy the words from the answer.',
   ].join('\n\n');
 }
 
+/**
+ * Why a second reading cannot be taken as a reading of these cases, or null: it must speak of every case once, by its
+ * number, and of no other. A reading that left a case out, named one twice or named one that is not there was taken
+ * for "nothing found" in the cases it did not cover: not read is not the same as sound.
+ */
+export function checkFault(read: z.infer<typeof FactsCheck>, count: number): string | null {
+  const seen = read.cases.map((c) => c.n);
+  const beyond = seen.filter((n) => n < 1 || n > count);
+  if (beyond.length) return `it speaks of case ${beyond[0]}, and there are ${count}`;
+  const twice = seen.find((n, i) => seen.indexOf(n) !== i);
+  if (twice !== undefined) return `it speaks of case ${twice} twice`;
+  const missing = Array.from({ length: count }, (_, i) => i + 1).filter((n) => !seen.includes(n));
+  return missing.length ? `it says nothing of case ${missing.join(', ')}: every case is listed, with an empty list where nothing was found` : null;
+}
+
+/** What each case's answer claims without support, as a second reader found it. Asked once more when the reading is not of these cases; throws when it still is not. */
 async function unsupportedIn(inference: Inference, course: Course, lesson: Lesson, v: FactsDraft, signal?: AbortSignal): Promise<string[][]> {
-  const { value } = await runJob(inference, { task: 'folio_facts_check', system: 'You check course materials. Reply with one JSON object and nothing else.', context: courseBackground(course), prompt: factsCheckPrompt(course, lesson, v), effort: 'medium', schema: FactsCheck, signal });
-  return v.cases.map((_, i) => value.cases.find((c) => c.n === i + 1)?.unsupported ?? []);
+  const read = (told = '') => runJob(inference, { task: 'folio_facts_check', system: 'You check course materials. Reply with one JSON object and nothing else.', context: courseBackground(course), prompt: `${factsCheckPrompt(course, lesson, v)}${told}`, effort: 'medium', schema: FactsCheck, signal }).then((r) => r.value);
+  let value = await read();
+  const first = checkFault(value, v.cases.length);
+  if (first) value = await read(`\n\nA first answer was not usable: ${first}. List each of the ${v.cases.length} cases once, by its number.`);
+  const still = checkFault(value, v.cases.length);
+  if (still) throw new InferenceError('invalid', `The lesson's cases could not be read a second time (${still}), so they are not taken as checked.`);
+  return v.cases.map((_, i) => value.cases.find((c) => c.n === i + 1)!.unsupported);
 }
 
 /**

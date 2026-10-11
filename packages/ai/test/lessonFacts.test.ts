@@ -2,7 +2,7 @@ import { CourseStore, MATERIAL_KINDS, orderedLessons, parseCourse, type Course, 
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { missingTargets, runBuild, type BuildHost } from '../src/build';
-import { factsSummary, hasFacts, lessonFacts, needsFacts } from '../src/lessonFacts';
+import { checkFault, FactsCheck, factsSummary, hasFacts, lessonFacts, needsFacts } from '../src/lessonFacts';
 import { untaught } from '../src/slideSteps';
 import { checklistLines, lessonChecklist } from '@folio/core';
 import { sectionPrompt } from '../src/prompts';
@@ -21,6 +21,8 @@ const facts = {
     { title: 'One worker dismissed', known: 'In a firm of 300, one worker is dismissed after repeated absences.', question: 'Is this a trouble or an issue?', answer: 'A personal trouble: one case, with a cause in that worker’s own circumstances.', notShown: '' },
   ],
 };
+/** A second reading that speaks of both cases and finds nothing. */
+const SOUND = { cases: [{ n: 1, unsupported: [] }, { n: 2, unsupported: [] }] };
 const slides = { slides: [{ layout: 'title', title: 'T', bullets: [], notes: '' }, { layout: 'bullets', title: 'A', bullets: ['a'], notes: '' }, { layout: 'bullets', title: 'B', bullets: ['b'], notes: '' }] };
 const host = (store: CourseStore, model: ReturnType<typeof fakeInference>): BuildHost => ({ inference: model, getCourse: () => store.getState(), commit: (_t, commands) => void store.apply(commands, { label: { key: 't' }, source: 'ai' }), signal: new AbortController().signal }) as BuildHost;
 
@@ -29,7 +31,7 @@ describe('a lesson written without a plan', () => {
     const store = new CourseStore(chosen(['slides', 'quiz']));
     const first = store.getState().lessonOrder[0]!;
     expect(needsFacts(store.getState(), store.getState().lessons[first]!)).toBe(true);
-    const model = fakeInference((req) => (req.task === 'folio_facts' ? facts : req.task === 'folio_facts_check' ? { cases: [] } : req.task === 'folio_slides' ? slides : { questions: [] }));
+    const model = fakeInference((req) => (req.task === 'folio_facts' ? facts : req.task === 'folio_facts_check' ? SOUND : req.task === 'folio_slides' ? slides : { questions: [] }));
     await runBuild(host(store, model), missingTargets(store.getState(), [first]));
     const lesson = store.getState().lessons[first]!;
     expect(hasFacts(lesson)).toBe(true);
@@ -48,7 +50,7 @@ describe('a lesson written without a plan', () => {
   it('is not written from a guess when its facts cannot be had: the parts stay to be written', async () => {
     const store = new CourseStore(chosen(['slides']));
     const first = store.getState().lessonOrder[0]!;
-    const summary = await runBuild(host(store, fakeInference((req) => (req.task === 'folio_facts' ? { keyIdeas: [] } : req.task === 'folio_facts_check' ? { cases: [] } : slides))), missingTargets(store.getState(), [first]));
+    const summary = await runBuild(host(store, fakeInference((req) => (req.task === 'folio_facts' ? { keyIdeas: [] } : req.task === 'folio_facts_check' ? SOUND : slides))), missingTargets(store.getState(), [first]));
     expect(summary.built).toBe(0);
     expect(store.getState().lessons[first]!.slides).toHaveLength(0);
     expect(missingTargets(store.getState(), [first]).map((t) => t.kind)).toEqual(['facts', 'slides']);
@@ -57,7 +59,7 @@ describe('a lesson written without a plan', () => {
   it('keeps its facts for a material added later: they are not settled a second time', async () => {
     const store = new CourseStore(chosen(['quiz']));
     const first = store.getState().lessonOrder[0]!;
-    const model = fakeInference((req) => (req.task === 'folio_facts' ? facts : req.task === 'folio_facts_check' ? { cases: [] } : req.task === 'folio_slides' ? slides : { questions: [] }));
+    const model = fakeInference((req) => (req.task === 'folio_facts' ? facts : req.task === 'folio_facts_check' ? SOUND : req.task === 'folio_slides' ? slides : { questions: [] }));
     await runBuild(host(store, model), missingTargets(store.getState(), [first]));
     store.apply([{ type: 'material.set', payload: { kind: 'slides', enabled: true } } as never], { label: { key: 't' }, source: 'teacher' });
     expect(missingTargets(store.getState(), [first]).map((t) => t.kind)).not.toContain('facts');
@@ -113,7 +115,7 @@ describe('what a case’s answer claims beyond what is given', () => {
     const c = chosen(['slides']);
     const first = c.lessonOrder[0]!;
     let checks = 0;
-    const model = fakeInference((req, call) => (req.task === 'folio_facts' ? (call === 1 ? claimed : facts) : { cases: checks++ === 0 ? [{ n: 1, unsupported: [claim] }] : [] }));
+    const model = fakeInference((req, call) => (req.task === 'folio_facts' ? (call === 1 ? claimed : facts) : { cases: checks++ === 0 ? [{ n: 1, unsupported: [claim] }, { n: 2, unsupported: [] }] : SOUND.cases }));
     const store = new CourseStore(c);
     store.apply(await lessonFacts(model, c, first), { label: { key: 't' }, source: 'ai' });
     expect(model.calls.map((x) => x.task)).toEqual(['folio_facts', 'folio_facts_check', 'folio_facts', 'folio_facts_check']);
@@ -125,7 +127,7 @@ describe('what a case’s answer claims beyond what is given', () => {
   it('is kept on the case when it is still there after one rewrite: writers are told not to state it, and the teacher is told', async () => {
     const c = chosen(['slides']);
     const first = c.lessonOrder[0]!;
-    const model = fakeInference((req) => (req.task === 'folio_facts' ? claimed : { cases: [{ n: 1, unsupported: [claim] }] }));
+    const model = fakeInference((req) => (req.task === 'folio_facts' ? claimed : { cases: [{ n: 1, unsupported: [claim] }, { n: 2, unsupported: [] }] }));
     const store = new CourseStore(c);
     store.apply(await lessonFacts(model, c, first), { label: { key: 't' }, source: 'ai' });
     const lesson = store.getState().lessons[first]!;
@@ -155,5 +157,43 @@ describe('a deck that leaves out what the lesson was settled with', () => {
     const more = [...real.slides, { layout: 'bullets' as const, title: 'Two walking legs added', bullets: ['Resolve each leg into components.'], notes: '' }, { layout: 'bullets' as const, title: 'Work', bullets: ['F = (3.0, −2.0, 4.0) N and d = (2.0, 5.0, −1.0) m: find F·d.'], notes: 'Magnitudes √29 and √30.' }];
     expect(untaught(deck(more), lessonOf(real.cases))).toEqual([]);
     expect(untaught(deck(real.slides), { segments: [{}], cases: real.cases } as never)).toEqual([]);
+  });
+});
+
+describe('a second reading that is not a reading of these cases', () => {
+  const reading = (cases: { n: number; unsupported: string[] }[]) => FactsCheck.parse({ cases });
+
+  it('is told from a sound one: every case once, by its number, and no other', () => {
+    expect(checkFault(reading(SOUND.cases), 2)).toBeNull();
+    // As it was found: each of these parsed, and each was taken for "nothing found".
+    expect(checkFault(reading([]), 2)).toContain('says nothing of case 1, 2');
+    expect(checkFault(reading([{ n: 1, unsupported: [] }]), 2)).toContain('says nothing of case 2');
+    expect(checkFault(reading([{ n: 1, unsupported: [] }, { n: 1, unsupported: ['x'] }]), 2)).toContain('case 1 twice');
+    expect(checkFault(reading([{ n: 1, unsupported: [] }, { n: 2, unsupported: [] }, { n: 3, unsupported: [] }]), 2)).toContain('case 3, and there are 2');
+  });
+
+  it('is asked for once more, with what was wrong said, and taken when the second is whole', async () => {
+    const c = chosen(['slides']);
+    let reads = 0;
+    const model = fakeInference((req) => (req.task === 'folio_facts' ? facts : reads++ === 0 ? { cases: [] } : SOUND));
+    const commands = await lessonFacts(model, c, c.lessonOrder[0]!);
+    expect(commands).toHaveLength(1);
+    expect(model.calls.map((x) => x.task)).toEqual(['folio_facts', 'folio_facts_check', 'folio_facts_check']);
+    expect(model.calls[2]!.prompt).toContain('A first answer was not usable: it says nothing of case 1, 2');
+  });
+
+  it('fails the step when it is still not whole: the facts are not taken as checked, and nothing is written from them', async () => {
+    for (const bad of [{ cases: [] }, { cases: [{ n: 1, unsupported: [] }, { n: 1, unsupported: [] }] }, { cases: [{ n: 1, unsupported: [] }, { n: 2, unsupported: [] }, { n: 9, unsupported: [] }] }]) {
+      const store = new CourseStore(chosen(['slides']));
+      const first = store.getState().lessonOrder[0]!;
+      const model = fakeInference((req) => (req.task === 'folio_facts' ? facts : req.task === 'folio_facts_check' ? bad : slides));
+      const summary = await runBuild(host(store, model), missingTargets(store.getState(), [first]));
+      expect(summary.built).toBe(0);
+      expect(store.getState().lessons[first]!.cases).toEqual([]);
+      expect(store.getState().lessons[first]!.slides).toEqual([]);
+      // Two readings and no third.
+      expect(model.calls.filter((x) => x.task === 'folio_facts_check').length).toBeLessThanOrEqual(4);
+      expect(missingTargets(store.getState(), [first]).map((t) => t.kind)).toEqual(['facts', 'slides']);
+    }
   });
 });
