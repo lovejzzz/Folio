@@ -80,6 +80,8 @@ export type CommandMap = {
   'task.update': { taskId: string; fields: TaskFields };
   'task.remove': { taskId: string };
   'rubric.update': { rubricId: string; rubric: Omit<Rubric, 'id'> };
+  /** A rubric given to a piece of graded work that stands without one. The piece's own words are not touched. */
+  'rubric.attach': { taskId: string; rubric: Rubric };
   'faq.fill': { lessonId: string; entries: FaqEntry[]; flags: Flag[] };
   'faq.add': { entry: FaqEntry };
   'faq.update': { faqId: string; question?: string; answer?: string };
@@ -303,6 +305,12 @@ const handlers: { [K in CommandType]: Handler<K> } = {
       markEdited(lesson, sectionOfTask(task as Task));
     }
     removeTaskEntity(draft, p.taskId);
+  },
+  'rubric.attach': (draft, p) => {
+    const task = draft.tasks[p.taskId];
+    if (!task || task.kind !== 'assignment') throw new CommandError(`No graded work ${p.taskId}`);
+    draft.rubrics[p.rubric.id] = p.rubric;
+    task.rubricId = p.rubric.id;
   },
   'rubric.update': (draft, p) => {
     if (!draft.rubrics[p.rubricId]) throw new CommandError(`No rubric ${p.rubricId}`);

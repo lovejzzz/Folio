@@ -10,6 +10,7 @@ import type { RunOptions } from './runCells';
 import { generateSection, type SectionProgress } from './sections';
 import { lastRead } from './lastRead';
 import { BUILT_ON_PLAN } from './prompts';
+import { piecesLackingRubric } from './rubricAlone';
 
 export interface BuildTarget {
   lessonId: string;
@@ -80,8 +81,8 @@ export interface PlannedTask extends BuildTarget {
   neededBy?: MaterialKind;
   /**
    * "run": to be written. "done": written already. "noWork": the lesson sets no work of this kind, so there is nothing
-   * to write. "noRubric": rubrics are chosen and the lesson's graded work stands written with none: said, never run,
-   * since the only way Folio has to write a rubric is to write the work again, and the work is the teacher's now.
+   * to write. "noRubric": rubrics are chosen and the lesson's graded work stands written with none: the work is not
+   * written again; a rubric alone is written for it (rubricAlone.ts), after the parts to be run.
    */
   state: 'run' | 'done' | 'noWork' | 'noRubric';
 }
@@ -108,16 +109,7 @@ export function executionPlan(course: Course, lessonIds?: readonly string[]): Pl
  * A piece marked in points or as complete has none by design.
  */
 export function rubricLacking(course: Course, lesson: Lesson): boolean {
-  if (!course.materials.rubrics.enabled || !setsWork(lesson, 'rubrics')) return false;
-  const scored = new Set(lessonPieces(lesson).filter((p) => p.kind === 'assignment' || p.kind === 'inclass').map((p) => p.toward.trim()));
-  const byPoints = (toward: string) => {
-    const g = course.grading.find((x) => x.item.trim() === toward);
-    return g?.judged === 'complete' || Boolean(g?.card?.points);
-  };
-  return lesson.taskIds.some((id) => {
-    const t = course.tasks[id];
-    return t?.kind === 'assignment' && scored.has(t.toward.trim()) && !byPoints(t.toward.trim()) && !(t.rubricId && course.rubrics[t.rubricId]);
-  });
+  return piecesLackingRubric(course, lesson).length > 0;
 }
 
 /**

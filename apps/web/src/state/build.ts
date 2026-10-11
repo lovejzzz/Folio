@@ -1,5 +1,5 @@
 import { pageRuns } from './workshop';
-import { missingTargets, runBuild, targetKey, type BuildEvent, type BuildSummary, type BuildTarget, type Inference, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
+import { executionPlan, fillRubrics, missingTargets, runBuild, targetKey, type BuildEvent, type BuildSummary, type BuildTarget, type Inference, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
 import { attentionItems, cmd, lessonNumber, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
 import { router } from '../app/router';
@@ -186,7 +186,9 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   if (!store || useBuild.getState().running) return;
   const course = store.getState();
   const list = targets ?? missingTargets(course);
-  if (!list.length) {
+  // Written work that lacks its rubric is given one, and nothing of it is written again: also when nothing else is left.
+  const lacking = !targets && executionPlan(course).some((t) => t.state === 'noRubric');
+  if (!list.length && !lacking) {
     if (!targets && course.status !== 'ready') {
       markReady(store);
       toast({ key: 'build', message: currentMessages().build.ready, duration: 6000 });
@@ -213,6 +215,7 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   }
   const summary = await guardedRun(store, inference, usages, controller, list);
   if (!summary) return;
+  if (lacking && !controller.signal.aborted) await fillRubrics(inference, () => store.getState(), (commands) => void store.apply(commands, { label: { key: 'built' }, source: 'ai', undoable: false }), undefined, controller.signal).catch(() => null);
   if (!missingTargets(store.getState()).length) markReady(store);
   const { cells: after } = useBuild.getState();
   const errorsOnly = Object.fromEntries(Object.entries(after).filter(([, v]) => v === 'error'));

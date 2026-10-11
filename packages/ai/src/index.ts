@@ -24,3 +24,4 @@ export { supportedHandout, supportedPrompt } from './supports';
 export { codeUnits, lessonCodeFaults, looksLikeR, type CodeFault, type LineRunner } from './sheetCode';
 export { sheetsRun, workRun } from './sheetRun';
 export * from './checklist';
+export * from './rubricAlone';

@@ -14,7 +14,7 @@ import { MATERIAL_KINDS, CourseStore, OnlineSchema, cmd, orderedLessons, parseCo
 import { FOLIO_MIX } from '../../../packages/ai/src/adapters/mix';
 import { withHandouts } from '../../../packages/ai/src/handouts';
 import { planReadAgain } from '../../../packages/ai/src/sections';
-import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, supportedHandout, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
+import { fillRubrics, BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, supportedHandout, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawn } from 'node:child_process';
 import { nodeRunner } from '@folio/run/node';
@@ -434,6 +434,8 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
   // --lessons N writes only the first N lessons: a long course is tried a few weeks at a time, then carried on with --polish.
   const first = option('--lessons') ? store.getState().lessonOrder.slice(0, Number(option('--lessons'))) : undefined;
   for (let round = 0; round < 3 && missingTargets(store.getState(), first).length; round++) await build(name, store, missingTargets(store.getState(), first), failed);
+  // --rubrics: written work that lacks its rubric is given one, as the app does at the end of a build.
+  if (ARGS.includes('--rubrics')) console.log(`${name}: rubrics alone`, await fillRubrics(inference, () => store.getState(), (commands) => void store.apply(commands, { label: { key: 'built' }, source: 'ai', undoable: false }), first));
   // A check-up keeps what a teacher would get: the review's notes stay, nothing is written again.
   for (let round = 0; round < 2 && !CHECKUP && flawed(store.getState()).length; round++) {
     console.log(`${name}: writing again ${flawed(store.getState()).length} parts`);
