@@ -1,5 +1,7 @@
 import { TO_CONFIRM, groundsOf, unsourcedLocators } from './locators';
 import { lessonPieces } from './course';
+import { docLabels } from './docLabels';
+import { lessonReady, readyLines } from './ready';
 import type { Course, Lesson, Task } from './schema';
 
 /**
@@ -38,6 +40,8 @@ export type CheckItem =
 export interface Checklist {
   checked: CheckItem[];
   look: CheckItem[];
+  /** What to have on hand before the meeting, as the lesson holds it. */
+  ready: string[];
 }
 
 const numbers = (text: string) => (text.match(/\d+(?:\.\d+)?/g) ?? []).length;
@@ -64,6 +68,7 @@ export function lessonChecklist(course: Course, lesson: Lesson): Checklist {
   const unsaid = [...new Set(lessonPieces(lesson).filter((p) => p.kind === 'assignment' || p.kind === 'step' || p.kind === 'inclass').map((p) => p.toward.trim()))].filter((toward) => course.grading.find((g) => g.item.trim() === toward)?.card?.handIn === 'unsaid');
   const titleOf = (t: (typeof tasks)[number]) => short(t.kind === 'assignment' ? t.title : t.prompt);
   return {
+    ready: readyLines(lessonReady(course, lesson), docLabels(course.language)),
     checked: [
       ...(held ? [{ kind: 'answersHeld' as const, count: held }] : []),
       ...(keysHeld.length ? [{ kind: 'keysHeld' as const, count: keysHeld.length, fixed: keysHeld.filter((h) => h.keyChecked === 'fixed').map((h) => h.title) }] : []),
@@ -80,7 +85,7 @@ export function lessonChecklist(course: Course, lesson: Lesson): Checklist {
 }
 
 /** The list in plain English, a line an item: for an export, and for readers who measure what it points at. */
-export function checklistLines(list: Checklist): { checked: string[]; look: string[] } {
+export function checklistLines(list: Checklist): { checked: string[]; look: string[]; ready: string[] } {
   const n = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
   const say = (item: CheckItem): string => {
     switch (item.kind) {
@@ -100,5 +105,5 @@ export function checklistLines(list: Checklist): { checked: string[]; look: stri
         return `Your brief does not say how ${item.items.map((t) => `“${t}”`).join(', ')} ${item.items.length === 1 ? 'is' : 'are'} handed in, so no page names a way: set it in the grading table on the syllabus.`;
     }
   };
-  return { checked: list.checked.map(say), look: list.look.map(say) };
+  return { checked: list.checked.map(say), look: list.look.map(say), ready: list.ready };
 }

@@ -8,6 +8,7 @@ import { LIVE_ASKS, MIXED_ASKS, isLiveOnline, isMixedOnline, liveBackground, run
 import { pieceFacts } from './pieceFacts';
 import { packagesLine } from './rLedger';
 import { sheetsText } from './lessonView';
+import { unlistedAsk } from './onScreen';
 import { ONLINE_ASKS, moduleAsk, onlineBackground, onlineHomeworkLine } from './online';
 
 /**
@@ -238,6 +239,8 @@ export function lessonContext(course: Course, lesson: Lesson): string {
 /** What a material built on the plan owes it: the plan is what the teacher has read and agreed to. */
 const FOLLOW_REST =
   'Where the plan says what this material holds or asks, it must hold or ask exactly that. Take only what the plan has students actually do, see and learn as having happened. Never state as fact an idea the teacher notes flag as a misconception. When the lesson holds graded work done in class (a quiz, test, exam, interview or presentation), no other material of the lesson repeats its questions or gives their answers, whatever examples the plan uses; and where the lesson sets graded work, the materials help students do it without doing it for them.';
+/** For what is written after the plan in a lesson with code: the plan's account of what code gives is the one account. */
+export const AS_RUN = 'What a command prints or returns is said here exactly as the plan says it, never from memory of the language: the plan\'s account was set against a run of the code where one could be made, and versions differ.';
 const FOLLOW_PLAN = `Use the same examples, data and figures as the plan. ${FOLLOW_REST}`;
 /**
  * Work students do on their own is not the class practice copied out: told to use the plan's examples, graded
@@ -399,6 +402,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     const inClass = kind === 'assignments' && lesson.homework.kind === 'inclass';
     const follow = inClass ? FOLLOW_IN_CLASS : kind === 'assignments' && hasModulePages(course) ? FOLLOW_PAGE_BUILD : kind === 'quiz' || kind === 'assignments' ? FOLLOW_PLAN_NEW_ITEMS : FOLLOW_PLAN;
     if (plan) parts.push([plan, sheetsText(lesson, kind === 'slides' || kind === 'study' || kind === 'faq' || kind === 'assignments'), follow].filter(Boolean).join('\n\n'));
+    if (plan && kind === 'slides') parts.push(unlistedAsk(lesson.segments, new Set(lesson.handouts.map((h) => h.usedIn.trim().toLowerCase()))));
   }
   if (kind === 'plan') parts.push(nextReading(course, lesson), earlierLessons(course, lesson), earlierNotes(lesson));
   // A graded piece of its own, not one of a weekly run: it is written from the course, not from one lesson.
@@ -413,6 +417,8 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
   }
   parts.push(hasModulePages(course) ? onlineAsk(course, lesson, kind) : asks[kind](course, lesson));
   parts.push(already);
+  // A guide said a text column's summary shows "length, class and mode" beside a plan and a key, both run, that had it right.
+  if ((kind === 'study' || kind === 'faq') && lesson.segments.some((s) => /`[^`\n]*\w\([^`\n]*`/.test(`${s.description} ${s.teacherNotes}`))) parts.push(AS_RUN);
   if (kind === 'study' || kind === 'faq') parts.push(keysSoFar(lesson.taskIds.flatMap((id) => (course.tasks[id] ? [course.tasks[id]] : []))));
   // Taught live online, a plan is a run of show, and the slides and prompts are for a screen and a breakout room.
   if (isLiveOnline(course)) parts.push(kind === 'plan' ? runOfShow(course) : kind === 'slides' || kind === 'discussions' || kind === 'faq' ? LIVE_ASKS[kind] : '');

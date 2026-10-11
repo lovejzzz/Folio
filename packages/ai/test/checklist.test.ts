@@ -7,7 +7,7 @@ describe('what a teacher is told was checked, and what is theirs to look at', ()
   it('is made from what the lesson holds: facts, a line each, and nothing when there is nothing to say', () => {
     const course = smallCourse();
     const lesson = orderedLessons(course)[0]!;
-    expect(lessonChecklist(course, lesson)).toEqual({ checked: [], look: [] });
+    expect(lessonChecklist(course, lesson)).toEqual({ checked: [], look: [], ready: [] });
     const base = { lessonId: lesson.id, objectiveIds: [], sourceRefs: [], origin: 'ai' as const, edited: false };
     const q = (id: string, more: object) => ({ ...base, id, kind: 'question' as const, format: 'short' as const, prompt: 'Find the mean of 3, 4, 5 and 8.', choices: [], correct: null, answer: '5', explanation: '20 / 4 = 5', flags: [], ...more });
     const sheet = (id: string, title: string, key: string, keyChecked?: 'held' | 'fixed') => ({ id, title, kind: 'worksheet' as const, usedIn: 'Practice', copies: '', blocks: [], key, supports: false, ...(keyChecked ? { keyChecked } : {}) });

@@ -13,6 +13,7 @@ import type { Inference } from './inference';
 import { runJob } from './jobs';
 import { placed } from './lastRead';
 import { say } from './lessonView';
+import { onTheSheet, saidShown } from './onScreen';
 import { neverInstalled } from './rLedger';
 import { withoutSelfReport } from './tidy';
 import { courseBackground, lessonContext, systemPrompt } from './prompts';
@@ -25,6 +26,12 @@ import { courseBackground, lessonContext, systemPrompt } from './prompts';
  */
 
 const line = z.string().min(1);
+
+/**
+ * What the sheets' writer lists to have ready, less what is listed already by rule or is no thing to bring: a first
+ * run gave "the printed paper for Quizzes, written separately" and "the question ready to put on the screen".
+ */
+export const readyKept = (list: readonly string[]): string[] => list.map((x) => x.trim()).filter((x) => x && !/\bwritten separately\b|\bon the screen\b|\bslides?\b/i.test(x));
 
 export const HandoutsDraft = z.object({
   handouts: z
@@ -43,6 +50,8 @@ export const HandoutsDraft = z.object({
     .default([]),
   // Told its room beforehand, the writer gave fewer items than the plan listed and said nothing: the plan went on telling
   // of "three conversions" beside a sheet of one, and read out answers to items nobody had (four lessons of thirty-two).
+  // Calculators, forty quiz papers and texts to copy stood in the segment that used them and nowhere a teacher looks first.
+  ready: z.array(z.string()).max(8).default([]).describe('What else the plan has someone use that no sheet here holds, one thing a line, saying who has it ready: "Students bring a calculator", "Teacher: copies of the two excerpts the plan names". Only what the plan has someone use in this lesson, never advice, and never the sheets, the slides, what goes on the screen or the lesson\'s quiz and graded papers, which are listed already; empty when those are all it needs'),
   fewer: z.array(z.string()).max(12).default([]).describe('The titles of the segments whose sheet gives fewer items than the plan lists for it, or other items; empty when every sheet holds what the plan lists'),
 });
 export type HandoutsDraft = z.infer<typeof HandoutsDraft>;
@@ -194,11 +203,13 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
     // (a reading or a reference sheet too: a seminar's fifth and sixth questions stood one way on the slide and another on
     // the handout the key was written to)
     const sheeted = new Set(sure.handouts.map((h) => h.usedIn.trim().toLowerCase()));
-    const single = { ...settled, segments: settled.segments.map((seg) => (seg.shown?.length && sheeted.has(seg.title.trim().toLowerCase()) ? { ...seg, shown: undefined } : seg)) };
+    // And its sentences say the sheet: "three flawed statements on the screen" stood in a plan whose screen had none.
+    const sheetsOf = (title: string) => sure.handouts.filter((h) => h.usedIn.trim().toLowerCase() === title.trim().toLowerCase()).map((h) => h.title);
+    const single = { ...settled, segments: settled.segments.map((seg) => (sheeted.has(seg.title.trim().toLowerCase()) ? onTheSheet({ ...seg, shown: undefined }, saidShown(seg.description).length ? sheetsOf(seg.title) : []) : seg)) };
     const run = await sheetsRun(inference, r, course, { ...lesson, segments: single.segments as Lesson['segments'] }, sure.handouts, signal);
     // A package the sheets load that no lesson has had students install stops on every laptop: said, since the run here has it.
     const unhad = neverInstalled(course, { ...lesson, segments: single.segments as Lesson['segments'] }, run.handouts);
-    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [...fill.payload.flags, ...sure.flags, ...run.flags, ...unhad], content: { ...content, ...single, handouts: run.handouts } }) : c));
+    const commands = written.commands.map((c) => (c === fill ? cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [...fill.payload.flags, ...sure.flags, ...run.flags, ...unhad], content: { ...content, ...single, handouts: run.handouts, ready: readyKept(result.value.ready ?? []) } }) : c));
     return { commands, flagged: written.flagged + sure.flags.length + run.flags.length + unhad.length };
   } catch (error) {
     if (signal?.aborted) throw error;

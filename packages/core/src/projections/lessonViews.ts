@@ -2,6 +2,7 @@ import { exhibitBlock } from './pageView';
 import { filledTexts, isBlankPoint, isBlankSegment, isBlankTerm, statedObjectives } from '../blank';
 import { lessonSessions, sessionIndex } from '../course';
 import type { Handout } from '../page';
+import { lessonReady, readyLines } from '../ready';
 import type { Lesson } from '../schema';
 import type { Block } from '../semantic';
 import { projectPage } from './pageView';
@@ -50,6 +51,12 @@ export function projectPlan(ctx: Ctx): Block[] {
     if (readings.length) {
       blocks.push({ t: 'heading', level: 3, text: l.beforeClass });
       blocks.push({ t: 'list', ordered: false, items: readings });
+    }
+    // The teacher's copy gathers what to have on hand: it stood only in the segments that used it.
+    const ready = teacher ? readyLines(lessonReady(course, lesson), l) : [];
+    if (ready.length) {
+      blocks.push({ t: 'heading', level: 3, text: l.toHaveReady });
+      blocks.push({ t: 'list', ordered: false, items: ready });
     }
     const keyIdeas = filledTexts(lesson.keyIdeas);
     if (keyIdeas.length) {

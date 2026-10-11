@@ -37,7 +37,7 @@ type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K>
 export type TaskFields = Partial<DistributiveOmit<Task, 'id' | 'kind' | 'lessonId'>>;
 
 export interface SectionContent {
-  plan: { segments: Segment[]; keyIdeas: string[]; vocabulary: Term[]; page?: PageBlock[]; facilitation?: Facilitation; handouts?: Handout[] };
+  plan: { segments: Segment[]; keyIdeas: string[]; vocabulary: Term[]; page?: PageBlock[]; facilitation?: Facilitation; handouts?: Handout[]; ready?: string[] };
   slides: { slides: Slide[] };
   study: { overview: string; points: StudyPoint[] };
 }
@@ -231,6 +231,7 @@ const handlers: { [K in CommandType]: Handler<K> } = {
       lesson.facilitation = p.content.facilitation;
       // Only when the fill brings them: a note put right on the plan fills it again, and must not take its sheets away.
       if (p.content.handouts !== undefined) lesson.handouts = p.content.handouts;
+      if (p.content.ready !== undefined) lesson.ready = p.content.ready;
     } else if (p.kind === 'slides') {
       lesson.slides = p.content.slides;
     } else {

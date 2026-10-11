@@ -8,11 +8,21 @@ import { useT } from '../../i18n';
 export function LessonChecks({ course, lesson }: { course: Course; lesson: Lesson }) {
   const t = useT();
   const list = lessonChecklist(course, lesson);
-  if (!list.checked.length && !list.look.length) return null;
+  if (!list.checked.length && !list.look.length && !list.ready.length) return null;
   const say = (item: CheckItem) => t.lesson.checks[item.kind](item as never);
   return (
     <section aria-label={t.lesson.checks.title} className="no-print mt-4 rounded-control bg-well px-5 py-4 font-ui text-13 text-ink-2">
-      <h2 className="mb-2 font-semibold text-ink">{t.lesson.checks.title}</h2>
+      {list.ready.length > 0 && (
+        <>
+          <h2 className="mb-2 font-semibold text-ink">{t.lesson.checks.ready}</h2>
+          <ul className="mb-3 list-disc space-y-1 pl-5 marker:text-ink-3">
+            {list.ready.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </>
+      )}
+      {(list.look.length > 0 || list.checked.length > 0) && <h2 className="mb-2 font-semibold text-ink">{t.lesson.checks.title}</h2>}
       {list.look.length > 0 && (
         <ul className="list-disc space-y-1 pl-5 marker:text-ink-3">
           {list.look.map((item) => (

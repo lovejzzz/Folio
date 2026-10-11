@@ -1,0 +1,258 @@
+{
+ "ug-calculus-1 L1": {
+  "segments": [
+   {
+    "title": "Reading limits from a graph",
+    "description": "Introduce x→a⁻ as approaching a from the left and x→a⁺ as approaching a from the right. Show the function h by its pieces and have students picture its graph from the description.\nStudents answer the six questions alone for four minutes, then compare with a partner.\nGo over each one, using a sketch of h.",
+    "teacherNotes": "Answers: (a) 3; (b) 2; (c) does not exist; (d) h(0) = 1; (e) 2; (f) h(2) = 0. Students often answer (c) with 1 by reading the dot at x = 0. For (e), the value h(2) = 0 does not matter; near 2, h(x) = 2."
+   }
+  ],
+  "sheets": [
+   {
+    "title": "A table for sin x / x",
+    "usedIn": "A table for sin x / x"
+   },
+   {
+    "title": "Reading limits from a graph",
+    "usedIn": "Reading limits from a graph"
+   },
+   {
+    "title": "Zero over zero: factor and cancel",
+    "usedIn": "Zero over zero: factor and cancel"
+   },
+   {
+    "title": "Find the mistake",
+    "usedIn": "Find the mistake"
+   },
+   {
+    "title": "Choose the method",
+    "usedIn": "Choose the method"
+   },
+   {
+    "title": "Problems on tangents, velocities and limits",
+    "usedIn": "Problems on tangents, velocities and limits"
+   }
+  ]
+ },
+ "ug-data-structures-room L1": {
+  "segments": [
+   {
+    "title": "Trace delete by hand",
+    "description": "Students work alone on paper with the chain 4 → 8 → 1 → 6. They draw the chain after deleting 1, then after deleting 4 from the result.\nPartners compare drawings and name the one reference that changed each time.\nThe teacher runs the code in the notes on the screen, and students check both drawings against the printed lists.",
+    "teacherNotes": "Answers: after deleting 1: 4 → 8 → 6 (the 8 node now points to 6). After deleting 4: 8 → 6 (head moves to the 8 node). Watch for students who draw a gap instead of reconnecting the arrow. Students watch the run and do not type it.\n`trace = LinkedList()`\n`for value in (6, 1, 8, 4):`\n`    trace.insert_front(value)`\n`trace.delete(1)`\n`print(trace.to_list())`\n`trace.delete(4)`\n`print(trace.to_list())`"
+   },
+   {
+    "title": "Break",
+    "description": "Short break. Leave the linked list code on the screen.",
+    "teacherNotes": ""
+   },
+   {
+    "title": "Find and fix the bug in delete",
+    "description": "Show a faulty `delete` for a linked list. Each student tests it on paper with the chain 5 → 2 → 8, deleting 5, and writes what goes wrong.\nStudents write a fix, then compare it with a partner’s.\nHear two fixes and test one live.",
+    "teacherNotes": "Bug: the head is never checked, so deleting 5 leaves the chain unchanged and returns False; an empty list also raises AttributeError on node.next. Fix: add the empty check and head case from the earlier code. This replaces extra practice items.\n`    def delete(self, value):`\n`        node = self.head`\n`        while node.next is not None:`\n`            if node.next.value == value:`\n`                node.next = node.next.next`\n`                return True`\n`            node = node.next`\n`        return False`"
+   }
+  ],
+  "sheets": [
+   {
+    "title": "Trace delete by hand",
+    "usedIn": "Trace delete by hand"
+   },
+   {
+    "title": "Find and fix the bug in delete",
+    "usedIn": "Find and fix the bug in delete"
+   },
+   {
+    "title": "Exit ticket: pick the structure",
+    "usedIn": "Exit ticket: pick the structure"
+   }
+  ]
+ },
+ "ug-data-structures-room L2": {
+  "segments": [
+   {
+    "title": "Find and fix the bug in the bracket checker",
+    "description": "Show a faulty `is_balanced`. Each student tests it alone on paper with `((` and `())` and writes what goes wrong in each case.\nStudents write a fix, then compare it with a partner’s.\nHear two fixes and test one live.",
+    "teacherNotes": "Bugs: `((` returns True because the final stack is never checked. `())` pops an empty stack and raises `IndexError`. Fix: test `is_empty()` before popping and return `stack.is_empty()`. Watch for students who fix only one of the two.\n`def is_balanced_bad(text):`\n`    pairs = {')': '(', ']': '[', '}': '{'}`\n`    stack = Stack()`\n`    for ch in text:`\n`        if ch in '([{':`\n`            stack.push(ch)`\n`        elif ch in pairs:`\n`            if stack.pop() != pairs[ch]:`\n`                return False`\n`    return True`"
+   }
+  ],
+  "sheets": [
+   {
+    "title": "Find and fix the bug in the bracket checker",
+    "usedIn": "Find and fix the bug in the bracket checker"
+   }
+  ]
+ },
+ "ug-intro-sociology L2": {
+  "segments": [
+   {
+    "title": "Reading quiz on the assigned chapter",
+    "description": "Students sit apart and work alone in silence on the graded Reading quizzes paper. It covers OpenStax, Introduction to Sociology 3e, ch. 1, the section on theoretical perspectives in sociology.\nThe instructor announces what students may use, then collects the papers when ten minutes are up.\nThe quiz is marked in points. Reading quizzes are worth 15% of the course grade. Only the title of the quiz is on the screen.",
+    "teacherNotes": "Hand out the papers face down and start together. Keep the board and screen clear of anything that could answer a question. Late arrivals take only the time left. Going over answers waits until the papers are collected."
+   }
+  ],
+  "sheets": [
+   {
+    "title": "Three readings of one school rule",
+    "usedIn": "Three readings of one school rule"
+   },
+   {
+    "title": "Find and correct the mistaken theory label",
+    "usedIn": "Find and correct the mistaken theory label"
+   },
+   {
+    "title": "Participation in discussion: tracking through three lenses",
+    "usedIn": "Group discussion: tracking through three lenses"
+   }
+  ]
+ },
+ "ug-physics-mechanics L1": {
+  "segments": [
+   {
+    "title": "How the course runs and how it is graded",
+    "description": "Walk through the course map: kinematics, Newton’s laws, work and energy, momentum, rotation, oscillations, using OpenStax University Physics Volume 1.\nState the weekly rhythm of three lectures and one recitation.\nShow the grading: weekly problem sets 20%, recitation group problems 10%, Midterm 1 20%, Midterm 2 20%, final exam 30%.\nStudents read the grading table, then write one question about the course and swap it with a neighbor to answer from the table.",
+    "teacherNotes": "Say that weekly problem sets are each student’s own work and recitation group problems are done in groups in the recitation. Exams are marked in points. Announce any exam policies yourself. Collect unanswered questions for the end of the session."
+   },
+   {
+    "title": "SI units and chained conversion factors",
+    "description": "Introduce the SI base units meter, kilogram and second, and derived units such as newton (kg·m/s²) and joule (N·m). Show prefixes from nano to giga.\nWork 90 km/h to m/s as a chain of factors: 90 km/h × (1000 m / 1 km) × (1 h / 3600 s) = 25 m/s.\nStudents predict the next factor before each is written, and cancel the units aloud with a partner.\nRevisit the opening question: 65 mi/h × 0.447 (m/s)/(mi/h) ≈ 29 m/s.\nMention the 1999 loss of NASA’s Mars Climate Orbiter, caused by a mismatch between pound-force and newton units.",
+    "teacherNotes": "Stress that units cancel like algebraic symbols. Common error: converting squared or cubed units with the linear factor. Use 1 mi = 1609 m for the exercises. Keep the Mars Climate Orbiter point to a sentence."
+   },
+   {
+    "title": "Find and fix the mistake",
+    "description": "Each student gets three flawed worked statements on the screen and writes the error and the corrected line for each.\nPairs compare their corrections.\nHear one pair on statement 3.",
+    "teacherNotes": "1) 1 km² = 1000 m² is wrong: 1 km² = (1000 m)² = 10⁶ m². 2) 4.2 m × 1.37 = 5.754 m should be 5.8 m, two significant figures. 3) t = √(2hg) has dimensions L/T, not T; correct form is t = √(2h/g), valid for release from rest, constant g and negligible air resistance. These examples illustrate three checks: apply conversion factors to the correct power, report significant figures consistently, and check the dimensions of a formula."
+   },
+   {
+    "title": "Adding and subtracting vectors",
+    "description": "Show tip-to-tail addition on a drawing, then the component method: R = A + B gives Rₓ = Aₓ + Bₓ and R_y = A_y + B_y.\nWork A = (4.0î + 2.0ĵ) m and B = (−1.0î + 5.0ĵ) m. The sum is (3.0î + 7.0ĵ) m, with magnitude 7.6 m at 66.8° above +x.\nStudents predict A − B before it is shown. It is (5.0î − 3.0ĵ) m, magnitude 5.8 m.\nShow that subtraction means adding the negative, and that scalar multiplication scales every component.",
+    "teacherNotes": "Prediction answer: A − B = (4 − (−1), 2 − 5) = (5, −3). Common error: subtracting in the wrong order, which reverses the direction. Emphasize that components add, magnitudes do not."
+   }
+  ],
+  "sheets": [
+   {
+    "title": "Convert and compare",
+    "usedIn": "Convert and compare"
+   },
+   {
+    "title": "Which equations survive the check?",
+    "usedIn": "Which equations survive the check?"
+   },
+   {
+    "title": "Find and fix the mistake",
+    "usedIn": "Find and fix the mistake"
+   },
+   {
+    "title": "Resolve and rebuild vectors",
+    "usedIn": "Resolve and rebuild vectors"
+   },
+   {
+    "title": "Sum of two forces",
+    "usedIn": "Sum of two forces"
+   },
+   {
+    "title": "Dot product drill",
+    "usedIn": "Dot product drill"
+   }
+  ]
+ },
+ "ug-physics-mechanics L2": {
+  "segments": [
+   {
+    "title": "Integrate with initial conditions",
+    "description": "Students work alone for five minutes on the problem on the screen.\nThey find v(t), x(t) and the position at t = 3.0 s.\nThey compare with a partner and the worked solution follows.",
+    "teacherNotes": "v = 4.0t − t², x = 2.0t² − t³/3. At t = 3.0 s: x = 9.0 m (v = 3.0 m/s). Check that a(t) = dv/dt returns 4.0 − 2.0t."
+   },
+   {
+    "title": "Find and fix the mistake",
+    "description": "Students read the flawed solution on the screen and write what is wrong and the corrected answer, working alone for five minutes.\nPairs compare and agree on a one-sentence rule that would prevent the error.\nTwo pairs report and the class checks the corrected answer.",
+    "teacherNotes": "Error: the deceleration was entered as +4.0 m/s² although velocity is positive. Correct a = −4.0, so Δx = +50 m. A negative distance behind the start is physically absurd, which is the check. Another common error: using these equations when a varies."
+   }
+  ],
+  "sheets": [
+   {
+    "title": "Integrate with initial conditions",
+    "usedIn": "Integrate with initial conditions"
+   },
+   {
+    "title": "Choosing the equation",
+    "usedIn": "Choosing the equation"
+   },
+   {
+    "title": "Find and fix the mistake",
+    "usedIn": "Find and fix the mistake"
+   },
+   {
+    "title": "Stone from a bridge",
+    "usedIn": "Stone from a bridge"
+   },
+   {
+    "title": "Same motion, three graphs",
+    "usedIn": "Same motion, three graphs"
+   },
+   {
+    "title": "Car and truck at a light",
+    "usedIn": "Car and truck at a light"
+   }
+  ]
+ },
+ "uni-stats-lab L1": {
+  "segments": [
+   {
+    "title": "Short break",
+    "description": "Students take a short break. Leave the commute data on the screen for the next segment.",
+    "teacherNotes": ""
+   },
+   {
+    "title": "Find and fix the mistakes",
+    "description": "Show a classmate’s worked solution for five made-up study hours. It contains two errors.\nEach student finds both errors alone and writes the corrected values.\nPairs compare, then the teacher hears the fixes and asks why each error is tempting.",
+    "teacherNotes": "Errors: the median was read from the unsorted list (14); sorted 2, 4, 6, 9, 14 gives median 6. The sd divided by n; correct is 88 ÷ 4 = 22, so s = √22 ≈ 4.69. The mean 7 is right. Students who finish early explain what a larger outlier would do to each result."
+   }
+  ],
+  "sheets": [
+   {
+    "title": "Classify the variables",
+    "usedIn": "Classify five variables"
+   },
+   {
+    "title": "A data frame and summary()",
+    "usedIn": "A data frame and summary()"
+   },
+   {
+    "title": "Find and fix the mistakes",
+    "usedIn": "Find and fix the mistakes"
+   },
+   {
+    "title": "Check the hand calculations in R",
+    "usedIn": "Check the hand calculations in R"
+   }
+  ]
+ },
+ "uni-stats-lab L2": {
+  "segments": [
+   {
+    "title": "Short break",
+    "description": "Students take a short break. Leave the redrawn commute boxplot on the screen.",
+    "teacherNotes": ""
+   },
+   {
+    "title": "Find and fix the mistakes",
+    "description": "A classmate’s worked solution goes on the screen. It contains two errors, one in the outlier rule and one in the z-score.\nEach student finds both errors alone and writes the corrected values.\nPairs compare, then the teacher hears the fixes and asks why each error is tempting.",
+    "teacherNotes": "Error 1: the student added 1.5, not 1.5 × IQR. Correct fences: 6.75 − 5.625 = 1.125 and 10.5 + 5.625 = 16.125. Only 30 is flagged. Error 2: subtraction reversed; z = (30 − 10.75) / 8.15 ≈ +2.36, so 30 hours is far above average. Mean and Q1, Q3 are right."
+   }
+  ],
+  "sheets": [
+   {
+    "title": "Find and fix the mistakes",
+    "usedIn": "Find and fix the mistakes"
+   },
+   {
+    "title": "Describe the waiting times",
+    "usedIn": "Describe the waiting times"
+   },
+   {
+    "title": "R commands for the lab session",
+    "usedIn": "Recreate the commute boxplot in R"
+   }
+  ]
+ }
+}

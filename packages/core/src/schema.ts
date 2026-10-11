@@ -161,6 +161,8 @@ export const LessonSchema = z.object({
   facilitation: FacilitationSchema.optional(),
   /** The sheets a lesson in a room hands out, written in full: part of its plan. */
   handouts: z.array(HandoutSchema).default([]),
+  /** What else must be on hand for the lesson that no sheet holds: what students bring, what the teacher brings or copies. */
+  ready: z.array(text).default([]),
   /** Order of this lesson's tasks (questions, assignments, discussions). */
   taskIds: z.array(id),
   faqIds: z.array(id),
