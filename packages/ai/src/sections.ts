@@ -88,9 +88,10 @@ export function announced(v: PlanDraft, course: Course, lesson: Lesson): PlanDra
   // In one sentence: "a practice quiz on this lesson" beside "next time extends the comparison" announced nothing.
   const sentences = v.segments.flatMap((x) => `${x.description}\n${x.teacherNotes}`.toLowerCase().split(/(?<=[.!?])\s+|\n+/));
   if (sentences.some((x) => /\bnext (?:time|class|lesson|week|meeting|session)\b/.test(x) && (/\b(?:quiz(?:zes)?|tests?|exams?|midterms?|final)\b/.test(x) || x.includes(named)))) return v;
-  // By its component, and by what was taught so far: named by its paper's title, which carries the title of the lesson it
-  // is sat in, a quiz on lists was announced as covering stacks and queues, the lesson's own new topic.
-  const sat = `a graded test ("${test.toward.trim()}"), on what the course has taught up to today`;
+  // By its component and no more: named by its paper's title, which carried the lesson it is sat in, a quiz on lists was
+  // announced as covering stacks and queues; said to be "on what the course has taught up to today", a weekly quiz that
+  // is on next week's lectures was announced wrongly the other way. What it covers is the plan's and the paper's to say.
+  const sat = `a graded test ("${test.toward.trim()}")`;
   const last = v.segments.findLastIndex((x) => x.kind !== 'break');
   if (last < 0) return v;
   return { ...v, segments: v.segments.map((x, i) => (i === last ? { ...x, description: `${x.description.trimEnd()}\nBefore students leave, tell them that next time they sit ${sat}.` } : x)) };

@@ -223,7 +223,15 @@ export function pieceTitle(course: Course, lesson: Lesson): string | null {
   const toward = lesson.homework.toward.trim();
   if (!toward || lesson.homework.kind === 'step' || lesson.homework.kind === 'none') return null;
   const holders = Object.values(course.lessons).filter((l) => lessonPieces(l).some((p) => p.kind !== 'step' && p.toward.trim() === toward));
-  return lesson.homework.standing || holders.length <= 1 ? toward : `${toward}: ${lesson.title}`;
+  if (lesson.homework.standing || holders.length <= 1) return toward;
+  // A paper sat in a lesson that meets once tests what came before it: named by its lesson, a quiz on lists was "Quizzes:
+  // Stacks and queues", on the paper students were handed. It goes by its number. Where a lesson is a week of several
+  // meetings the paper is on that week, and keeps the week's title.
+  if (lesson.homework.kind === 'test' && course.shape.sessions.length <= 1) {
+    const sat = course.lessonOrder.map((id) => course.lessons[id]!).filter((l) => lessonPieces(l).some((p) => p.kind === 'test' && p.toward.trim() === toward));
+    return `${toward} ${sat.findIndex((l) => l.id === lesson.id) + 1}`;
+  }
+  return `${toward}: ${lesson.title}`;
 }
 
 /** The assignment a lesson holds for one component: the one written for it, else the lesson's first. */

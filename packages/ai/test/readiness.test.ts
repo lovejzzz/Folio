@@ -29,7 +29,7 @@ describe('a test sat next time, announced in the lesson before', () => {
     // The paper is on lists and linked lists (lesson 1); the lesson it is sat in teaches stacks and queues.
     expect(second!.title).toBe('Stacks and queues');
     expect(said.toLowerCase()).not.toContain('stacks and queues');
-    expect(said).toMatch(/what the course has taught up to today/);
+    expect(said).toBe('Before students leave, tell them that next time they sit a graded test ("Quizzes").');
   });
 });
 
@@ -103,5 +103,34 @@ describe('the minutes a plan gives a piece done in class', () => {
     const segments = [seg('Worked problem: a car braking', 12, 'The class works one problem together.'), seg('Group check', 8, 'Each group compares answers to the practice problems.'), seg('Recitation group problems', 26, 'Groups work the graded problems.')];
     store.apply([cmd('lesson.homework', { lessonId: first!.id, homework: { kind: 'inclass', toward: 'Recitation group problems', standing: false } }), cmd('section.fill', { lessonId: first!.id, kind: 'plan', flags: [], content: { segments, keyIdeas: ['k'], vocabulary: [] } })], { label: { key: 'b' }, source: 'teacher' });
     expect(minutesFor(store.getState(), store.getState().lessons[first!.id]!)).toBe(26);
+  });
+});
+
+/** Two more, found in the first batch written from this branch (readiness/batch1, frozen at 96e0492). */
+describe('a paper sat in a lesson that tests an earlier one', () => {
+  it('is not titled with the lesson it is sat in: a quiz on lists was "Quizzes: Stacks and queues"', async () => {
+    const { pieceTitle } = await import('../src/workJobs');
+    const course = parseCourse(fixture('batch1-data-structures'));
+    const second = orderedLessons(course)[1]!;
+    // As written: the paper's own first question is on a Python list against a linked list, the lesson before.
+    const paper = second.taskIds.map((id) => course.tasks[id]!).find((t) => t.kind === 'assignment' && t.toward === 'Quizzes')!;
+    expect(paper.kind === 'assignment' && [paper.title, /Python list with a singly linked list/.test(paper.steps[0]!)]).toEqual(['Quizzes: Stacks and queues', true]);
+    expect(pieceTitle(course, { ...second, homework: { kind: 'test', toward: 'Quizzes' }, also: [] })).toBe('Quizzes 1');
+    // In a course whose lesson is a week of several meetings the quiz is on that week, and is named for it.
+    const weekly = parseCourse(fixture('batch1-calculus'));
+    const week = orderedLessons(weekly)[1]!;
+    expect(pieceTitle(weekly, { ...week, homework: { kind: 'test', toward: 'Weekly recitation quizzes' }, also: [] })).toBe(`Weekly recitation quizzes: ${week.title}`);
+  });
+});
+
+describe('the sentence Folio adds to announce a test', () => {
+  it('says that a test is sat next time and claims nothing of what it covers', () => {
+    // As written in a weekly course: "on what the course has taught up to today", of a quiz that is on next week's lectures.
+    const weekly = parseCourse(fixture('batch1-calculus'));
+    const [, week2] = orderedLessons(weekly);
+    expect(week2!.segments.some((s) => /next time they sit a graded test \(“Weekly recitation quizzes”\), on what the course has taught up to today/.test(s.description))).toBe(true);
+    const plan = draftOf(week2!.segments.map((s) => ({ ...s, description: s.description.split('\n').filter((line) => !/next time they sit/i.test(line)).join('\n') })));
+    const said = announced(plan, weekly, week2!).segments.at(-1)!.description.split('\n').at(-1)!;
+    expect(said).toBe('Before students leave, tell them that next time they sit a graded test ("Weekly recitation quizzes").');
   });
 });
