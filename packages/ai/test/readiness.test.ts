@@ -161,3 +161,10 @@ describe('the sentence Folio adds to announce a test', () => {
     expect(said).toBe('Before students leave, tell them that next time they sit a graded test ("Weekly recitation quizzes").');
   });
 });
+
+describe('an instruction of Folio\'s said back to the teacher at the opening of a lesson', () => {
+  it('is taken out: "Take it in by name and say nothing more about it." (physics, lesson 2 of the first batch)', async () => {
+    const { withoutEchoes } = await import('../src/tidy');
+    expect(withoutEchoes('The problem set is due now. Take it in by name and say nothing more about it. Students read the puzzle on the screen.')).toBe('The problem set is due now. Students read the puzzle on the screen.');
+  });
+});
