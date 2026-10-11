@@ -1,4 +1,4 @@
-import { cellState, gradingWithOwn, lessonReady, MATERIAL_KINDS, orderedLessons, ownNeeds, parseCourse, readyLines, type Course, type MaterialKind } from '@folio/core';
+import { cellState, cmd, CourseStore, lessonReady, MATERIAL_KINDS, orderedLessons, ownEverywhere, ownNeeds, parseCourse, readyLines, type Course, type MaterialKind } from '@folio/core';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ownToWrite } from '../src/build';
@@ -9,7 +9,7 @@ import { ownToWrite } from '../src/build';
  * decks ready, and an export said nothing.
  */
 const real = parseCourse(JSON.parse(readFileSync(new URL('./fixtures/partial-slides-only.json', import.meta.url), 'utf8')) as unknown);
-const [first, second] = orderedLessons(real);
+const [first, second, third] = orderedLessons(real);
 const withAll = (kinds: MaterialKind[]): Course => ({ ...real, materials: Object.fromEntries(MATERIAL_KINDS.map((k) => [k, { enabled: kinds.includes(k), options: {} }])) as Course['materials'] });
 
 describe('graded work a course leans on and Folio did not write', () => {
@@ -33,17 +33,49 @@ describe('graded work a course leans on and Folio did not write', () => {
     expect(ownToWrite(real, [second!.id])).toEqual([{ lesson: 2, pieces: ['Reading quizzes', 'Participation in discussion'] }]);
   });
 
-  it('is settled only by the teacher saying they have it, and can be taken back', () => {
-    const have: Course = { ...real, grading: gradingWithOwn(real, ['Reading quizzes', 'Participation in discussion'], true) };
+  const said = (c: Course, lessonId: string, pieces: string[]) => {
+    const store = new CourseStore(c);
+    store.apply([cmd('lesson.own', { lessonId, pieces })], { label: { key: 't' }, source: 'teacher' });
+    return store.getState();
+  };
+
+  it('is settled by the teacher saying they have it for that lesson, and can be taken back', () => {
+    const have = said(real, second!.id, ['Reading quizzes', 'Participation in discussion']);
     expect(ownNeeds(have, [second!.id]).every((n) => n.confirmed)).toBe(true);
-    expect(cellState(have, second!, 'slides')).toBe('ready');
-    expect(ownToWrite(have, [first!.id, second!.id])).toEqual([]);
+    expect(cellState(have, have.lessons[second!.id]!, 'slides')).toBe('ready');
+    expect(ownToWrite(have, [first!.id, second!.id]).map((x) => x.lesson)).toEqual([1]);
     // Still listed to bring: having it is not the same as it being in the files.
-    expect(readyLines(lessonReady(have, second!)).join(' ')).toContain('Yours to bring');
-    const back: Course = { ...have, grading: gradingWithOwn(have, ['Reading quizzes'], false) };
-    expect(cellState(back, second!, 'slides')).toBe('attention');
-    // One piece confirmed is not the other.
-    expect(cellState({ ...real, grading: gradingWithOwn(real, ['Reading quizzes'], true) }, second!, 'slides')).toBe('attention');
+    expect(readyLines(lessonReady(have, have.lessons[second!.id]!)).join(' ')).toContain('Yours to bring');
+    const back = said(have, second!.id, ['Participation in discussion']);
+    expect(cellState(back, back.lessons[second!.id]!, 'slides')).toBe('attention');
+  });
+
+  it('is of that lesson only: the next lesson\'s quiz paper is not in hand because this one\'s is (as it was found in the browser)', () => {
+    const have = said(real, second!.id, ['Reading quizzes', 'Participation in discussion']);
+    const next = ownNeeds(have, [third!.id]);
+    expect(next.length).toBeGreaterThan(0);
+    expect(next.every((n) => !n.confirmed)).toBe(true);
+    expect(cellState(have, have.lessons[first!.id]!, 'slides')).toBe('attention');
+  });
+
+  it('reaches every lesson that uses a piece only when the teacher says so in as many words', () => {
+    const all = ownEverywhere(real, ['Participation in discussion']);
+    expect(all.length).toBeGreaterThan(2);
+    const store = new CourseStore(real);
+    store.apply(all.map((x) => cmd('lesson.own', x)), { label: { key: 't' }, source: 'teacher' });
+    const have = store.getState();
+    expect(ownNeeds(have).filter((n) => n.piece === 'Participation in discussion').every((n) => n.confirmed)).toBe(true);
+    // The quiz papers were not spoken of.
+    expect(ownNeeds(have).filter((n) => n.piece === 'Reading quizzes').some((n) => n.confirmed)).toBe(false);
+  });
+
+  it('lapses when the lesson\'s work changes, and when the piece\'s terms change', () => {
+    const have = said(real, second!.id, ['Reading quizzes', 'Participation in discussion']);
+    const store = new CourseStore(have);
+    store.apply([cmd('course.update', { grading: have.grading.map((g) => (g.item === 'Reading quizzes' ? { ...g, weight: g.weight + 5 } : g)) })], { label: { key: 't' }, source: 'teacher' });
+    expect(ownNeeds(store.getState(), [second!.id]).map((n) => `${n.piece}:${n.confirmed}`)).toEqual(['Reading quizzes:false', 'Participation in discussion:true']);
+    store.apply([cmd('lesson.homework', { lessonId: second!.id, homework: { kind: 'assignment', toward: 'Participation in discussion' } })], { label: { key: 't' }, source: 'teacher' });
+    expect(ownNeeds(store.getState(), [second!.id]).every((n) => !n.confirmed)).toBe(true);
   });
 
   it('is nothing where graded work is written, or where a lesson sets none', () => {

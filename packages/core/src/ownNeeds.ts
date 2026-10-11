@@ -15,7 +15,7 @@ export interface OwnNeed {
   lesson: number;
   /** The graded component, by the name the course gives it. */
   piece: string;
-  /** The teacher has said they have it. Never assumed. */
+  /** The teacher has said they have it, for this lesson. Never assumed, and never carried from another lesson. */
   confirmed: boolean;
 }
 
@@ -28,11 +28,19 @@ export function ownNeeds(course: Course, lessonIds?: readonly string[]): OwnNeed
     const lesson = course.lessons[lessonId];
     if (!lesson || (lessonIds && !lessonIds.includes(lessonId))) return [];
     const pieces = [...new Set(lessonPieces(lesson).filter((p) => p.kind !== 'none' && p.toward.trim()).map((p) => p.toward.trim()))];
-    return pieces.map((piece) => ({ lessonId, lesson: n + 1, piece, confirmed: course.grading.find((g) => g.item.trim() === piece)?.own === true }));
+    return pieces.map((piece) => ({ lessonId, lesson: n + 1, piece, confirmed: (lesson.own ?? []).includes(piece) }));
   });
 }
 
-/** The same course with these pieces marked as the teacher's own and in hand, or not: the value for `course.update`. */
-export function gradingWithOwn(course: Course, pieces: readonly string[], own: boolean): Course['grading'] {
-  return course.grading.map((g) => (pieces.includes(g.item.trim()) ? { ...g, own } : g));
+/**
+ * The lessons a teacher's word reaches when they say they have a piece "for every lesson that uses it": each lesson
+ * that sets or runs it, with the pieces it would then have in hand. Said only when asked for in so many words: one
+ * lesson's quiz paper in hand is not the next lesson's.
+ */
+export function ownEverywhere(course: Course, pieces: readonly string[]): { lessonId: string; pieces: string[] }[] {
+  return course.lessonOrder.flatMap((lessonId) => {
+    const mine = ownNeeds(course, [lessonId]);
+    const hit = mine.filter((n) => pieces.includes(n.piece));
+    return hit.length ? [{ lessonId, pieces: [...new Set([...mine.filter((n) => n.confirmed).map((n) => n.piece), ...hit.map((n) => n.piece)])] }] : [];
+  });
 }

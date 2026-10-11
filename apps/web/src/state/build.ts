@@ -1,5 +1,5 @@
 import { pageRuns } from './workshop';
-import { executionPlan, fillRubrics, missingTargets, runBuild, targetKey, type BuildEvent, type BuildSummary, type BuildTarget, type Inference, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
+import { missingTargets, type BuildKind, runBuild, targetKey, type BuildEvent, type BuildSummary, type BuildTarget, type Inference, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
 import { attentionItems, cmd, lessonNumber, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
 import { router } from '../app/router';
@@ -128,7 +128,8 @@ function trackEvent(store: Store, event: BuildEvent): void {
   const key = targetKey(event.target);
   if (event.type === 'start') {
     setCell(key, 'building');
-    startRow(event.target.lessonId, event.target.kind);
+    // The live row is of a section being written; a lesson's rubrics alone have no text to show as they come.
+    if (event.target.kind !== 'rubrics') startRow(event.target.lessonId, event.target.kind);
     useBuild.setState({ currentLesson: lessonNumber(store.getState(), event.target.lessonId) });
   } else if (event.type === 'done') {
     setCell(key, null);
@@ -186,9 +187,7 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   if (!store || useBuild.getState().running) return;
   const course = store.getState();
   const list = targets ?? missingTargets(course);
-  // Written work that lacks its rubric is given one, and nothing of it is written again: also when nothing else is left.
-  const lacking = !targets && executionPlan(course).some((t) => t.state === 'noRubric');
-  if (!list.length && !lacking) {
+  if (!list.length) {
     if (!targets && course.status !== 'ready') {
       markReady(store);
       toast({ key: 'build', message: currentMessages().build.ready, duration: 6000 });
@@ -215,7 +214,6 @@ export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   }
   const summary = await guardedRun(store, inference, usages, controller, list);
   if (!summary) return;
-  if (lacking && !controller.signal.aborted) await fillRubrics(inference, () => store.getState(), (commands) => void store.apply(commands, { label: { key: 'built' }, source: 'ai', undoable: false }), undefined, controller.signal).catch(() => null);
   if (!missingTargets(store.getState()).length) markReady(store);
   const { cells: after } = useBuild.getState();
   const errorsOnly = Object.fromEntries(Object.entries(after).filter(([, v]) => v === 'error'));
@@ -248,6 +246,6 @@ export function stopBuild(): void {
   controller.abort();
 }
 
-export function retryCell(lessonId: string, kind: GeneratedKind): void {
+export function retryCell(lessonId: string, kind: BuildKind): void {
   void startBuild([{ lessonId, kind }]);
 }

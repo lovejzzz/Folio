@@ -1,5 +1,5 @@
-import { cmd, lessonPieces, newId, orderedLessons, setsWork, type Assignment, type Command, type Course, type Lesson, type Rubric } from '@folio/core';
-import type { Inference } from './inference';
+import { cmd, CourseStore, lessonPieces, newId, orderedLessons, piecesLackingRubric, type Assignment, type Command, type Course, type Lesson, type Rubric } from '@folio/core';
+import { InferenceError, type Inference } from './inference';
 import { runJob } from './jobs';
 import { courseBackground, lessonContext, systemPrompt } from './prompts';
 import { universityRubric } from './scales';
@@ -15,71 +15,111 @@ import { AssignmentDraft } from './schemas';
 
 const RubricDraft = AssignmentDraft.shape.rubric;
 
-/** A lesson's written pieces that a rubric scores and that point at none the course holds. */
-export function piecesLackingRubric(course: Course, lesson: Lesson): Assignment[] {
-  if (!course.materials.rubrics.enabled || !setsWork(lesson, 'rubrics')) return [];
-  const scored = new Set(lessonPieces(lesson).filter((p) => p.kind === 'assignment' || p.kind === 'inclass').map((p) => p.toward.trim()));
-  const byPoints = (toward: string) => {
-    const g = course.grading.find((x) => x.item.trim() === toward);
-    return g?.judged === 'complete' || Boolean(g?.card?.points);
-  };
-  return lesson.taskIds.flatMap((id) => {
-    const t = course.tasks[id];
-    return t?.kind === 'assignment' && scored.has(t.toward.trim()) && !byPoints(t.toward.trim()) && !(t.rubricId && course.rubrics[t.rubricId]) ? [t] : [];
-  });
+/**
+ * What a piece says of its own scoring, which a rubric given to it must keep: "Each criterion earns 1–4 points, for a
+ * total of 12 points." Four real pieces that said so were each given four criteria of four levels: sixteen points
+ * under a brief that promised twelve. The piece is the teacher's and is not changed to fit; the rubric fits or is not given.
+ */
+export interface ScoringSaid {
+  /** The piece's own sentences on how it is scored, as written. */
+  sentences: string[];
+  /** The most one criterion earns, when the piece says. */
+  top?: number;
+  /** The total, when the piece says. */
+  total?: number;
 }
 
-/** The rubric another piece of the same component already has, copied under a new id: the component's one rubric. */
+export function scoringSaid(piece: Assignment): ScoringSaid {
+  const text = [piece.prompt, ...piece.steps].join('\n');
+  const sentences = text.split(/(?<=[.!?])\s+|\n/).filter((x) => /\bpoints?\b|\btotal\b|\bcriteri(?:on|a)\b|\bout of \d|\brubric\b/i.test(x)).map((x) => x.trim());
+  const said = sentences.join(' ');
+  const total = /\btotal of (\d+)|\bout of (\d+)|\b(\d+) points? (?:in total|in all|altogether)|\btotal(?: is|:)? (\d+)/i.exec(said);
+  const each = /\bcriteri(?:on|a)\b[^.]*?\b\d+\s*(?:–|-|to)\s*(\d+) points?|\bup to (\d+) points? (?:each|per criterion)/i.exec(said);
+  const n = (m: RegExpExecArray | null) => (m ? Number(m.slice(1).find(Boolean)) : undefined);
+  return { sentences, ...(n(each) ? { top: n(each)! } : {}), ...(n(total) ? { total: n(total)! } : {}) };
+}
+
+/** Why a rubric does not keep what the piece says of its scoring, as its writer can put it right; null when it does. */
+export function scoringBroken(rubric: { levels: { points: number }[]; criteria: unknown[] }, said: ScoringSaid): string | null {
+  const top = Math.max(0, ...rubric.levels.map((lv) => lv.points));
+  if (said.top !== undefined && top !== said.top) return `the piece says a criterion earns at most ${said.top}, and the top level here is ${top}`;
+  if (said.total !== undefined && rubric.criteria.length * top !== said.total) return `the piece says the total is ${said.total}; ${rubric.criteria.length} criteria of up to ${top} make ${rubric.criteria.length * top}: give exactly ${top ? said.total / top : said.total} criteria${Number.isInteger(said.total / (top || 1)) ? '' : ', or levels whose top makes the total'}`;
+  return null;
+}
+
+/**
+ * The rubric another piece of the same component already has, copied under a new id and this piece's own title: the
+ * component's one rubric. Only when it keeps what this piece says of its scoring; a rubric that does not is not taken.
+ */
 export function siblingRubric(course: Course, piece: Assignment): Rubric | null {
   if (!piece.toward.trim()) return null;
-  const other = Object.values(course.tasks).find((t) => t.kind === 'assignment' && t.id !== piece.id && t.toward.trim() === piece.toward.trim() && t.rubricId && course.rubrics[t.rubricId]);
-  const found = other?.kind === 'assignment' && other.rubricId ? course.rubrics[other.rubricId] : undefined;
+  const said = scoringSaid(piece);
+  const found = Object.values(course.tasks)
+    .flatMap((t) => (t.kind === 'assignment' && t.id !== piece.id && t.toward.trim() === piece.toward.trim() && t.rubricId && course.rubrics[t.rubricId] ? [course.rubrics[t.rubricId]!] : []))
+    .find((r) => !scoringBroken(r, said));
   if (!found) return null;
   const levels = found.levels.map((lv) => ({ ...lv, id: newId('x') }));
-  return { id: newId('r'), title: found.title, levels, criteria: found.criteria.map((c) => ({ id: newId('x'), name: c.name, descriptors: Object.fromEntries(found.levels.map((lv, i) => [levels[i]!.id, c.descriptors[lv.id] ?? ''])) })) };
+  return { id: newId('r'), title: piece.title, levels, criteria: found.criteria.map((c) => ({ id: newId('x'), name: c.name, descriptors: Object.fromEntries(found.levels.map((lv, i) => [levels[i]!.id, c.descriptors[lv.id] ?? ''])) })) };
 }
 
-export function rubricAlonePrompt(course: Course, lesson: Lesson, piece: Assignment): string {
+export function rubricAlonePrompt(course: Course, lesson: Lesson, piece: Assignment, fault = ''): string {
   // A rubric written for the first of a run of pieces is taken by the rest: written to that piece's own topic, a
   // problem set on stacks was scored on "Code for `count` and `remove_front`", which was the week before's.
   const run = piece.toward.trim() && orderedLessons(course).filter((l) => lessonPieces(l).some((p) => p.toward.trim() === piece.toward.trim())).length > 1;
   const shared = run ? ` Every piece of "${piece.toward.trim()}" in the course is scored on this one rubric: name its criteria for what any of them shows (such as correct results, reasoning shown, clear presentation), never for this lesson's topic, functions or documents, and write descriptors that fit them all.` : '';
+  const said = scoringSaid(piece);
+  const count = said.total !== undefined && said.top ? ` That is exactly ${said.total / said.top} criteria, the top level worth ${said.top}.` : '';
+  const kept = said.sentences.length ? ` The piece itself says how it is scored, and the rubric keeps to it to the point: ${said.sentences.map((x) => `"${x}"`).join(' ')}${count}` : '';
   return [
     lessonContext(course, lesson),
     `This piece of graded work stands as written and is not to be changed in any word:\n\nTitle: ${piece.title}\n${piece.prompt}\n${piece.steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}`,
-    `Write only its rubric: two to five criteria, each for something the piece as written asks a student to do, with a descriptor for every level that a marker could apply to a student's work. ${universityRubric(course.locale)} Nothing in the rubric asks for what the piece does not ask.${shared}`,
-  ].join('\n\n');
+    `Write only its rubric: two to five criteria, each for something the piece as written asks a student to do, with a descriptor for every level that a marker could apply to a student's work. ${universityRubric(course.locale)} Nothing in the rubric asks for what the piece does not ask.${kept}${shared}`,
+    fault ? `A first answer was not usable: ${fault}.` : '',
+  ].filter(Boolean).join('\n\n');
 }
 
-/** The command that gives one piece its rubric: a sibling's, or one written for it. Null when none could be had. */
-export async function rubricFor(inference: Inference, course: Course, lesson: Lesson, piece: Assignment, signal?: AbortSignal): Promise<Command | null> {
+/** A draft as the piece's rubric, or why it cannot be: no criteria, a criterion without a descriptor a level, or scoring the piece does not have. */
+function fromDraft(v: { levels: { label: string; points: number }[]; criteria: { name: string; descriptors: string[] }[] }, piece: Assignment): Rubric | string {
+  if (!v.criteria.length) return 'it has no criteria';
+  if (v.criteria.some((c) => c.descriptors.length !== v.levels.length)) return 'a criterion has not one descriptor for each level';
+  const broken = scoringBroken(v, scoringSaid(piece));
+  if (broken) return broken;
+  const levels = v.levels.map((lv) => ({ id: newId('x'), label: lv.label, points: lv.points }));
+  return { id: newId('r'), title: piece.title, levels, criteria: v.criteria.map((c) => ({ id: newId('x'), name: c.name, descriptors: Object.fromEntries(levels.map((lv, i) => [lv.id, c.descriptors[i] ?? ''])) })) };
+}
+
+/**
+ * The command that gives one piece its rubric: a sibling's that keeps this piece's scoring, or one written for it and
+ * asked for once more when it does not. Throws when none that fits could be had: nothing is attached then.
+ */
+export async function rubricFor(inference: Inference, course: Course, lesson: Lesson, piece: Assignment, signal?: AbortSignal): Promise<Command> {
   const copied = siblingRubric(course, piece);
   if (copied) return cmd('rubric.attach', { taskId: piece.id, rubric: copied });
-  const result = await runJob(inference, { task: 'folio_rubric', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: rubricAlonePrompt(course, lesson, piece), effort: 'medium', schema: RubricDraft, signal });
-  const v = result.value;
-  if (!v.criteria.length || v.criteria.some((c) => c.descriptors.length !== v.levels.length)) return null;
-  const levels = v.levels.map((lv) => ({ id: newId('x'), label: lv.label, points: lv.points }));
-  const rubric: Rubric = { id: newId('r'), title: piece.title, levels, criteria: v.criteria.map((c) => ({ id: newId('x'), name: c.name, descriptors: Object.fromEntries(levels.map((lv, i) => [lv.id, c.descriptors[i] ?? ''])) })) };
+  const ask = (fault = '') => runJob(inference, { task: 'folio_rubric', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: rubricAlonePrompt(course, lesson, piece, fault), effort: 'medium', schema: RubricDraft, signal });
+  const first = fromDraft((await ask()).value, piece);
+  const rubric = typeof first === 'string' ? fromDraft((await ask(first)).value, piece) : first;
+  if (typeof rubric === 'string') throw new InferenceError('invalid', `No rubric that fits "${piece.title}" could be written: ${rubric}.`);
   return cmd('rubric.attach', { taskId: piece.id, rubric });
 }
 
 /**
- * Give every piece that lacks one its rubric, lesson by lesson, one at a time so a later piece of a component takes
- * the rubric an earlier one was just given. Returns how many were given and how many could not be.
+ * A lesson's rubrics alone, as one part of a build: every piece of the lesson that lacks one is given one, in order,
+ * so a later piece takes what an earlier one was given. All or none: a piece that could not be given a fitting rubric
+ * fails the part, and nothing of it is kept.
  */
-export async function fillRubrics(inference: Inference, getCourse: () => Course, commit: (commands: Command[]) => void, lessonIds?: readonly string[], signal?: AbortSignal): Promise<{ given: number; failed: number }> {
-  let given = 0;
-  let failed = 0;
-  for (const { id } of orderedLessons(getCourse()).filter((l) => !lessonIds || lessonIds.includes(l.id))) {
-    for (const { id: taskId } of piecesLackingRubric(getCourse(), getCourse().lessons[id]!)) {
-      if (signal?.aborted) return { given, failed };
-      const course = getCourse();
-      const piece = course.tasks[taskId];
-      const command = piece?.kind === 'assignment' ? await rubricFor(inference, course, course.lessons[id]!, piece, signal).catch(() => null) : null;
-      if (command) commit([command]);
-      if (command) given += 1;
-      else failed += 1;
-    }
+export async function lessonRubrics(inference: Inference, course: Course, lessonId: string, signal?: AbortSignal): Promise<Command[]> {
+  const store = new CourseStore(course);
+  const commands: Command[] = [];
+  for (const { id } of piecesLackingRubric(course, course.lessons[lessonId]!)) {
+    if (signal?.aborted) throw new InferenceError('aborted', 'Stopped.');
+    const now = store.getState();
+    const piece = now.tasks[id];
+    if (piece?.kind !== 'assignment') continue;
+    const command = await rubricFor(inference, now, now.lessons[lessonId]!, piece, signal);
+    store.apply([command], { label: { key: 'built' }, source: 'ai', undoable: false });
+    commands.push(command);
   }
-  return { given, failed };
+  return commands;
 }
+
+export { piecesLackingRubric };

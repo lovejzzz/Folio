@@ -71,8 +71,10 @@ describe('what a course is said to cost before it is written', () => {
     expect(planEstimate([task('assignments', 'run', 'rubrics')])).toMatchObject({ credits: 40, needed: 1 });
     expect(planEstimate([task('assignments', 'done', 'rubrics')])).toMatchObject({ credits: 0, dollars: 0, parts: 0 });
     expect(planEstimate([])).toMatchObject({ credits: 0, parts: 0 });
-    // Written work with no rubric is counted apart and costs nothing: it is not written again.
-    expect(planEstimate([task('assignments', 'noRubric', 'rubrics'), task('quiz', 'run')])).toMatchObject({ credits: 20, parts: 1, noRubric: 1 });
+    // A lesson's rubrics alone are a part to run and are not priced.
+    expect(planEstimate([task('rubrics', 'run'), task('quiz', 'run')])).toMatchObject({ credits: 20, parts: 2, unpriced: 1 });
+    // Only rubrics alone left: a part is left, with no figure for it; it is never "nothing left".
+    expect(planEstimate([task('rubrics', 'run')])).toMatchObject({ credits: 0, parts: 1, unpriced: 1 });
   });
 });
 

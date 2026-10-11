@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { useT } from '../i18n';
 import { retryCell, useBuild } from '../state/build';
 import { keepMine, updateSection, useProposals } from '../state/proposals';
+import { buildKindFor } from '@folio/ai';
 import { CreditsNote } from '../screens/plan/CreditsNote';
 import { useCourse } from '../state/session';
 import { FlagNote } from './FlagNote';
@@ -41,7 +42,7 @@ function StaleBar({ course, lesson, kind }: { course: Course; lesson: Lesson; ki
 function NotBuilt({ lesson, kind }: { lesson: Lesson; kind: MaterialKind }) {
   const t = useT();
   const course = useCourse();
-  const section = sectionFor(kind);
+  const section = buildKindFor(course, lesson, kind, sectionFor(kind));
   const run = useBuild((s) => (section ? s.cells[`${lesson.id}:${section}`] : undefined));
   const error = useBuild((s) => (section ? s.errors[`${lesson.id}:${section}`] : undefined));
   if (run === 'building' || run === 'queued') {

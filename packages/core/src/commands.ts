@@ -61,6 +61,8 @@ export type CommandMap = {
   'lesson.update': { lessonId: string } & LessonFields;
   /** Set what students hand in. None also takes away the assignment already written, so nothing exports it. */
   'lesson.homework': { lessonId: string; homework: Lesson['homework'] };
+  /** The graded pieces of one lesson the teacher says they have themselves; replaces what was said before for that lesson. */
+  'lesson.own': { lessonId: string; pieces: string[] };
   'lesson.remove': { lessonId: string };
   'lesson.move': { lessonId: string; toIndex: number };
   'section.fill': {
@@ -143,7 +145,14 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     if (p.title !== undefined) draft.title = p.title;
     if (p.summary !== undefined) draft.summary = p.summary;
     if (p.policies !== undefined) draft.policies = p.policies;
-    if (p.grading !== undefined) draft.grading = p.grading.map((g) => ({ ...g }));
+    if (p.grading !== undefined) {
+      // A piece whose terms change (its weight, how it is judged, its card) is not the piece a teacher said they had.
+      const was = new Map(draft.grading.map((g) => [g.item.trim(), JSON.stringify({ ...g, id: '' })]));
+      const changed = new Set(p.grading.filter((g) => was.get(g.item.trim()) !== JSON.stringify({ ...g, id: '' })).map((g) => g.item.trim()));
+      const kept = new Set(p.grading.map((g) => g.item.trim()));
+      for (const lesson of Object.values(draft.lessons)) lesson.own = (lesson.own ?? []).filter((x) => kept.has(x) && !changed.has(x));
+      draft.grading = p.grading.map((g) => ({ ...g }));
+    }
     if (p.language !== undefined) draft.language = p.language;
     if (p.status !== undefined) draft.status = p.status;
     if (p.audience) Object.assign(draft.audience, p.audience);
@@ -181,8 +190,13 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     const at = p.afterId === null ? 0 : draft.lessonOrder.indexOf(p.afterId) + 1;
     draft.lessonOrder.splice(at < 0 ? draft.lessonOrder.length : at, 0, lesson.id);
   },
+  'lesson.own': (draft, p) => {
+    lessonOf(draft, p.lessonId).own = [...new Set(p.pieces.map((x) => x.trim()).filter(Boolean))];
+  },
   'lesson.homework': (draft, p) => {
     const lesson = lessonOf(draft, p.lessonId);
+    // Other work is set: what was said to be in hand was said of the work before.
+    if (JSON.stringify(lesson.homework) !== JSON.stringify(p.homework)) lesson.own = [];
     lesson.homework = { ...p.homework };
     if (p.homework.kind !== 'none' || lesson.also.length) return;
     lesson.taskIds = lesson.taskIds.filter((id) => {

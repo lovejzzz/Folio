@@ -3,6 +3,7 @@ import { MaterialIcon, cx, tabBg } from '@folio/ui';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useRef, useState, type KeyboardEvent } from 'react';
 import { useT } from '../../i18n';
+import { buildKindFor } from '@folio/ai';
 import { retryCell, useBuild } from '../../state/build';
 import { usePrefs } from '../../state/prefs';
 import { useCourse } from '../../state/session';
@@ -90,6 +91,12 @@ function useGridFocus(rows: number, cols: number, grid: React.RefObject<HTMLDivE
 }
 
 /** The course as a grid: rows are lessons, columns are materials. Arrow keys move, Enter opens. */
+/** Write a cell's part: its section, or the rubrics alone where the graded work stands without them. */
+function buildCell(course: Course, lesson: Lesson, kind: MaterialKind): void {
+  const part = buildKindFor(course, lesson, kind, sectionFor(kind));
+  if (part) retryCell(lesson.id, part);
+}
+
 export function MapGrid() {
   const t = useT();
   const course = useCourse();
@@ -104,7 +111,9 @@ export function MapGrid() {
   const { focus, setFocus, onKeyDown } = useGridFocus(lessons.length, kinds.length, gridRef);
   const runOf = (lessonId: string, kind: MaterialKind) => {
     const section = sectionFor(kind);
-    return section && courseId === course.id ? cells[`${lessonId}:${section}`] : undefined;
+    // A lesson's rubrics alone run under their own name; otherwise the cell follows its section.
+    const own = kind === 'rubrics' ? cells[`${lessonId}:rubrics`] : undefined;
+    return courseId !== course.id ? undefined : (own ?? (section ? cells[`${lessonId}:${section}`] : undefined));
   };
   return (
     <div className="relative">
@@ -132,12 +141,12 @@ export function MapGrid() {
                   lesson={lesson}
                   kind={kind}
                   view={cellView(course, lesson, kind, runOf(lesson.id, kind))}
-                  error={section ? errors[`${lesson.id}:${section}`] : undefined}
+                  error={(kind === 'rubrics' ? errors[`${lesson.id}:rubrics`] : undefined) ?? (section ? errors[`${lesson.id}:${section}`] : undefined)}
                   compact={compact}
                   focused={focus.row === row && focus.col === col}
                   onFocus={() => setFocus({ row, col })}
                   onOpen={() => void navigate({ to: '/c/$courseId/lesson/$lessonId', params: { courseId: course.id, lessonId: lesson.id }, search: { m: kind } })}
-                  onBuild={() => section && retryCell(lesson.id, section)}
+                  onBuild={() => buildCell(course, lesson, kind)}
                 />
               );
             })}

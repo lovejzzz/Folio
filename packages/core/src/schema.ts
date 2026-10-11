@@ -165,6 +165,11 @@ export const LessonSchema = z.object({
   handouts: z.array(HandoutSchema).default([]),
   /** What else must be on hand for the lesson that no sheet holds: what students bring, what the teacher brings or copies. */
   ready: z.array(text).default([]),
+  /**
+   * The graded pieces of this lesson, by name, that the teacher has said they have themselves where Folio writes none:
+   * this lesson's paper and instructions, not every lesson's. Emptied when the lesson's work or that piece's terms change.
+   */
+  own: z.array(text).default([]),
   /** Order of this lesson's tasks (questions, assignments, discussions). */
   taskIds: z.array(id),
   faqIds: z.array(id),
@@ -345,8 +350,6 @@ export const GradeItemSchema = z.object({
   weight: z.number().min(0).max(100),
   judged: z.enum(['levels', 'complete']).optional(),
   card: GradeCardSchema.optional(),
-  /** The teacher has said they have this piece's paper, instructions and scoring themselves, where Folio writes none. */
-  own: z.boolean().optional(),
 });
 export type GradeItem = z.infer<typeof GradeItemSchema>;
 

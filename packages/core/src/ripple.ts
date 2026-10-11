@@ -1,3 +1,4 @@
+import { piecesLackingRubric } from './rubricLack';
 import { ownNeeds } from './ownNeeds';
 import { filledTexts, isBlankSegment, statedObjectives } from './blank';
 import { lessonPieces, orderedLessons } from './course';
@@ -97,6 +98,8 @@ export function cellState(course: Course, lesson: Lesson, kind: MaterialKind): C
   const section = sectionFor(kind);
   if (!section) return 'ready';
   if (!setsWork(lesson, kind)) return 'none';
+  // The graded work stands and its rubric does not: the rubrics are not written, whatever the work's own state.
+  if (kind === 'rubrics' && lesson.gen.assignments && piecesLackingRubric(course, lesson).length > 0) return 'empty';
   const meta = lesson.gen[section];
   if (!meta) return 'empty';
   if (staleReasons(course, lesson, section).length > 0) return 'stale';

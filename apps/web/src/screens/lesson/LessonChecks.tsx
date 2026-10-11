@@ -1,4 +1,4 @@
-import { cmd, gradingWithOwn, lessonChecklist, ownNeeds, type CheckItem, type Course, type Lesson } from '@folio/core';
+import { cmd, lessonChecklist, ownEverywhere, ownNeeds, type CheckItem, type Course, type Lesson } from '@folio/core';
 import { Button } from '@folio/ui';
 import { edit } from '../../state/edit';
 import { useT } from '../../i18n';
@@ -16,13 +16,21 @@ function OwnWork({ course, lesson }: { course: Course; lesson: Lesson }) {
   const needs = ownNeeds(course, [lesson.id]);
   if (!needs.length) return null;
   const open = needs.filter((n) => !n.confirmed);
-  const set = (own: boolean) => edit([cmd('course.update', { grading: gradingWithOwn(course, needs.map((n) => n.piece), own) })], { key: 'editedGrading' });
+  const names = needs.map((n) => n.piece);
+  const here = (pieces: string[]) => edit([cmd('lesson.own', { lessonId: lesson.id, pieces })], { key: 'editedGrading' });
+  // Asked for in so many words: a rubric or a brief used all term is one thing to have; each lesson's quiz paper is not.
+  const everywhere = () => edit(ownEverywhere(course, names).map((x) => cmd('lesson.own', x)), { key: 'editedGrading' });
   return (
     <p className="mb-3 flex flex-wrap items-center gap-2">
       <span>{open.length ? t.lesson.checks.ownOpen : t.lesson.checks.ownHave}</span>
-      <Button size="sm" variant="secondary" onPress={() => set(open.length > 0)}>
+      <Button size="sm" variant="secondary" onPress={() => here(open.length ? names : [])}>
         {open.length ? t.lesson.checks.ownConfirm : t.lesson.checks.ownUndo}
       </Button>
+      {open.length > 0 && ownEverywhere(course, names).length > 1 && (
+        <Button size="sm" variant="quiet" onPress={everywhere}>
+          {t.lesson.checks.ownAll}
+        </Button>
+      )}
     </p>
   );
 }

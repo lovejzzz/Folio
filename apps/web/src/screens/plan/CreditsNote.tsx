@@ -21,11 +21,13 @@ export function CreditsNote({ course, targets }: { course: Course; targets?: rea
   const own = ownToWrite(course, targets?.map((x) => x.lessonId));
   const lacking = (
     <>
-      {need.noRubric > 0 && <span className="block text-attention">{creditsText.noRubric(need.noRubric)}</span>}
+      {need.unpriced > 0 && <span className="block">{creditsText.unpriced(need.unpriced)}</span>}
       {own.length > 0 && <span className="block">{creditsText.ownToWrite([...new Set(own.flatMap((x) => x.pieces))], own.length)}</span>}
     </>
   );
   if (need.parts === 0) return <p className={quiet}>{creditsText.nothingLeft}{lacking}</p>;
+  // Only parts whose cost is not known are left: no figure, and no word that nothing is to pay.
+  if (need.parts === need.unpriced) return <p className={quiet}>{lacking}</p>;
   const also = need.needed ? ` ${creditsText.alsoWritten}` : '';
   // With a key of their own a teacher pays the provider: said in dollars, before anything is written.
   if (provider !== 'folio') return <p className={quiet}>{creditsText.ownKey(need.dollars)}{also}{lacking}</p>;

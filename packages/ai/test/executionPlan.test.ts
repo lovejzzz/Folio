@@ -75,8 +75,9 @@ describe('what a build of a course would do', () => {
       tasks: { a1: piece('a1', first, null), a2: piece('a2', second, 'r_gone') },
       lessons: { [first]: { ...base.lessons[first]!, taskIds: ['a1'] }, [second]: { ...base.lessons[second]!, taskIds: ['a2'], gen: base.lessons[first]!.gen } },
     };
-    expect(said(lost)).toEqual(['1:assignments:noRubric(for rubrics)', '2:assignments:noRubric(for rubrics)']);
-    expect(missingTargets(lost)).toEqual([]);
+    // The work is done and stays; the rubrics alone are a part to run, in the queue like any other.
+    expect(said(lost)).toEqual(['1:assignments:done(for rubrics)', '1:rubrics:run', '2:assignments:done(for rubrics)', '2:rubrics:run']);
+    expect(missingTargets(lost)).toEqual([{ lessonId: first, kind: 'rubrics' }, { lessonId: second, kind: 'rubrics' }]);
     // With its rubric in the course it is done; with rubrics not chosen nobody asks.
     const kept: Course = { ...lost, rubrics: { r1: { id: 'r1', title: 'Lab report', levels: [], criteria: [] } }, tasks: { ...lost.tasks, a1: piece('a1', first, 'r1'), a2: piece('a2', second, 'r1') } };
     expect(said(kept)).toEqual(['1:assignments:done(for rubrics)', '2:assignments:done(for rubrics)']);
