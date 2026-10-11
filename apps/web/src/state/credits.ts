@@ -101,7 +101,7 @@ export const creditsText = {
   /** Said when a choice has more written than was ticked: never charged for in silence. */
   alsoWritten: 'This includes the graded work the rubrics score: a rubric is written with its assignment.',
   /** Rubrics alone still to be written: a part of the build whose cost is not known, said as that. */
-  unpriced: (n: number) => `${n === 1 ? 'One lesson’s rubric is' : `${n} lessons’ rubrics are`} to be written for graded work that stands without one; the work itself is not changed. What that costs has not been measured (a short call for each piece, none where another piece’s rubric fits), so it is not in a figure here.`,
+  unpriced: (n: number) => `${n === 1 ? 'One short step is' : `${n} short steps are`} also part of this and not in a figure, since what they cost has not been measured: a lesson’s facts settled once where no lesson plan is written, so that what you chose agrees with itself, or a rubric alone for graded work that stands without one. A short call each.`,
   /** Graded work the chosen materials lean on and that is not being written: named before the build. */
   ownToWrite: (pieces: string[], lessons: number) => `${lessons === 1 ? 'One lesson sets' : `${lessons} lessons set`} graded work (${pieces.map((x) => `“${x}”`).join(', ')}) that is not among what you chose: what is written names it and leaves its instructions, paper and rubric to you.`,
   /** Nothing is left to write: said, and no figure given. */
@@ -147,7 +147,7 @@ export function estimateCredits(lessons: number, kinds: readonly string[]): numb
 export function planEstimate(tasks: readonly { kind: string; state: string; neededBy?: string }[]): { credits: number; dollars: number; parts: number; needed: number; unpriced: number } {
   const run = tasks.filter((t) => t.state === 'run');
   // A lesson's rubrics alone are a part to run whose cost has not been measured: counted apart, never as nothing.
-  const priced = run.filter((t) => t.kind !== 'rubrics');
+  const priced = run.filter((t) => t.kind !== 'rubrics' && t.kind !== 'facts');
   const cents = priced.reduce((sum, t) => sum + (PER_LESSON[t.kind] ?? 0), 0);
   return { credits: Math.ceil(cents / 10) * 10, dollars: cents / MARKUP / 100, parts: run.length, needed: run.filter((t) => t.neededBy).length, unpriced: run.length - priced.length };
 }

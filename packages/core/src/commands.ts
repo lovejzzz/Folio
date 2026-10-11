@@ -4,7 +4,7 @@ import type { Flag } from './flags';
 import type { GeneratedKind, MaterialKind } from './materials';
 import { computeBasis } from './ripple';
 import type { CoursePage, Facilitation, Handout, Online, PageBlock } from './page';
-import type {
+import type { LessonCase,
   Course,
   CourseStatus,
   FaqEntry,
@@ -61,6 +61,8 @@ export type CommandMap = {
   'lesson.update': { lessonId: string } & LessonFields;
   /** Set what students hand in. None also takes away the assignment already written, so nothing exports it. */
   'lesson.homework': { lessonId: string; homework: Lesson['homework'] };
+  /** The lesson's facts where it has no plan: its key ideas, its terms and its cases, written once for every material. */
+  'lesson.facts': { lessonId: string; keyIdeas: string[]; vocabulary: Term[]; cases: LessonCase[] };
   /** The graded pieces of one lesson the teacher says they have themselves; replaces what was said before for that lesson. */
   'lesson.own': { lessonId: string; pieces: string[] };
   'lesson.remove': { lessonId: string };
@@ -189,6 +191,12 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     draft.lessons[lesson.id] = lesson;
     const at = p.afterId === null ? 0 : draft.lessonOrder.indexOf(p.afterId) + 1;
     draft.lessonOrder.splice(at < 0 ? draft.lessonOrder.length : at, 0, lesson.id);
+  },
+  'lesson.facts': (draft, p) => {
+    const lesson = lessonOf(draft, p.lessonId);
+    lesson.keyIdeas = p.keyIdeas;
+    lesson.vocabulary = p.vocabulary;
+    lesson.cases = p.cases;
   },
   'lesson.own': (draft, p) => {
     lessonOf(draft, p.lessonId).own = [...new Set(p.pieces.map((x) => x.trim()).filter(Boolean))];

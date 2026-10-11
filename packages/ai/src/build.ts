@@ -3,17 +3,21 @@ import { CourseStore, GENERATED_KINDS, lessonPieces, orderedLessons, ownNeeds, s
 /** The lesson still exists and still asks for this section: the teacher may have changed its homework mid-build. */
 const stillWanted = (course: Course, t: BuildTarget) => {
   const lesson = course.lessons[t.lessonId];
-  return Boolean(lesson && setsWork(lesson, t.kind));
+  return Boolean(lesson && (t.kind === 'facts' || setsWork(lesson, t.kind)));
 };
 import { InferenceError, type Inference } from './inference';
 import type { RunOptions } from './runCells';
 import { generateSection, type SectionProgress } from './sections';
 import { lastRead } from './lastRead';
 import { BUILT_ON_PLAN } from './prompts';
+import { lessonFacts, needsFacts } from './lessonFacts';
 import { lessonRubrics, piecesLackingRubric } from './rubricAlone';
 
-/** A part of a lesson a build writes: one of the sections, or the lesson's rubrics alone for graded work that stands without them. */
-export type BuildKind = GeneratedKind | 'rubrics';
+/**
+ * A part of a lesson a build writes: one of the sections; the lesson's rubrics alone, for graded work that stands
+ * without them; or the lesson's facts, settled first where it is written without a plan.
+ */
+export type BuildKind = GeneratedKind | 'rubrics' | 'facts';
 
 export interface BuildTarget {
   lessonId: string;
@@ -97,6 +101,8 @@ export function executionPlan(course: Course, lessonIds?: readonly string[]): Pl
   return orderedLessons(course).flatMap((l, i) =>
     !lessonIds || lessonIds.includes(l.id)
       ? [
+          // Written without a plan, a lesson's facts are settled before anything else of it: an inner step, named and counted.
+          ...factsFirst(course, l, i, kinds),
           ...kinds.map(({ kind, neededBy }): PlannedTask => ({ lessonId: l.id, lesson: i + 1, kind, ...(neededBy ? { neededBy } : {}), state: !setsWork(l, kind) ? 'noWork' : l.gen[kind] ? 'done' : 'run' })),
           // Written graded work that points at no rubric the course holds: a part of its own, the rubrics alone. That the
           // work was once written says nothing of its rubric, which can be deleted or lost on the way in from a file.
@@ -134,7 +140,7 @@ export function ownToWrite(course: Course, lessonIds?: readonly string[]): { les
 export function planOf(course: Course, targets: readonly BuildTarget[]): PlannedTask[] {
   return targets.flatMap((t): PlannedTask[] => {
     const lesson = course.lessons[t.lessonId];
-    return lesson ? [{ ...t, lesson: course.lessonOrder.indexOf(t.lessonId) + 1, state: setsWork(lesson, t.kind) ? 'run' : 'noWork' }] : [];
+    return lesson ? [{ ...t, lesson: course.lessonOrder.indexOf(t.lessonId) + 1, state: t.kind === 'facts' || setsWork(lesson, t.kind) ? 'run' : 'noWork' }] : [];
   });
 }
 
@@ -144,6 +150,12 @@ export function planOf(course: Course, targets: readonly BuildTarget[]): Planned
  */
 export function buildKindFor(course: Course, lesson: Lesson, kind: MaterialKind, section: GeneratedKind | null): BuildKind | null {
   return kind === 'rubrics' && lesson.gen.assignments && rubricLacking(course, lesson) ? 'rubrics' : section;
+}
+
+/** The facts step of a lesson written without a plan, when something of it is still to be written: named for the first such part. */
+function factsFirst(course: Course, l: Lesson, i: number, kinds: RunKind[]): PlannedTask[] {
+  const first = needsFacts(course, l) ? kinds.find(({ kind }) => BUILT_ON_PLAN.has(kind as never) && setsWork(l, kind) && !l.gen[kind]) : undefined;
+  return first ? [{ lessonId: l.id, lesson: i + 1, kind: 'facts', neededBy: first.neededBy ?? first.kind, state: 'run' }] : [];
 }
 
 /** Every enabled section that has not been built yet, lesson by lesson. */
@@ -197,6 +209,12 @@ function lastReads(host: BuildHost, targets: BuildTarget[], pending: BuildTarget
 const AFTER: Partial<Record<BuildTarget['kind'], BuildTarget['kind'][]>> = { assignments: ['quiz'], study: ['quiz', 'assignments'], faq: ['quiz', 'assignments'] };
 
 /** A lesson's rubrics alone wait for its graded work, and for the rubrics of earlier lessons, which a later piece may take. */
+/** A lesson's graded pieces, each as its kind and the component it counts toward. */
+const piecesOf = (course: Course, lessonId: string): string[] => (course.lessons[lessonId] ? lessonPieces(course.lessons[lessonId]).map((p) => `${p.kind}:${p.toward.trim()}`) : []);
+
+/** Everything written of a lesson without a plan waits for the lesson's facts. */
+const factsWait = (t: BuildTarget, queued: BuildTarget[]): boolean => t.kind !== 'facts' && queued.some((o) => o.kind === 'facts' && o.lessonId === t.lessonId);
+
 const rubricsWait = (t: BuildTarget, queued: BuildTarget[], position: (lessonId: string) => number): boolean =>
   queued.some((o) => (o.kind === 'assignments' && o.lessonId === t.lessonId) || (o.kind === 'rubrics' && position(o.lessonId) < position(t.lessonId)));
 
@@ -213,10 +231,7 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
   const position = (lessonId: string) => host.getCourse().lessonOrder.indexOf(lessonId);
   // Parts of one graded piece set in several lessons, and the steps toward one, are written in order too, each
   // seeing what came before it.
-  const pieces = (lessonId: string) => {
-    const lesson = host.getCourse().lessons[lessonId];
-    return lesson ? lessonPieces(lesson).map((p) => `${p.kind}:${p.toward.trim()}`) : [];
-  };
+  const pieces = (lessonId: string) => piecesOf(host.getCourse(), lessonId);
   const shares = (a: string, b: string) => pieces(a).some((key) => pieces(b).includes(key));
   // Plans written and not yet checked, and something to wake the queue when one arrives.
   const drafts = new Map<string, Command[]>();
@@ -230,8 +245,9 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
     if (t.kind === 'plan') return queued.some(scored) || waiting.some((o) => position(o.lessonId) < position(t.lessonId) && !drafts.has(o.lessonId));
     if (t.kind === 'assignments' && queued.some((o) => o.kind === 'assignments' && position(o.lessonId) < position(t.lessonId) && shares(o.lessonId, t.lessonId))) return true;
     // Each is shown what came before it: graded work the quiz (beside it, both set the same problems), the guide and the FAQ the keys.
-    if (t.kind === 'rubrics' ? rubricsWait(t, queued, position) : queued.some((o) => (AFTER[t.kind] ?? []).includes(o.kind) && o.lessonId === t.lessonId)) return true;
-    return t.kind !== 'rubrics' && BUILT_ON_PLAN.has(t.kind) && waiting.some((o) => o.lessonId === t.lessonId);
+    if (t.kind === 'facts' || factsWait(t, queued) || (t.kind === 'rubrics' && rubricsWait(t, queued, position))) return t.kind !== 'facts';
+    const kind = t.kind;
+    return kind !== 'rubrics' && (queued.some((o) => (AFTER[kind] ?? []).includes(o.kind) && o.lessonId === t.lessonId) || (BUILT_ON_PLAN.has(kind) && waiting.some((o) => o.lessonId === t.lessonId)));
   };
 
   // A plan that failed takes with it what would be written from it: written without, those parts would look
@@ -244,7 +260,7 @@ export async function runBuild(host: BuildHost, targets: BuildTarget[]): Promise
     for (const t of pending) if (t.kind === 'plan' && position(t.lessonId) > first && !failedPlans.has(t.lessonId)) failedPlans.set(t.lessonId, failedPlans.values().next().value!);
     for (let i = pending.length - 1; i >= 0; i--) {
       const t = pending[i]!;
-      const error = t.kind !== 'rubrics' && (BUILT_ON_PLAN.has(t.kind) || t.kind === 'plan') ? failedPlans.get(t.lessonId) : undefined;
+      const error = t.kind !== 'rubrics' && t.kind !== 'facts' && (BUILT_ON_PLAN.has(t.kind) || t.kind === 'plan') ? failedPlans.get(t.lessonId) : undefined;
       if (!error) continue;
       pending.splice(i, 1);
       summary.failed += 1;
@@ -301,7 +317,9 @@ async function runOne(host: BuildHost, target: BuildTarget, summary: BuildSummar
     const options = { reviewer: host.reviewer, run: host.run, onProgress, latest: pipeline?.view, onDraft: pipeline ? (commands: Command[]) => pipeline.drafted(target.lessonId, commands) : undefined };
     // Asked once more before it counts as failed: a part that fails holds back what is written from it, and most failures do not happen twice.
     const kind = target.kind;
-    const write = () => (kind === 'rubrics' ? lessonRubrics(host.inference, host.getCourse(), target.lessonId, host.signal).then((commands) => ({ commands, flagged: 0 })) : generateSection(host.inference, course, target.lessonId, kind, host.signal, options));
+    // Its facts could not be settled: nothing of the lesson is written from a guess. It stays to be run.
+    if (kind !== 'facts' && kind !== 'rubrics' && kind !== 'plan' && needsFacts(host.getCourse(), host.getCourse().lessons[target.lessonId]!)) throw new InferenceError('invalid', 'This lesson’s facts could not be settled, so nothing was written from them.');
+    const write = () => (kind === 'rubrics' || kind === 'facts' ? (kind === 'rubrics' ? lessonRubrics : lessonFacts)(host.inference, host.getCourse(), target.lessonId, host.signal).then((commands) => ({ commands, flagged: 0 })) : generateSection(host.inference, course, target.lessonId, kind, host.signal, options));
     const result = await write().catch((error: unknown) => (error instanceof InferenceError && AGAIN.has(error.kind) && !host.signal.aborted ? write() : Promise.reject(error)));
     if (host.signal.aborted) throw new InferenceError('aborted', 'Stopped.');
     if (!stillWanted(host.getCourse(), target)) return;

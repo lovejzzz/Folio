@@ -1,0 +1,115 @@
+{
+ "cases": [
+  {
+   "title": "Mills's town and nation",
+   "known": "Mills offers this illustration in The Sociological Imagination (1959), paraphrased here. In a city of 100,000 people, one man is out of work. In a nation of 50 million employees, 15 million are out of work.",
+   "question": "For each setting, is unemployment better understood as a personal trouble or as a public issue, and why?",
+   "answer": "In the city where one man is unemployed, it is reasonable to start with his own situation: his skills, his habits, his search for work, his local contacts. This is a personal trouble. In the nation with 15 million unemployed, which is 30 percent of 50 million employees, no account built on individual character can explain so many cases at once. The question becomes how the economy and its institutions create too few jobs. This is a public issue. The same event, losing a job, calls for a different kind of explanation depending on how widely it is shared and what produces it.",
+   "notShown": "It does not show that the single unemployed man is free of any responsibility for his situation, nor that individual effort never matters in a weak job market. It also does not say what caused the national unemployment; it only shows that the cause must be sought in structure.",
+   "id": "x_315a057a60c4"
+  },
+  {
+   "title": "The furniture plant closes",
+   "known": "Suppose a hypothetical town, invented for this lesson. Its largest employer, a furniture factory, closes and 600 workers lose their jobs. Over the following year the town's unemployment rate rises from 4 percent to 11 percent. Dana, 41, was a machine operator there for 15 years. She tells a friend, 'I should have retrained years ago.'",
+   "question": "How would the sociological imagination read Dana's situation, using biography, history and social structure?",
+   "answer": "Biography: Dana's 15 years at one employer, her skills and her decisions about retraining are part of her own life path. History: the plant closed at a particular moment, and Dana's job disappeared with it. Social structure: the town depends on one employer and the local economy offers few similar jobs, so 600 people compete for a small number of openings. Her feeling that she is at fault treats a public issue as a personal trouble. The jump in the town rate from 4 to 11 percent shows that many neighbors share her position. Her own choices can still affect how she fares in the search, but they do not explain why the jobs vanished.",
+   "notShown": "The case does not say why the factory closed, whether other towns are affected, or how Dana will fare. It gives no evidence that retraining would or would not have saved her job.",
+   "id": "x_e8e2e4140532"
+  },
+  {
+   "title": "Graduating into different years",
+   "known": "Well-established U.S. figures: the unemployment rate was about 25 percent in 1933, in the Great Depression. It reached 10.0 percent in October 2009, during the Great Recession. It was 3.5 percent in February 2020. Imagine three 22-year-olds, each looking for a first full-time job in one of those periods.",
+   "question": "What does comparing these three job seekers show about how history shapes individual biographies?",
+   "answer": "The three face very different odds of finding work, mainly because of the period they entered the labor market. A person who graduates when about one worker in four is jobless meets a market that offers far fewer openings than one who graduates at 3.5 percent. Each person's biography, with its schooling, effort and plans, unfolds inside a historical moment that they did not choose. Members of a birth cohort who meet a weak market at the same point in life share a common experience that points to structure, not to the character of each individual.",
+   "notShown": "The rates are national averages for the whole labor force, not for new graduates. The case does not say how any particular graduate fared, and it does not show that skill and effort have no effect on who finds work in a given year.",
+   "id": "x_b64715686ab5"
+  },
+  {
+   "title": "A classmate's remark in discussion",
+   "known": "Suppose a hypothetical discussion in which a student says, 'People who are unemployed just are not trying hard enough.' Another student wants to respond using the ideas of this lesson.",
+   "question": "How can a student respond to the remark by applying the sociological imagination, and what makes the response a sound contribution to discussion?",
+   "answer": "A strong response does not dismiss the remark. It grants that individual effort belongs to biography, then asks what the claim can and cannot explain. If unemployment rises sharply across a whole region or country, effort alone cannot account for it, because the number of available jobs has changed. The student can name the three elements (biography, history, social structure), say which one the original remark leaves out, and ask the speaker what evidence would show whether the problem is personal or public. This builds on the earlier point, uses the course's terms accurately and moves the discussion forward.",
+   "notShown": "The case does not show that the first speaker is wrong about every individual, and it does not provide data about how hard any unemployed person searches. It only shows that the remark cannot, on its own, explain a widely shared pattern.",
+   "id": "x_b917320522d7"
+  }
+ ],
+ "keyIdeas": [
+  "C. Wright Mills called the sociological imagination the ability to see how private experience is tied to larger social forces, so that a person's life is read against the society and the period in which it is lived.",
+  "A personal trouble is a difficulty felt within a person's own life and close relations. A public issue is a problem that arises from how institutions and the wider society are organized. The same event, such as losing a job, can be read at either level.",
+  "Unemployment shows the difference. When one worker in a town loses a job, we look first at that person's skills and choices. When millions are out of work, the cause cannot lie in millions of separate personal failings, and we must look at the economy.",
+  "Biography (a person's life path), history (the period and the changes of the period) and social structure (the patterned relationships and institutions that organize society) work together to shape individual lives. None of the three is enough alone.",
+  "Participation in discussion is a graded component of this course, worth 10% of the course grade. The instructor gives its instructions. The sociological imagination is the habit of mind students practice in every discussion."
+ ],
+ "slides": [
+  {
+   "title": "The sociological imagination",
+   "bullets": [
+    "Introduction to sociology: society, inequality and change",
+    "Textbook: OpenStax, Introduction to Sociology 3e"
+   ],
+   "notes": "Welcome the class. About 40 students, so say your name and invite a few to say why they chose the course. Nothing today assumes earlier reading. Chapter 1 of the textbook (An Introduction to Sociology) is background for what we do now. Tell students the aim: by the end they can tell a personal trouble from a public issue, using unemployment, and explain how biography, history and social structure shape a life."
+  },
+  {
+   "title": "Mills: private lives, public forces",
+   "bullets": [
+    "Sociological imagination: tie private experience to larger social forces",
+    "Personal trouble: felt in one person’s life and close relations",
+    "Public issue: arises from how institutions and society are organized",
+    "The same event can be read at either level"
+   ],
+   "notes": "Short exposition only. C. Wright Mills developed the idea in The Sociological Imagination (1959). Say it in your own words: a person’s life has to be read against the society and the period in which it is lived. A personal trouble is usually explained by that person’s traits and choices. A public issue reaches beyond any one life. Use losing a job as the running example: it can be read at both levels. Do not give the answer to the next question yet. Move quickly to it so students do the thinking."
+  },
+  {
+   "title": "One city, one nation: trouble or issue?",
+   "bullets": [
+    "For each setting, is unemployment a personal trouble or a public issue?",
+    "Give your reason in one sentence."
+   ],
+   "notes": "Mills offers this illustration (paraphrased). Give students two minutes in pairs, then take answers from several pairs and let them respond to one another before you say anything.\n\nAnswer to draw out. City: with one man out of work, it is reasonable to start with his situation: his skills, habits, job search and local contacts. That is a personal trouble. Nation: 15 million of 50 million employees is 30 percent. No account built on individual character can explain so many cases at once. The question becomes how the economy and its institutions create too few jobs. That is a public issue. The same event, losing a job, needs a different kind of explanation depending on how widely it is shared and what produces it.\n\nCaution: the case does not show that the single unemployed man bears no responsibility, nor that effort never matters in a weak job market. It also does not say what caused the national unemployment. It only shows that the cause must be sought in structure."
+  },
+  {
+   "title": "Three elements that shape a life",
+   "bullets": [
+    "Work together; none is enough alone"
+   ],
+   "notes": "Walk through the table briefly, then go straight to the next slide. Biography is the course of one life. History is the period and its changes, which open some possibilities and close others. Social structure is the relatively stable pattern of relationships, roles and institutions, such as the economy, the family and the state. Stress that Mills asks us to hold all three in view at once."
+  },
+  {
+   "title": "The furniture plant closes",
+   "bullets": [
+    "Suppose a hypothetical town, invented for this class. Its largest employer, a furniture factory, closes. 600 workers lose their jobs.",
+    "Over the next year the town’s unemployment rate rises from 4 percent to 11 percent.",
+    "Dana, 41, was a machine operator there for 15 years. She says: “I should have retrained years ago.”",
+    "Read Dana’s situation using biography, history and social structure."
+   ],
+   "notes": "Small groups of four, about five minutes, one reader per group to report. Then discuss as a class.\n\nAnswer to draw out. Biography: Dana’s 15 years at one employer, her skills and her decisions about retraining are part of her own life path. History: the plant closed at a particular moment, and her job disappeared with it. Social structure: the town depends on one employer and the local economy offers few similar jobs, so 600 people compete for a small number of openings. Her feeling of fault treats a public issue as a personal trouble. The rise from 4 to 11 percent shows many neighbors share her position. Her own choices can still affect how she fares in the search, but they do not explain why the jobs vanished.\n\nCaution: the case does not say why the factory closed, whether other towns are affected, or how Dana will fare. It gives no evidence that retraining would or would not have saved her job."
+  },
+  {
+   "title": "Graduating into different years",
+   "bullets": [
+    "Three 22-year-olds, each seeking a first full-time job",
+    "These are national rates for all workers, not for new graduates"
+   ],
+   "notes": "Figures are well-established U.S. unemployment rates: about 25 percent in 1933 (Great Depression), 10.0 percent in October 2009 (Great Recession), 3.5 percent in February 2020. Ask: what does comparing the three job seekers show about how history shapes individual biographies?\n\nAnswer to draw out. The three face very different odds mainly because of the period they entered the labor market. A graduate who enters when about one worker in four is jobless meets far fewer openings than one who enters at 3.5 percent. Each biography, with its schooling, effort and plans, unfolds inside a historical moment nobody chooses. Members of a birth cohort who meet a weak market at the same point in life share an experience that points to structure, not to the character of each person.\n\nCaution: the rates cover the whole labor force. The case does not say how any particular graduate fared, and it does not show that skill and effort have no effect on who finds work in a given year."
+  },
+  {
+   "title": "Participation in discussion: respond to this remark",
+   "bullets": [
+    "Participation in discussion is 10% of the course grade. Your instructor gives its instructions.",
+    "Suppose, in a hypothetical discussion, a classmate says: “People who are unemployed just are not trying hard enough.”",
+    "Respond using the sociological imagination.",
+    "What makes your response a sound contribution?"
+   ],
+   "notes": "Give the instructions for participation in discussion yourself; they are yours to bring and explain. Keep that to a short statement, then let students lead. The sociological imagination is the habit of mind they will practice in every discussion this term.\n\nRun the remark as a short student-led exchange. Ask a student to volunteer a response, then ask others to build on it. Draw out the following. A strong response does not dismiss the remark. It grants that individual effort belongs to biography, then asks what the claim can and cannot explain. If unemployment rises sharply across a whole region or country, effort alone cannot account for it, because the number of available jobs has changed. The student can name biography, history and social structure, say which one the remark leaves out, and ask the speaker what evidence would show whether the problem is personal or public. A sound response builds on the earlier point, uses the course terms accurately and moves the discussion forward.\n\nCaution: this does not show the first speaker is wrong about every individual, and it supplies no data on how hard any unemployed person searches. It shows only that the remark cannot, on its own, explain a widely shared pattern."
+  },
+  {
+   "title": "For next time",
+   "bullets": [
+    "Reading quiz at the start of class (reading quizzes are 15% of the course grade)",
+    "Read the assignment in OpenStax, Introduction to Sociology 3e, that your instructor names",
+    "Bring one example of a personal trouble that may be a public issue"
+   ],
+   "notes": "Reading quizzes begin next time, at the start of class. Name the chapter or pages students should read, and say what they may use for the quiz, since that is yours to announce. Ask students to bring one example, from the news or their own experience, of a personal trouble that may also be a public issue. We will use these in discussion."
+  }
+ ]
+}

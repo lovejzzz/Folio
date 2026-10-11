@@ -131,6 +131,14 @@ export const HomeworkSchema = z.object({
 });
 export type Homework = z.infer<typeof HomeworkSchema>;
 
+/**
+ * A case a lesson works with, settled once for everything written about the lesson: what is given, what is asked, the
+ * answer, and what the case does not show. Kept apart because writers working alone each made their own: a deck asked
+ * for two personal reasons a worker lost her job when the plant closed, and gave "she had no savings" as one.
+ */
+export const LessonCaseSchema = z.object({ id, title: text, known: text, question: text, answer: text, notShown: text.default('') });
+export type LessonCase = z.infer<typeof LessonCaseSchema>;
+
 export const LessonSchema = z.object({
   id,
   title: text,
@@ -170,6 +178,8 @@ export const LessonSchema = z.object({
    * this lesson's paper and instructions, not every lesson's. Emptied when the lesson's work or that piece's terms change.
    */
   own: z.array(text).default([]),
+  /** The lesson's cases, where no lesson plan holds them: one account for every material (see LessonCaseSchema). */
+  cases: z.array(LessonCaseSchema).default([]),
   /** Order of this lesson's tasks (questions, assignments, discussions). */
   taskIds: z.array(id),
   faqIds: z.array(id),

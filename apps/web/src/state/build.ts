@@ -128,8 +128,8 @@ function trackEvent(store: Store, event: BuildEvent): void {
   const key = targetKey(event.target);
   if (event.type === 'start') {
     setCell(key, 'building');
-    // The live row is of a section being written; a lesson's rubrics alone have no text to show as they come.
-    if (event.target.kind !== 'rubrics') startRow(event.target.lessonId, event.target.kind);
+    // The live row is of a section being written; a lesson's rubrics alone and its facts have no text to show as they come.
+    if (event.target.kind !== 'rubrics' && event.target.kind !== 'facts') startRow(event.target.lessonId, event.target.kind);
     useBuild.setState({ currentLesson: lessonNumber(store.getState(), event.target.lessonId) });
   } else if (event.type === 'done') {
     setCell(key, null);

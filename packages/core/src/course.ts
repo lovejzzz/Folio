@@ -63,6 +63,7 @@ export function emptyLesson(idValue: string, title: string, summary = ''): Lesso
     handouts: [],
     ready: [],
     own: [],
+    cases: [],
     taskIds: [],
     faqIds: [],
     gen: {},

@@ -8,6 +8,7 @@ import { LIVE_ASKS, MIXED_ASKS, isLiveOnline, isMixedOnline, liveBackground, run
 import { pieceFacts } from './pieceFacts';
 import { packagesLine } from './rLedger';
 import { sheetsText } from './lessonView';
+import { factsSummary } from './lessonFacts';
 import { unlistedAsk } from './onScreen';
 import { ONLINE_ASKS, moduleAsk, onlineBackground, onlineHomeworkLine } from './online';
 
@@ -430,7 +431,8 @@ export function onlyThese(course: Course): string {
 export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromptKind, already = ''): string {
   const parts = [lessonContext(course, lesson)];
   if (BUILT_ON_PLAN.has(kind)) {
-    const plan = planSummary(lesson, kind === 'slides');
+    // With no plan, the lesson's facts settled once stand in for it: the same for every writer.
+    const plan = planSummary(lesson, kind === 'slides') || factsSummary(lesson);
     // Each job invents what the sources don't give; without the plan, a quiz and a plan gave one coefficient two standard errors.
     // A week's graded work online is the page's own build handed in with something of the student's own on it: told to
     // "give new items, not the lesson's", an assignment forbade the notebook its page had just said to submit.

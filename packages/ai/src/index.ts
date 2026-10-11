@@ -25,3 +25,4 @@ export { codeUnits, lessonCodeFaults, looksLikeR, type CodeFault, type LineRunne
 export { sheetsRun, workRun } from './sheetRun';
 export * from './checklist';
 export * from './rubricAlone';
+export * from './lessonFacts';
