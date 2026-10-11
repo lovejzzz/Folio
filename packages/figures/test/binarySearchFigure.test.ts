@@ -171,7 +171,7 @@ describe('a number on a label', () => {
     expect(cabinetLimit(tiny.values, tiny.target)).toBe('tooLong');
     const still = stillFigure({ kind: 'figure', figure: 'binarySearch', ...tiny });
     expect(still).toMatchObject({ problem: null, limit: 'tooLong' });
-    expect(still.note).toContain('never rounds');
+    expect(still.note).toContain('never round');
     expect(still.frames.every((f) => f.svg === null)).toBe(true);
     expect(still.frames.at(-1)!.caption).toContain('1e-8 was found at position 3');
     expect(still.table.rows.length).toBeGreaterThan(0);

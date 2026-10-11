@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { binarySearch, describeStart, orderedLessons, project, type Course, type Slide } from '@folio/core';
+import { binarySearch, cellState, describeStart, figureFaults, orderedLessons, project, type Course, type Slide } from '@folio/core';
 import { sampleCourse } from '@folio/core/sample';
 import { keyframes } from '@folio/figures';
 import { strFromU8, unzipSync } from 'fflate';
@@ -104,6 +104,25 @@ describe('a demonstration the picture cannot hold, or that is not finished', () 
     expect(slides).toContain('This demonstration is not finished');
     expect(slides).not.toContain('Searching for 40');
     expect(pngs(files, /^ppt\/media\//)).toHaveLength(0);
+  });
+});
+
+describe('where a course says a demonstration is not ready', () => {
+  const draft = deck({ kind: 'figure', figure: 'binarySearch', values: LIST, target: 40, entered: { target: 'forty' } });
+
+  it('is one list for the map and for an export, from the check the slide uses: the lesson, the slide and the reason', () => {
+    expect(figureFaults(draft)).toEqual([{ lessonId: lesson.id, lesson: 1, slide: 1, title: 'Halving the search', problem: 'unfinished' }]);
+    expect(figureFaults(course)).toEqual([]);
+    expect(figureFaults(deck({ kind: 'figure', figure: 'binarySearch', values: [9, 3], target: 3 }))[0]).toMatchObject({ problem: 'unsorted' });
+    // Only the lessons asked for, and a list the picture cannot hold is no fault: it is searched and told in words.
+    expect(figureFaults(draft, ['another-lesson'])).toEqual([]);
+    expect(figureFaults(deck({ kind: 'figure', figure: 'binarySearch', values: [1e-8, 1], target: 1 }))).toEqual([]);
+  });
+
+  it('marks the deck on the map as needing a look', () => {
+    const state = (c: Course) => cellState(c, c.lessons[lesson.id]!, 'slides');
+    expect(state(draft)).toBe('attention');
+    expect(state(course)).toBe('ready');
   });
 });
 

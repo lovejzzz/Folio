@@ -30,7 +30,7 @@ const PROBLEMS: Record<FigureProblem, string> = {
 };
 const LIMITS: Record<CabinetLimit, string> = {
   tooMany: `The picture holds up to ${DRAWERS_MAX} numbers; this list is longer, so the search is given step by step in words and in the table.`,
-  tooLong: `The picture writes numbers of up to ${NUMERAL_MAX} characters exactly and never rounds; one of these is longer, so the search is given step by step in words and in the table.`,
+  tooLong: `The picture's labels write a number digit by digit (digits, a minus sign, a decimal point; ${NUMERAL_MAX} characters at most) and never round; one of these numbers cannot be written that way in full, so the search is given step by step in words and in the table.`,
 };
 export const limitText = (limit: CabinetLimit): string => LIMITS[limit];
 

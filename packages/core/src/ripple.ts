@@ -1,3 +1,4 @@
+import { figureFaults } from './figures/faults';
 import { filledTexts, isBlankSegment, statedObjectives } from './blank';
 import { lessonPieces, orderedLessons } from './course';
 import type { Flag } from './flags';
@@ -100,6 +101,8 @@ export function cellState(course: Course, lesson: Lesson, kind: MaterialKind): C
   if (!meta) return 'empty';
   if (staleReasons(course, lesson, section).length > 0) return 'stale';
   if (meta.flags.length > 0 || itemFlags(course, lesson, kind).length > 0) return 'attention';
+  // A deck with a demonstration that is unfinished is not ready, whoever wrote the rest of it.
+  if (kind === 'slides' && figureFaults(course, [lesson.id]).length > 0) return 'attention';
   return 'ready';
 }
 

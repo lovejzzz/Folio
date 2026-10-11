@@ -340,9 +340,16 @@ export const en = {
     },
     limit: {
       tooMany: 'The picture holds up to 15 numbers. This list is longer: the search is worked below, in words and in the row of numbers.',
-      tooLong: 'The picture writes numbers of up to five characters exactly and never rounds. One of these is longer: the search is worked below, in words and in the row of numbers.',
+      tooLong: 'The picture’s labels write a number digit by digit (digits, a minus sign, a decimal point; five characters at most) and never round. One of these numbers cannot be written that way in full: the search is worked below, in words and in the row of numbers.',
     },
     strip: 'The list at this step',
+    held: {
+      title: (n: number) => (n === 1 ? 'A demonstration is not ready' : `${n} demonstrations are not ready`),
+      where: (lesson: number, slide: number, title: string) => `Lesson ${lesson}, slide ${slide}${title ? `, “${title}”` : ''}`,
+      student: 'A copy for students is not made while one is unfinished. Put it right, or take it off its slide.',
+      teacher: 'Your own copy can be made: each is marked as unfinished in it, with what was typed.',
+      fix: 'Go to the slide',
+    },
     place: (n: number) => `Position ${n}`,
     states: { play: 'still in play', aside: 'set aside', look: 'being compared', found: 'found' },
     looking: (n: string) => `Looking for ${n}`,

@@ -64,6 +64,18 @@ test('a binary search demonstration is added to a slide, worked, changed, kept o
   await page.reload();
   await expect(page.getByRole('textbox', { name: 'The list, in ascending order' })).toHaveText('1, nope, 3');
   await expect(page.getByRole('group', { name: 'The demonstration’s numbers' }).getByRole('alert')).toContainText('“nope” is not a number.');
+  // An export is held for it: a copy for students is not made, the teacher's own is, and the way back is given.
+  await page.getByRole('button', { name: 'Export', exact: true }).click();
+  const held = page.getByRole('dialog', { name: 'Export' });
+  await expect(held.getByRole('alert')).toContainText('A demonstration is not ready');
+  await expect(held.getByRole('alert')).toContainText('Lesson 1, slide 1, “Asking questions with data”');
+  await expect(held.getByRole('button', { name: 'Download Word' })).toBeDisabled();
+  await held.getByRole('radio', { name: 'You (answers)' }).click();
+  await expect(held.getByRole('button', { name: 'Download Word' })).toBeEnabled();
+  await expect(held.getByRole('alert')).toContainText('marked as unfinished');
+  await held.getByRole('link', { name: 'Go to the slide' }).click();
+  await expect(page.getByRole('dialog', { name: 'Export' })).toHaveCount(0);
+  await expect(page.getByRole('textbox', { name: 'The list, in ascending order' })).toHaveText('1, nope, 3');
   await retype(page, 'The list, in ascending order', '3, 8, 12, 17, 23, 31, 42, 56, 71');
   await expect(said).toHaveText(/^Searching for 42 in a sorted list of 9 numbers/);
   // The same step as numbers of the page's own size.
@@ -82,7 +94,7 @@ test('a binary search demonstration is added to a slide, worked, changed, kept o
   await data.getByRole('button', { name: 'Put them in order' }).click();
   // A number the labels cannot write in full is searched all the same: no picture, the reason, and the numbers below.
   await retype(page, 'The number to look for', '0.00000001');
-  await expect(page.locator('.folio-figure-problem').first()).toContainText('never rounds');
+  await expect(page.locator('.folio-figure-problem').first()).toContainText('never round');
   await expect(said).toHaveText(/^Searching for 1e-8 in a sorted list of 4 numbers/);
   await expect(page.getByText('Looking for 1e-8')).toBeVisible();
   await retype(page, 'The number to look for', '4');

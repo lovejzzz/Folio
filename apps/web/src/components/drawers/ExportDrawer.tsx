@@ -1,8 +1,8 @@
-import { enabledKinds, orderedLessons, project, type Course, type MaterialKind } from '@folio/core';
+import { enabledKinds, figureFaults, orderedLessons, project, type Course, type FigureFault, type MaterialKind } from '@folio/core';
 import { Button, Checkbox, SegmentedControl, cx, fieldClass } from '@folio/ui';
 import { EyeOff, FileArchive, FileSpreadsheet, FileText, FolderDown, Presentation, Printer, UploadCloud } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
-import { useParams } from '@tanstack/react-router';
+import { Link, useParams } from '@tanstack/react-router';
 import { Radio, RadioGroup } from 'react-aria-components';
 import { router } from '../../app/router';
 import { useT } from '../../i18n';
@@ -10,6 +10,7 @@ import { download, makeExport } from '../../lib/exporter';
 import { exportErrorMessage } from '../../lib/exportErrors';
 import { GOOGLE_RETURN_PATH } from '../../lib/googlePath';
 import { flushNow, useCourse } from '../../state/session';
+import { useUi } from '../../state/ui';
 import { toast } from '../../state/toasts';
 import { DocView } from '../DocView';
 import { FORMATS, effectiveChoice, googleClientId, initialChoice, kindsFor, lessonIdsFor, type ExportChoice, type FormatChoice } from './exportOptions';
@@ -137,6 +138,31 @@ function KindPicker({ choice, set }: { choice: ExportChoice; set: (patch: Partia
 }
 
 /** Export: what, for whom, in which format. Sensible defaults make it one click. */
+/**
+ * Demonstrations that are unfinished in what is about to be exported, each with the way back to its slide. A copy for
+ * students is held for them; the teacher's own copy is made, and says in the file which are unfinished.
+ */
+function Held({ faults, courseId, student }: { faults: FigureFault[]; courseId: string; student: boolean }) {
+  const t = useT();
+  const { openDrawer } = useUi();
+  return (
+    <div role="alert" className="space-y-1 rounded-control bg-well px-3 py-2 font-ui text-13 text-ink">
+      <p className="font-semibold text-attention">{t.figures.held.title(faults.length)}</p>
+      <ul className="space-y-0.5">
+        {faults.map((f) => (
+          <li key={`${f.lessonId}:${f.slide}`}>
+            {t.figures.held.where(f.lesson, f.slide, f.title)}: {t.figures.problem[f.problem]}{' '}
+            <Link to="/c/$courseId/m/$kind" params={{ courseId, kind: 'slides' }} search={{ lesson: f.lessonId, slide: f.slide }} className="underline" onClick={() => openDrawer(null)}>
+              {t.figures.held.fix}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <p className="text-ink-2">{student ? t.figures.held.student : t.figures.held.teacher}</p>
+    </div>
+  );
+}
+
 export function ExportDrawer() {
   const course = useCourse();
   const lessons = orderedLessons(course);
@@ -153,6 +179,9 @@ export function ExportDrawer() {
       .finally(() => setBusy(false));
   };
   const noSlides = choice.format === 'pptx' && !lessons.some((l) => (choice.scope !== 'lesson' || l.id === choice.lessonId) && l.slides.length);
+  // The same check the slide and the files use: read here before a file is made.
+  const faults = backup || !kinds.includes('slides') ? [] : figureFaults(course, lessonIdsFor(effectiveChoice(choice)));
+  const held = faults.length > 0 && choice.audience === 'student';
   const cta = choice.format === 'pdf' ? exportText.print : choice.format === 'google' ? exportText.uploadGoogle : choice.format === 'folio' ? exportText.downloadBackup : exportText.download(exportText.formats[choice.format as keyof typeof exportText.formats]);
   return (
     <>
@@ -184,7 +213,8 @@ export function ExportDrawer() {
       {/* The action stays in view while the choices above scroll; the preview pushed it off a laptop screen. */}
       <div className="sticky bottom-0 space-y-2 border-t border-rule bg-paper p-4">
         {noSlides && <p className="font-ui text-13 text-attention">{exportText.noSlides}</p>}
-        <Button variant="primary" size="lg" className="w-full" isDisabled={busy || kinds.length === 0 || noSlides} onPress={run}>
+        {faults.length > 0 && <Held faults={faults} courseId={course.id} student={choice.audience === 'student'} />}
+        <Button variant="primary" size="lg" className="w-full" isDisabled={busy || kinds.length === 0 || noSlides || held} onPress={run}>
           {busy ? exportText.working : cta}
         </Button>
       </div>
