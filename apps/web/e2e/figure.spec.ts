@@ -49,6 +49,15 @@ test('a binary search demonstration is added to a slide, worked, changed, kept o
     await tools.getByRole('button', { name: 'Back to the start' }).click();
   }
 
+  // What is not a number stays as typed and is named; the list the figure has is not touched.
+  await retype(page, 'The list, in ascending order', '1, nope, 3');
+  const typed = page.getByRole('group', { name: 'The demonstration’s numbers' });
+  await expect(typed.getByRole('alert')).toContainText('“nope” is not a number: nothing was changed.');
+  await expect(page.getByRole('textbox', { name: 'The list, in ascending order' })).toHaveText('1, nope, 3');
+  await expect(said).toHaveText(/^Searching for 42 in a sorted list of 9 numbers/);
+  await retype(page, 'The number to look for', 'x');
+  await expect(typed.getByRole('alert')).toContainText('“nope”, “x” are not numbers');
+  await retype(page, 'The number to look for', '42');
   // A list out of order is refused, and put in order only when the teacher says.
   await retype(page, 'The list, in ascending order', '9, 3, 5, 12');
   const data = page.getByRole('group', { name: 'The demonstration’s numbers' });

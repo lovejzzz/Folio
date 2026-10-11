@@ -346,6 +346,7 @@ export const en = {
     valuesHint: 'Numbers separated by commas, up to 15',
     target: 'The number to look for',
     sort: 'Put them in order',
+    notNumber: (wrong: string[]) => `${wrong.map((x) => `“${x}”`).join(', ')} ${wrong.length === 1 ? 'is not a number' : 'are not numbers'}: nothing was changed. Put it right and the figure is drawn again.`,
     frames: 'The search, step by step',
   },
   /** The sheets a lesson in a room hands out. */
