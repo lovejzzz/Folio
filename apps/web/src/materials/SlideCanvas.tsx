@@ -87,7 +87,7 @@ export function SlideCanvas({ slide, lang, footer, onChange, live = Boolean(onCh
           {title}
         </div>
         {slide.visual && (
-          <div className="folio-slide-gap" style={cq(2.2)}>
+          <div className={cx('folio-slide-gap', slide.visual.kind === 'figure' && 'folio-slide-figure-slot')} style={cq(2.2)}>
             <SlideVisualView visual={slide.visual} live={live} onChange={onChange && ((visual) => onChange({ ...slide, visual }))} />
           </div>
         )}

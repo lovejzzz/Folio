@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const port = Number(process.env.FOLIO_PORT ?? 4173);
+/** Where the tested build goes: another folder lets two runs of the suite stand side by side. */
+const out = process.env.FOLIO_E2E_DIR ?? 'dist-e2e';
 
 // Chromium needs a UTF-8 locale to keep non-ASCII download names (course titles, Chinese).
 process.env.LANG ||= 'C.UTF-8';
@@ -32,7 +34,7 @@ export default defineConfig({
   ],
   webServer: {
     // Built apart from the release, with a stand-in Google client, so sign-in and Google Docs can be tested.
-    command: `pnpm exec vite build --mode e2e --outDir dist-e2e --emptyOutDir --logLevel warn && pnpm exec vite preview --outDir dist-e2e --port ${port} --strictPort`,
+    command: `pnpm exec vite build --mode e2e --outDir ${out} --emptyOutDir --logLevel warn && pnpm exec vite preview --outDir ${out} --port ${port} --strictPort`,
     port,
     // Always this build: a server left running from an earlier one would be tested in its place.
     reuseExistingServer: false,

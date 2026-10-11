@@ -32,7 +32,7 @@ const D = 38;
 const H = 30;
 const X0 = 4;
 const OUT = 9;
-const PROUD = 1.5;
+const PROUD = 3;
 export const VIEW = { width: 640, height: 380 };
 
 type P = k.Projection;
@@ -129,7 +129,7 @@ function drawer(i: number, value: number, pull: number, state: DrawerState, p: P
   const lit = state === 'look' || state === 'found';
   const tone: k.Tone = state === 'aside' ? 'lo' : 'hi';
   const parts: string[] = [];
-  if (out_ > 2.5) {
+  if (out_ > PROUD + 1) {
     const box: k.Plan = { x: x0 + 1, y: D, w: 12, d: out_, r: 0.5 };
     parts.push(S(k.slabOf(box, 5, H - 11, p, 2, 0.3), { tone: 'mid' }), L(k.planOutline(k.insetPlan({ ...box, d: out_ - 0.4 }, 1.3), H - 6, p, 2), { tone: 'faint' }));
     // The card in the drawer: what is read.
@@ -138,7 +138,7 @@ function drawer(i: number, value: number, pull: number, state: DrawerState, p: P
   parts.push(S(k.slabOf({ x: x0, y, w: 14, d: 1.6, r: 0.5 }, 3, 24, p, 3, 0.4), { tone, lit, crease: state === 'aside' ? 'faint' : 'lo' }));
   const face = y + 1.6;
   parts.push(L(onFront(x0 + 2, x0 + 12, face, 13, 23, p), { tone: state === 'aside' ? 'faint' : 'lo' }));
-  parts.push(L(stamped(numeral(value), { x0: x0 + 3.2, x1: x0 + 10.8, y: face, z0: 14.6, z1: 21.4 }, p), { tone: lit ? 'lit' : state === 'aside' ? 'lo' : 'hi', className: 'fig-numeral' }));
+  parts.push(L(stamped(numeral(value), { x0: x0 + 3.2, x1: x0 + 10.8, y: face, z0: 14.6, z1: 21.4 }, p), { tone: lit ? 'lit' : state === 'aside' ? 'lo' : 'hi', ...(state === 'aside' ? {} : { className: 'fig-numeral' }) }));
   parts.push(S(k.slabOf({ x: x0 + 5, y: face, w: 4, d: 1.4, r: 0.4 }, 7, 1.6, p, 2), { tone: state === 'aside' ? 'lo' : 'mid' }));
   parts.push(k.dotsSvg(k.pointsAt([[x0 + 2.9, face, 22.1], [x0 + 11.1, face, 22.1]], p), { size: 0.4, tone: state === 'aside' ? 'lo' : 'mid' }));
   return k.groupSvg(parts, { 'data-drawer': i, 'data-state': state });

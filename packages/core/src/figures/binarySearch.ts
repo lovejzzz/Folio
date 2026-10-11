@@ -37,12 +37,26 @@ export interface BinarySearchModel {
   found: number | null;
 }
 
-export type BinarySearchProblem = 'tooLong' | 'notNumbers' | 'unsorted';
+export type BinarySearchProblem = 'tooLong' | 'notNumbers' | 'unshowable' | 'unsorted';
+
+/** The most characters a drawer's label holds at a size a class can read. */
+export const NUMERAL_MAX = 5;
+
+/**
+ * A number exactly as the figure writes it, or null when it cannot be written there in full: digits, a minus sign and
+ * a decimal point, five characters at most. Nothing is rounded: a label that showed 0 for 0.00000001 beside a sentence
+ * that said 1e-8 was the figure and its words disagreeing, which is the one thing they may not do.
+ */
+export function numeralOf(n: number): string | null {
+  const text = String(Object.is(n, -0) ? 0 : n);
+  return /^-?\d+(?:\.\d+)?$/.test(text) && text.length <= NUMERAL_MAX ? text : null;
+}
 
 /** Why a list cannot be searched as it stands, or null. An empty list is searched: the answer is "not there", in no steps. */
 export function binarySearchProblem(input: BinarySearchInput): BinarySearchProblem | null {
   if (input.values.length > BINARY_SEARCH_MAX) return 'tooLong';
   if (![...input.values, input.target].every((n) => Number.isFinite(n))) return 'notNumbers';
+  if (![...input.values, input.target].every((n) => numeralOf(n) !== null)) return 'unshowable';
   return input.values.every((n, i) => i === 0 || input.values[i - 1]! <= n) ? null : 'unsorted';
 }
 

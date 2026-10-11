@@ -336,6 +336,7 @@ export const en = {
     problem: {
       tooLong: 'More than 15 numbers do not fit the drawers: shorten the list.',
       notNumbers: 'Every entry must be a number.',
+      unshowable: 'A label holds five characters: digits, a minus sign, a decimal point. One of these numbers does not fit exactly, and the figure does not round.',
       unsorted: 'Binary search needs the list in ascending order.',
     },
     add: 'Add a binary search demonstration',

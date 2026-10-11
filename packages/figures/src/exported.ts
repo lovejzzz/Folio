@@ -8,7 +8,7 @@ type Figure = Extract<SlideVisual, { kind: 'figure' }>;
 /** A demonstration as a file that cannot move holds it: its pictures in order, each with its sentence, and the table of steps. */
 export interface StillFigure {
   /** Why the list cannot be searched, when it cannot: then there are no frames. */
-  problem: 'tooLong' | 'notNumbers' | 'unsorted' | null;
+  problem: 'tooLong' | 'notNumbers' | 'unshowable' | 'unsorted' | null;
   frames: { svg: string; caption: string }[];
   table: { columns: string[]; rows: string[][] };
   width: number;
@@ -18,6 +18,7 @@ export interface StillFigure {
 const PROBLEMS = {
   tooLong: 'This demonstration cannot be drawn: its list has more than 15 numbers.',
   notNumbers: 'This demonstration cannot be drawn: its list holds something that is not a number.',
+  unshowable: 'This demonstration cannot be drawn: one of its numbers does not fit a label exactly (five characters at most: digits, a minus sign, a decimal point).',
   unsorted: 'This demonstration cannot be drawn: binary search needs its list in ascending order.',
 };
 export const problemText = (problem: keyof typeof PROBLEMS): string => PROBLEMS[problem];

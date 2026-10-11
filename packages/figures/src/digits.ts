@@ -1,3 +1,5 @@
+import { numeralOf } from '@folio/core';
+
 /**
  * Numerals as strokes, in the manner of a seven-segment stamp: the figure's numbers are drawn with the same lines
  * as its parts, so a frame is the same picture in a browser, in a PNG made without one, and in print, with no font
@@ -37,14 +39,17 @@ export function strokesOf(text: string): { strokes: [[number, number], [number, 
   let at = 0;
   for (const ch of text) {
     const glyph = GLYPHS[ch];
-    if (!glyph) continue;
+    // Never passed over: a label missing a character would be another number.
+    if (!glyph) throw new Error(`figure: no stroke for "${ch}"`);
     for (const [u0, v0, u1, v1] of glyph.segs) strokes.push([[at + u0, v0], [at + u1, v1]]);
     at += glyph.width + GAP;
   }
   return { strokes, width: Math.max(0, at - GAP) };
 }
 
-/** A number as short as it can be written and still be the number: 12, -3, 0.5. */
+/** A number as the figure writes it: exactly, or not at all (see `numeralOf`). A list the model accepts has only such numbers. */
 export function numeral(value: number): string {
-  return Number.isInteger(value) ? String(value) : String(Math.round(value * 100) / 100);
+  const text = numeralOf(value);
+  if (text === null) throw new Error(`figure: ${value} cannot be written on a label`);
+  return text;
 }

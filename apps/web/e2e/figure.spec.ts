@@ -55,6 +55,10 @@ test('a binary search demonstration is added to a slide, worked, changed, kept o
   await expect(data.getByRole('alert')).toContainText('Binary search needs the list in ascending order.');
   await expect(page.getByRole('group', { name: 'Binary search, step by step' })).toHaveCount(0);
   await data.getByRole('button', { name: 'Put them in order' }).click();
+  // A number the labels cannot write in full is refused too: the figure never rounds.
+  await retype(page, 'The number to look for', '0.00000001');
+  await expect(data.getByRole('alert')).toContainText('the figure does not round');
+  await expect(page.getByRole('group', { name: 'Binary search, step by step' })).toHaveCount(0);
   await retype(page, 'The number to look for', '4');
   await expect(said).toHaveText('Searching for 4 in a sorted list of 4 numbers: 3, 5, 9, 12.');
   await tools.getByRole('button', { name: 'Next step' }).click();
