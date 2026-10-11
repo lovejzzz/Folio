@@ -167,8 +167,11 @@ export function sceneBody({ values, target, pose }: Scene): string {
   return [...base(f), ...cabinet(f, values.length), ...top, ...drawers, wanted(f, target)].join('');
 }
 
+const NUMERALS = '.fig-numeral{stroke-width:1.1px}';
+/** The kit's styles and the one rule of our own, for a page that draws a figure live. */
+export const FIGURE_CSS = `${k.ISO_CSS}${NUMERALS}`;
+
 /** A frame as a picture of its own: the styles are inside it, so it is the same in a page, a file or a print. */
 export function sceneSvg(scene: Scene, label: string): string {
-  const numerals = '<style>.fig-numeral{stroke-width:1.1px}</style>';
-  return k.figureSvg({ width: VIEW.width, height: VIEW.height, label, body: numerals + sceneBody(scene), standalone: 'light' });
+  return k.figureSvg({ width: VIEW.width, height: VIEW.height, label, body: `<style>${NUMERALS}</style>${sceneBody(scene)}`, standalone: 'light' });
 }

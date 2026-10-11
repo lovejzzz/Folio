@@ -3,6 +3,7 @@ import PptxGenJS from 'pptxgenjs';
 import { hasMarks, plainText, textRuns, type Block, type SemanticDoc } from '@folio/core';
 import { printFonts, printPalette } from '@folio/ui/tokens';
 import { cleanDoc } from './xml';
+import { figureSlides } from './pptxFigure';
 import { ExportError } from './errors';
 import { MIN_SIZE, fitSize, splitToFit, type Box } from './fit';
 
@@ -62,6 +63,12 @@ function footer(slide: PptSlide, f: Faces, lesson: string): void {
     valign: 'middle',
   });
 }
+
+/** A slide with its lesson's name at the foot, handed back: for slides made elsewhere. */
+const footed = (slide: PptSlide, f: Faces, lesson: string): PptSlide => {
+  footer(slide, f, lesson);
+  return slide;
+};
 
 type RunOptions = PptxGenJS.TextPropsOptions;
 
@@ -164,6 +171,7 @@ const VISUAL = { x: LEFT, y: 1.85, w: TEXT_W, h: 3.9 };
  */
 function visualSlide(pptx: PptxGenJS, slide: PptSlide, s: Slide, f: Faces): void {
   const v = s.visual!;
+  if (v.kind === 'figure') return;
   slide.addText(inline(s.title, { fontFace: f.title }), { x: LEFT, y: 0.55, w: TEXT_W, h: 1.1, fontFace: f.title, fontSize: sized([s.title], { w: TEXT_W, h: 1.1 }, 32, 20), color: printPalette.ink, valign: 'bottom', fit: 'shrink', lang: f.lang, margin: 0 });
   if (v.kind === 'table') {
     const cell = (text: string, head: boolean) => ({ text: plainText(text), options: { bold: head, fontFace: f.body, fontSize: 16, color: printPalette.ink, fill: { color: head ? printPalette.well : printPalette.paper }, valign: 'middle' as const } });
@@ -261,6 +269,10 @@ export async function renderPptx(given: SemanticDoc): Promise<Uint8Array> {
     slides = [{ t: 'slide', n: 1, layout: 'title', title: doc.title, bullets: doc.subtitle ? [doc.subtitle] : [], lesson: '' }];
   }
   for (const s of slides.flatMap((x) => continued(x, f))) {
+    if (s.visual?.kind === 'figure') {
+      figureSlides(() => footed(pptx.addSlide({ masterName: MASTER }), f, s.lesson), s, s.visual, f);
+      continue;
+    }
     const slide = pptx.addSlide({ masterName: MASTER });
     if (s.visual) visualSlide(pptx, slide, s, f);
     else LAYOUTS[s.layout](slide, s, f);

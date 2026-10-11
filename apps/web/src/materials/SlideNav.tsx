@@ -130,7 +130,7 @@ export function SlidePager({ course, lesson, index, onPrev, onNext }: { course: 
 }
 
 /** Widgets that already use the arrow keys for themselves. */
-const OWNS_ARROWS = 'input, textarea, select, [role="radiogroup"], [role="menu"], [role="listbox"], [role="grid"], [role="tablist"], [role="slider"], [role="dialog"]';
+const OWNS_ARROWS = 'input, textarea, select, [role="radiogroup"], [role="menu"], [role="listbox"], [role="grid"], [role="tablist"], [role="slider"], [role="dialog"], [data-owns-arrows]';
 
 /** ← and → step through the deck, unless focus is in a text field or a widget that owns the arrows. */
 export function useArrowKeys(onPrev: (() => void) | undefined, onNext: (() => void) | undefined) {

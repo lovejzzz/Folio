@@ -4,6 +4,7 @@ import { useT } from '../i18n';
 import { useMediaUrl } from '../state/mediaUrl';
 import { InlineText } from './InlineText';
 import { SlideCanvas } from '../materials/SlideCanvas';
+import { FigureFrames } from '../materials/figures/FigureView';
 
 function Table({ head, rows, widths }: { head: string[]; rows: string[][]; widths?: number[] }) {
   return (
@@ -137,6 +138,7 @@ function SlideBlock({ b, lang }: { b: B<'slide'>; lang: string }) {
   return (
     <div className="avoid-break my-4 overflow-hidden rounded-control shadow-sheet">
       <SlideCanvas slide={{ id: String(b.n), layout: b.layout, title: b.title, bullets: b.bullets, notes: b.notes ?? '', visual: b.visual }} lang={lang} footer={b.lesson} />
+      {b.visual?.kind === 'figure' && <FigureFrames visual={b.visual} table={(head, rows) => <Table head={head} rows={rows} />} />}
       {b.notes && (
         <p className="border-t border-rule px-4 py-2 font-ui text-13 text-ink-2">
           <InlineText text={b.notes} />

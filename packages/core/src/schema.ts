@@ -80,6 +80,10 @@ export type SlideLayout = z.infer<typeof SlideLayoutSchema>;
  * the same headings, or numbers to be compared, is read from a table or a chart and not from five bullets.
  * A chart is always drawn from its numbers, never from an impression of a shape.
  */
+/** The demonstrations a slide can hold. */
+export const FigureIdSchema = z.enum(['binarySearch']);
+export type FigureId = z.infer<typeof FigureIdSchema>;
+
 export const SlideVisualSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('table'), columns: z.array(text), rows: z.array(z.array(text)) }),
   z.object({
@@ -92,6 +96,9 @@ export const SlideVisualSchema = z.discriminatedUnion('kind', [
     /** The numbers are made up to show a shape, and the slide says so. */
     illustrative: z.boolean().default(false),
   }),
+  // A demonstration that moves, made by Folio from its numbers: which one is a name from a list Folio keeps, never code
+  // or an address, so a course file can ask only for a figure Folio itself draws.
+  z.object({ kind: z.literal('figure'), figure: FigureIdSchema, values: z.array(z.number()).max(15), target: z.number() }),
 ]);
 export type SlideVisual = z.infer<typeof SlideVisualSchema>;
 

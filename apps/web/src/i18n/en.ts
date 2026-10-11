@@ -323,6 +323,29 @@ export const en = {
     category: (n: number) => `Label ${n}`,
     valueOf: (label: string) => `Value for ${label}`,
   },
+  /** Demonstrations on a slide. */
+  figures: {
+    binarySearch: 'Binary search, step by step',
+    reset: 'Back to the start',
+    back: 'One step back',
+    step: 'Next step',
+    play: 'Play',
+    pause: 'Pause',
+    stepOf: (at: number, last: number) => (at === 0 ? `Start · ${last} to go` : `${at} of ${last}`),
+    problem: {
+      tooLong: 'More than 15 numbers do not fit the drawers: shorten the list.',
+      notNumbers: 'Every entry must be a number.',
+      unsorted: 'Binary search needs the list in ascending order.',
+    },
+    add: 'Add a binary search demonstration',
+    remove: 'Remove the demonstration',
+    data: 'The demonstration’s numbers',
+    values: 'The list, in ascending order',
+    valuesHint: 'Numbers separated by commas, up to 15',
+    target: 'The number to look for',
+    sort: 'Put them in order',
+    frames: 'The search, step by step',
+  },
   /** The sheets a lesson in a room hands out. */
   handouts: {
     heading: 'Handouts',

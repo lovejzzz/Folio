@@ -2,7 +2,7 @@ import { missingTargets } from '@folio/ai';
 import { cmd, newId, orderedLessons, type Course, type Lesson, type Slide, type SlideLayout } from '@folio/core';
 import { Button, IconButton, SegmentedControl } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
-import { ArrowDown, ArrowUp, EyeOff, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, EyeOff, Plus, Search, SearchX, Trash2 } from 'lucide-react';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { startBuild, useBuild } from '../state/build';
@@ -10,6 +10,7 @@ import { edit } from '../state/edit';
 import { focusItem } from './newItems';
 import { SlideCanvas } from './SlideCanvas';
 import { ChartData } from './SlideVisual';
+import { FigureData, newBinarySearch } from './figures/FigureData';
 import { Filmstrip, SlidePager, deckOrder, useArrowKeys, type SlidePos } from './SlideNav';
 
 /** In the lesson view: the deck as a grid of thumbnails that open the slide editor. */
@@ -85,6 +86,10 @@ function StageTools({ lesson, slide, index, save, go }: StageToolsProps) {
         <IconButton label={t.lesson.moveSlideDown} isDisabled={index === slides.length - 1} onPress={() => move(index + 1)}>
           <ArrowDown size={16} strokeWidth={1.5} />
         </IconButton>
+        {/* A demonstration is put on the slide or taken off it; a slide with a table or chart keeps that. */}
+        <IconButton label={slide.visual?.kind === 'figure' ? t.figures.remove : t.figures.add} isDisabled={Boolean(slide.visual) && slide.visual?.kind !== 'figure'} onPress={() => save(slides.map((s) => (s.id === slide.id ? { ...s, visual: s.visual ? undefined : newBinarySearch() } : s)))}>
+          {slide.visual?.kind === 'figure' ? <SearchX size={16} strokeWidth={1.5} /> : <Search size={16} strokeWidth={1.5} />}
+        </IconButton>
         <IconButton label={t.lesson.addSlide} onPress={add}>
           <Plus size={16} strokeWidth={1.5} />
         </IconButton>
@@ -155,6 +160,7 @@ export function SlidesEditor({ course, lessonId, slide: slideNumber, onGo }: Sli
           <SlideCanvas key={slide.id} slide={slide} lang={course.language} footer={`${t.common.lesson(n)} · ${lesson.title}`} onChange={update} />
         </div>
         {slide.visual?.kind === 'chart' && <ChartData v={slide.visual} onChange={(visual) => update({ ...slide, visual })} />}
+        {slide.visual?.kind === 'figure' && <FigureData v={slide.visual} onChange={(visual) => update({ ...slide, visual })} />}
         <SlidePager course={course} lesson={lesson} index={pos.index} onPrev={onPrev} onNext={onNext} />
         <section className="mt-4 rounded-sheet bg-paper p-5 shadow-sheet">
           <h3 className="mb-2 flex flex-wrap items-center gap-x-1.5 font-ui text-13 font-semibold text-ink">

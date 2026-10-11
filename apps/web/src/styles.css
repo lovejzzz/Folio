@@ -251,6 +251,47 @@
   .folio-slide-chart {
     max-height: 24cqw;
   }
+  /* A demonstration takes the slide's middle: its picture, the sentence for the step, the buttons. */
+  .folio-figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6cqw;
+    outline: none;
+    border-radius: 0.6cqw;
+  }
+  .folio-figure:focus-visible {
+    box-shadow: 0 0 0 2px var(--folio-accent);
+  }
+  .folio-figure-art {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 27cqw;
+    aspect-ratio: 640 / 380;
+    margin: 0 auto;
+  }
+  .folio-figure-caption {
+    font-size: max(1.5cqw, 11px);
+    line-height: 1.35;
+    text-align: center;
+    min-height: 2.7em;
+    max-width: 78cqw;
+  }
+  /* On a page that cannot move, each picture of the search at the width of the text. */
+  .folio-figure-frame {
+    margin: 0 0 0.9rem;
+  }
+  .folio-figure-print {
+    display: block;
+    width: 100%;
+    max-width: 34rem;
+    height: auto;
+    aspect-ratio: 640 / 380;
+  }
+  .folio-figure-problem {
+    font-size: max(1.6cqw, 11px);
+  }
   .folio-slide-table th,
   .folio-slide-table td {
     padding: 0.35em 0.6em;
