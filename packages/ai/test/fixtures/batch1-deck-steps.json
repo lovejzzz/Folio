@@ -1,0 +1,534 @@
+{
+ "ug-intro-sociology": {
+  "segments": [
+   {
+    "id": "x_c3ceabeebd9e",
+    "kind": "check",
+    "session": 0,
+    "title": "Reading quiz on the assigned chapter",
+    "minutes": 10,
+    "description": "Students sit apart and work alone in silence on the graded Reading quizzes paper. It covers OpenStax, Introduction to Sociology 3e, ch. 1, the section on theoretical perspectives in sociology.\nThe instructor announces what students may use, then collects the papers when ten minutes are up.\nThe quiz is marked in points. Reading quizzes are worth 15% of the course grade. Only the title of the quiz is on the screen.",
+    "teacherNotes": "Hand out the papers face down and start together. Keep the board and screen clear of anything that could answer a question. Late arrivals take only the time left. Going over answers waits until the papers are collected."
+   },
+   {
+    "id": "x_0c24eccd0b55",
+    "kind": "warmup",
+    "session": 0,
+    "title": "Why do societies have schools?",
+    "minutes": 4,
+    "description": "Each student writes two reasons a society sends children to school, and one unintended effect of schooling.\nStudents compare lists with a neighbor for one minute.\nThe instructor lists three or four answers on the board and keeps them for the next two segments.",
+    "teacherNotes": "Expect: teach reading and math, prepare workers, childcare, friendships. Use friendships as a possible unintended effect. Punctuality, obedience and sorting may be intended; ask about intention before classifying an effect as manifest or latent. Sorting also introduces conflict questions. Do not ask about students’ own schools.",
+    "shown": [
+     "Write two reasons a society sends children to school.",
+     "Write one unintended effect of schooling: something schools do that nobody planned."
+    ]
+   },
+   {
+    "id": "x_9c8cfcbe899d",
+    "kind": "teach",
+    "session": 0,
+    "title": "Functionalism and conflict theory: Durkheim and Marx",
+    "minutes": 8,
+    "description": "The instructor presents Durkheim’s functionalism: social facts and society as interdependent parts. The instructor then introduces Robert Merton’s distinctions among manifest functions, latent functions and dysfunctions. The worked example is a school’s bell schedule and attendance rules.\nThe instructor then presents Marx’s conflict view: bourgeoisie and proletariat, and struggle over resources and power.\nBefore the conflict reading of the bell schedule is shown, each student writes what a conflict theorist would ask about it and compares with a partner.",
+    "teacherNotes": "Functionalist reading: the manifest function is organizing instruction. Teaching punctuality and routine is a manifest function if intended and recognized. A possible latent function is students forming friendships during shared breaks. Conflict reading: whose interests do the rules serve? Correct two misconceptions: functionalism does not say everything is good, and conflict theory does not mean violence. Paraphrase the textbook’s wording."
+   },
+   {
+    "id": "x_a33d08844a0a",
+    "kind": "teach",
+    "session": 0,
+    "title": "Meaning and the self: Weber and Mead",
+    "minutes": 7,
+    "description": "The instructor introduces Weber’s verstehen, interpretive understanding of the meanings people attach to action. Weber also wrote on class, status, power and rationalization, so he links the two earlier views to this one.\nThe instructor introduces Mead, whose Mind, Self, and Society (1934) was assembled from his students’ notes after his death. Symbolic interactionism studies how shared symbols and meanings arise in face-to-face interaction.\nStudents write what an interactionist would study in a classroom, such as what “late” means to a teacher and to a student. They explain it to a partner.",
+    "teacherNotes": "Weber’s The Protestant Ethic and the Spirit of Capitalism appeared in 1905. Placing Weber as a bridge avoids forcing him into one box. Mead’s fuller account of the self comes later in the course, so keep it to symbols, meanings and interaction here."
+   },
+   {
+    "id": "x_4d2d4023ebf6",
+    "kind": "practice",
+    "session": 0,
+    "title": "Three readings of one school rule",
+    "minutes": 8,
+    "description": "In pairs, students take a hypothetical school rule: a ban on hats plus a required uniform shirt.\nEach pair writes one short question or claim for each perspective, about one minute each.\nThe instructor hears one pair per perspective, about a minute each, and the class checks each against the textbook’s description of that view.",
+    "teacherNotes": "Pairs should name the perspective’s central claim, not just a topic. Keep each answer to one short phrase. Sample answers, one per line:\nFunctionalism: the rule supports order and shared identity, and could be dysfunctional if it provokes conflict.\nConflict: ask who enforces it, who can afford the shirts, and whose style counts as proper.\nInteractionism: ask what the uniform means to students and teachers, and how enforcement shapes how each sees the other.\nMark claims that go beyond the case as hypotheses."
+   },
+   {
+    "id": "x_53aab58193af",
+    "kind": "practice",
+    "session": 0,
+    "title": "Find and correct the mistaken theory label",
+    "minutes": 8,
+    "description": "Students read a short made-up student paragraph that labels a functionalist argument as conflict theory.\nEach student writes which perspective the paragraph really describes and the evidence in the wording. Then each rewrites the paragraph as a conflict-theory claim in two sentences.\nPairs compare rewrites. The instructor hears two and puts the corrected claim on the board.",
+    "teacherNotes": "Mistake: the paragraph describes functionalism (tracking keeps order and fills needed roles), not conflict. Conflict rewrite: tracking may reproduce advantages of families with more resources. Weak rewrites only reverse the verdict. Push for who benefits and how that could be tested."
+   },
+   {
+    "id": "x_d26957495572",
+    "kind": "discuss",
+    "session": 0,
+    "title": "Group discussion: tracking through three lenses",
+    "minutes": 21,
+    "description": "Each student receives a printed copy of the Participation in discussion brief and rubric, with today’s three questions printed alongside. Students reread it silently for two minutes and the instructor takes questions on the document.\nGroups of four work through the three questions in order, about six minutes each, applying the perspective and building on each other’s points.\nThe instructor scores three groups, staying with one group for one full question and moving as the question changes. Scoring is as it happens against the rubric, and nothing is handed in.",
+    "teacherNotes": "Prepare about 40 copies; do not use a slide. Case, stated hypothetical: a district ends honors tracks in ninth grade, keeps advanced courses in grades 11 and 12.\nQ1 Functionalist (Durkheim): what function might tracking serve for the school and society, and what would count as a dysfunction?\nQ2 Conflict (Marx): who gains and who loses from tracking, and what would you need to find out to test that?\nQ3 Interactionist (Mead): how might the label “honors” shape how students and teachers define themselves and each other? Which view would you start with to explain the district’s decision, and why?\nExpected answers:\nQ1 Sorting matches instruction to readiness and prepares for later roles; dysfunction if sorting hardens early and lowers effort or trust.\nQ2 Students with more resources may gain; test through placement by family background, course access and later outcomes.\nQ3 Labels become meanings in interaction, shaping expectations and self-views; a strong answer names what to observe, such as teacher talk or how students describe themselves. Any perspective can be a defensible starting point for explaining the decision if students explain its relevance and identify evidence needed to test it. Functionalism might examine instructional coordination, conflict theory unequal access and influence, and interactionism meanings attached to track labels. The case does not establish the district’s motives.\nScoring: do not announce which groups. Mark a seating chart and score unscored groups first, then return to students with thin evidence on any criterion. Score against the rubric on your own copy. Add no criteria."
+   },
+   {
+    "id": "x_91327fffb273",
+    "kind": "discuss",
+    "session": 0,
+    "title": "Whole-class synthesis: one institution, three questions",
+    "minutes": 5,
+    "description": "One speaker from each of two groups gives a thirty-second report on where the group’s answer to Question 3 diverged.\nThe instructor draws a three-column table on the board: central claim, key question and the school example for each perspective. The instructor adds one point on Weber as the bridge.\nStudents copy only the central-claim column into their notes.",
+    "teacherNotes": "Pick two speakers who spoke less, from groups you could not reach. Table: functionalism asks what the parts contribute; conflict asks who benefits; interactionism asks what it means to those involved. Say plainly that these are lenses to generate testable questions, not conclusions."
+   },
+   {
+    "id": "x_d686716a302b",
+    "kind": "close",
+    "session": 0,
+    "title": "Summary sentence and what comes next",
+    "minutes": 4,
+    "description": "Each student writes one sentence stating the central claim of the perspective they find hardest to apply, and reads it to a neighbor.\nThe instructor says that next time the class walks through the scientific method in sociology, from forming a question and hypothesis to defining variables.\nThe instructor reminds students that Reading quizzes are worth 15% of the course grade and announces that the Reading quizzes paper is at the start of next class, marked in points, covers OpenStax, Introduction to Sociology 3e, ch. 2 (Sociological Research), the section on the research process, and that the instructor will announce what students may bring. A short practice quiz on today’s lesson is available after class and counts toward no grade.",
+    "teacherNotes": "Say the reading aloud and write it on the board: OpenStax, Introduction to Sociology 3e, ch. 2, Sociological Research, the research process. Tell students before they leave."
+   }
+  ],
+  "slides": [
+   {
+    "layout": "title",
+    "title": "Founders and theoretical perspectives",
+    "bullets": [
+     "Functionalism, conflict theory, symbolic interactionism",
+     "Durkheim, Marx, Weber and Mead",
+     "One institution, three questions: the school"
+    ]
+   },
+   {
+    "layout": "bullets",
+    "title": "Reading quizzes",
+    "bullets": []
+   },
+   {
+    "layout": "question",
+    "title": "Why do societies have schools?",
+    "bullets": [
+     "Write two reasons a society sends children to school.",
+     "Write one unintended effect of schooling: something schools do that nobody planned."
+    ]
+   },
+   {
+    "layout": "bullets",
+    "title": "Durkheim and Marx",
+    "bullets": [
+     "Functionalism (Durkheim): society as interdependent parts",
+     "Merton: manifest functions, latent functions, dysfunctions",
+     "Conflict theory (Marx): bourgeoisie and proletariat",
+     "Society shaped by struggle over resources and power",
+     "Worked example: bell schedule and attendance rules"
+    ]
+   },
+   {
+    "layout": "bullets",
+    "title": "Meaning and the self: Weber and Mead",
+    "bullets": [
+     "Weber: verstehen, interpretive understanding of meaning",
+     "Weber also: class, status, power, rationalization",
+     "Mead: Mind, Self, and Society (1934)",
+     "Interactionism: shared meanings built in everyday interaction",
+     "Write what an interactionist would study in a classroom"
+    ]
+   },
+   {
+    "layout": "bullets",
+    "title": "Three readings of one school rule",
+    "bullets": [
+     "Hypothetical rule: a hat ban plus a required uniform shirt",
+     "Write one short question or claim per perspective",
+     "Name the perspective’s central claim, not just a topic",
+     "Keep each answer to one short phrase"
+    ]
+   },
+   {
+    "layout": "bullets",
+    "title": "Tracking through three lenses",
+    "bullets": [
+     "Hypothetical case: a district ends honors tracks in ninth grade",
+     "Advanced courses stay in grades 11 and 12",
+     "Groups of four; three questions on your printed copy",
+     "Take them in order, about six minutes each",
+     "Apply the perspective and build on each other’s points"
+    ]
+   },
+   {
+    "layout": "bullets",
+    "title": "Next time and what is due",
+    "bullets": [
+     "Next class: Reading quizzes, marked in points",
+     "Reading quizzes are worth 15% of the course grade",
+     "Read OpenStax, Introduction to Sociology 3e",
+     "Ch. 2 (to confirm), Sociological Research: the research process",
+     "Now: one sentence on your hardest perspective"
+    ]
+   }
+  ],
+  "handouts": [
+   {
+    "title": "Three readings of one school rule",
+    "usedIn": "Three readings of one school rule"
+   },
+   {
+    "title": "Find and correct the mistaken theory label",
+    "usedIn": "Find and correct the mistaken theory label"
+   },
+   {
+    "title": "Participation in discussion: tracking through three lenses",
+    "usedIn": "Group discussion: tracking through three lenses"
+   }
+  ]
+ },
+ "ug-physics-mechanics": {
+  "segments": [
+   {
+    "id": "x_4087b8194848",
+    "kind": "warmup",
+    "session": 0,
+    "title": "Is 65 mi/h faster than 30 m/s?",
+    "minutes": 5,
+    "description": "Put the question on the screen. Each student writes a guess and one line of reasoning, then compares with a neighbor.\nHear two guesses and the reasoning behind them.\nUse the disagreement to show why a shared system of units is needed.",
+    "teacherNotes": "Answer: 65 mi/h ≈ 29.1 m/s, so slightly slower than 30 m/s. Many students guess by feel. Do not reveal the answer until the conversion method is taught; return to it in the conversion segment.",
+    "shown": [
+     "A car travels at 65 mi/h. A cyclist’s computer reads 30 m/s on a downhill. Which is faster? Write your guess and one line of reasoning."
+    ]
+   },
+   {
+    "id": "x_45536725f651",
+    "kind": "teach",
+    "session": 0,
+    "title": "How the course runs and how it is graded",
+    "minutes": 8,
+    "description": "Walk through the course map: kinematics, Newton’s laws, work and energy, momentum, rotation, oscillations, using OpenStax University Physics Volume 1.\nState the weekly rhythm of three lectures and one recitation.\nShow the grading: weekly problem sets 20%, recitation group problems 10%, Midterm 1 20%, Midterm 2 20%, final exam 30%.\nStudents read the grading table, then write one question about the course and swap it with a neighbor to answer from the table.",
+    "teacherNotes": "Say that weekly problem sets are each student’s own work and recitation group problems are done in groups in the recitation. Exams are marked in points. Announce any exam policies yourself. Collect unanswered questions for the end of the session."
+   },
+   {
+    "id": "x_7bdef6e7c27a",
+    "kind": "teach",
+    "session": 0,
+    "title": "SI units and chained conversion factors",
+    "minutes": 10,
+    "description": "Introduce the SI base units meter, kilogram and second, and derived units such as newton (kg·m/s²) and joule (N·m). Show prefixes from nano to giga.\nWork 90 km/h to m/s as a chain of factors: 90 km/h × (1000 m / 1 km) × (1 h / 3600 s) = 25 m/s.\nStudents predict the next factor before each is written, and cancel the units aloud with a partner.\nRevisit the opening question: 65 mi/h × 0.447 (m/s)/(mi/h) ≈ 29 m/s.\nMention the 1999 loss of NASA’s Mars Climate Orbiter, caused by a mismatch between pound-force and newton units.",
+    "teacherNotes": "Stress that units cancel like algebraic symbols. Common error: converting squared or cubed units with the linear factor. Use 1 mi = 1609 m for the exercises. Keep the Mars Climate Orbiter point to a sentence."
+   },
+   {
+    "id": "x_10ce096e898c",
+    "kind": "practice",
+    "session": 0,
+    "title": "Convert and compare",
+    "minutes": 9,
+    "description": "Students work three conversions on their own, each as a chain of factors with every unit written in every line.\nThen they check answers with a partner.\nPairs resolve any disagreement by writing the chain of factors on the board.",
+    "teacherNotes": "Items and answers: 1) 2.5 g/cm³ to kg/m³: 2500 kg/m³. 2) 55 mi/h to m/s: 24.6 m/s, or 25 m/s to two significant figures. 3) 9.8 m/s² to km/h²: 1.3 × 10⁵ km/h² to two significant figures. Item 3 needs the time factor squared: 9.8 × (3600)² ÷ 1000 ≈ 127,000."
+   },
+   {
+    "id": "x_9f3158ca2c66",
+    "kind": "teach",
+    "session": 0,
+    "title": "Dimensional analysis as an equation check",
+    "minutes": 10,
+    "description": "Introduce the dimensions L, M and T and the bracket notation: [x] = L, [v] = L/T, [a] = L/T², [F] = ML/T².\nCheck x = x₀ + v₀t + ½at²: every term has dimension L.\nState the rule: both sides of an equation, and every term in a sum, must have the same dimensions.\nStudents test v² = v₀² + 2ax in pairs before the result is shown.\nNote what the method cannot see: pure numbers such as ½ or 2π.",
+    "teacherNotes": "v² = v₀² + 2ax: each term is L²/T², so it passes. Dimensions cannot confirm factors like ½, only reject wrong forms. Students often forget that the exponent of a dimension applies to the whole symbol, so [a t²] = (L/T²)(T²) = L."
+   },
+   {
+    "id": "x_e318f8ad9677",
+    "kind": "practice",
+    "session": 0,
+    "title": "Which equations survive the check?",
+    "minutes": 6,
+    "description": "Students test three candidate equations alone, writing only the dimensions of each side and marking it consistent or inconsistent.\nPairs compare their marks for one minute.\nHear one pair on item b, the equation that fails.",
+    "teacherNotes": "Answers: a) v = v₀ + at passes (L/T). b) x = vt² fails: L versus LT. c) T = 2π√(ℓ/g) passes: √(L ÷ L/T²) = T. Note that c) passing does not prove the 2π is right."
+   },
+   {
+    "id": "x_732f17a960a4",
+    "kind": "close",
+    "session": 0,
+    "title": "Summary and what comes next",
+    "minutes": 2,
+    "description": "Name the two tools of the day: chained conversion and dimension checks. Answer the course questions collected earlier today.\nTell students that the next lecture covers significant figures and vectors.\nPoint them to OpenStax University Physics Volume 1, ch. 1 (Units and Measurement) and ch. 2 (Vectors) as reference for the week.",
+    "teacherNotes": ""
+   },
+   {
+    "id": "x_35b3f95659e0",
+    "kind": "warmup",
+    "session": 1,
+    "title": "How many digits should the area have?",
+    "minutes": 5,
+    "description": "Show the measurements on the screen. Each student writes how many digits to report and why, then compares with a neighbor.\nHear two answers and the reasons.",
+    "teacherNotes": "Calculator gives 0.9 m² exactly here, so use the data counts: 1.2 has two significant figures, 0.75 has two. Product is limited to two: 0.90 m². The trailing zero is meaningful and must be written.",
+    "shown": [
+     "A desk measures 1.2 m wide and 0.75 m deep. A calculator multiplies the two numbers. How many significant figures should the area have, and what is the area?"
+    ]
+   },
+   {
+    "id": "x_3cabe552f4f8",
+    "kind": "teach",
+    "session": 1,
+    "title": "Significant figures and scientific notation",
+    "minutes": 10,
+    "description": "State the counting rules: nonzero digits count, zeros between them count, leading zeros do not, trailing zeros after a decimal point do.\nMultiplication and division keep the fewest significant figures. Addition and subtraction keep the fewest decimal places.\nWork 12.5 + 0.372 = 12.872, reported as 12.9.\nStudents predict the reported value of 4.20 × 10³ ÷ 3.0 before it is shown.\nRecommend carrying an extra digit through intermediate steps and rounding only at the end.",
+    "teacherNotes": "4.20 × 10³ ÷ 3.0 = 1400 = 1.4 × 10³, two significant figures. Scientific notation removes the ambiguity of trailing zeros in 1400. Do not penalize rounding in the last place; this course scores setup and units first."
+   },
+   {
+    "id": "x_c89cf0643789",
+    "kind": "practice",
+    "session": 1,
+    "title": "Find and fix the mistake",
+    "minutes": 10,
+    "description": "Each student gets three flawed worked statements on the screen and writes the error and the corrected line for each.\nPairs compare their corrections.\nHear one pair on statement 3.",
+    "teacherNotes": "1) 1 km² = 1000 m² is wrong: 1 km² = (1000 m)² = 10⁶ m². 2) 4.2 m × 1.37 = 5.754 m should be 5.8 m, two significant figures. 3) t = √(2hg) has dimensions L/T, not T; correct form is t = √(2h/g), valid for release from rest, constant g and negligible air resistance. These examples illustrate three checks: apply conversion factors to the correct power, report significant figures consistently, and check the dimensions of a formula."
+   },
+   {
+    "id": "x_15d2b39da942",
+    "kind": "teach",
+    "session": 1,
+    "title": "Scalars, vectors and components",
+    "minutes": 12,
+    "description": "Contrast scalar and vector quantities with examples: mass, time and temperature against displacement and force.\nDefine displacement as Δr = r_f − r_i, the straight-line change in position, and distinguish it from distance traveled.\nResolve a drone displacement of 120 m at 35° above the horizontal: Aₓ = 120 cos 35° = 98.3 m and A_y = 120 sin 35° = 68.8 m.\nStudents predict the components of a 10 m vector at 150° before the board shows (−8.66, 5.00) m.\nGive the reverse: A = √(Aₓ² + A_y²) and θ = tan⁻¹(A_y/Aₓ), with a quadrant check.\nIntroduce unit vectors î, ĵ and k̂.",
+    "teacherNotes": "Common error: calculator in radian mode. Another: tan⁻¹ returns an angle in the wrong quadrant when Aₓ is negative, so add 180° and check against a sketch. State that θ is measured from the +x axis unless a problem says otherwise."
+   },
+   {
+    "id": "x_9f9984ff87ce",
+    "kind": "practice",
+    "session": 1,
+    "title": "Resolve and rebuild vectors",
+    "minutes": 8,
+    "description": "Students work three vectors in pairs, each partner doing alternate items and checking the other's.\nBefore calculating, each draws a sketch with axes and the signs of both components.\nAngles are measured from the +x axis.",
+    "teacherNotes": "Answers: 1) (20 N, 34.6 N). 2) magnitude 5 m, angle 126.9° from +x, in the second quadrant. 3) (−4.24 m/s, 4.24 m/s). Check sketches first; most errors are sign errors."
+   },
+   {
+    "id": "x_8ee86be75c0d",
+    "kind": "check",
+    "session": 1,
+    "title": "Why not add the components?",
+    "minutes": 5,
+    "description": "Show a claim: A vector with Aₓ = 6 and A_y = 8 has magnitude 14.\nEach student writes whether it is right and why, then explains to a partner.\nHear two explanations and sum up with the Pythagorean relation.",
+    "teacherNotes": "The magnitude is √(36 + 64) = 10, not 14. Adding components treats the vector as a path along both axes. This check is a good moment to flag any student still unsure of the quadrant rule.",
+    "shown": [
+     "Claim: A = (6, 8) has magnitude 6 + 8 = 14. Is the claim correct? Explain in one sentence."
+    ]
+   },
+   {
+    "id": "x_cabab8727f78",
+    "kind": "warmup",
+    "session": 2,
+    "title": "Distance versus displacement",
+    "minutes": 5,
+    "description": "Show the walk on the screen. Each student writes the distance traveled and the displacement, with direction.\nPairs compare, then one answer is drawn on the board.",
+    "teacherNotes": "Distance 7 m. Displacement 5 m at about 53° north of east, since tan⁻¹(4/3) = 53.1°. Many students give 7 m for both.",
+    "shown": [
+     "A person walks 3 m east and then 4 m north. What distance did they travel? What is their displacement, in magnitude and direction?"
+    ]
+   },
+   {
+    "id": "x_356856052cda",
+    "kind": "teach",
+    "session": 2,
+    "title": "Adding and subtracting vectors",
+    "minutes": 12,
+    "description": "Show tip-to-tail addition on a drawing, then the component method: R = A + B gives Rₓ = Aₓ + Bₓ and R_y = A_y + B_y.\nWork A = (4.0î + 2.0ĵ) m and B = (−1.0î + 5.0ĵ) m. The sum is (3.0î + 7.0ĵ) m, with magnitude 7.6 m at 66.8° above +x.\nStudents predict A − B before it is shown. It is (5.0î − 3.0ĵ) m, magnitude 5.8 m.\nShow that subtraction means adding the negative, and that scalar multiplication scales every component.",
+    "teacherNotes": "Prediction answer: A − B = (4 − (−1), 2 − 5) = (5, −3). Common error: subtracting in the wrong order, which reverses the direction. Emphasize that components add, magnitudes do not."
+   },
+   {
+    "id": "x_b94c514a9410",
+    "kind": "practice",
+    "session": 2,
+    "title": "Sum of two forces",
+    "minutes": 10,
+    "description": "Students work two problems alone on paper, each with a sketch, components and a final magnitude and direction.\nPairs then compare and agree on one answer for each.\nHear one pair describe where they first disagreed.",
+    "teacherNotes": "Problem 1 answer: Rₓ = 10 + 8 cos120° = 6.0 N, R_y = 8 sin120° = 6.93 N, so R = 9.2 N at 49° above +x. Problem 2 answer: R = (−8.0î + 10.0ĵ) m, magnitude 12.8 m, direction 128.7° from +x (second quadrant)."
+   },
+   {
+    "id": "x_da5de3128d4a",
+    "kind": "teach",
+    "session": 2,
+    "title": "The dot product",
+    "minutes": 10,
+    "description": "Define A·B = AₓBₓ + A_yB_y + A_zB_z = AB cosφ, a scalar.\nGive the unit-vector rules: î·î = 1 and î·ĵ = 0.\nWork A = 2î + 3ĵ − k̂ and B = 4î − ĵ + 2k̂: A·B = 3, so cosφ = 3/√294 and φ ≈ 79.9°.\nStudents predict first whether the angle is acute or obtuse from the sign of A·B.\nRelate it to later use: work is a dot product of force and displacement.",
+    "teacherNotes": "Positive dot product means φ < 90°, zero means perpendicular, negative means φ > 90°. A common error is giving a vector as the answer. A·B is one number, and the units multiply."
+   },
+   {
+    "id": "x_8777fca437a7",
+    "kind": "practice",
+    "session": 2,
+    "title": "Dot product drill",
+    "minutes": 8,
+    "description": "Students work four items alone, then check answers with a partner in one minute.\nFor item b, they write only the result and one phrase on what it says about the two vectors.",
+    "teacherNotes": "Answers: a) 12. b) 0, so perpendicular. c) 45°. d) 20 N × 5 m × cos60° = 50 N·m. Item d is a preview of work, treated later in the course."
+   },
+   {
+    "id": "x_4a6a2ff277f7",
+    "kind": "check",
+    "session": 2,
+    "title": "Can a dot product be negative?",
+    "minutes": 5,
+    "description": "Each student writes whether A·B can be negative, with one example pair of vectors.\nPartners swap and verify the example by computing.\nHear one example and name the geometric condition.",
+    "teacherNotes": "Yes: when 90° < φ ≤ 180°, for example (1, 0)·(−1, 1) = −1. Watch for students who say magnitudes make it positive: cosφ carries the sign."
+   },
+   {
+    "id": "x_554ba3e77b26",
+    "kind": "warmup",
+    "session": 3,
+    "title": "A rope pulling a crate",
+    "minutes": 6,
+    "description": "Students work this problem alone: a 50 N rope pull acts at 37° above the horizontal. Find the horizontal and vertical components.\nThey compare answers with a neighbor and check units.",
+    "teacherNotes": "Answers: 39.9 N horizontal and 30.1 N vertical. Use this to confirm calculators are in degree mode and to reveal how students set up a sketch before the group work.",
+    "shown": [
+     "A rope pulls a crate with a force of 50 N at 37° above the horizontal. Find the horizontal and vertical components of the force."
+    ]
+   },
+   {
+    "id": "x_e589e1693c31",
+    "kind": "teach",
+    "session": 3,
+    "title": "A routine for multi-step problems",
+    "minutes": 5,
+    "description": "Write the routine on the board: sketch with axes, list knowns and unknowns, solve in symbols, substitute with units, then check dimensions and size.\nApply it to the warm-up problem in under two minutes.\nStudents tell a partner which step they most often skip.",
+    "teacherNotes": "Keep it short. The routine is the point, not another worked example. Tell groups to rotate who writes, so everyone can explain every step."
+   },
+   {
+    "id": "x_cebf2453ad8c",
+    "kind": "practice",
+    "session": 3,
+    "title": "Recitation group problems",
+    "minutes": 25,
+    "description": "Students form groups of three or four. Each group works the Recitation group problems sheet on units, dimensional analysis, components, vector addition and dot products.\nEvery student works every part, and each group produces one written solution.\nThe instructor circulates and asks groups to explain steps rather than giving answers.",
+    "teacherNotes": "Recitation group problems account for 10% of the course grade; this piece’s scoring is stated on the sheet. Do not solve the sheet’s problems for groups. Prompt with: where is your sketch, what are the units, does the size make sense."
+   },
+   {
+    "id": "x_5123be769ac1",
+    "kind": "discuss",
+    "session": 3,
+    "title": "Common pitfalls across the room",
+    "minutes": 7,
+    "description": "Ask each group to name one mistake it caught in its own work, and collect three on the board: wrong quadrant, mixed units, magnitude from summed components.\nWork through the worked solutions to the group problems on the board, following the routine: sketch, symbols, units, dimension check.\nEach student explains to a partner how a sketch or a dimension check would catch one of the three mistakes.",
+    "teacherNotes": "Draw on mistakes seen while circulating. Prepare the worked solutions from the sheet beforehand and keep each to about a minute, naming the step where each pitfall would appear. Link the pitfalls back to tools from the three lectures."
+   },
+   {
+    "id": "x_53ab0446e8c0",
+    "kind": "close",
+    "session": 3,
+    "title": "Problem set, reading and what comes next",
+    "minutes": 7,
+    "description": "Set the Weekly problem sets assignment, each student’s own work. State that Weekly problem sets account for 20% of the course grade. Tell students it is due at the first meeting of Motion along a straight line.\nAsk students to read OpenStax University Physics Volume 1, ch. 3 (Motion Along a Straight Line) before then.\nPreview next time: velocity as the derivative of position, acceleration as the derivative of velocity, integration, constant-acceleration equations, and free fall at 9.8 m/s².\nTell students the practice quiz on this lesson is for after class and counts toward no part of the grade.",
+    "teacherNotes": "Say the due date in exactly those words. Do not add collection details. Remind students that calculus now enters the course, so derivative rules deserve a quick review before the reading."
+   }
+  ],
+  "slides": [
+   {
+    "layout": "title",
+    "title": "Units, vectors, and displacement",
+    "bullets": [
+     "Calculus-based physics I: mechanics",
+     "OpenStax, University Physics Volume 1"
+    ]
+   },
+   {
+    "layout": "question",
+    "title": "Is 65 mi/h faster than 30 m/s?",
+    "bullets": [
+     "A car travels at 65 mi/h. A cyclist’s computer reads 30 m/s on a downhill. Which is faster? Write your guess and one line of reasoning."
+    ]
+   },
+   {
+    "layout": "bullets",
+    "title": "How the course is graded",
+    "bullets": [
+     "Three lectures and one recitation each week",
+     "Textbook: OpenStax University Physics Volume 1"
+    ]
+   },
+   {
+    "layout": "bullets",
+    "title": "SI units, conversions, and dimensions",
+    "bullets": [
+     "SI base units: meter, kilogram, second",
+     "Chain conversion factors; cancel units like symbols",
+     "Dimensions: [x] = L, [v] = L/T, [F] = ML/T²",
+     "Every term in an equation has the same dimensions",
+     "Dimensions cannot check pure numbers like ½ or 2π"
+    ]
+   },
+   {
+    "layout": "question",
+    "title": "How many digits should the area have?",
+    "bullets": [
+     "A desk measures 1.2 m wide and 0.75 m deep. A calculator multiplies the two numbers. How many significant figures should the area have, and what is the area?"
+    ]
+   },
+   {
+    "layout": "bullets",
+    "title": "Significant figures and vector components",
+    "bullets": [
+     "Multiply or divide: keep the fewest significant figures",
+     "Add or subtract: keep the fewest decimal places",
+     "Aₓ = A cosθ and A_y = A sinθ",
+     "A = √(Aₓ² + A_y²), θ = tan⁻¹(A_y/Aₓ)",
+     "Displacement Δr = r_f − r_i, not distance traveled"
+    ]
+   },
+   {
+    "layout": "question",
+    "title": "Two checks on vectors",
+    "bullets": [
+     "Claim: A = (6, 8) has magnitude 6 + 8 = 14. Is the claim correct? Explain in one sentence.",
+     "A person walks 3 m east and then 4 m north. What distance did they travel? What is their displacement, in magnitude and direction?"
+    ]
+   },
+   {
+    "layout": "bullets",
+    "title": "Adding vectors and the dot product",
+    "bullets": [
+     "Add by components: Rₓ = Aₓ + Bₓ, R_y = A_y + B_y",
+     "Subtract by adding the negative vector",
+     "A·B = AₓBₓ + A_yB_y + A_zB_z = AB cosφ",
+     "The dot product is a scalar, not a vector",
+     "It measures how much two vectors point the same way"
+    ]
+   },
+   {
+    "layout": "question",
+    "title": "A rope pulling a crate",
+    "bullets": [
+     "A rope pulls a crate with a force of 50 N at 37° above the horizontal. Find the horizontal and vertical components of the force."
+    ]
+   },
+   {
+    "layout": "bullets",
+    "title": "Due and reading",
+    "bullets": [
+     "Weekly problem sets are due at the first meeting of Motion along a straight line",
+     "Read OpenStax University Physics Volume 1, ch. 3 (to confirm) (Motion Along a Straight Line)",
+     "Review derivative rules before the reading",
+     "Practice quiz on this lesson: after class, counts toward no grade"
+    ]
+   }
+  ],
+  "handouts": [
+   {
+    "title": "Convert and compare",
+    "usedIn": "Convert and compare"
+   },
+   {
+    "title": "Which equations survive the check?",
+    "usedIn": "Which equations survive the check?"
+   },
+   {
+    "title": "Find and fix the mistake",
+    "usedIn": "Find and fix the mistake"
+   },
+   {
+    "title": "Resolve and rebuild vectors",
+    "usedIn": "Resolve and rebuild vectors"
+   },
+   {
+    "title": "Sum of two forces",
+    "usedIn": "Sum of two forces"
+   },
+   {
+    "title": "Dot product drill",
+    "usedIn": "Dot product drill"
+   }
+  ]
+ }
+}

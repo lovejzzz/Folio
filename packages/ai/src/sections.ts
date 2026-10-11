@@ -1,3 +1,4 @@
+import { outOfStep, withSheetSlides } from './slideSteps';
 import { groundsOf, markedForStudents } from './locators';
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
@@ -20,6 +21,7 @@ import {
   type Lesson,
   type Question,
   type SlideVisual, orderedLessons } from '@folio/core';
+import { docLabels } from '@folio/core';
 import type { Inference } from './inference';
 import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
@@ -147,14 +149,19 @@ function unshown(v: SlidesDraft, lesson: Lesson): Problem[] {
 
 const slides: SectionJob<SlidesDraft> = {
   schema: SlidesDraft,
-  tidy: (v, course) => tidySlides(v, course.language),
-  check: (v, _course, lesson) => unshown(v, lesson),
+  tidy: (v, course, lesson) => {
+    const tidied = tidySlides(v, course.language);
+    const sessions = lessonSessions(course);
+    const shown = sessions.some((s) => s.kind === 'lecture' || s.kind === 'class') ? sessions.map((s) => s.kind === 'lecture' || s.kind === 'class') : sessions.map(() => true);
+    return { slides: withSheetSlides(tidied.slides, lesson, docLabels(course.language).fromSheet, (session) => shown[session] ?? true) };
+  },
+  check: (v, _course, lesson) => [...unshown(v, lesson), ...outOfStep(v, lesson).map((issue): Problem => ({ index: null, advisory: true, flag: { code: 'schemaIssue', values: { path: 'slides', issue } } }))],
   toCommands: (v, problems, _course, lesson) => [
     cmd('section.fill', {
       lessonId: lesson.id,
       kind: 'slides',
       flags: flagsAt(problems, null),
-      content: { slides: v.slides.map(({ table, chart, ...s }) => ({ ...s, id: newId('x'), ...slideVisual(table, chart) })) },
+      content: { slides: v.slides.map(({ table, chart, segment, ...s }) => ({ ...s, id: newId('x'), ...(lesson.segments[segment - 1] ? { segment: lesson.segments[segment - 1]!.id } : {}), ...slideVisual(table, chart) })) },
     }),
   ],
 };

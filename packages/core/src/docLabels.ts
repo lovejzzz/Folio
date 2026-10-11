@@ -90,6 +90,7 @@ const en = {
   trueWord: 'True',
   falseWord: 'False',
   continued: (title: string) => `${title} (continued)`,
+  fromSheet: (sheets: string[]) => `Work from the ${sheets.length === 1 ? 'sheet' : 'sheets'} ${sheets.map((x) => `“${x}”`).join(' and ')}.`,
   points: (n: number) => (n === 1 ? '1 pt' : `${n} pts`),
   general: 'General',
   module: {
@@ -203,6 +204,7 @@ const zh: DocLabels = {
   trueWord: '正确',
   falseWord: '错误',
   continued: (title: string) => `${title}（续）`,
+  fromSheet: (sheets) => `按讲义${sheets.map((x) => `“${x}”`).join('、')}完成。`,
   points: (n) => `${n} 分`,
   general: '通用',
   module: {

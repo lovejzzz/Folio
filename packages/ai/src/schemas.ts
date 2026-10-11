@@ -131,6 +131,8 @@ export const SlidesDraft = z.object({
         // Five fit a slide; a few more are split over two slides rather than sent back.
         bullets: z.array(line).max(10).describe('At most five'),
         notes: z.string().describe('Speaker notes for the teacher'),
+        // Slides had no tie to the plan's steps: a sheet's segment had no slide and the one before stayed up, and nothing could tell.
+        segment: z.number().int().min(0).default(0).describe('The number of the plan\'s segment this slide is shown in; 0 for the title slide and a last slide of what is due'),
         table: z
           // (eight: a table of seven columns sent a whole deck back to be written again on a paid run)
           .object({ columns: z.array(z.string()).max(8), rows: z.array(z.array(z.string())).max(10) })
@@ -149,7 +151,8 @@ export const SlidesDraft = z.object({
       }),
     )
     .min(3)
-    .max(10),
+    // A week of four meetings has four meetings' slides.
+    .max(40),
 });
 export type SlidesDraft = z.infer<typeof SlidesDraft>;
 

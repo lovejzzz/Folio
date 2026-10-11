@@ -101,6 +101,8 @@ export const SlideSchema = z.object({
   title: text,
   bullets: z.array(text),
   notes: text,
+  /** The plan's segment this slide is shown in, when its writer said: what ties a deck to the lesson's steps. */
+  segment: id.optional(),
   visual: SlideVisualSchema.optional(),
 });
 export type Slide = z.infer<typeof SlideSchema>;
