@@ -34,6 +34,22 @@ test('a key that stops working mid-build is fixed from the toast, and the build 
   await expect(page.getByText('Couldn’t write')).toHaveCount(0);
 });
 
+test('a teacher stops a build by hand: what is written is kept, the rest waits, and Resume finishes it', async ({ page }) => {
+  await withKey(page);
+  // Slow enough that the build is still writing when Stop is pressed.
+  await fakeAnthropic(page, { delayMs: 400 });
+  await planTwoLessons(page);
+  await page.getByRole('button', { name: 'Write 2 lessons' }).click();
+  await page.getByRole('button', { name: 'Stop', exact: true }).click();
+  await expect(page.getByText(/^Paused · \d+ parts? left$/)).toBeVisible({ timeout: 15_000 });
+  // Nothing is lost by the stop or by a reload: the pause is still there, and Resume writes what was left.
+  await page.reload();
+  await expect(page.getByText(/^Paused · \d+ parts? left$/)).toBeVisible();
+  await page.getByRole('button', { name: 'Resume' }).click();
+  await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByText('Couldn’t write')).toHaveCount(0);
+});
+
 test('sections that failed on a server error are rebuilt by Resume', async ({ page }) => {
   await withKey(page);
   await fakeAnthropic(page);
