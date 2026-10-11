@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
-import { binarySearch, binarySearchProblem, describeResult, describeStart, describeStep, numeralOf, SlideVisualSchema } from '@folio/core';
+import { binarySearch, binarySearchProblem, describeResult, describeStart, describeStep, enteredFaults, figureProblem, SlideVisualSchema } from '@folio/core';
 import { describe, expect, it } from 'vitest';
 import { between, framePng, keyframes, paintSvg, renderFrame, stillFigure } from '../src';
-import { numeral, strokesOf } from '../src/digits';
+import { cabinetLimit, numeral, numeralOf, strokesOf } from '../src/digits';
 
 const LIST = [3, 8, 12, 17, 23, 31, 42, 56, 71];
 const sha = (data: string | Uint8Array) => createHash('sha256').update(data).digest('hex').slice(0, 16);
@@ -123,9 +123,21 @@ describe('what a course file can ask for', () => {
   it('is never a figure Folio does not keep, a script, an address, or more numbers than fit', () => {
     expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'https://example.com/figure.js', values: [1], target: 1 }).success).toBe(false);
     expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'binarySearch', values: ['<script>alert(1)</script>'], target: 1 }).success).toBe(false);
-    expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'binarySearch', values: Array.from({ length: 16 }, (_, i) => i), target: 1 }).success).toBe(false);
     const kept = SlideVisualSchema.parse({ kind: 'figure', figure: 'binarySearch', values: [1], target: 1, script: 'alert(1)', src: 'x.js' });
     expect(Object.keys(kept).sort()).toEqual(['figure', 'kind', 'target', 'values']);
+  });
+
+  it('keeps what was typed and is not yet numbers, and is unfinished until it is put right: in a file opened again, and in every export', () => {
+    const draft = SlideVisualSchema.parse({ kind: 'figure', figure: 'binarySearch', values: [1, 2, 3], target: 2, entered: { values: '1, nope, 3' } });
+    if (draft.kind !== 'figure') throw new Error('not a figure');
+    expect(figureProblem(draft)).toBe('unfinished');
+    expect(enteredFaults(draft.entered)).toEqual(['nope']);
+    const still = stillFigure(draft);
+    expect(still).toMatchObject({ problem: 'unfinished', frames: [] });
+    expect(still.note).toContain('“1, nope, 3”');
+    // The numbers it had before are not passed off as its numbers.
+    expect(still.table.rows).toEqual([]);
+    expect(figureProblem({ ...draft, entered: undefined })).toBeNull();
   });
 });
 
@@ -152,14 +164,28 @@ describe('a number on a label', () => {
     expect(strokesOf(numeral(0.125)).strokes.length).not.toBe(strokesOf(numeral(0)).strokes.length);
   });
 
-  it('refuses a list with a number it cannot write in full, as it was found: three drawers all showing 0', () => {
+  it('is never rounded: a list the labels cannot write in full is still searched, and told in words with the reason there is no picture', () => {
+    // As it was found: three drawers and the card all read 0 beside a sentence that said 1e-8.
     const tiny = { values: [-0.00000001, 0, 0.00000001], target: 0.00000001 };
-    expect(binarySearchProblem(tiny)).toBe('unshowable');
-    expect(() => binarySearch(tiny)).toThrow();
-    expect(stillFigure({ kind: 'figure', figure: 'binarySearch', ...tiny })).toMatchObject({ problem: 'unshowable', frames: [] });
+    expect(binarySearchProblem(tiny)).toBeNull();
+    expect(cabinetLimit(tiny.values, tiny.target)).toBe('tooLong');
+    const still = stillFigure({ kind: 'figure', figure: 'binarySearch', ...tiny });
+    expect(still).toMatchObject({ problem: null, limit: 'tooLong' });
+    expect(still.note).toContain('never rounds');
+    expect(still.frames.every((f) => f.svg === null)).toBe(true);
+    expect(still.frames.at(-1)!.caption).toContain('1e-8 was found at position 3');
+    expect(still.table.rows.length).toBeGreaterThan(0);
     for (const n of [1e21, 1e-7, 123456, -12345, 0.33333, 1 / 3]) expect(numeralOf(n), String(n)).toBeNull();
     for (const n of [0, -0, 5, -9999, 99999, 0.001, -0.25, 12.75]) expect(numeralOf(n), String(n)).not.toBeNull();
-    expect(binarySearchProblem({ values: [1, 2, 3], target: 2.000001 })).toBe('unshowable');
+  });
+
+  it('is searched whatever its length: more numbers than the cabinet has drawers are told in words', () => {
+    const long = { values: Array.from({ length: 40 }, (_, i) => i * 3), target: 51 };
+    expect(binarySearchProblem(long)).toBeNull();
+    const still = stillFigure({ kind: 'figure', figure: 'binarySearch', ...long });
+    expect(still).toMatchObject({ problem: null, limit: 'tooMany' });
+    expect(still.frames.at(-1)!.caption).toContain('51 was found at position 18');
+    expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'binarySearch', values: Array.from({ length: 61 }, (_, i) => i), target: 1 }).success).toBe(false);
   });
 
   it('never passes over a character it has no strokes for', () => {

@@ -286,6 +286,55 @@
     aspect-ratio: 640 / 380;
     margin: 0 auto;
   }
+  /* The list as numbers of the page's own size: wraps on a narrow screen, never scrolls sideways. */
+  .folio-figure-strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+  .folio-figure-strip > li {
+    display: grid;
+    justify-items: center;
+    min-width: 2.25rem;
+    padding: 0.15rem 0.35rem 0.25rem;
+    border: 1px solid var(--folio-rule-strong);
+    border-radius: var(--radius-control);
+    background: var(--folio-paper);
+    color: var(--folio-ink);
+  }
+  .folio-figure-strip-place {
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    color: var(--folio-ink-2);
+  }
+  .folio-figure-strip-value {
+    font-size: 1rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+  }
+  .folio-figure-strip > li[data-state='aside'] {
+    border-style: dashed;
+    border-color: var(--folio-rule);
+    background: transparent;
+  }
+  .folio-figure-strip > li[data-state='aside'] .folio-figure-strip-value {
+    font-weight: 400;
+    color: var(--folio-ink-2);
+    text-decoration: line-through;
+  }
+  .folio-figure-strip > li[data-state='look'],
+  .folio-figure-strip > li[data-state='found'] {
+    border-color: var(--folio-ink);
+    box-shadow: 0 0 0 2px var(--folio-ink);
+  }
+  .folio-figure-strip > li[data-state='found'] {
+    background: var(--folio-ink);
+    color: var(--folio-paper);
+  }
+  .folio-figure-strip > li[data-state='found'] .folio-figure-strip-place {
+    color: var(--folio-paper);
+  }
   /* Under the slide: room for the longest sentence of a step, so the buttons do not jump. */
   .folio-figure-caption {
     text-align: center;

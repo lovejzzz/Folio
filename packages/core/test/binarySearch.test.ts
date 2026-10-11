@@ -45,7 +45,8 @@ describe('binary search, the model', () => {
   it('refuses a list that is not sorted, too long, or not of numbers, and sorts only when asked', () => {
     expect(binarySearchProblem({ values: [3, 1, 2], target: 2 })).toBe('unsorted');
     expect(() => binarySearch({ values: [3, 1, 2], target: 2 })).toThrow(/unsorted/);
-    expect(binarySearchProblem({ values: Array.from({ length: 16 }, (_, i) => i), target: 2 })).toBe('tooLong');
+    // Length is no fault of a search: how many a picture holds is the picture's affair.
+    expect(binarySearchProblem({ values: Array.from({ length: 16 }, (_, i) => i), target: 2 })).toBeNull();
     expect(binarySearchProblem({ values: [1, Number.NaN], target: 2 })).toBe('notNumbers');
     expect(binarySearchProblem({ values: [], target: 2 })).toBeNull();
     expect(sortedForSearch([3, 1, 2])).toEqual([1, 2, 3]);

@@ -75,3 +75,35 @@ describe('a slide with a demonstration, in a Word file', () => {
     }
   });
 });
+
+describe('a demonstration the picture cannot hold, or that is not finished', () => {
+  const long = deck({ kind: 'figure', figure: 'binarySearch', values: Array.from({ length: 20 }, (_, i) => i * 5), target: 35 });
+  const draft = deck({ kind: 'figure', figure: 'binarySearch', values: LIST, target: 40, entered: { values: '1, nope, 3' } });
+
+  it('is told in words and in the table when it is searched and cannot be drawn: no picture, and the reason', async () => {
+    const word = unzip(await renderDocx([docOf(long, 'student')], { courseTitle: long.title }));
+    const xml = strFromU8(word['word/document.xml']!);
+    expect(pngs(word, /^word\/media\//)).toHaveLength(0);
+    expect(xml).toContain('The picture holds up to 15 numbers');
+    expect(xml).toContain('35 was found at position 8');
+    expect(xml).toContain('What follows');
+    const slides = text(unzip(await renderPptx(docOf(long, 'student'))), /^ppt\/slides\/slide\d+\.xml$/);
+    expect(slides).toContain('The picture holds up to 15 numbers');
+    expect(slides).toContain('35 was found at position 8');
+    expect(slides).toContain('<a:tbl>');
+  });
+
+  it('is exported as unfinished, with what was typed, and never as the numbers it had before', async () => {
+    const xml = strFromU8(unzip(await renderDocx([docOf(draft, 'teacher')], { courseTitle: draft.title }))['word/document.xml']!);
+    expect(xml).toContain('This demonstration is not finished');
+    expect(xml).toContain('1, nope, 3');
+    expect(xml).not.toContain('Searching for 40');
+    expect(xml).not.toContain('What follows');
+    const files = unzip(await renderPptx(docOf(draft, 'teacher')));
+    const slides = text(files, /^ppt\/slides\/slide\d+\.xml$/);
+    expect(slides).toContain('This demonstration is not finished');
+    expect(slides).not.toContain('Searching for 40');
+    expect(pngs(files, /^ppt\/media\//)).toHaveLength(0);
+  });
+});
+

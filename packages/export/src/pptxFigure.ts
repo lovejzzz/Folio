@@ -1,5 +1,5 @@
 import type PptxGenJS from 'pptxgenjs';
-import { framePng, problemText, stillFigure } from '@folio/figures';
+import { framePng, stillFigure } from '@folio/figures';
 import { plainText, type Block } from '@folio/core';
 import { printPalette } from '@folio/ui/tokens';
 
@@ -35,17 +35,25 @@ export function figureSlides(add: () => PptSlide, s: Slide, figure: Figure, f: F
   const still = stillFigure(figure);
   const first = add();
   if (s.notes) first.addNotes(plainText(s.notes));
+  const words = (slide: PptSlide, text: string, y: number, h: number) => slide.addText(text, { x: LEFT, y, w: WIDTH, h, fontFace: f.body, fontSize: 16, color: printPalette.ink, valign: 'top', fit: 'shrink', lang: f.lang, margin: 0 });
+  // Unfinished or not searchable: the reason and nothing else. Never the numbers it had before.
   if (still.problem) {
     titled(first, s.title, f);
-    first.addText(problemText(still.problem), { x: LEFT, y: 1.8, w: WIDTH, h: 1, fontFace: f.body, fontSize: 18, color: printPalette.ink2, valign: 'top', lang: f.lang, margin: 0 });
+    words(first, still.note, 1.8, 2);
     return;
+  }
+  const pictures = still.frames.filter((x) => x.svg);
+  // Searched, and the picture cannot hold it: the steps in words on one slide, under the reason.
+  if (!pictures.length) {
+    titled(first, s.title, f);
+    words(first, [still.note, ...still.frames.map((x) => x.caption)].join('\n'), 1.6, 4.9);
   }
   const h = 4.1;
   const w = (h * still.width) / still.height;
-  still.frames.forEach((frame, i) => {
+  pictures.forEach((frame, i) => {
     const slide = i ? add() : first;
-    titled(slide, still.frames.length > 1 ? `${s.title} (${i + 1}/${still.frames.length})` : s.title, f);
-    slide.addImage({ data: `image/png;base64,${base64(framePng(frame.svg))}`, x: LEFT + (WIDTH - w) / 2, y: 1.45, w, h, altText: frame.caption });
+    titled(slide, pictures.length > 1 ? `${s.title} (${i + 1}/${pictures.length})` : s.title, f);
+    slide.addImage({ data: `image/png;base64,${base64(framePng(frame.svg!))}`, x: LEFT + (WIDTH - w) / 2, y: 1.45, w, h, altText: frame.caption });
     slide.addText(frame.caption, { x: LEFT, y: 5.6, w: WIDTH, h: 1.0, fontFace: f.body, fontSize: 16, color: printPalette.ink, align: 'center', valign: 'top', fit: 'shrink', lang: f.lang, margin: 0 });
   });
   if (!still.table.rows.length) return;

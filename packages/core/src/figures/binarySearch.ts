@@ -9,7 +9,8 @@
  * A list that is not in ascending order is refused, not sorted behind the teacher's back.
  */
 
-export const BINARY_SEARCH_MAX = 15;
+/** The most numbers a course file may hold for one search: a bound on the file, not on what a picture can show. */
+export const BINARY_SEARCH_MAX = 60;
 
 export interface BinarySearchInput {
   values: number[];
@@ -37,27 +38,44 @@ export interface BinarySearchModel {
   found: number | null;
 }
 
-export type BinarySearchProblem = 'tooLong' | 'notNumbers' | 'unshowable' | 'unsorted';
-
-/** The most characters a drawer's label holds at a size a class can read. */
-export const NUMERAL_MAX = 5;
+export type BinarySearchProblem = 'notNumbers' | 'unsorted';
 
 /**
- * A number exactly as the figure writes it, or null when it cannot be written there in full: digits, a minus sign and
- * a decimal point, five characters at most. Nothing is rounded: a label that showed 0 for 0.00000001 beside a sentence
- * that said 1e-8 was the figure and its words disagreeing, which is the one thing they may not do.
+ * Why a list cannot be searched as it stands, or null: what the method itself needs, and nothing about any picture
+ * of it. How many numbers a drawing holds, or how long a number its labels can write, is the drawing's affair
+ * (`@folio/figures`), and a list a drawing cannot hold is still searched and told in words.
+ * An empty list is searched: the answer is "not there", in no steps.
  */
-export function numeralOf(n: number): string | null {
-  const text = String(Object.is(n, -0) ? 0 : n);
-  return /^-?\d+(?:\.\d+)?$/.test(text) && text.length <= NUMERAL_MAX ? text : null;
+export function binarySearchProblem(input: BinarySearchInput): BinarySearchProblem | null {
+  if (![...input.values, input.target].every((n) => Number.isFinite(n))) return 'notNumbers';
+  return input.values.every((n, i) => i === 0 || input.values[i - 1]! <= n) ? null : 'unsorted';
 }
 
-/** Why a list cannot be searched as it stands, or null. An empty list is searched: the answer is "not there", in no steps. */
-export function binarySearchProblem(input: BinarySearchInput): BinarySearchProblem | null {
-  if (input.values.length > BINARY_SEARCH_MAX) return 'tooLong';
-  if (![...input.values, input.target].every((n) => Number.isFinite(n))) return 'notNumbers';
-  if (![...input.values, input.target].every((n) => numeralOf(n) !== null)) return 'unshowable';
-  return input.values.every((n, i) => i === 0 || input.values[i - 1]! <= n) ? null : 'unsorted';
+/** What was typed for a demonstration and is not yet numbers: kept as typed, beside the numbers the figure last had. */
+export interface FigureEntered {
+  values?: string | undefined;
+  target?: string | undefined;
+}
+
+/** What a teacher typed as a list, entry by entry: commas, semicolons or spaces between them. */
+export const figureEntries = (text: string): string[] => text.split(/[\s,;，、]+/).filter(Boolean);
+export const isFigureNumber = (entry: string): boolean => entry.trim() !== '' && Number.isFinite(Number(entry.trim()));
+
+/** The entries of what was typed that are not numbers, in the order typed. */
+export function enteredFaults(entered: FigureEntered | undefined): string[] {
+  return [...figureEntries(entered?.values ?? ''), ...(entered?.target === undefined ? [] : [entered.target.trim()])].filter((x) => !isFigureNumber(x));
+}
+
+export type FigureProblem = BinarySearchProblem | 'unfinished';
+
+/**
+ * The one check of a demonstration, asked wherever one is typed, opened from a file, drawn, stepped or exported.
+ * A demonstration whose numbers are still being typed wrongly is unfinished: it is drawn and exported as that, with
+ * what was typed, never as the numbers it had before.
+ */
+export function figureProblem(figure: BinarySearchInput & { entered?: FigureEntered | undefined }): FigureProblem | null {
+  if (figure.entered && (figure.entered.values !== undefined || figure.entered.target !== undefined)) return 'unfinished';
+  return binarySearchProblem(figure);
 }
 
 /** The same numbers in ascending order: offered to the teacher as a choice, never done for them. */

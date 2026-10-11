@@ -39,6 +39,12 @@ test('on a phone a demonstration is worked by touch, and fits the slide', async 
   expect(line!.y + line!.height).toBeLessThanOrEqual(foot!.y);
   expect(art!.y + art!.height).toBeLessThanOrEqual(line!.y + 1);
   expect(art!.height).toBeGreaterThan(60);
+  // The numbers at a size a phone can read, the same step as the picture: sixteen pixels, none off the screen.
+  const strip = page.getByRole('list', { name: 'The list at this step' });
+  await expect(strip.getByRole('listitem', { name: 'Position 4: 4, found' })).toBeVisible();
+  await expect(strip.getByRole('listitem')).toHaveCount(7);
+  expect(await strip.locator('.folio-figure-strip-value').first().evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(16);
+  for (const box of await strip.getByRole('listitem').evaluateAll((items) => items.map((el) => el.getBoundingClientRect().right))) expect(box).toBeLessThanOrEqual(page.viewportSize()!.width);
   // Buttons a thumb can hit.
   const button = await tools.getByRole('button', { name: 'Next step' }).boundingBox();
   expect(Math.min(button!.width, button!.height)).toBeGreaterThanOrEqual(32);

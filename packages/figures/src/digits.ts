@@ -1,5 +1,3 @@
-import { numeralOf } from '@folio/core';
-
 /**
  * Numerals as strokes, in the manner of a seven-segment stamp: the figure's numbers are drawn with the same lines
  * as its parts, so a frame is the same picture in a browser, in a PNG made without one, and in print, with no font
@@ -47,7 +45,29 @@ export function strokesOf(text: string): { strokes: [[number, number], [number, 
   return { strokes, width: Math.max(0, at - GAP) };
 }
 
-/** A number as the figure writes it: exactly, or not at all (see `numeralOf`). A list the model accepts has only such numbers. */
+/** The most characters a drawer's label holds at a size a class can read, and the most drawers the cabinet has. */
+export const NUMERAL_MAX = 5;
+export const DRAWERS_MAX = 15;
+
+/**
+ * A number exactly as a label writes it, or null when it cannot be written there in full: digits, a minus sign and a
+ * decimal point, five characters at most. Nothing is rounded: a label that showed 0 for 0.00000001 beside a sentence
+ * that said 1e-8 was the figure and its words disagreeing, which is the one thing they may not do.
+ */
+export function numeralOf(n: number): string | null {
+  const text = String(Object.is(n, -0) ? 0 : n);
+  return /^-?\d+(?:\.\d+)?$/.test(text) && text.length <= NUMERAL_MAX ? text : null;
+}
+
+export type CabinetLimit = 'tooMany' | 'tooLong';
+
+/** Why the cabinet cannot be drawn for a list that can be searched, or null. The search itself is unaffected. */
+export function cabinetLimit(values: readonly number[], target: number): CabinetLimit | null {
+  if (values.length > DRAWERS_MAX) return 'tooMany';
+  return [...values, target].every((n) => numeralOf(n) !== null) ? null : 'tooLong';
+}
+
+/** A number as a label writes it: exactly, or an error. The cabinet is drawn only for lists within `cabinetLimit`. */
 export function numeral(value: number): string {
   const text = numeralOf(value);
   if (text === null) throw new Error(`figure: ${value} cannot be written on a label`);

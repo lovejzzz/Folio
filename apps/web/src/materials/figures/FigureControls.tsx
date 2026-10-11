@@ -11,6 +11,7 @@ export function FigureControls() {
   const { at, last } = run;
   return (
     <div className="no-print mt-3 grid gap-2" data-owns-arrows role="group" aria-label={t.figures.controls} onKeyDown={run.onKey}>
+      <FigureStrip />
       <p className="folio-figure-caption font-ui text-14 leading-5 text-ink" aria-live="polite">
         {run.frames[at]!.caption}
       </p>
@@ -29,6 +30,36 @@ export function FigureControls() {
           {run.running ? <Pause size={16} strokeWidth={1.5} /> : <Play size={16} strokeWidth={1.5} />}
         </IconButton>
       </div>
+    </div>
+  );
+}
+
+/**
+ * The list at this step as a row of numbers a hand-held screen can read: each with its position, those set aside
+ * dimmed and struck through, the one being compared outlined. The picture on a phone is three hundred pixels wide and
+ * its labels are small; this says the same step from the same pose in type of the page's own size, and it is what
+ * shows the numbers when the picture cannot hold them.
+ */
+function FigureStrip() {
+  const t = useT();
+  const run = useFigureRun();
+  if (!run) return null;
+  const { state } = run.frames[run.at]!.pose;
+  return (
+    <div className="grid justify-items-center gap-1">
+      <ol className="folio-figure-strip font-ui" aria-label={t.figures.strip}>
+        {run.values.map((value, i) => (
+          <li key={i} data-state={state[i]} aria-label={`${t.figures.place(i + 1)}: ${value}, ${t.figures.states[state[i] ?? 'play']}`}>
+            <span aria-hidden className="folio-figure-strip-place">
+              {i + 1}
+            </span>
+            <span aria-hidden className="folio-figure-strip-value tabular-nums">
+              {String(value)}
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p className="font-ui text-13 text-ink-2">{t.figures.looking(String(run.target))}</p>
     </div>
   );
 }

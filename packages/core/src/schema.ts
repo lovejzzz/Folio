@@ -98,7 +98,14 @@ export const SlideVisualSchema = z.discriminatedUnion('kind', [
   }),
   // A demonstration that moves, made by Folio from its numbers: which one is a name from a list Folio keeps, never code
   // or an address, so a course file can ask only for a figure Folio itself draws.
-  z.object({ kind: z.literal('figure'), figure: FigureIdSchema, values: z.array(z.number()).max(15), target: z.number() }),
+  z.object({
+    kind: z.literal('figure'),
+    figure: FigureIdSchema,
+    values: z.array(z.number()).max(60),
+    target: z.number(),
+    /** What the teacher typed that is not yet numbers, as typed: saved with the course, so it is neither lost nor passed off as the numbers above. */
+    entered: z.object({ values: z.string().max(600).optional(), target: z.string().max(60).optional() }).optional(),
+  }),
 ]);
 export type SlideVisual = z.infer<typeof SlideVisualSchema>;
 

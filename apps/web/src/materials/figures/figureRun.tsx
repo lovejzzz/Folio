@@ -1,4 +1,4 @@
-import { binarySearch, binarySearchProblem, type SlideVisual } from '@folio/core';
+import { binarySearch, figureProblem, type SlideVisual } from '@folio/core';
 import { keyframes, type Keyframe } from '@folio/figures';
 import { useMediaQuery } from '@folio/ui';
 import { createContext, useContext, useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from 'react';
@@ -64,7 +64,7 @@ function Running({ visual, children }: { visual: Figure; children: ReactNode }) 
 
 /** Everything inside can work the demonstration; a list that cannot be searched has nothing to work. */
 export function FigureRunProvider({ visual, children }: { visual: Figure; children: ReactNode }) {
-  if (binarySearchProblem(visual)) return <>{children}</>;
+  if (figureProblem(visual)) return <>{children}</>;
   // A new list or target starts the search again from its first picture.
   return (
     <Running key={`${visual.values.join(',')}|${visual.target}`} visual={visual}>

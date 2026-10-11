@@ -19,7 +19,7 @@ import { textRuns, type Block, type DocLabels, type Language } from '@folio/core
 import { printFonts, printPalette } from '@folio/ui/tokens';
 import { choiceLetter, type ExportLabels } from './labels';
 import { pictureMark, type PlacedPicture } from './docxImages';
-import { framePng, problemText, stillFigure } from '@folio/figures';
+import { framePng, stillFigure } from '@folio/figures';
 import { wordImageType, type ResolvedMedia } from './media';
 import { BULLETS, NUMBERS, SIZE, fontFor, hairline, type FontRole } from './docxTheme';
 
@@ -230,11 +230,12 @@ type Figure = Extract<NonNullable<Slide['visual']>, { kind: 'figure' }>;
  */
 function figure(ctx: BlockCtx, visual: Figure): DocxChild[] {
   const still = stillFigure(visual);
-  if (still.problem) return [para(ctx, problemText(still.problem), 'muted')];
+  // Unfinished or not searchable: the reason and nothing else. Never the numbers it had before.
+  if (still.problem) return [para(ctx, still.note, 'muted')];
   const width = Math.min(Math.floor(ctx.width / TWIPS_PER_PIXEL), 560);
-  const out: DocxChild[] = [];
+  const out: DocxChild[] = still.note ? [para(ctx, still.note, 'muted')] : [];
   still.frames.forEach((frame, i) => {
-    if (ctx.placed) {
+    if (ctx.placed && frame.svg) {
       const mark = pictureMark(ctx.placed.length);
       ctx.placed.push({ src: `figure:${visual.figure}:${visual.values.join(',')}:${visual.target}:${i}`, bytes: framePng(frame.svg), type: 'png', width, height: Math.round((width * still.height) / still.width), description: frame.caption });
       out.push(new Paragraph({ keepNext: true, spacing: { before: 120, after: 80 }, children: [new TextRun(mark)] }));

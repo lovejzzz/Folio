@@ -49,25 +49,42 @@ test('a binary search demonstration is added to a slide, worked, changed, kept o
     await tools.getByRole('button', { name: 'Back to the start' }).click();
   }
 
-  // What is not a number stays as typed and is named; the list the figure has is not touched.
+  // What is not a number stays as typed and is named, and the demonstration is unfinished, not its old self.
   await retype(page, 'The list, in ascending order', '1, nope, 3');
   const typed = page.getByRole('group', { name: 'The demonstration’s numbers' });
-  await expect(typed.getByRole('alert')).toContainText('“nope” is not a number: nothing was changed.');
+  await expect(typed.getByRole('alert')).toContainText('“nope” is not a number.');
+  await expect(page.getByRole('group', { name: 'Binary search, step by step' })).toHaveCount(0);
+  await expect(page.locator('.folio-figure-problem').first()).toContainText('not finished');
+  // It is the slide's own: another slide has none of it, and it is there on coming back and after a reload.
+  await page.getByRole('button', { name: 'Next slide' }).click();
+  await expect(page.getByRole('group', { name: 'The demonstration’s numbers' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Previous slide' }).click();
   await expect(page.getByRole('textbox', { name: 'The list, in ascending order' })).toHaveText('1, nope, 3');
+  await settled(page);
+  await page.reload();
+  await expect(page.getByRole('textbox', { name: 'The list, in ascending order' })).toHaveText('1, nope, 3');
+  await expect(page.getByRole('group', { name: 'The demonstration’s numbers' }).getByRole('alert')).toContainText('“nope” is not a number.');
+  await retype(page, 'The list, in ascending order', '3, 8, 12, 17, 23, 31, 42, 56, 71');
   await expect(said).toHaveText(/^Searching for 42 in a sorted list of 9 numbers/);
-  await retype(page, 'The number to look for', 'x');
-  await expect(typed.getByRole('alert')).toContainText('“nope”, “x” are not numbers');
-  await retype(page, 'The number to look for', '42');
+  // The same step as numbers of the page's own size.
+  const strip = page.getByRole('list', { name: 'The list at this step' });
+  await tools.getByRole('button', { name: 'Next step' }).click();
+  await expect(strip.getByRole('listitem', { name: 'Position 5: 23, being compared' })).toBeVisible();
+  await tools.getByRole('button', { name: 'Next step' }).click();
+  await expect(strip.getByRole('listitem', { name: 'Position 1: 3, set aside' })).toBeVisible();
+  await expect(strip.getByRole('listitem', { name: 'Position 7: 42, found' })).toBeVisible();
+  await tools.getByRole('button', { name: 'Back to the start' }).click();
   // A list out of order is refused, and put in order only when the teacher says.
   await retype(page, 'The list, in ascending order', '9, 3, 5, 12');
   const data = page.getByRole('group', { name: 'The demonstration’s numbers' });
   await expect(data.getByRole('alert')).toContainText('Binary search needs the list in ascending order.');
   await expect(page.getByRole('group', { name: 'Binary search, step by step' })).toHaveCount(0);
   await data.getByRole('button', { name: 'Put them in order' }).click();
-  // A number the labels cannot write in full is refused too: the figure never rounds.
+  // A number the labels cannot write in full is searched all the same: no picture, the reason, and the numbers below.
   await retype(page, 'The number to look for', '0.00000001');
-  await expect(data.getByRole('alert')).toContainText('the figure does not round');
-  await expect(page.getByRole('group', { name: 'Binary search, step by step' })).toHaveCount(0);
+  await expect(page.locator('.folio-figure-problem').first()).toContainText('never rounds');
+  await expect(said).toHaveText(/^Searching for 1e-8 in a sorted list of 4 numbers/);
+  await expect(page.getByText('Looking for 1e-8')).toBeVisible();
   await retype(page, 'The number to look for', '4');
   await expect(said).toHaveText('Searching for 4 in a sorted list of 4 numbers: 3, 5, 9, 12.');
   await tools.getByRole('button', { name: 'Next step' }).click();
