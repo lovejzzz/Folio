@@ -1,6 +1,6 @@
 import { MATERIAL_KINDS, type Course, type MaterialKind } from '@folio/core';
 import { describe, expect, it } from 'vitest';
-import { executionPlan, missingTargets } from '../src/build';
+import { executionPlan, missingTargets, planOf } from '../src/build';
 import { smallCourse } from './fake';
 
 /** The small course with only these materials chosen, and these parts of its first lesson written already. */
@@ -63,4 +63,33 @@ describe('what a build of a course would do', () => {
     const after = { ...before, materials: { ...before.materials, quiz: { enabled: false, options: {} } } };
     expect(said(after).some((x) => x.includes('quiz'))).toBe(false);
   });
+
+  it('does not take graded work once written for a rubric that exists: lost, the lesson is said to have none, and the work is not written again', () => {
+    // As it was found: rubrics alone, every lesson's graded work written, and the course holding no rubric at all.
+    const base = chosen(['rubrics'], ['assignments']);
+    const [first, second] = base.lessonOrder as [string, string];
+    const piece = (id: string, lessonId: string, rubricId: string | null) => ({ id, lessonId, kind: 'assignment' as const, title: 'Lab report', prompt: 'Write it up.', steps: [], rubricId, answerKey: '', toward: '', objectiveIds: [], sourceRefs: [], origin: 'ai' as const, edited: false, flags: [] });
+    const lost: Course = {
+      ...base,
+      rubrics: {},
+      tasks: { a1: piece('a1', first, null), a2: piece('a2', second, 'r_gone') },
+      lessons: { [first]: { ...base.lessons[first]!, taskIds: ['a1'] }, [second]: { ...base.lessons[second]!, taskIds: ['a2'], gen: base.lessons[first]!.gen } },
+    };
+    expect(said(lost)).toEqual(['1:assignments:noRubric(for rubrics)', '2:assignments:noRubric(for rubrics)']);
+    expect(missingTargets(lost)).toEqual([]);
+    // With its rubric in the course it is done; with rubrics not chosen nobody asks.
+    const kept: Course = { ...lost, rubrics: { r1: { id: 'r1', title: 'Lab report', levels: [], criteria: [] } }, tasks: { ...lost.tasks, a1: piece('a1', first, 'r1'), a2: piece('a2', second, 'r1') } };
+    expect(said(kept)).toEqual(['1:assignments:done(for rubrics)', '2:assignments:done(for rubrics)']);
+    expect(said({ ...lost, materials: { ...lost.materials, rubrics: { enabled: false, options: {} }, assignments: { enabled: true, options: {} } } })).toEqual(['1:assignments:done', '2:assignments:done']);
+  });
+
+  it('plans a part asked for by itself as that part alone, written again or not', () => {
+    const c = chosen(['plan', 'slides', 'quiz'], ['plan', 'slides']);
+    const first = c.lessonOrder[0]!;
+    expect(planOf(c, [{ lessonId: first, kind: 'slides' }]).map((t) => `${t.lesson}:${t.kind}:${t.state}`)).toEqual(['1:slides:run']);
+    // The rest of the course still lacks four parts: none of them is in it.
+    expect(missingTargets(c)).toHaveLength(4);
+    expect(planOf(c, [{ lessonId: 'gone', kind: 'quiz' }])).toEqual([]);
+  });
 });
+

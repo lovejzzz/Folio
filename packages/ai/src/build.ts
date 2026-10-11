@@ -1,4 +1,4 @@
-import { CourseStore, GENERATED_KINDS, lessonPieces, orderedLessons, setsWork, type Command, type Course, type GeneratedKind, type MaterialKind } from '@folio/core';
+import { CourseStore, GENERATED_KINDS, lessonPieces, orderedLessons, setsWork, type Command, type Course, type GeneratedKind, type Lesson, type MaterialKind } from '@folio/core';
 
 /** The lesson still exists and still asks for this section: the teacher may have changed its homework mid-build. */
 const stillWanted = (course: Course, t: BuildTarget) => {
@@ -78,8 +78,12 @@ export interface PlannedTask extends BuildTarget {
   lesson: number;
   /** The chosen material that needs it, when the teacher did not choose it themselves. */
   neededBy?: MaterialKind;
-  /** "run": to be written. "done": written already. "noWork": the lesson sets no work of this kind, so there is nothing to write. */
-  state: 'run' | 'done' | 'noWork';
+  /**
+   * "run": to be written. "done": written already. "noWork": the lesson sets no work of this kind, so there is nothing
+   * to write. "noRubric": rubrics are chosen and the lesson's graded work stands written with none: said, never run,
+   * since the only way Folio has to write a rubric is to write the work again, and the work is the teacher's now.
+   */
+  state: 'run' | 'done' | 'noWork' | 'noRubric';
 }
 
 /**
@@ -92,9 +96,40 @@ export function executionPlan(course: Course, lessonIds?: readonly string[]): Pl
   const kinds = runKinds((k) => course.materials[k].enabled);
   return orderedLessons(course).flatMap((l, i) =>
     !lessonIds || lessonIds.includes(l.id)
-      ? kinds.map(({ kind, neededBy }): PlannedTask => ({ lessonId: l.id, lesson: i + 1, kind, ...(neededBy ? { neededBy } : {}), state: !setsWork(l, kind) ? 'noWork' : l.gen[kind] ? 'done' : 'run' }))
+      ? kinds.map(({ kind, neededBy }): PlannedTask => ({ lessonId: l.id, lesson: i + 1, kind, ...(neededBy ? { neededBy } : {}), state: !setsWork(l, kind) ? 'noWork' : !l.gen[kind] ? 'run' : kind === 'assignments' && rubricLacking(course, l) ? 'noRubric' : 'done' }))
       : [],
   );
+}
+
+/**
+ * Whether a lesson's written graded work lacks a rubric it is to have: rubrics are chosen, the lesson sets a piece a
+ * rubric scores, and that piece as it stands points at no rubric the course holds. That the work was once written
+ * says nothing of this: a rubric can be deleted, or lost on the way in from a file, and the work kept.
+ * A piece marked in points or as complete has none by design.
+ */
+export function rubricLacking(course: Course, lesson: Lesson): boolean {
+  if (!course.materials.rubrics.enabled || !setsWork(lesson, 'rubrics')) return false;
+  const scored = new Set(lessonPieces(lesson).filter((p) => p.kind === 'assignment' || p.kind === 'inclass').map((p) => p.toward.trim()));
+  const byPoints = (toward: string) => {
+    const g = course.grading.find((x) => x.item.trim() === toward);
+    return g?.judged === 'complete' || Boolean(g?.card?.points);
+  };
+  return lesson.taskIds.some((id) => {
+    const t = course.tasks[id];
+    return t?.kind === 'assignment' && scored.has(t.toward.trim()) && !byPoints(t.toward.trim()) && !(t.rubricId && course.rubrics[t.rubricId]);
+  });
+}
+
+/**
+ * The plan of a build asked for part by part (one part written again, the failed ones tried again): those parts and
+ * no others, each to be written whether or not it was before. Its cost is reckoned from this, not from what the
+ * whole course still lacks.
+ */
+export function planOf(course: Course, targets: readonly BuildTarget[]): PlannedTask[] {
+  return targets.flatMap((t): PlannedTask[] => {
+    const lesson = course.lessons[t.lessonId];
+    return lesson ? [{ ...t, lesson: course.lessonOrder.indexOf(t.lessonId) + 1, state: setsWork(lesson, t.kind) ? 'run' : 'noWork' }] : [];
+  });
 }
 
 /** Every enabled section that has not been built yet, lesson by lesson. */

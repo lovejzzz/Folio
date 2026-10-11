@@ -100,6 +100,8 @@ export const creditsText = {
   signInFirst: 'Sign in with Google first.',
   /** Said when a choice has more written than was ticked: never charged for in silence. */
   alsoWritten: 'This includes the graded work the rubrics score: a rubric is written with its assignment.',
+  /** Written graded work that has no rubric though rubrics are chosen: said, and not written over. */
+  noRubric: (n: number) => `${n === 1 ? 'One lesson’s graded work has' : `${n} lessons’ graded work have`} no rubric. Folio writes a rubric with its assignment and will not write your assignment again for it: add the rubric by hand, or write that assignment again yourself.`,
   /** Nothing is left to write: said, and no figure given. */
   nothingLeft: 'Everything chosen is written: there is nothing left to pay for.',
   ownKey: (usd: number) => `About $${usd < 10 ? usd.toFixed(1) : Math.round(usd)} at your provider’s prices, as measured on courses like this one.`,
@@ -140,8 +142,8 @@ export function estimateCredits(lessons: number, kinds: readonly string[]): numb
  * What the parts still to be written take, from the build's own plan of them: nothing for what is written already,
  * nothing for a lesson that sets no such work, and the work a chosen material needs counted with it.
  */
-export function planEstimate(tasks: readonly { kind: string; state: string; neededBy?: string }[]): { credits: number; dollars: number; parts: number; needed: number } {
+export function planEstimate(tasks: readonly { kind: string; state: string; neededBy?: string }[]): { credits: number; dollars: number; parts: number; needed: number; noRubric: number } {
   const run = tasks.filter((t) => t.state === 'run');
   const cents = run.reduce((sum, t) => sum + (PER_LESSON[t.kind] ?? 0), 0);
-  return { credits: Math.ceil(cents / 10) * 10, dollars: cents / MARKUP / 100, parts: run.length, needed: run.filter((t) => t.neededBy).length };
+  return { credits: Math.ceil(cents / 10) * 10, dollars: cents / MARKUP / 100, parts: run.length, needed: run.filter((t) => t.neededBy).length, noRubric: tasks.filter((t) => t.state === 'noRubric').length };
 }

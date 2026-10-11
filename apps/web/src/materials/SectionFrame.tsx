@@ -4,6 +4,8 @@ import type { ReactNode } from 'react';
 import { useT } from '../i18n';
 import { retryCell, useBuild } from '../state/build';
 import { keepMine, updateSection, useProposals } from '../state/proposals';
+import { CreditsNote } from '../screens/plan/CreditsNote';
+import { useCourse } from '../state/session';
 import { FlagNote } from './FlagNote';
 import { HomeworkPicker, NoWork } from './Homework';
 
@@ -38,6 +40,7 @@ function StaleBar({ course, lesson, kind }: { course: Course; lesson: Lesson; ki
 
 function NotBuilt({ lesson, kind }: { lesson: Lesson; kind: MaterialKind }) {
   const t = useT();
+  const course = useCourse();
   const section = sectionFor(kind);
   const run = useBuild((s) => (section ? s.cells[`${lesson.id}:${section}`] : undefined));
   const error = useBuild((s) => (section ? s.errors[`${lesson.id}:${section}`] : undefined));
@@ -57,6 +60,8 @@ function NotBuilt({ lesson, kind }: { lesson: Lesson; kind: MaterialKind }) {
           {run === 'error' ? t.common.retry : t.lesson.buildThis}
         </Button>
       )}
+      {/* Of this part alone: what the rest of the course still lacks is not counted with it. */}
+      {section && <CreditsNote course={course} targets={[{ lessonId: lesson.id, kind: section }]} />}
     </div>
   );
 }
