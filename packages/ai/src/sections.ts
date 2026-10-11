@@ -153,6 +153,8 @@ const slides: SectionJob<SlidesDraft> = {
     const tidied = tidySlides(v, course.language);
     const sessions = lessonSessions(course);
     const shown = sessions.some((s) => s.kind === 'lecture' || s.kind === 'class') ? sessions.map((s) => s.kind === 'lecture' || s.kind === 'class') : sessions.map(() => true);
+    // With the lesson plan out of the teacher's choice its sheets are too: no slide is made that sends a class to one.
+    if (!course.materials.plan.enabled) return tidied;
     return { slides: withSheetSlides(tidied.slides, lesson, docLabels(course.language).fromSheet, (session) => shown[session] ?? true) };
   },
   check: (v, _course, lesson) => [...unshown(v, lesson), ...outOfStep(v, lesson).map((issue): Problem => ({ index: null, advisory: true, flag: { code: 'schemaIssue', values: { path: 'slides', issue } } }))],

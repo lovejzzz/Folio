@@ -375,7 +375,22 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
     // --redo quiz,assignments: those parts of the first lessons are written again from the plans as they stand, to
     // compare ways of writing one part on the same lessons.
     for (const id of saved.lessonOrder.slice(0, Number(option('--lessons') ?? saved.lessonOrder.length))) for (const kind of (option('--redo') ?? '').split(',').filter((k) => k && k !== 'handouts' && k !== 'review')) delete saved.lessons[id]!.gen[kind];
+    // --fresh: the first lessons as an outline left them, nothing of theirs written: to try a choice of materials from the start.
+    if (ARGS.includes('--fresh')) {
+      const all = saved as unknown as { lessonOrder: string[]; lessons: Record<string, Record<string, unknown>>; tasks: Record<string, unknown>; faq: Record<string, unknown> };
+      for (const id of all.lessonOrder.slice(0, Number(option('--lessons') ?? all.lessonOrder.length))) {
+        const l = all.lessons[id]!;
+        for (const t of (l.taskIds as string[]) ?? []) delete all.tasks[t];
+        for (const f of (l.faqIds as string[]) ?? []) delete all.faq[f];
+        Object.assign(l, { gen: {}, segments: [], slides: [], handouts: [], taskIds: [], faqIds: [], keyIdeas: [], vocabulary: [], study: { overview: '', points: [] }, ready: [], page: [] });
+      }
+    }
     store = new CourseStore(parseCourse(saved));
+    // --materials slides,quiz: only these are chosen, as a teacher who wants part of a course would have it.
+    if (option('--materials')) {
+      const want = option('--materials')!.split(',');
+      store.apply(MATERIAL_KINDS.map((kind) => cmd('material.set', { kind, enabled: want.includes(kind) })), { label: { key: 'built' }, source: 'teacher', undoable: false });
+    }
     // --redo handouts: the sheets alone, written again from the plan as it stands.
     // --redo review: the plan as it stands read and mended again (and its sheets written from what comes of it), to try a
     // change to the reading on plans already written.
@@ -438,7 +453,7 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
 const polishOnly = ARGS.includes('--polish');
 // --mix '{"folio_assignments":{"model":"claude-sonnet-5-5","effort":"medium"}}': who writes a part, for an experiment.
 if (option('--mix')) Object.assign(FOLIO_MIX as Record<string, unknown>, JSON.parse(option('--mix')!));
-const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs', '--lessons', '--trace', '--redo', '--mix'].includes(ARGS[i - 1] ?? ''));
+const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs', '--lessons', '--trace', '--redo', '--mix', '--materials'].includes(ARGS[i - 1] ?? ''));
 const asked = names.length ? names : Object.keys(CHECKUP ?? BRIEFS);
 await Promise.all(asked.map((name) => make(name, polishOnly)));
 {

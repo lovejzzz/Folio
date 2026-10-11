@@ -401,6 +401,26 @@ function onlineAsk(course: Course, lesson: Lesson, kind: SectionPromptKind): str
   return `${asks[kind](course, lesson)} ${ONLINE_ASKS[kind]}${mixed && kind === 'quiz' ? ` ${MIXED_ASKS.quiz}` : ''}`;
 }
 
+const MATERIAL_NAMES: Record<string, string> = { plan: 'a lesson plan (with its handouts and worksheets)', slides: 'a slide deck', quiz: 'a practice quiz', study: 'a study guide', faq: 'an FAQ', discussions: 'discussion prompts', assignments: 'graded work written out (assignments, test papers)', rubrics: 'rubrics' };
+
+const PLAN_SET_ASIDE = 'A plan of this lesson was written before, and the teacher has since taken the lesson plan out of what they use. It is given here only so that the facts, examples, numbers and names of what you write agree with it: nothing you write speaks of it, of its segments or of its sheets.';
+
+/**
+ * What exists for this course and what does not, said to every writer when the teacher has chosen only some
+ * materials. Each writer took the full set for granted: a plan sent the class to slides and a study guide nobody had
+ * asked for, and a deck written alone "worked from the sheet". Nothing is said when everything is chosen.
+ */
+export function onlyThese(course: Course): string {
+  if (hasModulePages(course)) return '';
+  const kinds = Object.keys(MATERIAL_NAMES);
+  // Graded work is written whenever its rubrics are: it exists then, chosen or not.
+  const on = (k: string) => course.materials[k as keyof Course['materials']].enabled || (k === 'assignments' && course.materials.rubrics.enabled);
+  const off = kinds.filter((k) => !on(k));
+  if (!off.length) return '';
+  const list = (ks: string[]) => ks.map((k) => MATERIAL_NAMES[k]).join('; ');
+  return `The teacher has chosen to have only these written for this course: ${list(kinds.filter(on))}. Not written, and not to be had by anyone: ${list(off)}. So nothing you write sends a student or the teacher to one of those, names one, or leaves to one something a reader of yours needs: what your material needs (its questions, its data, its figures given by their numbers, its instructions) it holds itself, in full. Where the course's own facts name a graded piece, it is still named: only its written-out paper may be absent.`;
+}
+
 /** The per-call part of a section request; the course itself goes in courseBackground. */
 export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromptKind, already = ''): string {
   const parts = [lessonContext(course, lesson)];
@@ -411,9 +431,13 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     // "give new items, not the lesson's", an assignment forbade the notebook its page had just said to submit.
     const inClass = kind === 'assignments' && lesson.homework.kind === 'inclass';
     const follow = inClass ? FOLLOW_IN_CLASS : kind === 'assignments' && hasModulePages(course) ? FOLLOW_PAGE_BUILD : kind === 'quiz' || kind === 'assignments' ? FOLLOW_PLAN_NEW_ITEMS : FOLLOW_PLAN;
-    if (plan) parts.push([plan, sheetsText(lesson, kind === 'slides' || kind === 'study' || kind === 'faq' || kind === 'assignments'), follow].filter(Boolean).join('\n\n'));
+    // A plan written before and since taken out of the teacher's choice still says what the lesson's facts are, so
+    // what is written now agrees with what was; its sheets go with it and are nobody's to be sent to.
+    const kept = course.materials.plan.enabled || hasModulePages(course);
+    if (plan) parts.push([kept ? plan : `${PLAN_SET_ASIDE}\n${plan}`, kept ? sheetsText(lesson, kind === 'slides' || kind === 'study' || kind === 'faq' || kind === 'assignments') : '', follow].filter(Boolean).join('\n\n'));
     if (plan && kind === 'slides') parts.push(unlistedAsk(lesson.segments, new Set(lesson.handouts.map((h) => h.usedIn.trim().toLowerCase()))));
   }
+  parts.push(onlyThese(course));
   if (kind === 'plan') parts.push(nextReading(course, lesson), earlierLessons(course, lesson), earlierNotes(lesson));
   // A graded piece of its own, not one of a weekly run: it is written from the course, not from one lesson.
   if (kind === 'assignments' && ownPiece(course, lesson)) parts.push(courseSoFar(course, lesson));
