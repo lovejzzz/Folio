@@ -15,12 +15,16 @@ const lessons = orderedLessons(course).slice(0, 2);
 const plain = (xml: string) => xml.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/\s+/g, ' ');
 const squash = (text: string) => text.replace(/[`*_]/g, '').replace(/\s+/g, ' ').trim();
 /** Sentences of a teacher-only text long enough to be told from anything students are given. */
-const telling = (text: string) => squash(text).split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter((s) => s.length >= 40);
+const telling = (text: string) => squash(text).split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter((s) => s.length >= 20);
+/** Letters and digits only: the same words are found however they are spaced, quoted or marked up. */
+const bare = (text: string) => text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
 
 function teachersOnly(): { where: string; text: string }[] {
   const out: { where: string; text: string }[] = [];
   for (const lesson of lessons) {
     for (const seg of lesson.segments) for (const text of telling(seg.teacherNotes)) out.push({ where: `notes of "${seg.title}"`, text });
+    // What a segment does is the teacher's script, and often says the answer.
+    for (const seg of lesson.segments) for (const text of telling(seg.description)) out.push({ where: `script of "${seg.title}"`, text });
     for (const sheet of lesson.handouts) for (const text of telling(sheet.key)) out.push({ where: `key of "${sheet.title}"`, text });
     for (const slide of lesson.slides) for (const text of telling(slide.notes ?? '')) out.push({ where: `notes of slide "${slide.title}"`, text });
     for (const id of lesson.taskIds) {
@@ -40,29 +44,31 @@ function studentsOwn(): string {
 describe('a real course, exported for students', () => {
   const secrets = teachersOnly();
   const own = studentsOwn();
-  const leaks = (text: string) => secrets.filter((s) => !own.includes(s.text.slice(0, 60)) && text.includes(s.text.slice(0, 60)));
+  const ownBare = bare(own);
+  // In the student file, and nowhere among what students are given in their own right (a sentence the study guide also says,
+  // code set on a sheet and repeated in the notes).
+  const leaks = (text: string) => { const there = bare(text); return secrets.filter((s) => bare(s.text).length >= 16 && there.includes(bare(s.text)) && !ownBare.includes(bare(s.text))); };
 
   it('has teacher-only text to keep out, in every place a lesson keeps it', () => {
     const places = new Set(secrets.map((s) => s.where.split(' of ')[0]));
-    expect([...places].sort()).toEqual(['explanation', 'key', 'notes']);
+    expect([...places].sort()).toEqual(['explanation', 'key', 'notes', 'script']);
     expect(secrets.length).toBeGreaterThan(60);
   });
 
   it('keeps all of it out of the Word file, material by material', async () => {
-    // The lesson plan is the one material that is the teacher's own page: a teacher who ticks it for a student copy hands
-    // out what each segment does, which the slide notes say again. It is checked apart, below.
-    for (const kind of MATERIAL_KINDS.filter((k) => k !== 'plan')) {
+    for (const kind of MATERIAL_KINDS) {
       const doc = project(course, kind, { audience: 'student', lessonIds: lessons.map((l) => l.id) });
       const text = plain(unzipText(await renderDocx([doc], { courseTitle: course.title })).text('word/document.xml'));
-      expect(leaks(squash(text)).map((s) => `${kind}: ${s.where}: ${s.text.slice(0, 60)}`)).toEqual([]);
+      expect(leaks(text).map((s) => `${kind}: ${s.where}: ${s.text.slice(0, 60)}`)).toEqual([]);
     }
   });
 
-  it('gives a student copy of the plan no teacher\'s notes and no key, though it carries what each segment does', async () => {
+  it('gives a student copy of the plan the order of the meeting and its times, and none of the script', async () => {
     const doc = project(course, 'plan', { audience: 'student', lessonIds: lessons.map((l) => l.id) });
-    const text = squash(plain(unzipText(await renderDocx([doc], { courseTitle: course.title })).text('word/document.xml')));
-    const found = leaks(text).filter((s) => !s.where.startsWith('notes of slide'));
-    expect(found.map((s) => `${s.where}: ${s.text.slice(0, 60)}`)).toEqual([]);
+    const text = plain(unzipText(await renderDocx([doc], { courseTitle: course.title })).text('word/document.xml'));
+    const first = lessons[0]!.segments[0]!;
+    expect(text).toContain(first.title);
+    expect(bare(text)).not.toContain(bare(telling(first.description)[0]!));
   });
 
   it('keeps all of it out of the deck, speaker notes included', async () => {
@@ -75,7 +81,7 @@ describe('a real course, exported for students', () => {
   it('and the teacher\'s copy has them', async () => {
     const docs = MATERIAL_KINDS.map((kind) => project(course, kind, { audience: 'teacher', lessonIds: lessons.map((l) => l.id) }));
     const text = squash(plain(unzipText(await renderDocx(docs, { courseTitle: course.title })).text('word/document.xml')));
-    const found = secrets.filter((s) => text.includes(s.text.slice(0, 60))).length;
+    const found = secrets.filter((s) => bare(text).includes(bare(s.text))).length;
     expect(found / secrets.length).toBeGreaterThan(0.8);
   });
 });

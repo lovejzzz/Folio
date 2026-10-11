@@ -33,7 +33,7 @@ function sheet(h: Handout): Block[] {
   });
 }
 
-/** Lesson plans. The student copy is a lesson outline without teacher notes. */
+/** Lesson plans. The student copy is the outline of the lesson: what it is for, its order and times, its sheets; no script and no notes. */
 export function projectPlan(ctx: Ctx): Block[] {
   const { course, l, teacher } = ctx;
   const blocks: Block[] = [];
@@ -64,15 +64,17 @@ export function projectPlan(ctx: Ctx): Block[] {
       const mine = segments.filter((s) => sessionIndex(course, s.session) === i);
       if (!mine.length) continue;
       if (sessions.length > 1) blocks.push({ t: 'heading', level: 3, text: l.sessionHeading(l.sessionKinds[session.kind], session.minutes) });
+      // What each segment does is the teacher's script: it says what to show and ask, and often what the answer is ("simplify
+      // to 49 + 4.9h and read off 49 m/s"). A student's copy keeps the order of the meeting and its times, and none of that.
+      if (!teacher) {
+        blocks.push({ t: 'table', head: [l.time, l.activity], widths: [16, 84], rows: mine.map((s) => [l.minutes(s.minutes), field(ctx, s.id, 'title', s.title)]) });
+        continue;
+      }
       blocks.push({
         t: 'table',
         head: [l.time, l.activity, l.details],
         widths: [12, 28, 60],
-        rows: mine.map((s) => [
-          l.minutes(s.minutes),
-          field(ctx, s.id, 'title', s.title),
-          teacher && s.teacherNotes ? `${s.description}\n${l.teacherNote}: ${s.teacherNotes}` : s.description,
-        ]),
+        rows: mine.map((s) => [l.minutes(s.minutes), field(ctx, s.id, 'title', s.title), s.teacherNotes ? `${s.description}\n${l.teacherNote}: ${s.teacherNotes}` : s.description]),
       });
     }
     const vocabulary = terms(lesson);
