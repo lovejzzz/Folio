@@ -84,7 +84,7 @@ describe('a segment worked from a sheet', () => {
 
 describe('a plan written again', () => {
   it('keeps the id of each segment that keeps its title, so its slides stay tied to it', async () => {
-    const { keptIds } = await import('../src/sections');
+    const { keptIds } = await import('../src/slideSteps');
     const before = [{ id: 'x_a', title: 'Warm-up' }, { id: 'x_b', title: 'Worked example' }, { id: 'x_c', title: 'Practice' }];
     // Written again: one renamed, one new, the order changed.
     const again = keptIds([{ title: 'Practice' }, { title: 'warm-up ' }, { title: 'A new example' }, { title: 'Exit ticket' }], before);
@@ -94,7 +94,7 @@ describe('a plan written again', () => {
   });
 
   it('gives new ids where a title stands twice: two segments of one name are not told apart by it', async () => {
-    const { keptIds } = await import('../src/sections');
+    const { keptIds } = await import('../src/slideSteps');
     const again = keptIds([{ title: 'Practice' }, { title: 'Practice' }], [{ id: 'x_a', title: 'Practice' }]);
     expect(again.map((s) => s.id)).not.toContain('x_a');
   });

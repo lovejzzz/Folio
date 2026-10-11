@@ -1,4 +1,4 @@
-import { outOfStep, withSheetSlides } from './slideSteps';
+import { keptIds, outOfStep, withSheetSlides } from './slideSteps';
 import { groundsOf, markedForStudents } from './locators';
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
@@ -97,21 +97,6 @@ export function announced(v: PlanDraft, course: Course, lesson: Lesson): PlanDra
   const last = v.segments.findLastIndex((x) => x.kind !== 'break');
   if (last < 0) return v;
   return { ...v, segments: v.segments.map((x, i) => (i === last ? { ...x, description: `${x.description.trimEnd()}\nBefore students leave, tell them that next time they sit ${sat}.` } : x)) };
-}
-
-/**
- * A plan written again keeps the id of every segment that keeps its title: slides say which segment they are shown in
- * by its id, and a plan written again with new ids throughout left every slide of the deck tied to nothing. A segment
- * that is new, renamed, or one of two of a name gets a new id, and what was tied to the old one is then tied to nothing,
- * which the deck's own "needs updating" already says.
- */
-export function keptIds<T extends { title: string }>(written: T[], before: readonly { id: string; title: string }[]): (T & { id: string })[] {
-  const key = (title: string) => title.trim().toLowerCase();
-  const once = (list: readonly { title: string }[], title: string) => list.filter((x) => key(x.title) === key(title)).length === 1;
-  return written.map((s) => {
-    const old = once(written, s.title) && once(before, s.title) ? before.find((x) => key(x.title) === key(s.title)) : undefined;
-    return { ...s, id: old?.id ?? newId('x') };
-  });
 }
 
 const plan: SectionJob<PlanDraft> = {
