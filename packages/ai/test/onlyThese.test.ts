@@ -1,6 +1,7 @@
 import { MATERIAL_KINDS, orderedLessons, parseCourse, type Course, type MaterialKind } from '@folio/core';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { homeworkLine, inClassPieces } from '../src/continuity';
 import { onlyThese, sectionPrompt } from '../src/prompts';
 
 /** A lesson Folio really wrote (statistics with R, the frozen batch), with only some of its materials chosen. */
@@ -47,6 +48,18 @@ describe('what a writer is told exists', () => {
     expect(said).toContain('nothing is said of what its brief, paper, answer key or rubric holds');
     expect(onlyThese(chosen(['slides', 'assignments']))).not.toContain('the teacher\'s own to write out');
     expect(onlyThese(chosen(['slides', 'rubrics']))).not.toContain('the teacher\'s own to write out');
+  });
+
+  it('does not tell a plan that a piece\'s brief is written and given out with its rubric when no graded work is written (as a plan written alone was told)', () => {
+    const alone = chosen(['plan']);
+    const line = homeworkLine(alone, lesson);
+    expect(line).toContain('graded work that the teacher writes out themselves');
+    expect(line).toContain('"Weekly lab worksheets"');
+    expect(line).not.toMatch(/its brief is written|given out|with its rubric/);
+    expect(inClassPieces(alone)).toBe('');
+    // With graded work written, the plan is told as before.
+    expect(homeworkLine(chosen(['plan', 'assignments']), lesson)).not.toContain('writes out themselves');
+    expect(homeworkLine(chosen(['plan', 'rubrics']), lesson)).not.toContain('writes out themselves');
   });
 });
 

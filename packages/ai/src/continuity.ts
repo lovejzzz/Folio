@@ -258,7 +258,24 @@ function firstTurn(course: Course, lesson: Lesson): string {
   return ' This is the first lesson to run it, and its brief is written with this lesson: where a student prepares their turn (leading, presenting), today the brief is given out (with its rubric, where it has one), the teacher models a turn that is not scored, and who goes first next time is settled; scored turns begin next time. Where nothing is prepared (taking part, answering in class), it is scored from today.';
 }
 
+/** Whether graded work is written out for this course: chosen, or needed by the rubrics that are. */
+const worksWritten = (course: Course): boolean => course.materials.assignments.enabled || course.materials.rubrics.enabled || hasModulePages(course);
+
+/**
+ * A lesson's graded work in a course where none is written out: the teacher's own. A plan written alone was told, as
+ * every plan is, that the piece's brief is written with the lesson and given out with its rubric, and had the teacher
+ * hand out a brief and explain four levels that nobody had written.
+ */
+function ownWork(course: Course, lesson: Lesson): string {
+  if (worksWritten(course)) return '';
+  const names = [...new Set(lessonPieces(lesson).filter((p) => p.kind !== 'none' && p.toward.trim()).map((p) => `"${p.toward.trim()}"`))];
+  if (!names.length) return '';
+  return `This lesson sets or runs ${names.join(' and ')}: graded work that the teacher writes out themselves, since no graded work is written for this course. It is given its place and its time and called by its name; its instructions, paper, answer key and rubric are the teacher's to bring, and nothing is said of what they hold, of levels or criteria, or of copies of them.`;
+}
+
 export function homeworkLine(course: Course, lesson: Lesson): string {
+  const own = ownWork(course, lesson);
+  if (own) return own;
   const toward = lesson.homework.toward.trim();
   const collected = orderedLessons(course)
     .filter((l) => l.id !== lesson.id)
@@ -382,6 +399,7 @@ export function ownPiece(course: Course, lesson: Lesson): boolean {
  * brief and rubric are, so none writes criteria of its own or cites a rubric that isn't there.
  */
 export function inClassPieces(course: Course): string {
+  if (!worksWritten(course)) return '';
   const seen = new Set<string>();
   const lines = orderedLessons(course).flatMap((l) =>
     lessonPieces(l).flatMap((p) => {
