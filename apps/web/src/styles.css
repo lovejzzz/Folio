@@ -267,16 +267,14 @@
     display: block;
     width: auto;
     max-width: 100%;
-    max-height: 27cqw;
+    max-height: 30cqw;
     aspect-ratio: 640 / 380;
     margin: 0 auto;
   }
+  /* Under the slide: room for the longest sentence of a step, so the buttons do not jump. */
   .folio-figure-caption {
-    font-size: max(1.5cqw, 11px);
-    line-height: 1.35;
     text-align: center;
-    min-height: 2.7em;
-    max-width: 78cqw;
+    min-height: 3.75rem;
   }
   /* On a page that cannot move, each picture of the search at the width of the text. */
   .folio-figure-frame {

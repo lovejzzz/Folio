@@ -3,6 +3,7 @@ import { binarySearch, binarySearchProblem } from '@folio/core';
 import { keyframes, renderFrame, stillFigure } from '@folio/figures';
 import { lazy, Suspense, type ComponentType, type LazyExoticComponent, type ReactNode } from 'react';
 import { useT } from '../../i18n';
+import { useFigureRun, type FigureRun } from './figureRun';
 
 type Figure = Extract<SlideVisual, { kind: 'figure' }>;
 
@@ -10,7 +11,7 @@ type Figure = Extract<SlideVisual, { kind: 'figure' }>;
  * The demonstrations a slide can hold, each loaded when a slide first shows one. A course file names one of these and
  * gives it numbers; it cannot bring a drawing or a program of its own.
  */
-const LIVE: Record<FigureId, LazyExoticComponent<ComponentType<{ values: number[]; target: number }>>> = {
+const LIVE: Record<FigureId, LazyExoticComponent<ComponentType<{ run: FigureRun }>>> = {
   binarySearch: lazy(() => import('./BinarySearchFigure')),
 };
 
@@ -27,13 +28,14 @@ export function FigureStill({ visual }: { visual: Figure }) {
   return <img className="folio-figure-art" src={svgAddress(renderFrame(model, first))} alt={first.caption} />;
 }
 
-/** A slide's demonstration: live where a teacher or a class works it, still everywhere else. */
+/** A slide's demonstration: worked where a run of it is held above the slide (the stage), still everywhere else. */
 export function FigureView({ visual, live }: { visual: Figure; live: boolean }) {
+  const run = useFigureRun();
   const Live = LIVE[visual.figure];
-  if (!live) return <FigureStill visual={visual} />;
+  if (!live || !run) return <FigureStill visual={visual} />;
   return (
     <Suspense fallback={<FigureStill visual={visual} />}>
-      <Live values={visual.values} target={visual.target} />
+      <Live run={run} />
     </Suspense>
   );
 }

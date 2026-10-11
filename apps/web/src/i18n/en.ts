@@ -326,6 +326,7 @@ export const en = {
   /** Demonstrations on a slide. */
   figures: {
     binarySearch: 'Binary search, step by step',
+    controls: 'Work the demonstration',
     reset: 'Back to the start',
     back: 'One step back',
     step: 'Next step',

@@ -3,6 +3,7 @@ import { cmd, newId, orderedLessons, type Course, type Lesson, type Slide, type 
 import { Button, IconButton, SegmentedControl } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
 import { ArrowDown, ArrowUp, EyeOff, Plus, Search, SearchX, Trash2 } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { startBuild, useBuild } from '../state/build';
@@ -10,7 +11,9 @@ import { edit } from '../state/edit';
 import { focusItem } from './newItems';
 import { SlideCanvas } from './SlideCanvas';
 import { ChartData } from './SlideVisual';
+import { FigureControls } from './figures/FigureControls';
 import { FigureData, newBinarySearch } from './figures/FigureData';
+import { FigureRunProvider } from './figures/figureRun';
 import { Filmstrip, SlidePager, deckOrder, useArrowKeys, type SlidePos } from './SlideNav';
 
 /** In the lesson view: the deck as a grid of thumbnails that open the slide editor. */
@@ -101,6 +104,12 @@ function StageTools({ lesson, slide, index, save, go }: StageToolsProps) {
   );
 }
 
+/** The slide on the stage, and what works it: a demonstration's run is held here, over the slide and its buttons. */
+function Stage({ slide, children }: { slide: Slide; children: ReactNode }) {
+  if (slide.visual?.kind !== 'figure') return <>{children}</>;
+  return <FigureRunProvider visual={slide.visual}>{children}</FigureRunProvider>;
+}
+
 /** The lesson and slide to show: the one asked for, clamped to what exists, else the first. */
 function resolve(lessons: Lesson[], lessonId: string | undefined, slide: number | undefined): SlidePos | null {
   const lesson = lessons.find((l) => l.id === lessonId) ?? lessons[0];
@@ -156,9 +165,12 @@ export function SlidesEditor({ course, lessonId, slide: slideNumber, onGo }: Sli
       <Filmstrip course={course} lessons={lessons} activeId={slide.id} onSelect={onGo} />
       <div className="mx-auto min-w-0 max-w-slide flex-1">
         <StageTools lesson={lesson} slide={slide} index={pos.index} save={save} go={(index) => onGo({ lessonId: lesson.id, index })} />
-        <div className="overflow-hidden rounded-sheet shadow-overlay">
-          <SlideCanvas key={slide.id} slide={slide} lang={course.language} footer={`${t.common.lesson(n)} · ${lesson.title}`} onChange={update} />
-        </div>
+        <Stage slide={slide}>
+          <div className="overflow-hidden rounded-sheet shadow-overlay">
+            <SlideCanvas key={slide.id} slide={slide} lang={course.language} footer={`${t.common.lesson(n)} · ${lesson.title}`} onChange={update} />
+          </div>
+          <FigureControls />
+        </Stage>
         {slide.visual?.kind === 'chart' && <ChartData v={slide.visual} onChange={(visual) => update({ ...slide, visual })} />}
         {slide.visual?.kind === 'figure' && <FigureData v={slide.visual} onChange={(visual) => update({ ...slide, visual })} />}
         <SlidePager course={course} lesson={lesson} index={pos.index} onPrev={onPrev} onNext={onNext} />
