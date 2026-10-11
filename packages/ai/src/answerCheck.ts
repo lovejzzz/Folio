@@ -105,7 +105,7 @@ function imports(form: Form): string {
   return found.length ? `def _libraries():\n${found.join('\n')}\n` : '';
 }
 
-async function runForm(runner: Runner, task: Task, form: Form): Promise<Verdict | null> {
+export async function runForm(runner: Runner, task: Task, form: Form): Promise<Verdict | null> {
   await runner.reset();
   const code = `${HARNESS}\n${imports(form)}print(run_check('item.json', 'check.json'))`;
   const res = await runner.run({ code, files: [{ path: 'item.json', data: JSON.stringify(task) }, { path: 'check.json', data: JSON.stringify(form) }] });
@@ -136,6 +136,20 @@ const claim = (c: Check): string => {
 };
 
 const ORIGIN = 'the mistake the explanation names';
+
+/**
+ * The item without the sentences of its explanation that speak of the wrong choices whose account failed, when nothing
+ * else failed. Null when the key itself is in question, or no such sentence can be told apart.
+ */
+function withoutFalseOrigins(task: Task, flags: Flag[]): Task | null {
+  if (task.kind !== 'question' || !flags.length || !flags.every((f) => f.code === 'answerCheck' && f.values.claim.startsWith(ORIGIN))) return null;
+  const numbers = flags.flatMap((f) => (f.code === 'answerCheck' ? [Number(/\(choice (\d+)\)/.exec(f.values.claim)?.[1])] : [])).filter((n) => n > 0);
+  const quoted = numbers.map((n) => task.choices[n - 1]?.text.replace(/`/g, '').trim()).filter((text): text is string => Boolean(text));
+  if (!quoted.length || quoted.length !== numbers.length) return null;
+  const sentences = task.explanation.split(/(?<=[.!?])\s+(?=[“"A-Z])/);
+  const kept = sentences.filter((sentence) => !quoted.some((text) => sentence.replace(/`/g, '').includes(text)));
+  return kept.length && kept.length < sentences.length ? { ...task, explanation: kept.join(' ') } : null;
+}
 
 export interface AnswerChecks {
   /** What failed twice, by task: for the teacher. */
@@ -181,8 +195,13 @@ export async function checkAnswers(inference: Inference, runner: Runner, tasks: 
     // Put right by what was computed, and kept only if it then holds: otherwise the item stands as written, with its note.
     const again = await corrected(inference, task, shownItem(task), flags, signal).catch(() => null);
     const holds = again ? await checkOne(inference, runner, again, signal).catch(() => null) : null;
-    if (again && holds && !holds.length) out.fixed.set(task.id, again);
-    else {
+    if (again && holds && !holds.length) return void out.fixed.set(task.id, again);
+    // An account of a wrong choice that a program cannot reproduce, and that could not be put right, is taken out: "uses
+    // position as velocity" stood beside 7.0 where that gives 11. The key and what else is said stand; a teacher reading
+    // the explanation to a class is not given a reason that is false. Kept only if the item then holds.
+    const plain = withoutFalseOrigins(task, flags);
+    if (plain && !(await checkOne(inference, runner, plain, signal).catch(() => null))?.length) return void out.fixed.set(task.id, plain);
+    {
       // What an explanation says of a wrong choice ("22.0 omits the initial velocity", when that gives 18.0) is put right when it
       // can be; when it cannot, the form misread the mistake as often as the item misstated it, and the teacher is not told.
       const loud = flags.filter((f) => !(f.code === 'answerCheck' && f.values.claim.startsWith(ORIGIN)));

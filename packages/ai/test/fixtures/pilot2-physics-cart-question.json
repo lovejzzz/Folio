@@ -1,0 +1,36 @@
+{
+ "lessonId": "l_19f6692a3ee7",
+ "sourceRefs": [],
+ "origin": "ai",
+ "edited": false,
+ "id": "t_8ed9a8f426f0",
+ "kind": "question",
+ "objectiveIds": [
+  "o_abd7070ec457"
+ ],
+ "flags": [],
+ "format": "choice",
+ "prompt": "A cart has position x(t) = (1.0 m) + (5.0 m/s)t \u2212 (2.0 m/s\u00b2)t\u00b2 + (1.0 m/s\u00b3)t\u00b3. What are its velocity and acceleration at t = 2.0 s?",
+ "choices": [
+  {
+   "id": "x_8fc30ad988a9",
+   "text": "v = 7.0 m/s; a = 9.0 m/s\u00b2"
+  },
+  {
+   "id": "x_bd702a8a987e",
+   "text": "v = 9.0 m/s; a = 12.0 m/s\u00b2"
+  },
+  {
+   "id": "x_841525433a61",
+   "text": "v = 1.0 m/s; a = \u22124.0 m/s\u00b2"
+  },
+  {
+   "id": "x_483095d90bc4",
+   "text": "v = 9.0 m/s; a = 8.0 m/s\u00b2"
+  }
+ ],
+ "correct": "x_483095d90bc4",
+ "answer": "",
+ "explanation": "Differentiating gives v(t) = (5.0 m/s) \u2212 (4.0 m/s\u00b2)t + (3.0 m/s\u00b3)t\u00b2 and a(t) = \u22124.0 m/s\u00b2 + (6.0 m/s\u00b3)t. At 2.0 s, these give 9.0 m/s and 8.0 m/s\u00b2. \u201cv = 7.0 m/s; a = 9.0 m/s\u00b2\u201d uses position as velocity and velocity as acceleration. \u201cv = 9.0 m/s; a = 12.0 m/s\u00b2\u201d drops the constant \u22124.0 m/s\u00b2 from acceleration. \u201cv = 1.0 m/s; a = \u22124.0 m/s\u00b2\u201d ignores the cubic position term.",
+ "difficulty": 2
+}

@@ -26,7 +26,7 @@ import { newVocabulary } from './continuity';
 import { workRun } from './sheetRun';
 import type { LineRunner } from './sheetCode';
 import type { Runner } from '@folio/run';
-import { alreadySet, assignments, base, continuedInClass, flagsAt, pieceTitle, step, test, type SectionJob } from './workJobs';
+import { alreadySet, assignments, base, continuedInClass, flagsAt, step, test, type SectionJob } from './workJobs';
 import { issuePlace, reviewPlan } from './review';
 import { PREPARATION_GRADING, checkRunOfShow, isLiveOnline, isMixedOnline } from './live';
 import { FORUM_GRADING, checkModule, moduleJob, type ModuleDraft } from './online';
@@ -88,12 +88,12 @@ export function announced(v: PlanDraft, course: Course, lesson: Lesson): PlanDra
   // In one sentence: "a practice quiz on this lesson" beside "next time extends the comparison" announced nothing.
   const sentences = v.segments.flatMap((x) => `${x.description}\n${x.teacherNotes}`.toLowerCase().split(/(?<=[.!?])\s+|\n+/));
   if (sentences.some((x) => /\bnext (?:time|class|lesson|week|meeting|session)\b/.test(x) && (/\b(?:quiz(?:zes)?|tests?|exams?|midterms?|final)\b/.test(x) || x.includes(named)))) return v;
-  // The paper by its own name ("Quiz 1"), not the component's ("Quizzes"): a slide read "Next time: Quizzes".
-  const title = pieceTitle(course, { ...next!, homework: test, also: [] });
-  const sat = title && title.trim().toLowerCase() !== named ? `"${title.trim()}"` : `a graded test ("${test.toward.trim()}")`;
+  // By its component, and by what was taught so far: named by its paper's title, which carries the title of the lesson it
+  // is sat in, a quiz on lists was announced as covering stacks and queues, the lesson's own new topic.
+  const sat = `a graded test ("${test.toward.trim()}"), on what the course has taught up to today`;
   const last = v.segments.findLastIndex((x) => x.kind !== 'break');
   if (last < 0) return v;
-  return { ...v, segments: v.segments.map((x, i) => (i === last ? { ...x, description: `${x.description.trimEnd()}\nBefore students leave, tell them that next time they sit ${sat}, and what it covers.` } : x)) };
+  return { ...v, segments: v.segments.map((x, i) => (i === last ? { ...x, description: `${x.description.trimEnd()}\nBefore students leave, tell them that next time they sit ${sat}.` } : x)) };
 }
 
 const plan: SectionJob<PlanDraft> = {

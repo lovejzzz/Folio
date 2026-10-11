@@ -276,7 +276,7 @@ def check_item(item, check):
                     v = ev(e['origin_expr'])
                     if flat(v) and not numbers(ch[n - 1]['text'].replace('\x60', '')): raise Invalid('the choice states no number to compare')
                     return match_text(ch[n - 1]['text'], v, e.get('first'), tol)
-                guard(f'origin{n}', 'the mistake the explanation names gives this distractor', f)
+                guard(f'origin{n}', f'the mistake the explanation names gives this distractor (choice {n})', f)
             if e.get('says_expr') and e.get('kind') == 'code':
                 def f(n=n, e=e):
                     ns = fresh()

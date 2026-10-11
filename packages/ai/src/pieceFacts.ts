@@ -93,8 +93,13 @@ export function unsaidWays(segments: { title: string; description: string; teach
     const named = toward.toLowerCase();
     for (const seg of segments) {
       const text = `${seg.description}\n${seg.teacherNotes}`;
-      if (!`${seg.title}\n${text}`.toLowerCase().includes(named)) continue;
-      const said = text.split(/(?<=[.!?])\s+|\n+/).find((x) => WAY.test(x) && !/\bdue\b|\bnothing\b|\bnot\b|\bno way\b/i.test(x));
+      // The sentence is about this piece: it names it, or stands in the segment titled for it. A quiz's own segment said a
+      // problem set was due now and then "collect every paper at the end of the time", and the papers were the quiz's.
+      const titled = seg.title.toLowerCase().includes(named);
+      const sentences = text.split(/(?<=[.!?])\s+|\n+/);
+      // (or follows the sentence that names it and speaks of "it": "Set the Seminar paper. Students hand it in before they leave.")
+      const about = (x: string, i: number) => titled || x.toLowerCase().includes(named) || (/\b(?:it|them)\b/i.test(x) && Boolean(sentences[i - 1]?.toLowerCase().includes(named)));
+      const said = sentences.find((x, i) => WAY.test(x) && about(x, i) && !/\bdue\b|\bnothing\b|\bnot\b|\bno way\b|\bpapers?\b|\bquiz(?:zes)?\b|\btests?\b|\bexams?\b/i.test(x));
       if (said) return [{ code: 'reviewNote' as const, values: { where: seg.title, text: `This segment says how "${toward}" is handed in or when it is scored ("${said.trim().slice(0, 160)}"). Your brief does not say, so the other materials name no way: set it in the grading table on the syllabus, or change this sentence.` } }];
     }
     return [];
