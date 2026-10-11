@@ -34,6 +34,8 @@ export type CheckItem =
   | { kind: 'toConfirm'; found: string[] }
   /** Graded pieces this lesson holds whose way of handing in the brief did not give: no page names one. */
   | { kind: 'handInUnsaid'; items: string[] }
+  /** Cases of a lesson written without a plan whose answer still claims what the case does not give, after one rewrite. */
+  | { kind: 'factsUnsupported'; cases: string[] }
   /** Notes Folio left on the lesson. */
   | { kind: 'notes'; count: number };
 
@@ -80,6 +82,7 @@ export function lessonChecklist(course: Course, lesson: Lesson): Checklist {
       ...(keysUnreached.length ? [{ kind: 'keysUnchecked' as const, titles: keysUnreached.slice(0, 3).map((h) => h.title), more: Math.max(0, keysUnreached.length - 3) }] : []),
       ...(toConfirm.length ? [{ kind: 'toConfirm' as const, found: toConfirm.slice(0, 8) }] : []),
       ...(unsaid.length ? [{ kind: 'handInUnsaid' as const, items: unsaid }] : []),
+      ...(lesson.cases.some((c) => c.unsupported.length) ? [{ kind: 'factsUnsupported' as const, cases: lesson.cases.filter((c) => c.unsupported.length).map((c) => `${c.title}: ${c.unsupported.join('; ')}`) }] : []),
     ],
   };
 }
@@ -101,6 +104,8 @@ export function checklistLines(list: Checklist): { checked: string[]; look: stri
         return `Sheet keys no program worked out: ${item.titles.map((t) => `“${t}”`).join('; ')}${item.more ? `, and ${item.more} more` : ''}.`;
       case 'toConfirm':
         return `Not in your brief or files, to confirm: ${item.found.join('; ')}.`;
+      case 'factsUnsupported':
+        return `A second reading found these stated in a case's answer and not given by the case; the materials were told not to state them, and they are yours to check: ${item.cases.join(' · ')}.`;
       case 'handInUnsaid':
         return `Your brief does not say how ${item.items.map((t) => `“${t}”`).join(', ')} ${item.items.length === 1 ? 'is' : 'are'} handed in, so no page names a way: set it in the grading table on the syllabus.`;
     }

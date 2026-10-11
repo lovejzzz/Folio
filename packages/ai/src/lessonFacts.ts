@@ -47,18 +47,56 @@ export function factsPrompt(course: Course, lesson: Lesson): string {
   ].filter(Boolean).join('\n\n');
 }
 
-/** The command that settles one lesson's facts. Throws when they could not be had: nothing is written from a guess. */
+/** A second reader's finding: for each case, what its answer states as fact that nothing given supports. */
+export const FactsCheck = z.object({
+  cases: z.array(z.object({ n: z.number().int().min(1).describe('The case, counted from 1'), unsupported: z.array(line).max(6).describe('Each statement of fact in the answer that is not in what is given and does not follow from it or from what the lesson teaches: copied from the answer, a few words each. Empty when there is none') })),
+});
+
+/**
+ * What the answers claim beyond what the cases give, read by a second reader that did not write them. One writer
+ * filling in "what the case does not show" settled nothing: a case that gave a plant closing and 600 jobs lost had an
+ * answer that said the town "offers few similar jobs, so 600 people compete for a small number of openings", which
+ * nothing given said. A statement of the lesson's own teaching (a definition, a law, a method) is not a claim of the case.
+ */
+export function factsCheckPrompt(course: Course, lesson: Lesson, v: FactsDraft): string {
+  const cases = v.cases.map((c, i) => `Case ${i + 1}, ${c.title}\nGiven: ${c.known}\nAsked: ${c.question}\nAnswer: ${c.answer}`).join('\n\n');
+  return [
+    lessonContext(course, lesson),
+    `What the lesson teaches:\n${v.keyIdeas.map((k) => `- ${k}`).join('\n')}`,
+    cases,
+    'Read each answer against what its case gives, as a careful examiner would. List every statement in the answer that says something is so about the case (a number, a cause, a circumstance, how many jobs or people or units there are, what someone did or will do) when that is neither written under "Given" nor follows from it by the lesson\'s own reasoning or by arithmetic. A definition, a law or a method the lesson teaches is not such a statement, and neither is one the answer marks as a possibility ("may", "one would need to know"). Copy the words from the answer.',
+  ].join('\n\n');
+}
+
+async function unsupportedIn(inference: Inference, course: Course, lesson: Lesson, v: FactsDraft, signal?: AbortSignal): Promise<string[][]> {
+  const { value } = await runJob(inference, { task: 'folio_facts_check', system: 'You check course materials. Reply with one JSON object and nothing else.', context: courseBackground(course), prompt: factsCheckPrompt(course, lesson, v), effort: 'medium', schema: FactsCheck, signal });
+  return v.cases.map((_, i) => value.cases.find((c) => c.n === i + 1)?.unsupported ?? []);
+}
+
+/**
+ * The command that settles one lesson's facts: written, read by a second reader for what the answers claim beyond what
+ * is given, written once more with those claims named when there are any, and read again. What is still claimed
+ * without support after that is kept on the case as such: writers are told not to state it, and the teacher is told
+ * it is there. Throws when the facts could not be had, or could not be read: nothing is written from a guess.
+ */
 export async function lessonFacts(inference: Inference, course: Course, lessonId: string, signal?: AbortSignal): Promise<Command[]> {
   const lesson = course.lessons[lessonId];
   if (!lesson) throw new InferenceError('invalid', 'No such lesson.');
-  const { value } = await runJob(inference, { task: 'folio_facts', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: factsPrompt(course, lesson), effort: 'medium', schema: FactsDraft, signal });
-  return [cmd('lesson.facts', { lessonId, keyIdeas: value.keyIdeas, vocabulary: value.vocabulary.map((t) => ({ ...t, id: newId('x') })), cases: value.cases.map((c) => ({ ...c, id: newId('x') })) })];
+  const write = (told = '') => runJob(inference, { task: 'folio_facts', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: `${factsPrompt(course, lesson)}${told}`, effort: 'medium', schema: FactsDraft, signal }).then((r) => r.value);
+  let value = await write();
+  let found = await unsupportedIn(inference, course, lesson, value, signal);
+  if (found.some((x) => x.length)) {
+    const named = found.flatMap((x, i) => (x.length ? [`in "${value.cases[i]!.title}": ${x.map((y) => `"${y}"`).join('; ')}`] : []));
+    value = await write(`\n\nA first answer was not usable. Its answers stated as fact what their cases do not give: ${named.join('. ')}. Either put what the answer needs under what is given, as part of the case, or take the claim out of the answer: an answer says only what follows from what is given.`);
+    found = await unsupportedIn(inference, course, lesson, value, signal);
+  }
+  return [cmd('lesson.facts', { lessonId, keyIdeas: value.keyIdeas, vocabulary: value.vocabulary.map((t) => ({ ...t, id: newId('x') })), cases: value.cases.map((c, i) => ({ ...c, id: newId('x'), unsupported: found[i] ?? [] })) })];
 }
 
 /** The lesson's facts as every writer is given them, in place of a plan. */
 export function factsSummary(lesson: Lesson): string {
   if (!lesson.cases.length) return '';
-  const cases = lesson.cases.map((c, i) => `Case ${i + 1}, ${c.title}\n  Given: ${c.known}\n  Asked: ${c.question}\n  Answer: ${c.answer}${c.notShown.trim() ? `\n  Not shown by the case, and never claimed: ${c.notShown.trim()}` : ''}`);
+  const cases = lesson.cases.map((c, i) => `Case ${i + 1}, ${c.title}\n  Given: ${c.known}\n  Asked: ${c.question}\n  Answer: ${c.answer}${c.notShown.trim() ? `\n  Not shown by the case, and never claimed: ${c.notShown.trim()}` : ''}${c.unsupported.length ? `\n  In the answer above and NOT given by the case, so never stated as fact in what you write: ${c.unsupported.map((x) => `"${x}"`).join('; ')}` : ''}`);
   const terms = lesson.vocabulary.map((t) => `${t.term}: ${t.definition}`);
   return [
     'There is no lesson plan. What this lesson teaches was settled once, for every material written for it:',

@@ -136,7 +136,16 @@ export type Homework = z.infer<typeof HomeworkSchema>;
  * answer, and what the case does not show. Kept apart because writers working alone each made their own: a deck asked
  * for two personal reasons a worker lost her job when the plant closed, and gave "she had no savings" as one.
  */
-export const LessonCaseSchema = z.object({ id, title: text, known: text, question: text, answer: text, notShown: text.default('') });
+export const LessonCaseSchema = z.object({
+  id,
+  title: text,
+  known: text,
+  question: text,
+  answer: text,
+  notShown: text.default(''),
+  /** What its answer still claims that nothing given supports, as a second reading found after one rewrite: said, never passed on as fact. */
+  unsupported: z.array(text).default([]),
+});
 export type LessonCase = z.infer<typeof LessonCaseSchema>;
 
 export const LessonSchema = z.object({

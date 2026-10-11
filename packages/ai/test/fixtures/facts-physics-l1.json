@@ -1,0 +1,129 @@
+{
+ "cases": [
+  {
+   "title": "Highway speed in SI units",
+   "known": "A sign gives a speed limit of 65 mi/h. Use 1 mi = 1609.344 m (exact) and 1 h = 3600 s (exact). The 65 is a measured value with two significant figures.",
+   "question": "What is 65 mi/h in m/s, stated with the right number of significant figures?",
+   "answer": "Multiply by ratios equal to 1 so the old units cancel: 65 mi/h × (1609.344 m / 1 mi) × (1 h / 3600 s) = 104 607.36 m / 3600 s = 29.0576 m/s. The conversion factors are exact, so only the 65 limits precision. Two significant figures give 29 m/s.",
+   "notShown": "The case does not say whether the limit is exactly 65 or rounded. Writing 29.0576 m/s would claim a precision that the sign's two-figure value does not have.",
+   "id": "x_4738469116a5"
+  },
+  {
+   "title": "Two candidate fall-time formulas",
+   "known": "An object is released from rest and falls a height h in free fall with acceleration g (units m/s²). A student proposes two formulas for the fall time t: (a) t = √(2h/g) and (b) t = √(2g/h). Height h has dimension L, and g has dimension L/T².",
+   "question": "Using dimensional analysis only, which formula can be correct?",
+   "answer": "For (a): 2h/g has dimensions L ÷ (L/T²) = T², and the square root is T, which is a time. For (b): 2g/h has dimensions (L/T²) ÷ L = 1/T², and the square root is 1/T, which is not a time. Formula (b) is rejected. Formula (a) passes the check.",
+   "notShown": "Passing the check does not prove (a) is right. Dimensional analysis cannot tell whether the factor 2 is correct, since pure numbers have no dimensions. Showing that needs the kinematics of motion along a line, which comes later in the course.",
+   "id": "x_81822e359648"
+  },
+  {
+   "title": "Two walking legs added",
+   "known": "A hiker walks displacement A of 40.0 m at 30.0° above the +x axis (counterclockwise from +x). She then walks displacement B of 25.0 m at 120.0° measured counterclockwise from the +x axis.",
+   "question": "What are the magnitude and direction of her total displacement A + B?",
+   "answer": "Components of A: Aₓ = 40.0 cos 30.0° = 34.6 m, A_y = 40.0 sin 30.0° = 20.0 m. Components of B: Bₓ = 25.0 cos 120.0° = −12.5 m, B_y = 25.0 sin 120.0° = 21.7 m. Sum: Rₓ = 34.6 − 12.5 = 22.1 m and R_y = 20.0 + 21.7 = 41.7 m. Magnitude R = √(22.1² + 41.7²) ≈ 47.2 m. Direction θ = tan⁻¹(41.7/22.1) ≈ 62.0° above the +x axis; both components are positive, so the angle is in the first quadrant. Check: A and B are 90° apart, so R = √(40.0² + 25.0²) = 47.2 m, which agrees.",
+   "notShown": "The total displacement is 47.2 m, but the hiker walked 65.0 m. The displacement says nothing about the path or the distance traveled, and it does not say that she walked in a straight line from start to finish.",
+   "id": "x_4be69efe1a84"
+  },
+  {
+   "title": "Dot product of a force and a displacement",
+   "known": "A force F = (3.0 î − 2.0 ĵ + 4.0 k̂) N acts while an object undergoes displacement d = (2.0 î + 5.0 ĵ − 1.0 k̂) m. The unit vectors î, ĵ, k̂ point along +x, +y, +z.",
+   "question": "What is F·d, and what is the angle between F and d?",
+   "answer": "F·d = (3.0)(2.0) + (−2.0)(5.0) + (4.0)(−1.0) = 6.0 − 10.0 − 4.0 = −8.0 N·m. The magnitudes are F = √(3.0² + 2.0² + 4.0²) = √29 ≈ 5.39 N and d = √(2.0² + 5.0² + 1.0²) = √30 ≈ 5.48 m. Then cos θ = −8.0 / √(29 × 30) = −8.0 / 29.5 ≈ −0.271, so θ ≈ 105.7°. The result is negative because the angle is greater than 90°: the force points partly against the displacement.",
+   "notShown": "The case does not say that F is the only force on the object or that the object slows down. A negative dot product describes only the angle between these two vectors. Its physical meaning as work is developed later in the course.",
+   "id": "x_d031f3ddce9d"
+  }
+ ],
+ "slides": [
+  {
+   "layout": "title",
+   "title": "Units and dimensional analysis",
+   "bullets": [
+    "Calculus-based physics I: mechanics",
+    "OpenStax, University Physics Volume 1",
+    "Chapter 1 (to confirm): Units and Measurement"
+   ],
+   "notes": "Welcome the class. Today’s tools are the ones every later mechanics problem uses: unit conversion, significant figures and a dimensional check on equations. Nothing today assumes earlier preparation, so define every term as it comes up. The textbook sections that match today are the ones on units and standards, unit conversion, dimensional analysis and significant figures in Chapter 1."
+  },
+  {
+   "layout": "bullets",
+   "title": "Quantities, dimensions, and SI units",
+   "bullets": [
+    "Every quantity is a number times a unit",
+    "Seven SI base units; mechanics uses three"
+   ],
+   "notes": "Say it plainly: ‘five’ by itself means nothing in physics; ‘five meters’ does. Units are multiplied and cancelled like algebraic symbols. Walk down the table. Length, mass and time are the three base quantities of mechanics, with dimensions L, M and T and SI base units meter, kilogram and second. Everything else is built from them. Speed is L/T, acceleration is L/T², and force has dimension M·L/T², which is why 1 N = 1 kg·m/s². Point out that a dimension names the kind of quantity, while a unit is a particular choice of size: miles and meters are both units of length."
+  },
+  {
+   "layout": "bullets",
+   "title": "Significant figures",
+   "bullets": [
+    "Reliable digits plus one estimated digit",
+    "Product or quotient: keep the fewest significant figures",
+    "Sum or difference: keep the fewest decimal places",
+    "Exact factors, such as 1 h = 3600 s, never limit",
+    "Carry extra digits; round once, at the end"
+   ],
+   "notes": "Explain that a measured value carries its own precision: 65 and 65.00 are different claims. Give the two rules briefly, with a quick example from the board, such as 2.5 m × 3.14 = 7.85 m², stated as 7.9 m² because 2.5 has two significant figures. Then stress the last bullet: rounding in the middle of a calculation piles up errors, so keep a few extra digits and round once at the end. Exact definitions, such as 1 mi = 1609.344 m, count as infinitely precise. Next slide uses these rules at once."
+  },
+  {
+   "layout": "question",
+   "title": "Convert a speed limit to SI units",
+   "bullets": [
+    "A sign gives a speed limit of 65 mi/h",
+    "Use 1 mi = 1609.344 m and 1 h = 3600 s, both exact",
+    "The 65 is measured, with two significant figures",
+    "Write the limit in m/s",
+    "How many significant figures should you state?"
+   ],
+   "notes": "Give students a few minutes to work alone or with a neighbor, and walk around. Do not show the answer yet. Watch for students who write the full calculator display, and for students who multiply instead of using each factor as a ratio equal to 1 so that the old units cancel. Ask a few students what they got and how many digits they kept before moving on."
+  },
+  {
+   "layout": "bullets",
+   "title": "Multiply by ratios equal to 1",
+   "bullets": [
+    "65 mi/h × (1609.344 m / 1 mi)",
+    "× (1 h / 3600 s)",
+    "= 104 607.36 m / 3600 s",
+    "= 29.0576 m/s",
+    "Exact factors; the 65 limits it: 29 m/s"
+   ],
+   "notes": "Work the chain on the board and cross out mi and h as they cancel. Each bracket equals 1, because the top and bottom are the same length or the same time, so the value of the speed does not change, only its units. Both conversion factors are exact, so only the 65 limits precision, and two significant figures give 29 m/s. Writing 29.0576 m/s would claim a precision the sign’s two-figure value does not have. Do not say whether the limit is exactly 65 or a rounded value; the data does not tell us."
+  },
+  {
+   "layout": "bullets",
+   "title": "Dimensional analysis",
+   "bullets": [
+    "Dimensions: L for length, M for mass, T for time",
+    "Both sides of an equation share dimensions",
+    "Every term in a sum shares them too",
+    "Pure numbers, such as 2, have no dimensions",
+    "The check can reject a formula, not confirm it"
+   ],
+   "notes": "Dimensional analysis checks the kind of quantity, not its size. If the two sides of an equation have different dimensions, the equation is wrong, whatever the numbers. Use square brackets or just write L, M, T. Emphasize the asymmetry in the last bullet: a formula that fails is rejected, but a formula that passes may still be wrong, for example by a numerical factor, since pure numbers carry no dimensions. Square roots halve the powers of the dimensions, so √(T²) = T."
+  },
+  {
+   "layout": "question",
+   "title": "Which fall-time formula can be correct?",
+   "bullets": [
+    "An object is released from rest and falls a height h",
+    "Free-fall acceleration g; h has dimension L, g has L/T²",
+    "Proposed fall time (a): t = √(2h/g)",
+    "Proposed fall time (b): t = √(2g/h)",
+    "Using dimensions only, which can be correct?"
+   ],
+   "notes": "Students work on this first, in pairs, for a few minutes. Ask them to write the dimensions of the expression under each root, then of the root. Do not reveal the answer. Remind them that they are not deriving the formula or doing kinematics, only checking dimensions."
+  },
+  {
+   "layout": "bullets",
+   "title": "Checking the two formulas",
+   "bullets": [
+    "(a) 2h/g: L ÷ (L/T²) = T²; root is T, a time",
+    "(b) 2g/h: (L/T²) ÷ L = 1/T²; root is 1/T",
+    "1/T is not a time, so (b) is rejected",
+    "(a) passes the check",
+    "Passing does not prove (a) is right"
+   ],
+   "notes": "Go through each formula line by line, with the same steps the students used. Formula (b) is rejected because its result has dimension 1/T, not T. Formula (a) passes, but the check cannot say whether the factor 2 is correct, since pure numbers have no dimensions. Showing that needs the kinematics of motion along a line, which comes later in the course. Close the meeting by naming the two habits to use in every problem: carry units through the algebra, and check dimensions before trusting a result."
+  }
+ ]
+}

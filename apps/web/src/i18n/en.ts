@@ -427,6 +427,7 @@ export const en = {
       answersUnchecked: (v: { titles: string[]; more: number }) => `Answers no program worked out: ${v.titles.map((x) => `“${x}”`).join('; ')}${v.more ? `, and ${v.more} more` : ''}.`,
       keysUnchecked: (v: { titles: string[]; more: number }) => `Sheet keys no program worked out: ${v.titles.map((x) => `“${x}”`).join('; ')}${v.more ? `, and ${v.more} more` : ''}.`,
       toConfirm: (v: { found: string[] }) => `Not in your brief or files, to confirm: ${v.found.join('; ')}.`,
+      factsUnsupported: (v: { cases: string[] }) => `A second reading found these stated in a case’s answer and not given by the case; the materials were told not to state them, and they are yours to check: ${v.cases.join(' · ')}.`,
       handInUnsaid: (v: { items: string[] }) => `Your brief does not say how ${v.items.map((x) => `“${x}”`).join(', ')} ${v.items.length === 1 ? 'is' : 'are'} handed in, so no page names a way: set it in the grading table on the syllabus.`,
     },
     objectives: 'Objectives',

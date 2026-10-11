@@ -66,3 +66,38 @@ export function keptIds<T extends { title: string }>(written: T[], before: reado
   });
 }
 
+
+/**
+ * The cases of a lesson written without a plan that no slide of its deck teaches. A real deck of a week on units,
+ * vectors and the dot product had eight slides, all on units, and the quiz written from the same facts asked for
+ * components and a dot product nobody had been shown. A case is taught where a slide carries its name, its question,
+ * or most of its own numbers. Asked for once more, and said on the deck if still missing.
+ */
+export function untaught(v: SlidesDraft, lesson: Lesson): string[] {
+  if (lesson.segments.length || !lesson.cases.length) return [];
+  const deck = v.slides.map((s) => [s.title, ...s.bullets, s.notes, ...(s.table ? [...s.table.columns, ...s.table.rows.flat()] : [])].join(' ')).join('\n');
+  const words = plain(deck);
+  const numbers = (text: string) => [...new Set(text.match(/\d+(?:\.\d+)?/g) ?? [])].filter((n) => n.length >= 2);
+  return lesson.cases
+    .filter((c) => {
+      const own = numbers(c.known);
+      const shown = own.filter((n) => deck.includes(n)).length;
+      // Or most of the words of its name, a plural apart: "Two candidate fall-time formulas" is taught by "Which fall-time formula can be correct?".
+      const named = [...new Set(c.title.toLowerCase().match(/\p{L}{4,}/gu) ?? [])].map((w) => w.replace(/s$/, ''));
+      const said = named.filter((w) => deck.toLowerCase().includes(w)).length;
+      return !words.includes(plain(c.title)) && !words.includes(plain(c.question).slice(0, 40)) && !(own.length >= 2 && shown / own.length >= 0.6) && !(named.length >= 3 && said / named.length >= 0.75);
+    })
+    .map((c) => c.title);
+}
+
+/**
+ * What is wrong with a deck against its lesson, each as its writer can put it right. Out of step with the plan is
+ * asked for once and let be; a case with no slide is kept on the deck when a second writing still leaves it out, so a
+ * teacher is told what is not taught.
+ */
+export function deckFaults(v: SlidesDraft, lesson: Lesson): { issue: string; kept: boolean }[] {
+  return [
+    ...untaught(v, lesson).map((title) => ({ kept: true, issue: `The lesson's case "${title}" has no slide: the deck teaches every case the lesson was settled with, each on a slide of its own, however many slides that takes` })),
+    ...outOfStep(v, lesson).map((issue) => ({ kept: false, issue })),
+  ];
+}

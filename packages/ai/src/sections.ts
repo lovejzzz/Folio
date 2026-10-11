@@ -1,4 +1,4 @@
-import { keptIds, outOfStep, withSheetSlides } from './slideSteps';
+import { deckFaults, keptIds, withSheetSlides } from './slideSteps';
 import { groundsOf, markedForStudents } from './locators';
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
@@ -157,7 +157,7 @@ const slides: SectionJob<SlidesDraft> = {
     if (!course.materials.plan.enabled) return tidied;
     return { slides: withSheetSlides(tidied.slides, lesson, docLabels(course.language).fromSheet, (session) => shown[session] ?? true) };
   },
-  check: (v, _course, lesson) => [...unshown(v, lesson), ...outOfStep(v, lesson).map((issue): Problem => ({ index: null, advisory: true, flag: { code: 'schemaIssue', values: { path: 'slides', issue } } }))],
+  check: (v, _course, lesson) => [...unshown(v, lesson), ...deckFaults(v, lesson).map(({ issue, kept }): Problem => ({ index: null, ...(kept ? {} : { advisory: true }), flag: { code: 'schemaIssue', values: { path: 'slides', issue } } }))],
   toCommands: (v, problems, _course, lesson) => [
     cmd('section.fill', {
       lessonId: lesson.id,

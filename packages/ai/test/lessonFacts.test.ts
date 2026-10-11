@@ -2,7 +2,9 @@ import { CourseStore, MATERIAL_KINDS, orderedLessons, parseCourse, type Course, 
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { missingTargets, runBuild, type BuildHost } from '../src/build';
-import { factsSummary, hasFacts, needsFacts } from '../src/lessonFacts';
+import { factsSummary, hasFacts, lessonFacts, needsFacts } from '../src/lessonFacts';
+import { untaught } from '../src/slideSteps';
+import { checklistLines, lessonChecklist } from '@folio/core';
 import { sectionPrompt } from '../src/prompts';
 import { fakeInference, smallCourse } from './fake';
 
@@ -27,13 +29,13 @@ describe('a lesson written without a plan', () => {
     const store = new CourseStore(chosen(['slides', 'quiz']));
     const first = store.getState().lessonOrder[0]!;
     expect(needsFacts(store.getState(), store.getState().lessons[first]!)).toBe(true);
-    const model = fakeInference((req) => (req.task === 'folio_facts' ? facts : req.task === 'folio_slides' ? slides : { questions: [] }));
+    const model = fakeInference((req) => (req.task === 'folio_facts' ? facts : req.task === 'folio_facts_check' ? { cases: [] } : req.task === 'folio_slides' ? slides : { questions: [] }));
     await runBuild(host(store, model), missingTargets(store.getState(), [first]));
     const lesson = store.getState().lessons[first]!;
     expect(hasFacts(lesson)).toBe(true);
     expect(lesson.cases.map((c) => c.title)).toEqual(['The plant closes', 'One worker dismissed']);
-    // The facts were asked for before anything else, and once.
-    expect(model.calls[0]!.task).toBe('folio_facts');
+    // The facts were asked for before anything else, and once; then read by a second reader.
+    expect(model.calls.slice(0, 2).map((c) => c.task)).toEqual(['folio_facts', 'folio_facts_check']);
     expect(model.calls.filter((c) => c.task === 'folio_facts')).toHaveLength(1);
     // Both writers were given the case, its answer, and what it does not show.
     for (const task of ['folio_slides', 'folio_quiz']) {
@@ -46,7 +48,7 @@ describe('a lesson written without a plan', () => {
   it('is not written from a guess when its facts cannot be had: the parts stay to be written', async () => {
     const store = new CourseStore(chosen(['slides']));
     const first = store.getState().lessonOrder[0]!;
-    const summary = await runBuild(host(store, fakeInference((req) => (req.task === 'folio_facts' ? { keyIdeas: [] } : slides))), missingTargets(store.getState(), [first]));
+    const summary = await runBuild(host(store, fakeInference((req) => (req.task === 'folio_facts' ? { keyIdeas: [] } : req.task === 'folio_facts_check' ? { cases: [] } : slides))), missingTargets(store.getState(), [first]));
     expect(summary.built).toBe(0);
     expect(store.getState().lessons[first]!.slides).toHaveLength(0);
     expect(missingTargets(store.getState(), [first]).map((t) => t.kind)).toEqual(['facts', 'slides']);
@@ -55,7 +57,7 @@ describe('a lesson written without a plan', () => {
   it('keeps its facts for a material added later: they are not settled a second time', async () => {
     const store = new CourseStore(chosen(['quiz']));
     const first = store.getState().lessonOrder[0]!;
-    const model = fakeInference((req) => (req.task === 'folio_facts' ? facts : req.task === 'folio_slides' ? slides : { questions: [] }));
+    const model = fakeInference((req) => (req.task === 'folio_facts' ? facts : req.task === 'folio_facts_check' ? { cases: [] } : req.task === 'folio_slides' ? slides : { questions: [] }));
     await runBuild(host(store, model), missingTargets(store.getState(), [first]));
     store.apply([{ type: 'material.set', payload: { kind: 'slides', enabled: true } } as never], { label: { key: 't' }, source: 'teacher' });
     expect(missingTargets(store.getState(), [first]).map((t) => t.kind)).not.toContain('facts');
@@ -99,5 +101,59 @@ describe('a plant closes: the real deck written alone, before and after', () => 
     const plain = (x: string) => x.replace(/[’']/g, '');
     expect(plain(slide.notes)).toContain(plain(plant.answer).slice(0, 120));
     expect(after.slides.map((s) => s.notes).join('\n')).not.toMatch(/did not save|no savings|had not saved/i);
+  });
+});
+
+describe('what a case’s answer claims beyond what is given', () => {
+  // As it was found: the case gives a closing and 600 jobs lost; its answer says the town offers few similar jobs.
+  const claimed = { ...facts, cases: [{ ...facts.cases[0]!, answer: 'The plant closed, and the local economy offers few similar jobs, so 600 people compete for a small number of openings.' }, facts.cases[1]!] };
+  const claim = 'the local economy offers few similar jobs';
+
+  it('is read by a second reader, named to the writer once, and gone when the second writing drops it', async () => {
+    const c = chosen(['slides']);
+    const first = c.lessonOrder[0]!;
+    let checks = 0;
+    const model = fakeInference((req, call) => (req.task === 'folio_facts' ? (call === 1 ? claimed : facts) : { cases: checks++ === 0 ? [{ n: 1, unsupported: [claim] }] : [] }));
+    const store = new CourseStore(c);
+    store.apply(await lessonFacts(model, c, first), { label: { key: 't' }, source: 'ai' });
+    expect(model.calls.map((x) => x.task)).toEqual(['folio_facts', 'folio_facts_check', 'folio_facts', 'folio_facts_check']);
+    expect(model.calls[2]!.prompt).toContain(`in "The plant closes": "${claim}"`);
+    expect(store.getState().lessons[first]!.cases.every((x) => x.unsupported.length === 0)).toBe(true);
+    expect(checklistLines(lessonChecklist(store.getState(), store.getState().lessons[first]!)).look.join(' ')).not.toContain('second reading');
+  });
+
+  it('is kept on the case when it is still there after one rewrite: writers are told not to state it, and the teacher is told', async () => {
+    const c = chosen(['slides']);
+    const first = c.lessonOrder[0]!;
+    const model = fakeInference((req) => (req.task === 'folio_facts' ? claimed : { cases: [{ n: 1, unsupported: [claim] }] }));
+    const store = new CourseStore(c);
+    store.apply(await lessonFacts(model, c, first), { label: { key: 't' }, source: 'ai' });
+    const lesson = store.getState().lessons[first]!;
+    // Asked for twice and no more.
+    expect(model.calls.filter((x) => x.task === 'folio_facts')).toHaveLength(2);
+    expect(lesson.cases[0]!.unsupported).toEqual([claim]);
+    expect(factsSummary(lesson)).toContain(`NOT given by the case, so never stated as fact in what you write: "${claim}"`);
+    expect(checklistLines(lessonChecklist(store.getState(), lesson)).look.join(' ')).toContain(`The plant closes: ${claim}`);
+  });
+});
+
+/**
+ * A real deck of a week on units, vectors and the dot product, written from the lesson's facts (physics;
+ * readiness/batch7-facts/phys-slides-quiz, kept in test/fixtures/facts-physics-l1.json): eight slides, all on units.
+ */
+describe('a deck that leaves out what the lesson was settled with', () => {
+  const real = JSON.parse(readFileSync(new URL('./fixtures/facts-physics-l1.json', import.meta.url), 'utf8')) as { cases: { title: string }[]; slides: { layout: 'bullets'; title: string; bullets: string[]; notes: string }[] };
+  const lessonOf = (cases: unknown) => ({ segments: [], cases }) as never;
+  const deck = (list: typeof real.slides) => ({ slides: list.map((s) => ({ ...s, segment: 0 })) });
+
+  it('is found: the two cases on vectors have no slide, as the real deck was', () => {
+    expect(real.cases.map((c) => c.title)).toEqual(['Highway speed in SI units', 'Two candidate fall-time formulas', 'Two walking legs added', 'Dot product of a force and a displacement']);
+    expect(untaught(deck(real.slides), lessonOf(real.cases))).toEqual(['Two walking legs added', 'Dot product of a force and a displacement']);
+  });
+
+  it('is not found once each case has a slide, by its name or by its numbers; and is not asked of a lesson with a plan', () => {
+    const more = [...real.slides, { layout: 'bullets' as const, title: 'Two walking legs added', bullets: ['Resolve each leg into components.'], notes: '' }, { layout: 'bullets' as const, title: 'Work', bullets: ['F = (3.0, −2.0, 4.0) N and d = (2.0, 5.0, −1.0) m: find F·d.'], notes: 'Magnitudes √29 and √30.' }];
+    expect(untaught(deck(more), lessonOf(real.cases))).toEqual([]);
+    expect(untaught(deck(real.slides), { segments: [{}], cases: real.cases } as never)).toEqual([]);
   });
 });
