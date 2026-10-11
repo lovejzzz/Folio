@@ -21,3 +21,4 @@ export * from './inlineCode';
 export { project } from './projections';
 export * from './locators';
 export * from './checklist';
+export * from './figures/binarySearch';
