@@ -1,4 +1,4 @@
-import { lessonPieces, orderedLessons, type Course, type GradeItem } from '@folio/core';
+import { lessonPieces, orderedLessons, type Course, type Flag, type GradeItem, type Lesson } from '@folio/core';
 
 /**
  * How each graded piece runs, as one text for every writer of every lesson. These are not content: who does a piece, how
@@ -26,7 +26,12 @@ function handIn(g: GradeItem, kinds: Set<string>): string {
   if (kinds.has('test')) return '';
   if (card.handIn === 'none') return 'nothing is handed in: it is scored as it happens';
   // What the brief left open is not settled here: said the same in every lesson, an invented way is still invented.
-  if (card.handIn === 'unsaid') return 'the brief does not say how it is handed in, so no material says how, where or when it is collected (not "hand it in before you leave", not "submit online"): a piece is "due at the start of" its lesson, in those words, and no more is written';
+  if (card.handIn === 'unsaid') {
+    // Work done in the lesson has no deadline to word: told every piece was "due at the start of its lesson", a lab's
+    // worksheet written in class was "due at the start of its lesson" on the sheet itself.
+    if (kinds.has('inclass')) return 'the brief does not say whether or how what is written is collected, so no material says that it is handed in, where, or when, and none gives it a deadline: it is done in the lesson that runs it';
+    return 'the brief does not say how it is handed in, so no material says how or where it is collected (not "hand it in before you leave", not "submit online"): its deadline is said in the words the lesson that sets it is given, and nothing is added';
+  }
   if (kinds.has('inclass')) return card.handIn === 'online' ? 'what is written is submitted online after the lesson it is done in, and nothing is collected in the room' : 'what is written is handed in on paper at the end of the lesson it is done in';
   return card.handIn === 'online' ? 'submitted online before the lesson it is due at, and never collected in class' : 'handed in on paper at the start of the lesson it is due at';
 }
@@ -72,4 +77,25 @@ export function pieceFacts(course: Course): string {
 /** Whether a piece's first lesson scores it: no where a student prepares a turn, as the card has it. Undefined for a course with no card. */
 export function preparedTurn(course: Course, toward: string): boolean | undefined {
   return course.grading.find((g) => g.item.trim() === toward.trim())?.card?.prepared;
+}
+
+const WAY = /\bhand(?:ed|s)? (?:it |them |this |these )?in\b|\bcollect(?:s|ed)?\b|\bsubmit(?:s|ted)?\b|\bturn(?:ed|s)? (?:it |them )?in\b|\bscored? (?:at the bench|on the spot|as they work|in class|after class)\b/i;
+
+/**
+ * Where a plan says how a piece is handed in or when it is scored, and the brief did not: said to the teacher, in the
+ * plan's own sentence. Told to say nothing of it, a plan still had a reflection "handed in and scored after class" where
+ * every other material collected nothing, and a notebook scored "at the bench" that its own brief scored after class.
+ */
+export function unsaidWays(segments: { title: string; description: string; teacherNotes: string }[], course: Course, lesson: Lesson): Flag[] {
+  const open = [...new Set(lessonPieces(lesson).map((p) => p.toward.trim()).filter(Boolean))].filter((toward) => course.grading.find((g) => g.item.trim() === toward)?.card?.handIn === 'unsaid');
+  return open.flatMap((toward) => {
+    const named = toward.toLowerCase();
+    for (const seg of segments) {
+      const text = `${seg.description}\n${seg.teacherNotes}`;
+      if (!`${seg.title}\n${text}`.toLowerCase().includes(named)) continue;
+      const said = text.split(/(?<=[.!?])\s+|\n+/).find((x) => WAY.test(x) && !/\bdue\b/i.test(x));
+      if (said) return [{ code: 'reviewNote' as const, values: { where: seg.title, text: `This segment says how "${toward}" is handed in or when it is scored ("${said.trim().slice(0, 160)}"). Your brief does not say, so the other materials name no way: set it in the grading table on the syllabus, or change this sentence.` } }];
+    }
+    return [];
+  });
 }

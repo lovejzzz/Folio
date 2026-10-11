@@ -1,5 +1,6 @@
 import { CourseStore, checklistLines, lessonAssignments, lessonChecklist, lessonPieces, orderedLessons, project, setsWork, type Course } from '@folio/core';
 import { describe, expect, it } from 'vitest';
+import { unsaidWays } from '../src/pieceFacts';
 import { OutlineDraft, courseBackground, courseFromOutline, generateSection, lessonContext, outlinePrompt, sectionPrompt, type NewCourseRequest } from '../src';
 import { fakeInference } from './fake';
 
@@ -308,7 +309,7 @@ describe('how each graded piece runs', () => {
     expect(told).toContain('its data or material: a question the student chooses.');
     expect(told).toContain('These lines are for you, the writer, and are not passed on as advice to the teacher or to students.');
     // What the brief left open is said to be open: an invented way, said the same in every lesson, is still invented.
-    expect(told).toContain('- Seminar paper (60%): each student\'s own work, done and scored alone; the brief does not say how it is handed in, so no material says how, where or when it is collected');
+    expect(told).toContain('- Seminar paper (60%): each student\'s own work, done and scored alone; the brief does not say how it is handed in, so no material says how or where it is collected');
     const [opening] = orderedLessons(course);
     expect(checklistLines(lessonChecklist(course, opening!)).look).toContain('Your brief does not say how “Seminar paper” is handed in, so no page names a way: set it in the grading table on the syllabus.');
     // A test says what may be used, or that no material settles it.
@@ -317,6 +318,10 @@ describe('how each graded piece runs', () => {
     expect(courseBackground(courseFromOutline(bare, draft))).toContain('marked in points; what students may bring or use is the teacher\'s to announce, and no material names anything');
     draft.grading[2] = { ...draft.grading[2]!, allowed: 'closed book, a calculator', points: 50 };
     expect(courseBackground(courseFromOutline(bare, draft))).toContain('marked out of 50 points each time; students may use: closed book, a calculator');
+    // A plan that still says how an unsaid piece is handed in is told to the teacher, in its own sentence; a deadline is not a way.
+    const seg = (description: string) => [{ title: 'Close', description, teacherNotes: '' }];
+    expect(unsaidWays(seg('Set the Seminar paper. Students hand it in before they leave.'), course, opening!).map((f) => (f.code === 'reviewNote' ? f.values.text.slice(0, 96) : ''))).toEqual(['This segment says how "Seminar paper" is handed in or when it is scored ("Students hand it in be']);
+    expect(unsaidWays(seg('Set the Seminar paper, due at the start of the last lesson.'), course, opening!)).toEqual([]);
     // A course outlined before components carried a card is told nothing of the kind.
     const old = courseFromOutline(bare, outline());
     expect(courseBackground({ ...old, grading: old.grading.map(({ card: _card, ...g }) => g) })).not.toContain('How each graded piece runs');

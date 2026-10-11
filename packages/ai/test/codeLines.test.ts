@@ -48,7 +48,7 @@ describe('the keys to a lesson\'s sheets, written from the sheets by another wri
 });
 
 describe('what a segment puts on the screen', () => {
-  it('is left to the sheet where a sheet sets the work, and stands where the sheet is only read from', async () => {
+  it('is left to the sheet wherever students hold one, to work on or to read, and stands where there is none', async () => {
     const { withHandouts } = await import('../src/handouts');
     const { CourseStore, cmd, orderedLessons, newId } = await import('@folio/core');
     const { fakeInference, planDraft, smallCourse } = await import('./fake');
@@ -60,7 +60,7 @@ describe('what a segment puts on the screen', () => {
     const out = await withHandouts(fakeInference(() => ({}), { handouts: sheets, keyed: { keys: [], corrections: [] } }), course, lesson, written);
     const store = new CourseStore(course);
     store.apply(out.commands, { label: { key: 'b' }, source: 'ai' });
-    expect(store.getState().lessons[lesson.id]!.segments.slice(0, 2).map((s) => s.shown?.length ?? 0)).toEqual([0, 1]);
+    expect(store.getState().lessons[lesson.id]!.segments.slice(0, 3).map((s) => s.shown?.length ?? 0)).toEqual([0, 0, 1]);
   });
 });
 

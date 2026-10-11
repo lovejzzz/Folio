@@ -38,6 +38,7 @@ import { stuckClaims } from './stuckCheck';
 import { withAnswerChecks } from './answerCheck';
 import { codeFaults } from './codeLines';
 import { withHandouts } from './handouts';
+import { unsaidWays } from './pieceFacts';
 import { startCommands } from './start';
 import { runJob, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
@@ -475,7 +476,7 @@ export async function generateSection(
     case 'plan':
       if (hasModulePages(course)) return withStart(inference, course, lesson, signal, pageWithRuns(run, moduleJob, { writer: inference, reviewer, now, lesson, signal, options, mendPage }));
       // The sheets the plan hands out are written from the plan as it stands after its review.
-      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, (v) => [...codeFaults(v), ...(plan.check?.(v, now(), lesson) ?? [])]).then((read) => ({ ...read, value: announced(read.value, now(), lesson) })) : undefined), signal, options.run?.r, options.run?.runner);
+      return withHandouts(inference, now(), lesson, await run(plan, reviewer ? (draft) => reviewed(readPlan(reviewer, now, lesson, signal), draft, options.onProgress, mendLesson, (v) => [...codeFaults(v), ...(plan.check?.(v, now(), lesson) ?? [])]).then((read) => ({ problems: [...read.problems, ...unsaidWays(read.value.segments, now(), lesson).map((flag) => ({ index: null, flag }))], value: announced(read.value, now(), lesson) })) : undefined), signal, options.run?.r, options.run?.runner);
     case 'slides':
       return run(slides);
     case 'study':

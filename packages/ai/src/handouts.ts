@@ -191,7 +191,9 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
     // the sheet's writer wrote the same practice in its own words, the slides followed the plan's list and the key the sheet:
     // one exercise in two versions, in nine lessons of a reading of thirty-two. The list stands where no sheet sets the work:
     // a reading or a reference sheet in students' hands leaves the screen its own questions.
-    const sheeted = new Set(sure.handouts.filter((h) => h.kind !== 'reading' && h.kind !== 'reference').map((h) => h.usedIn.trim().toLowerCase()));
+    // (a reading or a reference sheet too: a seminar's fifth and sixth questions stood one way on the slide and another on
+    // the handout the key was written to)
+    const sheeted = new Set(sure.handouts.map((h) => h.usedIn.trim().toLowerCase()));
     const single = { ...settled, segments: settled.segments.map((seg) => (seg.shown?.length && sheeted.has(seg.title.trim().toLowerCase()) ? { ...seg, shown: undefined } : seg)) };
     const run = await sheetsRun(inference, r, course, { ...lesson, segments: single.segments as Lesson['segments'] }, sure.handouts, signal);
     // A package the sheets load that no lesson has had students install stops on every laptop: said, since the run here has it.
