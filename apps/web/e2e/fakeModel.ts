@@ -222,8 +222,11 @@ function answerFor(body: Body, python = false): unknown {
         sourcePassage: i === 0 && prompt.includes("Teacher's sources") ? 1 : null,
       })),
     };
-  if (prompt.includes('Write one assignment'))
-    return { title: `${title} poster`, prompt: 'Make a poster that explains the process.', steps: ['Draw a leaf', 'Label the inputs and outputs'], rubric: { levels: [{ label: 'Excellent', points: 3 }, { label: 'Good', points: 2 }, { label: 'Beginning', points: 1 }], criteria: [{ name: 'Accuracy', descriptors: ['All correct', 'Mostly correct', 'Several errors'] }, { name: 'Clarity', descriptors: ['Very clear', 'Clear', 'Hard to follow'] }] } };
+  // A paper sat in class: a brief that lists its graded work has its quizzes and tests placed, and each is written as a paper.
+  if (prompt.includes('as a paper students are handed'))
+    return { title: `${title} quiz`, instructions: 'Ten minutes. Closed book. Show your working.', questions: [1, 2, 3].map((n) => ({ question: `Question ${n}: name one thing a plant needs to make sugar.`, points: 2, answer: 'Light, water or carbon dioxide.' })) };
+  if (prompt.includes('Write one assignment') || /Write the assignment "|Write "[^"]+" as the brief describes it/.test(prompt))
+    return { answerKey: 'Run it in pairs; score each poster on the rubric as you pass.', title: `${title} poster`, prompt: 'Make a poster that explains the process.', steps: ['Draw a leaf', 'Label the inputs and outputs'], rubric: { levels: [{ label: 'Excellent', points: 3 }, { label: 'Good', points: 2 }, { label: 'Beginning', points: 1 }], criteria: [{ name: 'Accuracy', descriptors: ['All correct', 'Mostly correct', 'Several errors'] }, { name: 'Clarity', descriptors: ['Very clear', 'Clear', 'Hard to follow'] }] } };
   if (prompt.includes('discussion prompts')) return { discussions: [{ prompt: 'Could a plant live in a sealed jar?', followUps: ['What would it need?'] }] };
   if (prompt.includes('commonly ask')) return { entries: [{ question: 'Do plants breathe?', answer: 'Yes, they respire all the time, day and night.' }] };
   if (prompt.includes('Turn the request into')) return coursePlan(prompt);
