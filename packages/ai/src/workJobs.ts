@@ -44,7 +44,10 @@ export function minutesFor(course: Course, lesson: Lesson): number {
   // And a piece run over several segments has all of them: a lab of 69 minutes in three parts was held to the 25 of its longest,
   // and its teacher told it asked too much.
   const part = mine.filter((seg) => stems(toward).some((w) => text(seg).includes(w))).reduce((n, seg) => n + seg.minutes, 0);
-  return Math.max(whole, part);
+  // A segment that names the piece in full is the piece's: "Recitation group problems" was given 69 and 101 minutes, the
+  // sum of every segment with the word "problem" or "group" in it.
+  const named = mine.filter((seg) => text(seg).includes(toward.toLowerCase()) || text(seg).includes(toward.toLowerCase().replace(/s$/, ''))).reduce((n, seg) => n + seg.minutes, 0);
+  return named || Math.max(whole, part);
 }
 
 function tooMuch(v: { prompt: string; steps: string[] }, course: Course, lesson: Lesson): Problem[] {

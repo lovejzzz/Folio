@@ -91,3 +91,17 @@ describe('what an explanation says of a wrong choice', () => {
     expect(fixed!.explanation).toContain('drops the constant −4.0 m/s² from acceleration');
   }, 240_000);
 });
+
+describe('the minutes a plan gives a piece done in class', () => {
+  it('are those of the segments that name it in full, not of every segment that shares a word with it', async () => {
+    const { CourseStore, cmd } = await import('@folio/core');
+    const { minutesFor } = await import('../src/workJobs');
+    const { smallCourse } = await import('./fake');
+    const store = new CourseStore({ ...smallCourse(), grading: [{ id: 'g_1', item: 'Recitation group problems', weight: 10 }] });
+    const [first] = orderedLessons(store.getState());
+    const seg = (title: string, minutes: number, description: string) => ({ id: `x_${title}`, session: 0, kind: 'practice' as const, title, minutes, description, teacherNotes: '' });
+    const segments = [seg('Worked problem: a car braking', 12, 'The class works one problem together.'), seg('Group check', 8, 'Each group compares answers to the practice problems.'), seg('Recitation group problems', 26, 'Groups work the graded problems.')];
+    store.apply([cmd('lesson.homework', { lessonId: first!.id, homework: { kind: 'inclass', toward: 'Recitation group problems', standing: false } }), cmd('section.fill', { lessonId: first!.id, kind: 'plan', flags: [], content: { segments, keyIdeas: ['k'], vocabulary: [] } })], { label: { key: 'b' }, source: 'teacher' });
+    expect(minutesFor(store.getState(), store.getState().lessons[first!.id]!)).toBe(26);
+  });
+});
