@@ -106,6 +106,33 @@ describe('the minutes a plan gives a piece done in class', () => {
   });
 });
 
+describe('the item with a false account taken out', () => {
+  const cart = fixture('pilot2-physics-cart-question') as Task & { explanation: string; choices: { text: string }[] };
+  const setup = 'x = lambda t: 1.0 + 5.0*t - 2.0*t**2 + 1.0*t**3\nv = lambda t: 5.0 - 4.0*t + 3.0*t**2\na = lambda t: -4.0 + 6.0*t';
+  const failing = { checkable: true, setup, answer_expr: '[v(2.0), a(2.0)]', choices: cart.choices.map((c, i) => ({ n: i + 1, kind: 'value', ...(c.text.includes('7.0') ? { origin_expr: '[x(2.0), v(2.0)]' } : {}) })), stated: [], verbatim: [], unchecked: [] };
+  // The first two forms are of the item as written and fail on the false account; what is asked after that is the check of the item without it.
+  const then = (later: (call: number) => unknown) => {
+    let forms = 0;
+    return fakeInference((req) => (req.task === 'folio_answer_fix' ? { changes: [] } : (forms += 1) <= 2 ? failing : later(forms)));
+  };
+
+  it('is not kept when the check of it cannot be had: nothing was proved', async () => {
+    const out = await checkAnswers(then(() => ({ checkable: false, setup: '', choices: [], stated: [], verbatim: [], unchecked: [] })), nodeRunner(), [cart]);
+    expect([out.fixed.size, out.held.size]).toEqual([0, 0]);
+  }, 240_000);
+
+  it('is not kept when the check of it throws', async () => {
+    const out = await checkAnswers(then(() => { throw new Error('the model is away'); }), nodeRunner(), [cart]);
+    expect([out.fixed.size, out.held.size]).toEqual([0, 0]);
+  }, 240_000);
+
+  it('and a stop during that check stops: it is not taken for a pass', async () => {
+    const stop = new AbortController();
+    const model = then(() => { stop.abort(); throw new DOMException('stopped', 'AbortError'); });
+    await expect(checkAnswers(model, nodeRunner(), [cart], stop.signal)).rejects.toBeDefined();
+  }, 240_000);
+});
+
 /** Two more, found in the first batch written from this branch (readiness/batch1, frozen at 96e0492). */
 describe('a paper sat in a lesson that tests an earlier one', () => {
   it('is not titled with the lesson it is sat in: a quiz on lists was "Quizzes: Stacks and queues"', async () => {

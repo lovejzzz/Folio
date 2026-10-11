@@ -200,7 +200,11 @@ export async function checkAnswers(inference: Inference, runner: Runner, tasks: 
     // position as velocity" stood beside 7.0 where that gives 11. The key and what else is said stand; a teacher reading
     // the explanation to a class is not given a reason that is false. Kept only if the item then holds.
     const plain = withoutFalseOrigins(task, flags);
-    if (plain && !(await checkOne(inference, runner, plain, signal).catch(() => null))?.length) return void out.fixed.set(task.id, plain);
+    // Kept only when the check ran on it and found nothing: a check that could not be had (no form bound, the program
+    // refused it, an error) proves nothing, and counted as a pass it would have put an unchecked item among the corrected.
+    // Stopping still stops.
+    const after = plain ? await checkOne(inference, runner, plain, signal).catch((error: unknown) => (signal?.aborted ? Promise.reject(error) : null)) : null;
+    if (plain && after !== null && after.length === 0) return void out.fixed.set(task.id, plain);
     {
       // What an explanation says of a wrong choice ("22.0 omits the initial velocity", when that gives 18.0) is put right when it
       // can be; when it cannot, the form misread the mistake as often as the item misstated it, and the teacher is not told.
