@@ -2,7 +2,7 @@ import { CourseStore, MATERIAL_KINDS, orderedLessons, parseCourse, type Assignme
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { executionPlan, missingTargets, runBuild, type BuildHost } from '../src/build';
-import { lessonRubrics, piecesLackingRubric, rubricAlonePrompt, scoringBroken, scoringSaid, siblingRubric } from '../src/rubricAlone';
+import { lessonRubrics, piecesLackingRubric, rubricAlonePrompt, scoringBroken, scoringSaid, siblingRubric, unchecked } from '../src/rubricAlone';
 import { fakeInference } from './fake';
 
 /**
@@ -120,4 +120,32 @@ describe('a rubric taken from another piece of the component', () => {
     const wide: Course = { ...c, rubrics: { [a.rubricId!]: { ...c.rubrics[a.rubricId!]!, criteria: [...c.rubrics[a.rubricId!]!.criteria, { id: 'x_more', name: 'Extra', descriptors: {} }] } } };
     expect(siblingRubric(wide, other)).toBeNull();
   });
+
+  it('is not taken on a name and a total alone: the two pieces must say the same of their scoring', () => {
+    const [a, b] = scored;
+    if (!a || !b || a.toward !== b.toward) return;
+    const c = lost([a.rubricId!]);
+    const other = { ...(c.tasks[b.id] as Assignment), prompt: 'Each of three parts earns 1–4 points, for a total of 12 points, by the criteria your section leader gives.', steps: ['Do it.'] };
+    expect(scoringSaid(other)).toMatchObject({ total: 12 });
+    expect(siblingRubric({ ...c, tasks: { ...c.tasks, [b.id]: other } }, other)).toBeNull();
+    // And a piece that says nothing of its scoring shares no contract.
+    expect(siblingRubric(c, { ...(c.tasks[b.id] as Assignment), prompt: 'Write an essay.', steps: ['Argue a thesis.'] })).toBeNull();
+  });
 });
+
+describe('what could not be checked', () => {
+  it('is said on the piece: scoring spoken of in words no rule reads, or not spoken of at all, is not taken for kept', async () => {
+    expect(unchecked(scored[0]!)).toBe('');
+    const vague = { ...scored[0]!, prompt: 'Your work is scored on the rubric, with more weight on the analysis than on the code.', steps: ['Do it.'] };
+    expect(unchecked(vague)).toContain('could not check it against (“Your work is scored on the rubric, with more weight on the analysis than on the code.”)');
+    expect(unchecked({ ...scored[0]!, prompt: 'Write an essay.', steps: ['Argue a thesis.'] })).toContain('says nothing of how it is scored');
+    const store = new CourseStore({ ...lost(), tasks: { ...lost().tasks, [scored[0]!.id]: { ...vague, rubricId: null } } });
+    const first = scored[0]!.lessonId;
+    const commands = await lessonRubrics(fakeInference(() => ({ levels, criteria: criteria(4) })), store.getState(), first);
+    store.apply(commands, { label: { key: 't' }, source: 'ai' });
+    const now = store.getState().tasks[scored[0]!.id] as Assignment;
+    expect(now.rubricId).toBeTruthy();
+    expect(now.flags.map((f) => (f.code === 'reviewNote' ? f.values.where : ''))).toContain('Rubric');
+  });
+});
+

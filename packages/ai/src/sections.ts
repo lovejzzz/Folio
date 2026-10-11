@@ -99,6 +99,21 @@ export function announced(v: PlanDraft, course: Course, lesson: Lesson): PlanDra
   return { ...v, segments: v.segments.map((x, i) => (i === last ? { ...x, description: `${x.description.trimEnd()}\nBefore students leave, tell them that next time they sit ${sat}.` } : x)) };
 }
 
+/**
+ * A plan written again keeps the id of every segment that keeps its title: slides say which segment they are shown in
+ * by its id, and a plan written again with new ids throughout left every slide of the deck tied to nothing. A segment
+ * that is new, renamed, or one of two of a name gets a new id, and what was tied to the old one is then tied to nothing,
+ * which the deck's own "needs updating" already says.
+ */
+export function keptIds<T extends { title: string }>(written: T[], before: readonly { id: string; title: string }[]): (T & { id: string })[] {
+  const key = (title: string) => title.trim().toLowerCase();
+  const once = (list: readonly { title: string }[], title: string) => list.filter((x) => key(x.title) === key(title)).length === 1;
+  return written.map((s) => {
+    const old = once(written, s.title) && once(before, s.title) ? before.find((x) => key(x.title) === key(s.title)) : undefined;
+    return { ...s, id: old?.id ?? newId('x') };
+  });
+}
+
 const plan: SectionJob<PlanDraft> = {
   schema: PlanDraft,
   tidy: (v, course, lesson) => newVocabulary(tidyLessonNames(tidyPlanSources(v), course, lesson), course, lesson),
@@ -116,7 +131,7 @@ const plan: SectionJob<PlanDraft> = {
       flags: flagsAt(problems, null),
       content: {
         keyIdeas: v.keyIdeas,
-        segments: v.segments.map((s) => ({ ...s, session: sessionIndex(_course, s.session - 1), id: newId('x') })),
+        segments: keptIds(v.segments, lesson.segments).map((s) => ({ ...s, session: sessionIndex(_course, s.session - 1) })),
         vocabulary: v.vocabulary.map((t) => ({ ...t, id: newId('x') })),
       },
     }),

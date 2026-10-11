@@ -54,12 +54,27 @@ export function scoringBroken(rubric: { levels: { points: number }[]; criteria: 
 export function siblingRubric(course: Course, piece: Assignment): Rubric | null {
   if (!piece.toward.trim()) return null;
   const said = scoringSaid(piece);
+  // The same words on how it is scored, in both pieces: that is the shared contract. A name in common and a total
+  // that happens to agree are not one, and a piece that says nothing of its scoring shares none.
+  // The sentences that state points in numbers: a piece's other remarks on scoring ("scored alone") are its own.
+  const stated = (x: ScoringSaid) => x.sentences.filter((line) => /\d[^.]*\bpoints?\b/i.test(line)).join(' ');
+  const same = (other: Assignment) => stated(said) !== '' && stated(scoringSaid(other)) === stated(said);
   const found = Object.values(course.tasks)
-    .flatMap((t) => (t.kind === 'assignment' && t.id !== piece.id && t.toward.trim() === piece.toward.trim() && t.rubricId && course.rubrics[t.rubricId] ? [course.rubrics[t.rubricId]!] : []))
+    .flatMap((t) => (t.kind === 'assignment' && t.id !== piece.id && t.toward.trim() === piece.toward.trim() && same(t) && t.rubricId && course.rubrics[t.rubricId] ? [course.rubrics[t.rubricId]!] : []))
     .find((r) => !scoringBroken(r, said));
   if (!found) return null;
   const levels = found.levels.map((lv) => ({ ...lv, id: newId('x') }));
   return { id: newId('r'), title: piece.title, levels, criteria: found.criteria.map((c) => ({ id: newId('x'), name: c.name, descriptors: Object.fromEntries(found.levels.map((lv, i) => [levels[i]!.id, c.descriptors[lv.id] ?? ''])) })) };
+}
+
+/**
+ * What could not be checked of a rubric against its piece, said to the teacher on the piece; empty when the piece's
+ * scoring was read and kept. A piece that speaks of points in words no rule here reads is not thereby unconstrained.
+ */
+export function unchecked(piece: Assignment): string {
+  const said = scoringSaid(piece);
+  if (said.top !== undefined || said.total !== undefined) return '';
+  return said.sentences.length ? `This rubric was written for the piece as it stands, and the piece speaks of its scoring in words Folio could not check it against (${said.sentences.map((x) => `“${x}”`).join(' ')}): compare the two before you use it.` : 'This rubric was written for the piece as it stands. The piece itself says nothing of how it is scored, so there was nothing to hold the rubric to: check that its criteria and points are what you intend.';
 }
 
 export function rubricAlonePrompt(course: Course, lesson: Lesson, piece: Assignment, fault = ''): string {
@@ -95,11 +110,12 @@ function fromDraft(v: { levels: { label: string; points: number }[]; criteria: {
 export async function rubricFor(inference: Inference, course: Course, lesson: Lesson, piece: Assignment, signal?: AbortSignal): Promise<Command> {
   const copied = siblingRubric(course, piece);
   if (copied) return cmd('rubric.attach', { taskId: piece.id, rubric: copied });
+  const note = unchecked(piece);
   const ask = (fault = '') => runJob(inference, { task: 'folio_rubric', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: rubricAlonePrompt(course, lesson, piece, fault), effort: 'medium', schema: RubricDraft, signal });
   const first = fromDraft((await ask()).value, piece);
   const rubric = typeof first === 'string' ? fromDraft((await ask(first)).value, piece) : first;
   if (typeof rubric === 'string') throw new InferenceError('invalid', `No rubric that fits "${piece.title}" could be written: ${rubric}.`);
-  return cmd('rubric.attach', { taskId: piece.id, rubric });
+  return cmd('rubric.attach', { taskId: piece.id, rubric, ...(note ? { note } : {}) });
 }
 
 /**

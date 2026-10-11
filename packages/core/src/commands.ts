@@ -85,7 +85,7 @@ export type CommandMap = {
   'task.remove': { taskId: string };
   'rubric.update': { rubricId: string; rubric: Omit<Rubric, 'id'> };
   /** A rubric given to a piece of graded work that stands without one. The piece's own words are not touched. */
-  'rubric.attach': { taskId: string; rubric: Rubric };
+  'rubric.attach': { taskId: string; rubric: Rubric; note?: string };
   'faq.fill': { lessonId: string; entries: FaqEntry[]; flags: Flag[] };
   'faq.add': { entry: FaqEntry };
   'faq.update': { faqId: string; question?: string; answer?: string };
@@ -333,6 +333,8 @@ const handlers: { [K in CommandType]: Handler<K> } = {
     if (!task || task.kind !== 'assignment') throw new CommandError(`No graded work ${p.taskId}`);
     draft.rubrics[p.rubric.id] = p.rubric;
     task.rubricId = p.rubric.id;
+    // What could not be checked of it is said on the piece, for the teacher to look at.
+    if (p.note) task.flags = [...task.flags.filter((f) => !(f.code === 'reviewNote' && f.values.where === 'Rubric')), { code: 'reviewNote', values: { where: 'Rubric', text: p.note } }];
   },
   'rubric.update': (draft, p) => {
     if (!draft.rubrics[p.rubricId]) throw new CommandError(`No rubric ${p.rubricId}`);

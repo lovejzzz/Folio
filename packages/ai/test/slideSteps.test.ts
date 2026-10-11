@@ -81,3 +81,21 @@ describe('a segment worked from a sheet', () => {
     expect(withSheetSlides(deck(sociology, []).slides, lessonOf(sociology), lead)).toHaveLength(sociology.slides.length);
   });
 });
+
+describe('a plan written again', () => {
+  it('keeps the id of each segment that keeps its title, so its slides stay tied to it', async () => {
+    const { keptIds } = await import('../src/sections');
+    const before = [{ id: 'x_a', title: 'Warm-up' }, { id: 'x_b', title: 'Worked example' }, { id: 'x_c', title: 'Practice' }];
+    // Written again: one renamed, one new, the order changed.
+    const again = keptIds([{ title: 'Practice' }, { title: 'warm-up ' }, { title: 'A new example' }, { title: 'Exit ticket' }], before);
+    expect(again.map((s) => s.id).slice(0, 2)).toEqual(['x_c', 'x_a']);
+    expect(again[2]!.id).not.toBe('x_b');
+    expect(new Set(again.map((s) => s.id)).size).toBe(4);
+  });
+
+  it('gives new ids where a title stands twice: two segments of one name are not told apart by it', async () => {
+    const { keptIds } = await import('../src/sections');
+    const again = keptIds([{ title: 'Practice' }, { title: 'Practice' }], [{ id: 'x_a', title: 'Practice' }]);
+    expect(again.map((s) => s.id)).not.toContain('x_a');
+  });
+});
