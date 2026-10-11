@@ -415,6 +415,10 @@ export const en = {
     checks: {
       title: 'Yours to check',
       ready: 'To have ready',
+      ownOpen: 'Folio did not write this graded work: these materials count on your own.',
+      ownHave: 'You have said you have this graded work yourself.',
+      ownConfirm: 'I have it',
+      ownUndo: 'I don’t have it yet',
       worked: 'What Folio worked out',
       answersHeld: (v: { count: number }) => `${v.count} ${v.count === 1 ? 'answer' : 'answers'} in the quiz and graded work worked out by a program, as written.`,
       keysHeld: (v: { count: number; fixed: string[] }) => `${v.count} ${v.count === 1 ? 'sheet key' : 'sheet keys'} worked out by a program${v.fixed.length ? `; corrected in ${v.fixed.map((x) => `“${x}”`).join(', ')}` : ''}.`,

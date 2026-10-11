@@ -22,3 +22,4 @@ export { project } from './projections';
 export * from './locators';
 export * from './checklist';
 export * from './ready';
+export * from './ownNeeds';

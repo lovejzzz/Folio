@@ -1,3 +1,4 @@
+import { ownNeeds } from './ownNeeds';
 import { filledTexts, isBlankSegment, statedObjectives } from './blank';
 import { lessonPieces, orderedLessons } from './course';
 import type { Flag } from './flags';
@@ -100,6 +101,8 @@ export function cellState(course: Course, lesson: Lesson, kind: MaterialKind): C
   if (!meta) return 'empty';
   if (staleReasons(course, lesson, section).length > 0) return 'stale';
   if (meta.flags.length > 0 || itemFlags(course, lesson, kind).length > 0) return 'attention';
+  // Written, and leaning on graded work the teacher has not yet said they have: not ready to take into a room.
+  if (ownNeeds(course, [lesson.id]).some((n) => !n.confirmed)) return 'attention';
   return 'ready';
 }
 

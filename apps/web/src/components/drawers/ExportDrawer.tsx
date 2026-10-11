@@ -1,4 +1,4 @@
-import { enabledKinds, orderedLessons, project, type Course, type MaterialKind } from '@folio/core';
+import { enabledKinds, orderedLessons, ownNeeds, project, type Course, type MaterialKind } from '@folio/core';
 import { Button, Checkbox, SegmentedControl, cx, fieldClass } from '@folio/ui';
 import { EyeOff, FileArchive, FileSpreadsheet, FileText, FolderDown, Presentation, Printer, UploadCloud } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
@@ -137,6 +137,17 @@ function KindPicker({ choice, set }: { choice: ExportChoice; set: (patch: Partia
 }
 
 /** Export: what, for whom, in which format. Sensible defaults make it one click. */
+/** What these files count on and do not hold: said before they are made, by the account the map reads. */
+function OwnNote({ course, lessonIds }: { course: Course; lessonIds: readonly string[] | undefined }) {
+  const own = ownNeeds(course, lessonIds).filter((n) => !n.confirmed);
+  if (!own.length) return null;
+  return (
+    <p role="note" className="rounded-control bg-well px-3 py-2 font-ui text-13 text-ink">
+      {exportText.ownNeeded([...new Set(own.map((n) => n.piece))], [...new Set(own.map((n) => n.lesson))])}
+    </p>
+  );
+}
+
 export function ExportDrawer() {
   const course = useCourse();
   const lessons = orderedLessons(course);
@@ -184,6 +195,7 @@ export function ExportDrawer() {
       {/* The action stays in view while the choices above scroll; the preview pushed it off a laptop screen. */}
       <div className="sticky bottom-0 space-y-2 border-t border-rule bg-paper p-4">
         {noSlides && <p className="font-ui text-13 text-attention">{exportText.noSlides}</p>}
+        {!backup && <OwnNote course={course} lessonIds={lessonIdsFor(effectiveChoice(choice))} />}
         <Button variant="primary" size="lg" className="w-full" isDisabled={busy || kinds.length === 0 || noSlides} onPress={run}>
           {busy ? exportText.working : cta}
         </Button>

@@ -63,4 +63,5 @@ export const exportText = {
     backToFolio: 'Back to Folio',
   },
   noSlides: 'There are no slides in the chosen lessons yet.',
+  ownNeeded: (pieces: string[], lessons: number[]) => `Not in these files, and yours to bring: the paper, the instructions and the scoring for ${pieces.map((x) => `“${x}”`).join(', ')} (lesson${lessons.length === 1 ? '' : 's'} ${lessons.join(', ')}). Folio did not write them. Say on the lesson’s page when you have them.`,
 };

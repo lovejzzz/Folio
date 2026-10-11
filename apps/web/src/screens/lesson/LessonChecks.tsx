@@ -1,10 +1,32 @@
-import { lessonChecklist, type CheckItem, type Course, type Lesson } from '@folio/core';
+import { cmd, gradingWithOwn, lessonChecklist, ownNeeds, type CheckItem, type Course, type Lesson } from '@folio/core';
+import { Button } from '@folio/ui';
+import { edit } from '../../state/edit';
 import { useT } from '../../i18n';
 
 /**
  * What Folio worked out on this lesson and what is the teacher's to look at before class: five lines at most, facts only.
  * With few notes left on a lesson, no note had come to look like no problem.
  */
+/**
+ * Graded work this lesson leans on that Folio did not write: the teacher says when they have it, and until then the
+ * lesson's materials are marked on the map as needing a look. Said once it is in hand; taken back the same way.
+ */
+function OwnWork({ course, lesson }: { course: Course; lesson: Lesson }) {
+  const t = useT();
+  const needs = ownNeeds(course, [lesson.id]);
+  if (!needs.length) return null;
+  const open = needs.filter((n) => !n.confirmed);
+  const set = (own: boolean) => edit([cmd('course.update', { grading: gradingWithOwn(course, needs.map((n) => n.piece), own) })], { key: 'editedGrading' });
+  return (
+    <p className="mb-3 flex flex-wrap items-center gap-2">
+      <span>{open.length ? t.lesson.checks.ownOpen : t.lesson.checks.ownHave}</span>
+      <Button size="sm" variant="secondary" onPress={() => set(open.length > 0)}>
+        {open.length ? t.lesson.checks.ownConfirm : t.lesson.checks.ownUndo}
+      </Button>
+    </p>
+  );
+}
+
 export function LessonChecks({ course, lesson }: { course: Course; lesson: Lesson }) {
   const t = useT();
   const list = lessonChecklist(course, lesson);
@@ -20,6 +42,7 @@ export function LessonChecks({ course, lesson }: { course: Course; lesson: Lesso
               <li key={line}>{line}</li>
             ))}
           </ul>
+          <OwnWork course={course} lesson={lesson} />
         </>
       )}
       {(list.look.length > 0 || list.checked.length > 0) && <h2 className="mb-2 font-semibold text-ink">{t.lesson.checks.title}</h2>}

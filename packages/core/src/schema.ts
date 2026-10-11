@@ -339,7 +339,15 @@ export const GradeCardSchema = z.object({
 });
 export type GradeCard = z.infer<typeof GradeCardSchema>;
 
-export const GradeItemSchema = z.object({ id, item: text, weight: z.number().min(0).max(100), judged: z.enum(['levels', 'complete']).optional(), card: GradeCardSchema.optional() });
+export const GradeItemSchema = z.object({
+  id,
+  item: text,
+  weight: z.number().min(0).max(100),
+  judged: z.enum(['levels', 'complete']).optional(),
+  card: GradeCardSchema.optional(),
+  /** The teacher has said they have this piece's paper, instructions and scoring themselves, where Folio writes none. */
+  own: z.boolean().optional(),
+});
 export type GradeItem = z.infer<typeof GradeItemSchema>;
 
 export const CourseStatusSchema = z.enum(['planning', 'building', 'ready']);

@@ -1,4 +1,5 @@
 import { lessonPieces } from './course';
+import { ownNeeds } from './ownNeeds';
 import { docLabels, type DocLabels } from './docLabels';
 import type { Course, Lesson } from './schema';
 
@@ -15,6 +16,8 @@ export interface ReadyList {
   papers: string[];
   /** Graded work scored during the meeting: the teacher marks against a list of the class. */
   scored: string[];
+  /** Graded work of this lesson that Folio is not writing: the teacher's own to bring, by its name. */
+  own: string[];
   /** What else the plan has someone use, as the sheets' writer listed it. */
   onHand: string[];
 }
@@ -27,11 +30,12 @@ export function lessonReady(course: Course, lesson: Lesson): ReadyList {
     copies: lesson.handouts.filter((h) => h.title.trim()).map((h) => ({ title: h.title, copies: h.copies })),
     papers: pieces.filter((p) => p.kind === 'test' && card(p.toward)?.handIn !== 'online').flatMap((p) => titled(p.toward)),
     scored: pieces.filter((p) => p.kind === 'inclass').map((p) => p.toward.trim()),
+    own: ownNeeds(course, [lesson.id]).map((n) => n.piece),
     onHand: (lesson.ready ?? []).map((x) => x.trim()).filter(Boolean),
   };
 }
 
-export const hasReady = (list: ReadyList) => list.copies.length + list.papers.length + list.scored.length + list.onHand.length > 0;
+export const hasReady = (list: ReadyList) => list.copies.length + list.papers.length + list.scored.length + list.own.length + list.onHand.length > 0;
 
 /** The list as the teacher reads it, a line a kind, in the course's language. */
 export function readyLines(list: ReadyList, l: DocLabels = docLabels('en')): string[] {
@@ -40,6 +44,7 @@ export function readyLines(list: ReadyList, l: DocLabels = docLabels('en')): str
     ...(list.copies.length ? [l.readyCopies(list.copies.map((c) => `${q(c.title)}${c.copies.trim() ? ` (${c.copies.trim().replace(/\.$/, '')})` : ''}`).join('; '))] : []),
     ...(list.papers.length ? [l.readyPapers(list.papers.map(q).join('; '))] : []),
     ...(list.scored.length ? [l.readyScored(list.scored.map(q).join('; '))] : []),
+    ...(list.own.length ? [l.readyOwn(list.own.map(q).join('; '))] : []),
     ...list.onHand,
   ];
 }

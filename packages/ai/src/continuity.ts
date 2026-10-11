@@ -1,4 +1,4 @@
-import { hasModulePages, lessonPieces, orderedLessons, type Course, type Lesson } from '@folio/core';
+import { hasModulePages, lessonPieces, orderedLessons, worksWritten, type Course, type Lesson } from '@folio/core';
 import { filesSoFar } from './earlierFiles';
 import { moduleDigest, moduleSummary } from './online';
 import { preparedTurn } from './pieceFacts';
@@ -257,9 +257,6 @@ function firstTurn(course: Course, lesson: Lesson): string {
   if (prepared === false) return ' This is the first lesson to run it, and its brief is written with this lesson: nothing is prepared ahead for it, so it is scored from today.';
   return ' This is the first lesson to run it, and its brief is written with this lesson: where a student prepares their turn (leading, presenting), today the brief is given out (with its rubric, where it has one), the teacher models a turn that is not scored, and who goes first next time is settled; scored turns begin next time. Where nothing is prepared (taking part, answering in class), it is scored from today.';
 }
-
-/** Whether graded work is written out for this course: chosen, or needed by the rubrics that are. */
-const worksWritten = (course: Course): boolean => course.materials.assignments.enabled || course.materials.rubrics.enabled || hasModulePages(course);
 
 /**
  * A lesson's graded work in a course where none is written out: the teacher's own. A plan written alone was told, as

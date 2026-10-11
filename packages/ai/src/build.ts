@@ -1,4 +1,4 @@
-import { CourseStore, GENERATED_KINDS, lessonPieces, orderedLessons, setsWork, type Command, type Course, type GeneratedKind, type Lesson, type MaterialKind } from '@folio/core';
+import { CourseStore, GENERATED_KINDS, lessonPieces, orderedLessons, ownNeeds, setsWork, type Command, type Course, type GeneratedKind, type Lesson, type MaterialKind } from '@folio/core';
 
 /** The lesson still exists and still asks for this section: the teacher may have changed its homework mid-build. */
 const stillWanted = (course: Course, t: BuildTarget) => {
@@ -126,11 +126,8 @@ export function rubricLacking(course: Course, lesson: Lesson): boolean {
  * then name the piece and leave its instructions to the teacher.
  */
 export function ownToWrite(course: Course, lessonIds?: readonly string[]): { lesson: number; pieces: string[] }[] {
-  if (runKinds((k) => course.materials[k].enabled).some((r) => r.kind === 'assignments')) return [];
-  return orderedLessons(course).flatMap((l, i) => {
-    const pieces = [...new Set(lessonPieces(l).filter((p) => p.kind !== 'none').map((p) => p.toward.trim()).filter(Boolean))];
-    return pieces.length && (!lessonIds || lessonIds.includes(l.id)) ? [{ lesson: i + 1, pieces }] : [];
-  });
+  const open = ownNeeds(course, lessonIds).filter((n) => !n.confirmed);
+  return [...new Set(open.map((n) => n.lesson))].map((lesson) => ({ lesson, pieces: open.filter((n) => n.lesson === lesson).map((n) => n.piece) }));
 }
 
 /**
