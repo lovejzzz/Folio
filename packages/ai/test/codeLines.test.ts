@@ -142,6 +142,7 @@ describe('an instruction that comes back as advice', () => {
     expect(withoutEchoes('Set the final proposal. Use the deadline wording exactly. Say what builds toward it.')).toBe('Set the final proposal. Say what builds toward it.');
     expect(withoutEchoes('Keep a roster. Divide the class across the groups without assuming a class size. Assign nothing more.')).toBe('Keep a roster. Assign nothing more.');
     expect(withoutEchoes('Set the problem set. Do not describe how any is handed in. No helpers are named. Hear two pairs.')).toBe('Set the problem set. Hear two pairs.');
+    expect(withoutEchoes('Set the report. Say nothing about how the report is collected. Hear two pairs.')).toBe('Set the report. Hear two pairs.');
     expect(withoutEchoes('Hand out the sheet.\n`x = 1  # written separately`\nThe handout is written separately; do not model it.')).toBe('Hand out the sheet.\n`x = 1  # written separately`');
     expect(withoutEchoes('Each criterion is scored from 1 to 4 points.')).toBe('Each criterion is scored from 1 to 4 points.');
   });

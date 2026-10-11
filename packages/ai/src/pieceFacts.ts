@@ -87,13 +87,14 @@ const WAY = /\bhand(?:ed|s)? (?:it |them |this |these )?in\b|\bcollect(?:s|ed)?\
  * every other material collected nothing, and a notebook scored "at the bench" that its own brief scored after class.
  */
 export function unsaidWays(segments: { title: string; description: string; teacherNotes: string }[], course: Course, lesson: Lesson): Flag[] {
-  const open = [...new Set(lessonPieces(lesson).map((p) => p.toward.trim()).filter(Boolean))].filter((toward) => course.grading.find((g) => g.item.trim() === toward)?.card?.handIn === 'unsaid');
+  // (a paper sat in class is collected when it is done: that is no way of handing in to leave open)
+  const open = [...new Set(lessonPieces(lesson).filter((p) => p.kind !== 'test' && p.kind !== 'none').map((p) => p.toward.trim()).filter(Boolean))].filter((toward) => course.grading.find((g) => g.item.trim() === toward)?.card?.handIn === 'unsaid');
   return open.flatMap((toward) => {
     const named = toward.toLowerCase();
     for (const seg of segments) {
       const text = `${seg.description}\n${seg.teacherNotes}`;
       if (!`${seg.title}\n${text}`.toLowerCase().includes(named)) continue;
-      const said = text.split(/(?<=[.!?])\s+|\n+/).find((x) => WAY.test(x) && !/\bdue\b/i.test(x));
+      const said = text.split(/(?<=[.!?])\s+|\n+/).find((x) => WAY.test(x) && !/\bdue\b|\bnothing\b|\bnot\b|\bno way\b/i.test(x));
       if (said) return [{ code: 'reviewNote' as const, values: { where: seg.title, text: `This segment says how "${toward}" is handed in or when it is scored ("${said.trim().slice(0, 160)}"). Your brief does not say, so the other materials name no way: set it in the grading table on the syllabus, or change this sentence.` } }];
     }
     return [];
