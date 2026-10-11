@@ -1,4 +1,4 @@
-import { CourseStore, GENERATED_KINDS, lessonPieces, orderedLessons, setsWork, type Command, type Course, type GeneratedKind } from '@folio/core';
+import { CourseStore, GENERATED_KINDS, lessonPieces, orderedLessons, setsWork, type Command, type Course, type GeneratedKind, type MaterialKind } from '@folio/core';
 
 /** The lesson still exists and still asks for this section: the teacher may have changed its homework mid-build. */
 const stillWanted = (course: Course, t: BuildTarget) => {
@@ -53,11 +53,27 @@ export interface BuildHost {
 
 export const targetKey = (t: BuildTarget): string => `${t.lessonId}:${t.kind}`;
 
-/** Which sections a material needs. Rubrics are written alongside assignments. */
+/** A section a build writes: one the teacher chose, or one a chosen material cannot be written without. */
+export interface RunKind {
+  kind: GeneratedKind;
+  /** The chosen material that needs it, when the teacher did not choose it themselves. */
+  neededBy?: MaterialKind;
+}
+
+/**
+ * What is really written for a choice of materials: the one list the build runs, and the one its cost is reckoned
+ * from. Rubrics are written with the graded work they score, so choosing rubrics alone writes that work too: the
+ * build did, and the estimate, which added up only what was ticked, said nothing was to pay.
+ */
+export function runKinds(enabled: (kind: MaterialKind) => boolean): RunKind[] {
+  return GENERATED_KINDS.flatMap((kind): RunKind[] => {
+    if (enabled(kind)) return [{ kind }];
+    return kind === 'assignments' && enabled('rubrics') ? [{ kind, neededBy: 'rubrics' }] : [];
+  });
+}
+
 function wantedKinds(course: Course): GeneratedKind[] {
-  return GENERATED_KINDS.filter(
-    (k) => course.materials[k].enabled || (k === 'assignments' && course.materials.rubrics.enabled),
-  );
+  return runKinds((k) => course.materials[k].enabled).map((r) => r.kind);
 }
 
 /** Every enabled section that has not been built yet, lesson by lesson. */

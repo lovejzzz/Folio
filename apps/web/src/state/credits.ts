@@ -1,3 +1,4 @@
+import { runKinds } from '@folio/ai';
 import { create } from 'zustand';
 
 /**
@@ -97,6 +98,8 @@ export const creditsText = {
   thanks: 'Thank you. Your credits are added as soon as Stripe confirms the payment.',
   unavailable: 'Folio credits aren’t switched on yet. Use your own key for now.',
   signInFirst: 'Sign in with Google first.',
+  /** Said when a choice has more written than was ticked: never charged for in silence. */
+  alsoWritten: 'This includes the graded work the rubrics score: a rubric is written with its assignment.',
   ownKey: (usd: number) => `About $${usd < 10 ? usd.toFixed(1) : Math.round(usd)} at your provider’s prices, as measured on courses like this one.`,
   estimate: (n: number, have: number | null) => (have === null ? `About ${n.toLocaleString('en-US')} credits.` : `About ${n.toLocaleString('en-US')} credits; you have ${have.toLocaleString('en-US')}.`),
 };
@@ -115,14 +118,18 @@ export const creditsText = {
  */
 const PER_LESSON: Partial<Record<string, number>> = { plan: 100, slides: 25, quiz: 16, study: 14, faq: 10, discussions: 7, assignments: 32, rubrics: 0 };
 
+/** A lesson's credits for a choice of materials: of everything that choice has written, chosen or needed by it. */
+const perLesson = (kinds: readonly string[]): number => runKinds((k) => kinds.includes(k)).reduce((sum, r) => sum + (PER_LESSON[r.kind] ?? 0), 0);
+
+/** The materials a choice has written that the teacher did not choose, each with the chosen one that needs it. */
+export const neededToo = (kinds: readonly string[]): { kind: string; neededBy: string }[] => runKinds((k) => kinds.includes(k)).flatMap((r) => (r.neededBy ? [{ kind: r.kind, neededBy: r.neededBy }] : []));
+
 /** About what the same lessons cost a teacher who writes with their own key, in dollars at the providers' prices. */
 export function estimateDollars(lessons: number, kinds: readonly string[]): number {
-  const each = kinds.reduce((sum, k) => sum + (PER_LESSON[k] ?? 0), 0);
-  return (lessons * each) / MARKUP / 100;
+  return (lessons * perLesson(kinds)) / MARKUP / 100;
 }
 
 /** About how many credits writing these lessons with these materials takes, rounded up to ten. */
 export function estimateCredits(lessons: number, kinds: readonly string[]): number {
-  const each = kinds.reduce((sum, k) => sum + (PER_LESSON[k] ?? 0), 0);
-  return Math.ceil((lessons * each) / 10) * 10;
+  return Math.ceil((lessons * perLesson(kinds)) / 10) * 10;
 }

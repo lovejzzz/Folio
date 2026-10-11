@@ -44,4 +44,18 @@ describe('what a course is said to cost before it is written', () => {
     expect(estimateDollars(1, all)).toBeCloseTo(0.68, 2);
     expect(creditsText.ownKey(estimateDollars(14, all))).toBe('About $9.5 at your provider’s prices, as measured on courses like this one.');
   });
+
+  it('counts what a choice has written, not only what was ticked: rubrics alone are written with their graded work', async () => {
+    const { estimateDollars, neededToo } = await import('./credits');
+    // As it was: rubrics alone were estimated at nothing, and the build wrote the assignments.
+    expect(estimateCredits(4, ['rubrics'])).toBe(estimateCredits(4, ['assignments']));
+    expect(estimateCredits(4, ['rubrics'])).toBe(130);
+    expect(estimateDollars(4, ['rubrics'])).toBeGreaterThan(0);
+    expect(neededToo(['rubrics'])).toEqual([{ kind: 'assignments', neededBy: 'rubrics' }]);
+    // Chosen together they are written once, and nothing is needed that was not chosen.
+    expect(estimateCredits(4, ['assignments', 'rubrics'])).toBe(130);
+    expect(neededToo(['assignments', 'rubrics'])).toEqual([]);
+    expect(neededToo(['slides'])).toEqual([]);
+  });
 });
+
