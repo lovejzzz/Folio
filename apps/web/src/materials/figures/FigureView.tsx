@@ -1,7 +1,7 @@
+import { figureText } from '../../i18n/figureText';
 import type { FigureId, SlideVisual } from '@folio/core';
 import { stillFigure } from '@folio/figures';
 import { lazy, Suspense, type ComponentType, type LazyExoticComponent, type ReactNode } from 'react';
-import { useT } from '../../i18n';
 import { useFigureRun, type FigureRun } from './figureRun';
 
 type Figure = Extract<SlideVisual, { kind: 'figure' }>;
@@ -22,9 +22,8 @@ export const svgAddress = (svg: string): string => `data:image/svg+xml;charset=u
 
 /** Why there is no picture, in the interface's words: the demonstration cannot be shown, or the cabinet cannot draw it. */
 function useReason(visual: Figure): string {
-  const t = useT();
   const still = stillFigure(visual);
-  return still.problem ? t.figures.problem[still.problem] : still.limit ? t.figures.limit[still.limit] : '';
+  return still.problem ? figureText.problem[still.problem] : still.limit ? figureText.limit[still.limit] : '';
 }
 
 /** The figure standing still at its first picture: in a thumbnail, a preview and on paper. */
@@ -54,13 +53,12 @@ export function FigureView({ visual, live }: { visual: Figure; live: boolean }) 
  * that cannot move shows of it, on screen before printing and in the PDF. The same a Word file and a deck get.
  */
 export function FigureFrames({ visual, table }: { visual: Figure; table: (head: string[], rows: string[][]) => ReactNode }) {
-  const t = useT();
   const still = stillFigure(visual);
   // Unfinished or not searchable: the slide above says why, and there are no steps to give.
   if (still.problem) return null;
   return (
-    <section className="px-4 py-3" aria-label={t.figures.frames}>
-      <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{t.figures.frames}</h4>
+    <section className="px-4 py-3" aria-label={figureText.frames}>
+      <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{figureText.frames}</h4>
       {still.frames.map((frame, i) => (
         <figure key={i} className="avoid-break folio-figure-frame">
           {frame.svg && <img className="folio-figure-print" style={{ aspectRatio: `${still.width} / ${still.height}` }} src={svgAddress(frame.svg)} alt={frame.caption} />}

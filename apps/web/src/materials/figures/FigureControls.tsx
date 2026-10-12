@@ -1,14 +1,13 @@
+import { figureText } from '../../i18n/figureText';
 import { IconButton, useMediaQuery } from '@folio/ui';
 import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Pause, Play, RotateCcw } from 'lucide-react';
 import { lazy, Suspense, useState } from 'react';
-import { useT } from '../../i18n';
 import { useFigureRun } from './figureRun';
 
 const Large = lazy(() => import('./BinarySearchFigure'));
 
 /** Under the slide: the sentence for the picture the demonstration is at, and the buttons that work it. */
 export function FigureControls() {
-  const t = useT();
   const run = useFigureRun();
   // On a screen in the hand the slide is two hundred pixels high and its picture smaller still: there the larger
   // picture is open from the start. Anywhere, one button opens and closes it.
@@ -18,7 +17,7 @@ export function FigureControls() {
   const { at, last } = run;
   const open = chosen ?? narrow;
   return (
-    <div className="no-print mt-3 grid gap-2" data-owns-arrows role="group" aria-label={t.figures.controls} onKeyDown={run.onKey}>
+    <div className="no-print mt-3 grid gap-2" data-owns-arrows role="group" aria-label={figureText.controls} onKeyDown={run.onKey}>
       {open && (
         <Suspense fallback={null}>
           <Large run={run} large />
@@ -29,20 +28,20 @@ export function FigureControls() {
         {run.frames[at]!.caption}
       </p>
       <div className="flex items-center justify-center gap-1">
-        <IconButton label={t.figures.reset} isDisabled={at === 0} onPress={() => run.go(0)}>
+        <IconButton label={figureText.reset} isDisabled={at === 0} onPress={() => run.go(0)}>
           <RotateCcw size={16} strokeWidth={1.5} />
         </IconButton>
-        <IconButton label={t.figures.back} isDisabled={at === 0} onPress={() => run.go(at - 1)}>
+        <IconButton label={figureText.back} isDisabled={at === 0} onPress={() => run.go(at - 1)}>
           <ChevronLeft size={16} strokeWidth={1.5} />
         </IconButton>
-        <span className="px-1 font-ui text-12 tabular-nums text-ink-2">{t.figures.stepOf(at, last)}</span>
-        <IconButton label={t.figures.step} isDisabled={at >= last} onPress={() => run.go(at + 1)}>
+        <span className="px-1 font-ui text-12 tabular-nums text-ink-2">{figureText.stepOf(at, last)}</span>
+        <IconButton label={figureText.step} isDisabled={at >= last} onPress={() => run.go(at + 1)}>
           <ChevronRight size={16} strokeWidth={1.5} />
         </IconButton>
-        <IconButton label={run.running ? t.figures.pause : t.figures.play} isDisabled={last === 0} onPress={run.toggle}>
+        <IconButton label={run.running ? figureText.pause : figureText.play} isDisabled={last === 0} onPress={run.toggle}>
           {run.running ? <Pause size={16} strokeWidth={1.5} /> : <Play size={16} strokeWidth={1.5} />}
         </IconButton>
-        <IconButton label={open ? t.figures.smaller : t.figures.larger} onPress={() => setChosen(!open)}>
+        <IconButton label={open ? figureText.smaller : figureText.larger} onPress={() => setChosen(!open)}>
           {open ? <Minimize2 size={16} strokeWidth={1.5} /> : <Maximize2 size={16} strokeWidth={1.5} />}
         </IconButton>
       </div>
@@ -57,15 +56,14 @@ export function FigureControls() {
  * shows the numbers when the picture cannot hold them.
  */
 function FigureStrip() {
-  const t = useT();
   const run = useFigureRun();
   if (!run) return null;
   const items = run.kind.items(run.visual, run.frames[run.at]!.pose);
   return (
     <div className="grid justify-items-center gap-1">
-      <ol className="folio-figure-strip font-ui" aria-label={t.figures.strip}>
+      <ol className="folio-figure-strip font-ui" aria-label={figureText.strip}>
         {items.map((item) => (
-          <li key={item.place} data-state={item.state} aria-label={`${t.figures.place(item.place)}: ${item.value}, ${t.figures.states[item.state as keyof typeof t.figures.states] ?? item.state}`}>
+          <li key={item.place} data-state={item.state} aria-label={`${figureText.place(item.place)}: ${item.value}, ${figureText.states[item.state as keyof typeof figureText.states] ?? item.state}`}>
             <span aria-hidden className="folio-figure-strip-place">
               {item.place}
             </span>
@@ -75,7 +73,7 @@ function FigureStrip() {
           </li>
         ))}
       </ol>
-      <p className="font-ui text-13 text-ink-2">{run.visual.figure === 'binarySearch' ? t.figures.looking(String(run.visual.target)) : run.visual.figure === 'selectionSort' ? t.figures.sorting : run.visual.figure === 'rackBudget' ? t.figures.filling : t.figures.descending}</p>
+      <p className="font-ui text-13 text-ink-2">{run.visual.figure === 'binarySearch' ? figureText.looking(String(run.visual.target)) : run.visual.figure === 'selectionSort' ? figureText.sorting : run.visual.figure === 'rackBudget' ? figureText.filling : figureText.descending}</p>
     </div>
   );
 }

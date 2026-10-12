@@ -1,3 +1,4 @@
+import { figureText } from '../../i18n/figureText';
 import { enabledKinds, figureFaults, orderedLessons, ownNeeds, project, type Course, type FigureFault, type MaterialKind } from '@folio/core';
 import { Button, Checkbox, SegmentedControl, cx, fieldClass } from '@folio/ui';
 import { EyeOff, FileArchive, FileSpreadsheet, FileText, FolderDown, Presentation, Printer, UploadCloud } from 'lucide-react';
@@ -154,22 +155,21 @@ function OwnNote({ course, lessonIds }: { course: Course; lessonIds: readonly st
  * students is held for them; the teacher's own copy is made, and says in the file which are unfinished.
  */
 function Held({ faults, courseId, student }: { faults: FigureFault[]; courseId: string; student: boolean }) {
-  const t = useT();
   const { openDrawer } = useUi();
   return (
     <div role="alert" className="space-y-1 rounded-control bg-well px-3 py-2 font-ui text-13 text-ink">
-      <p className="font-semibold text-attention">{t.figures.held.title(faults.length)}</p>
+      <p className="font-semibold text-attention">{figureText.held.title(faults.length)}</p>
       <ul className="space-y-0.5">
         {faults.map((f) => (
           <li key={`${f.lessonId}:${f.slide}`}>
-            {t.figures.held.where(f.lesson, f.slide, f.title)}: {t.figures.problem[f.problem]}{' '}
+            {figureText.held.where(f.lesson, f.slide, f.title)}: {figureText.problem[f.problem]}{' '}
             <Link to="/c/$courseId/m/$kind" params={{ courseId, kind: 'slides' }} search={{ lesson: f.lessonId, slide: f.slide }} className="underline" onClick={() => openDrawer(null)}>
-              {t.figures.held.fix}
+              {figureText.held.fix}
             </Link>
           </li>
         ))}
       </ul>
-      <p className="text-ink-2">{student ? t.figures.held.student : t.figures.held.teacher}</p>
+      <p className="text-ink-2">{student ? figureText.held.student : figureText.held.teacher}</p>
     </div>
   );
 }

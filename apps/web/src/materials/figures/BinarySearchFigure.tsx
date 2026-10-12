@@ -1,5 +1,5 @@
+import { figureText } from '../../i18n/figureText';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useT } from '../../i18n';
 import { adoptFigureStyles } from './figureStyles';
 import type { FigureRun } from './figureRun';
 
@@ -61,7 +61,6 @@ const CABINET_BAND = { top: 36, height: 290 };
  * that scrolls sideways when the screen is narrower than that, and that keeps the number being compared in view.
  */
 export default function BinarySearchFigure({ run, large = false }: { run: FigureRun; large?: boolean }) {
-  const t = useT();
   // Counts each time the picture comes to rest at a step.
   const [rested, setRested] = useState(0);
   const onRest = useCallback(() => setRested((n) => n + 1), []);
@@ -103,17 +102,17 @@ export default function BinarySearchFigure({ run, large = false }: { run: Figure
   const art = <svg ref={host} className={large ? 'iso-svg folio-figure-wide' : 'iso-svg folio-figure-art'} style={{ ...(large && { minWidth: `${width}px` }), aspectRatio: `${view.width} / ${tall}` }} viewBox={`0 ${top} ${view.width} ${tall}`} role="img" aria-label={run.frames[run.at]!.caption} />;
   if (!large) {
     return (
-      <div className="folio-figure iso" data-theme="light" data-owns-arrows role="group" aria-label={t.figures.names[run.visual.figure]} tabIndex={0} onKeyDown={run.onKey}>
+      <div className="folio-figure iso" data-theme="light" data-owns-arrows role="group" aria-label={figureText.names[run.visual.figure]} tabIndex={0} onKeyDown={run.onKey}>
         {art}
       </div>
     );
   }
   return (
     <>
-      <div ref={frame} className="folio-figure-large iso" data-theme="light" data-owns-arrows role="group" aria-label={t.figures.large} tabIndex={0} onKeyDown={run.onKey}>
+      <div ref={frame} className="folio-figure-large iso" data-theme="light" data-owns-arrows role="group" aria-label={figureText.large} tabIndex={0} onKeyDown={run.onKey}>
         {art}
       </div>
-      {wide && <p className="text-center font-ui text-12 text-ink-2">{t.figures.sideways}</p>}
+      {wide && <p className="text-center font-ui text-12 text-ink-2">{figureText.sideways}</p>}
     </>
   );
 }

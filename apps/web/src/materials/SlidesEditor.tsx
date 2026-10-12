@@ -1,3 +1,4 @@
+import { figureText } from '../i18n/figureText';
 import { missingTargets } from '@folio/ai';
 import { cmd, newId, orderedLessons, type Course, type Lesson, type Slide, type SlideLayout } from '@folio/core';
 import { Button, IconButton, SegmentedControl } from '@folio/ui';
@@ -21,25 +22,24 @@ import { Filmstrip, SlidePager, deckOrder, useArrowKeys, type SlidePos } from '.
 
 /** A demonstration is put on the slide or taken off it; a slide with a table or chart keeps that. A second kind is offered where the slide has none. */
 function FigureButtons({ slide, set }: { slide: Slide; set: (visual: Slide['visual']) => void }) {
-  const t = useT();
   const has = slide.visual?.kind === 'figure';
   return (
     <>
-      <IconButton label={has ? t.figures.remove : t.figures.add} isDisabled={Boolean(slide.visual) && !has} onPress={() => set(slide.visual ? undefined : newBinarySearch())}>
+      <IconButton label={has ? figureText.remove : figureText.add} isDisabled={Boolean(slide.visual) && !has} onPress={() => set(slide.visual ? undefined : newBinarySearch())}>
         {has ? <SearchX size={16} strokeWidth={1.5} /> : <Search size={16} strokeWidth={1.5} />}
       </IconButton>
       {!slide.visual && (
-        <IconButton label={t.figures.addSort} onPress={() => set(newSelectionSort())}>
+        <IconButton label={figureText.addSort} onPress={() => set(newSelectionSort())}>
           <ArrowDownNarrowWide size={16} strokeWidth={1.5} />
         </IconButton>
       )}
       {!slide.visual && (
-        <IconButton label={t.figures.addDescent} onPress={() => set(newGradientDescent())}>
+        <IconButton label={figureText.addDescent} onPress={() => set(newGradientDescent())}>
           <TrendingDown size={16} strokeWidth={1.5} />
         </IconButton>
       )}
       {!slide.visual && (
-        <IconButton label={t.figures.addRack} onPress={() => set(newRackBudget())}>
+        <IconButton label={figureText.addRack} onPress={() => set(newRackBudget())}>
           <Server size={16} strokeWidth={1.5} />
         </IconButton>
       )}

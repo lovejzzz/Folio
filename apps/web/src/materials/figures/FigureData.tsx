@@ -1,8 +1,8 @@
+import { figureText } from '../../i18n/figureText';
 import { enteredFaults, figureEntries, figureProblem, isFigureNumber, sortedForSearch, type FigureEntered, type SlideVisual } from '@folio/core';
 import { cabinetCramped } from '@folio/figures';
 import { Button, SegmentedControl } from '@folio/ui';
 import { EditableText } from '../../components/editing/EditableText';
-import { useT } from '../../i18n';
 
 type Figure = Extract<SlideVisual, { kind: 'figure' }>;
 
@@ -30,13 +30,12 @@ function typed(v: Figure, field: keyof FigureEntered, text: string | undefined):
  * right: "1, nope, 3" had become "1, 3" without a word, and a draft held only on the screen went with the next slide.
  */
 export function FigureData({ v, onChange }: { v: Figure; onChange: (next: Figure) => void }) {
-  const t = useT();
   const search = v.figure === 'binarySearch';
   const descent = v.figure === 'gradientDescent';
   const rack = v.figure === 'rackBudget';
-  const looks = search ? t.figures.looks : descent ? t.figures.descentLooks : rack ? t.figures.rackLooks : t.figures.sortLooks;
-  const valuesName = search ? t.figures.values : descent ? t.figures.descentValues : rack ? t.figures.rackValues : t.figures.sortValues;
-  const targetName = descent ? t.figures.descentTarget : t.figures.target;
+  const looks = search ? figureText.looks : descent ? figureText.descentLooks : rack ? figureText.rackLooks : figureText.sortLooks;
+  const valuesName = search ? figureText.values : descent ? figureText.descentValues : rack ? figureText.rackValues : figureText.sortValues;
+  const targetName = descent ? figureText.descentTarget : figureText.target;
   const problem = figureProblem(v);
   const wrong = enteredFaults(v.entered);
   const values = (text: string) => {
@@ -45,14 +44,14 @@ export function FigureData({ v, onChange }: { v: Figure; onChange: (next: Figure
   };
   const target = (text: string) => onChange(isFigureNumber(text) ? { ...typed(v, 'target', undefined), target: Number(text) } : typed(v, 'target', text));
   return (
-    <div className="no-print mt-2 grid gap-1 font-ui text-12 text-ink-2" role="group" aria-label={t.figures.data}>
+    <div className="no-print mt-2 grid gap-1 font-ui text-12 text-ink-2" role="group" aria-label={figureText.data}>
       <div className="flex flex-wrap items-center gap-2 overflow-x-auto">
-        <span className="shrink-0 font-semibold">{t.figures.look}</span>
-        <SegmentedControl<Figure['look']> label={t.figures.look} value={v.look} onChange={(look) => onChange({ ...v, look })} options={[{ id: 'cabinet', label: looks.cabinet }, { id: 'flat', label: looks.flat }, { id: 'composite', label: looks.composite }]} />
+        <span className="shrink-0 font-semibold">{figureText.look}</span>
+        <SegmentedControl<Figure['look']> label={figureText.look} value={v.look} onChange={(look) => onChange({ ...v, look })} options={[{ id: 'cabinet', label: looks.cabinet }, { id: 'flat', label: looks.flat }, { id: 'composite', label: looks.composite }]} />
       </div>
       <div className="flex items-baseline gap-2">
         <span className="shrink-0 font-semibold">{valuesName}</span>
-        <EditableText as="div" className="min-w-0 flex-1 border border-rule px-1.5 py-0.5 tabular-nums" value={v.entered?.values ?? v.values.join(', ')} label={valuesName} placeholder={search ? t.figures.valuesHint : descent ? t.figures.descentHint : rack ? t.figures.rackHint : t.figures.sortHint} onCommit={values} />
+        <EditableText as="div" className="min-w-0 flex-1 border border-rule px-1.5 py-0.5 tabular-nums" value={v.entered?.values ?? v.values.join(', ')} label={valuesName} placeholder={search ? figureText.valuesHint : descent ? figureText.descentHint : rack ? figureText.rackHint : figureText.sortHint} onCommit={values} />
       </div>
       {/* A sort looks for no number; a search and a descent each have one. */}
       {(search || descent) && (
@@ -64,23 +63,23 @@ export function FigureData({ v, onChange }: { v: Figure; onChange: (next: Figure
       {/* Drawn, and too small to read: said, with the look that has room for them one press away. Never switched unasked. */}
       {!problem && search && v.look === 'cabinet' && cabinetCramped(v.values, v.target) && (
         <p role="note" className="flex flex-wrap items-center gap-2 text-ink">
-          {t.figures.cramped}
+          {figureText.cramped}
           <Button size="sm" variant="secondary" onPress={() => onChange({ ...v, look: 'flat' })}>
-            {t.figures.asRow}
+            {figureText.asRow}
           </Button>
         </p>
       )}
       {problem === 'unfinished' && (
         <p role="alert" className="text-ink">
-          {t.figures.notNumber(wrong)}
+          {figureText.notNumber(wrong)}
         </p>
       )}
       {problem && problem !== 'unfinished' && (
         <p role="alert" className="flex flex-wrap items-center gap-2 text-ink">
-          {t.figures.problem[problem]}
+          {figureText.problem[problem]}
           {problem === 'unsorted' && (
             <Button size="sm" variant="secondary" onPress={() => onChange({ ...v, values: sortedForSearch(v.values) })}>
-              {t.figures.sort}
+              {figureText.sort}
             </Button>
           )}
         </p>
