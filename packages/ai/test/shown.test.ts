@@ -18,6 +18,20 @@ describe('what a segment puts on the screen', () => {
     expect(planSummary(lesson)).toContain('- Warm-up (10 min): Students answer.\n  Teacher notes');
   });
 
+  it('is carried by a layout that holds its words: things side by side, a chain, a table, as well as a line', async () => {
+    const schemes = ['Scheme 1: single characters', 'Scheme 2: whole words from a fixed list', 'Scheme 3: subword pieces'];
+    const stages = ['First: split the text into tokens', 'Second: look each token up in the table'];
+    const plan = { ...course, lessons: { ...course.lessons, [first.id]: { ...lesson, segments: [seg('Three schemes', schemes), seg('Two stages', stages)] } } };
+    const slide = (title: string, more: object) => ({ layout: 'bullets', title, bullets: [], notes: '', ...more });
+    const filler = ['Matter', 'Physical change', 'Chemical change'].map((t) => slide(t, { bullets: ['One point', 'Another point'] }));
+    const sides = slide('Three ways to split a word', { compare: { sides: schemes.map((x) => ({ title: x.split(': ')[0]!, points: [x.split(': ')[1]!] })), ask: '' } });
+    const chain = slide('From text to vectors', { steps: { steps: stages.map((x) => ({ title: x.split(': ')[0]!, detail: x.split(': ')[1]! })), cycle: false } });
+    const model = fakeInference(() => ({ slides: [...filler, sides, chain] }));
+    await generateSection(model, plan, first.id, 'slides');
+    // Asked for once: nothing was counted missing, though no item is a line of its own.
+    expect(model.calls).toHaveLength(1);
+  });
+
   it('is on a slide in the plan’s words, or the deck is asked for once more', async () => {
     const slide = (title: string, bullets: string[]) => ({ layout: 'bullets', title, bullets, notes: '' });
     const filler = ['Matter', 'Physical change', 'Chemical change', 'Signs of each'].map((t) => slide(t, ['One point', 'Another point']));

@@ -132,7 +132,10 @@ const plan: SectionJob<PlanDraft> = {
  */
 function unshown(v: SlidesDraft, lesson: Lesson): Problem[] {
   const plain = (text: string) => text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
-  const deck = plain(JSON.stringify(v.slides.map(({ notes: _notes, ...slide }) => slide)));
+  // What students read on the deck, as its words alone: a thing the plan lists as "Scheme 1: single characters" is carried
+  // by a column named "Scheme 1" with the point "single characters", and was counted missing when the file's own
+  // field names stood between the two.
+  const deck = plain(v.slides.map((x) => [x.title, ...x.bullets, ...(x.table ? [...x.table.columns, ...x.table.rows.flat()] : []), ...(x.chart ? [...x.chart.categories, ...x.chart.series.flatMap((y) => [y.name, ...y.values.map(String)]), x.chart.unit] : []), ...(x.steps?.steps.flatMap((y) => [y.title, y.detail]) ?? []), ...(x.compare ? [...x.compare.sides.flatMap((y) => [y.title, ...y.points]), x.compare.ask] : [])].join(' ')).join(' '));
   // Code the teacher types and runs before the class is on the screen too, and is not a slide's to carry: a lab's forty
   // commands sent both decks of a first paid run back to be written again.
   const code = (item: string) => /^\s*(?:#|[\w.$]+\s*(?:<-|=[^=]|\()|.*(?:\|>|%>%)\s*$)/.test(item) || /^`[^`]+`$/.test(item.trim());
