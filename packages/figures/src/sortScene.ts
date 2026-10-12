@@ -137,9 +137,9 @@ export function sortSceneBody(scene: SortScene, view: View = VIEW): string {
   return ground(scene.values.length, scene.pose.from, p) + order.map((id) => block(id, scene, tall[id]!, size, p)).join('');
 }
 
-/** Where a block meets the eye: the middle of the foot of its front. */
+/** Where a line to a block starts: on the tray under the middle of its front, in the gap a lifted block leaves. At the block's own foot the dot lay over its number. */
 function blockFoot(scene: SortScene, id: number, view: View): P {
-  return k.iso([blockX(scene.pose.slot[id] ?? id) + BLOCK / 2, 5 + DEPTH, TRAY + (scene.pose.lift[id] ?? 0) * LIFT], projectionOf(scene.values.length, view));
+  return k.iso([blockX(scene.pose.slot[id] ?? id) + BLOCK / 2, 5 + DEPTH, TRAY], projectionOf(scene.values.length, view));
 }
 
 // ---- the reading ----
