@@ -21,7 +21,7 @@ test('before the first build: a range at the model chosen, that follows the mate
   await fakeAnthropic(page);
   await planTwoLessons(page);
   // A key of one's own: dollars at the provider, for the model, and never credits.
-  await expect(note(page)).toContainText(/About \$[\d.]+ to \$[\d.]+ charged by your provider for claude-sonnet-5-5, not by Folio\./);
+  await expect(note(page)).toContainText(/About (?:\$[\d.]+|\d+¢) to \$[\d.]+ charged by your provider for claude-sonnet-5-5, not by Folio\./);
   await expect(note(page)).not.toContainText('credits');
   await expect(note(page)).toContainText('not a bill and not a limit');
   const all = upper((await note(page).textContent())!);
@@ -52,13 +52,13 @@ test('failed parts: trying them all again and Resume are priced from what is lef
   // Paused: what is left, counted and priced from one list.
   await expect(page.getByText('Paused · 2 parts left')).toBeVisible();
   const paused = page.locator('[data-estimate]');
-  await expect(paused).toHaveText(/^about \$[\d.]+ to \$[\d.]+$/);
+  await expect(paused).toHaveText(/^about (?:\$[\d.]+|\d+¢) to \$[\d.]+$/);
   const left = upper((await paused.textContent())!);
   expect(left).toBeLessThan(whole);
   // Trying both again from the list of what failed: the same two parts, the same figure.
   await page.getByRole('button', { name: 'Review', exact: true }).click();
   const changes = page.getByRole('dialog', { name: 'To do & history' });
-  await expect(note(changes)).toContainText(/About \$[\d.]+ to \$[\d.]+ charged by your provider/);
+  await expect(note(changes)).toContainText(/About (?:\$[\d.]+|\d+¢) to \$[\d.]+ charged by your provider/);
   expect(upper((await note(changes).textContent())!)).toBe(left);
   await expect(changes.getByRole('button', { name: 'Try all 2 again' })).toBeVisible();
   await page.keyboard.press('Escape');
@@ -121,10 +121,14 @@ test('stopped by hand, the page opened again: the pause says what is left and ab
   const line = (await page.getByText(/^Paused · \d+ parts? left$/).textContent())!;
   const left = Number(line.match(/(\d+) part/)![1]);
   const paused = page.locator('[data-estimate]');
-  await expect(paused).toHaveText(/^about \$[\d.]+ to \$[\d.]+$/);
+  await expect(paused).toHaveText(/^about (?:\$[\d.]+|\d+¢) to \$[\d.]+$/);
   expect(upper((await paused.textContent())!)).toBeLessThanOrEqual(whole);
-  // The sentences behind the figure are its description: who is paid, and that it is an estimate.
-  await expect(paused).toHaveAttribute('title', /charged by your provider for claude-sonnet-5-5, not by Folio\..*not a bill and not a limit/);
+  // The figure is a button: pressed, it shows who is paid and that it is an estimate, with Resume under it.
+  await paused.click();
+  const takes = page.getByRole('dialog', { name: 'What resuming will take' });
+  await expect(takes).toContainText(/charged by your provider for claude-sonnet-5-5, not by Folio\./);
+  await expect(takes).toContainText('not a bill and not a limit');
+  await page.keyboard.press('Escape');
   const before = model.calls.length;
   await page.getByRole('button', { name: 'Resume' }).click();
   await expect(page.getByText(/Course ready/)).toBeVisible({ timeout: 60_000 });

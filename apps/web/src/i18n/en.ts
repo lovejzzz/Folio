@@ -283,6 +283,7 @@ export const en = {
     stopping: 'Stopping…',
     paused: (n: number) => (n === 1 ? 'Paused · 1 part left' : `Paused · ${n} parts left`),
     resume: 'Resume',
+    whatItTakes: 'What resuming will take',
     ready: 'Course ready.',
     /** What the run cost, priced when it ends: prices change, so none is quoted beforehand. */
     cost: (usd: number, live: boolean) =>

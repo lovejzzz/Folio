@@ -1,8 +1,8 @@
-import { buildPlan, DEFAULT_MODELS, livePrices, ownToWrite, priceFor, type BuildTarget, type Price } from '@folio/ai';
-import type { Course } from '@folio/core';
-import { useEffect, useState } from 'react';
+import { buildPlan, DEFAULT_MODELS, livePrices, ownToWrite, priceFor, REVIEW_MODELS, sectionPrompt, type BuildTarget, type PlannedTask, type Price } from '@folio/ai';
+import { GENERATED_KINDS, type Course } from '@folio/core';
+import { useEffect, useMemo, useState } from 'react';
 import { creditsText, refreshCredits, useCredits } from '../../state/credits';
-import { estimateLines, planEstimate, type Paying } from '../../state/estimate';
+import { estimateLines, planEstimate, type Estimate, type Paying, type RoutePrice } from '../../state/estimate';
 import { usePrefs } from '../../state/prefs';
 
 /** Today's price list, asked for once a note for a teacher's own key is shown; null until it is in, or when it cannot be had. */
@@ -16,9 +16,12 @@ function useLivePrices(wanted: boolean): Map<string, Price> | null {
   return live;
 }
 
+const perThousand = (p: Price | null): RoutePrice | null => (p ? { sent: p.input * 1000, written: p.output * 1000 } : null);
+
 /**
  * Who is paid for a build started now, and at what price: Folio credits against a balance, or a provider at a model's
- * price. `ask` false reads what is known and asks no server: for a line shown on every screen of a course, signed in or not.
+ * prices for what is sent and what is written, with the prices of the model that reads each plan where the provider has
+ * one. `ask` false reads what is known and asks no server: for a line shown on every screen of a course, signed in or not.
  */
 export function usePaying(ask = true): Paying {
   const provider = usePrefs((s) => s.provider);
@@ -30,7 +33,27 @@ export function usePaying(ask = true): Paying {
   useEffect(() => {
     if (ask && provider === 'folio') void refreshCredits();
   }, [ask, provider]);
-  return { provider, model, price: own ? priceFor(provider, model, live) : null, balance, packs };
+  const reader = own ? REVIEW_MODELS[provider] : undefined;
+  return { provider, model, balance, packs, reader, prices: { write: own && provider ? perThousand(priceFor(provider, model, live)) : null, ...(reader && provider ? { check: perThousand(priceFor(provider, reader, live)) } : {}) } };
+}
+
+/** How large, in thousands of tokens, a part's own request is now, for each kind of part a plan runs: read from the request itself (lesson, course, sources), over up to three of the lessons it is run for. */
+function sentNow(course: Course, plan: readonly PlannedTask[]): Partial<Record<string, number>> {
+  const out: Partial<Record<string, number>> = {};
+  for (const kind of GENERATED_KINDS) {
+    const lessons = plan.filter((t) => t.state === 'run' && t.kind === kind).map((t) => course.lessons[t.lessonId]).filter((l) => l !== undefined);
+    const some = [lessons[0], lessons[Math.floor(lessons.length / 2)], lessons.at(-1)].filter((l, i, all) => l !== undefined && all.indexOf(l) === i);
+    if (some.length) out[kind] = some.reduce((n, l) => n + sectionPrompt(course, l!, kind).length, 0) / some.length / 4000;
+  }
+  return out;
+}
+
+/** The plan of a build as it stands now, and what it is expected to take: the one reading every note and line shows. */
+export function usePlanEstimate(course: Course, targets?: readonly BuildTarget[]): Estimate {
+  const key = targets?.map((t) => `${t.lessonId}:${t.kind}`).join('|');
+  // (Targets are compared by what they name: a list made again on every render is the same list.)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => ((plan) => planEstimate(plan, sentNow(course, plan)))(buildPlan(course, targets)), [course, key]);
 }
 
 /**
@@ -40,8 +63,8 @@ export function usePaying(ask = true): Paying {
  */
 export function CreditsNote({ course, targets }: { course: Course; targets?: readonly BuildTarget[] }) {
   const pay = usePaying();
+  const need = usePlanEstimate(course, targets);
   if (course.lessonOrder.length === 0) return null;
-  const need = planEstimate(buildPlan(course, targets));
   const lines = estimateLines(need, pay);
   const lacking = ownToWrite(course, targets?.map((x) => x.lessonId));
   if (lacking.length) lines.push(creditsText.ownToWrite([...new Set(lacking.flatMap((x) => x.pieces))], lacking.length));
