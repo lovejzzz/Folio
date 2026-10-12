@@ -28,3 +28,4 @@ export * from './figures/binarySearch';
 export * from './figures/selectionSort';
 export * from './figures/gradientDescent';
 export * from './figures/faults';
+export * from './figures/catalog';

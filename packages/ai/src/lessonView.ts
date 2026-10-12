@@ -1,4 +1,4 @@
-import type { Course, Lesson, Rubric, Task } from '@folio/core';
+import { FIGURE_CATALOG, type Course, type Lesson, type Rubric, type Task } from '@folio/core';
 
 /**
  * One lesson as the people who use it meet it: everything students are shown, material by material, and apart
@@ -54,8 +54,8 @@ export function say(b: Loose): string {
 const chartText = (c: Extract<NonNullable<Lesson['slides'][number]['visual']>, { kind: 'chart' }>): string =>
   `[a ${c.chart} chart, drawn on the slide; along the bottom: ${c.categories.join(', ')}; ${c.series.map((x) => `${x.name || 'values'}: ${x.values.join(', ')}`).join('; ')}${c.unit ? ` (${c.unit})` : ''}]`;
 
-/** A demonstration is drawn on the slide by Folio from its numbers: said so, with what it searches. */
-const figureText = (f: Extract<NonNullable<Lesson['slides'][number]['visual']>, { kind: 'figure' }>): string => `[a demonstration of binary search, drawn on the slide and stepped through: the list ${f.values.join(', ')}; looking for ${f.target}]`;
+/** A demonstration is drawn on the slide by Folio from its numbers: said so, by its name and what it is given. It was said to be binary search whatever it was. */
+const figureText = (f: Extract<NonNullable<Lesson['slides'][number]['visual']>, { kind: 'figure' }>): string => `[a demonstration drawn on the slide by Folio and stepped through. ${FIGURE_CATALOG[f.figure]}. Here: values ${f.values.join(', ')}; target ${f.target}]`;
 
 const part = (name: string, body: string[]): string => (body.some((x) => x.trim()) ? `<${name}>\n${body.filter((x) => x.trim()).join('\n\n')}\n</${name}>` : '');
 const letter = (i: number) => 'ABCDEFGH'[i] ?? '?';

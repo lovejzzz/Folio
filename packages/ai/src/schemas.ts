@@ -1,3 +1,4 @@
+import { FigureIdSchema } from '@folio/core';
 import { z } from 'zod';
 
 /**
@@ -148,6 +149,10 @@ export const SlidesDraft = z.object({
           })
           .optional()
           .describe('Only for numbers the lesson compares or follows: the numbers themselves, the plan\'s own where it gives them'),
+        figure: z
+          .object({ figure: FigureIdSchema, values: z.array(z.number()).max(15), target: z.number().default(0) })
+          .optional()
+          .describe('Only where the lesson teaches one of Folio\'s demonstrations step by step: its name and its numbers, the plan\'s own where it gives them'),
       }),
     )
     .min(3)
