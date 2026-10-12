@@ -10,6 +10,8 @@ interface SlideCanvasProps {
   lang: string;
   footer?: string;
   onChange?: (slide: Slide) => void;
+  /** A demonstration on the slide can be worked: on the stage, not in a thumbnail or on paper. Where the slide is edited, unless said. */
+  live?: boolean;
   className?: string;
 }
 
@@ -53,7 +55,7 @@ function Bullets({ slide, onChange, lang }: { slide: Slide; onChange?: (s: Slide
  * A 16:9 slide in the paper-and-ink style. Sizes are in container units, so
  * the same component is a thumbnail in the filmstrip and the full stage.
  */
-export function SlideCanvas({ slide, lang, footer, onChange, className }: SlideCanvasProps) {
+export function SlideCanvas({ slide, lang, footer, onChange, live = Boolean(onChange), className }: SlideCanvasProps) {
   const t = useT();
   const titleSize = { title: 7.2, bullets: 5.2, question: 5.6, quote: 5 }[slide.layout];
   // The slide being edited heads the page under the deck's title; a thumbnail is a link or button that already has
@@ -85,8 +87,8 @@ export function SlideCanvas({ slide, lang, footer, onChange, className }: SlideC
           {title}
         </div>
         {slide.visual && (
-          <div className="folio-slide-gap" style={cq(2.2)}>
-            <SlideVisualView visual={slide.visual} onChange={onChange && ((visual) => onChange({ ...slide, visual }))} />
+          <div className={cx('folio-slide-gap', slide.visual.kind === 'figure' && 'folio-slide-figure-slot')} style={cq(2.2)}>
+            <SlideVisualView visual={slide.visual} live={live} onChange={onChange && ((visual) => onChange({ ...slide, visual }))} />
           </div>
         )}
         {/* A question's points stand as one block in the middle, each beside its dot: centred line by line in the editor, the

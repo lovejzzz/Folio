@@ -65,6 +65,9 @@ importers:
       '@folio/export':
         specifier: workspace:*
         version: link:../../packages/export
+      '@folio/figures':
+        specifier: workspace:*
+        version: link:../../packages/figures
       '@folio/run':
         specifier: workspace:*
         version: link:../../packages/run
@@ -186,6 +189,9 @@ importers:
       '@folio/core':
         specifier: workspace:*
         version: link:../core
+      '@folio/figures':
+        specifier: workspace:*
+        version: link:../figures
       '@folio/ui':
         specifier: workspace:*
         version: link:../ui
@@ -198,6 +204,15 @@ importers:
       pptxgenjs:
         specifier: ^4.0.1
         version: 4.0.1
+
+  packages/figures:
+    dependencies:
+      '@folio/core':
+        specifier: workspace:*
+        version: link:../core
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
 
   packages/run:
     dependencies:

@@ -1,5 +1,6 @@
 import { piecesLackingRubric } from './rubricLack';
 import { ownNeeds } from './ownNeeds';
+import { figureFaults } from './figures/faults';
 import { filledTexts, isBlankSegment, statedObjectives } from './blank';
 import { lessonPieces, orderedLessons } from './course';
 import type { Flag } from './flags';
@@ -106,6 +107,8 @@ export function cellState(course: Course, lesson: Lesson, kind: MaterialKind): C
   if (meta.flags.length > 0 || itemFlags(course, lesson, kind).length > 0) return 'attention';
   // Written, and leaning on graded work the teacher has not yet said they have: not ready to take into a room.
   if (ownNeeds(course, [lesson.id]).some((n) => !n.confirmed)) return 'attention';
+  // A deck with a demonstration that is unfinished is not ready, whoever wrote the rest of it.
+  if (kind === 'slides' && figureFaults(course, [lesson.id]).length > 0) return 'attention';
   return 'ready';
 }
 

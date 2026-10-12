@@ -54,6 +54,9 @@ export function say(b: Loose): string {
 const chartText = (c: Extract<NonNullable<Lesson['slides'][number]['visual']>, { kind: 'chart' }>): string =>
   `[a ${c.chart} chart, drawn on the slide; along the bottom: ${c.categories.join(', ')}; ${c.series.map((x) => `${x.name || 'values'}: ${x.values.join(', ')}`).join('; ')}${c.unit ? ` (${c.unit})` : ''}]`;
 
+/** A demonstration is drawn on the slide by Folio from its numbers: said so, with what it searches. */
+const figureText = (f: Extract<NonNullable<Lesson['slides'][number]['visual']>, { kind: 'figure' }>): string => `[a demonstration of binary search, drawn on the slide and stepped through: the list ${f.values.join(', ')}; looking for ${f.target}]`;
+
 const part = (name: string, body: string[]): string => (body.some((x) => x.trim()) ? `<${name}>\n${body.filter((x) => x.trim()).join('\n\n')}\n</${name}>` : '');
 const letter = (i: number) => 'ABCDEFGH'[i] ?? '?';
 
@@ -93,7 +96,7 @@ export function lessonView(course: Course, lesson: Lesson): { students: string; 
   const steps = new Set([lesson.homework, ...(lesson.also ?? [])].filter((p) => p.kind === 'step').map((p) => p.toward.trim()));
   const of = (kind: Task['kind']) => tasks.filter((t) => t.kind === kind).map((t) => taskText(course, t, online, t.kind === 'assignment' && steps.has(t.toward.trim())));
   const plan = lesson.segments.map((s, i) => `${i + 1}. ${s.title} (${s.kind}, ${s.minutes} min): ${s.description}${s.teacherNotes ? `\n   Teacher's notes: ${s.teacherNotes}` : ''}`);
-  const slide = (s: Lesson['slides'][number], i: number) => [`Slide ${i + 1}: ${s.title}`, ...s.bullets.map((b) => `- ${b}`), s.visual?.kind === 'table' ? table(s.visual.columns, s.visual.rows) : s.visual ? chartText(s.visual) : ''].filter(Boolean).join('\n');
+  const slide = (s: Lesson['slides'][number], i: number) => [`Slide ${i + 1}: ${s.title}`, ...s.bullets.map((b) => `- ${b}`), s.visual?.kind === 'table' ? table(s.visual.columns, s.visual.rows) : s.visual?.kind === 'chart' ? chartText(s.visual) : s.visual ? figureText(s.visual) : ''].filter(Boolean).join('\n');
   const faq = lesson.faqIds.map((id) => course.faq[id]).filter(Boolean);
   const students = [
     part('page', lesson.page.map((b) => say(b as Loose))),

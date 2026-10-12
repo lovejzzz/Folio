@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`a picture as a file > agrees with the copies kept of it: a change to the kit or the drawing shows here first 1`] = `
+[
+  "5ffc6b87496cd2c1",
+  "3bff4c0a46fe68e2",
+  "3a494cd76b854103",
+]
+`;

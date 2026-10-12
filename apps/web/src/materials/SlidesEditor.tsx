@@ -2,7 +2,8 @@ import { missingTargets } from '@folio/ai';
 import { cmd, newId, orderedLessons, type Course, type Lesson, type Slide, type SlideLayout } from '@folio/core';
 import { Button, IconButton, SegmentedControl } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
-import { ArrowDown, ArrowUp, EyeOff, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowDownNarrowWide, TrendingDown, ArrowUp, EyeOff, Plus, Search, SearchX, Trash2 } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { startBuild, useBuild } from '../state/build';
@@ -11,7 +12,34 @@ import { CreditsNote } from '../screens/plan/CreditsNote';
 import { focusItem } from './newItems';
 import { SlideCanvas } from './SlideCanvas';
 import { ChartData } from './SlideVisual';
+import { FigureControls } from './figures/FigureControls';
+import { FigureData, newBinarySearch, newGradientDescent, newSelectionSort } from './figures/FigureData';
+import { FigureRunProvider } from './figures/figureRun';
 import { Filmstrip, SlidePager, deckOrder, useArrowKeys, type SlidePos } from './SlideNav';
+
+
+/** A demonstration is put on the slide or taken off it; a slide with a table or chart keeps that. A second kind is offered where the slide has none. */
+function FigureButtons({ slide, set }: { slide: Slide; set: (visual: Slide['visual']) => void }) {
+  const t = useT();
+  const has = slide.visual?.kind === 'figure';
+  return (
+    <>
+      <IconButton label={has ? t.figures.remove : t.figures.add} isDisabled={Boolean(slide.visual) && !has} onPress={() => set(slide.visual ? undefined : newBinarySearch())}>
+        {has ? <SearchX size={16} strokeWidth={1.5} /> : <Search size={16} strokeWidth={1.5} />}
+      </IconButton>
+      {!slide.visual && (
+        <IconButton label={t.figures.addSort} onPress={() => set(newSelectionSort())}>
+          <ArrowDownNarrowWide size={16} strokeWidth={1.5} />
+        </IconButton>
+      )}
+      {!slide.visual && (
+        <IconButton label={t.figures.addDescent} onPress={() => set(newGradientDescent())}>
+          <TrendingDown size={16} strokeWidth={1.5} />
+        </IconButton>
+      )}
+    </>
+  );
+}
 
 /** In the lesson view: the deck as a grid of thumbnails that open the slide editor. */
 export function SlidesStrip({ course, lesson }: { course: Course; lesson: Lesson }) {
@@ -86,6 +114,7 @@ function StageTools({ lesson, slide, index, save, go }: StageToolsProps) {
         <IconButton label={t.lesson.moveSlideDown} isDisabled={index === slides.length - 1} onPress={() => move(index + 1)}>
           <ArrowDown size={16} strokeWidth={1.5} />
         </IconButton>
+        <FigureButtons slide={slide} set={(visual) => save(slides.map((x) => (x.id === slide.id ? { ...x, visual } : x)))} />
         <IconButton label={t.lesson.addSlide} onPress={add}>
           <Plus size={16} strokeWidth={1.5} />
         </IconButton>
@@ -95,6 +124,12 @@ function StageTools({ lesson, slide, index, save, go }: StageToolsProps) {
       </div>
     </div>
   );
+}
+
+/** The slide on the stage, and what works it: a demonstration's run is held here, over the slide and its buttons. */
+function Stage({ slide, children }: { slide: Slide; children: ReactNode }) {
+  if (slide.visual?.kind !== 'figure') return <>{children}</>;
+  return <FigureRunProvider visual={slide.visual}>{children}</FigureRunProvider>;
 }
 
 /** The lesson and slide to show: the one asked for, clamped to what exists, else the first. */
@@ -153,10 +188,14 @@ export function SlidesEditor({ course, lessonId, slide: slideNumber, onGo }: Sli
       <Filmstrip course={course} lessons={lessons} activeId={slide.id} onSelect={onGo} />
       <div className="mx-auto min-w-0 max-w-slide flex-1">
         <StageTools lesson={lesson} slide={slide} index={pos.index} save={save} go={(index) => onGo({ lessonId: lesson.id, index })} />
-        <div className="overflow-hidden rounded-sheet shadow-overlay">
-          <SlideCanvas key={slide.id} slide={slide} lang={course.language} footer={`${t.common.lesson(n)} · ${lesson.title}`} onChange={update} />
-        </div>
+        <Stage slide={slide}>
+          <div className="overflow-hidden rounded-sheet shadow-overlay">
+            <SlideCanvas key={slide.id} slide={slide} lang={course.language} footer={`${t.common.lesson(n)} · ${lesson.title}`} onChange={update} />
+          </div>
+          <FigureControls />
+        </Stage>
         {slide.visual?.kind === 'chart' && <ChartData v={slide.visual} onChange={(visual) => update({ ...slide, visual })} />}
+        {slide.visual?.kind === 'figure' && <FigureData v={slide.visual} onChange={(visual) => update({ ...slide, visual })} />}
         <SlidePager course={course} lesson={lesson} index={pos.index} onPrev={onPrev} onNext={onNext} />
         <section className="mt-4 rounded-sheet bg-paper p-5 shadow-sheet">
           <h3 className="mb-2 flex flex-wrap items-center gap-x-1.5 font-ui text-13 font-semibold text-ink">

@@ -80,6 +80,10 @@ export type SlideLayout = z.infer<typeof SlideLayoutSchema>;
  * the same headings, or numbers to be compared, is read from a table or a chart and not from five bullets.
  * A chart is always drawn from its numbers, never from an impression of a shape.
  */
+/** The demonstrations a slide can hold. */
+export const FigureIdSchema = z.enum(['binarySearch', 'selectionSort', 'gradientDescent']);
+export type FigureId = z.infer<typeof FigureIdSchema>;
+
 export const SlideVisualSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('table'), columns: z.array(text), rows: z.array(z.array(text)) }),
   z.object({
@@ -91,6 +95,19 @@ export const SlideVisualSchema = z.discriminatedUnion('kind', [
     unit: text.default(''),
     /** The numbers are made up to show a shape, and the slide says so. */
     illustrative: z.boolean().default(false),
+  }),
+  // A demonstration that moves, made by Folio from its numbers: which one is a name from a list Folio keeps, never code
+  // or an address, so a course file can ask only for a figure Folio itself draws.
+  z.object({
+    kind: z.literal('figure'),
+    figure: FigureIdSchema,
+    /** How it is drawn: the cabinet of drawers, or a flat row of numbers. One of Folio's own, by name: never a stylesheet or a colour. */
+    look: z.enum(['cabinet', 'flat', 'composite']).default('cabinet'),
+    values: z.array(z.number()).max(60),
+    /** The number a search looks for; a demonstration that looks for none keeps it at 0. */
+    target: z.number().default(0),
+    /** What the teacher typed that is not yet numbers, as typed: saved with the course, so it is neither lost nor passed off as the numbers above. */
+    entered: z.object({ values: z.string().max(600).optional(), target: z.string().max(60).optional() }).optional(),
   }),
 ]);
 export type SlideVisual = z.infer<typeof SlideVisualSchema>;
