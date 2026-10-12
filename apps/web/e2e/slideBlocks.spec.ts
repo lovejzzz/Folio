@@ -61,17 +61,17 @@ test('a teacher gives a slide a layout by hand, makes it longer, and takes it of
   await tools.getByRole('button', { name: 'Add a step' }).click();
   await expect(page.getByRole('group', { name: '4 steps, in order' }).last().locator('.folio-slide-step')).toHaveCount(4);
   await tools.getByRole('button', { name: 'The last leads back to the first' }).click();
-  await expect(page.getByText('Then back to “Step 1”.').last()).toBeVisible();
+  await expect(page.locator('.folio-slide').last().getByText('Then back to “Step 1”.')).toBeVisible();
   await tools.getByRole('button', { name: 'Take the layout off' }).click();
   await expect(page.locator('.folio-slide-steps')).toHaveCount(0);
   // Things side by side: two columns to start, a third and a second point when asked for, and kept.
   await tools.getByRole('button', { name: 'Things side by side' }).click();
   await tools.getByRole('button', { name: 'Add a column' }).click();
   await tools.getByRole('button', { name: 'Add a point to each' }).click();
-  const sides = page.locator('.folio-slide-compare').last();
+  const sides = page.locator('.folio-slide').last().locator('.folio-slide-compare');
   await expect(sides.locator('.folio-slide-side')).toHaveCount(3);
   await expect(sides.getByRole('listitem')).toHaveCount(6);
   await expect(tools.getByRole('button', { name: 'Add a column' })).toBeDisabled();
   await page.reload();
-  await expect(page.locator('.folio-slide-compare').last().locator('.folio-slide-side')).toHaveCount(3);
+  await expect(page.locator('.folio-slide').last().locator('.folio-slide-compare').locator('.folio-slide-side')).toHaveCount(3);
 });
