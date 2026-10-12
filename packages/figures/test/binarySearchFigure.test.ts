@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
 import { binarySearch, binarySearchProblem, describeResult, describeStart, describeStep, enteredFaults, figureProblem, SlideVisualSchema } from '@folio/core';
 import { describe, expect, it } from 'vitest';
-import { between, FLAT, flatSvg, flatView, framePng, gridOf, keyframes, lineFor, paintSvg, renderFrame, stillFigure } from '../src';
-import { cabinetLimit, numeral, numeralOf, strokesOf } from '../src/digits';
+import { between, FLAT, flatReadWidth, flatSvg, flatView, framePng, gridOf, keyframes, lineFor, paintSvg, renderFrame, stillFigure } from '../src';
+import { cabinetCramped, cabinetLimit, cabinetReadWidth, numeral, numeralOf, strokesOf } from '../src/digits';
 
 const LIST = [3, 8, 12, 17, 23, 31, 42, 56, 71];
 const sha = (data: string | Uint8Array) => createHash('sha256').update(data).digest('hex').slice(0, 16);
@@ -350,3 +350,24 @@ describe('numerals that stay numerals: one size for a figure, and a line that si
   });
 });
 
+
+describe('a size to read on the screen in hand', () => {
+  const FIFTEEN = [-2.5, -1, 0, 0.5, 1.25, 3, 7, 12, 18, 25, 40, 64, 99, 120, 480];
+  it('the row of numbers asks for the width at which its numerals are thirteen pixels and its positions nine', () => {
+    for (const values of [[3, 8, 12, 17, 23, 31, 42, 56, 71], FIFTEEN, [-9999, -12.5, 0.001, 1.25, 480, 12345, 99999]]) {
+      const width = flatReadWidth(values);
+      const scale = width / flatView(values).width;
+      expect(gridOf(values).unit * 6 * scale).toBeGreaterThanOrEqual(13);
+      expect(2.1 * 6 * scale).toBeGreaterThanOrEqual(9);
+      expect(width).toBeLessThanOrEqual(640);
+    }
+  });
+  it('the cabinet is cramped by a label over three characters or by more than ten drawers, and then asks for more width', () => {
+    expect(cabinetCramped([3, 8, 12, 17, 23, 31, 42, 56, 71], 40)).toBe(false);
+    expect(cabinetCramped([1, 2, 3], 1234)).toBe(true);
+    expect(cabinetCramped([1, 2.25, 3], 2)).toBe(true);
+    expect(cabinetCramped(FIFTEEN.map((_, i) => i), 3)).toBe(true);
+    expect(cabinetReadWidth([3, 8, 12], 8)).toBe(640);
+    expect(cabinetReadWidth(FIFTEEN, 64)).toBeGreaterThan(640);
+  });
+});

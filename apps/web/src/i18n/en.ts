@@ -327,6 +327,12 @@ export const en = {
   figures: {
     binarySearch: 'Binary search, step by step',
     controls: 'Work the demonstration',
+    large: 'Binary search, larger picture',
+    larger: 'Show the picture larger',
+    sideways: 'Slide the picture sideways to see the rest of it.',
+    smaller: 'Hide the larger picture',
+    cramped: 'The cabinet’s labels are small for these numbers: long numbers, or more than ten of them, are hard to read on them.',
+    asRow: 'Draw it as a row of numbers',
     reset: 'Back to the start',
     back: 'One step back',
     step: 'Next step',

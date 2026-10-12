@@ -78,3 +78,19 @@ export function numeral(value: number): string {
   if (text === null) throw new Error(`figure: ${value} cannot be written on a label`);
   return text;
 }
+
+/**
+ * Whether the cabinet's small labels are too small for these numbers to be read on a slide: more than three
+ * characters on a label, or more than ten drawers. The cabinet still draws them, and correctly; a teacher is told,
+ * and offered the row of numbers, which gives long numbers wide cells.
+ */
+export function cabinetCramped(values: readonly number[], target: number): boolean {
+  return values.length > 10 || [...values, target].some((n) => (numeralOf(n) ?? '').length > 3);
+}
+
+/**
+ * How wide, in pixels of a screen, the cabinet of these numbers must be shown for its labels to be read there: nine
+ * pixels high at the least. Measured on a phone: a five-character label is 7.5 pixels high at 640, and a label of
+ * fifteen drawers 8.7 at 960.
+ */
+export const cabinetReadWidth = (values: readonly number[], target: number): number => (cabinetCramped(values, target) ? 1040 : 640);

@@ -1,16 +1,29 @@
-import { IconButton } from '@folio/ui';
-import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from 'lucide-react';
+import { IconButton, useMediaQuery } from '@folio/ui';
+import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Pause, Play, RotateCcw } from 'lucide-react';
+import { lazy, Suspense, useState } from 'react';
 import { useT } from '../../i18n';
 import { useFigureRun } from './figureRun';
+
+const Large = lazy(() => import('./BinarySearchFigure'));
 
 /** Under the slide: the sentence for the picture the demonstration is at, and the buttons that work it. */
 export function FigureControls() {
   const t = useT();
   const run = useFigureRun();
+  // On a screen in the hand the slide is two hundred pixels high and its picture smaller still: there the larger
+  // picture is open from the start. Anywhere, one button opens and closes it.
+  const narrow = useMediaQuery('(max-width: 767px)');
+  const [chosen, setChosen] = useState<boolean | null>(null);
   if (!run) return null;
   const { at, last } = run;
+  const open = chosen ?? narrow;
   return (
     <div className="no-print mt-3 grid gap-2" data-owns-arrows role="group" aria-label={t.figures.controls} onKeyDown={run.onKey}>
+      {open && (
+        <Suspense fallback={null}>
+          <Large run={run} large />
+        </Suspense>
+      )}
       <FigureStrip />
       <p className="folio-figure-caption font-ui text-14 leading-5 text-ink" aria-live="polite">
         {run.frames[at]!.caption}
@@ -28,6 +41,9 @@ export function FigureControls() {
         </IconButton>
         <IconButton label={run.running ? t.figures.pause : t.figures.play} isDisabled={last === 0} onPress={run.toggle}>
           {run.running ? <Pause size={16} strokeWidth={1.5} /> : <Play size={16} strokeWidth={1.5} />}
+        </IconButton>
+        <IconButton label={open ? t.figures.smaller : t.figures.larger} onPress={() => setChosen(!open)}>
+          {open ? <Minimize2 size={16} strokeWidth={1.5} /> : <Maximize2 size={16} strokeWidth={1.5} />}
         </IconButton>
       </div>
     </div>

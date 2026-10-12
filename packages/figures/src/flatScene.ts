@@ -25,6 +25,8 @@ const CELLS = W - 150;
 /** A numeral's unit: its height is six of these. Under this a numeral in a 640-wide picture does not read. */
 const MIN_UNIT = 2.6;
 const MAX_UNIT = 6.2;
+/** The unit of the positions written under the cells. */
+const PLACE_UNIT = 2.1;
 /** The share of a cell's width its numeral may take. */
 const INNER = 0.86;
 
@@ -38,13 +40,14 @@ const rect = (x: number, y: number, w: number, h: number): P[] => [[x, y], [x + 
 export const lineFor = (unit: number, share = 1): number => Math.max(0.9, Math.min(3.4, unit * 0.56) * share);
 
 /** A number in strokes at a given unit, centred in a box, its line as heavy as the unit bears. */
-function written(text: string, box: { x: number; y: number; w: number; h: number }, color: string, unit: number, share = 1): string {
+function written(text: string, box: { x: number; y: number; w: number; h: number }, color: string, unit: number, share = 1, part = 'value'): string {
   const { strokes, width } = strokesOf(text);
   if (!width) return '';
   const s = Math.min(unit, box.w / width, box.h / GLYPH_HEIGHT);
   const left = box.x + (box.w - width * s) / 2;
   const base = box.y + (box.h + GLYPH_HEIGHT * s) / 2;
-  return stroke(strokes.map(([[u0, v0], [u1, v1]]) => d([[left + u0 * s, base - v0 * s], [left + u1 * s, base - v1 * s]])).join(''), color, lineFor(s, share));
+  // Marked with what it writes: what a test measures on a screen.
+  return stroke(strokes.map(([[u0, v0], [u1, v1]]) => d([[left + u0 * s, base - v0 * s], [left + u1 * s, base - v1 * s]])).join(''), color, lineFor(s, share)).replace('<path', `<path data-part="${part}"`);
 }
 
 /** Where everything stands: how many rows, the cell, the one unit of every numeral in the cells, the picture's height. */
@@ -85,6 +88,16 @@ export function gridOf(values: readonly number[]): Grid {
 /** The measure of the flat figure for these numbers: its width is fixed, its height follows its rows. */
 export const flatView = (values: readonly number[]): { width: number; height: number } => ({ width: W, height: Math.round(gridOf(values).height) });
 
+/**
+ * How wide, in pixels of a screen, the flat figure of these numbers must be shown for a person to read it there: its
+ * numerals at least thirteen pixels high and the positions under them at least nine. Measured on the screen and not
+ * in the picture's own units: a figure that reads in a deck was 168 pixels wide on a phone, its numerals six pixels.
+ */
+export function flatReadWidth(values: readonly number[]): number {
+  const unit = gridOf(values).unit;
+  return Math.ceil(Math.max((W * 13) / (unit * GLYPH_HEIGHT), (W * 9) / (PLACE_UNIT * GLYPH_HEIGHT)));
+}
+
 /** Diagonal lines across a cell: set aside, told by line and not by shade. */
 function hatch(x: number, y: number, w: number, h: number): string {
   const lines: string[] = [];
@@ -99,7 +112,7 @@ function cellOf(i: number, value: number, state: string, g: Grid): string {
   const box = d(rect(x, y, w, g.h), true);
   const room = Math.min(w * INNER, w - 8);
   const inner = { x: x + (w - room) / 2, y: y + g.h * 0.18, w: room, h: g.h * 0.64 };
-  const place = written(String(i + 1), { x, y: y + g.h + 7, w, h: 13 }, FLAT.soft, 2.1);
+  const place = written(String(i + 1), { x, y: y + g.h + 7, w, h: 13 }, FLAT.soft, PLACE_UNIT, 1, 'place');
   if (state === 'found') return fillOf(box, FLAT.accent) + stroke(box, FLAT.accent, 3) + written(numeral(value), inner, FLAT.paper, g.unit) + place;
   if (state === 'aside') return fillOf(box, FLAT.page) + hatch(x, y, w, g.h) + stroke(box, FLAT.rule, 1.6) + written(numeral(value), inner, FLAT.soft, g.unit, 0.6) + place;
   const look = state === 'look';
@@ -136,7 +149,7 @@ function pointer(scene: Scene, g: Grid): string {
   const value = scene.values[mid];
   if (value === undefined) return arrow;
   const sign = scene.target === value ? '=' : scene.target < value ? '<' : '>';
-  return arrow + written(`${numeral(scene.target)} ${sign} ${numeral(value)}`, { x: Math.max(8, Math.min(CELLS - 190, x - 110)), y: top - 30, w: 220, h: 26 }, FLAT.accent, 4.2);
+  return arrow + written(`${numeral(scene.target)} ${sign} ${numeral(value)}`, { x: Math.max(8, Math.min(CELLS - 190, x - 110)), y: top - 30, w: 220, h: 26 }, FLAT.accent, 4.2, 1, 'compare');
 }
 
 /** The number looked for, in a frame of its own at the right, with a magnifier's ring over it in place of a word. */
@@ -145,7 +158,7 @@ function sought(scene: Scene, g: Grid): string {
   const y = g.top(0);
   const box = d(rect(x, y, 84, 84), true);
   const ring = Array.from({ length: 17 }, (_, i): P => [x + 42 + 9 * Math.cos((i / 16) * Math.PI * 2), y - 22 + 9 * Math.sin((i / 16) * Math.PI * 2)]);
-  return fillOf(box, FLAT.paper) + stroke(box, FLAT.ink, 2) + stroke(d(rect(x + 5, y + 5, 74, 74), true), FLAT.ink, 1.2) + written(numeral(scene.target), { x: x + 11, y: y + 16, w: 62, h: 52 }, FLAT.ink, MAX_UNIT) + stroke(d(ring), FLAT.ink, 2.2) + stroke(d([[x + 49, y - 15], [x + 57, y - 6]]), FLAT.ink, 2.6);
+  return fillOf(box, FLAT.paper) + stroke(box, FLAT.ink, 2) + stroke(d(rect(x + 5, y + 5, 74, 74), true), FLAT.ink, 1.2) + written(numeral(scene.target), { x: x + 11, y: y + 16, w: 62, h: 52 }, FLAT.ink, MAX_UNIT, 1, 'sought') + stroke(d(ring), FLAT.ink, 2.2) + stroke(d([[x + 49, y - 15], [x + 57, y - 6]]), FLAT.ink, 2.6);
 }
 
 /** The whole flat figure as the inside of an SVG. */

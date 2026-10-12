@@ -335,6 +335,23 @@
   .folio-figure-strip > li[data-state='found'] .folio-figure-strip-place {
     color: var(--folio-paper);
   }
+  /* The same picture at a size that reads on the screen in hand: as wide as it needs, in a frame that scrolls sideways. */
+  .folio-figure-large {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border: 1px solid var(--folio-rule);
+    border-radius: var(--radius-control);
+    background: var(--folio-paper);
+    outline: none;
+  }
+  .folio-figure-large:focus-visible {
+    box-shadow: 0 0 0 2px var(--folio-accent);
+  }
+  .folio-figure-wide {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
   /* Under the slide: room for the longest sentence of a step, so the buttons do not jump. */
   .folio-figure-caption {
     text-align: center;

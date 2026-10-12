@@ -1,4 +1,5 @@
 import { enteredFaults, figureEntries, figureProblem, isFigureNumber, sortedForSearch, type FigureEntered, type SlideVisual } from '@folio/core';
+import { cabinetCramped } from '@folio/figures';
 import { Button, SegmentedControl } from '@folio/ui';
 import { EditableText } from '../../components/editing/EditableText';
 import { useT } from '../../i18n';
@@ -42,6 +43,15 @@ export function FigureData({ v, onChange }: { v: Figure; onChange: (next: Figure
         <span className="shrink-0 font-semibold">{t.figures.target}</span>
         <EditableText as="div" className="border border-rule px-1.5 py-0.5 tabular-nums" value={v.entered?.target ?? String(v.target)} label={t.figures.target} onCommit={target} />
       </div>
+      {/* Drawn, and too small to read: said, with the look that has room for them one press away. Never switched unasked. */}
+      {!problem && v.look === 'cabinet' && cabinetCramped(v.values, v.target) && (
+        <p role="note" className="flex flex-wrap items-center gap-2 text-ink">
+          {t.figures.cramped}
+          <Button size="sm" variant="secondary" onPress={() => onChange({ ...v, look: 'flat' })}>
+            {t.figures.asRow}
+          </Button>
+        </p>
+      )}
       {problem === 'unfinished' && (
         <p role="alert" className="text-ink">
           {t.figures.notNumber(wrong)}
