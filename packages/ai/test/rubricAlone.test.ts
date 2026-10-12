@@ -149,3 +149,19 @@ describe('what could not be checked', () => {
   });
 });
 
+
+describe('a piece scored answer by answer', () => {
+  it('lacks no rubric, whatever its component is called', async () => {
+    const { scoredByAnswer } = await import('@folio/core');
+    const piece = (prompt: string) => ({ prompt, steps: [] }) as never;
+    // As four courses had them.
+    expect(scoredByAnswer(piece('Each question has one correct answer and earns 1 point for a correct response or 0 points otherwise.'))).toBe(true);
+    expect(scoredByAnswer(piece('Each correct answer earns 1 point; an incorrect or unanswered question earns 0 points.'))).toBe(true);
+    expect(scoredByAnswer(piece('Six questions, 2 points each.'))).toBe(true);
+    expect(scoredByAnswer(piece('One point for each correct answer.'))).toBe(true);
+    // A piece scored on criteria says points too, and still takes a rubric.
+    expect(scoredByAnswer(piece('Each criterion earns 1–4 points, for a total of 12 points.'))).toBe(false);
+    expect(scoredByAnswer(piece('Write a lab report. It is scored with the rubric below, out of 16 points.'))).toBe(false);
+    expect(scoredByAnswer(piece('Answer the three questions in a paragraph each.'))).toBe(false);
+  });
+});

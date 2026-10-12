@@ -91,6 +91,20 @@ export function untaught(v: SlidesDraft, lesson: Lesson): string[] {
 }
 
 /**
+ * Meetings of the lesson that put things on the screen and have no slide of the deck's own. A real deck of a week of
+ * three lectures and a recitation had nine slides, all for the first lecture: the others' equations, worked examples
+ * and prompts were on no slide, and only the slides that send students to a sheet stood for those meetings.
+ */
+export function meetingsUnshown(v: SlidesDraft, lesson: Lesson): number[] {
+  // A deck that names no segment at all is out of step as a whole, which is said elsewhere: here, only one that names some.
+  if (!v.slides.some((x) => x.segment > 0)) return [];
+  const session = (n: number) => lesson.segments[n - 1]?.session;
+  const drawn = new Set(v.slides.map((s) => session(s.segment)).filter((x) => x !== undefined));
+  const showing = new Set(lesson.segments.filter((s) => (s.shown ?? []).some((item) => plain(item).length >= 12)).map((s) => s.session));
+  return [...showing].filter((s) => !drawn.has(s)).sort((a, b) => a - b).map((s) => s + 1);
+}
+
+/**
  * What is wrong with a deck against its lesson, each as its writer can put it right. Out of step with the plan is
  * asked for once and let be; a case with no slide is kept on the deck when a second writing still leaves it out, so a
  * teacher is told what is not taught.
@@ -98,6 +112,7 @@ export function untaught(v: SlidesDraft, lesson: Lesson): string[] {
 export function deckFaults(v: SlidesDraft, lesson: Lesson): { issue: string; kept: boolean }[] {
   return [
     ...untaught(v, lesson).map((title) => ({ kept: true, issue: `The lesson's case "${title}" has no slide: the deck teaches every case the lesson was settled with, each on a slide of its own, however many slides that takes` })),
+    ...meetingsUnshown(v, lesson).map((n) => ({ kept: true, issue: `Meeting ${n} of this lesson puts things on the screen and the deck has no slide for it: every meeting's on-screen items have slides, each given the number of its own segment` })),
     ...outOfStep(v, lesson).map((issue) => ({ kept: false, issue })),
   ];
 }
