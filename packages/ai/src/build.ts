@@ -133,18 +133,6 @@ export function ownToWrite(course: Course, lessonIds?: readonly string[]): { les
 }
 
 /**
- * The plan of a build asked for part by part (one part written again, the failed ones tried again): those parts and
- * no others, each to be written whether or not it was before. Its cost is reckoned from this, not from what the
- * whole course still lacks.
- */
-export function planOf(course: Course, targets: readonly BuildTarget[]): PlannedTask[] {
-  return targets.flatMap((t): PlannedTask[] => {
-    const lesson = course.lessons[t.lessonId];
-    return lesson ? [{ ...t, lesson: course.lessonOrder.indexOf(t.lessonId) + 1, state: t.kind === 'facts' || setsWork(lesson, t.kind) ? 'run' : 'noWork' }] : [];
-  });
-}
-
-/**
  * The part a build writes for a cell of the map or a material's page: its section, or, for rubrics whose graded work
  * stands without one, the rubrics alone. Asked for by its section, such a cell wrote the teacher's assignment again.
  */

@@ -1,6 +1,7 @@
 import { MATERIAL_KINDS, type Course, type MaterialKind } from '@folio/core';
 import { describe, expect, it } from 'vitest';
-import { executionPlan, missingTargets, ownToWrite, planOf } from '../src/build';
+import { executionPlan, missingTargets, ownToWrite } from '../src/build';
+import { buildPlan } from '../src/buildPlan';
 import { smallCourse } from './fake';
 
 /** The small course with only these materials chosen, and these parts of its first lesson written already. */
@@ -90,10 +91,10 @@ describe('what a build of a course would do', () => {
   it('plans a part asked for by itself as that part alone, written again or not', () => {
     const c = chosen(['plan', 'slides', 'quiz'], ['plan', 'slides']);
     const first = c.lessonOrder[0]!;
-    expect(planOf(c, [{ lessonId: first, kind: 'slides' }]).map((t) => `${t.lesson}:${t.kind}:${t.state}`)).toEqual(['1:slides:run']);
+    expect(buildPlan(c, [{ lessonId: first, kind: 'slides' }]).map((t) => `${t.lesson}:${t.kind}:${t.state}`)).toEqual(['1:slides:run']);
     // The rest of the course still lacks four parts: none of them is in it.
     expect(missingTargets(c)).toHaveLength(4);
-    expect(planOf(c, [{ lessonId: 'gone', kind: 'quiz' }])).toEqual([]);
+    expect(buildPlan(c, [{ lessonId: 'gone', kind: 'quiz' }])).toEqual([]);
   });
 
   it('says which lessons lean on graded work that is not being written, by the pieces\' names', () => {

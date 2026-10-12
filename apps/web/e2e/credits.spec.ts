@@ -42,7 +42,8 @@ test('a teacher with no key signs in and writes with Folio credits', async ({ pa
 
   // The outline, and the estimate beside the balance.
   await page.getByRole('textbox', { name: 'Title of lesson 2' }).waitFor();
-  await expect(page.getByText(/About \d+ credits; you have 750\./)).toBeVisible();
+  await expect(page.getByText(/About [\d,]+ to [\d,]+ credits \(\$[\d.]+ to \$[\d.]+ of credits at the standard rate\)\./)).toBeVisible();
+  await expect(page.getByText("You have 750: nothing to buy.")).toBeVisible();
   await page.getByRole('radio', { name: 'Essentials' }).click();
   await page.getByRole('button', { name: 'Write 2 lessons' }).click();
   balance.value = 690;

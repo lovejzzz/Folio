@@ -8,6 +8,7 @@ import { edit, undo } from '../../state/edit';
 import { keepAll, keepMine, updateSection, updateSections, useProposals } from '../../state/proposals';
 import { useCourse, useStore } from '../../state/session';
 import { CompareDialog } from './CompareDialog';
+import { CreditsNote } from '../../screens/plan/CreditsNote';
 import { Sep } from '../Sep';
 
 function Group({ title, count, action, children }: { title: string; count: number; action?: ReactNode; children: ReactNode }) {
@@ -204,7 +205,7 @@ function useFailed(courseId: string, lessons: Record<string, unknown>): Failed[]
     .filter((f) => f.lessonId in lessons);
 }
 
-function FailedRow({ item }: { item: Failed }) {
+function FailedRow({ item, only = false }: { item: Failed; only?: boolean }) {
   const t = useT();
   const course = useCourse();
   const running = useBuild((s) => s.running);
@@ -222,6 +223,7 @@ function FailedRow({ item }: { item: Failed }) {
           {t.common.retry}
         </Button>
       </div>
+      {only && <CreditsNote course={course} targets={[{ lessonId: item.lessonId, kind: item.kind }]} />}
     </li>
   );
 }
@@ -229,8 +231,10 @@ function FailedRow({ item }: { item: Failed }) {
 function FailedGroup({ failed }: { failed: Failed[] }) {
   const t = useT();
   const running = useBuild((s) => s.running);
+  const course = useCourse();
   if (!failed.length) return null;
-  const retryAll = () => void startBuild(failed.map(({ lessonId, kind }) => ({ lessonId, kind })));
+  const targets = failed.map(({ lessonId, kind }) => ({ lessonId, kind }));
+  const retryAll = () => void startBuild(targets);
   return (
     <Group
       title={t.changes.failed}
@@ -243,8 +247,10 @@ function FailedGroup({ failed }: { failed: Failed[] }) {
         ) : undefined
       }
     >
+      {/* What trying them all again takes: those parts and what they need, from the plan the build runs. */}
+      {failed.length > 1 && <CreditsNote course={course} targets={targets} />}
       {failed.map((f) => (
-        <FailedRow key={`${f.lessonId}:${f.kind}`} item={f} />
+        <FailedRow key={`${f.lessonId}:${f.kind}`} item={f} only={failed.length === 1} />
       ))}
     </Group>
   );

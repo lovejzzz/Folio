@@ -81,7 +81,7 @@ export const creditsText = {
   signInToStart: 'Sign in with Google to start. Sign in with a school email (ending in .edu) and you get 750 free credits, enough for about 3 lessons with every material.',
   notSchool: 'Free credits come with school email addresses, ending in .edu. Buy credits below, or use your own AI key.',
   signIn: 'Sign in with Google',
-  how: 'Claude Sonnet 5.5 writes the plans, slides, study guides, discussions and FAQ; GPT-6.1 Sol writes the quizzes, the assignments and the answer keys, and checks every lesson plan. Each part uses the model that did it best for a fair price. A lesson with every material uses about 40 credits.',
+  how: 'Claude Sonnet 5.5 writes the plans, slides, study guides, discussions and FAQ; GPT-6.1 Sol writes the quizzes, the assignments and the answer keys, and checks every lesson plan. Each part uses the model that did it best for a fair price. A lesson with every material uses about 200 to 300 credits.',
   buy: 'Buy credits',
   buySoon: 'Buying more credits opens soon.',
   pack: (p: Pack) => `$${p.usd} for ${p.credits.toLocaleString('en-US')} credits${bonusOf(p) ? `, including ${bonusOf(p).toLocaleString('en-US')} bonus` : ''}`,
@@ -98,14 +98,10 @@ export const creditsText = {
   thanks: 'Thank you. Your credits are added as soon as Stripe confirms the payment.',
   unavailable: 'Folio credits aren’t switched on yet. Use your own key for now.',
   signInFirst: 'Sign in with Google first.',
-  /** Said when a choice has more written than was ticked: never charged for in silence. */
-  alsoWritten: 'This includes the graded work the rubrics score: a rubric is written with its assignment.',
-  /** Rubrics alone still to be written: a part of the build whose cost is not known, said as that. */
-  unpriced: (n: number) => `${n === 1 ? 'One short step is' : `${n} short steps are`} also part of this and not in a figure, since what they cost has not been measured: a lesson’s facts settled once where no lesson plan is written, so that what you chose agrees with itself, or a rubric alone for graded work that stands without one. A short call each.`,
+  noteLabel: 'What this will take',
   /** Graded work the chosen materials lean on and that is not being written: named before the build. */
   ownToWrite: (pieces: string[], lessons: number) => `${lessons === 1 ? 'One lesson sets' : `${lessons} lessons set`} graded work (${pieces.map((x) => `“${x}”`).join(', ')}) that is not among what you chose: what is written names it and leaves its instructions, paper and rubric to you.`,
-  /** Nothing is left to write: said, and no figure given. */
-  nothingLeft: 'Everything chosen is written: there is nothing left to pay for.',
+  /** Before a course has lessons: a single figure for so many lessons, at Folio's own mix. */
   ownKey: (usd: number) => `About $${usd < 10 ? usd.toFixed(1) : Math.round(usd)} at your provider’s prices, as measured on courses like this one.`,
   estimate: (n: number, have: number | null) => (have === null ? `About ${n.toLocaleString('en-US')} credits.` : `About ${n.toLocaleString('en-US')} credits; you have ${have.toLocaleString('en-US')}.`),
 };
@@ -138,16 +134,4 @@ export function estimateDollars(lessons: number, kinds: readonly string[]): numb
 /** Before a course has lessons: about how many credits so many lessons with these materials take, rounded up to ten. */
 export function estimateCredits(lessons: number, kinds: readonly string[]): number {
   return Math.ceil((lessons * perLesson(kinds)) / 10) * 10;
-}
-
-/**
- * What the parts still to be written take, from the build's own plan of them: nothing for what is written already,
- * nothing for a lesson that sets no such work, and the work a chosen material needs counted with it.
- */
-export function planEstimate(tasks: readonly { kind: string; state: string; neededBy?: string }[]): { credits: number; dollars: number; parts: number; needed: number; unpriced: number } {
-  const run = tasks.filter((t) => t.state === 'run');
-  // A lesson's rubrics alone are a part to run whose cost has not been measured: counted apart, never as nothing.
-  const priced = run.filter((t) => t.kind !== 'rubrics' && t.kind !== 'facts');
-  const cents = priced.reduce((sum, t) => sum + (PER_LESSON[t.kind] ?? 0), 0);
-  return { credits: Math.ceil(cents / 10) * 10, dollars: cents / MARKUP / 100, parts: run.length, needed: run.filter((t) => t.neededBy).length, unpriced: run.length - priced.length };
 }

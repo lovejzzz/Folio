@@ -1,5 +1,5 @@
 import { pageRuns } from './workshop';
-import { missingTargets, type BuildKind, runBuild, targetKey, type BuildEvent, type BuildSummary, type BuildTarget, type Inference, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
+import { buildPlan, missingTargets, toRun, type BuildKind, runBuild, targetKey, type BuildEvent, type BuildSummary, type BuildTarget, type Inference, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
 import { attentionItems, cmd, lessonNumber, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
 import { router } from '../app/router';
@@ -180,13 +180,17 @@ async function guardedRun(store: Store, inference: Inference, usages: Usage[], c
 /**
  * Build sections for the open course. With no targets, builds everything
  * missing; a course whose materials are all course-level (the syllabus, the
- * map) has nothing to write per lesson and is ready straight away.
+ * map) has nothing to write per lesson and is ready straight away. With
+ * targets (one part again, the failed ones, one material's missing parts),
+ * builds those and what they need: every start goes through the one plan.
  */
 export async function startBuild(targets?: BuildTarget[]): Promise<void> {
   const store = activeStore();
   if (!store || useBuild.getState().running) return;
   const course = store.getState();
-  const list = targets ?? missingTargets(course);
+  // The plan is made now, from the course and the choices as they stand: the same one the estimate beside the button
+  // was read from, with what a part asked for by name cannot be written without, and without what has no work to do.
+  const list = toRun(buildPlan(course, targets));
   if (!list.length) {
     if (!targets && course.status !== 'ready') {
       markReady(store);

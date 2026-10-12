@@ -7,6 +7,7 @@ import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { startBuild, useBuild } from '../state/build';
 import { edit } from '../state/edit';
+import { CreditsNote } from '../screens/plan/CreditsNote';
 import { focusItem } from './newItems';
 import { SlideCanvas } from './SlideCanvas';
 import { ChartData } from './SlideVisual';
@@ -116,6 +117,7 @@ function NoSlides({ course }: { course: Course }) {
           {t.lesson.buildThis}
         </Button>
       )}
+      {!running && missing.length > 0 && <CreditsNote course={course} targets={missing} />}
     </div>
   );
 }

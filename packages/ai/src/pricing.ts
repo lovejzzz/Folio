@@ -115,10 +115,24 @@ export function costOf(usages: readonly Usage[], live: Map<string, Price> | null
 const TTL = 60 * 60 * 1000;
 let cached: { at: number; prices: Promise<Map<string, Price> | null> } | null = null;
 
-/** What these calls cost at today's prices. */
-export async function priceUsage(usages: readonly Usage[], fetchImpl: typeof fetch = fetch): Promise<Cost> {
+/** Today's list, read at most once an hour; null when it cannot be had. */
+export async function livePrices(fetchImpl: typeof fetch = fetch): Promise<Map<string, Price> | null> {
   if (!cached || Date.now() - cached.at > TTL) cached = { at: Date.now(), prices: fetchLivePrices(fetchImpl) };
   const live = await cached.prices;
   if (!live) cached = null;
-  return costOf(usages, live);
+  return live;
+}
+
+/** What these calls cost at today's prices. */
+export async function priceUsage(usages: readonly Usage[], fetchImpl: typeof fetch = fetch): Promise<Cost> {
+  return costOf(usages, await livePrices(fetchImpl));
+}
+
+/**
+ * A model's price before anything is written, for an estimate: from today's list when it has been read, else from
+ * Folio's own; null where neither knows the model, and for a model on the teacher's own computer.
+ */
+export function priceFor(provider: ProviderId, model: string, live: Map<string, Price> | null = null): Price | null {
+  const vendor = VENDOR[provider];
+  return (vendor ? live?.get(`${vendor}/${modelKey(model)}`) : undefined) ?? (provider === 'local' ? null : builtInPrice(provider, model));
 }
