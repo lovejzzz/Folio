@@ -1,5 +1,47 @@
 [
  {
+  "version": "0.0.40",
+  "date": "October 12, 2026",
+  "title": "One piece of work, told one way",
+  "lede": "A lesson's plan, its slides, its graded piece and that piece's rubric are each written on their own, and nothing read them side by side. In a lesson Folio wrote for a composition course, the plan and the slide asked for a paragraph of about six sentences and the piece and its rubric for about three. This release has each part held to what the others already say of the same piece, tells you on the lesson's page where they still differ, and says what a change asked for in words will go on to write before you apply it.",
+  "sections": [
+   {
+    "heading": "A piece's length, time and points, across the lesson",
+    "body": "For each piece of work done in class, Folio now reads what the plan's segments, the slides of those segments, the piece and its rubric say of its length, its minutes and its total, and compares them. A part being written is asked once more where it says something else than what stands; a part already written, yours included, is never changed for it. What still differs is listed on the lesson's page under \"Yours to check\", a sentence each. Where one side says several figures and Folio cannot tell which is the piece's, it says so and does not count it as agreeing. Run over 1,777 lessons Folio had written before, it named the composition lesson and two worksheets that asked for more minutes than their segments had.",
+    "image": {
+     "src": "/changelog/0.0.40-told-two-ways.webp",
+     "alt": "The list on a lesson's page, Yours to check: the same piece of work, told two ways: the plan says 6 sentences and the piece 3 sentences; the piece says 3 sentences and its slide 6 sentences",
+     "width": 593,
+     "height": 288
+    }
+   },
+   {
+    "heading": "What a request in words will write, before you apply it",
+    "body": "Asking for a change in words (\"Add study guides\") showed its steps and nothing else, and Apply went on to write a study guide for every lesson. The preview now lists what applying will write for the first time, what it will write again because what it was written from changes, and what it will leave as you changed it, with what that is expected to take at the model you chose. Apply runs that same list. Showing it asks nothing of a model.",
+    "image": {
+     "src": "/changelog/0.0.40-before-apply.webp",
+     "alt": "The preview of the request Add study guides: Applying this then writes: Study guides, lessons 1, 2, 3, 4: written for the first time, with an estimate of 8 to 13 cents",
+     "width": 700,
+     "height": 400
+    }
+   },
+   {
+    "heading": "A slide's columns on a phone",
+    "body": "A slide is drawn to scale, so on a phone its columns and chains were a picture of the slide in type six pixels high. Under the slide, on a narrow screen, the same words now stand at the page's size, one under another, and a change made there is a change to the slide. The slide, the desktop view and the exported files are as they were.",
+    "image": {
+     "src": "/changelog/0.0.40-phone-columns.webp",
+     "alt": "A phone: a slide comparing a CPU and a GPU, and under it the same two columns at reading size, one under the other",
+     "width": 1024,
+     "height": 1800
+    }
+   },
+   {
+    "heading": "Smaller things",
+    "body": "On paper, each demonstration's pictures are headed with its own name; a sort's were headed as a search's. In a Word file a short slide keeps its heading, its bullets and the teacher's note on one page. The history names the step that settles what a lesson is about when no plan is written, where it said \"undefined\". And where a plan puts a figure on the screen that its own notes work out differently, the reader of the plan is told to put the screen right, and a deck is no longer let to have the teacher explain the figure away aloud: one deck did, of a matrix that is 67.1 MB and was shown as 201."
+   }
+  ]
+ },
+ {
   "version": "0.0.39",
   "date": "October 12, 2026",
   "title": "Slides that show, and a course of only what you choose",
