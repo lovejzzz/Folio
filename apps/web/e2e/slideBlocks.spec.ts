@@ -46,3 +46,32 @@ test('a chain of steps and things side by side are on the slide, reworded where 
   await page.goto(`${slides}?slide=2`);
   await expect(page.getByRole('group', { name: '4 steps, in order' }).last()).toContainText('Loss on the batch');
 });
+
+test('a teacher gives a slide a layout by hand, makes it longer, and takes it off', async ({ page }) => {
+  await page.route('**/samples/*.json', (route) => route.fulfill({ contentType: 'application/json', body: JSON.stringify(sampleCourse()) }));
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Or open a sample course' }).click();
+  await page.getByRole('dialog', { name: 'Open a sample course' }).getByRole('button', { name: /^Introduction to ethics/ }).click();
+  await expect(page).toHaveURL(/\/map$/);
+  await page.goto(`${page.url().replace(/\/map$/, '/m/slides')}?slide=2`);
+  const tools = page.getByRole('group', { name: 'A layout for this slide' });
+  await tools.getByRole('button', { name: 'A chain of steps' }).click();
+  const chain = page.getByRole('group', { name: '3 steps, in order' }).last();
+  await expect(chain.locator('.folio-slide-step')).toHaveCount(3);
+  await tools.getByRole('button', { name: 'Add a step' }).click();
+  await expect(page.getByRole('group', { name: '4 steps, in order' }).last().locator('.folio-slide-step')).toHaveCount(4);
+  await tools.getByRole('button', { name: 'The last leads back to the first' }).click();
+  await expect(page.getByText('Then back to “Step 1”.').last()).toBeVisible();
+  await tools.getByRole('button', { name: 'Take the layout off' }).click();
+  await expect(page.locator('.folio-slide-steps')).toHaveCount(0);
+  // Things side by side: two columns to start, a third and a second point when asked for, and kept.
+  await tools.getByRole('button', { name: 'Things side by side' }).click();
+  await tools.getByRole('button', { name: 'Add a column' }).click();
+  await tools.getByRole('button', { name: 'Add a point to each' }).click();
+  const sides = page.locator('.folio-slide-compare').last();
+  await expect(sides.locator('.folio-slide-side')).toHaveCount(3);
+  await expect(sides.getByRole('listitem')).toHaveCount(6);
+  await expect(tools.getByRole('button', { name: 'Add a column' })).toBeDisabled();
+  await page.reload();
+  await expect(page.locator('.folio-slide-compare').last().locator('.folio-slide-side')).toHaveCount(3);
+});

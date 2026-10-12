@@ -11,6 +11,7 @@ import { edit } from '../state/edit';
 import { CreditsNote } from '../screens/plan/CreditsNote';
 import { focusItem } from './newItems';
 import { SlideCanvas } from './SlideCanvas';
+import { BlockTools } from './BlockTools';
 import { ChartData } from './SlideVisual';
 import { FigureControls } from './figures/FigureControls';
 import { FigureData, newBinarySearch, newGradientDescent, newRackBudget, newSelectionSort } from './figures/FigureData';
@@ -201,6 +202,7 @@ export function SlidesEditor({ course, lessonId, slide: slideNumber, onGo }: Sli
         </Stage>
         {slide.visual?.kind === 'chart' && <ChartData v={slide.visual} onChange={(visual) => update({ ...slide, visual })} />}
         {slide.visual?.kind === 'figure' && <FigureData v={slide.visual} onChange={(visual) => update({ ...slide, visual })} />}
+        <BlockTools slide={slide} onChange={(visual) => update({ ...slide, visual })} />
         <SlidePager course={course} lesson={lesson} index={pos.index} onPrev={onPrev} onNext={onNext} />
         <section className="mt-4 rounded-sheet bg-paper p-5 shadow-sheet">
           <h3 className="mb-2 flex flex-wrap items-center gap-x-1.5 font-ui text-13 font-semibold text-ink">
