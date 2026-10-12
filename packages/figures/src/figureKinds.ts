@@ -1,8 +1,9 @@
-import { binarySearch, binarySearchTable, gradientDescent, gradientDescentTable, selectionSort, selectionSortTable, written, type SlideVisual } from '@folio/core';
+import { binarySearch, binarySearchTable, gradientDescent, gradientDescentTable, rackBudget, rackBudgetTable, selectionSort, selectionSortTable, written, type SlideVisual } from '@folio/core';
 import { between, figureBody, keyframes, readWidthOf, renderFrame, viewOf } from './binarySearchFrames';
 import type { Pose, View } from './binarySearchScene';
 import { descentBetween, descentBody, descentKeyframes, descentReadWidth, descentSvg, descentView, type DescentPose } from './descentScene';
 import { cabinetLimit, type CabinetLimit } from './digits';
+import { rackBetween, rackBody, rackKeyframes, rackReadWidth, rackSvg, rackView, type RackPose } from './rackScene';
 import { sortBetween, sortBody, sortKeyframes, sortLimit, sortReadWidth, sortSvg, sortView, type SortPose } from './sortScene';
 
 type Figure = Extract<SlideVisual, { kind: 'figure' }>;
@@ -79,5 +80,18 @@ const descent: FigureKind = {
   items: (_v, pose) => [...(pose as DescentPose).trail, (pose as DescentPose).w].map((w, i, all) => ({ place: i + 1, value: Number(written(w).text), state: i === all.length - 1 ? 'now' : 'past' })),
 };
 
-export const FIGURE_KINDS: Record<Figure['figure'], FigureKind> = { binarySearch: search, selectionSort: sort, gradientDescent: descent };
+const rack: FigureKind = {
+  stills: (v) => rackKeyframes(rackBudget(v)),
+  between: (a, b, t) => rackBetween(a as RackPose, b as RackPose, t),
+  body: (v, pose) => rackBody({ model: rackBudget(v), pose: pose as RackPose }, v.look),
+  svg: (v, still) => rackSvg({ model: rackBudget(v), pose: still.pose as RackPose }, still.caption, v.look),
+  view: (v) => rackView(v.look),
+  readWidth: (v) => rackReadWidth(v.look),
+  limit: () => null,
+  table: (v) => rackBudgetTable(rackBudget(v)),
+  // The servers tried so far, each with what the rack takes once it is counted.
+  items: (v, pose) => (pose as RackPose).state.flatMap((state, i) => (state === 'waiting' ? [] : [{ place: i + 1, value: Number(written((i + 1) * v.values[0]!).text), state: state === 'now' ? 'look' : state }])),
+};
+
+export const FIGURE_KINDS: Record<Figure['figure'], FigureKind> = { binarySearch: search, selectionSort: sort, gradientDescent: descent, rackBudget: rack };
 export const figureKind = (v: Figure): FigureKind => FIGURE_KINDS[v.figure];

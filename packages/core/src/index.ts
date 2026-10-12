@@ -24,4 +24,5 @@ export * from './checklist';
 export * from './figures/binarySearch';
 export * from './figures/selectionSort';
 export * from './figures/gradientDescent';
+export * from './figures/rackBudget';
 export * from './figures/faults';
