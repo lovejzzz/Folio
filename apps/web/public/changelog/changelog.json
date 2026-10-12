@@ -1,5 +1,65 @@
 [
  {
+  "version": "0.0.39",
+  "date": "October 12, 2026",
+  "title": "Slides that show, and a course of only what you choose",
+  "lede": "A deck Folio wrote was a deck of bullets: in eight lessons of one course, 7 slides of 90 held a table or a chart. This release has the lesson plan say what each thing on the screen is (a sequence, things set against each other, rows under the same headings, a method worked step by step) and has the deck draw it. It also lets you ask for only some materials and get a course that stands on them, and says what a build is expected to take before you start it.",
+  "sections": [
+   {
+    "heading": "Two layouts a slide can hold: a chain of steps, and things side by side",
+    "body": "A sequence the lesson teaches is now a chain of numbered steps with an arrow from one to the next, not a list whose order is only the order of its lines. Two or three things set against each other stand in columns, each under its name with its own points, with the question asked of them underneath. Both are the slide's own words: change them on the slide, add or remove a step or a column under it, or give any slide one by hand. In PowerPoint they are shapes and text you can move and reword, never a picture; in Word they are tables.",
+    "image": {
+     "src": "/changelog/0.0.39-side-by-side.webp",
+     "alt": "A slide from a generated deck, as PowerPoint shows it: A CPU and a GPU, side by side, with three points under each name",
+     "width": 1734,
+     "height": 975
+    }
+   },
+   {
+    "heading": "Why decks were bullets, and what changed",
+    "body": "Two things held decks to text. The deck was told to put every item the plan shows on the screen onto a slide in the plan's own words, whole; and the check that looks for those words read a slide as its file, so words arranged into a table or columns counted as missing, and a deck that arranged anything was sent back. The check now reads what students read. And the plan now writes what is on the screen as what it is, so the deck has something to draw. Written once each after the change, two lessons of a grade 10 chemistry course, an undergraduate microeconomics course and a US history course came to 32 slides of 84 with a table, a chart, a chain or columns. We have not yet had independent readers go through plans written this way, as we do before most releases: that reading comes next.",
+    "image": {
+     "src": "/changelog/0.0.39-steps.webp",
+     "alt": "A slide from a generated deck, as PowerPoint shows it: Where data travels in a GPU server, a chain of three steps from CPU and system RAM to GPU memory to GPU cores",
+     "width": 1734,
+     "height": 975
+    }
+   },
+   {
+    "heading": "Demonstrations Folio draws and steps through",
+    "body": "Four methods can now be put on a slide as a demonstration you step through with the class: binary search, selection sort, gradient descent on a loss, and filling a rack against a budget. Each is one picture in two layers. Above, the thing itself: drawers, blocks, a valley, a rack. Below, the numbers at a size a room can read, with the comparison or the sum written out, and a line from the part in hand to its number. You give the numbers; Folio works the method, writes the sentence for each step, and says how it ends (a learning rate too large is shown running away, and said to be). Add one from the slide's toolbar. A plan can ask for one where the lesson works that method, after students have predicted the result. Every step goes into PowerPoint, Word and print as a picture with its sentence; on a phone a larger picture opens under the slide.",
+    "image": {
+     "src": "/changelog/0.0.39-descent.webp",
+     "alt": "Gradient descent: a valley of columns with a puck on its side; below, a number line with the lowest point marked at 1, w at 2.2, the step 0.3 × 2.4 = 0.72, and w, loss and slope in a frame",
+     "width": 1280,
+     "height": 768
+    }
+   },
+   {
+    "heading": "A second and a fourth: sorting, and hardware",
+    "body": "Selection sort shows a block for each number, as tall as the number is large; the smallest of the rest is lifted and changes places with the one at the front. The rack shows servers sliding in until the next would go over the budget, and says whether the budget or the room stopped it: the same sum as batches into a GPU's memory.",
+    "image": {
+     "src": "/changelog/0.0.39-rack.webp",
+     "alt": "A rack with three servers in and a fourth half out; below, a gauge to a budget of 40 with blocks 1 to 3 and a hatched fourth across the budget line, 4 × 10.2 = 40.8, used 30.6, over by 0.8, fitted 3",
+     "width": 1280,
+     "height": 800
+    }
+   },
+   {
+    "heading": "Only the materials you choose",
+    "body": "A course of slides alone, or quizzes alone, or rubrics for graded work you already have, is now written to stand by itself. What you did not ask for is not leaned on: a deck no longer sends students to a sheet nobody wrote, and graded work that is yours to write is named, with its instructions and rubric left to you and marked on the map until you say you have it. Without lesson plans, each lesson's facts and cases are settled once before anything is written, and read a second time, so the slides, the quiz and the guide tell the same case the same way. A rubric can be written for work that stands without one, scored as the work itself says it is scored."
+   },
+   {
+    "heading": "What a build is expected to take, before you start it",
+    "body": "Beside every button that starts writing (the first build, Resume, one part again, all the failed parts) Folio now says about what it will take, as a range, read from the same list of parts the build then runs. With credits: what is used, what that is worth, and whether you would need to buy any. With your own key: your provider's charge at your model's prices for what is sent and what is written, or plainly that no price is known for it. A part asked for by name brings what it cannot be written without, and says so. The ranges come from a few measured lessons and are an estimate, not a bill; steps we have not measured are said to be reckoned. On a phone the figure is on the paused line, and a touch opens the rest."
+   },
+   {
+    "heading": "Smaller things",
+    "body": "Numbers in demonstrations are set in Folio's own typeface in the browser, in files and in print alike. A step of a demonstration now finishes even in a tab that is not being painted. Slides follow the plan segment by segment, so the slide for a sheet's step is no longer the one before it left up. A lesson's list of what to have ready names what the plan puts on the screen and hands out."
+   }
+  ]
+ },
+ {
   "version": "0.0.38",
   "date": "October 10, 2026",
   "title": "How each graded piece runs is said once",
