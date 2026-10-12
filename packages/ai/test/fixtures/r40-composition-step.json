@@ -1,0 +1,1073 @@
+{
+ "id": "c_9f94810befec",
+ "schemaVersion": 3,
+ "revision": 15,
+ "createdAt": "2026-10-12T18:21:25.468Z",
+ "updatedAt": "2026-10-12T18:37:03.005Z",
+ "status": "building",
+ "title": "English 101: Writing the personal, the rhetorical and the researched essay",
+ "summary": "First-year composition in which students write four essays through drafts, in-class peer review and revision: a personal narrative, a rhetorical analysis, an argument with sources and a researched essay in MLA style. Students practice a full writing process, give and use feedback, and learn to read, argue and research for college audiences.",
+ "brief": "First-year composition (English 101) at a community college: 15 weeks, two 75-minute class meetings a week, 22 students. Students write four essays through drafts: a personal narrative, a rhetorical analysis, an argument with sources, and a researched essay with MLA citation; each has a draft, an in-class peer review and a revision. No textbook; I supply the readings. Four essays 15%, 20%, 20% and 25%, peer review participation 10%, short in-class writing 10%.\nBefore planning, the teacher answered:\n- Which readings will you supply for the rhetorical analysis essay? Folio writes short ones from public information",
+ "language": "en",
+ "locale": "en-US",
+ "audience": {
+  "level": "Undergraduate",
+  "subject": "English composition"
+ },
+ "shape": {
+  "minutesPerLesson": 75,
+  "quizSize": 5,
+  "sessions": []
+ },
+ "delivery": "inperson",
+ "pages": [],
+ "policies": "",
+ "setup": [
+  "22 students",
+  "No textbook; the teacher supplies the readings",
+  "Each essay is written through a draft, an in-class peer review and a revision"
+ ],
+ "grading": [
+  {
+   "id": "g_8866a2667eb2",
+   "item": "Essay 1",
+   "weight": 15,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "unsaid",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  },
+  {
+   "id": "g_6157f301efa9",
+   "item": "Essay 2",
+   "weight": 20,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "unsaid",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  },
+  {
+   "id": "g_478c2a595314",
+   "item": "Essay 3",
+   "weight": 20,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "unsaid",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  },
+  {
+   "id": "g_a7bdb042c514",
+   "item": "Essay 4",
+   "weight": 25,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "unsaid",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  },
+  {
+   "id": "g_eb3c6d04e66c",
+   "item": "Peer review participation",
+   "weight": 10,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "none",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  },
+  {
+   "id": "g_ffc28a0a4a2f",
+   "item": "Short in-class writing",
+   "weight": 10,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "unsaid",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  }
+ ],
+ "objectives": {
+  "o_ffddcd5a1c1d": {
+   "id": "o_ffddcd5a1c1d",
+   "text": "Describe the stages of the writing process used in this course"
+  },
+  "o_26ca73c14de8": {
+   "id": "o_26ca73c14de8",
+   "text": "Produce a ten-minute freewrite on a memorable moment"
+  },
+  "o_365e308d799e": {
+   "id": "o_365e308d799e",
+   "text": "Generate three candidate moments using listing and clustering"
+  },
+  "o_7882a98a6928": {
+   "id": "o_7882a98a6928",
+   "text": "Select one moment and state why it matters"
+  },
+  "o_1afd13671289": {
+   "id": "o_1afd13671289",
+   "text": "Rewrite a summarized event as a scene with sensory detail"
+  },
+  "o_448eda98b7eb": {
+   "id": "o_448eda98b7eb",
+   "text": "Punctuate dialogue correctly in a short passage"
+  },
+  "o_947268c011ec": {
+   "id": "o_947268c011ec",
+   "text": "Outline a narrative with a clear turning point"
+  },
+  "o_12e5f5677293": {
+   "id": "o_12e5f5677293",
+   "text": "Write a reflective passage that states the story's significance"
+  },
+  "o_500f34c32df2": {
+   "id": "o_500f34c32df2",
+   "text": "Give specific, kind and usable written feedback on a peer's draft"
+  },
+  "o_25a767e9b8ee": {
+   "id": "o_25a767e9b8ee",
+   "text": "Identify two revision priorities from peer comments"
+  },
+  "o_299b94ca687b": {
+   "id": "o_299b94ca687b",
+   "text": "Write a revision plan ranked by importance"
+  },
+  "o_f28975c76f87": {
+   "id": "o_f28975c76f87",
+   "text": "Revise one scene using feedback received"
+  },
+  "o_75a524e097b7": {
+   "id": "o_75a524e097b7",
+   "text": "Fix comma splices and fragments in a sample paragraph"
+  },
+  "o_199c9bbe9dab": {
+   "id": "o_199c9bbe9dab",
+   "text": "Replace weak verbs and wordiness in their own draft"
+  },
+  "o_42a73d085cbc": {
+   "id": "o_42a73d085cbc",
+   "text": "Identify the author, audience, purpose and context of a short text"
+  },
+  "o_a2b3fc7d3e81": {
+   "id": "o_a2b3fc7d3e81",
+   "text": "Explain how context shapes a writer's choices"
+  },
+  "o_47a186162fb7": {
+   "id": "o_47a186162fb7",
+   "text": "Label examples of ethos, pathos and logos in a short text"
+  },
+  "o_2d77ed448dc6": {
+   "id": "o_2d77ed448dc6",
+   "text": "Judge which appeal a writer relies on most"
+  },
+  "o_52e023a4fb34": {
+   "id": "o_52e023a4fb34",
+   "text": "Annotate a passage for at least five rhetorical choices"
+  },
+  "o_625157b64f32": {
+   "id": "o_625157b64f32",
+   "text": "Explain the effect of one choice on the audience"
+  },
+  "o_9aa4779d1f99": {
+   "id": "o_9aa4779d1f99",
+   "text": "Draft a thesis that makes a claim about how a text persuades"
+  },
+  "o_bd64d9827295": {
+   "id": "o_bd64d9827295",
+   "text": "Embed a short quotation and explain its effect"
+  },
+  "o_37509944f657": {
+   "id": "o_37509944f657",
+   "text": "Evaluate whether a peer's thesis is supported by quoted evidence"
+  },
+  "o_ca48655ac0f3": {
+   "id": "o_ca48655ac0f3",
+   "text": "Recommend two specific revisions to a peer's draft"
+  },
+  "o_416d6d0db21b": {
+   "id": "o_416d6d0db21b",
+   "text": "Reorganize a body paragraph into claim, evidence and explanation"
+  },
+  "o_828a40cde1d3": {
+   "id": "o_828a40cde1d3",
+   "text": "Cut summary that does not support the thesis"
+  },
+  "o_4d1ce159c38e": {
+   "id": "o_4d1ce159c38e",
+   "text": "Write an introduction that names the text, author and thesis"
+  },
+  "o_8ff2df481c84": {
+   "id": "o_8ff2df481c84",
+   "text": "Add transitions that show relationships between paragraphs"
+  },
+  "o_7e64e6040a96": {
+   "id": "o_7e64e6040a96",
+   "text": "Distinguish a claim from a fact, a topic and a preference"
+  },
+  "o_3f7b36283b51": {
+   "id": "o_3f7b36283b51",
+   "text": "Identify the warrant behind a short argument"
+  },
+  "o_704ce806f459": {
+   "id": "o_704ce806f459",
+   "text": "Revise a vague topic into a debatable thesis"
+  },
+  "o_f2ce6e288da1": {
+   "id": "o_f2ce6e288da1",
+   "text": "Write a counterargument paragraph with a rebuttal"
+  },
+  "o_7f0a6e50a549": {
+   "id": "o_7f0a6e50a549",
+   "text": "Find two credible sources on their topic using a library database"
+  },
+  "o_b70c72042b74": {
+   "id": "o_b70c72042b74",
+   "text": "Evaluate a source using authority, currency and bias"
+  },
+  "o_66c621ca811b": {
+   "id": "o_66c621ca811b",
+   "text": "Paraphrase a passage without copying its sentence structure"
+  },
+  "o_4d3b86a7c061": {
+   "id": "o_4d3b86a7c061",
+   "text": "Introduce a quotation with a signal phrase and comment"
+  },
+  "o_e18e70c6f71f": {
+   "id": "o_e18e70c6f71f",
+   "text": "Assess how well a peer's evidence supports the claim"
+  },
+  "o_c8b00de57f74": {
+   "id": "o_c8b00de57f74",
+   "text": "Point out one unfair or weak step in a peer's reasoning"
+  },
+  "o_f0d1917b17d2": {
+   "id": "o_f0d1917b17d2",
+   "text": "Name and fix a fallacy in a sample argument"
+  },
+  "o_7724a306c195": {
+   "id": "o_7724a306c195",
+   "text": "Reorder paragraphs to build the argument's strength"
+  },
+  "o_1cac9ecb1f90": {
+   "id": "o_1cac9ecb1f90",
+   "text": "Revise biased or overheated phrasing into a measured tone"
+  },
+  "o_39d84fc35224": {
+   "id": "o_39d84fc35224",
+   "text": "Format a parenthetical citation for a print source"
+  },
+  "o_8ec69e86e6fd": {
+   "id": "o_8ec69e86e6fd",
+   "text": "Turn a broad topic into a focused research question"
+  },
+  "o_f37ce2fc55e4": {
+   "id": "o_f37ce2fc55e4",
+   "text": "Explain what kinds of sources the question needs"
+  },
+  "o_e5c2fe1aade0": {
+   "id": "o_e5c2fe1aade0",
+   "text": "Build a search string with Boolean operators"
+  },
+  "o_a053f2bbe0c3": {
+   "id": "o_a053f2bbe0c3",
+   "text": "Collect five relevant sources from the library databases"
+  },
+  "o_341e604a1610": {
+   "id": "o_341e604a1610",
+   "text": "Write an annotation that summarizes and evaluates one source"
+  },
+  "o_f395fcd93b69": {
+   "id": "o_f395fcd93b69",
+   "text": "Write a paragraph that synthesizes two or more sources"
+  },
+  "o_6e917097f8a9": {
+   "id": "o_6e917097f8a9",
+   "text": "Format a Works Cited entry for a journal article"
+  },
+  "o_7cb4d6e7db09": {
+   "id": "o_7cb4d6e7db09",
+   "text": "Cite a paraphrase and a quotation in text correctly"
+  },
+  "o_b133365f0237": {
+   "id": "o_b133365f0237",
+   "text": "Create an outline that places sources in support of a thesis"
+  },
+  "o_59fd8922e8c2": {
+   "id": "o_59fd8922e8c2",
+   "text": "Identify uncredited borrowing in a sample passage"
+  },
+  "o_c777a5f6950f": {
+   "id": "o_c777a5f6950f",
+   "text": "Check a peer's citations against the Works Cited page"
+  },
+  "o_57b59f66cef1": {
+   "id": "o_57b59f66cef1",
+   "text": "Recommend revisions to improve a peer's use of sources"
+  },
+  "o_a2ba283c24bf": {
+   "id": "o_a2ba283c24bf",
+   "text": "Revise a paragraph so the writer's idea leads the sources"
+  },
+  "o_e78ac926226e": {
+   "id": "o_e78ac926226e",
+   "text": "Strengthen the thesis to match the final evidence"
+  },
+  "o_453bb64a219c": {
+   "id": "o_453bb64a219c",
+   "text": "Proofread a draft for errors using a reading-aloud strategy"
+  },
+  "o_66d50da2a055": {
+   "id": "o_66d50da2a055",
+   "text": "Match every in-text citation to a Works Cited entry"
+  },
+  "o_303602fa143d": {
+   "id": "o_303602fa143d",
+   "text": "Describe two writing strategies they will keep using"
+  },
+  "o_bed37b553a0e": {
+   "id": "o_bed37b553a0e",
+   "text": "Compare an early and a late draft to show growth"
+  }
+ },
+ "lessons": {
+  "l_340fcfa28ea7": {
+   "id": "l_340fcfa28ea7",
+   "title": "Writing as a process and the personal narrative",
+   "summary": "Students meet the drafting, peer review and revision cycle, try a first freewrite, and receive the personal narrative assignment.",
+   "objectiveIds": [
+    "o_ffddcd5a1c1d",
+    "o_26ca73c14de8"
+   ],
+   "readings": [],
+   "suggestedReadings": [
+    "Lamott, Anne. \"Shitty First Drafts,\" in Bird by Bird (1994)"
+   ],
+   "standards": [],
+   "homework": {
+    "kind": "inclass",
+    "toward": "Peer review participation",
+    "standing": true
+   },
+   "also": [
+    {
+     "kind": "inclass",
+     "toward": "Short in-class writing",
+     "standing": false
+    },
+    {
+     "kind": "assignment",
+     "toward": "Essay 1"
+    },
+    {
+     "kind": "step",
+     "toward": "Essay 1"
+    }
+   ],
+   "segments": [
+    {
+     "kind": "warmup",
+     "session": 0,
+     "title": "How did your last good piece of writing get made?",
+     "minutes": 7,
+     "description": "Students think of the last piece of writing they were proud of, from a school paper to a work email. Each writes a short numbered list of the main steps, four or five at most, in order.\nIn pairs they compare lists and circle one step they share.\nTwo pairs name their shared step; the instructor writes these on the board.",
+     "teacherNotes": "Introduce yourself and learn names first. Expect lists like ‘thought about it, wrote it, checked spelling’. Note how few include feedback or rewriting; return to the board list in the next segment. Timing: about 2 minutes to list, 2 to compare and circle, 2 to hear two pairs, 1 to set up.",
+     "shown": [
+      "On your own, list in order the four or five main steps you took on the last piece of writing you were proud of. Then compare lists with a partner and circle one step you share."
+     ],
+     "id": "x_c33f904148fb"
+    },
+    {
+     "kind": "teach",
+     "session": 0,
+     "title": "How this course works and how it is graded",
+     "minutes": 8,
+     "description": "The instructor outlines the four essays: a personal narrative, a rhetorical analysis, an argument with sources, and a researched essay in MLA style.\nEach essay goes through a draft, an in-class peer review and a revision.\nThe instructor says the instructor supplies all readings, so there is no textbook to buy, and shows the grading table.\nIn pairs, students write one question about the course on a sticky note or notebook page; two or three are answered aloud.",
+     "teacherNotes": "Say each essay is the student’s own work. Keep to the table and do not add policies not yet decided. Questions you cannot answer now go on a list for next time.",
+     "shown": [
+      "Table: Component | Share of course grade / Essay 1 | 15% / Essay 2 | 20% / Essay 3 | 20% / Essay 4 | 25% / Peer review participation | 10% / Short in-class writing | 10%",
+      "Steps: Draft → In-class peer review → Revision (the path of every essay)"
+     ],
+     "id": "x_1b050329ae5e"
+    },
+    {
+     "kind": "teach",
+     "session": 0,
+     "title": "The writing process used in this course",
+     "minutes": 10,
+     "description": "The instructor puts up the five stages and links each to the board list from the warm-up.\nBefore hearing the order explained, students write which stage they think most people skip and why; two answers are heard.\nThe instructor explains why revision comes before editing: there is no point polishing a sentence you may cut.\nStudents then explain the five stages to a partner in their own words, without looking at the screen.",
+     "teacherNotes": "Most students say editing or peer review gets skipped. Stress the stages loop: a reader’s comment can send you back to prewriting. Mention Lamott’s ‘Shitty First Drafts’ only in the close.",
+     "shown": [
+      "Steps: Prewriting, finding ideas → Drafting, getting a full version down → Peer review, a reader responds → Revision, big changes to ideas, order and detail → Editing, sentences, word choice, punctuation",
+      "Which stage do most people skip, and why? Write two sentences."
+     ],
+     "id": "x_1e5beaba44b0"
+    },
+    {
+     "kind": "practice",
+     "session": 0,
+     "title": "Fix Dana’s plan",
+     "minutes": 8,
+     "description": "Students read a hypothetical student’s plan for a paper. Alone, each names one stage that is missing and one thing done at the wrong time.\nEach then rewrites the three-day plan so it uses all five stages in a sensible order.\nPairs compare rewrites and choose the one they would rather follow, saying why. The class hears one pair.",
+     "teacherNotes": "Expected: minimal prewriting, no reader, no revision; editing happens during drafting. A good rewrite puts freewriting first, a break before revising and commas last. Common error: adding peer review after editing. Timing: about 2 minutes to read and diagnose, 3 to rewrite, 2 to compare, 1 to hear one pair.",
+     "shown": [
+      "Suppose a student named Dana plans a paper this way. Monday night: she thinks of a topic. Tuesday at 11 p.m.: she writes the whole paper and fixes commas as she goes. Wednesday: she stops, because the paper is finished.",
+      "Name one stage missing from Dana’s plan and one thing she does at the wrong time. Then rewrite her three days using all five stages."
+     ],
+     "id": "x_3bf05c441c10"
+    },
+    {
+     "kind": "teach",
+     "session": 0,
+     "title": "Freewriting and the first freewrite",
+     "minutes": 13,
+     "description": "The instructor explains the freewriting rules and freewrites on the board for one minute about a different moment: a bicycle tire going flat on a steep hill.\nStudents pick a moment they remember clearly, one they are comfortable sharing with a partner.\nThey write without stopping for ten minutes. This is Short in-class writing (10%), done alone.\nIf stuck, they write the last word again and keep going.",
+     "teacherNotes": "Keep time visibly. Explain that each student will choose an excerpt for a partner to read. Allow students to pick a lighter moment; no one needs to write about something painful. Tell them to mark private passages and leave an excerpt available for peer response.",
+     "shown": [
+      "Freewriting rules: Keep your pen moving for the full ten minutes. Do not fix spelling or grammar. Do not stop to judge. If you get stuck, write the last word again.",
+      "Prompt: Write about a moment you still remember clearly. Where were you? What could you see, hear or feel?"
+     ],
+     "id": "x_9baf897fb23f"
+    },
+    {
+     "kind": "discuss",
+     "session": 0,
+     "title": "Peer review participation: first round",
+     "minutes": 20,
+     "description": "Each student gets a printed copy of the Peer review participation brief and reads it. Partners swap freewrites and read only the parts not marked private.\nEach partner writes the three responses on the screen, then they talk each response through, taking turns.\nThe instructor listens to each pair in turn for about a minute and a half, and scores each student as it happens.\nPairs finish with each writer telling their partner one change they will try in their own writing.",
+     "teacherNotes": "Eleven pairs at 1.5 minutes is about 17 minutes of listening, so pairs work at their own pace. Score each student’s participation using the printed brief and its rubric. Answers depend on the exchanged freewrite: the selected words must appear in it, the question must address the moment, and the proposed change must relate to that writing. Odd class: one group of three.",
+     "shown": [
+      "1. Copy one sentence or phrase from your partner’s freewrite that you can see, hear or feel. Say what made it vivid.",
+      "2. Write one question you still have about the moment.",
+      "3. Suggest one thing to try next: add a detail, cut something, or slow down at one point."
+     ],
+     "id": "x_a58b97495519"
+    },
+    {
+     "kind": "close",
+     "session": 0,
+     "title": "Essay 1 and what comes next",
+     "minutes": 6,
+     "description": "The instructor hands out the Essay 1 assignment and walks through it. Students are told it is due at the start of the class on The rhetorical situation: author, audience, purpose.\nThe instructor then sets a short ungraded step toward Essay 1, due at the start of the class on Peer review of narrative drafts.\nStudents write the two deadlines in their notebooks and ask questions about the assignment.",
+     "teacherNotes": "Read both deadlines aloud in these exact words. Do not model with today’s freewrite topics. Ask each student to check the deadlines against the printed assignment before leaving.",
+     "shown": [
+      "Essay 1 is due at the start of the class on The rhetorical situation: author, audience, purpose.",
+      "The short step toward Essay 1 is due at the start of the class on Peer review of narrative drafts."
+     ],
+     "id": "x_a38f7c3b3fb6"
+    },
+    {
+     "kind": "close",
+     "session": 0,
+     "title": "Wrap-up and a look ahead",
+     "minutes": 3,
+     "description": "The instructor says that next time students will use freewriting, listing and clustering to find one moment worth telling and decide what it meant to them.\nThe short quiz on today’s lesson is taken after class; it is practice and counts toward no grade.\nFor optional further reading, the instructor names Anne Lamott, ‘Shitty First Drafts,’ in Bird by Bird (1994).",
+     "teacherNotes": "Tell students to keep today’s freewrite; they will use it next time. The Lamott essay is optional and nothing will depend on it.",
+     "shown": [
+      "Next time: find one moment worth telling and decide what it meant to you.",
+      "Optional further reading: Lamott, Anne. ‘Shitty First Drafts,’ in Bird by Bird (1994)."
+     ],
+     "id": "x_a6f15823cd81"
+    }
+   ],
+   "keyIdeas": [
+    "Writing is a process, not a single act: prewriting, drafting, peer review, revision and editing, with returns to earlier stages as needed.",
+    "Revision (changing ideas, order and detail) comes before editing (changing sentences, words and punctuation).",
+    "Freewriting gets raw material onto the page before you judge it. The goal is quantity and honesty, not polish.",
+    "Peer review works when a reader says exactly what they saw in the draft, what they still wonder and what to try next.",
+    "The personal narrative asks you to tell one moment so a reader can see it and understand what it meant to you."
+   ],
+   "vocabulary": [
+    {
+     "term": "writing process",
+     "definition": "The series of stages a writer moves through, from first ideas to a finished text.",
+     "id": "x_71718b642fbc"
+    },
+    {
+     "term": "prewriting",
+     "definition": "Any work done before a full draft to find ideas, such as freewriting, listing or clustering.",
+     "id": "x_12e4b5438f65"
+    },
+    {
+     "term": "freewriting",
+     "definition": "Writing without stopping or correcting for a set time, to get ideas onto the page.",
+     "id": "x_e208d3ca4bd1"
+    },
+    {
+     "term": "draft",
+     "definition": "A full early version of a text that is expected to change.",
+     "id": "x_adf448eabbec"
+    },
+    {
+     "term": "peer review",
+     "definition": "A structured response to a classmate’s draft that tells the writer what works and what to try.",
+     "id": "x_7f997384552b"
+    },
+    {
+     "term": "revision",
+     "definition": "Big changes to a draft’s ideas, order and detail; literally, re-seeing the work.",
+     "id": "x_3129fe7cce43"
+    },
+    {
+     "term": "editing",
+     "definition": "Fixing sentences, word choice, spelling and punctuation, usually after revision.",
+     "id": "x_1e24e3d9e8ed"
+    },
+    {
+     "term": "personal narrative",
+     "definition": "An essay that tells a true story from the writer’s life and shows what it meant.",
+     "id": "x_f35bac14c66d"
+    }
+   ],
+   "slides": [],
+   "study": {
+    "overview": "Writing is a process, not a single act. This course moves each essay through prewriting, drafting, peer review, revision and editing, and you can return to an earlier stage whenever a draft needs it. Your first piece of work is a freewrite on a moment you remember clearly, which is raw material for the personal narrative. A personal narrative tells one moment so a reader can see it and understand what it meant to you. Optional further reading: Lamott, Anne. “Shitty First Drafts,” in Bird by Bird (1994). Nothing in the course depends on it.",
+    "points": [
+     {
+      "heading": "The five stages, and why they loop",
+      "explanation": "The course uses five stages: prewriting (finding ideas), drafting (getting a full version down), peer review (a reader responds), revision (big changes to ideas, order and detail) and editing (sentences, word choice and punctuation). They are not a one-way line. Each essay in this course runs through a draft, an in-class peer review and a revision, and a reader’s comment can send you back to an earlier stage.\n\nExample: suppose a student named Sam is writing a narrative about a first shift at a new job. Sam freewrites, drafts, and then a classmate asks, “Why did you stay after that first awful hour?” Sam cannot answer from the draft. So Sam goes back to prewriting, freewrites on that question, and only then revises. Going back was not a failure. It is how the process is meant to work.",
+      "id": "x_6bee0ffd3736"
+     },
+     {
+      "heading": "Revise first, edit last",
+      "explanation": "Revision changes ideas, order and detail. Editing changes sentences, words and punctuation. Revision comes first because there is no point polishing a sentence you may cut.\n\nExample: Sam spends an evening fixing commas in the opening paragraph. The next day, after peer review, Sam sees that the story really begins in the second paragraph, and the opening is cut. The comma work is lost. If Sam had revised first and edited at the end, the effort would have gone into sentences that stayed. A useful check before you touch a comma: ask whether the big choices (what to include, what order, what to expand) are settled yet.",
+      "id": "x_e254924ac036"
+     },
+     {
+      "heading": "Freewriting: quantity and honesty before polish",
+      "explanation": "Freewriting gets raw material onto the page before you judge it. The rules are simple: keep your pen moving for the full time, do not fix spelling or grammar, do not stop to judge, and if you get stuck, write your last word again and keep going. The goal is quantity and honesty, not polish.\n\nExample of what the page might look like when stuck: “The lights went out right as my brother blew out his candles and everyone laughed and the room was dark dark dark and I could smell the smoke from the wicks and hear my aunt’s chair scrape.” The repeated word is not a mistake. It is the technique, and it carried the writer to a smell and a sound. A lighter moment is a fine choice, and you can mark private passages so a partner reads only what you make available. Keep your freewrite, because you will go back to it to find a moment worth telling.",
+      "id": "x_ea43e45799d5"
+     },
+     {
+      "heading": "Peer review and the personal narrative",
+      "explanation": "Peer review works when a reader says exactly what they saw in the draft, what they still wonder and what to try next. In class you practiced the three moves on each other’s freewrites: copy a phrase that you can see, hear or feel and say what made it vivid; ask one question about the moment; suggest one thing to try, such as adding a detail, cutting something or slowing down at one point.\n\nExample response to a hypothetical freewrite about a power cut at a birthday dinner: “I could hear your aunt’s chair scrape because you wrote it, and it made the dark feel real. I still wonder what you were afraid of. Try slowing down at the moment the candles went out.” Notice that each sentence points to the writing itself. Vague comments such as “good detail” give the writer nothing to use.\n\nThese moves serve the personal narrative, which asks you to tell one moment so a reader can see it and understand what it meant to you. Essay 1 is due at the start of the class on The rhetorical situation: author, audience, purpose. The short ungraded step toward it is due at the start of the class on Peer review of narrative drafts. Check both against your printed assignment.",
+      "id": "x_f4496b7c3d59"
+     }
+    ]
+   },
+   "page": [],
+   "handouts": [],
+   "ready": [
+    "Students bring a notebook and a pen for the lists, the freewrite and the deadlines.",
+    "Teacher: a clock or timer the whole class can see for the ten-minute freewrite.",
+    "Teacher: sticky notes for the course questions, if students do not use notebook pages."
+   ],
+   "own": [],
+   "cases": [],
+   "taskIds": [
+    "t_e7ce800ff972",
+    "t_29a73d5e6736",
+    "t_b862bb86cd6e",
+    "t_ae65f6514433"
+   ],
+   "faqIds": [],
+   "gen": {
+    "plan": {
+     "basis": {
+      "title": "268b3eb5",
+      "readings": "741638a5",
+      "objectives": "e5cd715a",
+      "minutes": "8ce5cbf9",
+      "audience": "7e1a651d",
+      "sources": "741638a5"
+     },
+     "at": "2026-10-12T18:25:30.279Z",
+     "edited": false,
+     "flags": []
+    },
+    "discussions": {
+     "basis": {
+      "title": "268b3eb5",
+      "readings": "741638a5",
+      "objectives": "e5cd715a",
+      "audience": "7e1a651d",
+      "plan": "8cdcea78"
+     },
+     "at": "2026-10-12T18:25:42.619Z",
+     "edited": false,
+     "flags": []
+    },
+    "quiz": {
+     "basis": {
+      "title": "268b3eb5",
+      "objectives": "e5cd715a",
+      "quizSize": "300ca0d0",
+      "audience": "7e1a651d",
+      "sources": "741638a5",
+      "plan": "8cdcea78"
+     },
+     "at": "2026-10-12T18:26:10.310Z",
+     "edited": false,
+     "flags": []
+    },
+    "slides": {
+     "basis": {
+      "title": "268b3eb5",
+      "objectives": "e5cd715a",
+      "audience": "7e1a651d",
+      "plan": "8cdcea78"
+     },
+     "at": "2026-10-12T18:26:42.111Z",
+     "edited": false,
+     "flags": []
+    },
+    "assignments": {
+     "basis": {
+      "title": "268b3eb5",
+      "objectives": "e5cd715a",
+      "audience": "7e1a651d",
+      "plan": "8cdcea78",
+      "homework": "631e08a7"
+     },
+     "at": "2026-10-12T18:28:25.564Z",
+     "edited": false,
+     "flags": []
+    },
+    "faq": {
+     "basis": {
+      "title": "268b3eb5",
+      "audience": "7e1a651d",
+      "plan": "8cdcea78"
+     },
+     "at": "2026-10-12T18:28:40.432Z",
+     "edited": false,
+     "flags": []
+    },
+    "study": {
+     "basis": {
+      "title": "268b3eb5",
+      "objectives": "e5cd715a",
+      "audience": "7e1a651d",
+      "plan": "8cdcea78"
+     },
+     "at": "2026-10-12T18:28:47.626Z",
+     "edited": false,
+     "flags": []
+    }
+   }
+  }
+ },
+ "lessonOrder": [
+  "l_340fcfa28ea7"
+ ],
+ "tasks": {
+  "t_e7ce800ff972": {
+   "lessonId": "l_340fcfa28ea7",
+   "sourceRefs": [],
+   "origin": "ai",
+   "edited": false,
+   "id": "t_e7ce800ff972",
+   "kind": "assignment",
+   "objectiveIds": [
+    "o_ffddcd5a1c1d",
+    "o_26ca73c14de8"
+   ],
+   "flags": [],
+   "title": "Peer review participation",
+   "prompt": "Peer review participation is worth 10% of the course grade. Work with your assigned partner or group during the in-class peer review. Each student earns an individual score using the rubric below. The instructor scores participation as it happens. Each meeting’s score counts equally toward this component.",
+   "steps": [
+    "Choose a passage of your writing that your partner may read. Mark any private passages. Exchange writing and read only the passages your partner has made available.",
+    "Read the questions or problems handed out or shown at that meeting. Write brief responses about your partner’s writing. Use specific words or details from the passage to support your responses.",
+    "Take turns discussing your responses. Explain what you noticed, what you still wonder, and what the writer could try. Listen to your partner’s explanations and respond to them.",
+    "As the writer, tell your partner one change you will try in your own writing and explain how the feedback helped you choose it."
+   ],
+   "rubricId": "r_f2382f8a70bc",
+   "answerKey": "1. There is no single correct passage. Check that partners respect the writer’s marked boundaries.\n2. Responses depend on the writing and the questions or problems provided at that meeting. Written notes support the discussion; they are not handed in or scored separately.\n3. Use a running roster to record who is scheduled for observation at each meeting. Visit each scheduled pair or group while the others continue their exchanges. Hear each scheduled student explain feedback and respond as a writer. Score each student’s observed performance separately against every rubric criterion.\n4. A suitable change connects to feedback about the student’s own writing. Add the criterion points for the meeting’s score. Keep a separate score for each student and weight meeting scores equally within Peer review participation (10%).",
+   "toward": "Peer review participation"
+  },
+  "t_29a73d5e6736": {
+   "lessonId": "l_340fcfa28ea7",
+   "sourceRefs": [],
+   "origin": "ai",
+   "edited": false,
+   "id": "t_29a73d5e6736",
+   "kind": "assignment",
+   "objectiveIds": [
+    "o_ffddcd5a1c1d",
+    "o_26ca73c14de8"
+   ],
+   "flags": [],
+   "title": "Short in-class writing: Writing as a process and the personal narrative",
+   "prompt": "Write a ten-minute freewrite about a moment you remember clearly. Choose something you are comfortable sharing an excerpt from; an ordinary or lighthearted memory works well. Write on your own. Aim to discover material for a personal narrative, not to produce polished prose. Short in-class writing is worth 10% of the course grade. Each in-class writing assignment counts equally toward that share. This writing is scored individually using the rubric below, for a total of 8 possible points. Spelling, grammar and punctuation are not scored here.",
+   "steps": [
+    "Choose one moment you remember clearly. Focus on a particular experience rather than your whole life or a long period.",
+    "Write about that moment without stopping for ten minutes. Explore where you were and what you could see, hear or feel. Follow the memories and thoughts that emerge. Keep your pen moving without correcting spelling or grammar or judging the writing. If you get stuck, write the last word again and keep going."
+   ],
+   "rubricId": "r_2c47d99ab98a",
+   "answerKey": "1. Use the opening three minutes of the freewriting activity to explain the method, model a one-minute freewrite about a bicycle tire going flat on a steep hill, and let students choose their moments. All 22 students choose independently; an ordinary or lighthearted memory is suitable. There is no single correct choice.\n2. Start a visible ten-minute timer. All 22 students write independently at the same time, so no individual turns are needed. Remind students to repeat the last word and continue if they get stuck. After class, score each student’s writing individually: select the best-fitting descriptor for each rubric criterion, assign its 4, 3, 2 or 1 points, and add the two scores for a total out of 8. Judge the raw material on the page; do not score spelling, grammar or punctuation, or infer uninterrupted writing from the finished text. Keep this score separate from Peer review participation.",
+   "toward": "Short in-class writing"
+  },
+  "t_b862bb86cd6e": {
+   "lessonId": "l_340fcfa28ea7",
+   "sourceRefs": [],
+   "origin": "ai",
+   "edited": false,
+   "id": "t_b862bb86cd6e",
+   "kind": "assignment",
+   "objectiveIds": [
+    "o_ffddcd5a1c1d",
+    "o_26ca73c14de8"
+   ],
+   "flags": [],
+   "title": "Essay 1",
+   "prompt": "Write an 800–1,000-word personal narrative about one moment you experienced and what it meant to you. Develop the moment through a scene, sensory details, dialogue where useful, and reflection. Give readers enough context to understand the situation, but keep the focus on this particular experience. Choose something you are comfortable sharing with a peer reader; an ordinary moment can support a strong narrative. Essay 1 counts for 15% of the course grade. This is your own work, written and scored individually. The revised essay is due at the start of the class on The rhetorical situation: author, audience, purpose. It is scored using the rubric below: four criteria, each worth 1–4 points, for a total of 16 points.",
+   "steps": [
+    "Explore possible moments through freewriting, listing, or clustering. Choose a moment with a clear situation, an action or decision, and something worth reflecting on. Identify what readers need to know before the scene begins and why the experience matters to you.",
+    "Write a full draft as the short ungraded step toward Essay 1, due at the start of the class on Peer review of narrative drafts. Build toward the required length with context, a developed scene, actions and responses, and reflection rather than unrelated background. Use concrete sensory details and dialogue where they help readers understand the moment. Represent remembered conversations honestly; paraphrase speech when you cannot recall its wording.",
+    "Participate in the in-class peer review later in the course. Use the Peer review participation brief for that activity. Consider your reader’s observations, questions, and suggestions. Decide which changes will help readers follow the experience and understand its significance.",
+    "Revise ideas, order, and detail before editing sentences. Strengthen the narrative’s structure, develop important actions, and connect reflection to the experience. Then edit for clear sentences, precise verbs, and accurate punctuation. Prepare the revised 800–1,000-word essay, due at the start of the class on The rhetorical situation: author, audience, purpose."
+   ],
+   "rubricId": "r_5e32915e7b26",
+   "answerKey": "",
+   "toward": "Essay 1"
+  },
+  "t_ae65f6514433": {
+   "lessonId": "l_340fcfa28ea7",
+   "sourceRefs": [],
+   "origin": "ai",
+   "edited": false,
+   "id": "t_ae65f6514433",
+   "kind": "assignment",
+   "objectiveIds": [
+    "o_ffddcd5a1c1d",
+    "o_26ca73c14de8"
+   ],
+   "flags": [
+    {
+     "code": "reviewNote",
+     "values": {
+      "where": "Rubric",
+      "text": "This rubric was written for the piece as it stands. The piece itself says nothing of how it is scored, so there was nothing to hold the rubric to: check that its criteria and points are what you intend."
+     }
+    }
+   ],
+   "title": "A working draft of your personal narrative",
+   "prompt": "Write a full draft about one moment from your own life. This is an ungraded step toward Essay 1 (15% of the course grade). Spend about 40 minutes getting the whole experience onto the page; leave sentence polishing for later. The draft is due at the start of the class on Peer review of narrative drafts.",
+   "steps": [
+    "Choose a moment you are comfortable letting a reader see. Briefly list what happened before, during and after it.",
+    "Draft the narrative from beginning to end. Give readers enough context to follow the action. Develop the moment with details you remember, and explain what it meant to you. Aim toward the essay’s required 800–1,000 words without stopping to perfect sentences.",
+    "Read your draft once. Beneath it, note one place where you want to develop an idea, change the order or add a detail. Keep this note with the draft for revision."
+   ],
+   "rubricId": "r_df87d9ce0aad",
+   "answerKey": "",
+   "toward": "Essay 1"
+  }
+ },
+ "rubrics": {
+  "r_f2382f8a70bc": {
+   "id": "r_f2382f8a70bc",
+   "title": "Peer review participation",
+   "levels": [
+    {
+     "id": "x_0f43d78f17aa",
+     "label": "Exemplary",
+     "points": 4
+    },
+    {
+     "id": "x_9ea5438c3722",
+     "label": "Proficient",
+     "points": 3
+    },
+    {
+     "id": "x_974603f02104",
+     "label": "Developing",
+     "points": 2
+    },
+    {
+     "id": "x_c408b8347fc9",
+     "label": "Beginning",
+     "points": 1
+    }
+   ],
+   "criteria": [
+    {
+     "id": "x_e4d86ad720f1",
+     "name": "Specific reading of the writing",
+     "descriptors": {
+      "x_0f43d78f17aa": "Explains precise observations with relevant words or details from the writing and clearly describes their effect on the reader.",
+      "x_9ea5438c3722": "Supports observations with relevant words or details from the writing and explains what the reader noticed.",
+      "x_974603f02104": "Identifies a relevant feature but gives limited textual support or an unclear explanation.",
+      "x_c408b8347fc9": "Offers general reactions with little connection to the writing."
+     }
+    },
+    {
+     "id": "x_afd9274da136",
+     "name": "Questions and revision suggestions",
+     "descriptors": {
+      "x_0f43d78f17aa": "Raises a focused question and explains a practical revision suggestion that addresses a specific reader need.",
+      "x_9ea5438c3722": "Raises a relevant question and offers a practical suggestion connected to the writing.",
+      "x_974603f02104": "Offers a question or suggestion that is only loosely connected to the writing or needs clarification.",
+      "x_c408b8347fc9": "Offers little useful inquiry or revision guidance."
+     }
+    },
+    {
+     "id": "x_6c8968bb2742",
+     "name": "Discussion and use of feedback",
+     "descriptors": {
+      "x_0f43d78f17aa": "Explains feedback clearly, listens closely, responds thoughtfully, and identifies a specific change with a convincing connection to the feedback.",
+      "x_9ea5438c3722": "Explains feedback, listens and responds, and identifies a change connected to the feedback.",
+      "x_974603f02104": "Participates unevenly or identifies a change without clearly connecting it to the feedback.",
+      "x_c408b8347fc9": "Contributes little to the exchange or does not identify a change arising from the feedback."
+     }
+    }
+   ]
+  },
+  "r_2c47d99ab98a": {
+   "id": "r_2c47d99ab98a",
+   "title": "Short in-class writing: Writing as a process and the personal narrative",
+   "levels": [
+    {
+     "id": "x_30d628365537",
+     "label": "Exemplary",
+     "points": 4
+    },
+    {
+     "id": "x_ddd60c4afecd",
+     "label": "Proficient",
+     "points": 3
+    },
+    {
+     "id": "x_357b76bd93c1",
+     "label": "Developing",
+     "points": 2
+    },
+    {
+     "id": "x_55b1fb1e78a0",
+     "label": "Beginning",
+     "points": 1
+    }
+   ],
+   "criteria": [
+    {
+     "id": "x_b995af1acd7f",
+     "name": "Response to the task",
+     "descriptors": {
+      "x_30d628365537": "Explores an identifiable memorable moment through substantial raw writing; follows emerging memories or thoughts while keeping the experience recognizable.",
+      "x_ddd60c4afecd": "Explores an identifiable memorable moment with enough raw writing to establish the experience, though some possibilities remain unexplored.",
+      "x_357b76bd93c1": "Identifies a memory but gives a limited account, or discusses a broad period with little attention to a particular moment.",
+      "x_55b1fb1e78a0": "Provides only a minimal response, with little writing about an identifiable remembered experience."
+     }
+    },
+    {
+     "id": "x_5a7e65a2fe7c",
+     "name": "Development of ideas",
+     "descriptors": {
+      "x_30d628365537": "Develops the experience through several concrete observations, actions or thoughts that give the writer material to build on.",
+      "x_ddd60c4afecd": "Includes some concrete observations, actions or thoughts that give the writer material to build on.",
+      "x_357b76bd93c1": "Relies mostly on general statements, with few concrete observations, actions or thoughts.",
+      "x_55b1fb1e78a0": "Offers isolated statements with almost no concrete material to develop."
+     }
+    }
+   ]
+  },
+  "r_5e32915e7b26": {
+   "id": "r_5e32915e7b26",
+   "title": "Essay 1",
+   "levels": [
+    {
+     "id": "x_319b4e6e89b8",
+     "label": "Exemplary",
+     "points": 4
+    },
+    {
+     "id": "x_c2bb010fa8d0",
+     "label": "Proficient",
+     "points": 3
+    },
+    {
+     "id": "x_a75efe0c5c6d",
+     "label": "Developing",
+     "points": 2
+    },
+    {
+     "id": "x_2f497be242f2",
+     "label": "Beginning",
+     "points": 1
+    }
+   ],
+   "criteria": [
+    {
+     "id": "x_df33cd2f3ad3",
+     "name": "Focus and narrative structure",
+     "descriptors": {
+      "x_319b4e6e89b8": "Sustains a clear focus on one moment. Context, event sequence, and pacing guide readers through the experience; the ending grows from the narrative.",
+      "x_c2bb010fa8d0": "Focuses on one moment with sufficient context and a logical event sequence. Minor gaps or uneven pacing do not prevent understanding.",
+      "x_a75efe0c5c6d": "Identifies a moment but drifts into unrelated background or leaves gaps in the sequence. Uneven pacing makes important actions difficult to follow.",
+      "x_2f497be242f2": "Lacks a clear central moment or a coherent event sequence. Missing context prevents readers from understanding the experience."
+     }
+    },
+    {
+     "id": "x_72f177f7a24d",
+     "name": "Scene and concrete detail",
+     "descriptors": {
+      "x_319b4e6e89b8": "Develops important actions into a vivid scene. Selective sensory details and, where useful, dialogue reveal the situation and people without distracting from the moment.",
+      "x_c2bb010fa8d0": "Develops a recognizable scene with specific actions and sensory details. Most details support the narrative, though some passages remain general.",
+      "x_a75efe0c5c6d": "Relies heavily on summary. Some concrete details appear, but important actions or responses remain underdeveloped.",
+      "x_2f497be242f2": "Provides little scene development or concrete detail. General statements leave readers unable to picture the experience."
+     }
+    },
+    {
+     "id": "x_5333b994b0ed",
+     "name": "Reflection and voice",
+     "descriptors": {
+      "x_319b4e6e89b8": "Explores the moment’s significance through thoughtful reflection tied to specific events. A consistent personal voice conveys a distinct perspective.",
+      "x_c2bb010fa8d0": "Explains why the moment mattered and connects reflection to the experience. The personal voice is generally consistent.",
+      "x_a75efe0c5c6d": "States a lesson or feeling but only partly explains its connection to the events. The voice becomes generic or inconsistent.",
+      "x_2f497be242f2": "Offers little reflection on the experience’s significance. The writer’s perspective remains unclear."
+     }
+    },
+    {
+     "id": "x_6a1cf58b9213",
+     "name": "Revision and sentence clarity",
+     "descriptors": {
+      "x_319b4e6e89b8": "The revised essay shows purposeful changes to ideas, order, or detail that improve the draft. Clear sentences, precise verbs, and controlled punctuation support the narrative throughout.",
+      "x_c2bb010fa8d0": "The revised essay shows useful changes beyond proofreading. Sentences and verbs are generally clear; occasional punctuation or wording errors do not disrupt meaning.",
+      "x_a75efe0c5c6d": "Revision addresses some problems but leaves substantial weaknesses in development or organization. Repeated sentence, verb, or punctuation problems distract readers.",
+      "x_2f497be242f2": "The revised essay shows little substantive development from the draft. Frequent sentence or punctuation problems obscure meaning."
+     }
+    }
+   ]
+  },
+  "r_df87d9ce0aad": {
+   "id": "r_df87d9ce0aad",
+   "title": "A working draft of your personal narrative",
+   "levels": [
+    {
+     "id": "x_57d1e09bcaed",
+     "label": "Exemplary",
+     "points": 4
+    },
+    {
+     "id": "x_94ee4f535fde",
+     "label": "Proficient",
+     "points": 3
+    },
+    {
+     "id": "x_8f7759b87e58",
+     "label": "Developing",
+     "points": 2
+    },
+    {
+     "id": "x_08a15bf95f14",
+     "label": "Beginning",
+     "points": 1
+    }
+   ],
+   "criteria": [
+    {
+     "id": "x_177e34af7c0a",
+     "name": "Focus and context",
+     "descriptors": {
+      "x_57d1e09bcaed": "Centers on one clearly bounded moment from the writer's life. Gives just enough background about what came before and after for a reader to follow the action without confusion.",
+      "x_94ee4f535fde": "Centers on one moment, and the reader can follow the action. Some background is missing or runs longer than the moment needs, but this does not block understanding.",
+      "x_8f7759b87e58": "The moment is hard to pinpoint, or the draft spreads across several events. Background is thin or uneven, so the reader must guess at what is happening.",
+      "x_08a15bf95f14": "No single moment can be identified, or the reader cannot follow what happened because context is missing."
+     }
+    },
+    {
+     "id": "x_a413ffc7314e",
+     "name": "Development with detail",
+     "descriptors": {
+      "x_57d1e09bcaed": "Brings the moment to life with specific, remembered details such as sights, sounds, actions and speech. Details are chosen to build the experience, and they appear throughout the draft.",
+      "x_94ee4f535fde": "Uses specific details in most of the draft. A few passages stay general, but the moment is mostly vivid.",
+      "x_8f7759b87e58": "Details are sparse or generic. Much of the draft tells what happened without showing it.",
+      "x_08a15bf95f14": "Almost no detail. The draft is a bare summary of events."
+     }
+    },
+    {
+     "id": "x_f718bebce39d",
+     "name": "Explanation of meaning",
+     "descriptors": {
+      "x_57d1e09bcaed": "Explains what the moment meant to the writer with insight that goes beyond the obvious. The reflection is tied to specific events in the narrative.",
+      "x_94ee4f535fde": "Explains what the moment meant to the writer in a clear way. The reflection is sound but general, or only loosely tied to the events.",
+      "x_8f7759b87e58": "Offers a brief or vague statement of meaning, such as a stock lesson. It is not connected to what happened.",
+      "x_08a15bf95f14": "No explanation of what the moment meant to the writer."
+     }
+    },
+    {
+     "id": "x_640c299a3197",
+     "name": "Organization and completeness",
+     "descriptors": {
+      "x_57d1e09bcaed": "Runs from beginning to end in an order that suits the story. Reaches the required length of 800 to 1,000 words, and every part serves the whole.",
+      "x_94ee4f535fde": "Runs from beginning to end in a clear order. Length is close to the requirement, or a part is slightly uneven.",
+      "x_8f7759b87e58": "The order is confusing in places, or the draft stops before its end. Length is well short of or well over the requirement.",
+      "x_08a15bf95f14": "The draft is fragmentary, with no clear order. It is far from the required length."
+     }
+    }
+   ]
+  }
+ },
+ "faq": {},
+ "sources": {},
+ "sourceOrder": [],
+ "syllabus": null,
+ "materials": {
+  "map": {
+   "enabled": true,
+   "options": {}
+  },
+  "syllabus": {
+   "enabled": true,
+   "options": {}
+  },
+  "plan": {
+   "enabled": true,
+   "options": {}
+  },
+  "slides": {
+   "enabled": true,
+   "options": {}
+  },
+  "assignments": {
+   "enabled": true,
+   "options": {}
+  },
+  "rubrics": {
+   "enabled": true,
+   "options": {}
+  },
+  "discussions": {
+   "enabled": true,
+   "options": {}
+  },
+  "quiz": {
+   "enabled": true,
+   "options": {}
+  },
+  "study": {
+   "enabled": true,
+   "options": {}
+  },
+  "faq": {
+   "enabled": true,
+   "options": {}
+  }
+ },
+ "overrides": [],
+ "stamp": "x_cbd49351b744"
+}

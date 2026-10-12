@@ -165,3 +165,24 @@ describe('a piece scored answer by answer', () => {
     expect(scoredByAnswer(piece('Answer the three questions in a paragraph each.'))).toBe(false);
   });
 });
+
+describe('an ungraded step toward a piece the same lesson sets', () => {
+  // A lesson Folio really wrote (the reading before 0.0.40): it sets Essay 1 and, toward it, an ungraded draft. The draft
+  // was given a rubric of four criteria and sixteen points, and a note that there was nothing to hold the rubric to.
+  const lessonWithStep = parseCourse(JSON.parse(readFileSync(new URL('./fixtures/r40-composition-step.json', import.meta.url), 'utf8')) as unknown);
+  const lesson = orderedLessons(lessonWithStep)[0]!;
+  const draft = Object.values(lessonWithStep.tasks).find((t): t is Assignment => t.kind === 'assignment' && t.title.startsWith('A working draft'))!;
+  const essay = Object.values(lessonWithStep.tasks).find((t): t is Assignment => t.kind === 'assignment' && t.title === 'Essay 1')!;
+  const without = (ids: string[]): Course => ({ ...lessonWithStep, tasks: Object.fromEntries(Object.entries(lessonWithStep.tasks).map(([id, t]) => [id, ids.includes(id) && t.kind === 'assignment' ? { ...t, rubricId: null } : t])) });
+
+  it('is the real case: the draft says it is ungraded, and has a rubric', () => {
+    expect(draft.prompt).toContain('This is an ungraded step toward Essay 1');
+    expect(draft.rubricId).toBeTruthy();
+    expect(draft.toward).toBe(essay.toward);
+  });
+
+  it('lacks no rubric, while the piece it leads to does when it has none', () => {
+    const lacking = piecesLackingRubric(without([draft.id, essay.id]), lesson).map((t) => t.title);
+    expect(lacking).toEqual(['Essay 1']);
+  });
+});
