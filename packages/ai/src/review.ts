@@ -53,10 +53,17 @@ export const PlanReviewDraft = z.object({
 export type PlanReviewDraft = z.infer<typeof PlanReviewDraft>;
 export type PlanIssue = PlanReviewDraft['issues'][number];
 
+/**
+ * An on-screen item as its reader should take it. A demonstration is written in Folio's own terms (its name, "values",
+ * "target"), which a reader took for the lesson's code: "the screen still names selectionSort and supplies a target, but
+ * the Python function is selection_sort(values)" was left on a plan as a fault for its teacher.
+ */
+export const forReader = (item: string) => (/^\s*Demonstration:/i.test(item) ? `[${item.trim()}: a picture Folio draws on the slide and steps through with these numbers; its name, "values" and "target" are Folio's terms for the picture, shown to nobody, and are not the lesson's code or names]` : item);
+
 function planText(plan: PlanDraft): string {
   const ideas = plan.keyIdeas.map((k, i) => `Key idea ${i + 1}: ${k}`).join('\n');
   const segments = plan.segments
-    .map((s, i) => `Segment ${i + 1} (${s.kind}, ${s.minutes} min): ${s.title}\nDescription: ${s.description}${s.shown?.length ? `\nOn the screen: ${s.shown.join(' | ')}` : ''}\nTeacher notes: ${s.teacherNotes || '(none)'}`)
+    .map((s, i) => `Segment ${i + 1} (${s.kind}, ${s.minutes} min): ${s.title}\nDescription: ${s.description}${s.shown?.length ? `\nOn the screen: ${s.shown.map(forReader).join(' | ')}` : ''}\nTeacher notes: ${s.teacherNotes || '(none)'}`)
     .join('\n\n');
   const vocabulary = plan.vocabulary.map((v, i) => `Vocabulary ${i + 1}: ${v.term}: ${v.definition}`).join('\n');
   return [ideas, segments, vocabulary].filter(Boolean).join('\n\n');
