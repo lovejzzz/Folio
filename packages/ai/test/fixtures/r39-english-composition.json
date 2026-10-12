@@ -1,0 +1,1036 @@
+{
+ "id": "c_e3e8248c7f44",
+ "schemaVersion": 3,
+ "revision": 14,
+ "createdAt": "2026-10-12T10:47:37.104Z",
+ "updatedAt": "2026-10-12T11:03:39.746Z",
+ "status": "building",
+ "title": "English 101: first-year composition",
+ "summary": "Students write four essays through drafts, peer review and revision: a personal narrative, a rhetorical analysis, an argument with sources, and a researched essay in MLA style. The course builds from storytelling to analysis, argument and research. Short in-class writing and peer review run throughout.",
+ "brief": "First-year composition (English 101) at a community college: 15 weeks, two 75-minute class meetings a week, 22 students. Students write four essays through drafts: a personal narrative, a rhetorical analysis, an argument with sources, and a researched essay with MLA citation; each has a draft, an in-class peer review and a revision. No textbook; I supply the readings. Four essays 15%, 20%, 20% and 25%, peer review participation 10%, short in-class writing 10%.",
+ "language": "en",
+ "locale": "en-US",
+ "audience": {
+  "level": "Undergraduate",
+  "subject": "English composition"
+ },
+ "shape": {
+  "minutesPerLesson": 75,
+  "quizSize": 5,
+  "sessions": []
+ },
+ "delivery": "inperson",
+ "pages": [],
+ "policies": "",
+ "setup": [
+  "22 students",
+  "No textbook; the instructor supplies the readings"
+ ],
+ "grading": [
+  {
+   "id": "g_1997197eec5a",
+   "item": "Essay 1",
+   "weight": 15,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "unsaid",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  },
+  {
+   "id": "g_d23eb6ec85d0",
+   "item": "Essay 2",
+   "weight": 20,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "unsaid",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  },
+  {
+   "id": "g_dfc7ea1307de",
+   "item": "Essay 3",
+   "weight": 20,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "unsaid",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  },
+  {
+   "id": "g_41a20ab9ae9d",
+   "item": "Essay 4",
+   "weight": 25,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "unsaid",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  },
+  {
+   "id": "g_39563dd486e2",
+   "item": "Peer review participation",
+   "weight": 10,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "none",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  },
+  {
+   "id": "g_4f9dd772fcff",
+   "item": "Short in-class writing",
+   "weight": 10,
+   "judged": "levels",
+   "card": {
+    "who": "individual",
+    "prepared": false,
+    "handIn": "unsaid",
+    "allowed": "",
+    "length": "",
+    "source": ""
+   }
+  }
+ ],
+ "objectives": {
+  "o_c4523a47ee66": {
+   "id": "o_c4523a47ee66",
+   "text": "Describe the stages of drafting, peer review and revision"
+  },
+  "o_8c8484e03f9c": {
+   "id": "o_8c8484e03f9c",
+   "text": "Identify the key features of a personal narrative"
+  },
+  "o_f190d8f51668": {
+   "id": "o_f190d8f51668",
+   "text": "Generate three possible narrative topics through freewriting"
+  },
+  "o_fb918a882c86": {
+   "id": "o_fb918a882c86",
+   "text": "Select one moment and justify why it matters"
+  },
+  "o_6f5b75e88ad2": {
+   "id": "o_6f5b75e88ad2",
+   "text": "Revise a telling passage into a scene with sensory detail"
+  },
+  "o_997ab96042e7": {
+   "id": "o_997ab96042e7",
+   "text": "Punctuate and format dialogue correctly"
+  },
+  "o_7f7a75b3917a": {
+   "id": "o_7f7a75b3917a",
+   "text": "Outline a narrative with a clear beginning, turning point and ending"
+  },
+  "o_2f09c0e854cf": {
+   "id": "o_2f09c0e854cf",
+   "text": "Write a reflective passage that states the story's significance"
+  },
+  "o_41497896b3f1": {
+   "id": "o_41497896b3f1",
+   "text": "Give written feedback on a classmate's draft using a guide"
+  },
+  "o_c87f65f5f9da": {
+   "id": "o_c87f65f5f9da",
+   "text": "Choose three revision priorities from peer comments"
+  },
+  "o_c3f95678e302": {
+   "id": "o_c3f95678e302",
+   "text": "Distinguish global revision from editing and proofreading"
+  },
+  "o_26ccdf48f011": {
+   "id": "o_26ccdf48f011",
+   "text": "Vary sentence length and structure to shape voice"
+  },
+  "o_d12be75c565f": {
+   "id": "o_d12be75c565f",
+   "text": "Correct fragments, run-ons and comma splices in their own writing"
+  },
+  "o_9cef842f375e": {
+   "id": "o_9cef842f375e",
+   "text": "Proofread a full essay using a personal error list"
+  },
+  "o_d124a2c2cce2": {
+   "id": "o_d124a2c2cce2",
+   "text": "Identify the author, audience and purpose of a text"
+  },
+  "o_acc756aa0763": {
+   "id": "o_acc756aa0763",
+   "text": "Explain how context shapes a writer's choices"
+  },
+  "o_c22c19115fca": {
+   "id": "o_c22c19115fca",
+   "text": "Define ethos, pathos and logos with examples"
+  },
+  "o_de916c5efe91": {
+   "id": "o_de916c5efe91",
+   "text": "Annotate a text for each appeal"
+  },
+  "o_5b3edad5d0dc": {
+   "id": "o_5b3edad5d0dc",
+   "text": "Write a thesis that claims how a text persuades its audience"
+  },
+  "o_ae915b3d675c": {
+   "id": "o_ae915b3d675c",
+   "text": "Select evidence that supports an analytical claim"
+  },
+  "o_64bbb59637e7": {
+   "id": "o_64bbb59637e7",
+   "text": "Integrate a quotation using a signal phrase"
+  },
+  "o_66822712527f": {
+   "id": "o_66822712527f",
+   "text": "Write commentary that explains how evidence supports a claim"
+  },
+  "o_5eb2a7243708": {
+   "id": "o_5eb2a7243708",
+   "text": "Outline an analysis organized by strategy or by the text's progression"
+  },
+  "o_cd4c7959ef74": {
+   "id": "o_cd4c7959ef74",
+   "text": "Draft a body paragraph with claim, evidence and commentary"
+  },
+  "o_7d7776404ae2": {
+   "id": "o_7d7776404ae2",
+   "text": "Evaluate whether a draft analyzes rather than summarizes"
+  },
+  "o_9d570e906b0b": {
+   "id": "o_9d570e906b0b",
+   "text": "Give feedback tied to a thesis and its evidence"
+  },
+  "o_aa39e0cefb74": {
+   "id": "o_aa39e0cefb74",
+   "text": "Revise a thesis so it is specific and arguable"
+  },
+  "o_1f2dd88b864f": {
+   "id": "o_1f2dd88b864f",
+   "text": "Add transitions that connect paragraphs logically"
+  },
+  "o_eab021a234f9": {
+   "id": "o_eab021a234f9",
+   "text": "Write a conclusion that extends the analysis beyond summary"
+  },
+  "o_bc9fb8c1f081": {
+   "id": "o_bc9fb8c1f081",
+   "text": "Proofread quotations for accuracy and punctuation"
+  },
+  "o_5e176d7e130b": {
+   "id": "o_5e176d7e130b",
+   "text": "Distinguish an arguable claim from a fact or a preference"
+  },
+  "o_9ff5a3f4dd3e": {
+   "id": "o_9ff5a3f4dd3e",
+   "text": "Narrow a broad issue to a focused claim"
+  },
+  "o_4468ba0c6fc6": {
+   "id": "o_4468ba0c6fc6",
+   "text": "Identify claim, grounds and warrant in a sample argument"
+  },
+  "o_4a09288543c8": {
+   "id": "o_4a09288543c8",
+   "text": "Draft a thesis with two or three supporting reasons"
+  },
+  "o_448c995eb4b1": {
+   "id": "o_448c995eb4b1",
+   "text": "Search a library database with effective keywords"
+  },
+  "o_57c43a6d273a": {
+   "id": "o_57c43a6d273a",
+   "text": "Evaluate a source using five criteria"
+  },
+  "o_62ee7b5af4ea": {
+   "id": "o_62ee7b5af4ea",
+   "text": "Paraphrase a passage without copying its wording or structure"
+  },
+  "o_b8e6368b0664": {
+   "id": "o_b8e6368b0664",
+   "text": "Format an MLA in-text citation correctly"
+  },
+  "o_7ab4f886e548": {
+   "id": "o_7ab4f886e548",
+   "text": "Summarize an opposing view fairly"
+  },
+  "o_0cba9a4d3759": {
+   "id": "o_0cba9a4d3759",
+   "text": "Write a rebuttal that concedes and then responds"
+  },
+  "o_9f3af8b587bf": {
+   "id": "o_9f3af8b587bf",
+   "text": "Name and explain five common logical fallacies"
+  },
+  "o_f65069cf49e5": {
+   "id": "o_f65069cf49e5",
+   "text": "Revise a fallacious paragraph into sound reasoning"
+  },
+  "o_d03d8abcb70e": {
+   "id": "o_d03d8abcb70e",
+   "text": "Assess whether each reason is supported by credible evidence"
+  },
+  "o_4b48d94f50b9": {
+   "id": "o_4b48d94f50b9",
+   "text": "Suggest specific revisions for sources and counterargument"
+  },
+  "o_8087c17c8e61": {
+   "id": "o_8087c17c8e61",
+   "text": "Reorganize an argument so reasons build in strength"
+  },
+  "o_331aadaf27f3": {
+   "id": "o_331aadaf27f3",
+   "text": "Cut wordiness from sentences without losing meaning"
+  },
+  "o_ef599d68a26a": {
+   "id": "o_ef599d68a26a",
+   "text": "Write a research question that is focused and answerable"
+  },
+  "o_d7b89325d634": {
+   "id": "o_d7b89325d634",
+   "text": "Draft a working thesis to guide research"
+  },
+  "o_53d48e25f996": {
+   "id": "o_53d48e25f996",
+   "text": "Build a research log recording source details and notes"
+  },
+  "o_8801d804b173": {
+   "id": "o_8801d804b173",
+   "text": "Choose at least four credible sources for a question"
+  },
+  "o_6ed53d4214a3": {
+   "id": "o_6ed53d4214a3",
+   "text": "Create correct MLA Works Cited entries for three source types"
+  },
+  "o_28ea2b41d19a": {
+   "id": "o_28ea2b41d19a",
+   "text": "Format a paper with an MLA heading and running header"
+  },
+  "o_acd9329191e0": {
+   "id": "o_acd9329191e0",
+   "text": "Write a paragraph that synthesizes two or more sources"
+  },
+  "o_cbc04b56502a": {
+   "id": "o_cbc04b56502a",
+   "text": "Outline the essay so sources support the thesis"
+  },
+  "o_7880c1df3aa8": {
+   "id": "o_7880c1df3aa8",
+   "text": "Check a classmate's in-text citations against the Works Cited"
+  },
+  "o_494944c462dc": {
+   "id": "o_494944c462dc",
+   "text": "Recommend revisions to synthesis and organization"
+  },
+  "o_143806adfad1": {
+   "id": "o_143806adfad1",
+   "text": "Audit a draft so every source is cited in text and listed"
+  },
+  "o_16f138ce94bf": {
+   "id": "o_16f138ce94bf",
+   "text": "Revise introductions and conclusions to frame the research"
+  },
+  "o_850eed2e39f7": {
+   "id": "o_850eed2e39f7",
+   "text": "Proofread a research essay using a final checklist"
+  },
+  "o_b26df911c241": {
+   "id": "o_b26df911c241",
+   "text": "Reflect in writing on one lasting change in their process"
+  }
+ },
+ "lessons": {
+  "l_b39c359102a4": {
+   "id": "l_b39c359102a4",
+   "title": "Finding a story: freewriting and choosing a moment",
+   "summary": "Students use freewriting, listing and mapping to find a single meaningful moment, and test it against what a reader needs to feel its stakes.",
+   "objectiveIds": [
+    "o_f190d8f51668",
+    "o_fb918a882c86"
+   ],
+   "readings": [],
+   "suggestedReadings": [],
+   "standards": [],
+   "homework": {
+    "kind": "inclass",
+    "toward": "Peer review participation",
+    "standing": true
+   },
+   "also": [
+    {
+     "kind": "inclass",
+     "toward": "Short in-class writing",
+     "standing": false
+    }
+   ],
+   "segments": [
+    {
+     "kind": "warmup",
+     "session": 0,
+     "title": "Topic or moment?",
+     "minutes": 4,
+     "description": "Show the two pairs of phrases. Students jot a few words for each pair, naming which phrase is a bounded moment and why, for about one minute each.\nThey compare answers with a partner for one minute. Hear one.",
+     "teacherNotes": "Expected: the second phrase in each pair. It names a particular time and action. The first phrase names a broad topic rather than a particular event. Link back to the star each student placed on the Hughes chapter last time. Keep it to a few words per pair.",
+     "shown": [
+      "Pair 1: My summer job | The afternoon the freezer door locked behind me",
+      "Pair 2: My grandfather | The night my grandfather asked me to read his mail aloud"
+     ],
+     "id": "x_157a17b04af7"
+    },
+    {
+     "kind": "teach",
+     "session": 0,
+     "title": "Three ways to find a moment",
+     "minutes": 6,
+     "description": "Explain freewriting: write without stopping, without editing, and follow whatever comes. Explain listing: many short entries, each with a place and a rough date. Explain mapping: put one candidate at the center and branch out to people, place, action and feeling.\nDraw a sample map on the board for a hypothetical moment: \u201cthe day the bus left without me\u201d. Branches: driver, bus stop at 6:40 a.m., I ran and missed it, embarrassed and angry.\nBefore moving on, each student writes one sentence predicting which of the three will be hardest for them, and tells a partner.",
+     "teacherNotes": "Do not model with a topic any student might choose. Stress that freewriting is not graded for correctness and that spelling does not matter. Hughes can be the example: his map would branch from the bench in the church.",
+     "shown": [
+      "Table: Method | What you do | What it gives you / Freewriting | Write without stopping | Unexpected memories and details / Listing | Many short entries with place and date | Many options quickly / Mapping | Branch out from one moment | Who, where, what happened, what you felt"
+     ],
+     "id": "x_4f3265bab2be"
+    },
+    {
+     "kind": "practice",
+     "session": 0,
+     "title": "Freewrite from prompts",
+     "minutes": 5,
+     "description": "Show the four prompts. Students pick one and freewrite for four minutes without lifting the pen.\nIn the last minute they underline up to three different moments from their freewrite, each one a possible narrative topic.\nCirculate and give no feedback.",
+     "teacherNotes": "If a student stalls, tell them to write \u201cI can\u2019t think\u201d until something comes. Some memories may be painful. Remind students they choose what to write about and share only what they are comfortable sharing. Students who underline fewer than three can add more in the next segment by jotting a line on a second prompt.",
+     "shown": [
+      "A time I had to decide something quickly",
+      "A time I was embarrassed in front of other people",
+      "A time I changed my mind about someone",
+      "A place or a moment I would go back to if I could"
+     ],
+     "id": "x_9e9731456f62"
+    },
+    {
+     "kind": "practice",
+     "session": 0,
+     "title": "List, then map three candidates",
+     "minutes": 8,
+     "description": "Hand out the sheet \"Moment list and three maps\". In Part 1, students list the moments they underlined in their freewrite, plus any others it brings to mind. They have two minutes and write at least five entries, each with a moment and its setting: the place and a rough date or time of year.\nIn Part 2, they circle three entries that could each be a single scene, for one minute.\nFor each circled entry, they sketch a quick map for about a minute and a half, with a few words under Who, Where, What and Felt.",
+     "teacherNotes": "Common mistake: listing periods such as \u201chigh school\u201d or \u201cmy divorce\u201d. Ask: Could you stand in the room where it happened? Students with few ideas can return to another prompt and add a line. Keep map boxes to a few words each. The sheet holds all three maps on one page; tell students to keep it, since they need it later in the lesson and next time.",
+     "id": "x_bc419c967cb4"
+    },
+    {
+     "kind": "teach",
+     "session": 0,
+     "title": "Testing a moment for stakes",
+     "minutes": 4,
+     "description": "Show the four questions of the moment test. Talk through them using the Hughes bench as the example: one evening, two kinds of loss, a scene a reader can see.\nStudents silently mark which of their three candidates passes the most questions.",
+     "teacherNotes": "Stakes were named last time: what the narrator stands to gain or lose. Expect the answer \u201cnothing was at stake, it was just funny\u201d. Ask what the person risked, such as pride, a friendship or being believed.",
+     "shown": [
+      "Steps: Is it one bounded moment? \u2192 Is something at stake for the narrator? \u2192 Can I picture it in detail? \u2192 Can a reader who was not there feel why it mattered?"
+     ],
+     "id": "x_918dcfe1d12a"
+    },
+    {
+     "kind": "practice",
+     "session": 0,
+     "title": "Find the problem, then choose",
+     "minutes": 7,
+     "description": "Show a hypothetical justification a student might write. Students decide in writing which test question it fails and rewrite it in two sentences so it names a bounded moment and what was at stake.\nPartners compare rewrites for one minute. Each student then stars one of their own three moments for the test.",
+     "teacherNotes": "The flawed statement announces a lesson and covers a whole period. Sample rewrite: \u201cOn the driveway the night before my road test, I admitted to Dad that I had failed once already, and I risked his trust.\u201d Watch for rewrites that still state the lesson.",
+     "shown": [
+      "Hypothetical justification: \u201cI chose the summer I learned to drive because it taught me independence and responsibility, and it was an important time in my life.\u201d"
+     ],
+     "id": "x_2cd0c87efc9f"
+    },
+    {
+     "kind": "practice",
+     "session": 0,
+     "title": "Short in-class writing: why this moment matters",
+     "minutes": 6,
+     "description": "Direct students to its scoring instructions, then show the prompt. Students write alone for six minutes, in about six sentences.\nThey write on the moment they starred, and keep the paragraph for the next segment. Circulate and give no feedback during writing.",
+     "teacherNotes": "Strong response: names the moment in one sentence, states what the narrator could gain or lose, and includes one concrete detail. Weak response: describes a period or says only that it was important. This is the short in-class writing component and is done in class.",
+     "shown": [
+      "Prompt: Which moment did you choose, and why does it matter? Name the moment, say what you stood to gain or lose, and include one detail a reader could see or hear."
+     ],
+     "id": "x_c96a70f97b71"
+    },
+    {
+     "kind": "discuss",
+     "session": 0,
+     "title": "Peer review: exchange and read",
+     "minutes": 8,
+     "description": "Hand out copies of the full Peer review participation brief and its accompanying rubric again, with this meeting\u2019s questions printed with the piece. Identify Peer review participation as 10% of the course grade. Students exchange paragraphs with their partner and read the partner\u2019s paragraph for three minutes.\nThey then write responses to the three questions shown, for five minutes, referring to the writer\u2019s exact words.",
+     "teacherNotes": "This peer review participation is scored as it happens with the rubric accompanying the brief. Questions and sample answers: 1, a copied phrase such as \u201cI had never lied to him before\u201d plus how it shaped the reader\u2019s sense of why the moment matters; if no stake appears, name what stays unclear, e.g. what the writer risked. 2, one moment or a longer period, with a reason supported by the wording. 3, a real question, e.g. \u201cWhat did he say next?\u201d Weak: \u201cGood job.\u201d",
+     "id": "x_317c5cf3b140"
+    },
+    {
+     "kind": "discuss",
+     "session": 0,
+     "title": "Peer review: responses aloud and one change",
+     "minutes": 24,
+     "description": "Pair by pair around the room, each student gives the writer their responses aloud in about one minute. They give their answer to question 1 with the quoted wording, then ask the reader\u2019s question from question 3. The writer listens.\nThe class listens quietly while you score each student as it happens. In the last minute, each writer writes one change they would make to their own paragraph.",
+     "teacherNotes": "Eleven pairs, about two minutes a pair including the move. Seat pairs side by side. Use a seating chart for all 22 and score each student during their own turn with the brief\u2019s rubric. Each turn is about one minute; question 2 stays on the page. Cut a turn at one minute so the round fits.",
+     "shown": [],
+     "id": "x_7c14b3c68f41"
+    },
+    {
+     "kind": "close",
+     "session": 0,
+     "title": "What comes next",
+     "minutes": 3,
+     "description": "Tell students that next time they will practice showing rather than telling, using sensory detail and dialogue to build a scene. They will then plan the first draft of Essay 1.\nTell them the practice quiz on today\u2019s lesson is for after class and counts toward no grade. Remind them to keep their three maps and starred moment.",
+     "teacherNotes": "Nothing needs bringing beyond something to write with and today\u2019s maps. Ask students to keep the Essay 1 prompt where they can reach it.",
+     "id": "x_37f177936bc5"
+    }
+   ],
+   "keyIdeas": [
+    "Freewriting, listing and mapping are three ways to find material. Each one produces candidate moments, and none of them produces a finished essay.",
+    "A narrative topic is not yet a moment. A moment is bounded in time and place: one afternoon, one conversation, one decision.",
+    "A moment is worth choosing when something is at stake in it and a reader who was not there can picture it and feel what the narrator stood to gain or lose.",
+    "Choosing is a decision that can be justified. Writers test several candidates against the same questions instead of taking the first idea.",
+    "Peer review depends on specific attention: quote the writer\u2019s words, explain how you responded as a reader, and ask a real question."
+   ],
+   "vocabulary": [
+    {
+     "term": "freewriting",
+     "definition": "Writing without stopping or correcting to discover ideas and memories you did not plan to write about.",
+     "id": "x_7f1c820cce0f"
+    },
+    {
+     "term": "listing",
+     "definition": "Making a fast list of short entries, such as moments with a place and a time, to see many options at once.",
+     "id": "x_652b0e646e04"
+    },
+    {
+     "term": "mapping",
+     "definition": "Sketching a candidate moment at the center with branches for people, place, action and feeling.",
+     "id": "x_58fd3c8be66a"
+    },
+    {
+     "term": "bounded moment",
+     "definition": "An event limited to one time and place, such as a single conversation or decision, as opposed to a long period.",
+     "id": "x_5a827cd34b6d"
+    },
+    {
+     "term": "candidate",
+     "definition": "One of several possible moments you are considering before you choose which to write about.",
+     "id": "x_8adf335cf7ab"
+    },
+    {
+     "term": "justification",
+     "definition": "A short explanation of why you made a choice, naming what is at stake and what a reader can picture.",
+     "id": "x_54580e1def9e"
+    }
+   ],
+   "slides": [
+    {
+     "layout": "title",
+     "title": "Finding a story: freewriting and choosing a moment",
+     "bullets": [
+      "Generate three possible narrative topics through freewriting",
+      "Select one moment and justify why it matters"
+     ],
+     "notes": "Today students find candidate moments with three methods, test them for stakes, and choose one to justify in writing. Later in the meeting they swap paragraphs for peer review. Peer review participation (10% of the course grade) runs with its printed brief and rubric in students\u2019 hands, and the short in-class writing is done in class. Nothing else is graded today. Keep the tone light: today is about finding material, not producing polished writing.",
+     "id": "x_670a90ca1ab0"
+    },
+    {
+     "layout": "question",
+     "title": "Topic or moment?",
+     "bullets": [
+      "Pair 1: My summer job | The afternoon the freezer door locked behind me",
+      "Pair 2: My grandfather | The night my grandfather asked me to read his mail aloud",
+      "Which phrase in each pair is a bounded moment, and why?"
+     ],
+     "notes": "Students jot a few words for each pair, about one minute each, then compare with a partner for one minute. Hear one answer. Expected: the second phrase in each pair. It names a particular time and action. The first phrase in each pair names a broad topic rather than a particular event. Link back to the star each student placed on the Hughes chapter last time. Keep it to a few words per pair.",
+     "id": "x_746d1cbf5e3b",
+     "segment": "x_157a17b04af7"
+    },
+    {
+     "layout": "bullets",
+     "title": "Three ways to find a moment",
+     "bullets": [],
+     "notes": "Explain freewriting: write without stopping, without editing, and follow whatever comes. Stress that it is not graded for correctness and spelling does not matter. Explain listing: many short entries, each with a place and a rough date. Explain mapping: put one candidate at the center and branch out to people, place, action and feeling.\n\nDraw a sample map on the board for a hypothetical moment: \u201cthe day the bus left without me\u201d. Branches: driver; bus stop at 6:40 a.m.; I ran and missed it; embarrassed and angry. Do not model with a topic any student might choose. Hughes can be the example: his map would branch from the bench in the church.\n\nBefore moving on, each student writes one sentence predicting which of the three will be hardest for them, and tells a partner.",
+     "id": "x_fae9f61e9786",
+     "segment": "x_4f3265bab2be",
+     "visual": {
+      "kind": "table",
+      "columns": [
+       "Method",
+       "What you do",
+       "What it gives you"
+      ],
+      "rows": [
+       [
+        "Freewriting",
+        "Write without stopping",
+        "Unexpected memories and details"
+       ],
+       [
+        "Listing",
+        "Many short entries with place and date",
+        "Many options quickly"
+       ],
+       [
+        "Mapping",
+        "Branch out from one moment",
+        "Who, where, what happened, what you felt"
+       ]
+      ]
+     }
+    },
+    {
+     "layout": "bullets",
+     "title": "Freewrite: pick one prompt",
+     "bullets": [
+      "A time I had to decide something quickly",
+      "A time I was embarrassed in front of other people",
+      "A time I changed my mind about someone",
+      "A place or a moment I would go back to if I could"
+     ],
+     "notes": "Students pick one prompt and freewrite for four minutes without lifting the pen. In the last minute they underline up to three different moments from their freewrite, each one a possible narrative topic. Circulate and give no feedback.\n\nIf a student stalls, tell them to write \u201cI can\u2019t think\u201d until something comes. Some memories may be painful. Remind students they choose what to write about and share only what they are comfortable sharing. Students who underline fewer than three can add more in the next segment by jotting a line on a second prompt.",
+     "id": "x_79fa4a0bd962",
+     "segment": "x_9e9731456f62"
+    },
+    {
+     "layout": "bullets",
+     "title": "List, then map three candidates",
+     "bullets": [
+      "Work from the sheet \u201cMoment list and three maps\u201d."
+     ],
+     "notes": "",
+     "id": "x_226341ba0477",
+     "segment": "x_bc419c967cb4"
+    },
+    {
+     "layout": "bullets",
+     "title": "The moment test",
+     "bullets": [],
+     "notes": "Talk through the four questions using the Hughes bench as the example: one evening, two kinds of loss, a scene a reader can see. Then students silently mark which of their three candidates passes the most questions, using the maps on their sheet.\n\nStakes were named last time: what the narrator stands to gain or lose. Expect the answer \u201cnothing was at stake, it was just funny\u201d. Ask what the person risked, such as pride, a friendship or being believed.",
+     "id": "x_b455ac9568f9",
+     "segment": "x_918dcfe1d12a",
+     "visual": {
+      "kind": "steps",
+      "steps": [
+       {
+        "title": "Is it one bounded moment?",
+        "detail": ""
+       },
+       {
+        "title": "Is something at stake for the narrator?",
+        "detail": ""
+       },
+       {
+        "title": "Can I picture it in detail?",
+        "detail": ""
+       },
+       {
+        "title": "Can a reader who was not there feel why it mattered?",
+        "detail": ""
+       }
+      ],
+      "cycle": false
+     }
+    },
+    {
+     "layout": "quote",
+     "title": "Find the problem, then choose",
+     "bullets": [
+      "Hypothetical justification: \u201cI chose the summer I learned to drive because it taught me independence and responsibility, and it was an important time in my life.\u201d",
+      "Which test question does it fail? Rewrite it in two sentences: name a bounded moment and what was at stake."
+     ],
+     "notes": "Students decide in writing which test question the justification fails, then rewrite it in two sentences. Partners compare rewrites for one minute. Each student then stars one of their own three moments for the test.\n\nFor the teacher: the flawed statement announces a lesson and covers a whole period. Sample rewrite: \u201cOn the driveway the night before my road test, I admitted to Dad that I had failed once already, and I risked his trust.\u201d Watch for rewrites that still state the lesson.",
+     "id": "x_739e1869f785",
+     "segment": "x_2cd0c87efc9f"
+    },
+    {
+     "layout": "question",
+     "title": "Short in-class writing: why this moment matters",
+     "bullets": [
+      "Prompt: Which moment did you choose, and why does it matter? Name the moment, say what you stood to gain or lose, and include one detail a reader could see or hear.",
+      "Write alone for six minutes, in about six sentences.",
+      "Write on the moment you starred. Keep the paragraph."
+     ],
+     "notes": "This is the short in-class writing component (10% of the course grade). Direct students to its scoring instructions before showing the prompt. Circulate and give no feedback during writing.\n\nStrong response: names the moment in one sentence, states what the narrator could gain or lose, and includes one concrete detail. Weak response: describes a period or says only that it was important. Students keep their paragraph, which they exchange with a partner for peer review next.",
+     "id": "x_198b963292e8",
+     "segment": "x_c96a70f97b71"
+    },
+    {
+     "layout": "bullets",
+     "title": "Peer review: exchange and read",
+     "bullets": [
+      "Work from the sheet \u201cPeer review participation: responses for this meeting\u201d."
+     ],
+     "notes": "",
+     "id": "x_c2eeddb688a4",
+     "segment": "x_317c5cf3b140"
+    },
+    {
+     "layout": "bullets",
+     "title": "Before next time",
+     "bullets": [
+      "Keep your three maps and your starred moment",
+      "Practice quiz on today\u2019s lesson, after class",
+      "Next time: showing rather than telling, with sensory detail and dialogue",
+      "Next time: plan the first draft of Essay 1"
+     ],
+     "notes": "Nothing needs bringing beyond something to write with and today\u2019s maps. Ask students to keep the Essay 1 prompt where they can reach it. The practice quiz is for after class and counts toward no grade.",
+     "id": "x_f96afbe3b985"
+    }
+   ],
+   "study": {
+    "overview": "Good personal narratives start with a moment, not a topic. This lesson gave you three ways to find material (freewriting, listing and mapping), a four-question test for choosing among your candidates, and a way to explain your choice. It also practiced peer review that points to a writer\u2019s exact words. Use this guide to review the methods and to check the moment you starred before you plan your draft.",
+    "points": [
+     {
+      "heading": "Freewriting, listing and mapping each find material",
+      "explanation": "Freewriting means writing without stopping or editing and following whatever memory comes. Spelling does not matter. If you stall, write \u201cI can\u2019t think\u201d until something arrives. Listing means making many short entries, each with a place and a rough date or time of year. It gives you many options quickly. Mapping means putting one candidate at the center and branching out to who, where, what happened and what you felt. Suppose a map for \u201cthe day the bus left without me\u201d has these branches: the driver, the bus stop at 6:40 a.m., I ran and missed it, embarrassed and angry. In a few words the map shows a person, a place, an action and a feeling. None of these methods produces a finished essay. Each one produces candidates for you to test.",
+      "id": "x_96fe865ab6b0"
+     },
+     {
+      "heading": "A topic is not yet a moment",
+      "explanation": "A moment is bounded in time and place: one afternoon, one conversation, one decision. A topic covers a broad stretch. Compare \u201cMy summer job\u201d with \u201cThe afternoon the freezer door locked behind me.\u201d Compare \u201cMy grandfather\u201d with \u201cThe night my grandfather asked me to read his mail aloud.\u201d The second phrase in each pair names a particular time and action. The first names a subject you could write about for years. One check is to ask whether you could stand in the room where it happened. You can stand in a driveway on a particular night. You cannot stand in \u201chigh school.\u201d Adding more description to a broad topic does not make it a moment. You have to narrow it to one event.",
+      "id": "x_c9097615298d"
+     },
+     {
+      "heading": "Test each candidate for stakes, then justify your choice",
+      "explanation": "Run each candidate through the same four questions. Is it one bounded moment? Is something at stake for the narrator? Can I picture it in detail? Can a reader who was not there feel why it mattered? Stakes are what the narrator stood to gain or lose, such as pride, a friendship or being believed. A moment can be funny and still have stakes if the person risked something. Your justification should name the moment and the stakes instead of announcing a lesson. Suppose a student wrote, \u201cI chose the summer I learned to drive because it taught me independence and responsibility.\u201d That covers a whole season and states a lesson. A stronger version might read: \u201cOn the driveway the night before my road test, I admitted to Dad that I had failed once already, and I risked his trust.\u201d It names one scene, one action and one risk.",
+      "id": "x_2f5a2cf977cb"
+     },
+     {
+      "heading": "Peer review depends on specific attention",
+      "explanation": "Useful feedback points to the writer\u2019s exact words so the writer can find what you mean. Then it explains how you responded as a reader, and it asks a real question. Suppose a paragraph includes the sentence \u201cI had never lied to him before.\u201d A strong reader copies that phrase and explains that it made her see the trust the writer might lose. If no stake appears, the reader names what stays unclear, such as what the writer risked. A real question might be \u201cWhat did he say next?\u201d A comment like \u201cGood job\u201d gives the writer nothing to act on. Peer review participation is 10% of the course grade, so practice these three moves each time you read a partner\u2019s writing. After you hear feedback on your own work, decide on one change you would make.",
+      "id": "x_181703107269"
+     }
+    ]
+   },
+   "page": [],
+   "handouts": [],
+   "ready": [],
+   "own": [],
+   "cases": [],
+   "taskIds": [
+    "t_a63a440ab2ed",
+    "t_a6fceec12d3a"
+   ],
+   "faqIds": [],
+   "gen": {
+    "plan": {
+     "basis": {
+      "title": "e8b1ecac",
+      "readings": "741638a5",
+      "objectives": "b9e0e06a",
+      "minutes": "8ce5cbf9",
+      "audience": "7e1a651d",
+      "sources": "741638a5"
+     },
+     "at": "2026-10-12T11:01:37.203Z",
+     "edited": false,
+     "flags": [
+      {
+       "code": "reviewNote",
+       "values": {
+        "where": "Segment 3, Freewrite from prompts",
+        "text": "Folio could not fix this itself: Counted by its parts this needs about 8 minutes and has 5: 1 \u00d7 Freewrite on a chosen prompt (5 min), 3 \u00d7 Identify up to three candidate moments (3 min). Cut a part of it, or give it more minutes."
+       }
+      }
+     ]
+    },
+    "discussions": {
+     "basis": {
+      "title": "e8b1ecac",
+      "readings": "741638a5",
+      "objectives": "b9e0e06a",
+      "audience": "7e1a651d",
+      "plan": "5cd86f76"
+     },
+     "at": "2026-10-12T11:01:52.491Z",
+     "edited": false,
+     "flags": []
+    },
+    "quiz": {
+     "basis": {
+      "title": "e8b1ecac",
+      "objectives": "b9e0e06a",
+      "quizSize": "300ca0d0",
+      "audience": "7e1a651d",
+      "sources": "741638a5",
+      "plan": "5cd86f76"
+     },
+     "at": "2026-10-12T11:02:22.106Z",
+     "edited": false,
+     "flags": []
+    },
+    "slides": {
+     "basis": {
+      "title": "e8b1ecac",
+      "objectives": "b9e0e06a",
+      "audience": "7e1a651d",
+      "plan": "5cd86f76"
+     },
+     "at": "2026-10-12T11:02:37.784Z",
+     "edited": false,
+     "flags": []
+    },
+    "assignments": {
+     "basis": {
+      "title": "e8b1ecac",
+      "objectives": "b9e0e06a",
+      "audience": "7e1a651d",
+      "plan": "5cd86f76",
+      "homework": "7e0a3e12"
+     },
+     "at": "2026-10-12T11:03:20.649Z",
+     "edited": false,
+     "flags": []
+    },
+    "faq": {
+     "basis": {
+      "title": "e8b1ecac",
+      "audience": "7e1a651d",
+      "plan": "5cd86f76"
+     },
+     "at": "2026-10-12T11:03:33.753Z",
+     "edited": false,
+     "flags": []
+    },
+    "study": {
+     "basis": {
+      "title": "e8b1ecac",
+      "objectives": "b9e0e06a",
+      "audience": "7e1a651d",
+      "plan": "5cd86f76"
+     },
+     "at": "2026-10-12T11:03:39.746Z",
+     "edited": false,
+     "flags": []
+    }
+   }
+  }
+ },
+ "lessonOrder": [
+  "l_b39c359102a4"
+ ],
+ "tasks": {
+  "t_a63a440ab2ed": {
+   "lessonId": "l_b39c359102a4",
+   "sourceRefs": [],
+   "origin": "ai",
+   "edited": false,
+   "id": "t_a63a440ab2ed",
+   "kind": "assignment",
+   "objectiveIds": [
+    "o_f190d8f51668",
+    "o_fb918a882c86"
+   ],
+   "flags": [],
+   "title": "Peer review participation",
+   "prompt": "Peer review participation is 10% of the course grade. Give your partner feedback that helps them decide what to revise. Use the questions handed out or shown at that meeting to guide your response. Your work is scored individually as you give your feedback aloud, using the rubric below. Each criterion earns 1\u20134 points, for a total of 12 points per scored meeting. Scored meetings count equally toward this component.",
+   "steps": [
+    "Keep this brief in front of you. Exchange the writing specified at the meeting with your partner, and read your partner\u2019s writing carefully.",
+    "Write responses to the questions handed out or shown at that meeting. Refer to specific wording or passages so the writer can locate what you discuss.",
+    "When your turn is called, give your responses aloud to the writer. Explain your observations and ask your reader\u2019s question. Listen while your partner gives feedback on your writing.",
+    "After hearing your partner\u2019s feedback, write one change you would make to your own writing."
+   ],
+   "rubricId": "r_70378385e6db",
+   "answerKey": "1. Allow partners to exchange and read the writing during the reading period specified for the meeting. Keep copies of this brief in students\u2019 hands.\n2. Allow the response-writing period specified for the meeting. Responses depend on each partner\u2019s writing; there is no single correct answer. Written responses support the oral feedback.\n3. Call pairs in seating order and hear each partner separately. Other students listen while the instructor scores the speaker\u2019s oral feedback against all rubric criteria. Record individual criterion scores as the feedback occurs. Maintain a running record identifying the meeting, scheduled speakers and scores; use the meeting\u2019s designated group and speaking allocation to manage turns.\n4. Allow writers to note a revision after hearing their partners. The revision note supports the writer\u2019s next decision; the participation score comes from the feedback performed aloud.",
+   "toward": "Peer review participation"
+  },
+  "t_a6fceec12d3a": {
+   "lessonId": "l_b39c359102a4",
+   "sourceRefs": [],
+   "origin": "ai",
+   "edited": false,
+   "id": "t_a6fceec12d3a",
+   "kind": "assignment",
+   "objectiveIds": [
+    "o_f190d8f51668",
+    "o_fb918a882c86"
+   ],
+   "flags": [],
+   "title": "Short in-class writing: Finding a story: freewriting and choosing a moment",
+   "prompt": "Short in-class writing counts for 10% of the course grade. Each writing assignment counts equally toward that grade. Work alone for six minutes. Write one short paragraph of about three sentences about your starred moment. Your paragraph is scored out of 12 points using the rubric below.",
+   "steps": [
+    "Name the moment you starred, including when and where it happened. Explain what you stood to gain or lose and include one detail a reader could see or hear. Use about three sentences to show why you chose this moment.",
+    "Keep your paragraph for the peer review activity that follows."
+   ],
+   "rubricId": "r_7bfe98b490b7",
+   "answerKey": "1. Direct all 22 students to read the scoring instructions, then write independently during the same six-minute interval. Allow roughly four minutes for the short paragraph and the remaining time to finish and reread. Circulate without giving feedback. There is no single correct response: assess the student\u2019s chosen moment using the rubric. After class, award 1\u20134 points for each criterion and total the scores out of 12.\n2. Students keep their paragraphs available for the peer review activity that immediately follows. Keeping the paragraph earns no separate points.",
+   "toward": "Short in-class writing"
+  }
+ },
+ "rubrics": {
+  "r_70378385e6db": {
+   "id": "r_70378385e6db",
+   "title": "Peer review participation",
+   "levels": [
+    {
+     "id": "x_ed255aba4d11",
+     "label": "Exemplary",
+     "points": 4
+    },
+    {
+     "id": "x_f20f3d7031f4",
+     "label": "Proficient",
+     "points": 3
+    },
+    {
+     "id": "x_3203b954bdef",
+     "label": "Developing",
+     "points": 2
+    },
+    {
+     "id": "x_40a41691e61f",
+     "label": "Beginning",
+     "points": 1
+    }
+   ],
+   "criteria": [
+    {
+     "id": "x_3b2090fc4fa3",
+     "name": "Specific attention to the writing",
+     "descriptors": {
+      "x_ed255aba4d11": "Identifies precise wording or a passage and explains clearly what works for the reader.",
+      "x_f20f3d7031f4": "Identifies relevant wording or a passage and names what works for the reader.",
+      "x_3203b954bdef": "Refers to the writing generally, with limited explanation of what works.",
+      "x_40a41691e61f": "Offers general praise or criticism without locating support in the writing."
+     }
+    },
+    {
+     "id": "x_7a69d408f648",
+     "name": "Explanation of the reader\u2019s response",
+     "descriptors": {
+      "x_ed255aba4d11": "Answers the meeting\u2019s review questions directly and supports observations with clear reasons grounded in the writing.",
+      "x_f20f3d7031f4": "Answers the meeting\u2019s review questions and gives relevant reasons for observations.",
+      "x_3203b954bdef": "Answers the review questions partly or gives reasons that are vague or weakly connected to the writing.",
+      "x_40a41691e61f": "Leaves the review questions largely unanswered or gives judgments without reasons."
+     }
+    },
+    {
+     "id": "x_960e8192d220",
+     "name": "Useful inquiry",
+     "descriptors": {
+      "x_ed255aba4d11": "Asks a specific, open question that identifies an unresolved reader concern and gives the writer a clear direction for reconsidering the writing.",
+      "x_f20f3d7031f4": "Asks a relevant question that helps the writer consider a possible revision.",
+      "x_3203b954bdef": "Asks a broad or partly relevant question whose value for revision is unclear.",
+      "x_40a41691e61f": "Provides no genuine reader question or asks a question unrelated to the writing."
+     }
+    }
+   ]
+  },
+  "r_7bfe98b490b7": {
+   "id": "r_7bfe98b490b7",
+   "title": "Short in-class writing: Finding a story: freewriting and choosing a moment",
+   "levels": [
+    {
+     "id": "x_09f6cd0f552a",
+     "label": "Exemplary",
+     "points": 4
+    },
+    {
+     "id": "x_dc36f0ba5f39",
+     "label": "Proficient",
+     "points": 3
+    },
+    {
+     "id": "x_f7b7a61ddd9b",
+     "label": "Developing",
+     "points": 2
+    },
+    {
+     "id": "x_42bedeb0183d",
+     "label": "Beginning",
+     "points": 1
+    }
+   ],
+   "criteria": [
+    {
+     "id": "x_32cef761b13b",
+     "name": "Accuracy and focus",
+     "descriptors": {
+      "x_09f6cd0f552a": "Identifies one bounded moment with a clear time, place and action, and stays focused on it.",
+      "x_dc36f0ba5f39": "Identifies one bounded moment, though its time, place or action could be more precise.",
+      "x_f7b7a61ddd9b": "Suggests a particular event but leaves its boundaries unclear or shifts toward a broader period.",
+      "x_42bedeb0183d": "Names a broad topic or period without identifying a particular moment."
+     }
+    },
+    {
+     "id": "x_c8a24920269d",
+     "name": "Evidence and explanation",
+     "descriptors": {
+      "x_09f6cd0f552a": "Clearly explains what the narrator stood to gain or lose and includes a visible or audible detail that helps show why the chosen moment matters.",
+      "x_dc36f0ba5f39": "Identifies what the narrator stood to gain or lose and includes a visible or audible detail, though the significance could be clearer.",
+      "x_f7b7a61ddd9b": "Suggests stakes or includes a concrete detail, but leaves why the moment matters unclear.",
+      "x_42bedeb0183d": "Calls the experience important without explaining the stakes or providing a concrete detail."
+     }
+    },
+    {
+     "id": "x_8b2064b9d918",
+     "name": "Clear presentation",
+     "descriptors": {
+      "x_09f6cd0f552a": "Presents a coherent short paragraph of about three sentences with clear connections and easy-to-follow wording.",
+      "x_dc36f0ba5f39": "Presents a readable short paragraph with minor lapses in clarity or connections.",
+      "x_f7b7a61ddd9b": "Presents writing whose unclear sentences or weak connections sometimes obscure meaning.",
+      "x_42bedeb0183d": "Presents disconnected or difficult-to-follow writing that leaves the explanation largely unclear."
+     }
+    }
+   ]
+  }
+ },
+ "faq": {},
+ "sources": {},
+ "sourceOrder": [],
+ "syllabus": null,
+ "materials": {
+  "map": {
+   "enabled": true,
+   "options": {}
+  },
+  "syllabus": {
+   "enabled": true,
+   "options": {}
+  },
+  "plan": {
+   "enabled": true,
+   "options": {}
+  },
+  "slides": {
+   "enabled": true,
+   "options": {}
+  },
+  "assignments": {
+   "enabled": true,
+   "options": {}
+  },
+  "rubrics": {
+   "enabled": true,
+   "options": {}
+  },
+  "discussions": {
+   "enabled": true,
+   "options": {}
+  },
+  "quiz": {
+   "enabled": true,
+   "options": {}
+  },
+  "study": {
+   "enabled": true,
+   "options": {}
+  },
+  "faq": {
+   "enabled": true,
+   "options": {}
+  }
+ },
+ "overrides": [],
+ "stamp": "x_ffd9a953d09f"
+}

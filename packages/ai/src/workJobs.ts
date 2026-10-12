@@ -1,4 +1,5 @@
 import { cmd, lessonPieces, newId, type Command, type Course, type Flag, type Lesson, type Rubric, type Task } from '@folio/core';
+import { otherLength, segmentsFor } from './askedLength';
 import type { JobSpec, Problem } from './jobs';
 import { AssignmentDraft, StepDraft, TestDraft } from './schemas';
 import { tidySteps, unnumberSteps } from './tidy';
@@ -30,24 +31,9 @@ export const base = (lesson: Lesson) => ({ lessonId: lesson.id, sourceRefs: [], 
  * pieces, those a reader found undoable ran past ten words of task for each minute, and the rest under eight.
  */
 const WORDS_A_MINUTE = 10;
-/** The words a plan would use for a component: "In-class group worksheets" is run as "the group worksheet". */
-const stems = (name: string) => name.toLowerCase().split(/[^\p{L}\d]+/u).filter((w) => w.length > 2 && !['class', 'weekly', 'the', 'and'].includes(w)).map((w) => w.replace(/s$/, ''));
-
 /** The minutes a plan gives a piece done in class: its segments, and not the one that only lists how the course is graded. */
 export function minutesFor(course: Course, lesson: Lesson): number {
-  const toward = lesson.homework.toward.trim();
-  const others = course.grading.map((g) => g.item.trim().toLowerCase()).filter((item) => item && item !== toward.toLowerCase());
-  const text = (seg: Lesson['segments'][number]) => `${seg.title} ${seg.description}`.toLowerCase();
-  const mine = lesson.segments.filter((seg) => !others.some((item) => text(seg).includes(item)));
-  const whole = mine.filter((seg) => stems(toward).every((w) => text(seg).includes(w))).reduce((n, seg) => n + seg.minutes, 0);
-  // The longer reading wins: "Lab notebook" was tied to nine minutes of "preparing for the lab", not to the 95 of "Graded notebook".
-  // And a piece run over several segments has all of them: a lab of 69 minutes in three parts was held to the 25 of its longest,
-  // and its teacher told it asked too much.
-  const part = mine.filter((seg) => stems(toward).some((w) => text(seg).includes(w))).reduce((n, seg) => n + seg.minutes, 0);
-  // A segment that names the piece in full is the piece's: "Recitation group problems" was given 69 and 101 minutes, the
-  // sum of every segment with the word "problem" or "group" in it.
-  const named = mine.filter((seg) => text(seg).includes(toward.toLowerCase()) || text(seg).includes(toward.toLowerCase().replace(/s$/, ''))).reduce((n, seg) => n + seg.minutes, 0);
-  return named || Math.max(whole, part);
+  return segmentsFor(course, lesson, lesson.segments).reduce((n, seg) => n + seg.minutes, 0);
 }
 
 function tooMuch(v: { prompt: string; steps: string[] }, course: Course, lesson: Lesson): Problem[] {
@@ -67,7 +53,7 @@ function tooMuch(v: { prompt: string; steps: string[] }, course: Course, lesson:
   const words = v.steps.join(' ').split(/\s+/).filter(Boolean).length;
   // A count of words is a reason to ask once more, and no more than that: left as a note, it was wrong in three readings
   // running (a brief of 12 minutes a reader timed at 8 or 9). What a segment asks is counted by its parts when the plan is read.
-  return words > WORDS_A_MINUTE * minutes ? [{ ...issue(`The plan gives this ${minutes} minutes: ask for about half as much, the parts that matter most, so every group finishes`), advisory: true }] : [];
+  return words > WORDS_A_MINUTE * minutes ? [{ ...issue(`The plan gives this ${minutes} minutes: ask for about half as much, the parts that matter most, so every group finishes; a time or a length the plan states stays as the plan has it`), advisory: true }] : [];
 }
 
 /**
@@ -110,6 +96,7 @@ export const assignments: SectionJob<AssignmentDraft> = {
       ? [{ index: null, flag: { code: 'schemaIssue' as const, values: { path: 'answerKey', issue: 'Say how the teacher runs and scores this for a whole class in the lesson' } } }]
       : []),
     ...tooMuch(v, course, lesson),
+    ...otherLength(v, course, lesson),
     ...otherRubric(v, course, lesson),
     // A program with a fixed test run, or a problem with numbers, has results a marker needs: one came with no key at all.
     ...(lesson.homework.kind === 'assignment' && !lesson.homework.standing && !v.answerKey.trim() && v.steps.some((s) => /`[^`]+`|\d+(?:\.\d+)?\s*[×x*/÷+−-]\s*\d/.test(s))

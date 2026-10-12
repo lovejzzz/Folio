@@ -43,6 +43,7 @@ import { withAnswerChecks } from './answerCheck';
 import { codeFaults } from './codeLines';
 import { withHandouts } from './handouts';
 import { unsaidWays } from './pieceFacts';
+import { planOtherLength } from './askedLength';
 import { startCommands } from './start';
 import { runJob, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
@@ -104,7 +105,8 @@ export function announced(v: PlanDraft, course: Course, lesson: Lesson): PlanDra
 const plan: SectionJob<PlanDraft> = {
   schema: PlanDraft,
   tidy: (v, course, lesson) => newVocabulary(tidyLessonNames(tidyPlanSources(v), course, lesson), course, lesson),
-  check: (v, course) => [
+  check: (v, course, lesson) => [
+    ...planOtherLength(v.segments, course, lesson),
     ...checkSessionMinutes(
       v.segments.map((s) => ({ session: s.session - 1, minutes: s.minutes })),
       lessonSessions(course),
