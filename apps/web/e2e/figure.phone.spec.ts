@@ -64,6 +64,12 @@ test('on a phone the row of numbers is worked by touch and its numbers are read 
   await expect(figure.locator('[data-drawer]')).toHaveCount(7);
   await page.getByRole('group', { name: 'Work the demonstration' }).getByRole('button', { name: 'Next step' }).tap();
   await expect(figure.locator('[data-drawer="3"]')).toHaveAttribute('data-state', 'found');
+  // Measured once the picture has come to rest: while a part moves, the drawing is made again many times a second.
+  await page.waitForTimeout(900);
+  // The picture's lines shrink with the picture: a numeral's line stays a small part of its height on the phone too.
+  const drawn = await figure.locator('[data-drawer="3"] path').nth(2).evaluate((el) => ({ line: parseFloat(getComputedStyle(el).strokeWidth) * (el as SVGGraphicsElement).getScreenCTM()!.a, scaling: getComputedStyle(el).vectorEffect, height: el.getBoundingClientRect().height }));
+  expect(drawn.scaling).toBe('none');
+  expect(drawn.line / drawn.height).toBeLessThan(0.16);
   // A cell in the picture is wide enough to read on the phone, and the picture stays inside the slide.
   const cell = await figure.locator('[data-drawer="3"] path').first().boundingBox();
   expect(cell!.width).toBeGreaterThanOrEqual(16);

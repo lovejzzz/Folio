@@ -1,3 +1,4 @@
+import { NUMERAL_WEIGHTS } from './binarySearchScene';
 import { canvasOf, disc, fill, png, strokePieces, type Canvas, type Color, type Point } from './raster';
 
 /**
@@ -54,7 +55,8 @@ function paintPath(canvas: Canvas, a: Attrs, lit: boolean, scale: number): void 
   if (!runs.length || kinds.includes('iso-halo')) return;
   if (kinds.includes('iso-line')) {
     const tone = lit && kinds.includes('iso-edge') ? 'lit' : (a['data-tone'] ?? 'lo');
-    const width = (kinds.includes('fig-numeral') ? NUMERAL : WEIGHT) * scale;
+    const step = kinds.find((x) => /^fig-w\d$/.test(x));
+    const width = (step ? (NUMERAL_WEIGHTS[Number(step.slice(5))] ?? NUMERAL) : WEIGHT) * scale;
     // Every run of one path under one fill: where they cross, the line is no darker.
     fill(canvas, runs.flatMap((r) => (r.points.length > 1 ? strokePieces(r.points, width, r.closed) : [])), LINES[tone] ?? LINES.lo!);
     return;

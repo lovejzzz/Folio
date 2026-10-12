@@ -59,13 +59,27 @@ function frameOf(count: number): Frame {
 const onFront = (x0: number, x1: number, y: number, z0: number, z1: number, p: P) => k.pathOf([k.iso([x0, y, z0], p), k.iso([x1, y, z0], p), k.iso([x1, y, z1], p), k.iso([x0, y, z1], p)], true);
 
 /** A number stamped on a face that looks toward +y, centred in the box given, read from the viewer's left. */
-function stamped(text: string, box: { x0: number; x1: number; y: number; z0: number; z1: number }, p: P): string {
+function stamped(text: string, box: { x0: number; x1: number; y: number; z0: number; z1: number }, p: P): { d: string; weight: number } {
   const { strokes, width } = strokesOf(text);
-  if (!width) return '';
+  if (!width) return { d: '', weight: 0 };
   const s = Math.min((box.x1 - box.x0) / width, (box.z1 - box.z0) / GLYPH_HEIGHT);
   const left = (box.x0 + box.x1) / 2 - (width * s) / 2;
   const base = (box.z0 + box.z1) / 2 - (GLYPH_HEIGHT * s) / 2;
-  return strokes.map(([[u0, v0], [u1, v1]]) => k.segment([left + u0 * s, box.y, base + v0 * s], [left + u1 * s, box.y, base + v1 * s], p)).join('');
+  // The line is a fixed part of the numeral's size on the page: a long number, drawn small, had the line of a large one.
+  return { d: strokes.map(([[u0, v0], [u1, v1]]) => k.segment([left + u0 * s, box.y, base + v0 * s], [left + u1 * s, box.y, base + v1 * s], p)).join(''), weight: Math.max(0.35, Math.min(1.1, s * (p.scale ?? 1) * 0.5)) };
+}
+
+/**
+ * The weights a numeral's line can have, in pixels of the page. A class each and not a width written on the mark: the
+ * kit's rule for lines would overrule an attribute, and the page takes no style written into its markup.
+ */
+export const NUMERAL_WEIGHTS = [0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95, 1.1];
+
+/** A stamped number as a line of the weight its size bears, lighter by `share` for one set aside. */
+function numeralLine(n: { d: string; weight: number }, tone: k.LineTone, share = 1): string {
+  const want = n.weight * share;
+  const step = NUMERAL_WEIGHTS.reduce((best, w, i) => (Math.abs(w - want) < Math.abs(NUMERAL_WEIGHTS[best]! - want) ? i : best), 0);
+  return n.d ? L(n.d, { tone, className: `fig-numeral fig-w${step}` }) : '';
 }
 
 function base({ plate, p }: Frame): string[] {
@@ -138,7 +152,7 @@ function drawer(i: number, value: number, pull: number, state: DrawerState, p: P
   parts.push(S(k.slabOf({ x: x0, y, w: 14, d: 1.6, r: 0.5 }, 3, 24, p, 3, 0.4), { tone, lit, crease: state === 'aside' ? 'faint' : 'lo' }));
   const face = y + 1.6;
   parts.push(L(onFront(x0 + 2, x0 + 12, face, 13, 23, p), { tone: state === 'aside' ? 'faint' : 'lo' }));
-  parts.push(L(stamped(numeral(value), { x0: x0 + 3.2, x1: x0 + 10.8, y: face, z0: 14.6, z1: 21.4 }, p), { tone: lit ? 'lit' : state === 'aside' ? 'lo' : 'hi', ...(state === 'aside' ? {} : { className: 'fig-numeral' }) }));
+  parts.push(numeralLine(stamped(numeral(value), { x0: x0 + 3.2, x1: x0 + 10.8, y: face, z0: 14.6, z1: 21.4 }, p), lit ? 'lit' : state === 'aside' ? 'lo' : 'hi', state === 'aside' ? 0.6 : 1));
   parts.push(S(k.slabOf({ x: x0 + 5, y: face, w: 4, d: 1.4, r: 0.4 }, 7, 1.6, p, 2), { tone: state === 'aside' ? 'lo' : 'mid' }));
   parts.push(k.dotsSvg(k.pointsAt([[x0 + 2.9, face, 22.1], [x0 + 11.1, face, 22.1]], p), { size: 0.4, tone: state === 'aside' ? 'lo' : 'mid' }));
   return k.groupSvg(parts, { 'data-drawer': i, 'data-state': state });
@@ -155,7 +169,7 @@ function wanted({ body, p }: Frame, target: number): string {
     k.dotsSvg(k.pointsAt([[x + 2.4, D - 6, 3], [x + 19.6, D - 6, 3]], p), { size: 0.45, tone: 'mid' }),
     S(k.slabOf(card, 3, 19, p, 2, 0.3), { tone: 'hi' }),
     L(onFront(card.x + 2, card.x + 16, face, 8, 19, p), { tone: 'lo' }),
-    L(stamped(numeral(target), { x0: card.x + 3.4, x1: card.x + 14.6, y: face, z0: 9.6, z1: 17.4 }, p), { tone: 'hi', className: 'fig-numeral' }),
+    numeralLine(stamped(numeral(target), { x0: card.x + 3.4, x1: card.x + 14.6, y: face, z0: 9.6, z1: 17.4 }, p), 'hi'),
   ].join('');
 }
 
@@ -167,9 +181,11 @@ export function sceneBody({ values, target, pose }: Scene): string {
   return [...base(f), ...cabinet(f, values.length), ...top, ...drawers, wanted(f, target)].join('');
 }
 
-const NUMERALS = '.fig-numeral{stroke-width:1.1px}';
+const NUMERALS = NUMERAL_WEIGHTS.map((w, i) => `.iso-svg path.fig-w${i}{stroke-width:${w}px}`).join('');
 /** The kit's styles and the one rule of our own, for a page that draws a figure live. */
-export const FIGURE_CSS = `${k.ISO_CSS}${NUMERALS}`;
+// The kit keeps its hairlines one width at any size; the flat look's marks are measured in the picture's own units and
+// must scale with it: held at their width on a phone, a numeral nine pixels high was drawn with a three-pixel line.
+export const FIGURE_CSS = `${k.ISO_CSS}${NUMERALS}.iso-svg path.flat{vector-effect:none}`;
 
 /** A frame as a picture of its own: the styles are inside it, so it is the same in a page, a file or a print. */
 export function sceneSvg(scene: Scene, label: string): string {

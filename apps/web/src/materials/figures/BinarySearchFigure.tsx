@@ -1,4 +1,4 @@
-import { between, figureBody, FLAT_VIEW, VIEW, type Pose } from '@folio/figures';
+import { between, figureBody, flatView, VIEW, type Pose } from '@folio/figures';
 import { useEffect, useRef } from 'react';
 import { useT } from '../../i18n';
 import { adoptFigureStyles } from './figureStyles';
@@ -39,9 +39,11 @@ export default function BinarySearchFigure({ run }: { run: FigureRun }) {
   const t = useT();
   const host = useDrawn(run);
   useEffect(adoptFigureStyles, []);
+  // The row of numbers is as tall as its rows; the cabinet has one measure.
+  const view = run.look === 'flat' ? flatView(run.values) : VIEW;
   return (
     <div className="folio-figure iso" data-theme="light" data-owns-arrows role="group" aria-label={t.figures.binarySearch} tabIndex={0} onKeyDown={run.onKey}>
-      <svg ref={host} className="iso-svg folio-figure-art" data-look={run.look} viewBox={`0 0 ${(run.look === 'flat' ? FLAT_VIEW : VIEW).width} ${(run.look === 'flat' ? FLAT_VIEW : VIEW).height}`} role="img" aria-label={run.frames[run.at]!.caption} />
+      <svg ref={host} className="iso-svg folio-figure-art" style={{ aspectRatio: `${view.width} / ${view.height}` }} viewBox={`0 0 ${view.width} ${view.height}`} role="img" aria-label={run.frames[run.at]!.caption} />
     </div>
   );
 }

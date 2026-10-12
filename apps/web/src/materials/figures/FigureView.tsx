@@ -27,9 +27,10 @@ function useReason(visual: Figure): string {
 /** The figure standing still at its first picture: in a thumbnail, a preview and on paper. */
 export function FigureStill({ visual }: { visual: Figure }) {
   const reason = useReason(visual);
-  const first = stillFigure(visual).frames[0];
+  const still = stillFigure(visual);
+  const first = still.frames[0];
   if (reason || !first?.svg) return <p className="folio-figure-problem font-ui text-ink-2">{reason}</p>;
-  return <img className="folio-figure-art" data-look={visual.look} src={svgAddress(first.svg)} alt={first.caption} />;
+  return <img className="folio-figure-art" style={{ aspectRatio: `${still.width} / ${still.height}` }} src={svgAddress(first.svg)} alt={first.caption} />;
 }
 
 /** A slide's demonstration: worked where a run of it is held above the slide (the stage), still everywhere else. */
@@ -59,7 +60,7 @@ export function FigureFrames({ visual, table }: { visual: Figure; table: (head: 
       <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{t.figures.frames}</h4>
       {still.frames.map((frame, i) => (
         <figure key={i} className="avoid-break folio-figure-frame">
-          {frame.svg && <img className="folio-figure-print" data-look={visual.look} src={svgAddress(frame.svg)} alt={frame.caption} />}
+          {frame.svg && <img className="folio-figure-print" style={{ aspectRatio: `${still.width} / ${still.height}` }} src={svgAddress(frame.svg)} alt={frame.caption} />}
           <figcaption className="font-ui text-13 text-ink-2">{frame.caption}</figcaption>
         </figure>
       ))}
