@@ -356,6 +356,8 @@ export const en = {
     add: 'Add a binary search demonstration',
     remove: 'Remove the demonstration',
     data: 'The demonstration’s numbers',
+    look: 'Drawn as',
+    looks: { cabinet: 'A cabinet of drawers', flat: 'A row of numbers' },
     values: 'The list, in ascending order',
     valuesHint: 'Numbers separated by commas, up to 15',
     target: 'The number to look for',

@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { binarySearch, binarySearchProblem, describeResult, describeStart, describeStep, enteredFaults, figureProblem, SlideVisualSchema } from '@folio/core';
 import { describe, expect, it } from 'vitest';
-import { between, framePng, keyframes, paintSvg, renderFrame, stillFigure } from '../src';
+import { between, FLAT, flatSvg, framePng, keyframes, paintSvg, renderFrame, stillFigure } from '../src';
 import { cabinetLimit, numeral, numeralOf, strokesOf } from '../src/digits';
 
 const LIST = [3, 8, 12, 17, 23, 31, 42, 56, 71];
@@ -103,7 +103,7 @@ describe('a picture as a file', () => {
 
 describe('a demonstration in a file that cannot move', () => {
   it('has every picture with its sentence and the table of steps, all from one model', () => {
-    const still = stillFigure({ kind: 'figure', figure: 'binarySearch', values: LIST, target: 40 });
+    const still = stillFigure({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: LIST, target: 40 });
     const model = binarySearch({ values: LIST, target: 40 });
     expect(still.problem).toBeNull();
     expect(still.frames.map((f) => f.caption)).toEqual(keyframes(model).map((f) => f.caption));
@@ -111,24 +111,24 @@ describe('a demonstration in a file that cannot move', () => {
   });
 
   it('says why when its list cannot be searched, and draws nothing', () => {
-    expect(stillFigure({ kind: 'figure', figure: 'binarySearch', values: [5, 3, 9], target: 3 })).toMatchObject({ problem: 'unsorted', frames: [] });
+    expect(stillFigure({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: [5, 3, 9], target: 3 })).toMatchObject({ problem: 'unsorted', frames: [] });
   });
 });
 
 describe('what a course file can ask for', () => {
   it('is a figure by name from Folio\'s list, with numbers', () => {
-    expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'binarySearch', values: [1, 2, 3], target: 2 }).success).toBe(true);
+    expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: [1, 2, 3], target: 2 }).success).toBe(true);
   });
 
   it('is never a figure Folio does not keep, a script, an address, or more numbers than fit', () => {
     expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'https://example.com/figure.js', values: [1], target: 1 }).success).toBe(false);
-    expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'binarySearch', values: ['<script>alert(1)</script>'], target: 1 }).success).toBe(false);
-    const kept = SlideVisualSchema.parse({ kind: 'figure', figure: 'binarySearch', values: [1], target: 1, script: 'alert(1)', src: 'x.js' });
-    expect(Object.keys(kept).sort()).toEqual(['figure', 'kind', 'target', 'values']);
+    expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: ['<script>alert(1)</script>'], target: 1 }).success).toBe(false);
+    const kept = SlideVisualSchema.parse({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: [1], target: 1, script: 'alert(1)', src: 'x.js' });
+    expect(Object.keys(kept).sort()).toEqual(['figure', 'kind', 'look', 'target', 'values']);
   });
 
   it('keeps what was typed and is not yet numbers, and is unfinished until it is put right: in a file opened again, and in every export', () => {
-    const draft = SlideVisualSchema.parse({ kind: 'figure', figure: 'binarySearch', values: [1, 2, 3], target: 2, entered: { values: '1, nope, 3' } });
+    const draft = SlideVisualSchema.parse({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: [1, 2, 3], target: 2, entered: { values: '1, nope, 3' } });
     if (draft.kind !== 'figure') throw new Error('not a figure');
     expect(figureProblem(draft)).toBe('unfinished');
     expect(enteredFaults(draft.entered)).toEqual(['nope']);
@@ -169,7 +169,7 @@ describe('a number on a label', () => {
     const tiny = { values: [-0.00000001, 0, 0.00000001], target: 0.00000001 };
     expect(binarySearchProblem(tiny)).toBeNull();
     expect(cabinetLimit(tiny.values, tiny.target)).toBe('tooLong');
-    const still = stillFigure({ kind: 'figure', figure: 'binarySearch', ...tiny });
+    const still = stillFigure({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', ...tiny });
     expect(still).toMatchObject({ problem: null, limit: 'tooLong' });
     expect(still.note).toContain('never round');
     expect(still.frames.every((f) => f.svg === null)).toBe(true);
@@ -182,10 +182,10 @@ describe('a number on a label', () => {
   it('is searched whatever its length: more numbers than the cabinet has drawers are told in words', () => {
     const long = { values: Array.from({ length: 40 }, (_, i) => i * 3), target: 51 };
     expect(binarySearchProblem(long)).toBeNull();
-    const still = stillFigure({ kind: 'figure', figure: 'binarySearch', ...long });
+    const still = stillFigure({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', ...long });
     expect(still).toMatchObject({ problem: null, limit: 'tooMany' });
     expect(still.frames.at(-1)!.caption).toContain('51 was found at position 18');
-    expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'binarySearch', values: Array.from({ length: 61 }, (_, i) => i), target: 1 }).success).toBe(false);
+    expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: Array.from({ length: 61 }, (_, i) => i), target: 1 }).success).toBe(false);
   });
 
   it('never passes over a character it has no strokes for', () => {
@@ -193,3 +193,77 @@ describe('a number on a label', () => {
     expect(() => numeral(1e-8)).toThrow();
   });
 });
+
+describe('the flat look: a row of numbers for a projector and a page', () => {
+  const model = binarySearch({ values: LIST, target: 40 });
+  const frames = keyframes(model);
+  const at = (i: number) => renderFrame(model, frames[i]!, 'flat');
+  const states = (svg: string) => [...svg.matchAll(/data-drawer="(\d+)" data-state="(\w+)"/g)].map((m) => m[2]);
+
+  it('is drawn from the same poses as the cabinet: the same states, step for step', () => {
+    for (const [i, f] of frames.entries()) expect(states(at(i)), `frame ${i}`).toEqual(drawers(renderFrame(model, f)));
+    expect(states(at(1))).toEqual(['play', 'play', 'play', 'play', 'look', 'play', 'play', 'play', 'play']);
+  });
+
+  it('tells each state by more than colour: a heavy frame and an arrow, hatching, a bracket, a filled cell', () => {
+    const look = at(2);
+    const cell = (svg: string, i: number) => svg.split(`data-drawer="${i}"`)[1]!.split('</g>')[0]!;
+    // Compared: a frame twice as heavy as its neighbours', an arrow, and the comparison written out.
+    expect(cell(look, 6)).toContain(`stroke="${FLAT.accent}" stroke-width="4"`);
+    expect(cell(look, 7)).toContain(`stroke="${FLAT.ink}" stroke-width="2"`);
+    // Set aside: hatched (many short lines of the rule colour) and thin.
+    expect(cell(look, 0).split('M').length).toBeGreaterThan(12);
+    expect(cell(look, 0)).toContain('stroke-width="1.8"');
+    expect(cell(look, 7).split('M').length).toBeLessThan(cell(look, 0).split('M').length);
+    // In play: a bracket under positions 6 to 9, in ink.
+    expect(look).toMatch(new RegExp(`stroke="${FLAT.ink}" stroke-width="2.6"`));
+    const found = renderFrame(binarySearch({ values: LIST, target: 42 }), keyframes(binarySearch({ values: LIST, target: 42 })).at(-1)!, 'flat');
+    expect(cell(found, 6)).toContain(`fill="${FLAT.accent}"`);
+  });
+
+  it('writes the comparison over the number compared, with its sign, as the sentence has it', () => {
+    // Step 2 of looking for 40: the middle is 42, and 40 is less.
+    expect(frames[2]!.caption).toContain('40 is less than 42');
+    const strokes = (text: string) => text.split('M').length - 1;
+    const withSign = at(2);
+    const start = at(0);
+    expect(strokes(withSign)).toBeGreaterThan(strokes(start));
+    // Nothing is compared before the first step or after the search runs out: no arrow.
+    const arrow = `fill="${FLAT.accent}" stroke="none"`;
+    expect(start).not.toContain(arrow);
+    expect(at(frames.length - 1)).not.toContain(arrow);
+    expect(withSign).toContain(arrow);
+  });
+
+  it('needs no stylesheet, no font and no glow: every mark carries its own colour and width, in lines of 1.2 and more', () => {
+    const svg = at(2);
+    expect(svg).not.toMatch(/<style|<text|filter=|class="iso|url\(/);
+    const widths = [...svg.matchAll(/stroke-width="([\d.]+)"/g)].map((m) => Number(m[1]));
+    expect(Math.min(...widths)).toBeGreaterThanOrEqual(1.2);
+    expect(flatSvg({ values: [], target: 5, pose: { lo: 0, hi: 0, pull: [], state: [] } }, 'empty')).toContain('<svg');
+  });
+
+  it('is the same picture as a PNG: painted from its own marks, the same bytes each time, with the accent on it', () => {
+    const png = framePng(at(2));
+    expect(sha(framePng(at(2)))).toBe(sha(png));
+    const canvas = paintSvg(at(2), 1);
+    const [r, g, b] = [0x2b, 0x46, 0xc4];
+    let accent = 0;
+    for (let i = 0; i < canvas.data.length; i += 3) if (canvas.data[i] === r && canvas.data[i + 1] === g && canvas.data[i + 2] === b) accent += 1;
+    expect(accent).toBeGreaterThan(200);
+    // In grey it still reads: the compared cell's frame is darker and heavier than a hatched cell's.
+    expect(paintSvg(at(0), 1).data.some((v, i) => i % 3 === 0 && v === r)).toBe(false);
+  });
+
+  it('is what a still page gets when the slide asks for it, with the same sentences and table', () => {
+    const flat = stillFigure({ kind: 'figure', figure: 'binarySearch', look: 'flat', values: LIST, target: 40 });
+    const cabinet = stillFigure({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: LIST, target: 40 });
+    expect(flat.frames.map((f) => f.caption)).toEqual(cabinet.frames.map((f) => f.caption));
+    expect(flat.table).toEqual(cabinet.table);
+    expect(flat.frames[1]!.svg).toContain('class="flat"');
+    expect(cabinet.frames[1]!.svg).toContain('class="iso-');
+    expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'binarySearch', look: 'neon', values: [1], target: 1 }).success).toBe(false);
+    expect(SlideVisualSchema.parse({ kind: 'figure', figure: 'binarySearch', values: [1], target: 1 })).toMatchObject({ look: 'cabinet' });
+  });
+});
+

@@ -16,6 +16,7 @@ const HOLD_MS = 2400;
 export interface FigureRun {
   values: number[];
   target: number;
+  look: 'cabinet' | 'flat';
   frames: Keyframe[];
   at: number;
   last: number;
@@ -59,7 +60,7 @@ function Running({ visual, children }: { visual: Figure; children: ReactNode }) 
     e.preventDefault();
     act();
   };
-  return <Run.Provider value={{ values: visual.values, target: visual.target, frames, at, last, running, still, go, toggle, onKey }}>{children}</Run.Provider>;
+  return <Run.Provider value={{ values: visual.values, target: visual.target, look: visual.look, frames, at, last, running, still, go, toggle, onKey }}>{children}</Run.Provider>;
 }
 
 /** Everything inside can work the demonstration; a list that cannot be searched has nothing to work. */
@@ -67,7 +68,7 @@ export function FigureRunProvider({ visual, children }: { visual: Figure; childr
   if (figureProblem(visual)) return <>{children}</>;
   // A new list or target starts the search again from its first picture.
   return (
-    <Running key={`${visual.values.join(',')}|${visual.target}`} visual={visual}>
+    <Running key={`${visual.values.join(',')}|${visual.target}|${visual.look}`} visual={visual}>
       {children}
     </Running>
   );

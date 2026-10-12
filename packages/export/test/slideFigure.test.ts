@@ -13,7 +13,7 @@ const deck = (visual: Slide['visual']): Course => ({
   ...base,
   lessons: { ...base.lessons, [lesson.id]: { ...lesson, slides: [{ id: 's1', layout: 'bullets', title: 'Halving the search', bullets: [], notes: 'Ask which half can be set aside before each step.', visual }] } },
 });
-const course = deck({ kind: 'figure', figure: 'binarySearch', values: LIST, target: 40 });
+const course = deck({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: LIST, target: 40 });
 const model = binarySearch({ values: LIST, target: 40 });
 const frames = keyframes(model);
 const docOf = (c: Course, audience: 'teacher' | 'student') => project(c, 'slides', { audience, lessonIds: [lesson.id] });
@@ -45,7 +45,7 @@ describe('a slide with a demonstration, in a deck', () => {
   });
 
   it('says why, on one slide, when the list cannot be searched', async () => {
-    const files = unzip(await renderPptx(docOf(deck({ kind: 'figure', figure: 'binarySearch', values: [9, 3, 5], target: 3 }), 'teacher')));
+    const files = unzip(await renderPptx(docOf(deck({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: [9, 3, 5], target: 3 }), 'teacher')));
     expect(Object.keys(files).filter((name) => /^ppt\/slides\/slide\d+\.xml$/.test(name))).toHaveLength(1);
     expect(text(files, /^ppt\/slides\//)).toContain('needs its list in ascending order');
     expect(pngs(files, /^ppt\/media\//)).toHaveLength(0);
@@ -77,8 +77,8 @@ describe('a slide with a demonstration, in a Word file', () => {
 });
 
 describe('a demonstration the picture cannot hold, or that is not finished', () => {
-  const long = deck({ kind: 'figure', figure: 'binarySearch', values: Array.from({ length: 20 }, (_, i) => i * 5), target: 35 });
-  const draft = deck({ kind: 'figure', figure: 'binarySearch', values: LIST, target: 40, entered: { values: '1, nope, 3' } });
+  const long = deck({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: Array.from({ length: 20 }, (_, i) => i * 5), target: 35 });
+  const draft = deck({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: LIST, target: 40, entered: { values: '1, nope, 3' } });
 
   it('is told in words and in the table when it is searched and cannot be drawn: no picture, and the reason', async () => {
     const word = unzip(await renderDocx([docOf(long, 'student')], { courseTitle: long.title }));
@@ -108,15 +108,15 @@ describe('a demonstration the picture cannot hold, or that is not finished', () 
 });
 
 describe('where a course says a demonstration is not ready', () => {
-  const draft = deck({ kind: 'figure', figure: 'binarySearch', values: LIST, target: 40, entered: { target: 'forty' } });
+  const draft = deck({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: LIST, target: 40, entered: { target: 'forty' } });
 
   it('is one list for the map and for an export, from the check the slide uses: the lesson, the slide and the reason', () => {
     expect(figureFaults(draft)).toEqual([{ lessonId: lesson.id, lesson: 1, slide: 1, title: 'Halving the search', problem: 'unfinished' }]);
     expect(figureFaults(course)).toEqual([]);
-    expect(figureFaults(deck({ kind: 'figure', figure: 'binarySearch', values: [9, 3], target: 3 }))[0]).toMatchObject({ problem: 'unsorted' });
+    expect(figureFaults(deck({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: [9, 3], target: 3 }))[0]).toMatchObject({ problem: 'unsorted' });
     // Only the lessons asked for, and a list the picture cannot hold is no fault: it is searched and told in words.
     expect(figureFaults(draft, ['another-lesson'])).toEqual([]);
-    expect(figureFaults(deck({ kind: 'figure', figure: 'binarySearch', values: [1e-8, 1], target: 1 }))).toEqual([]);
+    expect(figureFaults(deck({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: [1e-8, 1], target: 1 }))).toEqual([]);
   });
 
   it('marks the deck on the map as needing a look', () => {

@@ -335,6 +335,11 @@
   .folio-figure-strip > li[data-state='found'] .folio-figure-strip-place {
     color: var(--folio-paper);
   }
+  /* The row of numbers is drawn in a shorter frame than the cabinet. */
+  .folio-figure-art[data-look='flat'],
+  .folio-figure-print[data-look='flat'] {
+    aspect-ratio: 640 / 250;
+  }
   /* Under the slide: room for the longest sentence of a step, so the buttons do not jump. */
   .folio-figure-caption {
     text-align: center;

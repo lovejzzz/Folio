@@ -8,7 +8,7 @@ const SHOTS = process.env.FOLIO_FIGURE_SHOTS;
 function withFigure(): string {
   const course = sampleCourse();
   const first = orderedLessons(course)[0]!;
-  first.slides[0] = { ...first.slides[0]!, visual: { kind: 'figure', figure: 'binarySearch', values: [2, 4, 4, 4, 9, 15, 21], target: 4 } };
+  first.slides[0] = { ...first.slides[0]!, visual: { kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: [2, 4, 4, 4, 9, 15, 21], target: 4 } };
   return JSON.stringify(course);
 }
 
@@ -50,3 +50,26 @@ test('on a phone a demonstration is worked by touch, and fits the slide', async 
   expect(Math.min(button!.width, button!.height)).toBeGreaterThanOrEqual(32);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/phone.png` });
 });
+
+test('on a phone the row of numbers is worked by touch and its numbers are read in the picture itself', async ({ page }) => {
+  const course = JSON.parse(withFigure()) as { lessonOrder: string[]; lessons: Record<string, { slides: { visual?: { look?: string } }[] }> };
+  course.lessons[course.lessonOrder[0]!]!.slides[0]!.visual!.look = 'flat';
+  await page.route('**/samples/*.json', (route) => route.fulfill({ contentType: 'application/json', body: JSON.stringify(course) }));
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Or open a sample course' }).click();
+  await page.getByRole('dialog', { name: 'Open a sample course' }).getByRole('button', { name: /^Introduction to ethics/ }).click();
+  await expect(page.getByText('Open a lesson to review it.')).toBeVisible();
+  await page.goto(page.url().replace(/\/map$/, '/m/slides'));
+  const figure = page.getByRole('group', { name: 'Binary search, step by step' });
+  await expect(figure.locator('[data-drawer]')).toHaveCount(7);
+  await page.getByRole('group', { name: 'Work the demonstration' }).getByRole('button', { name: 'Next step' }).tap();
+  await expect(figure.locator('[data-drawer="3"]')).toHaveAttribute('data-state', 'found');
+  // A cell in the picture is wide enough to read on the phone, and the picture stays inside the slide.
+  const cell = await figure.locator('[data-drawer="3"] path').first().boundingBox();
+  expect(cell!.width).toBeGreaterThanOrEqual(16);
+  const art = await figure.locator('svg').boundingBox();
+  expect(art!.x + art!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/phone-flat.png` });
+});
+

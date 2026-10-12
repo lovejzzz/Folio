@@ -40,9 +40,17 @@ export function runsOf(d: string, scale: number): { points: Point[]; closed: boo
   return runs.filter((r) => r.points.length);
 }
 
+/** A path whose colours are written on it: filled, then stroked at its own width. */
+function paintOwn(canvas: Canvas, a: Attrs, runs: { points: Point[]; closed: boolean }[], scale: number): void {
+  if (a.fill && a.fill !== 'none') fill(canvas, runs.map((r) => r.points), hex(a.fill));
+  if (a.stroke && a.stroke !== 'none') fill(canvas, runs.flatMap((r) => (r.points.length > 1 ? strokePieces(r.points, Number(a['stroke-width'] ?? 1) * scale, r.closed) : [])), hex(a.stroke));
+}
+
 function paintPath(canvas: Canvas, a: Attrs, lit: boolean, scale: number): void {
   const kinds = (a.class ?? '').split(/\s+/);
   const runs = runsOf(a.d ?? '', scale);
+  // A mark that carries its own fill, stroke and width (the flat look): painted as it says.
+  if (kinds.includes('flat')) return paintOwn(canvas, a, runs, scale);
   if (!runs.length || kinds.includes('iso-halo')) return;
   if (kinds.includes('iso-line')) {
     const tone = lit && kinds.includes('iso-edge') ? 'lit' : (a['data-tone'] ?? 'lo');

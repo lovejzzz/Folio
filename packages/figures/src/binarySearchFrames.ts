@@ -1,5 +1,6 @@
 import { after, describeResult, describeStart, describeStep, type BinarySearchModel } from '@folio/core';
-import { sceneSvg, type DrawerState, type Pose } from './binarySearchScene';
+import { sceneBody, sceneSvg, type DrawerState, type Pose, type Scene } from './binarySearchScene';
+import { flatBody, flatSvg } from './flatScene';
 
 /**
  * The search as a run of still pictures: where every part stands before the first comparison, at each comparison,
@@ -41,6 +42,13 @@ export function between(from: Pose, to: Pose, t: number): Pose {
 }
 
 /** One keyframe as a picture of its own (see `sceneSvg`): its caption is what a reader who cannot see it is told. */
-export function renderFrame(model: BinarySearchModel, frame: Keyframe): string {
-  return sceneSvg({ values: model.values, target: model.target, pose: frame.pose }, frame.caption);
+export function renderFrame(model: BinarySearchModel, frame: Keyframe, look: FigureLook = 'cabinet'): string {
+  const scene = { values: model.values, target: model.target, pose: frame.pose };
+  return look === 'flat' ? flatSvg(scene, frame.caption) : sceneSvg(scene, frame.caption);
 }
+
+/** The looks a demonstration can be drawn in. */
+export type FigureLook = 'cabinet' | 'flat';
+
+/** The inside of the live SVG for a pose, in a look. */
+export const figureBody = (scene: Scene, look: FigureLook): string => (look === 'flat' ? flatBody(scene) : sceneBody(scene));

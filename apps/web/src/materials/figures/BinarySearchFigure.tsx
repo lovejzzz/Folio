@@ -1,4 +1,4 @@
-import { between, sceneBody, VIEW, type Pose } from '@folio/figures';
+import { between, figureBody, FLAT_VIEW, VIEW, type Pose } from '@folio/figures';
 import { useEffect, useRef } from 'react';
 import { useT } from '../../i18n';
 import { adoptFigureStyles } from './figureStyles';
@@ -12,14 +12,14 @@ const ease = (t: number) => t * t * (3 - 2 * t);
  * The picture, drawn into the SVG by hand and not through React: while a drawer slides the whole drawing is made again
  * some sixty times a second from the pose, and nothing else on the page need hear of it.
  */
-function useDrawn({ values, target, frames, at, still }: FigureRun) {
+function useDrawn({ values, target, look, frames, at, still }: FigureRun) {
   const host = useRef<SVGSVGElement>(null);
   const shown = useRef<Pose | null>(null);
   useEffect(() => {
     const to = frames[at]!.pose;
     const from = shown.current;
     const draw = (pose: Pose) => {
-      if (host.current) host.current.innerHTML = sceneBody({ values, target, pose });
+      if (host.current) host.current.innerHTML = figureBody({ values, target, pose }, look);
       shown.current = pose;
     };
     if (still || !from || from.pull.length !== to.pull.length) return draw(to);
@@ -30,7 +30,7 @@ function useDrawn({ values, target, frames, at, still }: FigureRun) {
       if (t < 1) raf = requestAnimationFrame(tick);
     });
     return () => cancelAnimationFrame(raf);
-  }, [values, target, frames, at, still]);
+  }, [values, target, look, frames, at, still]);
   return host;
 }
 
@@ -41,7 +41,7 @@ export default function BinarySearchFigure({ run }: { run: FigureRun }) {
   useEffect(adoptFigureStyles, []);
   return (
     <div className="folio-figure iso" data-theme="light" data-owns-arrows role="group" aria-label={t.figures.binarySearch} tabIndex={0} onKeyDown={run.onKey}>
-      <svg ref={host} className="iso-svg folio-figure-art" viewBox={`0 0 ${VIEW.width} ${VIEW.height}`} role="img" aria-label={run.frames[run.at]!.caption} />
+      <svg ref={host} className="iso-svg folio-figure-art" data-look={run.look} viewBox={`0 0 ${(run.look === 'flat' ? FLAT_VIEW : VIEW).width} ${(run.look === 'flat' ? FLAT_VIEW : VIEW).height}`} role="img" aria-label={run.frames[run.at]!.caption} />
     </div>
   );
 }

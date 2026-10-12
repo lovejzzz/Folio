@@ -2,6 +2,7 @@ import { binarySearch, binarySearchTable, figureProblem, type FigureProblem, typ
 import { cabinetLimit, DRAWERS_MAX, NUMERAL_MAX, type CabinetLimit } from './digits';
 import { keyframes, renderFrame } from './binarySearchFrames';
 import { VIEW } from './binarySearchScene';
+import { FLAT_VIEW } from './flatScene';
 import { svgToPng } from './paint';
 
 type Figure = Extract<SlideVisual, { kind: 'figure' }>;
@@ -47,8 +48,8 @@ export function stillFigure(figure: Figure): StillFigure {
   if (problem) return { problem, limit: null, note: problemText(problem, figure), frames: [], table: { columns: [], rows: [] }, ...VIEW };
   const model = binarySearch(figure);
   const limit = cabinetLimit(model.values, model.target);
-  const frames = keyframes(model).map((f) => ({ svg: limit ? null : renderFrame(model, f), caption: f.caption }));
-  return { problem: null, limit, note: limit ? LIMITS[limit] : '', frames, table: binarySearchTable(model), ...VIEW };
+  const frames = keyframes(model).map((f) => ({ svg: limit ? null : renderFrame(model, f, figure.look), caption: f.caption }));
+  return { problem: null, limit, note: limit ? LIMITS[limit] : '', frames, table: binarySearchTable(model), ...(figure.look === 'flat' ? FLAT_VIEW : VIEW) };
 }
 
 /** A picture's PNG, at twice its own measure: sharp on a page and on a projector. */

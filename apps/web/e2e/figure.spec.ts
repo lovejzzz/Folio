@@ -7,6 +7,8 @@ const SHOTS = process.env.FOLIO_FIGURE_SHOTS;
 const pngs = (files: Record<string, Uint8Array>, dir: string) => Object.entries(files).filter(([name, data]) => name.startsWith(dir) && data[0] === 137 && data[1] === 80).length;
 
 test('a binary search demonstration is added to a slide, worked, changed, kept over a reload and exported', async ({ page, context }) => {
+  // Pictures are painted in the page for each file made: with the rest of the suite running beside it, a minute was once not enough.
+  test.setTimeout(150_000);
   await openSample(page);
   await page.goto(page.url().replace(/\/map$/, '/m/slides'));
   const title = page.getByRole('textbox', { name: 'Slide title' });

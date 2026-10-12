@@ -26,6 +26,11 @@ const GLYPHS: Record<string, { segs: Seg[]; width: number }> = {
   '9': { segs: [A, B, C, D, F, G], width: 4 },
   '-': { segs: [[0.6, 3, 3.4, 3]], width: 4 },
   '.': { segs: [[0.5, 0, 0.5, 0.35]], width: 1 },
+  // Signs of a comparison, for the line over the number being compared.
+  '<': { segs: [[3.6, 5.2, 0.4, 3], [0.4, 3, 3.6, 0.8]], width: 4 },
+  '>': { segs: [[0.4, 5.2, 3.6, 3], [3.6, 3, 0.4, 0.8]], width: 4 },
+  '=': { segs: [[0.4, 4, 3.6, 4], [0.4, 2, 3.6, 2]], width: 4 },
+  ' ': { segs: [], width: 2 },
 };
 
 const GAP = 1.6;
