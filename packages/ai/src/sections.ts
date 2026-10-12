@@ -141,7 +141,9 @@ function unshown(v: SlidesDraft, lesson: Lesson): Problem[] {
   const code = (item: string) => /^\s*(?:#|[\w.$]+\s*(?:<-|=[^=]|\()|.*(?:\|>|%>%)\s*$)/.test(item) || /^`[^`]+`$/.test(item.trim());
   // A demonstration the plan puts on the screen is carried by a slide that holds one: by its picture, not by the plan's words.
   const drawn = (item: string) => /^\s*demonstration\s*:/i.test(item) && v.slides.some((x) => x.figure);
-  const missing = lesson.segments.flatMap((s) => s.shown ?? []).filter((item) => !code(item) && !drawn(item) && plain(item).length >= 12 && !deck.includes(plain(item).slice(0, 40)));
+  // An item the plan wrote as a layout is looked for by its words, without the label that says which layout.
+  const bare = (item: string) => item.replace(/^\s*(?:steps|side by side|table)\s*:/i, '');
+  const missing = lesson.segments.flatMap((s) => s.shown ?? []).map(bare).filter((item) => !code(item) && !drawn(item) && plain(item).length >= 12 && !deck.includes(plain(item).slice(0, 40)));
   return missing.length ? [{ index: null, advisory: true, flag: { code: 'schemaIssue', values: { path: 'slides', issue: `The plan puts these on the screen, and no slide carries them in the plan's words: ${missing.map((m) => `"${m.length > 140 ? `${m.slice(0, 140)}…` : m}"`).join('; ')}. Give each a slide, whole` } } }] : [];
 }
 
