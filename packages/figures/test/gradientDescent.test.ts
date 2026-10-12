@@ -36,6 +36,22 @@ describe('gradient descent, as a model', () => {
     expect(gradientDescentTable(m).rows[2]![2]).toBe('≈ 0.23');
   });
 
+  it('walks any parabola a (w - best)^2 + c: a lesson\'s own loss, with its own steepness and floor', () => {
+    // The loss of a line through four points, in w alone: 7.5 (w - 2.4)^2 + 0.5.
+    const m = gradientDescent({ values: [0, 0.02, 3, 7.5, 0.5], target: 2.4 });
+    expect(m.steps[0]!.loss).toBeCloseTo(43.7);
+    expect(m.steps[0]!.slope).toBeCloseTo(-36);
+    expect(m.steps[0]!.next).toBeCloseTo(0.72);
+    expect(m.course).toBe('downhill');
+    // What matters is the rate times a: the same rate that walks down a shallow valley runs away in a steep one.
+    expect(gradientDescent({ values: [0, 0.2, 3, 1], target: 2 }).course).toBe('downhill');
+    expect(gradientDescent({ values: [0, 0.2, 3, 7.5], target: 2 }).course).toBe('diverging');
+    expect(gradientDescent({ values: [0, 0.1, 3, 5], target: 2 }).course).toBe('crossing');
+    expect(figureProblem(fig([0, 0.02, 3, 7.5, 0.5], 2.4))).toBeNull();
+    expect(figureProblem(fig([0, 0.02, 3, 0]))).toBe('badSetup');
+    expect(figureProblem(fig([0, 0.02, 3, 1, 0, 9]))).toBe('badSetup');
+  });
+
   it('needs three numbers: a start, a learning rate above 0, and 1 to 8 whole steps', () => {
     expect(figureProblem(fig([4, 0.3, 5]))).toBeNull();
     for (const bad of [[4, 0.3], [4, 0, 5], [4, -1, 5], [4, 0.3, 0], [4, 0.3, 9], [4, 0.3, 2.5]]) expect(figureProblem(fig(bad)), String(bad)).toBe('badSetup');

@@ -1,4 +1,4 @@
-import { describeDescentResult, describeDescentStart, describeDescentStep, written as said, type GradientDescentModel } from '@folio/core';
+import { describeDescentResult, describeDescentStart, describeDescentStep, lossAt, slopeAt, written as said, type GradientDescentModel } from '@folio/core';
 import * as k from './vendor/anatomy/iso-kit';
 import { standaloneSvg, VIEW, type View } from './binarySearchScene';
 import { GLYPH_HEIGHT } from './digits';
@@ -73,6 +73,7 @@ const projection = (view: View): k.Projection => k.fitProjection([...k.boxCorner
 
 /** How high the valley's side is at w, and where along the tray w stands. */
 const rise = (m: GradientDescentModel, w: number, r: number) => 2 + TALL * Math.min(1, (w - m.best) ** 2 / (r * r));
+// (The valley's shape is the parabola's whatever its a and c: they change the numbers read off it, not how it looks at this scale.)
 const along = (m: GradientDescentModel, w: number, r: number) => 3 + ((clamp(w, m.best - r, m.best + r) - (m.best - r)) / (2 * r)) * COLUMNS * PITCH;
 
 export function descentSceneBody({ model: m, pose }: DescentScene, view: View = VIEW): string {
@@ -108,7 +109,7 @@ const onAxis = (m: GradientDescentModel, w: number, r: number) => AXIS.x0 + ((cl
 /** The three numbers a step is made of, each under its name, in a frame at the right. */
 function readout(m: GradientDescentModel, w: number, y0: number): string {
   const x = W - 176;
-  const rows: [string, number][] = [['w', w], ['loss', (w - m.best) ** 2], ['slope', 2 * (w - m.best)]];
+  const rows: [string, number][] = [['w', w], ['loss', lossAt(m, w)], ['slope', slopeAt(m, w)]];
   const box = d([[x, y0], [x + 162, y0], [x + 162, y0 + 138], [x, y0 + 138]], true);
   return fillOf(box, FLAT.paper) + stroke(box, FLAT.ink, 2) + rows.map(([name, n], i) => written(name, { x: x + 10, y: y0 + 12 + i * 42, w: 46, h: 14 }, FLAT.soft, 2.3, 'name') + written(text(n), { x: x + 58, y: y0 + 6 + i * 42, w: 96, h: 28 }, FLAT.ink, 4.4, i === 0 ? 'value' : 'readout')).join('');
 }
@@ -130,8 +131,8 @@ function reading({ model: m, pose }: DescentScene, y0: number): { svg: string; a
     const a = x(pose.w);
     const b = x(pose.to);
     const way = b > a ? 1 : -1;
-    const move = m.rate * 2 * (pose.w - m.best);
-    step = stroke(d([[a, y - 14], [a, y - 34], [b, y - 34], [b, y - 16]]), FLAT.accent, 2.6).replace('<path', '<path data-part="swap"') + fillOf(d([[b - 6, y - 20], [b + 6, y - 20], [b, y - 10]], true), FLAT.accent) + (Math.abs(b - a) > 4 ? fillOf(d([[(a + b) / 2 - 4 * way, y - 39], [(a + b) / 2 - 4 * way, y - 29], [(a + b) / 2 + 5 * way, y - 34]], true), FLAT.accent) : '') + written(`${text(m.rate)} × ${text(2 * (pose.w - m.best))} = ${text(move)}`, { x: 6, y: y0 + 132, w: AXIS.x1 - 6, h: 18 }, FLAT.accent, 3, 'step');
+    const move = m.rate * slopeAt(m, pose.w);
+    step = stroke(d([[a, y - 14], [a, y - 34], [b, y - 34], [b, y - 16]]), FLAT.accent, 2.6).replace('<path', '<path data-part="swap"') + fillOf(d([[b - 6, y - 20], [b + 6, y - 20], [b, y - 10]], true), FLAT.accent) + (Math.abs(b - a) > 4 ? fillOf(d([[(a + b) / 2 - 4 * way, y - 39], [(a + b) / 2 - 4 * way, y - 29], [(a + b) / 2 + 5 * way, y - 34]], true), FLAT.accent) : '') + written(`${text(m.rate)} × ${text(slopeAt(m, pose.w))} = ${text(move)}`, { x: 6, y: y0 + 132, w: AXIS.x1 - 6, h: 18 }, FLAT.accent, 3, 'step');
   }
   return { svg: axis + ends + lowest + rings + step + now + readout(m, pose.w, y0 + 22), at: [x(pose.w), y - 80] };
 }
