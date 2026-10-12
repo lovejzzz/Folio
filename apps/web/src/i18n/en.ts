@@ -363,7 +363,7 @@ export const en = {
     remove: 'Remove the demonstration',
     data: 'The demonstration’s numbers',
     look: 'Drawn as',
-    looks: { cabinet: 'A cabinet of drawers', flat: 'A row of numbers' },
+    looks: { cabinet: 'A cabinet of drawers', flat: 'A row of numbers', composite: 'Both: the cabinet over the row' },
     values: 'The list, in ascending order',
     valuesHint: 'Numbers separated by commas, up to 15',
     target: 'The number to look for',

@@ -1,53 +1,28 @@
+import { GLYPH_OUTLINES } from './glyphs';
+
 /**
- * Numerals as strokes, in the manner of a seven-segment stamp: the figure's numbers are drawn with the same lines
- * as its parts, so a frame is the same picture in a browser, in a PNG made without one, and in print, with no font
- * to be missing.
+ * Numerals as outlines of the app's own typeface (glyphs.ts), filled: a frame is the same picture in a browser, in a
+ * PNG painted without one, and in print, with no font to be missing. They were strokes in the manner of a
+ * seven-segment stamp, which could not be told from a display's and whose "1" was a bar.
  */
 
-type Seg = [number, number, number, number];
-const A: Seg = [0, 6, 4, 6];
-const B: Seg = [4, 6, 4, 3];
-const C: Seg = [4, 3, 4, 0];
-const D: Seg = [0, 0, 4, 0];
-const E: Seg = [0, 0, 0, 3];
-const F: Seg = [0, 3, 0, 6];
-const G: Seg = [0, 3, 4, 3];
-
-const GLYPHS: Record<string, { segs: Seg[]; width: number }> = {
-  '0': { segs: [A, B, C, D, E, F], width: 4 },
-  '1': { segs: [[2, 6, 2, 0]], width: 4 },
-  '2': { segs: [A, B, G, E, D], width: 4 },
-  '3': { segs: [A, B, G, C, D], width: 4 },
-  '4': { segs: [F, G, B, C], width: 4 },
-  '5': { segs: [A, F, G, C, D], width: 4 },
-  '6': { segs: [A, F, G, E, D, C], width: 4 },
-  '7': { segs: [A, B, C], width: 4 },
-  '8': { segs: [A, B, C, D, E, F, G], width: 4 },
-  '9': { segs: [A, B, C, D, F, G], width: 4 },
-  '-': { segs: [[0.6, 3, 3.4, 3]], width: 4 },
-  '.': { segs: [[0.5, 0, 0.5, 0.35]], width: 1 },
-  // Signs of a comparison, for the line over the number being compared.
-  '<': { segs: [[3.6, 5.2, 0.4, 3], [0.4, 3, 3.6, 0.8]], width: 4 },
-  '>': { segs: [[0.4, 5.2, 3.6, 3], [3.6, 3, 0.4, 0.8]], width: 4 },
-  '=': { segs: [[0.4, 4, 3.6, 4], [0.4, 2, 3.6, 2]], width: 4 },
-  ' ': { segs: [], width: 2 },
-};
-
-const GAP = 1.6;
+/** The height of a capital, and of every digit, in the units numbers are laid out in. */
 export const GLYPH_HEIGHT = 6;
 
-/** The strokes of a number, each from [u, v] to [u, v], in a box `width` wide and six high, its corner at the origin. */
-export function strokesOf(text: string): { strokes: [[number, number], [number, number]][]; width: number } {
-  const strokes: [[number, number], [number, number]][] = [];
+type Pt = [number, number];
+
+/** A number's outlines, each a closed run of points [u, v] (v upward), in a box `width` wide and six high with its corner at the origin. */
+export function outlineOf(text: string): { polygons: Pt[][]; width: number } {
+  const polygons: Pt[][] = [];
   let at = 0;
   for (const ch of text) {
-    const glyph = GLYPHS[ch];
+    const glyph = GLYPH_OUTLINES[ch];
     // Never passed over: a label missing a character would be another number.
-    if (!glyph) throw new Error(`figure: no stroke for "${ch}"`);
-    for (const [u0, v0, u1, v1] of glyph.segs) strokes.push([[at + u0, v0], [at + u1, v1]]);
-    at += glyph.width + GAP;
+    if (!glyph) throw new Error(`figure: no outline for "${ch}"`);
+    for (const run of glyph.contours) polygons.push(run.map(([u, v]): Pt => [at + u * GLYPH_HEIGHT, v * GLYPH_HEIGHT]));
+    at += glyph.advance * GLYPH_HEIGHT;
   }
-  return { strokes, width: Math.max(0, at - GAP) };
+  return { polygons, width: at };
 }
 
 /** The most characters a drawer's label holds at a size a class can read, and the most drawers the cabinet has. */
@@ -87,10 +62,3 @@ export function numeral(value: number): string {
 export function cabinetCramped(values: readonly number[], target: number): boolean {
   return values.length > 10 || [...values, target].some((n) => (numeralOf(n) ?? '').length > 3);
 }
-
-/**
- * How wide, in pixels of a screen, the cabinet of these numbers must be shown for its labels to be read there: nine
- * pixels high at the least. Measured on a phone: a five-character label is 7.5 pixels high at 640, and a label of
- * fifteen drawers 8.7 at 960.
- */
-export const cabinetReadWidth = (values: readonly number[], target: number): number => (cabinetCramped(values, target) ? 1040 : 640);

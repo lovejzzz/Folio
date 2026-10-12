@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
 import { binarySearch, binarySearchProblem, describeResult, describeStart, describeStep, enteredFaults, figureProblem, SlideVisualSchema } from '@folio/core';
 import { describe, expect, it } from 'vitest';
-import { between, FLAT, flatReadWidth, flatSvg, flatView, framePng, gridOf, keyframes, lineFor, paintSvg, renderFrame, stillFigure } from '../src';
-import { cabinetCramped, cabinetLimit, cabinetReadWidth, numeral, numeralOf, strokesOf } from '../src/digits';
+import { between, cabinetReadWidth, compositeGrid, compositeView, FLAT, flatReadWidth, flatSvg, flatView, framePng, gridOf, keyframes, paintSvg, renderFrame, stillFigure } from '../src';
+import { cabinetCramped, cabinetLimit, numeral, numeralOf, outlineOf } from '../src/digits';
 
 const LIST = [3, 8, 12, 17, 23, 31, 42, 56, 71];
 const sha = (data: string | Uint8Array) => createHash('sha256').update(data).digest('hex').slice(0, 16);
@@ -143,12 +143,10 @@ describe('what a course file can ask for', () => {
 });
 
 describe('a number on a label', () => {
-  /** The strokes drawn on drawer `i`: the numeral's own path, counted by its segments. */
+  /** The outlines printed on drawer `i`: its label's own mark, counted by its closed runs. */
   const drawn = (svg: string, i: number) => {
     const group = svg.split(`data-drawer="${i}"`)[1]!.split('data-drawer=')[0]!;
-    const paths = [...group.matchAll(/<path class="iso-line(?: fig-numeral fig-w\d)?" data-tone="(?:hi|lo|lit)" d="((?:M[-\d. ]+L[-\d. ]+)+)"\/>/g)].map((m) => m[1]!.split('M').length - 1);
-    // The first such path in a drawer is its label; after the last drawer comes the card with the number sought.
-    return paths[0];
+    return (/<path class="flat fig-numeral" fill="#[0-9a-f]{6}" stroke="none" d="([^"]+)"\/>/.exec(group)?.[1] ?? '').split('Z').length - 1;
   };
 
   it('is the number itself, digit for digit, as its sentence has it: nothing is rounded', () => {
@@ -159,10 +157,10 @@ describe('a number on a label', () => {
     const svg = renderFrame(model, frames[0]!);
     values.forEach((v, i) => {
       expect(numeral(v)).toBe(String(v));
-      expect(drawn(svg, i), String(v)).toBe(strokesOf(String(v)).strokes.length);
+      expect(drawn(svg, i), String(v)).toBe(outlineOf(String(v)).polygons.length);
     });
-    // 0.125 and 0 are different pictures: the label is not the same strokes.
-    expect(strokesOf(numeral(0.125)).strokes.length).not.toBe(strokesOf(numeral(0)).strokes.length);
+    // 0.125 and 0 are different pictures: the label is not the same outlines.
+    expect(outlineOf(numeral(0.125)).polygons.length).not.toBe(outlineOf(numeral(0)).polygons.length);
   });
 
   it('is never rounded: a list the labels cannot write in full is still searched, and told in words with the reason there is no picture', () => {
@@ -189,8 +187,8 @@ describe('a number on a label', () => {
     expect(SlideVisualSchema.safeParse({ kind: 'figure', figure: 'binarySearch', look: 'cabinet', values: Array.from({ length: 61 }, (_, i) => i), target: 1 }).success).toBe(false);
   });
 
-  it('never passes over a character it has no strokes for', () => {
-    expect(() => strokesOf('1e-8')).toThrow();
+  it('never passes over a character it has no outline for', () => {
+    expect(() => outlineOf('1e-8')).toThrow();
     expect(() => numeral(1e-8)).toThrow();
   });
 });
@@ -212,12 +210,12 @@ describe('the flat look: a row of numbers for a projector and a page', () => {
     // Compared: a frame twice as heavy as its neighbours', an arrow, and the comparison written out.
     expect(cell(look, 6)).toContain(`stroke="${FLAT.accent}" stroke-width="4"`);
     expect(cell(look, 7)).toContain(`stroke="${FLAT.ink}" stroke-width="2"`);
-    // Set aside: hatched (short lines of the rule colour, which a cell in play has none of), its numeral in a lighter line.
+    // Set aside: hatched (short lines of the rule colour, which a cell in play has none of), its numeral in a lighter ink.
     const hatching = `stroke="${FLAT.rule}" stroke-width="1.2"`;
     expect(cell(look, 0)).toContain(hatching);
     expect(cell(look, 7)).not.toContain(hatching);
-    const numeralLine = (text: string) => Number([...text.matchAll(/stroke-width="([\d.]+)"/g)].at(-2)![1]);
-    expect(numeralLine(cell(look, 0))).toBeLessThan(numeralLine(cell(look, 7)));
+    expect(cell(look, 0)).toContain(`data-part="value" class="flat" fill="${FLAT.soft}"`);
+    expect(cell(look, 7)).toContain(`data-part="value" class="flat" fill="${FLAT.ink}"`);
     // In play: a bracket under positions 6 to 9, in ink.
     expect(look).toMatch(new RegExp(`stroke="${FLAT.ink}" stroke-width="2.6"`));
     const found = renderFrame(binarySearch({ values: LIST, target: 42 }), keyframes(binarySearch({ values: LIST, target: 42 })).at(-1)!, 'flat');
@@ -277,24 +275,30 @@ describe('the flat look: a row of numbers for a projector and a page', () => {
  * As it was found in a browser, on a phone and in a real deck: fifteen numbers, some of them "-2.5" and "1.25", each
  * shrunk to its own narrow cell and drawn with the line of a large numeral, came out as black lumps.
  */
-describe('numerals that stay numerals: one size for a figure, and a line that size bears', () => {
+describe('numerals that stay numerals: one size for a figure, in a real typeface', () => {
   const FIFTEEN = [-2.5, -1, 0, 0.5, 1.25, 3, 7, 12, 18, 25, 40, 64, 99, 120, 480];
   const LONG = [-9999, -12.5, 0.001, 1.25, 480, 12345, 99999];
-  /** Each cell's numeral: the height of its strokes and the width of its line, read from the picture itself. */
+  /** Each cell's numeral: its height, read from the picture itself. */
   const numerals = (svg: string, count: number) =>
     Array.from({ length: count }, (_, i) => {
       const cell = svg.split(`data-drawer="${i}"`)[1]!.split('</g>')[0]!;
-      // In a cell's markup the numeral is the last line but one; the last is its position under it.
-      const digits = [...cell.matchAll(/stroke="(#[0-9a-f]{6})" stroke-width="([\d.]+)"[^>]* d="([^"]+)"/g)].at(-2)!;
-      const ys = [...digits[3]!.matchAll(/[ML][-\d.]+ ([-\d.]+)/g)].map((m) => Number(m[1]));
-      return { height: Math.max(...ys) - Math.min(...ys), line: Number(digits[2]) };
+      const digits = /data-part="value"[^>]* d="([^"]+)"/.exec(cell)![1]!;
+      const ys = [...digits.matchAll(/[ML][-\d.]+ ([-\d.]+)/g)].map((m) => Number(m[1]));
+      return { height: Math.max(...ys) - Math.min(...ys) };
     });
 
-  it('keeps the line a fixed part of the numeral: at most a tenth of its height, whatever the size', () => {
-    for (const unit of [2.6, 3, 4.3, 6.2]) expect(lineFor(unit) / (unit * 6)).toBeLessThanOrEqual(0.1);
-    expect(lineFor(2.6)).toBeLessThan(lineFor(6.2));
-    // As it was: a line of 2.6 on a numeral whose unit was 1.4, a third of its height.
-    expect(2.6 / (1.4 * 6)).toBeGreaterThan(0.3);
+  it('writes numbers in the outlines of the app\'s own typeface, filled: a 1 with its flag, a 0 with its counter', () => {
+    expect(outlineOf('0').polygons).toHaveLength(2);
+    expect(outlineOf('8').polygons).toHaveLength(3);
+    expect(outlineOf('1').polygons[0]!.length).toBeGreaterThan(4);
+    // Six units high, like the layout that places them; digits of one height.
+    for (const ch of '0123456789') {
+      const vs = outlineOf(ch).polygons.flat().map(([, v]) => v);
+      expect(Math.max(...vs)).toBeGreaterThan(5.9);
+      expect(Math.max(...vs)).toBeLessThan(6.2);
+    }
+    const svg = renderFrame(binarySearch({ values: LIST, target: 40 }), keyframes(binarySearch({ values: LIST, target: 40 }))[0]!, 'flat');
+    expect(svg).toMatch(/data-part="value" class="flat" fill="#[0-9a-f]{6}" stroke="none"/);
   });
 
   it('gives fifteen numbers two rows, so the longest of them is still a numeral that reads', () => {
@@ -317,7 +321,6 @@ describe('numerals that stay numerals: one size for a figure, and a line that si
         const drawn = numerals(renderFrame(model, frame, 'flat'), values.length);
         const heights = drawn.map((n) => Math.round(n.height));
         expect(Math.max(...heights) - Math.min(...heights), `${values.length} numbers, ${frame.kind} ${frame.step}`).toBeLessThanOrEqual(1);
-        for (const n of drawn) expect(n.line / n.height, `${values.length} numbers`).toBeLessThanOrEqual(0.11);
         expect(Math.min(...heights)).toBeGreaterThanOrEqual(15);
       }
     }
@@ -332,7 +335,7 @@ describe('numerals that stay numerals: one size for a figure, and a line that si
     expect(brackets(renderFrame(model, frames[2]!, 'flat'))).toBe(1);
   });
 
-  it('paints the long numbers with open counters: the cell of "-2.5" is mostly paper, where it was mostly ink', () => {
+  it('paints the long numbers as numerals: the cell of "-2.5" is mostly paper, where it was once mostly ink', () => {
     const model = binarySearch({ values: FIFTEEN, target: 64 });
     const svg = renderFrame(model, keyframes(model)[0]!, 'flat');
     const g = gridOf(FIFTEEN);
@@ -345,7 +348,7 @@ describe('numerals that stay numerals: one size for a figure, and a line that si
         if (canvas.data[(y * canvas.width + x) * 3]! < 128) dark += 1;
       }
     }
-    expect(dark / all).toBeLessThan(0.2);
+    expect(dark / all).toBeLessThan(0.35);
     expect(dark).toBeGreaterThan(0);
   });
 });
@@ -367,7 +370,76 @@ describe('a size to read on the screen in hand', () => {
     expect(cabinetCramped([1, 2, 3], 1234)).toBe(true);
     expect(cabinetCramped([1, 2.25, 3], 2)).toBe(true);
     expect(cabinetCramped(FIFTEEN.map((_, i) => i), 3)).toBe(true);
-    expect(cabinetReadWidth([3, 8, 12], 8)).toBe(640);
-    expect(cabinetReadWidth(FIFTEEN, 64)).toBeGreaterThan(640);
+    expect(cabinetReadWidth([3, 8, 12])).toBe(640);
+    expect(cabinetReadWidth(FIFTEEN)).toBeGreaterThan(640);
+    expect(cabinetReadWidth(FIFTEEN)).toBeLessThanOrEqual(1280);
+  });
+});
+
+describe('the combined look: the cabinet over the row, one picture in two layers', () => {
+  const FIFTEEN = [-2.5, -1, 0, 0.5, 1.25, 3, 7, 12, 18, 25, 40, 64, 99, 120, 480];
+  const pictures = (values: number[], target: number) => {
+    const model = binarySearch({ values, target });
+    return keyframes(model).map((f) => renderFrame(model, f, 'composite'));
+  };
+  const layer = (svg: string, name: string) => svg.split(`data-layer="${name}"`)[1]!.split('data-layer=')[0]!;
+  const states = (text: string) => [...text.matchAll(/data-drawer="(\d+)" data-state="(\w+)"/g)].map((m) => `${m[1]}:${m[2]}`);
+
+  it('shows every number twice, in the same state in both layers at every step', () => {
+    for (const svg of pictures(LIST, 42)) {
+      expect(states(layer(svg, 'scene'))).toHaveLength(LIST.length);
+      expect(states(layer(svg, 'reading'))).toEqual(states(layer(svg, 'scene')));
+    }
+  });
+
+  it('is taller than either look alone by the other, and as wide', () => {
+    expect(compositeView(LIST)).toEqual({ width: 640, height: compositeView(LIST).height });
+    expect(compositeView(LIST).height).toBeGreaterThan(380);
+    expect(compositeView(FIFTEEN).height).toBeGreaterThan(compositeView(LIST).height);
+  });
+
+  it('leads the eye from the drawer that is out to its number: a line at every comparison, none before the first', () => {
+    const [start, step] = pictures(LIST, 42);
+    expect(start).not.toContain('data-part="leader"');
+    const line = /data-part="leader"[^>]* d="([^"]+)"/.exec(step!)![1]!;
+    const points = [...line.matchAll(/[ML]([-\d.]+) ([-\d.]+)/g)].map((m) => [Number(m[1]), Number(m[2])]);
+    // It starts in the scene and ends over the compared cell (the fifth of nine), above the comparison.
+    const g = compositeGrid(LIST);
+    expect(points[0]![1]).toBeLessThan(286);
+    expect(points.at(-1)![0]).toBeCloseTo(g.x(4) + g.cell / 2, 0);
+    expect(points.at(-1)![1]).toBeLessThan(g.top(0));
+    expect(step).toContain('data-part="compare"');
+  });
+
+  it('goes round the rows above to a number in a lower row, never across their numbers', () => {
+    const found = pictures(FIFTEEN, 64).at(-1)!;
+    const line = /data-part="leader"[^>]* d="([^"]+)"/.exec(found)![1]!;
+    const points = [...line.matchAll(/[ML]([-\d.]+) ([-\d.]+)/g)].map((m) => [Number(m[1]), Number(m[2])] as [number, number]);
+    const g = compositeGrid(FIFTEEN);
+    expect(g.rows).toBe(2);
+    // Every upright piece that passes the first row's cells stands outside them.
+    for (let i = 1; i < points.length; i++) {
+      const [a, b] = [points[i - 1]!, points[i]!];
+      const passes = a[0] === b[0] && Math.min(a[1], b[1]) < g.top(0) + g.h && Math.max(a[1], b[1]) > g.top(0);
+      if (passes) expect(a[0] < g.x(0) || a[0] > g.x(g.perRow - 1) + g.cell).toBe(true);
+    }
+  });
+
+  it('is the same picture as a PNG, painted without a browser, with the accent of the line on it', () => {
+    const svg = pictures(LIST, 42)[1]!;
+    const png = framePng(svg);
+    expect(sha(framePng(svg))).toBe(sha(png));
+    const canvas = paintSvg(svg, 2);
+    expect(canvas.width).toBe(1280);
+    expect(canvas.height).toBe(compositeView(LIST).height * 2);
+    let accent = 0;
+    for (let i = 0; i < canvas.data.length; i += 3) if (canvas.data[i] === 0x2b && canvas.data[i + 1] === 0x46 && canvas.data[i + 2] === 0xc4) accent += 1;
+    expect(accent).toBeGreaterThan(500);
+  });
+
+  it('is what a still page gets when the slide asks for it', () => {
+    const still = stillFigure({ kind: 'figure', figure: 'binarySearch', look: 'composite', values: LIST, target: 42 });
+    expect(still.frames.every((f) => f.svg?.includes('data-layer="reading"'))).toBe(true);
+    expect(still.height).toBe(compositeView(LIST).height);
   });
 });

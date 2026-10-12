@@ -1,8 +1,7 @@
 import { binarySearch, binarySearchTable, figureProblem, type FigureProblem, type SlideVisual } from '@folio/core';
 import { cabinetLimit, DRAWERS_MAX, NUMERAL_MAX, type CabinetLimit } from './digits';
-import { keyframes, renderFrame } from './binarySearchFrames';
+import { keyframes, renderFrame, viewOf } from './binarySearchFrames';
 import { VIEW } from './binarySearchScene';
-import { flatView } from './flatScene';
 import { svgToPng } from './paint';
 
 type Figure = Extract<SlideVisual, { kind: 'figure' }>;
@@ -49,7 +48,7 @@ export function stillFigure(figure: Figure): StillFigure {
   const model = binarySearch(figure);
   const limit = cabinetLimit(model.values, model.target);
   const frames = keyframes(model).map((f) => ({ svg: limit ? null : renderFrame(model, f, figure.look), caption: f.caption }));
-  return { problem: null, limit, note: limit ? LIMITS[limit] : '', frames, table: binarySearchTable(model), ...(figure.look === 'flat' ? flatView(model.values) : VIEW) };
+  return { problem: null, limit, note: limit ? LIMITS[limit] : '', frames, table: binarySearchTable(model), ...viewOf(figure.look, model.values) };
 }
 
 /** A picture's PNG, at twice its own measure: sharp on a page and on a projector. */

@@ -1,5 +1,5 @@
 import { binarySearch, figureProblem, type SlideVisual } from '@folio/core';
-import { keyframes, type Keyframe } from '@folio/figures';
+import { keyframes, type FigureLook, type Keyframe } from '@folio/figures';
 import { useMediaQuery } from '@folio/ui';
 import { createContext, useContext, useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from 'react';
 
@@ -16,7 +16,7 @@ const HOLD_MS = 2400;
 export interface FigureRun {
   values: number[];
   target: number;
-  look: 'cabinet' | 'flat';
+  look: FigureLook;
   frames: Keyframe[];
   at: number;
   last: number;

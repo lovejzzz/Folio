@@ -7,7 +7,7 @@ const SHOTS = process.env.FOLIO_FIGURE_SHOTS;
 const NINE = [3, 8, 12, 17, 23, 31, 42, 56, 71];
 const FIFTEEN = [-2.5, -1, 0, 0.5, 1.25, 3, 7, 12, 18, 25, 40, 64, 99, 120, 480];
 const LONG = [-9999, -12.5, 0.001, 1.25, 480, 12345, 99999];
-const CASES: [string, 'flat' | 'cabinet', number[], number][] = [['nine', 'flat', NINE, 42], ['fifteen', 'flat', FIFTEEN, 64], ['long', 'flat', LONG, 480], ['long-cabinet', 'cabinet', LONG, 480], ['fifteen-cabinet', 'cabinet', FIFTEEN, 64], ['nine-cabinet', 'cabinet', NINE, 42]];
+const CASES: [string, 'flat' | 'cabinet' | 'composite', number[], number][] = [['nine', 'flat', NINE, 42], ['fifteen', 'flat', FIFTEEN, 64], ['long', 'flat', LONG, 480], ['long-cabinet', 'cabinet', LONG, 480], ['fifteen-cabinet', 'cabinet', FIFTEEN, 64], ['nine-cabinet', 'cabinet', NINE, 42], ['nine-both', 'composite', NINE, 42], ['fifteen-both', 'composite', FIFTEEN, 64], ['long-both', 'composite', LONG, 480]];
 
 // The phone a reader held this to: 390 by 844.
 test.use({ viewport: { width: 390, height: 844 } });
@@ -26,16 +26,16 @@ const least = (large: Locator, marks: string) => large.locator(marks).evaluateAl
 /** What a person holding the phone has in front of them at one step: read in pixels of the screen, never in the picture's units. */
 async function readable(page: Page, large: Locator, look: string): Promise<void> {
   const tools = page.getByRole('group', { name: 'Work the demonstration' });
-  if (look === 'flat') {
+  if (look !== 'cabinet') {
     expect(await least(large, '[data-part="value"]')).toBeGreaterThanOrEqual(13);
     expect(await least(large, '[data-part="place"]')).toBeGreaterThanOrEqual(9);
     if (await large.locator('[data-part="compare"]').count()) expect(await least(large, '[data-part="compare"]')).toBeGreaterThanOrEqual(13);
   } else {
-    expect(await least(large, 'path[class*="fig-w"]')).toBeGreaterThanOrEqual(9);
+    expect(await least(large, '.fig-numeral')).toBeGreaterThanOrEqual(9);
   }
   // The number compared, or found, is written inside the frame, whole.
   const frame = (await large.boundingBox())!;
-  const cell = large.locator('[data-state="look"], [data-state="found"]').first().locator(look === 'flat' ? '[data-part="value"]' : 'path[class*="fig-w"]').first();
+  const cell = look === 'cabinet' ? large.locator('[data-state="look"], [data-state="found"]').first().locator('.fig-numeral').first() : large.locator('[data-state="look"] [data-part="value"], [data-state="found"] [data-part="value"]').first();
   if (await cell.count()) {
     const at = (await cell.boundingBox())!;
     expect(at.x).toBeGreaterThanOrEqual(frame.x - 1);
@@ -49,7 +49,7 @@ async function readable(page: Page, large: Locator, look: string): Promise<void>
 }
 
 test('on a phone the larger picture is open, read in pixels of the screen, and worked beside its buttons', async ({ page }) => {
-  test.setTimeout(240_000);
+  test.setTimeout(360_000);
   await page.route('**/samples/*.json', (route) => route.fulfill({ contentType: 'application/json', body: withFigures() }));
   await page.goto('/');
   await page.getByRole('button', { name: 'Or open a sample course' }).click();

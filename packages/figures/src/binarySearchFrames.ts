@@ -1,6 +1,7 @@
 import { after, describeResult, describeStart, describeStep, type BinarySearchModel } from '@folio/core';
-import { sceneBody, sceneSvg, type DrawerState, type Pose, type Scene } from './binarySearchScene';
-import { flatBody, flatSvg } from './flatScene';
+import { cabinetReadWidth, sceneBody, sceneSvg, VIEW, type DrawerState, type Pose, type Scene, type View } from './binarySearchScene';
+import { compositeBody, compositeReadWidth, compositeSvg, compositeView } from './compositeScene';
+import { flatBody, flatReadWidth, flatSvg, flatView } from './flatScene';
 
 /**
  * The search as a run of still pictures: where every part stands before the first comparison, at each comparison,
@@ -44,11 +45,17 @@ export function between(from: Pose, to: Pose, t: number): Pose {
 /** One keyframe as a picture of its own (see `sceneSvg`): its caption is what a reader who cannot see it is told. */
 export function renderFrame(model: BinarySearchModel, frame: Keyframe, look: FigureLook = 'cabinet'): string {
   const scene = { values: model.values, target: model.target, pose: frame.pose };
-  return look === 'flat' ? flatSvg(scene, frame.caption) : sceneSvg(scene, frame.caption);
+  return look === 'flat' ? flatSvg(scene, frame.caption) : look === 'composite' ? compositeSvg(scene, frame.caption) : sceneSvg(scene, frame.caption);
 }
 
 /** The looks a demonstration can be drawn in. */
-export type FigureLook = 'cabinet' | 'flat';
+export type FigureLook = 'cabinet' | 'flat' | 'composite';
 
 /** The inside of the live SVG for a pose, in a look. */
-export const figureBody = (scene: Scene, look: FigureLook): string => (look === 'flat' ? flatBody(scene) : sceneBody(scene));
+export const figureBody = (scene: Scene, look: FigureLook): string => (look === 'flat' ? flatBody(scene) : look === 'composite' ? compositeBody(scene) : sceneBody(scene));
+
+/** The measure of a figure in a look: the cabinet has one; the looks with a row are as tall as its rows. */
+export const viewOf = (look: FigureLook, values: readonly number[]): View => (look === 'flat' ? flatView(values) : look === 'composite' ? compositeView(values) : VIEW);
+
+/** How wide, in pixels of a screen, a figure in a look must be shown to be read there. */
+export const readWidthOf = (look: FigureLook, values: readonly number[]): number => (look === 'flat' ? flatReadWidth(values) : look === 'composite' ? compositeReadWidth(values) : cabinetReadWidth(values));

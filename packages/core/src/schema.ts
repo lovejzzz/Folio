@@ -102,7 +102,7 @@ export const SlideVisualSchema = z.discriminatedUnion('kind', [
     kind: z.literal('figure'),
     figure: FigureIdSchema,
     /** How it is drawn: the cabinet of drawers, or a flat row of numbers. One of Folio's own, by name: never a stylesheet or a colour. */
-    look: z.enum(['cabinet', 'flat']).default('cabinet'),
+    look: z.enum(['cabinet', 'flat', 'composite']).default('cabinet'),
     values: z.array(z.number()).max(60),
     target: z.number(),
     /** What the teacher typed that is not yet numbers, as typed: saved with the course, so it is neither lost nor passed off as the numbers above. */

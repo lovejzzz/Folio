@@ -33,7 +33,7 @@ export function FigureData({ v, onChange }: { v: Figure; onChange: (next: Figure
     <div className="no-print mt-2 grid gap-1 font-ui text-12 text-ink-2" role="group" aria-label={t.figures.data}>
       <div className="flex items-center gap-2">
         <span className="shrink-0 font-semibold">{t.figures.look}</span>
-        <SegmentedControl<Figure['look']> label={t.figures.look} value={v.look} onChange={(look) => onChange({ ...v, look })} options={[{ id: 'cabinet', label: t.figures.looks.cabinet }, { id: 'flat', label: t.figures.looks.flat }]} />
+        <SegmentedControl<Figure['look']> label={t.figures.look} value={v.look} onChange={(look) => onChange({ ...v, look })} options={[{ id: 'cabinet', label: t.figures.looks.cabinet }, { id: 'flat', label: t.figures.looks.flat }, { id: 'composite', label: t.figures.looks.composite }]} />
       </div>
       <div className="flex items-baseline gap-2">
         <span className="shrink-0 font-semibold">{t.figures.values}</span>
