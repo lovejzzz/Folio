@@ -9,7 +9,8 @@ import { d, fillOf, FLAT, stroke, written } from './flatScene';
  * into it from the bottom slot up; the one a step is about is lit, and one that would go over the budget stays
  * half out. Below, the reading: a gauge from 0 to the budget with a block for each server, the budget as a tall
  * line with its name, a server that does not fit hatched and across that line, the sum written over the newest
- * block, and beside it what is used, what is left (or how far over), and how many are in.
+ * block, and beside it what is used, what is left (or how far over), and how many are fitted. (The names are words
+ * with a tall letter: one of small letters alone, as "servers" was, stood six pixels high on a phone beside nine.)
  */
 
 export type ServerState = 'waiting' | 'in' | 'now' | 'refused';
@@ -144,7 +145,7 @@ function reading({ model: m, pose }: RackScene, y0: number): { svg: string; at: 
   const tried = now >= 0 ? m.steps[now]! : null;
   const over = tried && !tried.fits;
   const sum = tried ? written(`${tried.step} × ${text(m.each)} = ${text(tried.total)}`, { x: Math.max(6, Math.min(BAR.x1 - 200, x((now + 0.5) * m.each) - 110)), y: y - 50, w: 220, h: 20 }, FLAT.accent, 3.4, 'compare') : '';
-  const rows: [string, string][] = [['used', text(used)], [over ? 'over by' : 'left', text(over ? tried.total - m.budget : m.budget - used)], ['servers', String(count)]];
+  const rows: [string, string][] = [['used', text(used)], [over ? 'over by' : 'left', text(over ? tried.total - m.budget : m.budget - used)], ['fitted', String(count)]];
   return { svg: frame + blocks.join('') + limit + sum + readout(rows, y0 + 14), at: tried ? [x((now + 0.5) * m.each), y - 54] : null, now };
 }
 
