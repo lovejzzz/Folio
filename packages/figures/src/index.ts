@@ -5,3 +5,5 @@ export { svgToPng, paintSvg } from './paint';
 export * from './exported';
 export * from './flatScene';
 export { compositeBody, compositeGrid, compositeSvg, compositeView } from './compositeScene';
+export * from './figureKinds';
+export { SORT_MAX, sortKeyframes, sortBody, sortSvg, sortView, sortLimit, type SortPose } from './sortScene';

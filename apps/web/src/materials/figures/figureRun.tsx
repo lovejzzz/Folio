@@ -1,5 +1,5 @@
-import { binarySearch, figureProblem, type SlideVisual } from '@folio/core';
-import { keyframes, type FigureLook, type Keyframe } from '@folio/figures';
+import { figureProblem, type SlideVisual } from '@folio/core';
+import { figureKind, type FigureKind, type Still } from '@folio/figures';
 import { useMediaQuery } from '@folio/ui';
 import { createContext, useContext, useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from 'react';
 
@@ -14,10 +14,10 @@ const HOLD_MS = 2400;
  * high, and all three inside it covered one another.
  */
 export interface FigureRun {
-  values: number[];
-  target: number;
-  look: FigureLook;
-  frames: Keyframe[];
+  /** The demonstration as the slide holds it, and how its kind is drawn. */
+  visual: Figure;
+  kind: FigureKind;
+  frames: Still[];
   at: number;
   last: number;
   running: boolean;
@@ -32,7 +32,7 @@ const Run = createContext<FigureRun | null>(null);
 export const useFigureRun = (): FigureRun | null => useContext(Run);
 
 function Running({ visual, children }: { visual: Figure; children: ReactNode }) {
-  const frames = useMemo(() => keyframes(binarySearch(visual)), [visual]);
+  const frames = useMemo(() => figureKind(visual).stills(visual), [visual]);
   const [at, setAt] = useState(0);
   const [playing, setPlaying] = useState(false);
   const still = useMediaQuery('(prefers-reduced-motion: reduce)');
@@ -60,7 +60,7 @@ function Running({ visual, children }: { visual: Figure; children: ReactNode }) 
     e.preventDefault();
     act();
   };
-  return <Run.Provider value={{ values: visual.values, target: visual.target, look: visual.look, frames, at, last, running, still, go, toggle, onKey }}>{children}</Run.Provider>;
+  return <Run.Provider value={{ visual, kind: figureKind(visual), frames, at, last, running, still, go, toggle, onKey }}>{children}</Run.Provider>;
 }
 
 /** Everything inside can work the demonstration; a list that cannot be searched has nothing to work. */
@@ -68,7 +68,7 @@ export function FigureRunProvider({ visual, children }: { visual: Figure; childr
   if (figureProblem(visual)) return <>{children}</>;
   // A new list or target starts the search again from its first picture.
   return (
-    <Running key={`${visual.values.join(',')}|${visual.target}|${visual.look}`} visual={visual}>
+    <Running key={`${visual.figure}|${visual.values.join(',')}|${visual.target}|${visual.look}`} visual={visual}>
       {children}
     </Running>
   );

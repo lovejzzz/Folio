@@ -1,3 +1,5 @@
+import { selectionSortProblem } from './selectionSort';
+
 /**
  * Binary search, as a model with no drawing in it. Everything a teacher or a student sees of the demonstration (the
  * figure on a slide, the line that says what a step does, the text a screen reader is given, the table of steps in a Word
@@ -73,9 +75,10 @@ export type FigureProblem = BinarySearchProblem | 'unfinished';
  * A demonstration whose numbers are still being typed wrongly is unfinished: it is drawn and exported as that, with
  * what was typed, never as the numbers it had before.
  */
-export function figureProblem(figure: BinarySearchInput & { entered?: FigureEntered | undefined }): FigureProblem | null {
+export function figureProblem(figure: BinarySearchInput & { figure?: string; entered?: FigureEntered | undefined }): FigureProblem | null {
   if (figure.entered && (figure.entered.values !== undefined || figure.entered.target !== undefined)) return 'unfinished';
-  return binarySearchProblem(figure);
+  // Each demonstration asks of its list only what its own method needs: a search, that it is in order; a sort, nothing.
+  return figure.figure === 'selectionSort' ? selectionSortProblem(figure) : binarySearchProblem(figure);
 }
 
 /** The same numbers in ascending order: offered to the teacher as a choice, never done for them. */

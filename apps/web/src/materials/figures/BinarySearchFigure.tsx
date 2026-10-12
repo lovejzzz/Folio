@@ -1,4 +1,3 @@
-import { between, figureBody, readWidthOf, viewOf, type Pose } from '@folio/figures';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useT } from '../../i18n';
 import { adoptFigureStyles } from './figureStyles';
@@ -12,28 +11,44 @@ const ease = (t: number) => t * t * (3 - 2 * t);
  * The picture, drawn into the SVG by hand and not through React: while a drawer slides the whole drawing is made again
  * some sixty times a second from the pose, and nothing else on the page need hear of it.
  */
-function useDrawn({ values, target, look, frames, at, still }: FigureRun, onRest: () => void) {
+function useDrawn({ visual, kind, frames, at, still }: FigureRun, onRest: () => void) {
   const host = useRef<SVGSVGElement>(null);
-  const shown = useRef<Pose | null>(null);
+  const shown = useRef<{ pose: unknown; of: FigureRun['frames'] } | null>(null);
   useEffect(() => {
     const to = frames[at]!.pose;
-    const from = shown.current;
-    const draw = (pose: Pose) => {
-      if (host.current) host.current.innerHTML = figureBody({ values, target, pose }, look);
-      shown.current = pose;
+    // A pose is its own demonstration's: one left by other numbers is not a place to start from.
+    const from = shown.current?.of === frames ? shown.current.pose : null;
+    const draw = (pose: unknown) => {
+      if (host.current) host.current.innerHTML = kind.body(visual, pose);
+      shown.current = { pose, of: frames };
     };
     // Come to rest: said, so that what waits for the parts to stand still does not go by a clock.
-    const rest = (pose: Pose) => (draw(pose), onRest());
-    if (still || !from || from.pull.length !== to.pull.length) return rest(to);
+    const rest = (pose: unknown) => (draw(pose), onRest());
+    if (still || from === null) return rest(to);
     const start = performance.now();
-    let raf = requestAnimationFrame(function tick(now) {
+    let raf = 0;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      cancelAnimationFrame(raf);
+      rest(to);
+    };
+    raf = requestAnimationFrame(function tick(now) {
       const t = Math.min(1, (now - start) / MOVE_MS);
-      if (t < 1) draw(between(from, to, ease(t)));
-      else rest(to);
-      if (t < 1) raf = requestAnimationFrame(tick);
+      if (t >= 1) return finish();
+      draw(kind.between(from, to, ease(t)));
+      raf = requestAnimationFrame(tick);
     });
-    return () => cancelAnimationFrame(raf);
-  }, [values, target, look, frames, at, still, onRest]);
+    // A page that is not being painted (a tab behind another, a busy machine) is given few frames or none: the step
+    // still ends where it should, a moment after its time, whether or not a frame came to end it.
+    const late = setTimeout(finish, MOVE_MS + 80);
+    return () => {
+      done = true;
+      cancelAnimationFrame(raf);
+      clearTimeout(late);
+    };
+  }, [visual, kind, frames, at, still, onRest]);
   return host;
 }
 
@@ -54,18 +69,19 @@ export default function BinarySearchFigure({ run, large = false }: { run: Figure
   const frame = useRef<HTMLDivElement>(null);
   useEffect(adoptFigureStyles, []);
   // The row of numbers is as tall as its rows; the cabinet has one measure.
-  const view = viewOf(run.look, run.values);
+  const view = run.kind.view(run.visual);
+  const cabinet = run.visual.figure === 'binarySearch' && run.visual.look === 'cabinet';
   // The larger cabinet leaves out the empty paper over and under it: the room goes to the labels.
-  const top = large && run.look === 'cabinet' ? CABINET_BAND.top : 0;
-  const tall = large && run.look === 'cabinet' ? CABINET_BAND.height : view.height;
-  const width = readWidthOf(run.look, run.values);
+  const top = large && cabinet ? CABINET_BAND.top : 0;
+  const tall = large && cabinet ? CABINET_BAND.height : view.height;
+  const width = run.kind.readWidth(run.visual);
   useEffect(() => {
     if (!large) return;
     // The parts have come to rest: bring the number compared (or found) to the middle of the frame. Timed by a clock, a
     // busy page was asked while the drawer was still on its way, and the frame went to the wrong place or back to the start.
     const box = frame.current;
     // In the combined picture: the number in the row, which is what is read.
-    const held = box?.querySelector('[data-layer="reading"] [data-state="look"], [data-layer="reading"] [data-state="found"]') ?? box?.querySelector('[data-state="look"], [data-state="found"]');
+    const held = box?.querySelector('[data-layer="reading"] [data-state="look"], [data-layer="reading"] [data-state="found"], [data-layer="reading"] [data-state="min"]') ?? box?.querySelector('[data-state="look"], [data-state="found"], [data-state="min"]');
     // Its numeral and not its whole drawing: a drawer's drawing takes in the clips over it.
     const cell = held?.querySelector('[data-part="value"], .fig-numeral') ?? held;
     if (!box || !cell) return void box?.scrollTo({ left: 0 });
@@ -87,7 +103,7 @@ export default function BinarySearchFigure({ run, large = false }: { run: Figure
   const art = <svg ref={host} className={large ? 'iso-svg folio-figure-wide' : 'iso-svg folio-figure-art'} style={{ ...(large && { minWidth: `${width}px` }), aspectRatio: `${view.width} / ${tall}` }} viewBox={`0 ${top} ${view.width} ${tall}`} role="img" aria-label={run.frames[run.at]!.caption} />;
   if (!large) {
     return (
-      <div className="folio-figure iso" data-theme="light" data-owns-arrows role="group" aria-label={t.figures.binarySearch} tabIndex={0} onKeyDown={run.onKey}>
+      <div className="folio-figure iso" data-theme="light" data-owns-arrows role="group" aria-label={t.figures.names[run.visual.figure]} tabIndex={0} onKeyDown={run.onKey}>
         {art}
       </div>
     );

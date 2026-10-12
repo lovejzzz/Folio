@@ -61,10 +61,10 @@ function frameOf(count: number, view: View = VIEW): Frame {
 }
 
 /** A closed rectangle on a face that looks toward +y. */
-const onFront = (x0: number, x1: number, y: number, z0: number, z1: number, p: P) => k.pathOf([k.iso([x0, y, z0], p), k.iso([x1, y, z0], p), k.iso([x1, y, z1], p), k.iso([x0, y, z1], p)], true);
+export const onFront = (x0: number, x1: number, y: number, z0: number, z1: number, p: P) => k.pathOf([k.iso([x0, y, z0], p), k.iso([x1, y, z0], p), k.iso([x1, y, z1], p), k.iso([x0, y, z1], p)], true);
 
 /** A number printed on a face that looks toward +y, centred in the box given, read from the viewer's left: its outlines, lying in the face. */
-function stamped(text: string, box: { x0: number; x1: number; y: number; z0: number; z1: number }, p: P, size?: number): string {
+export function stamped(text: string, box: { x0: number; x1: number; y: number; z0: number; z1: number }, p: P, size?: number): string {
   const { polygons, width } = outlineOf(text);
   if (!width) return '';
   const s = size ?? Math.min((box.x1 - box.x0) / width, (box.z1 - box.z0) / GLYPH_HEIGHT);
@@ -77,7 +77,7 @@ function stamped(text: string, box: { x0: number; x1: number; y: number; z0: num
 const INK = { hi: '#26262a', lit: '#000000', lo: '#b4b4b8' };
 
 /** A printed number as a filled mark. */
-const numeralMark = (d: string, tone: keyof typeof INK): string => (d ? `<path class="flat fig-numeral" fill="${INK[tone]}" stroke="none" d="${d}"/>` : '');
+export const numeralMark = (d: string, tone: keyof typeof INK): string => (d ? `<path class="flat fig-numeral" fill="${INK[tone]}" stroke="none" d="${d}"/>` : '');
 
 function base({ plate, p }: Frame): string[] {
   const out: string[] = [`<path class="iso-halo" d="${k.haloOf(plate, -11, 8, p)}"/>`];

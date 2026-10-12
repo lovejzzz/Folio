@@ -81,7 +81,7 @@ export type SlideLayout = z.infer<typeof SlideLayoutSchema>;
  * A chart is always drawn from its numbers, never from an impression of a shape.
  */
 /** The demonstrations a slide can hold. */
-export const FigureIdSchema = z.enum(['binarySearch']);
+export const FigureIdSchema = z.enum(['binarySearch', 'selectionSort']);
 export type FigureId = z.infer<typeof FigureIdSchema>;
 
 export const SlideVisualSchema = z.discriminatedUnion('kind', [
@@ -104,7 +104,8 @@ export const SlideVisualSchema = z.discriminatedUnion('kind', [
     /** How it is drawn: the cabinet of drawers, or a flat row of numbers. One of Folio's own, by name: never a stylesheet or a colour. */
     look: z.enum(['cabinet', 'flat', 'composite']).default('cabinet'),
     values: z.array(z.number()).max(60),
-    target: z.number(),
+    /** The number a search looks for; a demonstration that looks for none keeps it at 0. */
+    target: z.number().default(0),
     /** What the teacher typed that is not yet numbers, as typed: saved with the course, so it is neither lost nor passed off as the numbers above. */
     entered: z.object({ values: z.string().max(600).optional(), target: z.string().max(60).optional() }).optional(),
   }),

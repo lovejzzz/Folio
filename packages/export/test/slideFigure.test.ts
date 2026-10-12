@@ -84,11 +84,11 @@ describe('a demonstration the picture cannot hold, or that is not finished', () 
     const word = unzip(await renderDocx([docOf(long, 'student')], { courseTitle: long.title }));
     const xml = strFromU8(word['word/document.xml']!);
     expect(pngs(word, /^word\/media\//)).toHaveLength(0);
-    expect(xml).toContain('The picture holds up to 15 numbers');
+    expect(xml).toContain('The picture holds only so many numbers');
     expect(xml).toContain('35 was found at position 8');
     expect(xml).toContain('What follows');
     const slides = text(unzip(await renderPptx(docOf(long, 'student'))), /^ppt\/slides\/slide\d+\.xml$/);
-    expect(slides).toContain('The picture holds up to 15 numbers');
+    expect(slides).toContain('The picture holds only so many numbers');
     expect(slides).toContain('35 was found at position 8');
     expect(slides).toContain('<a:tbl>');
   });

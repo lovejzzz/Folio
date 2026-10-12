@@ -60,22 +60,22 @@ function FigureStrip() {
   const t = useT();
   const run = useFigureRun();
   if (!run) return null;
-  const { state } = run.frames[run.at]!.pose;
+  const items = run.kind.items(run.visual, run.frames[run.at]!.pose);
   return (
     <div className="grid justify-items-center gap-1">
       <ol className="folio-figure-strip font-ui" aria-label={t.figures.strip}>
-        {run.values.map((value, i) => (
-          <li key={i} data-state={state[i]} aria-label={`${t.figures.place(i + 1)}: ${value}, ${t.figures.states[state[i] ?? 'play']}`}>
+        {items.map((item) => (
+          <li key={item.place} data-state={item.state} aria-label={`${t.figures.place(item.place)}: ${item.value}, ${t.figures.states[item.state as keyof typeof t.figures.states] ?? item.state}`}>
             <span aria-hidden className="folio-figure-strip-place">
-              {i + 1}
+              {item.place}
             </span>
             <span aria-hidden className="folio-figure-strip-value tabular-nums">
-              {String(value)}
+              {String(item.value)}
             </span>
           </li>
         ))}
       </ol>
-      <p className="font-ui text-13 text-ink-2">{t.figures.looking(String(run.target))}</p>
+      <p className="font-ui text-13 text-ink-2">{run.visual.figure === 'binarySearch' ? t.figures.looking(String(run.visual.target)) : t.figures.sorting}</p>
     </div>
   );
 }

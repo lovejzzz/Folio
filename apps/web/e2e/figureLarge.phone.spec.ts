@@ -58,7 +58,7 @@ test('on a phone the larger picture is open, read in pixels of the screen, and w
   const base = page.url().replace(/\/map$/, '/m/slides');
   for (const [name, look] of CASES) {
     await page.goto(`${base}?slide=${CASES.findIndex((c) => c[0] === name) + 1}`);
-    const large = page.getByRole('group', { name: 'Binary search, larger picture' });
+    const large = page.getByRole('group', { name: 'The demonstration, larger' });
     const tools = page.getByRole('group', { name: 'Work the demonstration' });
     await expect(large.locator('[data-drawer]').first()).toBeVisible();
     const next = tools.getByRole('button', { name: 'Next step' });
@@ -74,7 +74,7 @@ test('on a phone the larger picture is open, read in pixels of the screen, and w
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/phone390-${name}-step${step}.png` });
     }
     // The whole search was walked: a comparison, numbers set aside, and the number found.
-    expect([...seen].sort()).toEqual(['aside', 'found', 'look']);
+    expect([...seen].sort(), name).toEqual(['aside', 'found', 'look']);
     // The picture closes and opens by its button.
     await tools.getByRole('button', { name: 'Hide the larger picture' }).tap();
     await expect(large).toHaveCount(0);

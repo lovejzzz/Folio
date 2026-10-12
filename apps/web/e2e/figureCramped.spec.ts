@@ -20,7 +20,7 @@ test('numbers the cabinet draws too small are said, with the row of numbers one 
   await expect(note).toHaveCount(0);
   await expect(page.getByRole('group', { name: 'Binary search, step by step' }).locator('path.flat').first()).toBeVisible();
   // On a wide screen the larger picture is closed until asked for; it steps with the slide's picture.
-  const large = page.getByRole('group', { name: 'Binary search, larger picture' });
+  const large = page.getByRole('group', { name: 'The demonstration, larger' });
   await expect(large).toHaveCount(0);
   await tools.getByRole('button', { name: 'Show the picture larger' }).click();
   await expect(large.locator('[data-drawer]')).toHaveCount(7);

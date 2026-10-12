@@ -37,7 +37,7 @@ export const fillOf = (path: string, color: string) => `<path class="flat" fill=
 const rect = (x: number, y: number, w: number, h: number): P[] => [[x, y], [x + w, y], [x + w, y + h], [x, y + h]];
 
 /** A number in the app's typeface at a given unit, centred in a box. Marked with what it writes: what a test measures on a screen. */
-function written(text: string, box: { x: number; y: number; w: number; h: number }, color: string, unit: number, part = 'value'): string {
+export function written(text: string, box: { x: number; y: number; w: number; h: number }, color: string, unit: number, part = 'value'): string {
   const { polygons, width } = outlineOf(text);
   if (!width) return '';
   const s = Math.min(unit, box.w / width, box.h / GLYPH_HEIGHT);
