@@ -89,7 +89,7 @@ const lessonsOf = (n: number[]) => (n.length === 1 ? `lesson ${n[0]}` : n.length
 /** Why a part nobody ticked is written: said before the build, with the lessons it is written for. */
 function neededLine(n: Estimate['needed'][number]): string {
   const of = lessonsOf(n.lessons);
-  if (n.kind === 'facts') return `Also part of this: the facts of ${of}, settled once before the ${NAMES[n.neededBy] ?? n.neededBy} is written, since no lesson plan is.`;
+  if (n.kind === 'facts') return `Also part of this: the facts of ${of}, settled once first for the ${NAMES[n.neededBy] ?? n.neededBy}, since no lesson plan is written.`;
   if (n.kind === 'plan') return `Also written: the lesson plan of ${of}, which the ${NAMES[n.neededBy] ?? n.neededBy} is written from.`;
   if (n.kind === 'assignments') return `Also written: the graded work of ${of}, since a rubric is written with the work it scores.`;
   return `Also written: the ${NAMES[n.kind] ?? n.kind} of ${of}, which the ${NAMES[n.neededBy] ?? n.neededBy} needs.`;
@@ -116,7 +116,7 @@ function creditLines(e: Estimate, pay: Paying): string[] {
   if (pay.balance >= high) return [used, `You have ${pay.balance.toLocaleString('en-US')}: nothing to buy.`];
   const short = high - pay.balance;
   const pack = covering(short, pay.packs);
-  const buy = pack ? `the $${pack.usd} pack (${pack.credits.toLocaleString('en-US')} credits) covers it` : pay.packs.length ? 'more than one pack' : 'buying credits opens soon';
+  const buy = pack ? `the $${pack.usd} pack (${pack.credits.toLocaleString('en-US')} credits) covers it` : pay.packs.length ? 'more than one pack is needed' : 'buying credits opens soon';
   return [used, pay.balance >= low ? `You have ${pay.balance.toLocaleString('en-US')}: it may be enough, and may fall up to ${short.toLocaleString('en-US')} short; ${buy}.` : `You have ${pay.balance.toLocaleString('en-US')}: ${span((low - pay.balance).toLocaleString('en-US'), short.toLocaleString('en-US'))} more are needed; ${buy}.`];
 }
 

@@ -49,7 +49,7 @@ describe('what a build is expected to take, read from its plan', () => {
   it('lesson facts and their second reading are in the figure, at one pass and at two', () => {
     const e = planEstimate([task('facts', 'run', 1, 'slides'), task('slides', 'run')]);
     expect(e).toMatchObject({ parts: 2, credits: [40, 130], reckoned: 1 });
-    expect(estimateLines(e, folio(null))[1]).toBe('Also part of this: the facts of lesson 1, settled once before the slide deck is written, since no lesson plan is.');
+    expect(estimateLines(e, folio(null))[1]).toBe('Also part of this: the facts of lesson 1, settled once first for the slide deck, since no lesson plan is written.');
   });
 
   it('a part with no figure is said and never added as nothing', () => {
