@@ -145,7 +145,9 @@ function unshown(v: SlidesDraft, lesson: Lesson): Problem[] {
   // Code the teacher types and runs before the class is on the screen too, and is not a slide's to carry: a lab's forty
   // commands sent both decks of a first paid run back to be written again.
   const code = (item: string) => /^\s*(?:#|[\w.$]+\s*(?:<-|=[^=]|\()|.*(?:\|>|%>%)\s*$)/.test(item) || /^`[^`]+`$/.test(item.trim());
-  const missing = lesson.segments.flatMap((s) => s.shown ?? []).filter((item) => !code(item) && plain(item).length >= 12 && !deck.includes(plain(item).slice(0, 40)));
+  // A demonstration the plan puts on the screen is carried by a slide that holds one: by its picture, not by the plan's words.
+  const drawn = (item: string) => /^\s*demonstration\s*:/i.test(item) && v.slides.some((x) => x.figure);
+  const missing = lesson.segments.flatMap((s) => s.shown ?? []).filter((item) => !code(item) && !drawn(item) && plain(item).length >= 12 && !deck.includes(plain(item).slice(0, 40)));
   return missing.length ? [{ index: null, advisory: true, flag: { code: 'schemaIssue', values: { path: 'slides', issue: `The plan puts these on the screen, and no slide carries them in the plan's words: ${missing.map((m) => `"${m.length > 140 ? `${m.slice(0, 140)}…` : m}"`).join('; ')}. Give each a slide, whole` } } }] : [];
 }
 
