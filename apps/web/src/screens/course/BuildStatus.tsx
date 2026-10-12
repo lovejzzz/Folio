@@ -1,11 +1,11 @@
-import { buildPlan } from '@folio/ai';
-import { StatusMark, cx } from '@folio/ui';
-import { Button as AriaButton } from 'react-aria-components';
+import type { Course } from '@folio/core';
+import { Button, StatusMark, cx } from '@folio/ui';
+import { Button as AriaButton, Dialog as AriaDialog, DialogTrigger, Popover } from 'react-aria-components';
 import { useT } from '../../i18n';
 import { startBuild, stopBuild, useBuild } from '../../state/build';
-import { estimateLines, estimateShort, planEstimate } from '../../state/estimate';
+import { estimateLines, estimateShort } from '../../state/estimate';
 import { useCourse } from '../../state/session';
-import { usePaying } from '../plan/CreditsNote';
+import { usePaying, usePlanEstimate } from '../plan/CreditsNote';
 
 const linkClass =
   'rounded-control px-1 font-medium text-accent underline-offset-4 outline-none data-hovered:underline data-focus-visible:ring-2 data-focus-visible:ring-accent';
@@ -16,7 +16,6 @@ export function BuildStatus() {
   const course = useCourse();
   const { running, stopping, currentLesson, courseId } = useBuild();
   const mine = courseId === course.id;
-  const pay = usePaying(course.status === 'building' && !running);
   if (running && mine) {
     return (
       <p className="flex min-w-0 items-center gap-2 font-ui text-13 text-ink-2" aria-live="polite">
@@ -35,24 +34,45 @@ export function BuildStatus() {
     );
   }
   if (course.status === 'building') {
-    // What Resume runs is the course's plan as it stands now: what is left, counted and priced from the same list.
-    const need = planEstimate(buildPlan(course));
-    const left = need.parts;
-    if (!left) return null;
-    const figure = estimateShort(need, pay);
-    return (
-      <p className="flex min-w-0 items-center gap-2 font-ui text-13 text-ink-2">
-        <span className="truncate">{t.build.paused(left)}</span>
-        <span aria-hidden className="hidden sm:inline">·</span>
-        <span className="hidden truncate sm:inline" title={estimateLines(need, pay).join(' ')} data-estimate>
-          {figure}
-        </span>
-        <span aria-hidden>·</span>
-        <AriaButton onPress={() => void startBuild()} className={linkClass}>
-          {t.build.resume}
-        </AriaButton>
-      </p>
-    );
+    return <Paused course={course} />;
   }
   return null;
+}
+
+/**
+ * A build that stopped: what is left, about what it takes, and Resume. The figure is on the line on every screen, a
+ * phone's too, and is a button: pressed, it opens the sentences behind it (who is paid, what else is written, how far
+ * the figure can be trusted) with Resume under them. On a phone the figure was hidden and its sentences were a hover.
+ */
+function Paused({ course }: { course: Course }) {
+  const t = useT();
+  const pay = usePaying();
+  const need = usePlanEstimate(course);
+  if (!need.parts) return null;
+  const lines = estimateLines(need, pay);
+  return (
+    <p className="flex min-w-0 flex-wrap items-center gap-x-2 font-ui text-13 text-ink-2">
+      <span className="truncate">{t.build.paused(need.parts)}</span>
+      <span aria-hidden>·</span>
+      <DialogTrigger>
+        <AriaButton className={linkClass} data-estimate>
+          {estimateShort(need, pay)}
+        </AriaButton>
+        <Popover placement="bottom" offset={8} className="max-w-sm rounded-sheet bg-paper p-4 shadow-overlay">
+          <AriaDialog aria-label={t.build.whatItTakes} className="grid gap-2 font-ui text-13 leading-5 text-ink outline-none">
+            {lines.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+            <Button size="sm" variant="primary" className="justify-self-start" onPress={() => void startBuild()}>
+              {t.build.resume}
+            </Button>
+          </AriaDialog>
+        </Popover>
+      </DialogTrigger>
+      <span aria-hidden>·</span>
+      <AriaButton onPress={() => void startBuild()} className={linkClass}>
+        {t.build.resume}
+      </AriaButton>
+    </p>
+  );
 }
