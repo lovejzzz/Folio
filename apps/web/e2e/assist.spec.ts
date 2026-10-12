@@ -10,7 +10,10 @@ test('⌘K plans a course change, previews it, and applies it', async ({ page })
   await page.keyboard.type('make every quiz three questions');
   await page.getByRole('option', { name: /make every quiz three questions/ }).click();
   await expect(page.getByText('Make every quiz 3 questions')).toBeVisible();
-  await expect(page.getByText('Then update the 4 parts written from what changes.')).toBeVisible();
+  // What Apply goes on to write, and what it takes, before it is pressed.
+  const work = page.getByRole('note', { name: 'Applying this then writes:' });
+  await expect(work).toContainText('Quiz & exam bank, lessons 1, 2, 3, 4: written again from what changes');
+  await expect(work).toContainText(/\$|¢/);
   await page.getByRole('button', { name: 'Apply' }).click();
   await page.getByRole('link', { name: 'Open Quiz & exam bank' }).click();
   await expect(page.getByRole('article', { name: 'Question 12' })).toBeVisible();
