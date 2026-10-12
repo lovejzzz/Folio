@@ -104,6 +104,21 @@ export function meetingsUnshown(v: SlidesDraft, lesson: Lesson): number[] {
   return [...showing].filter((s) => !drawn.has(s)).sort((a, b) => a - b).map((s) => s + 1);
 }
 
+const SPOKEN_FIX = /[^.!?;\n]*\b\d[\d,.]*\s?[\p{L}%]{0,8}\s+(?:shown |printed |given )?(?:on|in) the (?:slide|screen) (?:is|are|means|refers|should|was|were|counts|covers|includes)\b[^.!?;\n]*/iu;
+
+/**
+ * Slides whose notes explain away a figure the slide itself shows ("the 201 MB on the slide is all three matrices
+ * together"), by number and with the sentence. A student reading the deck alone has the wrong figure, and a teacher who
+ * skips the sentence teaches it. Tried on 12,002 slides Folio had written: the one such slide named and no other; wider
+ * wordings ("the error on the slide") also named work shown wrong on purpose, for students to find, and were left out.
+ */
+export function spokenFixes(v: { slides: { notes: string }[] }): { n: number; said: string }[] {
+  return v.slides.flatMap((s, i) => {
+    const said = SPOKEN_FIX.exec(s.notes)?.[0].trim();
+    return said ? [{ n: i + 1, said: said.slice(0, 160) }] : [];
+  });
+}
+
 /**
  * What is wrong with a deck against its lesson, each as its writer can put it right. Out of step with the plan is
  * asked for once and let be; a case with no slide is kept on the deck when a second writing still leaves it out, so a
@@ -113,6 +128,7 @@ export function deckFaults(v: SlidesDraft, lesson: Lesson): { issue: string; kep
   return [
     ...untaught(v, lesson).map((title) => ({ kept: true, issue: `The lesson's case "${title}" has no slide: the deck teaches every case the lesson was settled with, each on a slide of its own, however many slides that takes` })),
     ...meetingsUnshown(v, lesson).map((n) => ({ kept: true, issue: `Meeting ${n} of this lesson puts things on the screen and the deck has no slide for it: every meeting's on-screen items have slides, each given the number of its own segment` })),
+    ...spokenFixes(v).map(({ n, said }) => ({ kept: true, issue: `Slide ${n}'s notes explain a figure the slide shows as meaning something else ("${said}"): the slide itself shows the figure that is right for what it asks, and the notes correct nothing on it` })),
     ...outOfStep(v, lesson).map((issue) => ({ kept: false, issue })),
   ];
 }

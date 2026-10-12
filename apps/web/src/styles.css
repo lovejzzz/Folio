@@ -433,6 +433,8 @@
   .folio-slide-ask {
     font-size: 0.9em;
     font-weight: 650;
+    /* Its own leading: at the page's, a question of two lines reached down to the slide's foot. */
+    line-height: 1.25;
     color: var(--folio-ink);
   }
   /* Things side by side: a column each, its name over a heavy rule, its points under. */
@@ -462,6 +464,21 @@
     border-bottom: 1px solid var(--folio-rule);
     line-height: 1.3;
     color: var(--folio-ink);
+  }
+  /* The same under the slide on a phone, at the page's size: steps one under another, sides one under another. */
+  .folio-slide-read .folio-slide-steps {
+    flex-direction: column;
+    font-size: 1em;
+  }
+  .folio-slide-read .folio-slide-step-arrow {
+    transform: rotate(90deg);
+  }
+  .folio-slide-read .folio-slide-compare {
+    grid-auto-flow: row;
+    font-size: 1em;
+  }
+  .folio-slide-read .folio-slide-table {
+    font-size: 0.9375rem;
   }
   .folio-slide-bullets > li {
     display: flex;

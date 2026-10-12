@@ -1,0 +1,56 @@
+{
+ "from": "the AI-training course Folio wrote on 12 October 2026, lesson 3: the segment and the slide as written",
+ "segment": {
+  "kind": "teach",
+  "session": 0,
+  "title": "Memory and VRAM: where the data lives",
+  "minutes": 6,
+  "description": "Draw the path from disk to host RAM, over PCIe to VRAM, then to on-chip cache, registers and cores, with the bandwidth of each hop.\nEach student writes a guess for the time to copy one 4096 × 4096 matrix of 32-bit numbers to the GPU.\nReveal the copy time and compare it with the multiply at peak.\nState the rule: create tensors on the device and keep copies out of the loop.",
+  "teacherNotes": "Copy: one matrix occupies 67,108,864 bytes, about 67.1 MB. At 16 GB/s its ideal copy time is about 4.2 ms, compared with about 17 ms for the multiply at peak. Copying both inputs and returning the output transfers about 201 MB and takes about 12.6 ms at that bandwidth. PCIe 3.0 x16 peaks near 16 GB/s; real copies are slower. Host RAM can have higher bandwidth than this PCIe link.",
+  "shown": [
+   "Steps: disk → host RAM → PCIe (about 16 GB/s) → VRAM (about 320 GB/s on a T4) → on-chip cache and registers → cores",
+   "Question: How long does it take to copy one 4096 × 4096 matrix of 32-bit numbers (201 MB) from host RAM to the GPU at about 16 GB/s?"
+  ],
+  "id": "x_082b310aa432"
+ },
+ "slide": {
+  "layout": "bullets",
+  "title": "Memory and VRAM: where the data lives",
+  "bullets": [
+   "Question: How long does it take to copy one 4096 × 4096 matrix of 32-bit numbers (201 MB) from host RAM to the GPU at about 16 GB/s?"
+  ],
+  "notes": "Draw the path from disk to the cores and give the bandwidth of each hop. Each student writes a guess for the copy time before you reveal it. Say aloud when you reveal: one matrix occupies 67,108,864 bytes, about 67.1 MB; the 201 MB on the slide is all three matrices together (two inputs and the returned output). At 16 GB/s one matrix copies in about 4.2 ms, compared with about 17 ms for the multiply at peak. Copying both inputs and returning the output transfers about 201 MB and takes about 12.6 ms at that bandwidth. PCIe 3.0 x16 peaks near 16 GB/s; real copies are slower. Host RAM can have higher bandwidth than this PCIe link. State the rule: create tensors on the device and keep copies out of the loop.",
+  "id": "x_b840012e77eb",
+  "segment": "x_082b310aa432",
+  "visual": {
+   "kind": "steps",
+   "steps": [
+    {
+     "title": "disk",
+     "detail": ""
+    },
+    {
+     "title": "host RAM",
+     "detail": ""
+    },
+    {
+     "title": "PCIe (about 16 GB/s)",
+     "detail": ""
+    },
+    {
+     "title": "VRAM (about 320 GB/s on a T4)",
+     "detail": ""
+    },
+    {
+     "title": "on-chip cache and registers",
+     "detail": ""
+    },
+    {
+     "title": "cores",
+     "detail": ""
+    }
+   ],
+   "cycle": false
+  }
+ }
+}

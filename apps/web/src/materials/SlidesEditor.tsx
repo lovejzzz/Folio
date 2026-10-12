@@ -17,6 +17,7 @@ import { ChartData } from './SlideVisual';
 import { FigureControls } from './figures/FigureControls';
 import { FigureData, newBinarySearch, newGradientDescent, newRackBudget, newSelectionSort } from './figures/FigureData';
 import { FigureRunProvider } from './figures/figureRun';
+import { SlideRead } from './SlideRead';
 import { Filmstrip, SlidePager, deckOrder, useArrowKeys, type SlidePos } from './SlideNav';
 
 
@@ -200,6 +201,7 @@ export function SlidesEditor({ course, lessonId, slide: slideNumber, onGo }: Sli
           </div>
           <FigureControls />
         </Stage>
+        <SlideRead slide={slide} onChange={(visual) => update({ ...slide, visual })} />
         {slide.visual?.kind === 'chart' && <ChartData v={slide.visual} onChange={(visual) => update({ ...slide, visual })} />}
         {slide.visual?.kind === 'figure' && <FigureData v={slide.visual} onChange={(visual) => update({ ...slide, visual })} />}
         <BlockTools slide={slide} onChange={(visual) => update({ ...slide, visual })} />

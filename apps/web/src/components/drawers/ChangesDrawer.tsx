@@ -256,6 +256,8 @@ function FailedGroup({ failed }: { failed: Failed[] }) {
   );
 }
 
+const FACTS = 'facts';
+
 /** History labels are stored as keys and values, and worded in the current language. */
 export function historyLabel(entry: HistoryEntry, t: Messages): string {
   const values: Record<string, string | number> = { ...entry.label.values };
@@ -264,7 +266,12 @@ export function historyLabel(entry: HistoryEntry, t: Messages): string {
     const whole = entry.label.key === 'includedMaterial' || entry.label.key === 'leftOutMaterial';
     values.material = whole ? t.materialsInline[kind] : t.materialInline[kind];
   }
+  // A step that is no material of its own: what a lesson is about, settled before parts written without a plan. It was
+  // "Wrote the undefined for lesson 1".
+  if (kind === 'facts') values.material = FACTS;
   const fn = (t.history as Record<string, unknown>)[entry.label.key];
+  // A line that would name a part and has none to name says only that something was written.
+  if (entry.label.key === 'built' && (values.material === undefined || values.n === undefined)) return t.history.edit;
   if (typeof fn === 'function') return (fn as (v: Record<string, string | number>) => string)(values);
   return t.history.edit;
 }
