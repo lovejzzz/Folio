@@ -99,3 +99,18 @@ describe('a plan written again', () => {
     expect(again.map((s) => s.id)).not.toContain('x_a');
   });
 });
+
+describe('a deck for every meeting that shows something', () => {
+  it('is asked of a deck whose slides all stand in the first meeting, and not of one with a slide in each', async () => {
+    const { meetingsUnshown } = await import('../src/slideSteps');
+    const seg = (session: number, title: string, shown?: string[]) => ({ id: `x_${title}`, session, kind: 'teach' as const, title, minutes: 10, description: '', teacherNotes: '', ...(shown ? { shown } : {}) });
+    const lesson = { segments: [seg(0, 'Vectors', ['Aₓ = A cos θ, A_y = A sin θ']), seg(0, 'Practice'), seg(1, 'Velocity', ['Position: x(t) = 2.0 + 6.0t − 1.0t²']), seg(2, 'Free fall', ['a = −9.8 m/s² with up positive']), seg(3, 'Recitation')] } as never;
+    const slide = (segment: number) => ({ layout: 'bullets' as const, title: `s${segment}`, bullets: [], notes: '', segment });
+    // Nine slides for the first lecture, none for the second or third: both are named, by their number in the week.
+    expect(meetingsUnshown({ slides: [slide(0), slide(1), slide(1), slide(2)] }, lesson)).toEqual([2, 3]);
+    // A meeting that shows nothing (the recitation) needs no slide; one slide in each of the others is enough.
+    expect(meetingsUnshown({ slides: [slide(0), slide(1), slide(3), slide(4)] }, lesson)).toEqual([]);
+    // A deck that names no segment is not judged here.
+    expect(meetingsUnshown({ slides: [slide(0), slide(0)] }, lesson)).toEqual([]);
+  });
+});
