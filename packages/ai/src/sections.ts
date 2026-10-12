@@ -43,7 +43,7 @@ import { withAnswerChecks } from './answerCheck';
 import { codeFaults } from './codeLines';
 import { withHandouts } from './handouts';
 import { unsaidWays } from './pieceFacts';
-import { planOtherLength } from './askedLength';
+import { planOtherLength, slidesOther } from './askedLength';
 import { startCommands } from './start';
 import { runJob, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
@@ -159,7 +159,7 @@ const slides: SectionJob<SlidesDraft> = {
     if (!course.materials.plan.enabled) return tidied;
     return { slides: withSheetSlides(tidied.slides, lesson, docLabels(course.language).fromSheet, (session) => shown[session] ?? true) };
   },
-  check: (v, _course, lesson) => [...unshown(v, lesson), ...deckFaults(v, lesson).map(({ issue, kept }): Problem => ({ index: null, ...(kept ? {} : { advisory: true }), flag: { code: 'schemaIssue', values: { path: 'slides', issue } } }))],
+  check: (v, _course, lesson) => [...unshown(v, lesson), ...slidesOther(v, _course, lesson), ...deckFaults(v, lesson).map(({ issue, kept }): Problem => ({ index: null, ...(kept ? {} : { advisory: true }), flag: { code: 'schemaIssue', values: { path: 'slides', issue } } }))],
   toCommands: (v, problems, _course, lesson) => [
     cmd('section.fill', {
       lessonId: lesson.id,

@@ -1,5 +1,5 @@
-import { cmd, lessonPieces, newId, type Command, type Course, type Flag, type Lesson, type Rubric, type Task } from '@folio/core';
-import { otherLength, segmentsFor } from './askedLength';
+import { cmd, lessonPieces, newId, segmentsFor, type Command, type Course, type Flag, type Lesson, type Rubric, type Task } from '@folio/core';
+import { otherLength } from './askedLength';
 import type { JobSpec, Problem } from './jobs';
 import { AssignmentDraft, StepDraft, TestDraft } from './schemas';
 import { tidySteps, unnumberSteps } from './tidy';

@@ -30,3 +30,5 @@ export * from './figures/gradientDescent';
 export * from './figures/rackBudget';
 export * from './figures/faults';
 export * from './figures/catalog';
+export * from './saidTerms';
+export * from './pieceTerms';

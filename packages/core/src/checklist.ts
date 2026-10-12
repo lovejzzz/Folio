@@ -1,6 +1,7 @@
 import { TO_CONFIRM, groundsOf, unsourcedLocators } from './locators';
 import { lessonPieces } from './course';
 import { docLabels } from './docLabels';
+import { apartLine, termsApart } from './pieceTerms';
 import { lessonReady, readyLines } from './ready';
 import type { Course, Lesson, Task } from './schema';
 
@@ -36,6 +37,8 @@ export type CheckItem =
   | { kind: 'handInUnsaid'; items: string[] }
   /** Cases of a lesson written without a plan whose answer still claims what the case does not give, after one rewrite. */
   | { kind: 'factsUnsupported'; cases: string[] }
+  /** A piece done in class of which two materials say different things (its length, its time, its points), each as a sentence. */
+  | { kind: 'termsApart'; lines: string[] }
   /** Notes Folio left on the lesson. */
   | { kind: 'notes'; count: number };
 
@@ -68,6 +71,8 @@ export function lessonChecklist(course: Course, lesson: Lesson): Checklist {
   const notes = tasks.reduce((n, t) => n + t.flags.length, 0) + Object.values(lesson.gen).reduce((n, g) => n + (g?.flags.length ?? 0), 0);
   // A piece handed in somehow, the brief not saying how: every page was told to name no way, and the teacher is the one to.
   const unsaid = [...new Set(lessonPieces(lesson).filter((p) => p.kind === 'assignment' || p.kind === 'step' || p.kind === 'inclass').map((p) => p.toward.trim()))].filter((toward) => course.grading.find((g) => g.item.trim() === toward)?.card?.handIn === 'unsaid');
+  // Read from the materials as they stand, the teacher's own changes among them: nothing here was asked of a writer.
+  const apart = termsApart(course, lesson).map(apartLine);
   const titleOf = (t: (typeof tasks)[number]) => short(t.kind === 'assignment' ? t.title : t.prompt);
   return {
     ready: readyLines(lessonReady(course, lesson), docLabels(course.language)),
@@ -80,6 +85,7 @@ export function lessonChecklist(course: Course, lesson: Lesson): Checklist {
       // Three by name and the rest by number: a list of every question is not read.
       ...(unreached.length ? [{ kind: 'answersUnchecked' as const, titles: unreached.slice(0, 3).map(titleOf), more: Math.max(0, unreached.length - 3) }] : []),
       ...(keysUnreached.length ? [{ kind: 'keysUnchecked' as const, titles: keysUnreached.slice(0, 3).map((h) => h.title), more: Math.max(0, keysUnreached.length - 3) }] : []),
+      ...(apart.length ? [{ kind: 'termsApart' as const, lines: apart }] : []),
       ...(toConfirm.length ? [{ kind: 'toConfirm' as const, found: toConfirm.slice(0, 8) }] : []),
       ...(unsaid.length ? [{ kind: 'handInUnsaid' as const, items: unsaid }] : []),
       ...(lesson.cases.some((c) => c.unsupported.length) ? [{ kind: 'factsUnsupported' as const, cases: lesson.cases.filter((c) => c.unsupported.length).map((c) => `${c.title}: ${c.unsupported.join('; ')}`) }] : []),
@@ -102,6 +108,8 @@ export function checklistLines(list: Checklist): { checked: string[]; look: stri
         return `Answers no program worked out: ${item.titles.map((t) => `“${t}”`).join('; ')}${item.more ? `, and ${item.more} more` : ''}.`;
       case 'keysUnchecked':
         return `Sheet keys no program worked out: ${item.titles.map((t) => `“${t}”`).join('; ')}${item.more ? `, and ${item.more} more` : ''}.`;
+      case 'termsApart':
+        return `The same piece of work, told two ways: ${item.lines.join(' ')}`;
       case 'toConfirm':
         return `Not in your brief or files, to confirm: ${item.found.join('; ')}.`;
       case 'factsUnsupported':
