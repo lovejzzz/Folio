@@ -188,7 +188,7 @@ describe('a number on a label', () => {
   });
 
   it('never passes over a character it has no outline for', () => {
-    expect(() => outlineOf('1e-8')).toThrow();
+    expect(() => outlineOf('1§8')).toThrow();
     expect(() => numeral(1e-8)).toThrow();
   });
 });

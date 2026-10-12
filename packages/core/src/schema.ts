@@ -81,7 +81,7 @@ export type SlideLayout = z.infer<typeof SlideLayoutSchema>;
  * A chart is always drawn from its numbers, never from an impression of a shape.
  */
 /** The demonstrations a slide can hold. */
-export const FigureIdSchema = z.enum(['binarySearch', 'selectionSort']);
+export const FigureIdSchema = z.enum(['binarySearch', 'selectionSort', 'gradientDescent']);
 export type FigureId = z.infer<typeof FigureIdSchema>;
 
 export const SlideVisualSchema = z.discriminatedUnion('kind', [

@@ -13,6 +13,7 @@ type Figure = Extract<SlideVisual, { kind: 'figure' }>;
 const LIVE: Record<FigureId, LazyExoticComponent<ComponentType<{ run: FigureRun }>>> = {
   binarySearch: lazy(() => import('./BinarySearchFigure')),
   selectionSort: lazy(() => import('./BinarySearchFigure')),
+  gradientDescent: lazy(() => import('./BinarySearchFigure')),
 };
 
 /** A picture's own file as an address: an image is its own document, so the styles inside it are its own. */

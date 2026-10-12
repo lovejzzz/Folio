@@ -12,6 +12,9 @@ export const newBinarySearch = (): Figure => ({ kind: 'figure', figure: 'binaryS
 /** A sort a teacher adds: seven numbers out of order, drawn as both layers. */
 export const newSelectionSort = (): Figure => ({ kind: 'figure', figure: 'selectionSort', look: 'composite', values: [31, 8, 56, 3, 42, 17, 23], target: 0 });
 
+/** A walk down a loss a teacher adds: from 4 toward 1 at a rate that gets there slowly. */
+export const newGradientDescent = (): Figure => ({ kind: 'figure', figure: 'gradientDescent', look: 'composite', values: [4, 0.3, 5], target: 1 });
+
 /** What was typed, with a field put right taken out of it: nothing left means the demonstration is finished. */
 function typed(v: Figure, field: keyof FigureEntered, text: string | undefined): Figure {
   const entered = { ...v.entered, [field]: text };
@@ -26,7 +29,10 @@ function typed(v: Figure, field: keyof FigureEntered, text: string | undefined):
 export function FigureData({ v, onChange }: { v: Figure; onChange: (next: Figure) => void }) {
   const t = useT();
   const search = v.figure === 'binarySearch';
-  const looks = search ? t.figures.looks : t.figures.sortLooks;
+  const descent = v.figure === 'gradientDescent';
+  const looks = search ? t.figures.looks : descent ? t.figures.descentLooks : t.figures.sortLooks;
+  const valuesName = search ? t.figures.values : descent ? t.figures.descentValues : t.figures.sortValues;
+  const targetName = descent ? t.figures.descentTarget : t.figures.target;
   const problem = figureProblem(v);
   const wrong = enteredFaults(v.entered);
   const values = (text: string) => {
@@ -41,14 +47,14 @@ export function FigureData({ v, onChange }: { v: Figure; onChange: (next: Figure
         <SegmentedControl<Figure['look']> label={t.figures.look} value={v.look} onChange={(look) => onChange({ ...v, look })} options={[{ id: 'cabinet', label: looks.cabinet }, { id: 'flat', label: looks.flat }, { id: 'composite', label: looks.composite }]} />
       </div>
       <div className="flex items-baseline gap-2">
-        <span className="shrink-0 font-semibold">{search ? t.figures.values : t.figures.sortValues}</span>
-        <EditableText as="div" className="min-w-0 flex-1 border border-rule px-1.5 py-0.5 tabular-nums" value={v.entered?.values ?? v.values.join(', ')} label={search ? t.figures.values : t.figures.sortValues} placeholder={search ? t.figures.valuesHint : t.figures.sortHint} onCommit={values} />
+        <span className="shrink-0 font-semibold">{valuesName}</span>
+        <EditableText as="div" className="min-w-0 flex-1 border border-rule px-1.5 py-0.5 tabular-nums" value={v.entered?.values ?? v.values.join(', ')} label={valuesName} placeholder={search ? t.figures.valuesHint : descent ? t.figures.descentHint : t.figures.sortHint} onCommit={values} />
       </div>
-      {/* Only a search looks for a number. */}
-      {search && (
+      {/* A sort looks for no number; a search and a descent each have one. */}
+      {(search || descent) && (
         <div className="flex items-baseline gap-2">
-          <span className="shrink-0 font-semibold">{t.figures.target}</span>
-          <EditableText as="div" className="border border-rule px-1.5 py-0.5 tabular-nums" value={v.entered?.target ?? String(v.target)} label={t.figures.target} onCommit={target} />
+          <span className="shrink-0 font-semibold">{targetName}</span>
+          <EditableText as="div" className="border border-rule px-1.5 py-0.5 tabular-nums" value={v.entered?.target ?? String(v.target)} label={targetName} onCommit={target} />
         </div>
       )}
       {/* Drawn, and too small to read: said, with the look that has room for them one press away. Never switched unasked. */}

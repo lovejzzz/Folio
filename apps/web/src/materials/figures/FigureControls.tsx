@@ -75,7 +75,7 @@ function FigureStrip() {
           </li>
         ))}
       </ol>
-      <p className="font-ui text-13 text-ink-2">{run.visual.figure === 'binarySearch' ? t.figures.looking(String(run.visual.target)) : t.figures.sorting}</p>
+      <p className="font-ui text-13 text-ink-2">{run.visual.figure === 'binarySearch' ? t.figures.looking(String(run.visual.target)) : run.visual.figure === 'selectionSort' ? t.figures.sorting : t.figures.descending}</p>
     </div>
   );
 }

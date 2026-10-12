@@ -26,6 +26,7 @@ export interface StillFigure {
 const PROBLEMS: Record<FigureProblem, string> = {
   notNumbers: 'This demonstration cannot be shown: its list holds something that is not a number.',
   unsorted: 'This demonstration cannot be shown: binary search needs its list in ascending order.',
+  badSetup: 'This demonstration cannot be shown: it needs where w starts, a learning rate above 0, and a whole number of steps from 1 to 8.',
   unfinished: 'This demonstration is not finished: what was typed for it is not all numbers',
 };
 const LIMITS: Record<CabinetLimit, string> = {

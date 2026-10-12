@@ -1,3 +1,4 @@
+import { gradientDescentProblem } from './gradientDescent';
 import { selectionSortProblem } from './selectionSort';
 
 /**
@@ -68,7 +69,7 @@ export function enteredFaults(entered: FigureEntered | undefined): string[] {
   return [...figureEntries(entered?.values ?? ''), ...(entered?.target === undefined ? [] : [entered.target.trim()])].filter((x) => !isFigureNumber(x));
 }
 
-export type FigureProblem = BinarySearchProblem | 'unfinished';
+export type FigureProblem = BinarySearchProblem | 'badSetup' | 'unfinished';
 
 /**
  * The one check of a demonstration, asked wherever one is typed, opened from a file, drawn, stepped or exported.
@@ -78,7 +79,7 @@ export type FigureProblem = BinarySearchProblem | 'unfinished';
 export function figureProblem(figure: BinarySearchInput & { figure?: string; entered?: FigureEntered | undefined }): FigureProblem | null {
   if (figure.entered && (figure.entered.values !== undefined || figure.entered.target !== undefined)) return 'unfinished';
   // Each demonstration asks of its list only what its own method needs: a search, that it is in order; a sort, nothing.
-  return figure.figure === 'selectionSort' ? selectionSortProblem(figure) : binarySearchProblem(figure);
+  return figure.figure === 'selectionSort' ? selectionSortProblem(figure) : figure.figure === 'gradientDescent' ? gradientDescentProblem(figure) : binarySearchProblem(figure);
 }
 
 /** The same numbers in ascending order: offered to the teacher as a choice, never done for them. */

@@ -1,6 +1,7 @@
-import { binarySearch, binarySearchTable, selectionSort, selectionSortTable, type SlideVisual } from '@folio/core';
+import { binarySearch, binarySearchTable, gradientDescent, gradientDescentTable, selectionSort, selectionSortTable, written, type SlideVisual } from '@folio/core';
 import { between, figureBody, keyframes, readWidthOf, renderFrame, viewOf } from './binarySearchFrames';
 import type { Pose, View } from './binarySearchScene';
+import { descentBetween, descentBody, descentKeyframes, descentReadWidth, descentSvg, descentView, type DescentPose } from './descentScene';
 import { cabinetLimit, type CabinetLimit } from './digits';
 import { sortBetween, sortBody, sortKeyframes, sortLimit, sortReadWidth, sortSvg, sortView, type SortPose } from './sortScene';
 
@@ -64,5 +65,19 @@ const sort: FigureKind = {
   items: (v, pose) => v.values.map((value, id) => ({ place: Math.round((pose as SortPose).slot[id] ?? id) + 1, value, state: (pose as SortPose).state[id] ?? 'rest' })).sort((a, b) => a.place - b.place),
 };
 
-export const FIGURE_KINDS: Record<Figure['figure'], FigureKind> = { binarySearch: search, selectionSort: sort };
+const descent: FigureKind = {
+  stills: (v) => descentKeyframes(gradientDescent(v)),
+  between: (a, b, t) => descentBetween(a as DescentPose, b as DescentPose, t),
+  body: (v, pose) => descentBody({ model: gradientDescent(v), pose: pose as DescentPose }, v.look),
+  svg: (v, still) => descentSvg({ model: gradientDescent(v), pose: still.pose as DescentPose }, still.caption, v.look),
+  view: (v) => descentView(v.look),
+  readWidth: (v) => descentReadWidth(v.look),
+  // Any walk can be drawn: one that runs away is held at the picture's edge and its numbers say where it is.
+  limit: () => null,
+  table: (v) => gradientDescentTable(gradientDescent(v)),
+  // Where w has been, in order, and where it is: each to three decimals, as the picture writes them.
+  items: (_v, pose) => [...(pose as DescentPose).trail, (pose as DescentPose).w].map((w, i, all) => ({ place: i + 1, value: Number(written(w).text), state: i === all.length - 1 ? 'now' : 'past' })),
+};
+
+export const FIGURE_KINDS: Record<Figure['figure'], FigureKind> = { binarySearch: search, selectionSort: sort, gradientDescent: descent };
 export const figureKind = (v: Figure): FigureKind => FIGURE_KINDS[v.figure];

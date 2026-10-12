@@ -2,7 +2,7 @@ import { missingTargets } from '@folio/ai';
 import { cmd, newId, orderedLessons, type Course, type Lesson, type Slide, type SlideLayout } from '@folio/core';
 import { Button, IconButton, SegmentedControl } from '@folio/ui';
 import { Link } from '@tanstack/react-router';
-import { ArrowDown, ArrowDownNarrowWide, ArrowUp, EyeOff, Plus, Search, SearchX, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowDownNarrowWide, TrendingDown, ArrowUp, EyeOff, Plus, Search, SearchX, Trash2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
@@ -12,7 +12,7 @@ import { focusItem } from './newItems';
 import { SlideCanvas } from './SlideCanvas';
 import { ChartData } from './SlideVisual';
 import { FigureControls } from './figures/FigureControls';
-import { FigureData, newBinarySearch, newSelectionSort } from './figures/FigureData';
+import { FigureData, newBinarySearch, newGradientDescent, newSelectionSort } from './figures/FigureData';
 import { FigureRunProvider } from './figures/figureRun';
 import { Filmstrip, SlidePager, deckOrder, useArrowKeys, type SlidePos } from './SlideNav';
 
@@ -29,6 +29,11 @@ function FigureButtons({ slide, set }: { slide: Slide; set: (visual: Slide['visu
       {!slide.visual && (
         <IconButton label={t.figures.addSort} onPress={() => set(newSelectionSort())}>
           <ArrowDownNarrowWide size={16} strokeWidth={1.5} />
+        </IconButton>
+      )}
+      {!slide.visual && (
+        <IconButton label={t.figures.addDescent} onPress={() => set(newGradientDescent())}>
+          <TrendingDown size={16} strokeWidth={1.5} />
         </IconButton>
       )}
     </>
