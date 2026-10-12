@@ -2,6 +2,7 @@ import type { SlideVisual } from '@folio/core';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { FigureView } from './figures/FigureView';
+import { CompareView, StepsView } from './SlideBlocks';
 
 type Chart = Extract<SlideVisual, { kind: 'chart' }>;
 type Table = Extract<SlideVisual, { kind: 'table' }>;
@@ -140,9 +141,11 @@ function TableView({ v, onChange }: { v: Table; onChange?: (next: Table) => void
   );
 }
 
-/** A slide's table or chart, at the slide's own scale. A table's words are changed in place; a chart's numbers under the slide, where there is room for them. */
+/** A slide's table, chart, chain of steps, things side by side or demonstration, at the slide's own scale. A table's words are changed in place; a chart's numbers under the slide, where there is room for them. */
 export function SlideVisualView({ visual, onChange, live = false }: { visual: SlideVisual; onChange?: (next: SlideVisual) => void; live?: boolean }) {
   if (visual.kind === 'table') return <TableView v={visual} onChange={onChange} />;
   if (visual.kind === 'figure') return <FigureView visual={visual} live={live} />;
+  if (visual.kind === 'steps') return <StepsView v={visual} onChange={onChange} />;
+  if (visual.kind === 'compare') return <CompareView v={visual} onChange={onChange} />;
   return <ChartView v={visual} />;
 }

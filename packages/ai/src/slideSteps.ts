@@ -14,7 +14,7 @@ const same = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLow
 
 /** The segments whose items for the screen a slide carries, by number from 1. */
 function carried(slide: Draft, lesson: Lesson): number[] {
-  const words = plain([slide.title, ...slide.bullets, ...(slide.table ? [...slide.table.columns, ...slide.table.rows.flat()] : [])].join(' '));
+  const words = plain([slide.title, ...slide.bullets, ...(slide.table ? [...slide.table.columns, ...slide.table.rows.flat()] : []), ...(slide.steps?.steps.flatMap((x) => [x.title, x.detail]) ?? []), ...(slide.compare ? [...slide.compare.sides.flatMap((x) => [x.title, ...x.points]), slide.compare.ask] : [])].join(' '));
   return lesson.segments.flatMap((s, i) => ((s.shown ?? []).some((item) => plain(item).length >= 12 && words.includes(plain(item).slice(0, 40))) ? [i + 1] : []));
 }
 

@@ -75,7 +75,7 @@ export const SlideLayoutSchema = z.enum(['title', 'bullets', 'question', 'quote'
 export type SlideLayout = z.infer<typeof SlideLayoutSchema>;
 
 /**
- * What a slide shows beside its words: a table, or a chart drawn from numbers. Slides were bullets and nothing
+ * What a slide shows beside its words: a table, a chart drawn from numbers, a chain of steps, or things side by side. Slides were bullets and nothing
  * else: teachers who rate generated decks call a bulleted list with no visuals unusable, and a comparison across
  * the same headings, or numbers to be compared, is read from a table or a chart and not from five bullets.
  * A chart is always drawn from its numbers, never from an impression of a shape.
@@ -109,6 +109,12 @@ export const SlideVisualSchema = z.discriminatedUnion('kind', [
     /** What the teacher typed that is not yet numbers, as typed: saved with the course, so it is neither lost nor passed off as the numbers above. */
     entered: z.object({ values: z.string().max(600).optional(), target: z.string().max(60).optional() }).optional(),
   }),
+  // A sequence the lesson teaches (the stages of a process, the steps of a method): read left to right from a chain of
+  // numbered steps, not from a list where the order is only the order of the lines. `cycle` when the last leads back to the first.
+  z.object({ kind: z.literal('steps'), steps: z.array(z.object({ title: text, detail: text.default('') })).min(2).max(6), cycle: z.boolean().default(false) }),
+  // Two or three things set side by side, each under its name with a few points of its own, and, where the lesson has
+  // one, the question students answer from them. (Things compared under the same headings are a table.)
+  z.object({ kind: z.literal('compare'), sides: z.array(z.object({ title: text, points: z.array(text).max(4).default([]) })).min(2).max(3), ask: text.default('') }),
 ]);
 export type SlideVisual = z.infer<typeof SlideVisualSchema>;
 

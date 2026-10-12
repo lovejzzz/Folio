@@ -256,6 +256,14 @@ function slide(ctx: BlockCtx, s: Slide): DocxChild[] {
   if (s.visual?.kind === 'table') out.push(table(ctx, s.visual.columns, s.visual.rows), spacer());
   if (s.visual?.kind === 'chart') out.push(table(ctx, [s.visual.unit, ...s.visual.categories], s.visual.series.map((x) => [x.name, ...x.values.map(String)])), spacer());
   if (s.visual?.kind === 'figure') out.push(...figure(ctx, s.visual));
+  // A chain of steps is a row of numbered columns; things side by side are columns under their names, with what is asked of them after.
+  if (s.visual?.kind === 'steps') out.push(table(ctx, s.visual.steps.map((x, i) => `${i + 1}. ${x.title}`), [s.visual.steps.map((x) => x.detail)]), spacer());
+  if (s.visual?.kind === 'compare') {
+    const sides = s.visual.sides;
+    const rows = Array.from({ length: Math.max(1, ...sides.map((x) => x.points.length)) }, (_, r) => sides.map((x) => x.points[r] ?? ''));
+    out.push(table(ctx, sides.map((x) => x.title), rows), spacer());
+    if (s.visual.ask) out.push(...list(ctx, true, [s.visual.ask]));
+  }
   if (s.bullets.length) out.push(...list(ctx, s.layout === 'question', s.bullets));
   if (s.notes) out.push(...note(ctx, ctx.l.teacherNote, s.notes));
   return out;

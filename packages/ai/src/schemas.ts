@@ -153,6 +153,14 @@ export const SlidesDraft = z.object({
           .object({ figure: FigureIdSchema, values: z.array(z.number()).max(15), target: z.number().default(0) })
           .optional()
           .describe('Only where the lesson teaches one of Folio\'s demonstrations step by step: its name and its numbers, the plan\'s own where it gives them'),
+        steps: z
+          .object({ steps: z.array(z.object({ title: z.string(), detail: z.string().default('') })).max(6), cycle: z.boolean().default(false) })
+          .optional()
+          .describe('Only for a sequence the lesson teaches (stages of a process, steps of a method), two to six: each a name of a few words and at most one short line; cycle true when the last leads back to the first'),
+        compare: z
+          .object({ sides: z.array(z.object({ title: z.string(), points: z.array(z.string()).max(4) })).max(3), ask: z.string().default('') })
+          .optional()
+          .describe('Only for two or three things the lesson sets side by side, each with its own few points (not the same headings: that is a table); ask is the one question students answer from them, when the plan has one'),
       }),
     )
     .min(3)

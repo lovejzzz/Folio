@@ -383,6 +383,86 @@
     font-weight: 650;
     background: var(--folio-well);
   }
+  /* A chain of steps: frames of one height in a row, an arrow between; sized by the slide (em), so a thumbnail is the slide small. */
+  .folio-slide-steps {
+    display: flex;
+    align-items: stretch;
+    gap: 0.4em;
+    font-size: 0.82em;
+  }
+  .folio-slide-step {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0.55em 0.6em 0.6em;
+    border: 0.12em solid var(--folio-ink);
+    border-radius: 0.3em;
+    background: var(--folio-paper);
+  }
+  .folio-slide-step-number {
+    display: block;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 0.8em;
+    color: var(--folio-accent);
+  }
+  .folio-slide-step-title {
+    font-family: var(--font-ui);
+    font-weight: 650;
+    line-height: 1.2;
+    color: var(--folio-ink);
+  }
+  .folio-slide-step-detail {
+    margin-top: 0.3em;
+    font-size: 0.82em;
+    line-height: 1.3;
+    color: var(--folio-ink-2);
+  }
+  .folio-slide-step-arrow {
+    align-self: center;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    color: var(--folio-ink);
+  }
+  .folio-slide-steps-cycle,
+  .folio-slide-ask {
+    margin-top: 0.7em;
+    font-family: var(--font-ui);
+    font-size: 0.78em;
+    color: var(--folio-ink-2);
+  }
+  .folio-slide-ask {
+    font-size: 0.9em;
+    font-weight: 650;
+    color: var(--folio-ink);
+  }
+  /* Things side by side: a column each, its name over a heavy rule, its points under. */
+  .folio-slide-compare {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 1em;
+    font-size: 0.82em;
+  }
+  .folio-slide-side-title {
+    padding-bottom: 0.3em;
+    border-bottom: 0.16em solid var(--folio-ink);
+    font-family: var(--font-ui);
+    font-weight: 650;
+    line-height: 1.2;
+    color: var(--folio-ink);
+  }
+  .folio-slide-side:first-child .folio-slide-side-title {
+    border-bottom-color: var(--folio-accent);
+  }
+  .folio-slide-side ul {
+    margin-top: 0.5em;
+  }
+  .folio-slide-side li {
+    padding: 0.28em 0;
+    border-bottom: 1px solid var(--folio-rule);
+    line-height: 1.3;
+    color: var(--folio-ink);
+  }
   .folio-slide-bullets > li {
     display: flex;
     gap: 0.6em;
