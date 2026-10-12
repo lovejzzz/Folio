@@ -17,13 +17,17 @@
    },
    {
     "heading": "Why decks were bullets, and what changed",
-    "body": "Two things held decks to text. The deck was told to put every item the plan shows on the screen onto a slide in the plan's own words, whole; and the check that looks for those words read a slide as its file, so words arranged into a table or columns counted as missing, and a deck that arranged anything was sent back. The check now reads what students read. And the plan now writes what is on the screen as what it is, so the deck has something to draw. Written once each after the change, two lessons of a grade 10 chemistry course, an undergraduate microeconomics course and a US history course came to 32 slides of 84 with a table, a chart, a chain or columns. We have not yet had independent readers go through plans written this way, as we do before most releases: that reading comes next.",
+    "body": "Two things held decks to text. The deck was told to put every item the plan shows on the screen onto a slide in the plan's own words, whole; and the check that looks for those words read a slide as its file, so words arranged into a table or columns counted as missing, and a deck that arranged anything was sent back. The check now reads what students read. And the plan now writes what is on the screen as what it is, so the deck has something to draw. Written once each after the change, two lessons of a grade 10 chemistry course, an undergraduate microeconomics course and a US history course came to 32 slides of 84 with a table, a chart, a chain or columns.",
     "image": {
      "src": "/changelog/0.0.39-steps.webp",
      "alt": "A slide from a generated deck, as PowerPoint shows it: Where data travels in a GPU server, a chain of three steps from CPU and system RAM to GPU memory to GPU cores",
      "width": 1734,
      "height": 975
     }
+   },
+   {
+    "heading": "What a reading found",
+    "body": "Before this release went out, independent readers went through sixteen fresh lessons of eight first-year university courses, as a last reader would before handing them to students. Of 248 slides, 57 held a table, a chart, a chain or columns, and no reader found one of them wrong. They did find eight things that would have stopped a class, and five of those were two faults this release itself had brought in: a reading quiz or clicker round scored a point an answer had been given a rubric of four levels beside it, and one week of four meetings had slides for the first meeting only. Both were put right where they were made, the three courses were written again, and a second reading of those six lessons found nothing that would stop a class and no false help in about 150 places checked. Still open, and not from this release: a few lessons where an activity's minutes are too few for its parts, and the mark “(to confirm)” that Folio puts after a chapter number you did not give, which readers take for a leftover."
    },
    {
     "heading": "Demonstrations Folio draws and steps through",
