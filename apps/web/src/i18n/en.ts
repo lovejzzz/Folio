@@ -342,7 +342,7 @@ export const en = {
     problem: {
       notNumbers: 'Every entry must be a number.',
       unsorted: 'Binary search needs the list in ascending order.',
-      badSetup: 'Three numbers are needed: where w starts, a learning rate above 0, and a whole number of steps from 1 to 8.',
+      badSetup: 'Three numbers are needed: where w starts, a learning rate above 0, and a whole number of steps from 1 to 8. A fourth and fifth, the loss’s a (above 0) and c, may follow.',
       unfinished: 'This demonstration’s numbers are not finished: put them right under the slide.',
     },
     limit: {
@@ -364,7 +364,7 @@ export const en = {
     addDescent: 'Add a gradient descent demonstration',
     descentLooks: { cabinet: 'The valley', flat: 'The number line', composite: 'Both: the valley over the number line' },
     descentValues: 'Start, learning rate, steps',
-    descentHint: 'Three numbers: where w starts, the learning rate, how many steps (1 to 8)',
+    descentHint: 'Where w starts, the learning rate, how many steps (1 to 8); then, if the loss is a (w − best)² + c, its a and c',
     descentTarget: 'The lowest point (the best w)',
     sorting: 'Sorting from the smallest',
     looking: (n: string) => `Looking for ${n}`,
