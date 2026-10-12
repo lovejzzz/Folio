@@ -315,6 +315,14 @@ export const en = {
   },
   /** A slide's table or chart. */
   slides: {
+    stepsOf: (n: number) => `${n} steps, in order`,
+    stepTitle: (n: number) => `Step ${n}`,
+    stepDetail: (n: number) => `Step ${n}, in a line`,
+    cycle: (first: string) => `Then back to “${first}”.`,
+    compareOf: (names: string[]) => `Side by side: ${names.join(', ')}`,
+    sideTitle: (n: number) => `Name of column ${n}`,
+    sidePoint: (name: string, n: number) => `${name}, point ${n}`,
+    ask: 'The question asked of them',
     barChart: 'Bar chart',
     lineChart: 'Line chart',
     illustrative: 'Illustration, not real data',

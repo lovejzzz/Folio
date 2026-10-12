@@ -54,6 +54,15 @@ export function say(b: Loose): string {
 const chartText = (c: Extract<NonNullable<Lesson['slides'][number]['visual']>, { kind: 'chart' }>): string =>
   `[a ${c.chart} chart, drawn on the slide; along the bottom: ${c.categories.join(', ')}; ${c.series.map((x) => `${x.name || 'values'}: ${x.values.join(', ')}`).join('; ')}${c.unit ? ` (${c.unit})` : ''}]`;
 
+type Visual = NonNullable<Lesson['slides'][number]['visual']>;
+/** A slide's visual in words, for a writer who reads the deck: what students see, never a description of a picture nobody made. */
+function visualText(v: Visual): string {
+  if (v.kind === 'table') return table(v.columns, v.rows);
+  if (v.kind === 'chart') return chartText(v);
+  if (v.kind === 'steps') return `[a chain of steps, drawn on the slide${v.cycle ? ', the last leading back to the first' : ''}: ${v.steps.map((x, i) => `${i + 1}. ${x.title}${x.detail ? ` (${x.detail})` : ''}`).join('; ')}]`;
+  return `[set side by side on the slide: ${v.sides.map((x) => `${x.title}: ${x.points.join(', ')}`).join(' | ')}${v.ask ? `; asked: ${v.ask}` : ''}]`;
+}
+
 const part = (name: string, body: string[]): string => (body.some((x) => x.trim()) ? `<${name}>\n${body.filter((x) => x.trim()).join('\n\n')}\n</${name}>` : '');
 const letter = (i: number) => 'ABCDEFGH'[i] ?? '?';
 
@@ -93,7 +102,7 @@ export function lessonView(course: Course, lesson: Lesson): { students: string; 
   const steps = new Set([lesson.homework, ...(lesson.also ?? [])].filter((p) => p.kind === 'step').map((p) => p.toward.trim()));
   const of = (kind: Task['kind']) => tasks.filter((t) => t.kind === kind).map((t) => taskText(course, t, online, t.kind === 'assignment' && steps.has(t.toward.trim())));
   const plan = lesson.segments.map((s, i) => `${i + 1}. ${s.title} (${s.kind}, ${s.minutes} min): ${s.description}${s.teacherNotes ? `\n   Teacher's notes: ${s.teacherNotes}` : ''}`);
-  const slide = (s: Lesson['slides'][number], i: number) => [`Slide ${i + 1}: ${s.title}`, ...s.bullets.map((b) => `- ${b}`), s.visual?.kind === 'table' ? table(s.visual.columns, s.visual.rows) : s.visual ? chartText(s.visual) : ''].filter(Boolean).join('\n');
+  const slide = (s: Lesson['slides'][number], i: number) => [`Slide ${i + 1}: ${s.title}`, ...s.bullets.map((b) => `- ${b}`), s.visual ? visualText(s.visual) : ''].filter(Boolean).join('\n');
   const faq = lesson.faqIds.map((id) => course.faq[id]).filter(Boolean);
   const students = [
     part('page', lesson.page.map((b) => say(b as Loose))),

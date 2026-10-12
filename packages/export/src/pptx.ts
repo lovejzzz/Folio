@@ -5,6 +5,7 @@ import { printFonts, printPalette } from '@folio/ui/tokens';
 import { cleanDoc } from './xml';
 import { ExportError } from './errors';
 import { MIN_SIZE, fitSize, splitToFit, type Box } from './fit';
+import { compareOnSlide, stepsOnSlide } from './pptxBlocks';
 
 /**
  * Slide decks in the "paper and ink" look: paper background, Georgia ink
@@ -168,6 +169,10 @@ function visualSlide(pptx: PptxGenJS, slide: PptSlide, s: Slide, f: Faces): void
   if (v.kind === 'table') {
     const cell = (text: string, head: boolean) => ({ text: plainText(text), options: { bold: head, fontFace: f.body, fontSize: 16, color: printPalette.ink, fill: { color: head ? printPalette.well : printPalette.paper }, valign: 'middle' as const } });
     slide.addTable([v.columns.map((c) => cell(c, true)), ...v.rows.map((r) => r.map((c) => cell(c, false)))], { x: VISUAL.x, y: VISUAL.y, w: VISUAL.w, colW: v.columns.map(() => VISUAL.w / v.columns.length), border: { type: 'solid', pt: 0.75, color: printPalette.rule }, margin: 0.08 });
+  } else if (v.kind === 'steps') {
+    stepsOnSlide(pptx, slide, v, f, VISUAL);
+  } else if (v.kind === 'compare') {
+    compareOnSlide(pptx, slide, v, f, VISUAL);
   } else {
     const named = v.series.some((x) => x.name.trim());
     slide.addChart(v.chart === 'bar' ? pptx.ChartType.bar : pptx.ChartType.line, v.series.map((x) => ({ name: x.name || s.title, labels: v.categories, values: x.values })), {
