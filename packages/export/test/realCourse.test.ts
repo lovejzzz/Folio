@@ -81,7 +81,8 @@ describe('a real course, exported for students', () => {
   it('and the teacher\'s copy has them', async () => {
     const docs = MATERIAL_KINDS.map((kind) => project(course, kind, { audience: 'teacher', lessonIds: lessons.map((l) => l.id) }));
     const text = squash(plain(unzipText(await renderDocx(docs, { courseTitle: course.title })).text('word/document.xml')));
-    const found = secrets.filter((s) => bare(text).includes(bare(s.text))).length;
+    const there = bare(text);
+    const found = secrets.filter((s) => there.includes(bare(s.text))).length;
     expect(found / secrets.length).toBeGreaterThan(0.8);
   });
 });
