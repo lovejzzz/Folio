@@ -96,4 +96,23 @@ describe('a Word file in Pages as in Word', () => {
     expect(document).not.toContain('<w:p><w:pPr><w:sectPr>');
     expect(document).toContain('w:line="20" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr><w:sectPr>');
   });
+
+  it('keeps a short slide\'s heading, bullets and note on one page, and lets a long one break', async () => {
+    const c = sampleCourse();
+    const lesson = c.lessons[c.lessonOrder[0]!]!;
+    const long = 'A sentence long enough to fill a line of a page, written to stand for a slide that says a great deal. '.repeat(14);
+    lesson.slides = [
+      { ...lesson.slides[0]!, visual: undefined, title: 'A short slide', bullets: ['First short point', 'Second short point', 'Last short point'], notes: 'A short note.\nIts second line.' },
+      { ...lesson.slides[0]!, visual: undefined, title: 'A long slide', bullets: ['Opening long point', long], notes: 'A note under a long slide.' },
+    ];
+    const xml = await documentXml(c, ['slides'], 'teacher');
+    const paragraph = (words: string) => xml.slice(xml.lastIndexOf('<w:p>', xml.indexOf(words)), xml.indexOf('</w:p>', xml.indexOf(words)));
+    for (const words of ['First short point', 'Second short point', 'Last short point', 'A short note.']) {
+      expect(paragraph(words), words).toContain('<w:keepNext/>');
+      expect(paragraph(words), words).toContain('<w:keepLines/>');
+    }
+    // The entry's last paragraph is not tied to the next slide: a run of short slides would otherwise be one block.
+    expect(paragraph('Its second line.')).not.toContain('<w:keepNext/>');
+    expect(paragraph('Opening long point')).not.toContain('<w:keepNext/>');
+  });
 });

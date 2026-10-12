@@ -89,13 +89,15 @@ function para(ctx: BlockCtx, text: string, tone?: 'lead' | 'muted'): Paragraph {
   return new Paragraph({ children: runs(ctx, text, style) });
 }
 
-function list(ctx: BlockCtx, ordered: boolean, items: string[]): Paragraph[] {
+/** `together`: each item is kept whole and on the page of what follows it, the last one only when `last` says so. */
+function list(ctx: BlockCtx, ordered: boolean, items: string[], together?: { last: boolean }): Paragraph[] {
   const instance = (ctx.lists.count += 1);
   return items.map(
-    (item) =>
+    (item, i) =>
       new Paragraph({
         numbering: ordered ? { reference: NUMBERS, level: 0, instance } : { reference: BULLETS, level: 0 },
         spacing: { after: 60 },
+        ...(together && { keepLines: true, keepNext: together.last || i < items.length - 1 }),
         children: runs(ctx, item),
       }),
   );
@@ -171,14 +173,14 @@ function terms(ctx: BlockCtx, items: { term: string; definition: string }[]): Pa
 }
 
 /** A shaded callout. Word merges the identical borders of its paragraphs into one box. */
-export function note(ctx: BlockCtx, label: string, text: string): Paragraph[] {
+export function note(ctx: BlockCtx, label: string, text: string, together = false): Paragraph[] {
   const box = { top: hairline, bottom: hairline, left: hairline, right: hairline };
   const shading = { type: ShadingType.CLEAR, fill: printPalette.well, color: 'auto' };
   const lines = text.split('\n');
   return lines.map((line, i) => {
     const children: ParagraphChild[] = i === 0 ? runs(ctx, `${label}  `, { bold: true }) : [];
     children.push(...runs(ctx, line));
-    return new Paragraph({ border: box, shading, indent: { left: 113, right: 113 }, spacing: { after: 0 }, children });
+    return new Paragraph({ border: box, shading, indent: { left: 113, right: 113 }, spacing: { after: 0 }, ...(together && { keepLines: true, keepNext: i < lines.length - 1 }), children });
   });
 }
 
@@ -246,6 +248,9 @@ function figure(ctx: BlockCtx, visual: Figure): DocxChild[] {
   return out;
 }
 
+/** The characters of bullets and note under which a slide's entry is kept on one page: about a third of a page of text. */
+const SHORT_SLIDE = 1200;
+
 /** The Word version of a slide: a heading per slide, its bullets, and speaker notes as a note. */
 function slide(ctx: BlockCtx, s: Slide): DocxChild[] {
   const out: DocxChild[] = [];
@@ -264,8 +269,12 @@ function slide(ctx: BlockCtx, s: Slide): DocxChild[] {
     out.push(table(ctx, sides.map((x) => x.title), rows), spacer());
     if (s.visual.ask) out.push(...list(ctx, true, [s.visual.ask]));
   }
-  if (s.bullets.length) out.push(...list(ctx, s.layout === 'question', s.bullets));
-  if (s.notes) out.push(...note(ctx, ctx.l.teacherNote, s.notes));
+  // A short slide is one thing to read: its heading, its bullets and the teacher's note stay on one page. A teacher's copy
+  // had a slide's heading and first bullet at the foot of a page and the rest, three lines, on the next. A long one may
+  // still break, between its paragraphs.
+  const short = !s.visual && [...s.bullets, s.notes ?? ''].join(' ').length <= SHORT_SLIDE;
+  if (s.bullets.length) out.push(...list(ctx, s.layout === 'question', s.bullets, short ? { last: Boolean(s.notes) } : undefined));
+  if (s.notes) out.push(...note(ctx, ctx.l.teacherNote, s.notes, short));
   return out;
 }
 

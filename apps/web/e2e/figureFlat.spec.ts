@@ -92,7 +92,7 @@ test('a demonstration drawn as a row of numbers: chosen, worked, kept, and expor
     await drawer.getByRole('button', { name: 'Open print view' }).click();
     const print = await popup;
     await print.addInitScript(() => (window.print = () => {}));
-    const steps = print.getByRole('region', { name: 'The search, step by step' });
+    const steps = print.getByRole('region', { name: 'Binary search, step by step' });
     await expect(steps.locator('img')).toHaveCount(5);
     await expect(steps.getByRole('columnheader', { name: 'What follows' })).toBeVisible();
     if (SHOTS) await print.pdf({ path: `${SHOTS}/flat-${who}.pdf` });

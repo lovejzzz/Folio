@@ -65,5 +65,4 @@ export const figureText = {
   target: 'The number to look for',
   sort: 'Put them in order',
   notNumber: (wrong: string[]) => `${wrong.length ? `${wrong.map((x) => `“${x}”`).join(', ')} ${wrong.length === 1 ? 'is not a number' : 'are not numbers'}` : 'Nothing is typed for the number to look for'}. It is kept as you typed it, and the demonstration is shown as unfinished, here and in every export, until it is put right.`,
-  frames: 'The search, step by step',
 };

@@ -44,7 +44,7 @@ export function sampleShots(): void {
     await drawer.getByRole('button', { name: 'Open print view' }).click();
     const print = await popup;
     await print.addInitScript(() => (window.print = () => {}));
-    await expect(print.getByRole('region', { name: 'The search, step by step' }).first()).toBeVisible();
+    await expect(print.getByRole('region', { name: 'Binary search, step by step' }).first()).toBeVisible();
     await print.pdf({ path: `${SHOTS}/sample-student.pdf` });
   });
 }

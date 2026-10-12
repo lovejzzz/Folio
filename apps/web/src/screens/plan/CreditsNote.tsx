@@ -48,6 +48,9 @@ function sentNow(course: Course, plan: readonly PlannedTask[]): Partial<Record<s
   return out;
 }
 
+/** What a plan already made is expected to take, at the size of its parts' requests now. */
+export const estimateOf = (course: Course, plan: readonly PlannedTask[]): Estimate => planEstimate(plan, sentNow(course, plan));
+
 /** The plan of a build as it stands now, and what it is expected to take: the one reading every note and line shows. */
 export function usePlanEstimate(course: Course, targets?: readonly BuildTarget[]): Estimate {
   const key = targets?.map((t) => `${t.lessonId}:${t.kind}`).join('|');

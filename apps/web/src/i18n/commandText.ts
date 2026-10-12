@@ -37,7 +37,17 @@ export const commandText = {
     setLevel: (v: { level: string }) => `Set the level to ${v.level}`,
     setMaterial: (v: { material: string; enabled: boolean }) => `${v.enabled ? 'Include' : 'Leave out'} ${v.material.toLowerCase()}`,
   },
-  thenUpdate: (n: number) => (n === 1 ? 'Then update the 1 part written from what changes.' : `Then update the ${n} parts written from what changes.`),
+  /** What Apply goes on to write, said before it is pressed. */
+  work: {
+    title: 'Applying this then writes:',
+    fresh: (v: { material: string; lessons: string }) => `${v.material}, ${v.lessons}: written for the first time`,
+    again: (v: { material: string; lessons: string }) => `${v.material}, ${v.lessons}: written again from what changes`,
+    needed: (v: { material: string; lessons: string; by: string }) => `${v.material}, ${v.lessons}: written first, because ${v.by.toLowerCase()} are written from it`,
+    kept: (v: { parts: string }) => `Left as you changed them, and marked as out of date for you to decide: ${v.parts}.`,
+    lessons: (numbers: number[]) => (numbers.length === 1 ? `lesson ${numbers[0]}` : `lessons ${numbers.join(', ')}`),
+    facts: 'What each lesson is about',
+    nothing: 'Nothing is written or written again.',
+  },
   undo: 'Undo',
   toggleTheme: 'Switch light and dark',
   exportItem: 'Export…',

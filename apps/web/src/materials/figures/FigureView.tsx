@@ -57,8 +57,9 @@ export function FigureFrames({ visual, table }: { visual: Figure; table: (head: 
   // Unfinished or not searchable: the slide above says why, and there are no steps to give.
   if (still.problem) return null;
   return (
-    <section className="px-4 py-3" aria-label={figureText.frames}>
-      <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{figureText.frames}</h4>
+    <section className="px-4 py-3" aria-label={figureText.names[visual.figure]}>
+      {/* Named for the demonstration it is: a sort's pictures were headed "The search, step by step". */}
+      <h4 className="mb-2 font-ui text-13 font-semibold text-ink">{figureText.names[visual.figure]}</h4>
       {still.frames.map((frame, i) => (
         <figure key={i} className="avoid-break folio-figure-frame">
           {frame.svg && <img className="folio-figure-print" style={{ aspectRatio: `${still.width} / ${still.height}` }} src={svgAddress(frame.svg)} alt={frame.caption} />}

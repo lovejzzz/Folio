@@ -153,6 +153,7 @@ function coursePlan(prompt: string) {
   if (request.includes('lesson 99')) operations.push({ op: 'removeLesson', lesson: 99 });
   if (request.includes('40 questions')) operations.push({ op: 'setQuizSize', size: 40 });
   if (request.includes('rename lesson 1')) operations.push({ op: 'renameLesson', lesson: 1, title: 'Asking good questions' });
+  if (request.includes('study guides')) operations.push({ op: 'setMaterial', material: 'study', enabled: true });
   if (!operations.length) return { summary: 'Quizzes get three questions.', operations: [{ op: 'setQuizSize', size: 3 }] };
   return { summary: 'As asked.', operations };
 }

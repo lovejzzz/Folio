@@ -1,15 +1,17 @@
-import { planCourseChange, missingTargets, type PlanOperation, type Proposal, type SkipReason, type SkippedOperation } from '@folio/ai';
+import { planCourseChange, type PlanOperation, type Proposal, type SkipReason, type SkippedOperation } from '@folio/ai';
 import { CourseStore, orderedLessons, staleItems, type Course } from '@folio/core';
 import { Button, Skeleton } from '@folio/ui';
 import { Sparkles } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useT, type Messages } from '../../i18n';
+import { afterPlan } from '../../state/afterPlan';
 import { startBuild } from '../../state/build';
 import { currentInference, errorMessage } from '../../state/model';
 import { updateSection } from '../../state/proposals';
 import { activeStore, useCourse } from '../../state/session';
 import { useUi } from '../../state/ui';
 import { commandText } from '../../i18n/commandText';
+import { PlanWork } from './PlanWork';
 
 /** A step in words, naming lessons by title as well as number (numbers are as the course stands now). */
 function describe(op: PlanOperation, t: Messages, course: Course): string {
@@ -89,14 +91,14 @@ function usePlan(request: string, onDone: () => void): { proposal: Proposal | nu
 
 const staleKey = (s: { lessonId: string; kind: string }) => `${s.lessonId}:${s.kind}`;
 
-/** Apply the plan, then update what it made out of date and build any new lessons. */
+/** Apply the plan, then run what the preview said follows it: the same account, read from the course as it now stands. */
 function applyPlan(proposal: Proposal, before: Set<string>): void {
   const store = activeStore();
   if (!store) return;
   store.apply(proposal.commands, { label: { key: 'plan', values: { summary: proposal.rationale } }, source: 'ai' });
-  const state = store.getState();
-  for (const s of staleItems(state).filter((x) => !x.edited && !before.has(staleKey(x)))) void updateSection(s.lessonId, s.kind);
-  if (missingTargets(state).length) void startBuild();
+  const work = afterPlan(store.getState(), before);
+  for (const s of work.updates) void updateSection(s.lessonId, s.kind);
+  if (work.build.length) void startBuild();
 }
 
 function PlanPreview({ proposal, before }: { proposal: Proposal; before: Set<string> }) {
@@ -116,7 +118,7 @@ function PlanPreview({ proposal, before }: { proposal: Proposal; before: Set<str
   }
   const preview = new CourseStore(course);
   preview.apply(proposal.commands, { label: { key: 'preview' }, source: 'ai' });
-  const newlyStale = staleItems(preview.getState()).filter((s) => !before.has(staleKey(s)));
+  const after = preview.getState();
   return (
     <div className="rounded-control bg-well px-4 py-3">
       {proposal.note && <p className="mb-3 font-ui text-14 leading-relaxed text-ink">{proposal.note}</p>}
@@ -128,8 +130,8 @@ function PlanPreview({ proposal, before }: { proposal: Proposal; before: Set<str
           </li>
         ))}
       </ul>
-      {newlyStale.length > 0 && <p className="mt-2 font-ui text-13 text-ink-2">{commandText.thenUpdate(newlyStale.length)}</p>}
       <Skipped skipped={proposal.skipped} />
+      <PlanWork course={after} work={afterPlan(after, before)} />
     </div>
   );
 }

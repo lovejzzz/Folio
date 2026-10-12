@@ -133,7 +133,7 @@ test('a binary search demonstration is added to a slide, worked, changed, kept o
   await drawer.getByRole('button', { name: 'Open print view' }).click();
   const print = await popup;
   await print.addInitScript(() => (window.print = () => {}));
-  const steps = print.getByRole('region', { name: 'The search, step by step' });
+  const steps = print.getByRole('region', { name: 'Binary search, step by step' });
   await expect(steps.locator('img')).toHaveCount(4);
   await expect(steps.getByText('4 is not in the list: the search ran out after 2 comparisons.')).toBeVisible();
   await expect(steps.getByRole('columnheader', { name: 'What follows' })).toBeVisible();
