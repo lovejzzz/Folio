@@ -17,7 +17,7 @@ test('on a phone a stopped build shows about what resuming takes, opens its sent
   // The figure itself is on the screen, whole and inside it: it was hidden on a phone.
   const figure = page.locator('[data-estimate]');
   await expect(figure).toBeVisible();
-  await expect(figure).toHaveText(/^about (?:\$[\d.]+|\d+¢) to \$[\d.]+$/);
+  await expect(figure).toHaveText(/^about (?:\$[\d.]+|\d+¢) to (?:\$[\d.]+|\d+¢)$/);
   const box = (await figure.boundingBox())!;
   expect(box.x).toBeGreaterThanOrEqual(0);
   expect(box.x + box.width).toBeLessThanOrEqual(390);

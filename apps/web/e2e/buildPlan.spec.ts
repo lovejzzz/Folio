@@ -5,8 +5,8 @@ import { withKey } from './helpers';
 
 const cors = { 'access-control-allow-origin': '*' };
 const note = (page: Page | Locator) => page.getByRole('note', { name: 'What this will take' });
-/** The upper figure of a range said in dollars. */
-const upper = (text: string) => Number(text.match(/to \$([\d.]+)/)?.[1] ?? NaN);
+/** The upper figure of a range, in dollars, whether it is said in dollars or in cents. */
+const upper = (text: string) => ((m) => (m ? (m[1] ? Number(m[1]) : Number(m[2]) / 100) : NaN))(text.match(/to (?:\$([\d.]+)|(\d+)¢)/));
 const said = (calls: { messages: { content: unknown }[] }[], words: string) => calls.filter((c) => JSON.stringify(c).includes(words)).length;
 
 async function planTwoLessons(page: Page) {
@@ -52,7 +52,7 @@ test('failed parts: trying them all again and Resume are priced from what is lef
   // Paused: what is left, counted and priced from one list.
   await expect(page.getByText('Paused · 2 parts left')).toBeVisible();
   const paused = page.locator('[data-estimate]');
-  await expect(paused).toHaveText(/^about (?:\$[\d.]+|\d+¢) to \$[\d.]+$/);
+  await expect(paused).toHaveText(/^about (?:\$[\d.]+|\d+¢) to (?:\$[\d.]+|\d+¢)$/);
   const left = upper((await paused.textContent())!);
   expect(left).toBeLessThan(whole);
   // Trying both again from the list of what failed: the same two parts, the same figure.
@@ -121,7 +121,7 @@ test('stopped by hand, the page opened again: the pause says what is left and ab
   const line = (await page.getByText(/^Paused · \d+ parts? left$/).textContent())!;
   const left = Number(line.match(/(\d+) part/)![1]);
   const paused = page.locator('[data-estimate]');
-  await expect(paused).toHaveText(/^about (?:\$[\d.]+|\d+¢) to \$[\d.]+$/);
+  await expect(paused).toHaveText(/^about (?:\$[\d.]+|\d+¢) to (?:\$[\d.]+|\d+¢)$/);
   expect(upper((await paused.textContent())!)).toBeLessThanOrEqual(whole);
   // The figure is a button: pressed, it shows who is paid and that it is an estimate, with Resume under it.
   await paused.click();
