@@ -22,11 +22,13 @@ test('on a phone a stopped build shows about what resuming takes, opens its sent
   expect(box.x).toBeGreaterThanOrEqual(0);
   expect(box.x + box.width).toBeLessThanOrEqual(390);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  if (process.env.FOLIO_B_SHOTS) await page.screenshot({ path: `${process.env.FOLIO_B_SHOTS}/phone390-paused-line.png` });
   // By touch: who is paid, what the figure is, and Resume, before anything is started.
   await figure.tap();
   const takes = page.getByRole('dialog', { name: 'What resuming will take' });
   await expect(takes).toContainText('charged by your provider');
   await expect(takes).toContainText('not a bill and not a limit');
+  if (process.env.FOLIO_B_SHOTS) await page.screenshot({ path: `${process.env.FOLIO_B_SHOTS}/phone390-paused-what-it-takes.png` });
   const inside = (await takes.boundingBox())!;
   expect(inside.x).toBeGreaterThanOrEqual(0);
   expect(inside.x + inside.width).toBeLessThanOrEqual(390);
