@@ -8,3 +8,4 @@ export { compositeBody, compositeGrid, compositeSvg, compositeView } from './com
 export * from './figureKinds';
 export { SORT_MAX, sortKeyframes, sortBody, sortSvg, sortView, sortLimit, type SortPose } from './sortScene';
 export { descentKeyframes, descentSvg, descentView, type DescentPose } from './descentScene';
+export { rackKeyframes, rackSvg, rackView, type RackPose } from './rackScene';

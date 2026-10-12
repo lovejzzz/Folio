@@ -15,6 +15,9 @@ export const newSelectionSort = (): Figure => ({ kind: 'figure', figure: 'select
 /** A walk down a loss a teacher adds: from 4 toward 1 at a rate that gets there slowly. */
 export const newGradientDescent = (): Figure => ({ kind: 'figure', figure: 'gradientDescent', look: 'composite', values: [4, 0.3, 5], target: 1 });
 
+/** A rack a teacher adds: servers of 10.2 into a budget of 40, with six slots. */
+export const newRackBudget = (): Figure => ({ kind: 'figure', figure: 'rackBudget', look: 'composite', values: [10.2, 40, 6], target: 0 });
+
 /** What was typed, with a field put right taken out of it: nothing left means the demonstration is finished. */
 function typed(v: Figure, field: keyof FigureEntered, text: string | undefined): Figure {
   const entered = { ...v.entered, [field]: text };
@@ -30,8 +33,9 @@ export function FigureData({ v, onChange }: { v: Figure; onChange: (next: Figure
   const t = useT();
   const search = v.figure === 'binarySearch';
   const descent = v.figure === 'gradientDescent';
-  const looks = search ? t.figures.looks : descent ? t.figures.descentLooks : t.figures.sortLooks;
-  const valuesName = search ? t.figures.values : descent ? t.figures.descentValues : t.figures.sortValues;
+  const rack = v.figure === 'rackBudget';
+  const looks = search ? t.figures.looks : descent ? t.figures.descentLooks : rack ? t.figures.rackLooks : t.figures.sortLooks;
+  const valuesName = search ? t.figures.values : descent ? t.figures.descentValues : rack ? t.figures.rackValues : t.figures.sortValues;
   const targetName = descent ? t.figures.descentTarget : t.figures.target;
   const problem = figureProblem(v);
   const wrong = enteredFaults(v.entered);
@@ -48,7 +52,7 @@ export function FigureData({ v, onChange }: { v: Figure; onChange: (next: Figure
       </div>
       <div className="flex items-baseline gap-2">
         <span className="shrink-0 font-semibold">{valuesName}</span>
-        <EditableText as="div" className="min-w-0 flex-1 border border-rule px-1.5 py-0.5 tabular-nums" value={v.entered?.values ?? v.values.join(', ')} label={valuesName} placeholder={search ? t.figures.valuesHint : descent ? t.figures.descentHint : t.figures.sortHint} onCommit={values} />
+        <EditableText as="div" className="min-w-0 flex-1 border border-rule px-1.5 py-0.5 tabular-nums" value={v.entered?.values ?? v.values.join(', ')} label={valuesName} placeholder={search ? t.figures.valuesHint : descent ? t.figures.descentHint : rack ? t.figures.rackHint : t.figures.sortHint} onCommit={values} />
       </div>
       {/* A sort looks for no number; a search and a descent each have one. */}
       {(search || descent) && (
