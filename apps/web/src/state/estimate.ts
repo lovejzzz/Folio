@@ -221,12 +221,16 @@ export function estimateLines(e: Estimate, pay: Paying): string[] {
   return lines;
 }
 
-/** The figure alone, for a line with no room for more ("Paused · 3 parts left · about 60 to 110 credits"); the sentences go with it as its description. */
-export function estimateShort(e: Estimate, pay: Paying): string {
+/**
+ * The figure alone, for a line with no room for more ("Paused · 3 parts left · about 60 to 110 credits"); the sentences
+ * are behind it. `tight` is the same figure for a phone's header, where even that is too long: the two ends and a dash.
+ */
+export function estimateShort(e: Estimate, pay: Paying, tight = false): string {
   if (e.parts === 0) return '';
+  const range = (a: string, b: string, unit = '') => (tight ? `${a === b ? a : `${a}–${b}`}${unit}` : `about ${span(a, b)}${unit}`);
   if (e.unknown === e.parts) return 'cost not known';
-  if (pay.provider === 'folio') return `about ${span(e.credits[0].toLocaleString('en-US'), e.credits[1].toLocaleString('en-US'))} credits`;
-  if (pay.provider === 'local') return 'no provider charge';
+  if (pay.provider === 'folio') return range(e.credits[0].toLocaleString('en-US'), e.credits[1].toLocaleString('en-US'), ' credits');
+  if (pay.provider === 'local') return tight ? 'no charge' : 'no provider charge';
   const theirs = keyDollars(e, { write: pay.prices.write, sol: pay.prices.write, check: pay.prices.check });
-  return theirs ? `about ${span(money(theirs.dollars[0]), money(theirs.dollars[1]))}${theirs.missing ? ', and more' : ''}` : 'cost not known';
+  return theirs ? `${range(money(theirs.dollars[0]), money(theirs.dollars[1]))}${theirs.missing ? (tight ? '+' : ', and more') : ''}` : 'cost not known';
 }

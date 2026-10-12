@@ -51,15 +51,20 @@ function Paused({ course }: { course: Course }) {
   if (!need.parts) return null;
   const lines = estimateLines(need, pay);
   return (
-    <p className="flex min-w-0 flex-wrap items-center gap-x-2 font-ui text-13 text-ink-2">
-      <span className="truncate">{t.build.paused(need.parts)}</span>
-      <span aria-hidden>·</span>
+    <p className="flex min-w-0 items-center gap-x-2 whitespace-nowrap font-ui text-13 text-ink-2">
+      {/* A phone's header has room for the figure and Resume, not for the words before them: those are read out, and are in what the figure opens. */}
+      <span className="sr-only truncate sm:not-sr-only">{t.build.paused(need.parts)}</span>
+      <span aria-hidden className="hidden sm:inline">·</span>
       <DialogTrigger>
-        <AriaButton className={linkClass} data-estimate>
-          {estimateShort(need, pay)}
+        <AriaButton className={linkClass} data-estimate aria-label={estimateShort(need, pay)}>
+          <span className="hidden sm:inline">{estimateShort(need, pay)}</span>
+          <span className="sm:hidden" data-estimate-tight>
+            {estimateShort(need, pay, true)}
+          </span>
         </AriaButton>
         <Popover placement="bottom" offset={8} className="max-w-sm rounded-sheet bg-paper p-4 shadow-overlay">
           <AriaDialog aria-label={t.build.whatItTakes} className="grid gap-2 font-ui text-13 leading-5 text-ink outline-none">
+            <p className="font-semibold">{t.build.paused(need.parts)}</p>
             {lines.map((line) => (
               <p key={line}>{line}</p>
             ))}
