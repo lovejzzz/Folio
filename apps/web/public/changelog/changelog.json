@@ -1,5 +1,23 @@
 [
  {
+  "version": "0.0.43",
+  "date": "October 13, 2026",
+  "title": "A slide that holds what is on it",
+  "lede": "A slide is a fixed shape, and what Folio put on one was set at one size whatever its length. A table of six rows over two lines of text ran down through the slide's foot.",
+  "sections": [
+   {
+    "heading": "What is under the title is brought down until it fits",
+    "body": "A slide's table, columns, chain or lines are now measured against the room the slide has for them, and where they are taller their type is brought down a step at a time until they stand above the foot. A slide with room is left at its size. The type goes no lower than a little over half: past that the slide holds too much, and it shows. A table also has its own leading now: it took the page's, a fixed height, so in the small slides at the side of the editor each row stood many times the height of its letters. PowerPoint already sized its lines to the slide; this is the page and the print view.",
+    "image": {
+     "src": "/changelog/0.0.43-fit.webp",
+     "alt": "A slide: Estimating a limit from a table, six rows of x and f(x), and two lines under it that end above the slide's foot",
+     "width": 960,
+     "height": 540
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.42",
   "date": "October 13, 2026",
   "title": "A limit set as a limit, and a demonstration given its own slide",

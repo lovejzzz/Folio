@@ -373,6 +373,9 @@
   }
   .folio-slide-table th,
   .folio-slide-table td {
+    /* Its own leading, by its own size: it took the page's (a fixed height), so in a thumbnail each row stood twelve
+       times the height of its letters and a table of six rows ran out of the slide. */
+    line-height: 1.35;
     padding: 0.35em 0.6em;
     border: 1px solid var(--folio-rule);
     text-align: left;

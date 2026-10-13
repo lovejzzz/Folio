@@ -1,4 +1,5 @@
 import type { Slide } from '@folio/core';
+import { useLayoutEffect, useRef } from 'react';
 import { cx } from '@folio/ui';
 import { EditableText } from '../components/editing/EditableText';
 import { InlineText } from '../components/InlineText';
@@ -15,7 +16,39 @@ interface SlideCanvasProps {
   className?: string;
 }
 
-const cq = (n: number) => ({ fontSize: `${n}cqw` });
+/** A size in the slide's own units, times the fit of the slide's body (1 unless its content is taller than the slide). */
+const cq = (n: number) => ({ fontSize: `calc(var(--fit, 1) * ${n}cqw)` });
+
+/**
+ * What a slide holds under its title, made smaller where it is taller than the room the slide has for it: a table of six
+ * rows over two lines of text ran down through the slide's foot. Its type is brought down a step at a time until it
+ * fits, and no lower than a little over half: past that the slide holds too much, and shows it.
+ */
+function useFit(key: string) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    const slide = el?.closest<HTMLElement>('.folio-slide');
+    if (!el || !slide) return;
+    const fit = () => {
+      const foot = slide.querySelector<HTMLElement>('.folio-slide-footer');
+      const frame = slide.getBoundingClientRect();
+      const room = (foot ? foot.getBoundingClientRect().top : frame.bottom - frame.height * 0.06) - frame.height * 0.015 - el.getBoundingClientRect().top;
+      let k = 1;
+      for (let i = 0; i < 6; i++) {
+        el.style.setProperty('--fit', String(k));
+        const tall = el.offsetHeight;
+        if (tall <= room || k <= 0.56) break;
+        k = Math.max(0.56, k * (room / tall) * 0.985);
+      }
+    };
+    fit();
+    const watch = new ResizeObserver(fit);
+    watch.observe(slide);
+    return () => watch.disconnect();
+  }, [key]);
+  return ref;
+}
 /** A bullet that is one whole line of code: a single pair of backticks around all of it. */
 const isCodeLine = (text: string) => /^`[^`]+`$/.test(text.trim());
 
@@ -65,6 +98,7 @@ function Bullets({ slide, onChange, lang }: { slide: Slide; onChange?: (s: Slide
 export function SlideCanvas({ slide, lang, footer, onChange, live = Boolean(onChange), className }: SlideCanvasProps) {
   const t = useT();
   const titleSize = { title: 7.2, bullets: 5.2, question: 5.6, quote: 5 }[slide.layout];
+  const fit = useFit(JSON.stringify([slide.title, slide.bullets, slide.visual, slide.layout]));
   // The slide being edited heads the page under the deck's title; a thumbnail is a link or button that already has
   // its name, so its title is not a heading too.
   const title = onChange ? (
@@ -93,15 +127,22 @@ export function SlideCanvas({ slide, lang, footer, onChange, live = Boolean(onCh
         <div className={cx('folio-slide-title font-display text-ink', slide.layout === 'quote' && 'italic')} style={cq(titleSize)}>
           {title}
         </div>
-        {slide.visual && (
-          <div className={cx('folio-slide-gap', slide.visual.kind === 'figure' && 'folio-slide-figure-slot')} style={cq(2.2)}>
+        {slide.visual?.kind === 'figure' && (
+          <div className="folio-slide-gap folio-slide-figure-slot" style={cq(2.2)}>
             <SlideVisualView visual={slide.visual} live={live} onChange={onChange && ((visual) => onChange({ ...slide, visual }))} />
           </div>
         )}
-        {/* A question's points stand as one block in the middle, each beside its dot: centred line by line in the editor, the
-            text drifted to the middle of the slide and left its dot at the edge. */}
-        <div className={cx('folio-slide-gap', slide.layout === 'question' && 'mx-auto w-fit max-w-full text-left')}>
-          <Bullets slide={slide} onChange={onChange} lang={lang} />
+        <div ref={fit}>
+          {slide.visual && slide.visual.kind !== 'figure' && (
+            <div className="folio-slide-gap" style={cq(2.2)}>
+              <SlideVisualView visual={slide.visual} live={live} onChange={onChange && ((visual) => onChange({ ...slide, visual }))} />
+            </div>
+          )}
+          {/* A question's points stand as one block in the middle, each beside its dot: centred line by line in the editor, the
+              text drifted to the middle of the slide and left its dot at the edge. */}
+          <div className={cx('folio-slide-gap', slide.layout === 'question' && 'mx-auto w-fit max-w-full text-left')}>
+            <Bullets slide={slide} onChange={onChange} lang={lang} />
+          </div>
         </div>
       </div>
       {footer && (
