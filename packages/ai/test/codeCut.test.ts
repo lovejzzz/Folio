@@ -65,5 +65,47 @@ describe('a function the writer cut into a slide and its "(continued)"', () => {
     expect(joinCode([code(3, 1), code(3, 1, ['What does it print?'])])).toHaveLength(2);
     expect(joinCode([code(9, 1), code(9, 1)])).toHaveLength(2);
     expect(joinCode([code(3, 1), code(3, 1), code(3, 1)])).toHaveLength(1);
+    // Two functions one after the other in one segment, under titles of their own, are two slides.
+    expect(joinCode([{ ...code(3, 1), title: 'Selection sort' }, { ...code(3, 1), title: 'Insertion sort' }])).toHaveLength(2);
+  });
+});
+
+describe('a deck Folio wrote on the live site: a demonstration under seven lines of code, and a block begun under a line of words', () => {
+  const deck = (JSON.parse(readFileSync(new URL('./fixtures/algorithms-figure-and-code.json', import.meta.url), 'utf8')) as { slides: { title: string; bullets: string[]; notes: string; segment: number; figure?: unknown }[] }).slides;
+  const isCode = (b: string) => /^`[^`]+`$/.test(b.trim());
+
+  it('is the real case', () => {
+    const shown = deck.find((s) => s.figure)!;
+    expect(shown.bullets.filter(isCode)).toHaveLength(7);
+    const first = deck.findIndex((s) => s.title === 'Find the mistake in this insertion sort');
+    expect(isCode(deck[first]!.bullets[0]!)).toBe(false);
+    expect(deck[first + 1]!.title).toContain('(continued)');
+  });
+
+  it('gives the demonstration a slide of its own and its code the next one', async () => {
+    const { figureApart } = await import('../src/slideSteps');
+    const out = figureApart(deck);
+    expect(out).toHaveLength(deck.length + 1);
+    const at = out.findIndex((s) => s.figure);
+    expect(out[at]!.bullets.filter(isCode)).toEqual([]);
+    expect(out[at + 1]!.figure).toBeUndefined();
+    expect(out[at + 1]!.title).toBe(out[at]!.title);
+    expect(out[at + 1]!.bullets).toHaveLength(7);
+    expect(out[at + 1]!.bullets[0]).toBe('`def selection_sort(items):`');
+    expect(out[at + 1]!.segment).toBe(out[at]!.segment);
+  });
+
+  it('joins the block that begins under a line of words with its "(continued)", and never a demonstration with what follows', async () => {
+    const { figureApart, joinCode } = await import('../src/slideSteps');
+    const out = joinCode(figureApart(deck));
+    expect(out.some((s) => s.title.includes('(continued)'))).toBe(false);
+    const mistake = out.find((s) => s.title === 'Find the mistake in this insertion sort')!;
+    expect(mistake.bullets[0]).toBe('Work alone: find an input that breaks it, then fix it');
+    expect(mistake.bullets.filter(isCode)).toHaveLength(9);
+    // The demonstration's slide keeps only its picture; its code stands on the slide after, and the next function is not run into it.
+    const at = out.findIndex((s) => s.figure);
+    expect(out[at]!.bullets.filter(isCode)).toEqual([]);
+    expect(out[at + 1]!.bullets).toHaveLength(7);
+    expect(out.flatMap((s) => s.bullets)).toEqual(deck.flatMap((s) => s.bullets.filter((b) => !isCode(b) || true)));
   });
 });

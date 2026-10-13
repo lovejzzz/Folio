@@ -1,0 +1,123 @@
+{
+ "from": "a deck Folio wrote on the live site at 0.0.41 on 13 October 2026 (an algorithms lesson on sorting): slides by segment number",
+ "slides": [
+  {
+   "title": "Selection sort and insertion sort",
+   "bullets": [
+    "Introduction to algorithms: searching and sorting"
+   ],
+   "notes": "Welcome students. Today they trace and code two sorting methods, then sit the graded Quizzes on search and on sorting.",
+   "segment": 0
+  },
+  {
+   "title": "Problem sets: Linear search and binary search, due now",
+   "bullets": [
+    "Due now: Problem sets, linear search and binary search",
+    "Today: trace and code selection sort and insertion sort",
+    "Then: sit the graded Quizzes on search and on sorting",
+    "Put away anything not needed for tracing"
+   ],
+   "notes": "Say that the Problem sets piece on linear and binary search is due now. Say only its name and that it is part of the Problem sets component (50% of the course grade). State today’s plan. Quiz conditions, including what students may bring or use, are announced before the Quizzes begin, not now.",
+   "segment": 1
+  },
+  {
+   "title": "Predict: sort a short list",
+   "bullets": [
+    "List: [29, 10, 14, 37, 13]",
+    "Sort it from smallest to largest",
+    "Alone: write the first three steps you would use",
+    "Then compare with a neighbor"
+   ],
+   "notes": "Allow about three minutes of writing, one minute comparing, two minutes reporting. Two pairs report one step each. Expect two strategies: pick the smallest and set it first, or insert each item into a sorted group. Label them selection and insertion on the board. Link back to last time: sorting is what makes binary search possible, so the cost of sorting matters.",
+   "segment": 2
+  },
+  {
+   "title": "Selection sort: pass by pass",
+   "bullets": [
+    "`def selection_sort(items):`",
+    "`    for i in range(len(items) - 1):`",
+    "`        m = i`",
+    "`        for j in range(i + 1, len(items)):`",
+    "`            if items[j] < items[m]:`",
+    "`                m = j`",
+    "`        items[i], items[m] = items[m], items[i]`"
+   ],
+   "notes": "Hand out the sheet Selection sort trace. Students should already have written their prediction of the list after the first pass. Step through the demonstration, then show the code. Students record each pass in the table and count comparisons per pass. Pass 1: the minimum 10 at index 1 swaps with 29, giving [10, 29, 14, 37, 13]. Pass 2: the minimum 13 swaps with 29, giving [10, 13, 14, 37, 29]. Pass 3: 14 is already in place, so the list is unchanged. Pass 4: 29 swaps with 37, giving [10, 13, 14, 29, 37]. The passes use 4, 3, 2, 1 comparisons: 10 in total, which is n(n−1)/2 for n = 5.",
+   "segment": 3,
+   "figure": {
+    "figure": "selectionSort",
+    "values": [
+     29,
+     10,
+     14,
+     37,
+     13
+    ],
+    "target": 0
+   }
+  },
+  {
+   "title": "Insertion sort: compare with your version",
+   "bullets": [
+    "`def insertion_sort(items):`",
+    "`    for i in range(1, len(items)):`",
+    "`        key = items[i]`",
+    "`        j = i - 1`",
+    "`        while j >= 0 and items[j] > key:`",
+    "`            items[j + 1] = items[j]`",
+    "`            j -= 1`",
+    "`        items[j + 1] = key`"
+   ],
+   "notes": "Keep this slide hidden until students have written their own versions. First trace insertion sort at the board on [12, 11, 13, 5, 6], pausing before each insertion for students to predict the sorted prefix. Students fill in the sheet Insertion sort trace and code, then write the function from memory of the trace. Then show this code and have them mark any differences. Table answers: key 11: prefix [11, 12], 1 shift, 1 comparison. Key 13: [11, 12, 13], 0 shifts, 1 comparison. Key 5: [5, 11, 12, 13], 3 shifts, 3 comparisons. Key 6: [5, 6, 11, 12, 13], 3 shifts, 4 comparisons. Totals: 7 shifts, 9 comparisons. Common error: forgetting to stop at index 0, giving a negative index, which Python silently reads from the end of the list.",
+   "segment": 4
+  },
+  {
+   "title": "Find the mistake in this insertion sort",
+   "bullets": [
+    "Work alone: find an input that breaks it, then fix it",
+    "`def insertion_sort(items):`",
+    "`    for i in range(1, len(items)):`",
+    "`        key = items[i]`",
+    "`        j = i - 1`"
+   ],
+   "notes": "Students use the sheet Find the mistake in this insertion sort. They write a failing input and what the function returns, write the corrected line, and explain the fix to a partner. Two pairs report. Answer for the teacher: with `j > 0` the item at index 0 is never compared or shifted, so [5, 3] returns [5, 3], wrongly. Fix: `j >= 0`. Ask why the same boundary care mattered in binary search last time.",
+   "segment": 5
+  },
+  {
+   "title": "Find the mistake in this insertion sort (continued)",
+   "bullets": [
+    "`        while j > 0 and items[j] > key:`",
+    "`            items[j + 1] = items[j]`",
+    "`            j -= 1`",
+    "`        items[j + 1] = key`",
+    "`    return items`"
+   ],
+   "notes": "",
+   "segment": 5
+  },
+  {
+   "title": "Why about n² comparisons, and which method?",
+   "bullets": [
+    "Part 1: why does selection sort make n(n−1)/2 comparisons?",
+    "Case A: one lookup in an unsorted list of 50 names",
+    "Case B: 100,000 lookups in a fixed, unsorted list",
+    "Case C: a nearly sorted list that needs sorting",
+    "Case D: one lookup in an unsorted list of 1,000,000 items"
+   ],
+   "notes": "Hand out the sheet Why n² comparisons, and which method. Pairs write one sentence for Part 1 in one minute; one pair reads theirs aloud. Then pairs choose linear search, binary search, selection sort or insertion sort, or a combination, for each case, with a reason in a few words (three minutes). Hear two pairs. Argument for Part 1: passes of n−1, n−2, ..., 1 comparisons sum to n(n−1)/2. For n = 1,000 that is 499,500; doubling n roughly quadruples it. Class adds a word on the reversed list: every key moves past all earlier items, so insertion sort does the same n(n−1)/2 in the worst case. Cases: A: linear search. B: sort once, then binary search. C: insertion sort, close to n comparisons. D: linear search, since sorting costs more than one scan.",
+   "segment": 6
+  },
+  {
+   "title": "Wrap-up and what is due",
+   "bullets": [
+    "Both sorts take about n² comparisons in the worst case",
+    "The right method depends on the situation",
+    "Due: the Problem sets piece set today",
+    "Deadline: as given in class",
+    "Optional reading: Cormen et al., Introduction to Algorithms, section 2.1 (to confirm)"
+   ],
+   "notes": "Name the Problem sets assignment for this lesson and give its deadline. Say nothing about its tasks or how it is scored beyond the piece itself. Summarize: both sorts take about n² comparisons in the worst case, and the right method depends on the situation. Optional further reading, not required for anything in the course: Cormen, Leiserson, Rivest and Stein, Introduction to Algorithms (3rd ed., 2009), section 2.1.",
+   "segment": 9
+  }
+ ]
+}

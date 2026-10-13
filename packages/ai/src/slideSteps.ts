@@ -128,16 +128,40 @@ const bare = (text: string) => text.trim().replace(/^`|`$/g, '').trim();
  * lines each, though told that a function stands on one slide and asked once more. Joined here, since a slide draws a
  * block of code at a size its lines fit at. The first slide's title stands; notes are put one after the other.
  */
-export function joinCode<S extends { title: string; bullets: string[]; notes: string; segment: number; visual?: unknown }>(slides: S[]): S[] {
-  const onlyCode = (x: S) => !x.visual && x.bullets.length > 0 && x.bullets.every(codeLine);
+type Drafted = { title: string; bullets: string[]; notes: string; segment: number; table?: unknown; chart?: unknown; figure?: unknown; steps?: unknown; compare?: unknown };
+const drawn = (x: Drafted) => Boolean(x.table ?? x.chart ?? x.figure ?? x.steps ?? x.compare);
+
+const untagged = (title: string) => title.replace(/\s*[(（][^()（）]*[)）]\s*$/u, '').trim().toLowerCase();
+const sameTitle = (a: string, b: string) => untagged(a) === untagged(b);
+
+export function joinCode<S extends Drafted>(slides: S[]): S[] {
+  const onlyCode = (x: S) => !drawn(x) && x.bullets.length > 0 && x.bullets.every(codeLine);
+  // The slide a block begins on may open with a line of words ("Work alone: find an input that breaks it"): it ends in code.
+  const endsInCode = (x: S) => !drawn(x) && x.bullets.length > 0 && codeLine(x.bullets.at(-1)!);
   const out: S[] = [];
   for (const slide of slides) {
     const before = out.at(-1);
-    if (before && onlyCode(before) && onlyCode(slide) && before.segment === slide.segment && before.bullets.length + slide.bullets.length <= 16) {
+    // Only a slide that carries on the one before it, by its title ("… (continued)" or the same title): two functions shown
+    // one after the other in a segment are two slides.
+    if (before && endsInCode(before) && onlyCode(slide) && before.segment === slide.segment && sameTitle(before.title, slide.title) && before.bullets.length + slide.bullets.length <= 16) {
       out[out.length - 1] = { ...before, bullets: [...before.bullets, ...slide.bullets], notes: [before.notes, slide.notes].filter((n) => n.trim()).join(' ') };
     } else out.push(slide);
   }
   return out;
+}
+
+/**
+ * A demonstration and a block of code on one slide, as two: the demonstration first, its code on a slide of its own
+ * right after. A slide draws its demonstration in the room its lines leave it, and under the seven lines of
+ * selection_sort the picture was a speck. The words that are not code stay with the picture.
+ */
+export function figureApart<S extends Drafted>(slides: S[]): S[] {
+  return slides.flatMap((slide) => {
+    const code = slide.bullets.filter(codeLine);
+    if (!slide.figure || code.length < 2) return [slide];
+    const { figure: _figure, ...rest } = slide;
+    return [{ ...slide, bullets: slide.bullets.filter((b) => !codeLine(b)) }, { ...(rest as S), bullets: code, notes: '' }];
+  });
 }
 
 /**

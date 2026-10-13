@@ -1,4 +1,4 @@
-import { deckFaults, joinCode, keptIds, withSheetSlides } from './slideSteps';
+import { deckFaults, figureApart, joinCode, keptIds, withSheetSlides } from './slideSteps';
 import { groundsOf, markedForStudents } from './locators';
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
@@ -154,7 +154,7 @@ const slides: SectionJob<SlidesDraft> = {
   tidy: (v, course, lesson) => {
     const drafted = tidySlides(v, course.language);
     // A function the writer cut over slides is put back on one before anything is checked or counted.
-    const tidied = { ...drafted, slides: joinCode(drafted.slides) };
+    const tidied = { ...drafted, slides: joinCode(figureApart(drafted.slides)) };
     const sessions = lessonSessions(course);
     const shown = sessions.some((s) => s.kind === 'lecture' || s.kind === 'class') ? sessions.map((s) => s.kind === 'lecture' || s.kind === 'class') : sessions.map(() => true);
     // With the lesson plan out of the teacher's choice its sheets are too: no slide is made that sends a class to one.
