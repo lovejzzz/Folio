@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.0.42",
+  "date": "October 13, 2026",
+  "title": "A limit set as a limit, and a demonstration given its own slide",
+  "lede": "Three courses were made on the site itself and every slide of them looked at. Four things were wrong in how Folio set what the model had written, none in the writing: a limit shown as it was typed, a demonstration squeezed to a speck by the code under it, a function still cut over two slides, and a right answer reported as a mismatch.",
+  "sections": [
+   {
+    "heading": "lim, log and Σ take their subscripts",
+    "body": "Course text stays plain, with a subscript written as x_{n−1}. Folio set one only after a single letter, so a limit written the only way it can be, lim_{x→0}, was shown as it was typed, on slides, pages and exports. A subscript in braces is now set after any word or bracket: limits, logarithms with a base, sums with their bounds. Names with underscores, such as selection_sort, have no braces and stay as they are.",
+    "image": {
+     "src": "/changelog/0.0.42-limit.webp",
+     "alt": "A slide: Tables in pairs: sin(x)/x, a table of four values of x, and the line State the limit, with x→0 set under lim",
+     "width": 960,
+     "height": 540
+    }
+   },
+   {
+    "heading": "A demonstration and its code on separate slides",
+    "body": "A slide draws its demonstration in the room its lines leave it. A deck put the selection sort demonstration and the seven lines of the function on one slide, and the picture was a speck. The code now goes to a slide of its own right after the demonstration. And a block of code that begins under a line of words (\"Work alone: find an input that breaks it\") is joined with its continuation, as a block of nothing but code already was."
+   },
+   {
+    "heading": "A minus sign in print is a minus",
+    "body": "Folio works out numeric answers and tells you when the answer written differs from the one computed. An answer written −4, with the minus sign as it is set in print, was read as 4 and reported as a mismatch with -4. It is read as what it is."
+   }
+  ]
+ },
+ {
   "version": "0.0.41",
   "date": "October 12, 2026",
   "title": "A method shown as it runs, and its code on one slide",
