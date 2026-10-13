@@ -30,8 +30,12 @@ const WRAPPED = /`([^`\n]+)`|\*\*([^*\n]+)\*\*/g;
 const ANY_BOLD = /\*\*[^*\n]+\*\*/;
 // Not global: test() on a global pattern moves its lastIndex, and matchAll starts from there.
 const ANY_CODE = /`[^`\n]+`/;
-/** "_educ" after a lone letter (β̂_educ, x_ik); "^2" after a letter, digit or bracket (R^2, e^{0.092}). */
-const MARKED = String.raw`(?:(?<=(?:^|[^\p{L}\p{N}_])\p{L}\p{M}*)_|(?<=(?:[\p{L}\p{N})\]]|\p{M}))\^)(?:\{([^{}\n]{1,24})\}|([−-]?[\p{L}\p{N}][\p{L}\p{M}\p{N}]*(?:\.\p{N}+)?))`;
+/**
+ * "_educ" after a lone letter (β̂_educ, x_ik); "_{…}" in braces after any word or bracket (lim_{x→a}, log_{2}, Σ_{i=1}):
+ * braces are never part of a snake_case name, and a limit written the only way it can be was shown as it was typed;
+ * "^2" after a letter, digit or bracket (R^2, e^{0.092}).
+ */
+const MARKED = String.raw`(?:(?<=(?:^|[^\p{L}\p{N}_])\p{L}\p{M}*)_|(?<=[\p{L}\p{N})\]]\p{M}*)_(?=\{)|(?<=(?:[\p{L}\p{N})\]}]|\p{M}))\^)(?:\{([^{}\n]{1,24})\}|([−-]?[\p{L}\p{N}][\p{L}\p{M}\p{N}]*(?:\.\p{N}+)?))`;
 
 /**
  * Unicode's own sub- and superscript characters (x₁, xᵢ, R², X⁻¹). The web

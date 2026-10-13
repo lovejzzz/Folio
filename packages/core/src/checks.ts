@@ -75,7 +75,9 @@ function round(n: number): string {
 }
 
 export function parseNumber(value: string): number | null {
-  const match = value.replace(/,/g, '').match(/-?\d+(?:\.\d+)?(?:e-?\d+)?/i);
+  // A minus sign as it is set in print (−4) is a minus: read as 4, a right answer of −4 was told to its teacher as a
+  // mismatch with "-4".
+  const match = value.replace(/,/g, '').replace(/[−–](?=\d)/g, '-').match(/-?\d+(?:\.\d+)?(?:e-?\d+)?/i);
   if (!match) return null;
   const n = Number(match[0]);
   if (!Number.isFinite(n)) return null;

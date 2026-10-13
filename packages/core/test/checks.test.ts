@@ -13,6 +13,12 @@ describe('checkQuestion', () => {
     expect(checkQuestion(q)).toEqual([{ code: 'answerMismatch', values: { stated: '7', computed: '6' } }]);
     expect(checkQuestion({ ...q, answer: '6' })).toEqual([]);
   });
+  it('reads a minus sign set as in print as a minus', () => {
+    // A calculus quiz's right answer, "−4", was told to its teacher as a mismatch with the computed "-4".
+    const q = { format: 'numeric' as const, prompt: 'The limit?', choices: [], answer: '−4', expression: '2*9-21-1' };
+    expect(checkQuestion(q)).toEqual([]);
+    expect(checkQuestion({ ...q, answer: '4' })).toEqual([{ code: 'answerMismatch', values: { stated: '4', computed: '-4' } }]);
+  });
   it('accepts an answer rounded to the places it is given to, and no further', () => {
     const q = { format: 'numeric' as const, prompt: 'Ratio, to one decimal place?', choices: [], answer: '1.7', expression: '5/3' };
     expect(checkQuestion(q)).toEqual([]);

@@ -121,3 +121,19 @@ describe('addresses', () => {
     expect(textRuns('x_i, see j_s@uni.edu').some((r) => r.script === 'sub' && r.text === 'i')).toBe(true);
   });
 });
+
+describe('a subscript in braces after a whole word', () => {
+  const shown = (text: string) => textRuns(text).map((r) => (r.script ? `[${r.script}:${r.text}]` : r.text)).join('');
+
+  it('sets a limit, a logarithm and a sum as they are written on paper', () => {
+    // Slides Folio wrote for a calculus course showed "lim_{x→0} g(x)" as typed.
+    expect(shown('State the limit: lim_{x→0} g(x) = ___')).toBe('State the limit: lim[sub:x→0] g(x) = ___');
+    expect(shown('log_{2} 500 and Σ_{i=1}^{n} x_i')).toBe('log[sub:2] 500 and Σ[sub:i=1][sup:n] x[sub:i]');
+    expect(shown('max_{x} f(x), (a+b)_{k}')).toBe('max[sub:x] f(x), (a+b)[sub:k]');
+  });
+
+  it('still leaves names with underscores alone', () => {
+    for (const text of ['selection_sort(items)', 'use my_list and total_count', 'snake_case_name']) expect(shown(text)).toBe(text);
+  });
+});
+
