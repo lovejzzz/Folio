@@ -1,5 +1,37 @@
 [
  {
+  "version": "0.0.41",
+  "date": "October 12, 2026",
+  "title": "A method shown as it runs, and its code on one slide",
+  "lede": "Folio draws a few methods itself as a demonstration a teacher steps through: binary search, selection sort, gradient descent, a rack filled against a budget. A lesson on binary search written with 0.0.40 used none of them and put the function on the screen instead, cut over three slides. This release has a lesson that teaches one of these methods show it as its demonstration, and keeps a block of code whole on one slide.",
+  "sections": [
+   {
+    "heading": "A taught method is shown as its demonstration, then its code",
+    "body": "The plan of a lesson was told it might list a demonstration where a segment worked one of the methods through; a lesson on searching chose to show the code line by line. It is now told that a segment teaching how one of these methods runs shows the demonstration, with the lesson's own numbers, and the code after it. Two lessons of an introductory algorithms course, written three times from one brief: with 0.0.40, a demonstration in one of the two and 2 slides of 28 with anything but text; with this release, a demonstration in both and 5 slides of 26. One course, written once each way: a direction, not a rate.",
+    "image": {
+     "src": "/changelog/0.0.41-demonstration.webp",
+     "alt": "A slide from a generated deck: Binary search, step by step, a drawn cabinet of fifteen numbered drawers over the same fifteen numbers in a row",
+     "width": 960,
+     "height": 540
+    }
+   },
+   {
+    "heading": "A block of code stands whole on one slide",
+    "body": "Lines of code one after another on a slide are now set as a block: close together, each on its own line with its indentation, at a size all of them fit the slide at. As bullets of the slide's own size, a function of twelve lines could not stand on one slide. Told to keep a function together, the writer of the deck still cut it into a slide and its \"(continued)\"; slides that hold nothing but code, one after another in one part of the lesson, are now joined into one by Folio itself.",
+    "image": {
+     "src": "/changelog/0.0.41-code-block.webp",
+     "alt": "A slide from a generated deck: Binary search in Python, the twelve lines of the function as one block of code",
+     "width": 960,
+     "height": 540
+    }
+   },
+   {
+    "heading": "A note that was not a fault",
+    "body": "The reader of a plan took a demonstration's own terms for the lesson's code, and left the teacher a note that \"the screen still names selectionSort and supplies a target, but the Python function is selection_sort(values)\". The reader is now shown a demonstration as what it is: a picture Folio draws, with its numbers. The two algorithms lessons written with this release were read by a strict reader and scored 8 and 8.5 of 10; what the reader found wrong was of kinds this release does not touch (a quiz given exactly its own minutes, two counts in keys that were not worked out)."
+   }
+  ]
+ },
+ {
   "version": "0.0.40",
   "date": "October 12, 2026",
   "title": "One piece of work, told one way",
