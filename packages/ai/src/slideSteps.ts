@@ -119,6 +119,31 @@ export function spokenFixes(v: { slides: { notes: string }[] }): { n: number; sa
   });
 }
 
+const codeLine = (text: string) => /^`[^`]+`$/.test(text.trim());
+const bare = (text: string) => text.trim().replace(/^`|`$/g, '').trim();
+
+/**
+ * Blocks of code a plan's segment shows (two lines or more, one after another) that the deck cuts over several slides,
+ * by segment number. A function of twelve lines stood on three slides, never whole on the screen while it was traced,
+ * and the notes sent the teacher back to "the previous slide" for "the whole function". A block too long for one slide
+ * (over sixteen lines) is let be.
+ */
+export function codeCut(v: { slides: { bullets: string[]; segment: number }[] }, lesson: Lesson): number[] {
+  return lesson.segments.flatMap((seg, at) => {
+    const blocks: string[][] = [];
+    for (const item of seg.shown ?? []) {
+      if (!codeLine(item)) blocks.push([]);
+      else if (blocks.length) blocks.at(-1)!.push(bare(item));
+      else blocks.push([bare(item)]);
+    }
+    const cut = blocks.filter((b) => b.length >= 2 && b.length <= 16).some((block) => {
+      const on = v.slides.map((s) => s.bullets.map(bare)).filter((lines) => block.some((line) => lines.includes(line)));
+      return on.length > 1 && !on.some((lines) => block.every((line) => lines.includes(line)));
+    });
+    return cut ? [at + 1] : [];
+  });
+}
+
 /**
  * What is wrong with a deck against its lesson, each as its writer can put it right. Out of step with the plan is
  * asked for once and let be; a case with no slide is kept on the deck when a second writing still leaves it out, so a
@@ -129,6 +154,7 @@ export function deckFaults(v: SlidesDraft, lesson: Lesson): { issue: string; kep
     ...untaught(v, lesson).map((title) => ({ kept: true, issue: `The lesson's case "${title}" has no slide: the deck teaches every case the lesson was settled with, each on a slide of its own, however many slides that takes` })),
     ...meetingsUnshown(v, lesson).map((n) => ({ kept: true, issue: `Meeting ${n} of this lesson puts things on the screen and the deck has no slide for it: every meeting's on-screen items have slides, each given the number of its own segment` })),
     ...spokenFixes(v).map(({ n, said }) => ({ kept: true, issue: `Slide ${n}'s notes explain a figure the slide shows as meaning something else ("${said}"): the slide itself shows the figure that is right for what it asks, and the notes correct nothing on it` })),
+    ...codeCut(v, lesson).map((n) => ({ kept: false, issue: `The code the plan shows in segment ${n} is one block and the deck cuts it over several slides: all of its lines stand on one slide, a bullet a line, past the bullet limit` })),
     ...outOfStep(v, lesson).map((issue) => ({ kept: false, issue })),
   ];
 }

@@ -16,6 +16,8 @@ interface SlideCanvasProps {
 }
 
 const cq = (n: number) => ({ fontSize: `${n}cqw` });
+/** A bullet that is one whole line of code: a single pair of backticks around all of it. */
+const isCodeLine = (text: string) => /^`[^`]+`$/.test(text.trim());
 
 function Bullets({ slide, onChange, lang }: { slide: Slide; onChange?: (s: Slide) => void; lang: string }) {
   const t = useT();
@@ -24,11 +26,16 @@ function Bullets({ slide, onChange, lang }: { slide: Slide; onChange?: (s: Slide
   const addLabel = slide.layout === 'title' ? t.lesson.addSubtitle : slide.layout === 'quote' ? t.lesson.addAttribution : t.lesson.addBullet;
   const set = (i: number, text: string) =>
     onChange?.({ ...slide, bullets: text.trim() ? slide.bullets.map((b, j) => (j === i ? text : b)) : slide.bullets.filter((_, j) => j !== i) });
+  // Lines of code one after another are one block of code: set close, without dots, at a size all of them fit the slide
+  // at. As bullets of the slide's own size a function of twelve lines could not stand on one slide, and was cut over three.
+  const code = slide.bullets.map(isCodeLine);
+  const inBlock = (i: number) => code[i] && (code[i - 1] || code[i + 1]);
+  const lines = code.filter((_, i) => inBlock(i)).length;
   return (
     <ul className="folio-slide-bullets font-reading leading-snug text-ink-2" style={cq(slide.layout === 'question' ? 2.8 : 3.1)}>
       {slide.bullets.map((b, i) => (
-        <li key={i}>
-          {plain ? null : <span aria-hidden className="folio-slide-dot" />}
+        <li key={i} className={inBlock(i) ? 'folio-slide-code' : undefined} style={inBlock(i) ? cq(Math.min(2.6, 22 / lines)) : undefined}>
+          {plain || inBlock(i) ? null : <span aria-hidden className="folio-slide-dot" />}
           {onChange ? <EditableText value={b} label={`${t.lesson.bullet} ${i + 1}`} lang={lang} className="min-w-0 flex-1" onCommit={(v) => set(i, v)} /> : <span><InlineText text={b} /></span>}
         </li>
       ))}

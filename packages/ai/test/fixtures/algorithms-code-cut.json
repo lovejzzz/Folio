@@ -1,0 +1,50 @@
+{
+ "from": "an algorithms lesson Folio wrote at 0.0.40 on 12 October 2026: the segment that shows binary_search, and the deck's slides by segment number",
+ "segmentNumber": 4,
+ "shown": [
+  "`def binary_search(values, target):`",
+  "`    low = 0`",
+  "`    high = len(values) - 1`",
+  "`    while low <= high:`",
+  "`        mid = (low + high) // 2`",
+  "`        if values[mid] == target:`",
+  "`            return mid`",
+  "`        elif values[mid] < target:`",
+  "`            low = mid + 1`",
+  "`        else:`",
+  "`            high = mid - 1`",
+  "`    return -1`"
+ ],
+ "slides": [
+  {
+   "title": "Binary search: halving a sorted list",
+   "bullets": [
+    "`def binary_search(values, target):`",
+    "`    low = 0`",
+    "`    high = len(values) - 1`",
+    "`    while low <= high:`"
+   ],
+   "segment": 4
+  },
+  {
+   "title": "Binary search: halving a sorted list (continued)",
+   "bullets": [
+    "`        mid = (low + high) // 2`",
+    "`        if values[mid] == target:`",
+    "`            return mid`"
+   ],
+   "segment": 4
+  },
+  {
+   "title": "Binary search: narrowing the range",
+   "bullets": [
+    "`        elif values[mid] < target:`",
+    "`            low = mid + 1`",
+    "`        else:`",
+    "`            high = mid - 1`",
+    "`    return -1`"
+   ],
+   "segment": 4
+  }
+ ]
+}

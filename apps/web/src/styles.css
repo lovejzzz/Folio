@@ -487,6 +487,13 @@
   .folio-slide-bullets > li + li {
     margin-top: 0.5em;
   }
+  /* A block of code: its lines close together, each kept on its own line with its indentation. */
+  .folio-slide-bullets > li.folio-slide-code + li.folio-slide-code {
+    margin-top: 0.1em;
+  }
+  .folio-slide-code {
+    white-space: pre;
+  }
   .folio-slide-dot {
     margin-top: 0.55em;
     width: 0.3em;

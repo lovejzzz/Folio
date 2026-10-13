@@ -130,7 +130,8 @@ export const SlidesDraft = z.object({
         layout: z.enum(['title', 'bullets', 'question', 'quote']),
         title: line,
         // Five fit a slide; a few more are split over two slides rather than sent back.
-        bullets: z.array(line).max(10).describe('At most five'),
+        // (Sixteen for a block of code, which is one bullet a line: at ten a function of twelve lines was cut over slides.)
+        bullets: z.array(line).max(16).describe('At most five; lines of code are one bullet each and may be more'),
         notes: z.string().describe('Speaker notes for the teacher'),
         // Slides had no tie to the plan's steps: a sheet's segment had no slide and the one before stayed up, and nothing could tell.
         segment: z.number().int().min(0).default(0).describe('The number of the plan\'s segment this slide is shown in; 0 for the title slide and a last slide of what is due'),
