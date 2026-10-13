@@ -123,6 +123,24 @@ const codeLine = (text: string) => /^`[^`]+`$/.test(text.trim());
 const bare = (text: string) => text.trim().replace(/^`|`$/g, '').trim();
 
 /**
+ * Slides that hold nothing but code, one after another in one segment, as one slide where their lines fit one: the
+ * writer cut a function of twelve lines into "Binary search in Python" and "Binary search in Python (continued)", six
+ * lines each, though told that a function stands on one slide and asked once more. Joined here, since a slide draws a
+ * block of code at a size its lines fit at. The first slide's title stands; notes are put one after the other.
+ */
+export function joinCode<S extends { title: string; bullets: string[]; notes: string; segment: number; visual?: unknown }>(slides: S[]): S[] {
+  const onlyCode = (x: S) => !x.visual && x.bullets.length > 0 && x.bullets.every(codeLine);
+  const out: S[] = [];
+  for (const slide of slides) {
+    const before = out.at(-1);
+    if (before && onlyCode(before) && onlyCode(slide) && before.segment === slide.segment && before.bullets.length + slide.bullets.length <= 16) {
+      out[out.length - 1] = { ...before, bullets: [...before.bullets, ...slide.bullets], notes: [before.notes, slide.notes].filter((n) => n.trim()).join(' ') };
+    } else out.push(slide);
+  }
+  return out;
+}
+
+/**
  * Blocks of code a plan's segment shows (two lines or more, one after another) that the deck cuts over several slides,
  * by segment number. A function of twelve lines stood on three slides, never whole on the screen while it was traced,
  * and the notes sent the teacher back to "the previous slide" for "the whole function". A block too long for one slide

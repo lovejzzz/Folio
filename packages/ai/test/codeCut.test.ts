@@ -35,3 +35,35 @@ describe('a block of code a plan shows', () => {
     expect(codeCut({ slides: [{ bullets: ['`line_0 = 0`'], segment: 1 }, { bullets: ['`line_1 = 1`'], segment: 1 }] }, long)).toEqual([]);
   });
 });
+
+describe('a function the writer cut into a slide and its "(continued)"', () => {
+  // Two decks Folio really wrote after the writer was told, and asked again, to keep a function on one slide.
+  const decks = (JSON.parse(readFileSync(new URL('./fixtures/algorithms-continued.json', import.meta.url), 'utf8')) as { decks: Record<string, { title: string; bullets: string[]; notes: string; segment: number }[]> }).decks;
+  const allCode = (s: { bullets: string[] }) => s.bullets.length > 0 && s.bullets.every((b) => /^`[^`]+`$/.test(b.trim()));
+
+  it('is the real case: in each deck, two slides of nothing but code, one after the other', () => {
+    for (const deck of Object.values(decks)) expect(deck.some((s, i) => allCode(s) && deck[i + 1] !== undefined && allCode(deck[i + 1]!) && deck[i + 1]!.title.includes('continued'))).toBe(true);
+  });
+
+  it('is put back on one slide, every line in order, the first title kept, nothing else touched', async () => {
+    const { joinCode } = await import('../src/slideSteps');
+    for (const deck of Object.values(decks)) {
+      const joined = joinCode(deck);
+      expect(joined).toHaveLength(deck.length - 1);
+      expect(joined.some((s) => s.title.includes('continued'))).toBe(false);
+      expect(joined.flatMap((s) => s.bullets)).toEqual(deck.flatMap((s) => s.bullets));
+      const block = joined.find((s) => allCode(s))!;
+      expect(block.bullets.length).toBeGreaterThanOrEqual(10);
+      expect(block.bullets[0]).toMatch(/^`def /);
+    }
+  });
+
+  it('leaves apart code in different segments, code with other lines, and what would not fit one slide', async () => {
+    const { joinCode } = await import('../src/slideSteps');
+    const code = (n: number, segment: number, extra: string[] = []) => ({ title: 'T', notes: '', segment, bullets: [...Array.from({ length: n }, (_, i) => `\`x${i} = ${i}\``), ...extra] });
+    expect(joinCode([code(3, 1), code(3, 2)])).toHaveLength(2);
+    expect(joinCode([code(3, 1), code(3, 1, ['What does it print?'])])).toHaveLength(2);
+    expect(joinCode([code(9, 1), code(9, 1)])).toHaveLength(2);
+    expect(joinCode([code(3, 1), code(3, 1), code(3, 1)])).toHaveLength(1);
+  });
+});
