@@ -11,7 +11,9 @@ describe('back from paying', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     useCredits.setState({ balance: null });
-    sessionStorage.clear();
+    // A storage of the tab's own, whatever the environment the tests run in has.
+    const kept = new Map<string, string>();
+    vi.stubGlobal('sessionStorage', { getItem: (k: string) => kept.get(k) ?? null, setItem: (k: string, v: string) => void kept.set(k, v), removeItem: (k: string) => void kept.delete(k), clear: () => kept.clear() });
   });
   afterEach(() => {
     vi.useRealTimers();
