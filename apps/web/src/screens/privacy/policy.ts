@@ -1,6 +1,6 @@
 /** Folio's privacy policy, in the page's own module so its text isn't part of every page's first load. */
 export const policy = {
-  updated: 'Last updated October 4, 2026',
+  updated: 'Last updated October 26, 2026',
   lede: 'You don’t need an account to use Folio: without one, your courses stay in your browser. If you choose to sign in, your courses are also kept in your account, so they’re on every device you use.',
   sections: [
     {
@@ -40,8 +40,12 @@ export const policy = {
       body: 'To see what is breaking, Folio’s server counts, each day and across everyone, how many sign-ins, AI requests, failed requests, purchases and saved courses there were, and how many credits were used. These are totals only: they aren’t linked to you, your account, your network address or your courses, and nothing you write is in them.',
     },
     {
+      heading: 'The tour video',
+      body: 'The two-minute tour on the home page is a YouTube video. Nothing is loaded from YouTube until you press it: the picture on the card is Folio’s own. When you press it, the video plays from youtube-nocookie.com, YouTube’s player that stores nothing in your browser until the video plays, and what YouTube then keeps is under Google’s privacy policy.',
+    },
+    {
       heading: 'What we don’t do',
-      body: 'No ads, no tracking of you, no analytics cookies. Nothing is sold, and nothing is shared beyond what this page describes: the AI company that writes your course, Stripe when you pay, Google when you sign in or export. Your courses are never used to train AI. The site is served by Cloudflare, which handles requests the way any web host does.',
+      body: 'No ads, no tracking of you, no analytics cookies. Nothing is sold, and nothing is shared beyond what this page describes: the AI company that writes your course, Stripe when you pay, Google when you sign in, export, or play the tour video. Your courses are never used to train AI. The site is served by Cloudflare, which handles requests the way any web host does.',
     },
     {
       heading: 'Questions',

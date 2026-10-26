@@ -1,11 +1,14 @@
 import { Link } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { usePageTitle } from '../../app/usePageTitle';
 import { SimpleHeader } from '../../components/AppHeader';
 import { useT } from '../../i18n';
 import { loadGuesses, setBrief, useDraft } from '../../state/draft';
 import { useUi } from '../../state/ui';
 import { BriefComposer } from './BriefComposer';
+
+
+const TourCard = lazy(() => import('./TourCard'));
 import { examplesForThisVisit } from './examples';
 
 /** The chips' guesses from the brief, fetched once the page has painted and the browser is idle. */
@@ -67,6 +70,10 @@ function Examples() {
       >
         {t.home.sample}
       </button>
+      {/* Loaded after the first screen, in a place of its own height, so the page does not move when it comes. */}
+      <Suspense fallback={<div aria-hidden className="mt-5 h-22" />}>
+        <TourCard />
+      </Suspense>
     </div>
   );
 }

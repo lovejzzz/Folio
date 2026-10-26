@@ -1,5 +1,27 @@
 [
  {
+  "version": "0.0.44",
+  "date": "October 26, 2026",
+  "title": "A two-minute tour, and what a purchase added",
+  "lede": "The home page now offers a short film of Folio making three courses, and buying credits ends by telling you what arrived.",
+  "sections": [
+   {
+    "heading": "See Folio make three courses",
+    "body": "Under the examples on the home page, a small card opens a two-minute tour: a sociology course, a calculus course and an algorithms course, each made on this site, shown from the first line a teacher types to the slides and the files they take away. Nothing is loaded from YouTube until you press it: the picture on the card is Folio's own, and the film plays from YouTube's player that keeps no cookies until it plays. The privacy page says so.",
+    "image": {
+     "src": "/changelog/0.0.44-tour.webp",
+     "alt": "The home page under its examples: Or open a sample course, and a card with a small picture of a slide, See Folio make three courses, 2-minute tour",
+     "width": 1080,
+     "height": 420
+    }
+   },
+   {
+    "heading": "Back from paying, the credits you bought",
+    "body": "After paying on Stripe's page you were told only that your credits would be added once Stripe confirmed the payment, whether they had come or not. The note now says thank you while the payment is confirmed, then changes to what was added and what you have now (\"1,000 credits added. You now have 1,651.\"). If the credits take longer than usual, it says so, and that nothing more is charged."
+   }
+  ]
+ },
+ {
   "version": "0.0.43",
   "date": "October 13, 2026",
   "title": "A slide that holds what is on it",

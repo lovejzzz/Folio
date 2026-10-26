@@ -1,119 +1,41 @@
-import { test, type Page } from '@playwright/test';
-import { fakeAnthropic } from './fakeModel';
-import { chooseSample } from './helpers';
+import { expect, test } from './fixtures';
 
 /**
- * A screenshot tour of every screen for design review. Runs only when
- * FOLIO_TOUR is set to an output directory.
+ * The film of Folio, offered on the home page under the examples. Nothing is asked of YouTube until the card is
+ * pressed; then its player opens in a dialog, from the address the site's policy lets in, and closes again.
  */
-const out = process.env.FOLIO_TOUR;
-test.skip(!out, 'Set FOLIO_TOUR=<dir> to take the design-review tour.');
-
-async function shot(page: Page, name: string) {
-  await page.waitForTimeout(350);
-  await page.screenshot({ path: `${out}/${name}.png` });
-}
-
-async function tour(page: Page, theme: string) {
-  await fakeAnthropic(page, { delayMs: 400 });
+test('the tour card asks nothing of YouTube until pressed, then plays in a dialog that closes', async ({ page }) => {
+  const asked: string[] = [];
+  await page.route(/youtube/, (route) => { asked.push(route.request().url()); return route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>player</title><p>player</p>' }); });
+  page.on('request', (r) => { if (/youtube|ytimg|googlevideo/.test(r.url())) asked.push(r.url()); });
   await page.goto('/');
-  await shot(page, `${theme}-01-home`);
-  await page.getByLabel('Describe your course').fill('Photosynthesis for year 7, four lessons');
-  await page.getByRole('button', { name: 'Continue' }).click();
-  await page.getByRole('dialog').getByLabel('API key', { exact: true }).fill('sk-ant-test');
-  await shot(page, `${theme}-02-connect`);
-  await page.getByRole('button', { name: 'Connect and continue' }).click();
-  await page.getByText('Drafting an outline').waitFor();
-  await shot(page, `${theme}-03-drafting`);
-  await page.getByRole('textbox', { name: 'Title of lesson 1' }).waitFor();
-  await shot(page, `${theme}-04-plan`);
-  await page.getByRole('button', { name: /Write 4 lessons/ }).click();
-  await page.waitForTimeout(1500);
-  await shot(page, `${theme}-05-map-building`);
-  await page.getByText(/Course ready/).waitFor({ timeout: 40_000 });
-  await shot(page, `${theme}-06-map-ready`);
-  await page.getByRole('button', { name: /To do & history/ }).click();
-  await shot(page, `${theme}-07-changes`);
-  await page.getByRole('button', { name: 'Export', exact: true }).click();
-  await shot(page, `${theme}-08-export`);
+  const card = page.getByRole('button', { name: /See Folio make three courses/ });
+  await expect(card).toBeVisible();
+  // The card stands under the examples and the sample link, inside the first screen.
+  const box = (await card.boundingBox())!;
+  expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+  const sample = (await page.getByRole('button', { name: 'Or open a sample course' }).boundingBox())!;
+  expect(box.y).toBeGreaterThan(sample.y);
+  await page.waitForTimeout(500);
+  expect(asked).toEqual([]);
+  if (process.env.FOLIO_SHOT_DIR) await page.screenshot({ path: `${process.env.FOLIO_SHOT_DIR}/tour-home-${test.info().project.name}.png` });
+  await card.click();
+  const dialog = page.getByRole('dialog', { name: 'Folio in two minutes' });
+  await expect(dialog).toBeVisible();
+  const player = dialog.locator('iframe');
+  await expect(player).toHaveAttribute('src', /^https:\/\/www\.youtube-nocookie\.com\/embed\/nvdMP4tHG0I\?autoplay=1/);
+  await expect(player).toHaveAttribute('title', 'Folio in two minutes');
+  await expect.poll(() => asked.length).toBeGreaterThan(0);
+  expect(asked.every((u) => u.startsWith('https://www.youtube-nocookie.com/'))).toBe(true);
+  // The player fits the screen, at 16:9.
+  const frame = (await player.boundingBox())!;
+  expect(frame.x + frame.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  expect(Math.abs(frame.width / frame.height - 16 / 9)).toBeLessThan(0.05);
+  if (process.env.FOLIO_SHOT_DIR) await page.screenshot({ path: `${process.env.FOLIO_SHOT_DIR}/tour-open-${test.info().project.name}.png` });
+  await dialog.getByRole('button', { name: 'Close' }).click();
+  await expect(dialog).toHaveCount(0);
+  await card.click();
   await page.keyboard.press('Escape');
-  await page.getByRole('link', { name: /Light and leaves/ }).first().click();
-  await shot(page, `${theme}-09-lesson`);
-  await page.keyboard.press('ControlOrMeta+k');
-  await page.keyboard.type('make every quiz three questions');
-  await shot(page, `${theme}-10-command`);
-  await page.keyboard.press('Escape');
-  await page.goto('/library');
-  await shot(page, `${theme}-11-library`);
-  await page.goto('/settings');
-  await shot(page, `${theme}-12-settings`);
-}
-
-test('tour, light', async ({ page }) => {
-  await page.emulateMedia({ colorScheme: 'light' });
-  await tour(page, 'light');
-});
-
-test('tour, dark', async ({ page }) => {
-  await page.emulateMedia({ colorScheme: 'dark' });
-  await tour(page, 'dark');
-});
-
-test('tour, sample course', async ({ page }) => {
-  await page.goto('/');
-  await chooseSample(page);
-  await page.getByRole('grid').waitFor();
-  const base = page.url().replace(/\/map$/, '');
-  for (const kind of ['syllabus', 'map', 'quiz', 'plan', 'rubrics', 'discussions']) {
-    await page.goto(`${base}/m/${kind}`);
-    await shot(page, `sample-m-${kind}`);
-  }
-  await page.goto('/settings');
-  await page.getByRole('radio', { name: 'Counts only' }).click();
-  await page.goto(`${base}/map`);
-  await shot(page, 'sample-map-compact');
-  await page.goto('/settings');
-  await page.getByRole('radio', { name: 'With a preview' }).click();
-});
-
-test('tour, phone', async ({ browser }) => {
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
-  await page.goto('/');
-  await shot(page, 'phone-home');
-  await chooseSample(page);
-  await page.getByText('Open a lesson to review it.').waitFor();
-  await shot(page, 'phone-map');
-  await page.getByRole('link', { name: /Picturing a distribution/ }).click();
-  await shot(page, 'phone-lesson');
-  await page.getByRole('button', { name: /To do & history/ }).click();
-  await shot(page, 'phone-changes');
-  await page.close();
-});
-
-test('tour, readme', async ({ browser }) => {
-  const make = async (scheme: 'light' | 'dark') => {
-    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: scheme });
-    return context.newPage();
-  };
-  const page = await make('light');
-  await page.goto('/');
-  await page.getByLabel('Describe your course').fill('A four-lesson introduction to statistics for grade 11. Real data from our school, lots of practice, one short quiz a lesson.');
-  await shot(page, 'readme-home');
-  await chooseSample(page);
-  await page.getByRole('grid').waitFor();
-  await shot(page, 'readme-map');
-  const base = page.url().replace(/\/map$/, '');
-  await page.getByRole('link', { name: /Picturing a distribution/ }).first().click();
-  await page.locator('#m-plan').waitFor();
-  await page.evaluate(() => window.scrollTo(0, 560));
-  await shot(page, 'readme-lesson');
-  await page.goto(`${base}/m/slides`);
-  await shot(page, 'readme-slides');
-  const dark = await make('dark');
-  await dark.goto('/');
-  await chooseSample(dark);
-  await dark.getByRole('grid').waitFor();
-  await dark.goto(dark.url().replace(/\/map$/, '/m/quiz'));
-  await dark.getByRole('button', { name: /^Show (answer|why)$/ }).first().click();
-  await shot(dark, 'readme-quiz-dark');
+  await expect(dialog).toHaveCount(0);
+  await expect(page.locator('iframe')).toHaveCount(0);
 });

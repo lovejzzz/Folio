@@ -43,12 +43,21 @@ export async function refreshCredits(): Promise<void> {
   }
 }
 
+/** Where the balance before paying is kept while the teacher is on Stripe's page: what came back is told against it. */
+const BEFORE = 'folio.creditsBefore';
+
 /** Go to Stripe's page to pay for a pack; the credits arrive when Stripe confirms the payment. */
 export async function buy(pack: string): Promise<boolean> {
   try {
     const response = await fetch('/api/billing/checkout', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-folio': '1' }, body: JSON.stringify({ pack }) });
     const body = (await response.json()) as { url?: string };
     if (!response.ok || !body.url) return false;
+    try {
+      const before = useCredits.getState().balance;
+      if (before !== null) sessionStorage.setItem(BEFORE, String(before));
+    } catch {
+      // (storage blocked: the return is told without the number added)
+    }
     window.location.assign(body.url);
     return true;
   } catch {
@@ -56,15 +65,28 @@ export async function buy(pack: string): Promise<boolean> {
   }
 }
 
-/** Back from paying: Stripe's confirmation can take a moment, so the balance is asked for a few times. */
-export async function afterPurchase(): Promise<void> {
-  const before = useCredits.getState().balance;
-  for (const wait of [0, 1500, 3000, 6000]) {
+/**
+ * Back from paying: Stripe's confirmation can take a moment, so the balance is asked for a few times. What came of it,
+ * for the teacher: the credits added and the balance, or that they are still on their way. It said only "your credits
+ * are added as soon as Stripe confirms the payment", whether they had come or not.
+ */
+export async function afterPurchase(): Promise<{ added: number | null; balance: number } | null> {
+  let before: number | null = null;
+  try {
+    const kept = sessionStorage.getItem(BEFORE);
+    sessionStorage.removeItem(BEFORE);
+    before = kept === null ? null : Number(kept);
+  } catch {
+    // (no storage: nothing to compare with)
+  }
+  if (before === null || !Number.isFinite(before)) before = useCredits.getState().balance;
+  for (const wait of [0, 1500, 3000, 6000, 12000]) {
     await new Promise((r) => setTimeout(r, wait));
     await refreshCredits();
     const now = useCredits.getState().balance;
-    if (before !== null && now !== null && now > before) return;
+    if (before !== null && now !== null && now > before) return { added: now - before, balance: now };
   }
+  return null;
 }
 
 /** Credits a dollar buys in the smallest pack; the larger packs add bonus credits on top. */
@@ -95,7 +117,13 @@ export const creditsText = {
   mayBeLost: 'Any Folio credits left in this account end with it: they can’t be restored or refunded.',
   lostOnDelete: (n: number) => `This account still has ${n.toLocaleString('en-US')} Folio credits. Deleting it ends them: they can’t be restored or refunded.`,
   buyFailed: 'The payment page didn’t open. Try again in a moment.',
-  thanks: 'Thank you. Your credits are added as soon as Stripe confirms the payment.',
+  /** Back from Stripe's page, while the payment is confirmed. */
+  thanks: 'Thank you. Your payment went through, and your credits are on their way.',
+  /** The credits have come. */
+  arrived: (added: number | null, balance: number) =>
+    added === null ? `Your credits are here. You have ${balance.toLocaleString('en-US')} credits.` : `${added.toLocaleString('en-US')} credits added. You now have ${balance.toLocaleString('en-US')}.`,
+  /** Not yet, after half a minute of asking. */
+  late: 'Your payment went through. The credits are taking longer than usual to arrive: they will show here when they do, and nothing more is charged.',
   unavailable: 'Folio credits aren’t switched on yet. Use your own key for now.',
   signInFirst: 'Sign in with Google first.',
   noteLabel: 'What this will take',

@@ -88,7 +88,8 @@ test('a teacher buys more credits on Stripe’s page, and sees them when they co
   // Stripe sends the teacher back, and confirms the payment a moment later.
   balance.value = 2762;
   await page.goto('/settings?purchase=done');
-  await expect(page.getByText(/Thank you\. Your credits are added/)).toBeVisible();
+  // What was added and what there is now, in the note that said thanks: told against the balance before paying.
+  await expect(page.getByText('2,750 credits added. You now have 2,762.')).toBeVisible();
   await expect(page.getByText('You have 2,762 credits.')).toBeVisible();
   expect(page.url()).not.toContain('purchase=');
   await page.goto('/');

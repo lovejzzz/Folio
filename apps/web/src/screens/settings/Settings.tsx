@@ -197,9 +197,12 @@ function usePurchaseReturn() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('purchase') !== 'done') return;
     window.history.replaceState(null, '', window.location.pathname);
-    void import('../../state/credits').then(({ afterPurchase, creditsText }) => {
-      toast({ message: creditsText.thanks });
-      void afterPurchase();
+    void import('../../state/credits').then(async ({ afterPurchase, creditsText }) => {
+      // One note, changed as things happen: thanks while Stripe confirms, then what was added and what there is now.
+      toast({ key: 'purchase', message: creditsText.thanks, duration: 0 });
+      const came = await afterPurchase();
+      if (came) toast({ key: 'purchase', message: creditsText.arrived(came.added, came.balance), duration: 9000 });
+      else toast({ key: 'purchase', message: creditsText.late, duration: 0 });
     });
   }, []);
 }
