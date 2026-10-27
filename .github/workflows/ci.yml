@@ -12,7 +12,8 @@ jobs:
   check:
     name: Types, lint, tests, budgets, end to end
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Installing the browsers' system packages took 1 minute on 26 October and stalled past 18 on 27 October.
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
