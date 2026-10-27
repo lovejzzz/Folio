@@ -217,7 +217,7 @@ export const AssignmentDraft = z.object({
       .max(5)
       .describe('Two to five; empty only for a piece that is all questions with one right answer each, scored by the answers'),
   }),
-  answerKey: z.string().default('').describe('For the teacher: the worked answer to each step, one per line, numbered as the steps are; empty when the work has no single answer, such as an essay'),
+  answerKey: z.string().default('').describe('For the teacher: the worked answer to each step, one per line, numbered as the steps are; for work with no single answer, such as an essay, what a strong answer covers and the usual mistakes'),
 });
 export type AssignmentDraft = z.infer<typeof AssignmentDraft>;
 

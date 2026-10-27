@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .row { fill: #E3DED3 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .row { fill: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">THE TEACHER'S KEY FOR A PRIMARY-SOURCE PAPER</text>
+  <rect class="card" x="36" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="56" y="96" font-size="16" font-weight="600">Before</text>
+  <text class="ink2" x="56" y="150" font-size="14" font-style="italic">No key: no single answer</text>
+  <text class="ink2" x="56" y="226" font-size="13">8 of 24 graded pieces in sixteen</text>
+  <text class="ink2" x="56" y="246" font-size="13">lessons came this way</text>
+  <rect class="card" x="414" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="434" y="96" font-size="16" font-weight="600">Now</text>
+  <text class="ink" x="434" y="128" font-size="13" font-weight="600">1. A strong paper</text>
+  <rect class="acc" x="434" y="140" width="290" height="8" rx="4"/>
+  <rect class="acc" x="434" y="156" width="230" height="8" rx="4"/>
+  <text class="ink" x="434" y="186" font-size="13" font-weight="600">Common mistakes</text>
+  <rect class="row" x="434" y="198" width="270" height="8" rx="4"/>
+  <text class="ink2" x="434" y="246" font-size="13">0 of 24 without a key</text>
+</svg>

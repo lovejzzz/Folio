@@ -1,5 +1,23 @@
 [
  {
+  "version": "0.0.46",
+  "date": "October 27, 2026",
+  "title": "A key for every essay and report",
+  "lede": "Graded work with no single answer, such as an essay, a lab report or a proposal, now comes with a key for the teacher too: what a strong answer covers, step by step, and the mistakes students usually make.",
+  "sections": [
+   {
+    "heading": "What a grader looks for",
+    "body": "Folio told the writer to leave the key empty when a piece had no single answer, so every essay, report and proposal came with a rubric and nothing else: in sixteen university lessons, 8 of the 24 graded pieces. Now the key says, for each step, what a strong answer has (the points, evidence or results to look for) and the usual mistakes, so whoever grades has it beside the rubric. In the same sixteen lessons, no piece is left without one, and a history paper's key now names what a strong paper does with its source.",
+    "image": {
+     "src": "/changelog/0.0.46-keys.svg",
+     "alt": "Two panels: before, a primary-source paper's key was empty; now it lists what a strong paper does and the common mistakes, and no graded piece in sixteen lessons is without a key",
+     "width": 800,
+     "height": 300
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.45",
   "date": "October 27, 2026",
   "title": "Quizzes and graded work for less, and no lecture left without slides",

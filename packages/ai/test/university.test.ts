@@ -45,6 +45,14 @@ describe('university courses', () => {
     const renamed = { ...school, rubrics: { r1: { id: 'r1', title: 'R', levels: [{ id: 'a', label: 'Gold', points: 3 }, { id: 'b', label: 'Silver', points: 2 }, { id: 'c', label: 'Bronze', points: 1 }], criteria: [] } } } as Course;
     expect(sectionPrompt(renamed, lesson(renamed), 'assignments')).toMatch(/exactly: "Gold" \(3\), "Silver" \(2\), "Bronze" \(1\)/);
   });
+
+  it('gives an essay a key the grader marks with: what a strong answer covers, not an empty one', () => {
+    // Told to leave it empty, every essay, report and proposal in sixteen lessons came with no key at all.
+    const uk = university();
+    const prompt = sectionPrompt(uk, orderedLessons(uk)[0]!, 'assignments');
+    expect(prompt).toMatch(/no single answer, such as an essay or a project, give per step what a strong answer covers/);
+    expect(prompt).not.toMatch(/leave it empty only when/);
+  });
 });
 
 describe('every course', () => {
