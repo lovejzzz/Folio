@@ -1,5 +1,23 @@
 [
  {
+  "version": "0.0.45",
+  "date": "October 27, 2026",
+  "title": "Quizzes and graded work for less",
+  "lede": "With Folio credits, the quizzes and graded work, with their answer keys, are now written by GPT-6.1 Terra, which OpenAI released this week: as right as before, for less than half the cost.",
+  "sections": [
+   {
+    "heading": "The same quality, checked twice",
+    "body": "The quizzes and graded work of sixteen university lessons were written again by the model that wrote them until now and by Terra, then read blind, every key and number worked again, and the whole done a second time. Terra had two wrong keys in 32 lessons where the old model had four; it now and then asked for a term the lesson had not used, and its work scored a little lower (8.2 against 8.5 out of 10) for being handed out and graded as is. Writing them costs 41% of what it did, so a course takes fewer credits. Terra was also tried on slides, study guides, FAQ and discussions and wrote them much thinner, so those stay with Claude Sonnet. With your own API key nothing changes: every part is written by the model you chose.",
+    "image": {
+     "src": "/changelog/0.0.45-terra.svg",
+     "alt": "Two panels: wrong answer keys, 4 before and 2 now; the cost of writing quizzes and graded work, 100% before and 41% now",
+     "width": 800,
+     "height": 300
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.44",
   "date": "October 26, 2026",
   "title": "A two-minute tour, and what a purchase added",
