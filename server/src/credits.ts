@@ -30,6 +30,7 @@ export const PRICES: Record<string, [number, number, number, number]> = {
   // OpenAI bills reasoning as output and charges nothing to write its cache.
   'gpt-6-luna': [0.1, 0.5, 0.01, 0],
   'gpt-6.1-sol': [2, 10, 0.1, 0],
+  'gpt-6.1-terra': [1, 5, 0.05, 0],
 };
 
 export interface Usage {

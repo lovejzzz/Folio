@@ -18,10 +18,13 @@ import { openaiInference } from './openai';
  * Every other job (outline, questions, edits) stays with Claude.
  */
 export const FOLIO_MIX: Readonly<Record<string, { model: string; effort: Effort }>> = {
-  folio_quiz: { model: 'gpt-6.1-sol', effort: 'low' },
+  // Quizzes and graded work moved to GPT-6.1 Terra at low (half Sol's price) in October 2026: the same sixteen lessons written
+  // again by each and judged blind, twice, gave Terra 2 wrong keys in 32 lessons to Sol's 4, 4 items needing what was not
+  // taught to Sol's 1, and scores of 8.2 against 8.5, for 41% of the cost. Terra wrote teaching parts far thinner than Sonnet.
+  folio_quiz: { model: 'gpt-6.1-terra', effort: 'low' },
   // And the keys to a lesson's sheets, written from the sheets Sonnet wrote: no wrong answer in sixteen lessons where Sonnet's own had four.
   folio_handout_keys: { model: 'gpt-6.1-sol', effort: 'low' },
-  folio_assignments: { model: 'gpt-6.1-sol', effort: 'low' },
+  folio_assignments: { model: 'gpt-6.1-terra', effort: 'low' },
   folio_plan_review: { model: 'gpt-6.1-sol', effort: 'low' },
   // A module page was read at medium while its code had to be run in the head. Now the code is run for real: twelve pages
   // read at low and twice at medium, each reading checked fault by fault, and low found all 28 that mattered, as medium did,

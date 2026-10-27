@@ -28,6 +28,7 @@ const BUILT_IN: Partial<Record<ProviderId, Record<string, [number, number, numbe
   openai: {
     'gpt-6-luna': [0.1, 0.5, 0.01, 0.1],
     'gpt-6.1-sol': [2, 10, 0.1, 2],
+    'gpt-6.1-terra': [1, 5, 0.05, 1.25],
   },
 };
 
