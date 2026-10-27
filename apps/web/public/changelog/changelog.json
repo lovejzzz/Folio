@@ -2,7 +2,7 @@
  {
   "version": "0.0.45",
   "date": "October 27, 2026",
-  "title": "Quizzes and graded work for less",
+  "title": "Quizzes and graded work for less, and no lecture left without slides",
   "lede": "With Folio credits, the quizzes and graded work, with their answer keys, are now written by GPT-6.1 Terra, which OpenAI released this week: as right as before, for less than half the cost.",
   "sections": [
    {
@@ -14,6 +14,10 @@
      "width": 800,
      "height": 300
     }
+   },
+   {
+    "heading": "A slide for every part of a lecture",
+    "body": "A deck was checked meeting by meeting, so a lecture with one slide passed even when half of it had none: a week of two lectures came with nine slides, and the second lecture's strikes, unions and immigration were on none of them. Now every part of a meeting with slides that teaches something has a slide of its own, and a deck that leaves one out is written again. On the same sixteen lessons, none was left out, and that history week has sixteen slides."
    }
   ]
  },
