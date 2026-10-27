@@ -23,7 +23,7 @@ import {
   orderedLessons,
 } from '@folio/core';
 import { docLabels } from '@folio/core';
-import { slideVisual } from './slideVisual';
+import { oneVisualEach, slideVisual } from './slideVisual';
 import type { Inference } from './inference';
 import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
@@ -167,7 +167,7 @@ const slides: SectionJob<SlidesDraft> = {
       lessonId: lesson.id,
       kind: 'slides',
       flags: flagsAt(problems, null),
-      content: { slides: v.slides.map(({ table, chart, steps, compare, figure, segment, ...s }) => ({ ...s, id: newId('x'), ...(lesson.segments[segment - 1] ? { segment: lesson.segments[segment - 1]!.id } : {}), ...slideVisual(table, chart, steps, compare, figure) })) },
+      content: { slides: oneVisualEach(v.slides).map(({ table, chart, steps, compare, figure, segment, ...s }) => ({ ...s, id: newId('x'), ...(lesson.segments[segment - 1] ? { segment: lesson.segments[segment - 1]!.id } : {}), ...slideVisual(table, chart, steps, compare, figure) })) },
     }),
   ],
 };

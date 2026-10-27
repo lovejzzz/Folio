@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.0.49",
+  "date": "October 27, 2026",
+  "title": "What the plan shows, the slides and prompts show too",
+  "lede": "Three places where one material said something the others did not, found by the same read of sixteen lessons and put right where they were made.",
+  "sections": [
+   {
+    "heading": "Two things to show, two slides",
+    "body": "A slide holds one table, chart, chain or comparison. When the plan showed two in one part of a lesson, the slide kept one and dropped the other: a composition course kept its chain of draft, review and revision and lost the table of grade shares the pairs then worked from. The second now follows on a slide of its own.",
+    "image": {
+     "src": "/changelog/0.0.49-two.svg",
+     "alt": "Two slides for one part of a lesson: the chain of draft, review and revision, then the grade table that used to be dropped",
+     "width": 800,
+     "height": 300
+    }
+   },
+   {
+    "heading": "Discussion prompts that know the sheets",
+    "body": "Discussion prompts were written knowing only the names of the lesson's sheets. One described a second way to work a problem that the sheet did not have; another moved a worker laid off from a call center to a plant. They are now written with the sheets in front of them."
+   },
+   {
+    "heading": "Answers after the work is in",
+    "body": "A problem session ends with worked solutions. When its group problems were scored, they went on the screen while groups still held their work. Solutions now come once any scored work of the session is out of students' hands."
+   }
+  ]
+ },
+ {
   "version": "0.0.48",
   "date": "October 27, 2026",
   "title": "A chapter to confirm is for the teacher's eyes",

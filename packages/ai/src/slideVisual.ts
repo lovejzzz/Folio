@@ -17,3 +17,18 @@ export function slideVisual(table: SlideDraft['table'], chart: SlideDraft['chart
   return {};
 }
 
+
+/**
+ * Each slide with one visual. A slide holds one, and a draft that gave two kept only the first in the order above: a
+ * composition lesson's "How this course works" kept its chain of draft, review and revision and lost the table of
+ * grade shares the pairs then worked from. A second or third visual goes on a slide of its own right after, in the
+ * same segment, so nothing the plan shows is lost.
+ */
+export function oneVisualEach(slides: SlideDraft[]): SlideDraft[] {
+  return slides.flatMap((s) => {
+    const parts = ([{ figure: s.figure }, { steps: s.steps }, { compare: s.compare }, { chart: s.chart }, { table: s.table }] as Partial<SlideDraft>[]).filter((p) => slideVisual(p.table, p.chart, p.steps, p.compare, p.figure).visual);
+    if (parts.length <= 1) return [s];
+    const { table: _t, chart: _c, steps: _s, compare: _m, figure: _f, ...bare } = s;
+    return parts.map((p, i) => (i === 0 ? { ...bare, ...p } : { ...bare, layout: 'bullets' as const, title: `${s.title} (continued)`, bullets: [], notes: '', ...p }));
+  });
+}

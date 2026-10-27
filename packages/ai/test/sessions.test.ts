@@ -27,6 +27,13 @@ describe('lessons that meet more than once', () => {
     expect(outline).toContain('Each lesson meets 2 times: a 50-minute lecture, then a 50-minute seminar.');
   });
 
+  it('goes over a problem session\'s solutions only once its scored work is out of students\' hands', () => {
+    // Solutions "to follow", and a recitation's scored group problems were on the screen while groups still held them.
+    const store = new CourseStore(smallCourse());
+    store.apply([cmd('course.update', { shape: { sessions: [{ kind: 'lecture', minutes: 50 }, { kind: 'problems', minutes: 50 }], minutesPerLesson: 100 } })], { label: { key: 't' }, source: 'teacher' });
+    expect(courseBackground(store.getState())).toContain('with worked solutions to follow once any work scored in it is out of students\' hands');
+  });
+
   it('keeps a course that meets once exactly as before', () => {
     const course = smallCourse();
     expect(courseBackground(course)).toContain(`Each lesson lasts ${course.shape.minutesPerLesson} minutes.`);

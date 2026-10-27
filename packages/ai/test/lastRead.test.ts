@@ -35,6 +35,8 @@ describe('what is settled where it is written, before any reading', () => {
     expect(sectionPrompt(withSheet, held, 'quiz')).toMatch(/already written:\n"Four claims" \(worksheet, used in "Leaf in the dark"\)\n/);
     expect(sectionPrompt(withSheet, held, 'quiz')).not.toMatch(/Plants eat soil/);
     expect(sectionPrompt(withSheet, held, 'slides')).not.toMatch(/False\./);
+    // A discussion that told of a route its sheet does not have, and of a worker laid off from a plant the sheet called a call center.
+    expect(sectionPrompt(withSheet, held, 'discussions')).toMatch(/"Four claims" \(worksheet, used in "Leaf in the dark"\):\n- Plants eat soil\./);
   });
 
   it('tells the first meeting, and only the first, that nothing could be prepared for it', () => {

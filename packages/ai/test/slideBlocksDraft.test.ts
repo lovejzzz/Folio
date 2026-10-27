@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sectionPrompt, SlidesDraft } from '../src';
-import { slideVisual } from '../src/slideVisual';
+import { oneVisualEach, slideVisual } from '../src/slideVisual';
 import { smallCourse } from './fake';
 
 describe('a chain of steps and things side by side, as a slide writer gives them', () => {
@@ -20,5 +20,22 @@ describe('a chain of steps and things side by side, as a slide writer gives them
     expect(slideVisual(undefined, undefined, undefined, { sides: [{ title: 'CPU', points: [] }], ask: '' })).toEqual({});
     // A table the writer also gave is not lost to an empty chain.
     expect(slideVisual({ columns: ['a', 'b'], rows: [['1', '2']] }, undefined, { steps: [], cycle: false })).toMatchObject({ visual: { kind: 'table' } });
+  });
+});
+
+describe('a slide that was given two visuals', () => {
+  it('keeps both, the second on a slide of its own in the same segment', () => {
+    // "How this course works" kept its chain and lost the grade table the pairs then worked from.
+    const steps = { steps: [{ title: 'Draft', detail: '' }, { title: 'Peer review', detail: '' }, { title: 'Revision', detail: '' }], cycle: false };
+    const table = { columns: ['Graded work', 'Share'], rows: [['Essay 1', '15%'], ['Essay 2', '20%']] };
+    const draft = { layout: 'bullets' as const, title: 'How this course works', bullets: ['Four essays'], notes: 'Pairs add the shares.', segment: 2, steps, table } as SlidesDraft['slides'][number];
+    const out = oneVisualEach([draft]);
+    expect(out.map((x) => [x.title, x.segment, Boolean(x.steps), Boolean(x.table), x.bullets.length])).toEqual([
+      ['How this course works', 2, true, false, 1],
+      ['How this course works (continued)', 2, false, true, 0],
+    ]);
+    // One visual, or one sound one beside a broken one: the slide as it was.
+    expect(oneVisualEach([{ ...draft, table: undefined }])).toHaveLength(1);
+    expect(oneVisualEach([{ ...draft, table: { columns: ['Only'], rows: [] } }])).toHaveLength(1);
   });
 });

@@ -73,7 +73,8 @@ const SESSION_GUIDE: Record<SessionKind, string> = {
   lecture: 'a lecture presents and explains, with slides',
   seminar: 'a seminar runs on discussion of the reading, led by the students, without slides',
   lab: 'a lab session is hands-on: the method, the equipment, safety and recording results',
-  problems: 'a problem session works through problems, students first, with worked solutions to follow',
+  // Solutions to follow, and a recitation's scored group problems were gone over on the screen while groups still held their work.
+  problems: 'a problem session works through problems, students first, with worked solutions to follow once any work scored in it is out of students\' hands',
 };
 
 /** "a 50-minute lecture, then a 50-minute seminar" */
@@ -445,7 +446,7 @@ export function sectionPrompt(course: Course, lesson: Lesson, kind: SectionPromp
     // A plan written before and since taken out of the teacher's choice still says what the lesson's facts are, so
     // what is written now agrees with what was; its sheets go with it and are nobody's to be sent to.
     const kept = course.materials.plan.enabled || hasModulePages(course);
-    if (plan) parts.push([kept ? plan : `${PLAN_SET_ASIDE}\n${plan}`, kept ? sheetsText(lesson, kind === 'slides' || kind === 'study' || kind === 'faq' || kind === 'assignments') : '', follow].filter(Boolean).join('\n\n'));
+    if (plan) parts.push([kept ? plan : `${PLAN_SET_ASIDE}\n${plan}`, kept ? sheetsText(lesson, kind === 'slides' || kind === 'study' || kind === 'faq' || kind === 'assignments' || kind === 'discussions') : '', follow].filter(Boolean).join('\n\n'));
     if (plan && kind === 'slides') parts.push(unlistedAsk(lesson.segments, new Set(lesson.handouts.map((h) => h.usedIn.trim().toLowerCase()))));
   }
   parts.push(onlyThese(course));
