@@ -1,5 +1,23 @@
 [
  {
+  "version": "0.0.48",
+  "date": "October 27, 2026",
+  "title": "A chapter to confirm is for the teacher's eyes",
+  "lede": "When Folio suggests a chapter, section or page your brief and files do not give, it marks it \"(to confirm)\" so you can check it. That mark is now yours alone: students' copies leave it out.",
+  "sections": [
+   {
+    "heading": "Marked for you, clean for them",
+    "body": "The mark was printed on everything students are handed, and readers of sixteen fresh lessons took it for a leftover in every one, though each chapter it stood beside was right. You still see it in Folio and in your own copies, and the list at the top of each lesson still names every reference to confirm. Student copies, printed or exported, the Canvas quiz package and student notebooks show the reference without it.",
+    "image": {
+     "src": "/changelog/0.0.48-confirm.svg",
+     "alt": "The same slide in two copies: the teacher's reads ch. 2 (to confirm); the students' reads ch. 2",
+     "width": 800,
+     "height": 300
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.47",
   "date": "October 27, 2026",
   "title": "Notes that are for the teacher, and a point an answer kept as one",

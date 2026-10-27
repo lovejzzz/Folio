@@ -1,4 +1,5 @@
 import { courseLabels } from '../docLabels';
+import { withoutMarks } from '../locators';
 import type { MaterialKind } from '../materials';
 import type { Course } from '../schema';
 import type { Block, ProjectOptions, SemanticDoc } from '../semantic';
@@ -29,6 +30,6 @@ export function project(course: Course, kind: MaterialKind, opts: ProjectOptions
     subtitle: course.title,
     language: course.language,
     audience: opts.audience,
-    blocks: projectors[kind](makeCtx(course, kind, opts)),
+    blocks: opts.audience === 'student' ? withoutMarks(projectors[kind](makeCtx(course, kind, opts))) : projectors[kind](makeCtx(course, kind, opts)),
   };
 }

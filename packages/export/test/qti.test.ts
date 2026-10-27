@@ -51,4 +51,12 @@ describe('the quizzes as Canvas takes them in', () => {
     expect(describeExport({ course, kinds: ['quiz'], audience: 'student', format: 'zip' }).contents.some((n) => n.includes('QTI'))).toBe(false);
     expect((await exportCourse({ course, kinds: ['quiz'], audience: 'teacher', format: 'qti' })).name).toMatch(/for Canvas \(QTI\)\.zip$/);
   });
+
+  it('is what students take in Canvas, so a chapter still to confirm goes without its mark', async () => {
+    const marked: Course = { ...course, tasks: { ...course.tasks, t_d: { ...course.tasks.t_d!, prompt: 'Why sample? See ch. 2 (to confirm).' } as Question } };
+    const zip = unzipSync((await exportCourse({ course: marked, kinds: ['quiz'], audience: 'teacher', format: 'qti' })).bytes);
+    const xml = strFromU8(zip['folio_quiz_1/folio_quiz_1.xml']!);
+    expect(xml).toContain('See ch. 2.');
+    expect(xml).not.toContain('to confirm');
+  });
 });

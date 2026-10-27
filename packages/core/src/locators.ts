@@ -17,12 +17,12 @@ export function unsourcedLocators(text: string, grounds: string): string[] {
   return [...new Set([...text.matchAll(LOCATOR)].map((m) => m[0].replace(/[.,;:]+$/, '')).filter((found) => !held.includes(plain(found))))];
 }
 
-/** Said after a locator nobody has confirmed, where students read it too. */
+/** Said after a locator nobody has confirmed: the teacher sees it in every material, and students never do. */
 export const TO_CONFIRM = '(to confirm)';
 
 /**
  * The text with each such locator marked. The number stays, since it is right about half the time and a teacher confirms
- * one in seconds; the mark tells a student it is not yet the teacher's word, and gives the teacher something to find.
+ * one in seconds; the mark gives the teacher something to find, and is taken out of every copy made for students.
  */
 export function withUnsourcedMarked(text: string, grounds: string): string {
   // Never an address, and never inside code or a link's target: marked there, "…/2-2-water (to confirm))" was a link that
@@ -49,3 +49,16 @@ export function markedForStudents<T>(value: T, grounds: string): T {
 
 /** What a course's teacher gave: the brief and the files. */
 export const groundsOf = (course: { brief: string; sources: Record<string, { title: string; text: string }> }): string => [course.brief, ...Object.values(course.sources).flatMap((s) => [s.title, s.text])].join('\n');
+
+/**
+ * A document for students without the marks. Printed on their slides and sheets, "ch. 2 (to confirm)" read to every
+ * reader as a leftover, in sixteen lessons of sixteen, and each of those chapters was right: the mark is for the teacher.
+ */
+export function withoutMarks<T>(value: T): T {
+  const walk = (v: unknown): unknown => {
+    if (typeof v === 'string') return v.split(` ${TO_CONFIRM}`).join('');
+    if (Array.isArray(v)) return v.map(walk);
+    return v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([key, x]) => [key, walk(x)])) : v;
+  };
+  return walk(value) as T;
+}

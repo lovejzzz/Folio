@@ -15,6 +15,15 @@ describe('project', () => {
     }
   });
 
+  it('shows the teacher where a chapter is still to confirm, and students never', () => {
+    // Marked in every material so the teacher finds it, the mark was printed on students' slides and sheets as well.
+    const marked = JSON.parse(JSON.stringify(course).split('"overview":"').join('"overview":"Read ch. 2 (to confirm) first. ')) as typeof course;
+    expect(JSON.stringify(project(marked, 'study', { audience: 'teacher' }))).toContain('ch. 2 (to confirm)');
+    const student = JSON.stringify(project(marked, 'study', { audience: 'student' }));
+    expect(student).toContain('Read ch. 2 first.');
+    expect(student).not.toContain('(to confirm)');
+  });
+
   it('never puts answers, explanations or teacher notes in a student copy', () => {
     for (const kind of MATERIAL_KINDS) {
       const doc = project(course, kind, { audience: 'student' });

@@ -1,4 +1,4 @@
-import { MEDIA_FOLDER, courseLabels, localMediaRef, mediaFileNames, pageMediaRefs, project, type Audience, type Course, type MaterialKind } from '@folio/core';
+import { MEDIA_FOLDER, courseLabels, withoutMarks, localMediaRef, mediaFileNames, pageMediaRefs, project, type Audience, type Course, type MaterialKind } from '@folio/core';
 import { MIME } from './mime';
 import { zipFiles } from './bundle';
 import { renderCsv } from './csv';
@@ -85,10 +85,10 @@ function pptxFile(req: ExportRequest): Planned {
   };
 }
 
-/** The quizzes as a package Canvas imports: questions with their keys, so the teacher's copy only. */
+/** The quizzes as a package Canvas imports: questions with their keys, so the teacher's copy only; students take them there, so without the teacher's marks. */
 function qtiFile(req: ExportRequest): Planned {
   const name = `${courseLabels(req.course).materials.quiz} for Canvas (QTI)`;
-  return { name: slugFilename(req.course.title, name, '', 'zip', scopeName(req)), mime: MIME.qti, make: async () => renderQti(req.course, req.lessonIds) };
+  return { name: slugFilename(req.course.title, name, '', 'zip', scopeName(req)), mime: MIME.qti, make: async () => renderQti(withoutMarks(req.course), req.lessonIds) };
 }
 
 function quizFile(req: ExportRequest, format: 'xlsx' | 'csv'): Planned {
@@ -153,7 +153,7 @@ function notebookFiles(req: ExportRequest): Planned[] {
     const lesson = req.course.lessons[id];
     if (!lesson || !hasNotebook(lesson)) return [];
     const n = req.course.lessonOrder.indexOf(id) + 1;
-    return [{ name: `${NOTEBOOK_FOLDER}/${slugFilename(l.lesson(n), lesson.title, '', 'ipynb')}`, mime: 'application/x-ipynb+json', make: async () => weekNotebook(lesson, req.audience === 'teacher') }];
+    return [{ name: `${NOTEBOOK_FOLDER}/${slugFilename(l.lesson(n), lesson.title, '', 'ipynb')}`, mime: 'application/x-ipynb+json', make: async () => weekNotebook(req.audience === 'teacher' ? lesson : withoutMarks(lesson), req.audience === 'teacher') }];
   });
 }
 
