@@ -114,3 +114,19 @@ describe('a deck for every meeting that shows something', () => {
     expect(meetingsUnshown({ slides: [slide(0), slide(0)] }, lesson)).toEqual([]);
   });
 });
+
+describe('a slide for every segment that teaches', () => {
+  it('names a lecture segment with no slide, and leaves a lab and a practice alone', async () => {
+    const { teachingUnshown } = await import('../src/slideSteps');
+    const seg = (session: number, kind: 'teach' | 'practice', title: string) => ({ id: `x_${title}`, session, kind, title, minutes: 20, description: '', teacherNotes: '' });
+    const lesson = { segments: [seg(0, 'teach', 'Railroads'), seg(0, 'teach', 'Corporations'), seg(1, 'teach', 'Strikes'), seg(1, 'practice', 'Choosing'), seg(1, 'teach', 'Immigration'), seg(2, 'teach', 'Lab method')] } as never;
+    const course = { shape: { minutesPerLesson: 150, sessions: [{ kind: 'lecture', minutes: 50 }, { kind: 'lecture', minutes: 50 }, { kind: 'lab', minutes: 50 }] } } as never;
+    const slide = (segment: number) => ({ layout: 'bullets' as const, title: `s${segment}`, bullets: [], notes: '', segment });
+    // The second lecture has a slide (its practice), so every meeting is shown; its two teaching segments are not.
+    expect(teachingUnshown({ slides: [slide(0), slide(1), slide(2), slide(4)] }, lesson, course)).toEqual([3, 5]);
+    expect(teachingUnshown({ slides: [slide(0), slide(1), slide(2), slide(3), slide(5)] }, lesson, course)).toEqual([]);
+    // One class a lesson: every teaching segment is on the deck.
+    const single = { shape: { minutesPerLesson: 50, sessions: [] } } as never;
+    expect(teachingUnshown({ slides: [slide(0), slide(1)] }, lesson, single)).toEqual([2, 3, 5, 6]);
+  });
+});

@@ -1,4 +1,4 @@
-import { newId, type Lesson } from '@folio/core';
+import { lessonSessions, newId, sessionIndex, type Course, type Lesson } from '@folio/core';
 import type { SlidesDraft } from './schemas';
 
 /**
@@ -104,6 +104,19 @@ export function meetingsUnshown(v: SlidesDraft, lesson: Lesson): number[] {
   return [...showing].filter((s) => !drawn.has(s)).sort((a, b) => a - b).map((s) => s + 1);
 }
 
+/**
+ * The plan's teaching segments, by number, that are in a meeting with slides and have no slide. A meeting with one slide
+ * passed the check above with half its lecture bare: a week of two lectures had nine slides, and the second lecture's
+ * strikes, unions and immigration were on none (three of sixteen lessons, read blind).
+ */
+export function teachingUnshown(v: SlidesDraft, lesson: Lesson, course: Course): number[] {
+  if (!v.slides.some((x) => x.segment > 0)) return [];
+  const sessions = lessonSessions(course);
+  const slid = sessions.some((s) => s.kind === 'lecture' || s.kind === 'class') ? (n: number) => ['lecture', 'class'].includes(sessions[sessionIndex(course, n)]!.kind) : () => true;
+  const drawn = new Set(v.slides.map((s) => s.segment));
+  return lesson.segments.flatMap((s, i) => (s.kind === 'teach' && slid(s.session) && !drawn.has(i + 1) ? [i + 1] : []));
+}
+
 const SPOKEN_FIX = /[^.!?;\n]*\b\d[\d,.]*\s?[\p{L}%]{0,8}\s+(?:shown |printed |given )?(?:on|in) the (?:slide|screen) (?:is|are|means|refers|should|was|were|counts|covers|includes)\b[^.!?;\n]*/iu;
 
 /**
@@ -191,10 +204,11 @@ export function codeCut(v: { slides: { bullets: string[]; segment: number }[] },
  * asked for once and let be; a case with no slide is kept on the deck when a second writing still leaves it out, so a
  * teacher is told what is not taught.
  */
-export function deckFaults(v: SlidesDraft, lesson: Lesson): { issue: string; kept: boolean }[] {
+export function deckFaults(v: SlidesDraft, lesson: Lesson, course?: Course): { issue: string; kept: boolean }[] {
   return [
     ...untaught(v, lesson).map((title) => ({ kept: true, issue: `The lesson's case "${title}" has no slide: the deck teaches every case the lesson was settled with, each on a slide of its own, however many slides that takes` })),
     ...meetingsUnshown(v, lesson).map((n) => ({ kept: true, issue: `Meeting ${n} of this lesson puts things on the screen and the deck has no slide for it: every meeting's on-screen items have slides, each given the number of its own segment` })),
+    ...(course ? teachingUnshown(v, lesson, course) : []).map((n) => ({ kept: true, issue: `Segment ${n} of the plan teaches in a meeting with slides and the deck has no slide for it: every segment that teaches has at least one slide of its own, given its number, however many slides that takes` })),
     ...spokenFixes(v).map(({ n, said }) => ({ kept: true, issue: `Slide ${n}'s notes explain a figure the slide shows as meaning something else ("${said}"): the slide itself shows the figure that is right for what it asks, and the notes correct nothing on it` })),
     ...codeCut(v, lesson).map((n) => ({ kept: false, issue: `The code the plan shows in segment ${n} is one block and the deck cuts it over several slides: all of its lines stand on one slide, a bullet a line, past the bullet limit` })),
     ...outOfStep(v, lesson).map((issue) => ({ kept: false, issue })),

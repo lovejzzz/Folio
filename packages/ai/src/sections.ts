@@ -161,7 +161,7 @@ const slides: SectionJob<SlidesDraft> = {
     if (!course.materials.plan.enabled) return tidied;
     return { slides: withSheetSlides(tidied.slides, lesson, docLabels(course.language).fromSheet, (session) => shown[session] ?? true) };
   },
-  check: (v, _course, lesson) => [...unshown(v, lesson), ...slidesOther(v, _course, lesson), ...deckFaults(v, lesson).map(({ issue, kept }): Problem => ({ index: null, ...(kept ? {} : { advisory: true }), flag: { code: 'schemaIssue', values: { path: 'slides', issue } } }))],
+  check: (v, _course, lesson) => [...unshown(v, lesson), ...slidesOther(v, _course, lesson), ...deckFaults(v, lesson, _course).map(({ issue, kept }): Problem => ({ index: null, ...(kept ? {} : { advisory: true }), flag: { code: 'schemaIssue', values: { path: 'slides', issue } } }))],
   toCommands: (v, problems, _course, lesson) => [
     cmd('section.fill', {
       lessonId: lesson.id,
