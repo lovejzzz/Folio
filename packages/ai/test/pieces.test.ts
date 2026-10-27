@@ -193,7 +193,10 @@ describe('a deadline in a lesson of several meetings', () => {
       const [first, second] = orderedLessons(course);
       return lessonContext(course, { ...first!, also: [], homework: { kind: 'assignment' as const, toward: 'Weekly response papers', due: second!.id } });
     };
-    expect(told(courseFromOutline({ ...req, sessions }, outline()))).toMatch(/due at the first meeting of the next lesson/);
+    const several = told(courseFromOutline({ ...req, sessions }, outline()));
+    expect(several).toMatch(/due "at the first meeting of [^"]+" \(never "next time"/);
+    // Told how to say it ("in those words"), plan writers passed the telling on: "Say the due date in exactly those words".
+    expect(several).not.toMatch(/in those words/);
     expect(told(courseFromOutline(req, outline()))).toMatch(/due at the start of the next lesson/);
   });
 });

@@ -183,7 +183,7 @@ export const QuestionDraft = z.object({
   answer: line.describe('For choice: the exact text of the correct option. For truefalse: "True" or "False". Otherwise the model answer'),
   explanation: line.describe('Why the answer is right, worked through; for a choice question also the slip behind each wrong choice, a clause each, naming the choice by its own words'),
   difficulty: z.number().int().min(1).max(3),
-  expression: z.string().nullable().default(null).describe('For arithmetic answers, the calculation, e.g. "(4+5+9)/3"; else null'),
+  expression: z.string().nullable().default(null).describe('For arithmetic answers, the calculation in ordinary arithmetic, e.g. "(4+5+9)/3"; otherwise null, as for an answer that follows a programming language\'s own rules (integer division, overflow)'),
   objective: z.number().int().min(1).describe('Which objective this assesses (1-based)'),
   sourcePassage: z.number().int().nullable().default(null).describe('Number of the source passage it draws on, or null'),
 });

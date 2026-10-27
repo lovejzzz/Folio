@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.0.47",
+  "date": "October 27, 2026",
+  "title": "Notes that are for the teacher, and a point an answer kept as one",
+  "lede": "Three things a fresh read of sixteen university lessons found, put right where they were made.",
+  "sections": [
+   {
+    "heading": "Folio's rules stay Folio's",
+    "body": "Writers are told how each graded piece is handed in and when it is due, so that every material says it the same way. Some passed the telling on: \"Say the due date in exactly those words\" and \"Say nothing more about the problem set than the sheet itself does\" stood in a teacher's notes, eight times in sixteen lessons. The due date is now given to writers as the words themselves, and a sentence that only repeats a rule is taken out. In the same three courses written again, none is left.",
+    "image": {
+     "src": "/changelog/0.0.47-notes.svg",
+     "alt": "The same three courses written again: rule sentences in the notes 8 before and 0 now; a levels rubric beside a point an answer 2 and 0; a right Java answer marked wrong 1 and 0",
+     "width": 800,
+     "height": 300
+    }
+   },
+   {
+    "heading": "A point an answer needs no rubric",
+    "body": "A piece that says \"each correct answer earns one point\" is scored by its answers, and Folio gives it no rubric. It read the rule only in figures, so a chemistry course's clicker rounds, which said it in words, were given a rubric of four levels as well, and students were told two ways of being scored. Now \"one point\" and \"two points\" count too, after a word such as earns or is worth."
+   },
+   {
+    "heading": "Java's arithmetic, not a calculator's",
+    "body": "A quiz answer is worked again from its calculation. For `3 + 5 * 2 - 8 / 3` that gave 10.333, and a right answer of 11 was marked for the teacher as a mismatch: in Java, 8 / 3 is 2. A calculation is now given only when the answer is ordinary arithmetic, never when it follows a language's own rules."
+   }
+  ]
+ },
+ {
   "version": "0.0.46",
   "date": "October 27, 2026",
   "title": "A key for every essay and report",

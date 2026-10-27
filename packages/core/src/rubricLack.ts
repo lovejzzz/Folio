@@ -14,7 +14,7 @@ import type { Assignment, Course, Lesson } from './schema';
  */
 export function scoredByAnswer(piece: Assignment): boolean {
   const text = [piece.prompt, ...piece.steps].join('\n');
-  return /\b(?:each|every|a|per)\s+(?:correct\s+)?(?:answer|response|question|item|problem)\b[^.\n]{0,80}?\b\d+(?:\.\d+)?\s*points?\b|\b\d+(?:\.\d+)?\s*points?\s+(?:each|per (?:question|answer|item|problem|correct answer)|for (?:each|every|a) correct)\b|\b(?:one|1) point for (?:each|every|a) correct\b/i.test(text);
+  return /\b(?:each|every|a|per)\s+(?:correct\s+)?(?:answer|response|question|item|problem)\b[^.\n]{0,80}?\b\d+(?:\.\d+)?\s*points?\b|\b\d+(?:\.\d+)?\s*points?\s+(?:each|per (?:question|answer|item|problem|correct answer)|for (?:each|every|a) correct)\b|\b(?:one|1) point for (?:each|every|a) correct\b|\b(?:each|every|per)\s+(?:correct\s+)?(?:answer|response|question|item|problem)\b[^.\n]{0,40}?\b(?:earns?|is worth|scores?|receives?|gets?)\s+(?:one|two|three|four|five|a|an)\s+points?\b/i.test(text);
 }
 
 /**

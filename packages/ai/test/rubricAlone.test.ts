@@ -159,6 +159,10 @@ describe('a piece scored answer by answer', () => {
     expect(scoredByAnswer(piece('Each correct answer earns 1 point; an incorrect or unanswered question earns 0 points.'))).toBe(true);
     expect(scoredByAnswer(piece('Six questions, 2 points each.'))).toBe(true);
     expect(scoredByAnswer(piece('One point for each correct answer.'))).toBe(true);
+    // In words: a chemistry course's clicker rounds were given a rubric of levels beside "one point" an answer.
+    expect(scoredByAnswer(piece('Each correct answer earns one point; an incorrect answer earns zero points.'))).toBe(true);
+    expect(scoredByAnswer(piece('Each question is worth two points.'))).toBe(true);
+    expect(scoredByAnswer(piece('Each answer should make one point clearly, with evidence.'))).toBe(false);
     // A piece scored on criteria says points too, and still takes a rubric.
     expect(scoredByAnswer(piece('Each criterion earns 1–4 points, for a total of 12 points.'))).toBe(false);
     expect(scoredByAnswer(piece('Write a lab report. It is scored with the rubric below, out of 16 points.'))).toBe(false);

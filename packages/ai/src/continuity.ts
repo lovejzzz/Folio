@@ -195,7 +195,7 @@ function dueWhen(course: Course, lesson: Lesson): string {
   // brief and "the meeting on developing literature review drafts" on the slide, and a student could not tell which meeting.
   // In a lesson of several meetings "next time" is also its own next meeting: a set due "at the start of next time" was announced in the third lecture, before the recitation.
   const met = course.shape.sessions.length > 1;
-  if (gap === 1 && met) return 'due at the first meeting of the next lesson (students are told so in those words, with that lesson\'s title, never "next time", which is also this lesson\'s next meeting)';
+  if (gap === 1 && met) return `due "at the first meeting of ${due.title}" (never "next time", which is also this lesson's next meeting)`;
   return gap === 1 ? 'due at the start of the next lesson' : `due at the start of the lesson ${gap} lessons after this one, "${due.title}" (wherever students are told the deadline it is in these words, "at the start of the class on ${due.title}", never a paraphrase, a count of lessons, or a week or date of your own)`;
 }
 

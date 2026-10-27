@@ -118,3 +118,11 @@ describe('course length in summaries', () => {
     expect(withoutSpan('It covers the five topic areas.')).toBe('It covers the five topic areas.');
   });
 });
+
+describe('QuestionDraft', () => {
+  it('asks for a calculation only in ordinary arithmetic', () => {
+    // A Java quiz's right answer, 11 for `3 + 5 * 2 - 8 / 3`, was told to its teacher as a mismatch with 10.333: the
+    // calculation was evaluated as real numbers, where Java divides two ints to a whole number.
+    expect(QuestionDraft.shape.expression.description).toMatch(/otherwise null, as for an answer that follows a programming language's own rules \(integer division/);
+  });
+});

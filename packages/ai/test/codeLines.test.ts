@@ -138,6 +138,9 @@ describe('an instruction that comes back as advice', () => {
     const { withoutEchoes } = await import('../src/tidy');
     expect(withoutEchoes('Score with the rubric from last time; write no criteria of your own. Hear two pairs.')).toBe('Hear two pairs.');
     expect(withoutEchoes('Groups hand in one sheet. Use new cases and numbers, not those from the examples in class. Post solutions after class.')).toBe('Groups hand in one sheet. Post solutions after class.');
+    // Rules passed on to the teacher as their own: eight sentences in sixteen lessons of one read.
+    expect(withoutEchoes('Say the due date in exactly those words, with the title. Collect the sheets.')).toBe('Collect the sheets.');
+    expect(withoutEchoes('Say nothing more about the problem set than the sheet itself does. Hear two answers.')).toBe('Hear two answers.');
     expect(withoutEchoes('Students take the quiz. The quiz is scored by points. Collect the papers.')).toBe('Students take the quiz. Collect the papers.');
     expect(withoutEchoes('Set the final proposal. Use the deadline wording exactly. Say what builds toward it.')).toBe('Set the final proposal. Say what builds toward it.');
     expect(withoutEchoes('Keep a roster. Divide the class across the groups without assuming a class size. Assign nothing more.')).toBe('Keep a roster. Assign nothing more.');
