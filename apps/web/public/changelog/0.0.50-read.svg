@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .row { fill: #E3DED3 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .row { fill: #3A3B35 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">SIXTEEN UNIVERSITY LESSONS, READ STRICTLY, TODAY</text>
+  <rect class="card" x="36" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="56" y="96" font-size="16" font-weight="600">Lessons with nothing that stops a class</text>
+  <text class="ink2" x="56" y="134" font-size="13">0.0.46</text>
+  <rect class="row" x="120" y="122" width="135" height="16" rx="8"/><text class="ink" x="265" y="135" font-size="14" font-weight="600">9</text>
+  <text class="ink2" x="56" y="174" font-size="13">Now</text>
+  <rect class="acc" x="120" y="162" width="195" height="16" rx="8"/><text class="ink" x="325" y="175" font-size="14" font-weight="600">13</text>
+  <text class="ink2" x="56" y="236" font-size="13">of 16</text>
+  <rect class="card" x="414" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="434" y="96" font-size="16" font-weight="600">Things that would stop a class</text>
+  <text class="ink2" x="434" y="134" font-size="13">0.0.46</text>
+  <rect class="row" x="498" y="122" width="200" height="16" rx="8"/><text class="ink" x="708" y="135" font-size="14" font-weight="600">10</text>
+  <text class="ink2" x="434" y="174" font-size="13">Now</text>
+  <rect class="acc" x="498" y="162" width="60" height="16" rx="8"/><text class="ink" x="568" y="175" font-size="14" font-weight="600">3</text>
+  <text class="ink2" x="434" y="236" font-size="13">Two of the three borderline</text>
+</svg>

@@ -1,5 +1,27 @@
 [
  {
+  "version": "0.0.50",
+  "date": "October 27, 2026",
+  "title": "A weekly quiz on its own week",
+  "lede": "A quiz held in a lesson's last meeting now covers what that lesson's lectures taught, and the same sixteen lessons, read again, have a third as many things that would stop a class.",
+  "sections": [
+   {
+    "heading": "This week's quiz on this week",
+    "body": "A short quiz was planned to test earlier lessons and not what its lesson had just taught. In a week of three lectures and a recitation, that put the week before's lectures on Friday's quiz, though they had had their own. A quiz now covers what was taught before its meeting: earlier lessons and its own lesson's earlier meetings. Graded quizzes with lettered choices are also asked to put the right answer at different letters, after a reading quiz was keyed A six times out of six."
+   },
+   {
+    "heading": "Where Folio stands",
+    "body": "The sixteen first-year lessons read earlier today on 0.0.46 were written again with everything since and read by four strict readers on the same terms. Lessons with nothing that would stop a class went from 9 to 13; things that would went from 10 to 3, two of them borderline. No answer key was wrong in either read. What is left is on our list: graded writing in class told to stay with students, one key whose number a program did not reach, and a few lines of advice that were never tried.",
+    "image": {
+     "src": "/changelog/0.0.50-read.svg",
+     "alt": "Sixteen lessons read strictly: lessons with nothing that stops a class 9 before and 13 now; things that would stop a class 10 before and 3 now",
+     "width": 800,
+     "height": 300
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.49",
   "date": "October 27, 2026",
   "title": "What the plan shows, the slides and prompts show too",

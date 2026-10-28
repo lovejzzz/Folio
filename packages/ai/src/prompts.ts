@@ -339,8 +339,9 @@ const asks: Record<SectionPromptKind, (course: Course, lesson: Lesson) => string
         rubricLevels(c),
       ].join(' ');
     // One of a run (weekly sets) is about its lesson; a piece of its own (a paper, a project) is about the course.
+    // Unsaid, a graded reading quiz was keyed A six times out of six: one guess scored full marks.
     const own = sharedComponent(c, lesson)
-      ? `it is about what this lesson taught, unless the brief has students do it before a lesson to prepare for it (a quiz on the reading before each class): then it is on what they read for the lesson it is due at, in questions a student who did the reading answers alone, each with one right answer when the brief calls it a quiz. A piece that is all questions with one right answer each is scored by its answers, a point each unless the brief says otherwise: its rubric has no criteria, and the prompt says how it is scored.${dueLesson(c, lesson)}`
+      ? `it is about what this lesson taught, unless the brief has students do it before a lesson to prepare for it (a quiz on the reading before each class): then it is on what they read for the lesson it is due at, in questions a student who did the reading answers alone, each with one right answer when the brief calls it a quiz (with choices, the right one at a different letter from question to question). A piece that is all questions with one right answer each is scored by its answers, a point each unless the brief says otherwise: its rubric has no criteria, and the prompt says how it is scored.${dueLesson(c, lesson)}`
       : "it is a piece of the whole course, so its topic and criteria come from the brief, not from this one lesson's topic, and any length the brief sets must be reachable with what the course has taught by now (say what fills it); when it is due lessons after it is set, it asks for what the lessons up to then teach as well, as the list of lessons shows; when the brief sets it stages or milestones with dates of their own, it is the whole piece, and lists every stage with when the brief says it is due";
     return [
       toward

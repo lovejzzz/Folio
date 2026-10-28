@@ -227,6 +227,10 @@ describe('a test taken in class', () => {
     const [first] = orderedLessons(store.getState());
     store.apply([cmd('lesson.homework', { lessonId: first!.id, homework: { kind: 'test', toward: 'Unit test' } })], { label: { key: 'b' }, source: 'teacher' });
     expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'plan')).toContain('writes no questions');
+    // Told a short quiz "tests earlier lessons", a recitation after three lectures quizzed the week before's lectures.
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'plan')).toContain("earlier lessons and this lesson's earlier meetings, not what its own meeting has just taught");
+    // Unsaid, a graded reading quiz was keyed A six times out of six.
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'assignments')).toContain('the right one is at a different letter from question to question');
     const inf = fakeInference(() => ({
       title: 'Unit test',
       instructions: 'You have 40 minutes. Show your work.',
