@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .strike { stroke: #B4452F; stroke-width: 2 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .strike { stroke: #E58A73 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">SHORT IN-CLASS WRITING, 10% OF THE GRADE, SCORED AFTER CLASS</text>
+  <rect class="card" x="36" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="56" y="96" font-size="16" font-weight="600">Before</text>
+  <text class="ink" x="56" y="140" font-size="15">“Keep your page in front of you;</text>
+  <text class="ink" x="56" y="164" font-size="15">it is yours for Essay 1.”</text>
+  <line class="strike" x1="52" y1="135" x2="296" y2="135"/><line class="strike" x1="52" y1="159" x2="222" y2="159"/>
+  <text class="ink2" x="56" y="236" font-size="13">Scored, but never collected</text>
+  <rect class="card" x="414" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="434" y="96" font-size="16" font-weight="600">Now</text>
+  <text class="ink" x="434" y="140" font-size="15">Nothing said of where it goes.</text>
+  <text class="acc" x="434" y="176" font-size="15" font-weight="600">Your list: set how it comes in,</text>
+  <text class="acc" x="434" y="200" font-size="15" font-weight="600">in the syllabus grading table</text>
+  <text class="ink2" x="434" y="236" font-size="13">Then every page says the same</text>
+</svg>

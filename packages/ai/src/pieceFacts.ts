@@ -29,7 +29,8 @@ function handIn(g: GradeItem, kinds: Set<string>): string {
   if (card.handIn === 'unsaid') {
     // Work done in the lesson has no deadline to word: told every piece was "due at the start of its lesson", a lab's
     // worksheet written in class was "due at the start of its lesson" on the sheet itself.
-    if (kinds.has('inclass')) return 'the brief does not say whether or how what is written is collected, so no material says that it is handed in, where, or when, and none gives it a deadline: it is done in the lesson that runs it';
+    // Told only not to say it was collected, two composition plans told students to keep graded writing scored after class.
+    if (kinds.has('inclass')) return 'the brief does not say whether or how what is written is collected, so no material says that it is handed in, where, or when, nor that students keep it, and none gives it a deadline: it is done in the lesson that runs it';
     return 'the brief does not say how it is handed in, so no material says how or where it is collected (not "hand it in before you leave", not "submit online"): its deadline is said in the words the lesson that sets it is given, and nothing is added';
   }
   if (kinds.has('inclass')) return card.handIn === 'online' ? 'what is written is submitted online after the lesson it is done in, and nothing is collected in the room' : 'what is written is handed in on paper at the end of the lesson it is done in';

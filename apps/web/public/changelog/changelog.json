@@ -1,5 +1,23 @@
 [
  {
+  "version": "0.0.51",
+  "date": "October 27, 2026",
+  "title": "Graded work in class is yours to collect",
+  "lede": "When your brief does not say what happens to writing scored after class, Folio no longer decides it for you.",
+  "sections": [
+   {
+    "heading": "Not handed in, and not kept either",
+    "body": "Writers were told not to say how in-class graded work is handed in when your brief leaves it open. Two composition lessons then told students to keep their pages, though each page was scored after class. Now no material says either: the lesson's list asks you to set how it comes in, in the grading table on the syllabus, and every page then says the same. A few more of Folio's own rules that had found their way into notes (\"write no new criteria\", \"its scoring is on the piece\") are taken out as well.",
+    "image": {
+     "src": "/changelog/0.0.51-collect.svg",
+     "alt": "Before: graded in-class writing told to stay with students and never collected. Now: nothing said of where it goes, and the lesson's list asks the teacher to set how it comes in",
+     "width": 800,
+     "height": 300
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.50",
   "date": "October 27, 2026",
   "title": "A weekly quiz on its own week",

@@ -299,6 +299,13 @@ describe('the first lesson to run a turn students prepare', () => {
 });
 
 describe('how each graded piece runs', () => {
+  it('leaves the fate of in-class work the brief does not settle open, keeping included', () => {
+    // Told only not to say it was collected, two plans told students to keep graded writing scored after class.
+    const draft = outline();
+    draft.lessons = draft.lessons.map((l) => ({ ...l, homework: 'inclass' as const, homeworkToward: draft.grading[2]!.item, homeworkDue: null, also: [] }));
+    expect(courseBackground(courseFromOutline({ ...req, brief: 'A writing course.' }, draft))).toContain('no material says that it is handed in, where, or when, nor that students keep it');
+  });
+
   it('is one text for every writer, made from the course’s record', () => {
     const draft = outline();
     const bare = { ...req, brief: 'A graduate seminar in the philosophy of mind.' };
