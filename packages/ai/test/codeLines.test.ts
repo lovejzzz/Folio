@@ -45,6 +45,32 @@ describe('the keys to a lesson\'s sheets, written from the sheets by another wri
     // And a wrong number on the sheet itself is put right on the sheet: its key is the key to the corrected sheet.
     expect(JSON.stringify(store.getState().lessons[lesson.id]!.handouts[0]!.blocks)).toContain('the average is 3.5');
   });
+
+  it('leave a statement students are asked to find the mistake in as it is written', async () => {
+    const { withHandouts } = await import('../src/handouts');
+    const { huntsErrors } = await import('../src/onPurpose');
+    const { CourseStore, cmd, orderedLessons, newId } = await import('@folio/core');
+    const { fakeInference, planDraft, smallCourse } = await import('./fake');
+    expect(huntsErrors('Each statement below contains one typical error.')).toBe(true);
+    expect(huntsErrors('Which mistake would you catch?')).toBe(true);
+    expect(huntsErrors('Find and fix the bug in each line.')).toBe(true);
+    expect(huntsErrors('Find the standard deviation. For 5 and 2 the average is 2.5.')).toBe(false);
+    expect(huntsErrors('Choose the correct option and explain the error bars.')).toBe(false);
+    const course = smallCourse();
+    const lesson = orderedLessons(course)[0]!;
+    const segments = planDraft.segments.map((s) => ({ ...s, id: newId('x'), session: 1, kind: s.kind as 'teach' }));
+    const written = { commands: [cmd('section.fill', { lessonId: lesson.id, kind: 'plan', flags: [], content: { segments, keyIdeas: [], vocabulary: [] } })], flagged: 0 };
+    // A review sheet's statements, each wrong on purpose: the keys' writer corrected them, and students were handed true statements and asked for the error.
+    const hunt = { title: 'Which mistake would you catch?', kind: 'worksheet', usedIn: 'Warm-up', copies: 'One each', blocks: [{ type: 'para', text: 'Each statement below contains one typical error. Write a one-sentence correction for each.' }, { type: 'para', text: '1. The standard error of the mean is therefore 10.' }, { type: 'para', text: '2. Because they never happen together, they are independent.' }] };
+    const plain = { title: 'Spread', kind: 'worksheet', usedIn: 'The equation', copies: 'One each', blocks: [{ type: 'para', text: 'For 5 and 2 the average is 2.5.' }] };
+    const model = fakeInference(() => ({}), { handouts: [hunt, plain], keyed: { keys: [], corrections: [{ find: 'The standard error of the mean is therefore 10.', replace: 'The estimated standard error of the mean is therefore 2.' }, { find: 'the average is 2.5', replace: 'the average is 3.5' }] } });
+    const out = await withHandouts(model, course, lesson, written);
+    const store = new CourseStore(course);
+    store.apply(out.commands, { label: { key: 'b' }, source: 'ai' });
+    const sheets = JSON.stringify(store.getState().lessons[lesson.id]!.handouts);
+    expect(sheets).toContain('The standard error of the mean is therefore 10.');
+    expect(sheets).toContain('the average is 3.5');
+  });
 });
 
 describe('what a segment puts on the screen', () => {

@@ -12,6 +12,7 @@ import { ExhibitBlockDraft, exhibitPart } from './exhibit';
 import type { Inference } from './inference';
 import { runJob } from './jobs';
 import { placed } from './lastRead';
+import { wrongOnPurpose } from './onPurpose';
 import { say } from './lessonView';
 import { onTheSheet, saidShown } from './onScreen';
 import { neverInstalled } from './rLedger';
@@ -132,12 +133,12 @@ export const HandoutKeysDraft = z.object({
     .array(z.object({ find: line.describe('The exact words of the plan that are wrong, copied character for character, where they stand only once'), replace: z.string().describe('What should stand there') }))
     .max(6)
     .default([])
-    .describe('Only where a number or result the plan states is wrong by your own working: one entry for each place the plan says it. Usually empty'),
+    .describe('Only where a number or result the plan states is wrong by your own working: one entry for each place the plan says it, never a statement students are asked to find the mistake in. Usually empty'),
 });
 export type HandoutKeysDraft = z.infer<typeof HandoutKeysDraft>;
 
 const KEYS_ASK =
-  'Below are a lesson plan and the sheets it hands to students, already written. Write the key to each sheet, for the teacher only: the answer to every question, cell and blank on the sheet, in the order they stand, worked out by you from the sheet as it is written (every number computed, every piece of code traced), with what to look for in an open answer and the common slip where there is one. Where a number or statement in the plan or on a sheet disagrees with what you work out, the key gives what is right and says nothing of the mistake, and the wrong words go under "corrections" with what should stand there: they are replaced in the plan and on the sheets, so the key is the key to the sheet as corrected. A key gives answers, and says nothing of how or whether you could check them. A sheet with nothing to mark has an empty key.';
+  'Below are a lesson plan and the sheets it hands to students, already written. Write the key to each sheet, for the teacher only: the answer to every question, cell and blank on the sheet, in the order they stand, worked out by you from the sheet as it is written (every number computed, every piece of code traced), with what to look for in an open answer and the common slip where there is one. Where a number or statement in the plan or on a sheet disagrees with what you work out, the key gives what is right and says nothing of the mistake, and the wrong words go under "corrections" with what should stand there: they are replaced in the plan and on the sheets, so the key is the key to the sheet as corrected. The one exception is a statement a sheet gives students as wrong on purpose (a mistake to catch, a claim to correct, a line to fix): it stays as written, is never a correction, and its key gives what students should find. A key gives answers, and says nothing of how or whether you could check them. A sheet with nothing to mark has an empty key.';
 
 export function handoutKeysPrompt(course: Course, lesson: Lesson, plan: Content, sheets: HandoutsDraft['handouts']): string {
   const shown = sheets.map((h) => `### ${h.title} (${h.kind}, used in "${h.usedIn}")\n${exhibitPart({ label: '', blocks: h.blocks }).blocks.map((b) => say(b as Record<string, unknown>)).join('\n')}`).join('\n\n');
@@ -180,12 +181,15 @@ export async function withHandouts(inference: Inference, course: Course, lesson:
       ? await runJob(inference, { task: 'folio_handout_keys', system: systemPrompt(course.language, course.locale), context: courseBackground(course), prompt: handoutKeysPrompt(course, lesson, led, result.value.handouts), effort: 'low', schema: HandoutKeysDraft, repair: false, signal }).then((r) => r.value, () => null)
       : null;
     const keyOf = (title: string) => withoutSelfReport(keyed?.keys.find((k) => k.title.trim() === title.trim())?.key ?? '');
+    // A statement students are asked to find the mistake in is wrong on purpose: a review sheet's three were corrected into truths.
+    const purpose = wrongOnPurpose(keyed?.corrections ?? [], result.value.handouts, led.segments);
+    const fixes = (keyed?.corrections ?? []).filter((fix) => !purpose.has(fix.find));
     // A sheet said "the average is 2.5, make it print 2.5" where it is 3.5; its key warned the teacher and the sheet was printed as it was.
-    const mended = (keyed?.corrections ?? []).reduce((now, fix) => (fix.find.trim() && now.includes(JSON.stringify(fix.find).slice(1, -1)) ? now.split(JSON.stringify(fix.find).slice(1, -1)).join(JSON.stringify(fix.replace).slice(1, -1)) : now), JSON.stringify(result.value.handouts));
+    const mended = fixes.reduce((now, fix) => (fix.find.trim() && now.includes(JSON.stringify(fix.find).slice(1, -1)) ? now.split(JSON.stringify(fix.find).slice(1, -1)).join(JSON.stringify(fix.replace).slice(1, -1)) : now), JSON.stringify(result.value.handouts));
     const handouts = (JSON.parse(mended) as HandoutsDraft['handouts']).map((h) => toHandout({ ...markedForStudents(h, groundsOf(course)), key: keyOf(h.title) }));
     // Working every answer makes the keys' writer the second to compute the plan's numbers: a key said "correction to the
     // plan: the standard deviation is 25.79, not 25.70", and the plan, its slides and the study guide kept 25.70.
-    const plan = (keyed?.corrections ?? []).reduce((now, fix) => {
+    const plan = fixes.reduce((now, fix) => {
       const got = placed(now, fix.find, fix.replace);
       return got.hits === 1 ? got.value : now;
     }, { segments: led.segments, keyIdeas: led.keyIdeas, vocabulary: led.vocabulary });

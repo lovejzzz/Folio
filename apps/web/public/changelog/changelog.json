@@ -1,5 +1,23 @@
 [
  {
+  "version": "0.0.55",
+  "date": "October 29, 2026",
+  "title": "Wrong on purpose stays wrong",
+  "lede": "A statement a sheet gives students to find the mistake in is no longer corrected by the writer of the keys: students get the error to catch, and the key gives the catch.",
+  "sections": [
+   {
+    "heading": "A review sheet corrected into truth",
+    "body": "The writer of a lesson's answer keys works every number and statement on the sheets out again, and where a sheet is wrong it corrects the sheet, so that the key is the key to the sheet students hold. A midterm's warm-up sheet gave three statements \"each containing one typical error\" for students to correct; the keys' writer took the errors for slips and corrected all three, so students were handed true statements and asked what was wrong with them, while the plan and the teacher's notes went on correcting the originals. The writer is now told that a statement given as wrong on purpose is no slip, and a correction whose words stand on a sheet, or in a segment, that asks students to find the mistake is not applied.",
+    "image": {
+     "src": "/changelog/0.0.55-purpose.svg",
+     "alt": "A warm-up sheet asking which mistake students would catch: before, its wrong statement corrected into a true one; now, left as written, with the correction in the key",
+     "width": 800,
+     "height": 300
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.54",
   "date": "October 29, 2026",
   "title": "A part's letter is not a choice",

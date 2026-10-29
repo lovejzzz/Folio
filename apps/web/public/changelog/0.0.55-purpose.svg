@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .row { fill: #E3DED3 } .warn { fill: #B4452F } .strike { stroke: #B4452F; stroke-width: 1.5 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .row { fill: #3A3B35 } .warn { fill: #E58A73 } .strike { stroke: #E58A73 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">“WHICH MISTAKE WOULD YOU CATCH?” — A WARM-UP SHEET</text>
+  <rect class="card" x="36" y="64" width="350" height="200" rx="14"/>
+  <text class="warn" x="56" y="92" font-size="13" font-weight="600" letter-spacing="0.4">BEFORE: CORRECTED INTO TRUTH</text>
+  <text class="ink2" x="56" y="122" font-size="13">Each statement contains one typical error.</text>
+  <text class="ink" x="56" y="152" font-size="14">1. The standard error is therefore <tspan class="warn" font-weight="600">2</tspan>.</text>
+  <line class="strike" x1="56" y1="178" x2="236" y2="178"/>
+  <text class="ink2" x="56" y="183" font-size="12">was “therefore 10”, the error to catch</text>
+  <text class="ink2" x="56" y="214" font-size="13">Students hunt an error that is no longer there;</text>
+  <text class="ink2" x="56" y="234" font-size="13">the plan and the notes still correct the original.</text>
+  <rect class="card" x="414" y="64" width="350" height="200" rx="14"/>
+  <text class="acc" x="434" y="92" font-size="13" font-weight="600" letter-spacing="0.4">NOW: LEFT AS WRITTEN</text>
+  <text class="ink2" x="434" y="122" font-size="13">Each statement contains one typical error.</text>
+  <text class="ink" x="434" y="152" font-size="14">1. The standard error is therefore <tspan class="acc" font-weight="600">10</tspan>.</text>
+  <rect class="row" x="434" y="170" width="310" height="1"/>
+  <text class="ink2" x="434" y="196" font-size="12" font-weight="600">Key, for the teacher</text>
+  <text class="ink2" x="434" y="216" font-size="13">SD is not SE: 10/√25 = 2, so about 95% of sample</text>
+  <text class="ink2" x="434" y="236" font-size="13">means lie within roughly 4 of the population mean.</text>
+</svg>
