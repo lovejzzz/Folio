@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { withoutSpan, tidyFollowUps, tidyPlanSources, tidySlides, tidySteps, tidyTrueFalse, unquote, unfence, unfenceAll } from '../src/tidy';
+import { singleKind, singleKindAll, withoutSpan, tidyFollowUps, tidyPlanSources, tidySlides, tidySteps, tidyTrueFalse, unquote, unfence, unfenceAll } from '../src/tidy';
 import { QuestionDraft } from '../src/schemas';
 
 const tf = (answer: string, choices: string[] = []): QuestionDraft =>
@@ -124,5 +124,18 @@ describe('QuestionDraft', () => {
     // A Java quiz's right answer, 11 for `3 + 5 * 2 - 8 / 3`, was told to its teacher as a mismatch with 10.333: the
     // calculation was evaluated as real numbers, where Java divides two ints to a whole number.
     expect(QuestionDraft.shape.expression.description).toMatch(/otherwise null, as for an answer that follows a programming language's own rules \(integer division/);
+  });
+});
+
+describe('a component named in the plural and given its kind word again', () => {
+  it('is made singular, by the course\'s own names only', () => {
+    const names = ['Reading quizzes', 'Weekly recitation quizzes', 'Midterm exams', 'Essay 1'];
+    expect(singleKind('A Reading quizzes quiz (15% of the course grade) opens the class.', names)).toBe('A Reading quiz (15% of the course grade) opens the class.');
+    expect(singleKind('Announce that the Weekly recitation quizzes quiz is held later.', names)).toBe('Announce that the Weekly recitation quiz is held later.');
+    expect(singleKind('Students sit the graded Reading quizzes paper.', names)).toBe('Students sit the graded Reading quiz paper.');
+    expect(singleKind('the midterm exams exam', names)).toBe('the midterm exam');
+    // The name alone, and a plural that is not a component's name, stand: "the unit tests test each method".
+    expect(singleKind('Reading quizzes begin next time. The unit tests test each method.', names)).toBe('Reading quizzes begin next time. The unit tests test each method.');
+    expect(singleKindAll({ bullets: ['A Reading quizzes quiz'], code: '`Reading quizzes quiz`' }, names)).toEqual({ bullets: ['A Reading quiz'], code: '`Reading quizzes quiz`' });
   });
 });

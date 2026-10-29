@@ -143,6 +143,7 @@ describe('an instruction that comes back as advice', () => {
     expect(withoutEchoes('Say nothing more about the problem set than the sheet itself does. Hear two answers.')).toBe('Hear two answers.');
     expect(withoutEchoes('Its scoring is on the Essay 1 piece. Write no new criteria. Pairs swap pages.')).toBe('Pairs swap pages.');
     expect(withoutEchoes('Do not add deadlines or ways of handing work in. Point students to the scoring rather than restating it. Close on time.')).toBe('Close on time.');
+    expect(withoutEchoes('Do not list quiz topics. Say Reading quizzes are marked in points.')).toBe('Say Reading quizzes are marked in points.');
     expect(withoutEchoes('Students take the quiz. The quiz is scored by points. Collect the papers.')).toBe('Students take the quiz. Collect the papers.');
     expect(withoutEchoes('Set the final proposal. Use the deadline wording exactly. Say what builds toward it.')).toBe('Set the final proposal. Say what builds toward it.');
     expect(withoutEchoes('Keep a roster. Divide the class across the groups without assuming a class size. Assign nothing more.')).toBe('Keep a roster. Assign nothing more.');

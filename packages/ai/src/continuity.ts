@@ -2,6 +2,7 @@ import { hasModulePages, lessonPieces, orderedLessons, worksWritten, type Course
 import { filesSoFar } from './earlierFiles';
 import { moduleDigest, moduleSummary } from './online';
 import { preparedTurn } from './pieceFacts';
+import { testCoverage } from './scales';
 import { EACH_TIME, firstRubric, otherPieces, pieceTitle, workOf } from './workJobs';
 
 /** Whether a lesson holds a piece of this kind for this component, as its main piece or beside it. */
@@ -299,7 +300,7 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
   if (own) return `${own}${lesson.homework.kind === 'assignment' || lesson.homework.kind === 'step' ? ` ${dueWords(course, lesson)}` : ''}${due}${only}`;
   const named = toward ? `"${toward}"` : 'a graded piece';
   // The paper and the rubric are their own material: a plan that also wrote them gave the lesson two.
-  if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions (or, when the summary says it is sat after the course ends, reviews for it and says when and how it is sat), and writes no questions.${due}${only}`;
+  if (lesson.homework.kind === 'test') return `This lesson holds ${toward ? `the graded test ${named}` : 'a graded test'}, written separately as a paper with its questions, key and points: the plan gives it its time and conditions (or, when the summary says it is sat after the course ends, reviews for it and says when and how it is sat), and writes no questions. It is ${testCoverage(course, toward)}: every material says so in those words and none lists its topics, which the paper alone gives.${due}${only}`;
   if (lesson.homework.kind === 'inclass') return `This lesson holds ${named}, done in class and graded as its brief says (with a rubric, where the brief has one), written separately: the plan runs it, with time for every student to do all of it (when each is heard or scored one by one, the minutes are one student's multiplied by the class the brief describes, with the moves between them: where that does not fit, it is scored from what is handed in or over several lessons), and writes no criteria; written work is handed in and scored after class (only what is performed, a talk or a discussion led, is scored as it happens), with no helpers the brief does not name; its tasks are printed with the piece, so the plan names no other sheet for it; what a student is graded for preparing or deciding (the questions of a discussion they lead, what a talk says) is left to them and never scripted.${firstTurn(course, lesson)}${lesson.homework.standing ? ` Its${EACH_TIME.slice(5)}.` : ''}${briefSoFar(course, lesson)}${due}${only}`;
   const set = `which the plan has the teacher set before students leave, naming it and when it is due, without spelling out its tasks or naming files and handouts it may not have; work the brief has students do online is handed in online by then, and never collected in class. ${dueWords(course, lesson)}`.trim();
   if (lesson.homework.kind === 'step') return `For homework this lesson sets a short ungraded step${toward ? ` toward "${toward}"` : ''}, ${set}${due}${only}`;
@@ -345,7 +346,9 @@ function ahead(course: Course, next: Lesson): string {
   const before = orderedLessons(course).slice(0, course.lessonOrder.indexOf(next.id));
   const firstTurns = pieces.filter((p) => p.kind === 'inclass' && p.toward.trim() && !before.some((l) => holds(l, 'inclass', p.toward.trim())));
   return [
-    tests.length ? `, and announces the test it holds${named(tests[0]!)}, what it covers and what to bring` : '',
+    // "Announces the test it holds, what it covers": a recitation's close said "next time they sit a graded test" (the next
+    // meeting was a lecture), and three materials listed three coverages, none the paper's.
+    tests.length ? `, and announces the test it holds${named(tests[0]!)}: sat "at ${next.title}"${course.shape.sessions.length > 1 ? ' (those words, never "next time", which is this lesson\'s own next meeting)' : ''}, ${testCoverage(course, tests[0]!.toward)}, and what to bring; no list of its topics, which the paper alone gives` : '',
     firstTurns.length ? `, and prepares the work graded in class there for the first time${named(firstTurns[0]!)}: which that lesson introduces with its brief, the teacher modelling a first turn: say now that it is introduced there; nobody is asked to lead or present at that lesson, and no turn is scored before students have had the brief for a lesson` : '',
   ].join('');
 }

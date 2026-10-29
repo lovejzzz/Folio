@@ -2,7 +2,7 @@ import { deckFaults, figureApart, joinCode, keptIds, withSheetSlides } from './s
 import { groundsOf, markedForStudents } from './locators';
 import { typesetDraft } from './typeset';
 import { balanceChoices, stripTrueFalsePrefix } from './balance';
-import { tidyFaq, tidyFollowUps, tidyLessonNames, tidyPlanSources, tidySlides, tidyTrueFalse } from './tidy';
+import { singleKindAll, tidyFaq, tidyFollowUps, tidyLessonNames, tidyPlanSources, tidySlides, tidyTrueFalse } from './tidy';
 import {
   checkSessionMinutes,
   lessonSessions,
@@ -20,10 +20,10 @@ import {
   type GeneratedKind,
   type Lesson,
   type Question,
-  orderedLessons,
 } from '@folio/core';
 import { docLabels } from '@folio/core';
-import { oneVisualEach, slideVisual } from './slideVisual';
+import { announced } from './announce';
+import { notedFrom, oneVisualEach, slideVisual } from './slideVisual';
 import type { Inference } from './inference';
 import { parsePartialJson } from './partial';
 import { newVocabulary } from './continuity';
@@ -80,27 +80,6 @@ function toQuestion(draft: QuestionDraft, course: Course, lesson: Lesson, flags:
   };
 }
 
-/**
- * A test sat at the next lesson, said in the plan's close when the plan does not say it. Told to announce it, a plan closed
- * on "next time extends the comparison"; sent to the mend, it came back the same, and the first quiz of a course opened a
- * class nobody had warned. Where the next lesson's test is known, the sentence is Folio's own, added to the last segment.
- */
-export function announced(v: PlanDraft, course: Course, lesson: Lesson): PlanDraft {
-  const next = orderedLessons(course)[course.lessonOrder.indexOf(lesson.id) + 1];
-  const test = next ? lessonPieces(next).find((p) => p.kind === 'test' && p.toward.trim()) : undefined;
-  if (!test || course.language !== 'en') return v;
-  const named = test.toward.trim().toLowerCase();
-  // In one sentence: "a practice quiz on this lesson" beside "next time extends the comparison" announced nothing.
-  const sentences = v.segments.flatMap((x) => `${x.description}\n${x.teacherNotes}`.toLowerCase().split(/(?<=[.!?])\s+|\n+/));
-  if (sentences.some((x) => /\bnext (?:time|class|lesson|week|meeting|session)\b/.test(x) && (/\b(?:quiz(?:zes)?|tests?|exams?|midterms?|final)\b/.test(x) || x.includes(named)))) return v;
-  // By its component and no more: named by its paper's title, which carried the lesson it is sat in, a quiz on lists was
-  // announced as covering stacks and queues; said to be "on what the course has taught up to today", a weekly quiz that
-  // is on next week's lectures was announced wrongly the other way. What it covers is the plan's and the paper's to say.
-  const sat = `a graded test ("${test.toward.trim()}")`;
-  const last = v.segments.findLastIndex((x) => x.kind !== 'break');
-  if (last < 0) return v;
-  return { ...v, segments: v.segments.map((x, i) => (i === last ? { ...x, description: `${x.description.trimEnd()}\nBefore students leave, tell them that next time they sit ${sat}.` } : x)) };
-}
 
 const plan: SectionJob<PlanDraft> = {
   schema: PlanDraft,
@@ -167,7 +146,7 @@ const slides: SectionJob<SlidesDraft> = {
       lessonId: lesson.id,
       kind: 'slides',
       flags: flagsAt(problems, null),
-      content: { slides: oneVisualEach(v.slides).map(({ table, chart, steps, compare, figure, segment, ...s }) => ({ ...s, id: newId('x'), ...(lesson.segments[segment - 1] ? { segment: lesson.segments[segment - 1]!.id } : {}), ...slideVisual(table, chart, steps, compare, figure) })) },
+      content: { slides: oneVisualEach(v.slides).map(({ table, chart, steps, compare, figure, segment, ...s }) => ({ ...s, id: newId('x'), notes: notedFrom(s.notes, lesson.segments[segment - 1]), ...(lesson.segments[segment - 1] ? { segment: lesson.segments[segment - 1]!.id } : {}), ...slideVisual(table, chart, steps, compare, figure) })) },
     }),
   ],
 };
@@ -451,6 +430,7 @@ export async function generateSection(
   // A module page is several times a plan's length, and is given the room.
   const planTask = (k: GeneratedKind) => (k === 'plan' && hasModulePages(course) ? 'folio_module' : `folio_${k}`);
   const run = async <T>(job: SectionJob<T>, revise?: Revision<T>, of: Lesson = lesson, already = ''): Promise<SectionResult> => {
+    const named = (v: T): T => singleKindAll(job.tidy ? job.tidy(v, course, of) : v, course.grading.map((g) => g.item));
     const result = await runJob(inference, {
       task: planTask(kind),
       system: systemPrompt(course.language, course.locale),
@@ -459,8 +439,8 @@ export async function generateSection(
       effort: SECTION_EFFORT[kind],
       write: planTask(kind) === 'folio_module',
       schema: job.schema,
-      // A chapter, a page or an address the teacher did not give is marked wherever students will read it.
-      tidy: (v) => (kind === 'plan' ? (job.tidy ? job.tidy(v, course, of) : v) : markedForStudents(job.tidy ? job.tidy(v, course, of) : v, groundsOf(course))),
+      // A chapter, a page or an address the teacher did not give is marked wherever students will read it; a component's name a writer doubled ("Reading quizzes quiz") is made single first.
+      tidy: (v) => (kind === 'plan' ? named(v) : markedForStudents(named(v), groundsOf(course))),
       check: job.check ? (v) => job.check!(v, course, of) : undefined,
       // A plan that is read and mended afterwards is not written again whole for what its own checks find: minutes that do
       // not add up go to the mend with the reader's notes, which changes the segments at fault. Written again, the dearest

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .row { fill: #E3DED3 } .strike { stroke: #B4452F; stroke-width: 2 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .row { fill: #3A3B35 } .strike { stroke: #E58A73 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">ONE WEEKLY QUIZ, AS FOUR MATERIALS SPOKE OF IT</text>
+  <rect class="card" x="36" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="56" y="96" font-size="16" font-weight="600">Before</text>
+  <text class="ink" x="56" y="128" font-size="14">Lecture close: “limit laws, tangents, velocity”</text>
+  <text class="ink" x="56" y="154" font-size="14">Slide: “continuity, IVT, asymptotes”</text>
+  <text class="ink" x="56" y="180" font-size="14">Recitation close: “next time, a graded test”</text>
+  <text class="ink" x="56" y="206" font-size="14">Paper: 15 minutes, in a 15-minute slot</text>
+  <text class="ink2" x="56" y="244" font-size="13">The paper asked about none of the first two</text>
+  <rect class="card" x="414" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="434" y="96" font-size="16" font-weight="600">Now</text>
+  <text class="ink" x="434" y="128" font-size="14">Every material: “on what this week’s</text>
+  <text class="ink" x="434" y="150" font-size="14">lectures taught, at Friday’s problem session”</text>
+  <text class="acc" x="434" y="184" font-size="14" font-weight="600">The paper alone lists its topics,</text>
+  <text class="acc" x="434" y="206" font-size="14" font-weight="600">in 12 minutes of a 15-minute slot</text>
+  <text class="ink2" x="434" y="244" font-size="13">Named “Weekly recitation quiz”, never “quizzes quiz”</text>
+</svg>

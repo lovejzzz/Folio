@@ -49,7 +49,30 @@ const REF_INLINE = new RegExp(String.raw`(?:,\s*|\s+in\s+|\s+)${REFS}(?=[\s.,:;)
  * teacher reads: "write no criteria of your own", "no second set of questions here", "the handout is written
  * separately". A sentence that carries one of these is the writer talking to itself, and goes.
  */
-const ECHOES = /\bwrites? no (?:other |separate |new )?criteria\b|\bits scoring is on (?:the|its|this)\b|\b(?:do not|don't|never) add (?:deadlines|ways? of handing)\b|\brather than restating\b|\bno second set of questions\b|\b(?:is|are) written separately\b|\bseparately written\b|\bscored by (?:its |their |the )?points\b|\btakes the place of further practice\b|\bin exactly (?:those|these) words\b|\buse (?:new|different|other) (?:cases|functions|numbers)[^.]*\b(?:not|from) those\b|\bnobody has been told anything yet\b|\b(?:two|three|four|five) bullets at most\b|\buse the (?:deadline|due date) wording exactly\b|\balready scheduled in the plan\b|\bwithout assuming a class size\b|\bdo not (?:describe|say|state|name|mention) how (?:it|any|they|this|these|each) (?:is|are) (?:handed in|collected|submitted|scored)\b|\bsay nothing (?:about|of|on) (?:how|when|where)\b|\btake it in by name\b|\bsay nothing more about\b|\bno helpers are named\b|\bonly as shown\b|\bno material (?:says|names)\b/i;
+const ECHOES = /\bwrites? no (?:other |separate |new )?criteria\b|\bits scoring is on (?:the|its|this)\b|\b(?:do not|don't|never) add (?:deadlines|ways? of handing)\b|\brather than restating\b|\b(?:do not|don't|never) list (?:the |its |any |quiz |test )?topics\b|\bno list of (?:its |the )?topics\b|\bno second set of questions\b|\b(?:is|are) written separately\b|\bseparately written\b|\bscored by (?:its |their |the )?points\b|\btakes the place of further practice\b|\bin exactly (?:those|these) words\b|\buse (?:new|different|other) (?:cases|functions|numbers)[^.]*\b(?:not|from) those\b|\bnobody has been told anything yet\b|\b(?:two|three|four|five) bullets at most\b|\buse the (?:deadline|due date) wording exactly\b|\balready scheduled in the plan\b|\bwithout assuming a class size\b|\bdo not (?:describe|say|state|name|mention) how (?:it|any|they|this|these|each) (?:is|are) (?:handed in|collected|submitted|scored)\b|\bsay nothing (?:about|of|on) (?:how|when|where)\b|\btake it in by name\b|\bsay nothing more about\b|\bno helpers are named\b|\bonly as shown\b|\bno material (?:says|names)\b/i;
+
+/**
+ * A graded component named by the teacher in the plural ("Reading quizzes") and then given its kind word again by a
+ * writer: "a Reading quizzes quiz", "the Weekly recitation quizzes quiz", "the graded Reading quizzes paper", five
+ * times in two lessons. The name is kept and made singular: "a Reading quiz", "the graded Reading quiz paper".
+ */
+export function singleKind(text: string, names: string[]): string {
+  const plural = names.map((n) => n.trim()).filter((n) => /\b(?:quizzes|tests|exams)$/i.test(n));
+  if (!plural.length) return text;
+  const esc = (n: string) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const doubled = new RegExp(String.raw`\b(${plural.map(esc).join('|')}) (quiz|test|exam|paper)\b`, 'gi');
+  return text.replace(doubled, (_, name: string, kind: string) => `${name.replace(/quizzes$/i, 'quiz').replace(/(tests|exams)$/i, (x) => x.slice(0, -1))}${/^paper$/i.test(kind) ? ' paper' : ''}`);
+}
+
+/** Every string of a draft with the names made single; code between backticks is passed over. */
+export function singleKindAll<T>(value: T, names: string[]): T {
+  const walk = (v: unknown): unknown => {
+    if (typeof v === 'string') return v.split(/(`[^`]*`)/).map((part, i) => (i % 2 ? part : singleKind(part, names))).join('');
+    if (Array.isArray(v)) return v.map(walk);
+    return v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)])) : v;
+  };
+  return walk(value) as T;
+}
 
 /** The text without the sentences that only echo an instruction. Lines of code are never touched. */
 export function withoutEchoes(text: string): string {

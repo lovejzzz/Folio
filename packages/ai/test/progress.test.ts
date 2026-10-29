@@ -143,6 +143,17 @@ describe('a section taking shape', () => {
     expect(slides.some((x) => 'table' in x || 'chart' in x)).toBe(false);
   });
 
+  it('gives a slide left without notes the plan\'s own words for its segment', async () => {
+    const store = new CourseStore(smallCourse());
+    const lesson = orderedLessons(store.getState())[0]!;
+    store.apply((await generateSection(fakeInference(() => planDraft), store.getState(), lesson.id, 'plan')).commands, { label: { key: 'b' }, source: 'ai' });
+    const slide = (extra: object) => ({ layout: 'bullets', title: 'T', bullets: [], notes: '', ...extra });
+    const deck = { slides: [slide({ layout: 'title' }), slide({ segment: 1 }), slide({ segment: 1, notes: 'Mine.' })] };
+    const result = await generateSection(fakeInference(() => deck), store.getState(), lesson.id, 'slides');
+    const slides = (result.commands[0]!.payload as { content: { slides: { notes: string }[] } }).content.slides;
+    expect(slides.map((x) => x.notes)).toEqual(['', 'Compare two leaves.', 'Mine.']);
+  });
+
   it('is not asked to stream when nobody is watching', async () => {
     const course = smallCourse();
     const writer = streaming({ slides: [{ layout: 'title', title: 'T', bullets: [], notes: '' }] });

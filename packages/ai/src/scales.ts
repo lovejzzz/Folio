@@ -36,13 +36,24 @@ export const IN_CLASS =
   'This piece is done in class, not taken home, in the minutes the plan gives it: count what each student must write, and ask only what a group finishes in that time with a few minutes to spare. The steps say what students do in the lesson, in full, since they are what the teacher prints for it (no other sheet holds its tasks); the rubric is what the teacher scores with, as it happens for what is performed and after class for written work handed in, and "answerKey" tells the teacher how to run and score it for a whole class in the time (who goes when, what the others do), or is empty.';
 
 /** A test, quiz or exam taken in class, as a paper to print, with its key. */
-export function testAsk(lesson: Lesson): string {
+/**
+ * What a graded paper is on, said the same by every material and listed by the paper alone: a reading quiz is on the
+ * reading set for its lesson; any other paper on what has been taught before it is sat. Told "covers what was taught
+ * before", a reading quiz sat at the start of a class was written on the lesson before, not on the chapter read for it.
+ */
+export function testCoverage(course: Course, toward: string): string {
+  if (/\breading\b/i.test(toward)) return 'on the reading set for the lesson it is sat in';
+  return `on what has been taught before it is sat${course.shape.sessions.length > 1 ? ", this lesson's earlier meetings included" : ''}`;
+}
+
+export function testAsk(course: Course, lesson: Lesson): string {
   const toward = lesson.homework.toward.trim();
   return [
-    `Write ${toward ? `"${toward}"` : 'the test this lesson holds'} as a paper students are handed, to be taken in the time the plan gives it (a final exam sat after the course is set for the usual two to three hours unless the brief says otherwise, and covers the whole course).`,
+    // A 15-minute paper in a 15-minute segment left no minute to hand it out or in.
+    `Write ${toward ? `"${toward}"` : 'the test this lesson holds'} as a paper students are handed, to be taken in the time the plan gives it: its time allowed is its segment's minutes less two or three for handing the paper out and in (a final exam sat after the course is set for the usual two to three hours unless the brief says otherwise, and covers the whole course).`,
     'Under "instructions", what students read at the top: the time allowed, what they may use and how to show their work. Then the questions, each complete as printed (a multiple-choice question lists its choices as A, B, C and D, and the right one is at a different letter from question to question), with the points it carries and, for the key, its answer with the working and what each point is for.',
     // Unbounded, "new numbers" took a grade 3 paper to elevenths and sixteenths.
-    'Cover what the plan says the paper covers, in proportion to the time each part took, and nothing not yet taught: what this lesson teaches after the paper is sat, as the plan orders its segments, is not on it. The one exception is a paper the plan says is on a reading done beforehand: it is on that reading, in questions a student who read it can answer. Use new cases and new numbers, never the examples the lessons worked or the items of a review held before it, but of the same kinds and sizes the lessons used. Mix short questions with ones that ask students to show reasoning, at the level these students are taught.',
+    `The paper is ${testCoverage(course, toward)}: cover that, in proportion to the time each part took, and nothing not yet taught: what this lesson teaches after the paper is sat, as the plan orders its segments, is not on it. The one exception is a paper the plan says is on a reading done beforehand: it is on that reading, in questions a student who read it can answer. Use new cases and new numbers, never the examples the lessons worked or the items of a review held before it, but of the same kinds and sizes the lessons used. Mix short questions with ones that ask students to show reasoning, at the level these students are taught.`,
     'Size it to its minutes by what a student must write, part by part: one who knows the material finishes with a few minutes to spare, so a 20-minute paper is three or four short questions, not a sample of everything: count two minutes for each part that asks for working or a reason and one for a short answer, and cut parts until the count fits. Every point is for something the printed question asks: no points for unasked work, and none added to reach a round total. A figure a question needs (a number line, a graph, a diagram) is given as a table of its points or in words wherever that is enough to answer from; only one that must be drawn is described in square brackets beginning "Figure for the teacher to draw:", exactly enough to draw it. Numbers are chosen so that no answer sits on a rounding edge (22.5 to two figures).',
     'Before you answer, work every question from its printed text alone: it must be answerable as written, its table or data must be right, and its key must match.',
   ].join(' ');
@@ -65,7 +76,7 @@ const NOTHING_SHOWN = 'Nothing left on the board or screen while students take i
 export function gradedPapers(course: Course, lesson: Lesson): string {
   // Its paper is the lesson's own material: the plan runs it and writes none of it. Told it "tests earlier lessons", a
   // week of three lectures and a recitation quizzed the week before's lectures, which had their own quiz.
-  if (lesson.homework.kind === 'test') return `The test or quiz this lesson holds has its own paper: the plan gives it its time (most of the lesson for a unit test or exam; ten to twenty minutes for a short quiz, which tests what was taught before its meeting: earlier lessons and this lesson's earlier meetings, not what its own meeting has just taught), says what it covers, how the room is set and what students may use, and writes no questions. ${NOTHING_SHOWN}`;
+  if (lesson.homework.kind === 'test') return `The test or quiz this lesson holds has its own paper: the plan gives it its time (most of the lesson for a unit test or exam; ten to twenty minutes for a short quiz, which tests what was taught before its meeting: earlier lessons and this lesson's earlier meetings, not what its own meeting has just taught), says that it is ${testCoverage(course, lesson.homework.toward.trim())} (no list of topics: the paper alone gives that), how the room is set and what students may use, and writes no questions. ${NOTHING_SHOWN}`;
   return course.materials.quiz.enabled ? QUIZ_IS_MATERIAL : QUIZ_IN_PLAN;
 }
 

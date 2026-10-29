@@ -22,6 +22,8 @@ describe('lessons that meet more than once', () => {
     expect(courseBackground(course)).toContain('a seminar runs on discussion of the reading, led by the students, without slides');
     expect(sectionPrompt(course, lesson, 'plan')).toContain('"session" set to 1 for the lecture (50 minutes), 2 for the seminar (50 minutes)');
     expect(sectionPrompt(course, lesson, 'slides')).toContain('The slides are for the lecture; the other sessions run without them.');
+    // Forty-one slides of 254 had no notes, thirty of them activity slides: a teacher presenting from the deck had nothing to say.
+    expect(sectionPrompt(course, lesson, 'slides')).toContain('Every slide has notes, an activity slide\'s saying what the teacher does and says while it is up.');
     expect(sectionPrompt(course, lesson, 'discussions')).toContain('They are for the seminar');
     const outline = outlinePrompt({ brief: 'b', lessonCount: 4, minutesPerLesson: 100, sessions, level: '', language: 'en', sources: [] });
     expect(outline).toContain('Each lesson meets 2 times: a 50-minute lecture, then a 50-minute seminar.');

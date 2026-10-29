@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { CourseStore, cmd, orderedLessons, staleItems } from '@folio/core';
 import { generateSection, InferenceError, missingTargets, runBuild, runJob, sectionPrompt, courseBackground, type BuildTarget } from '../src';
 import { fakeInference, planDraft, quizDraft, smallCourse } from './fake';
+import { sameLetterKey } from '../src/workJobs';
 import { z } from 'zod';
 
 describe('runJob', () => {
@@ -222,6 +223,17 @@ describe('a graded piece of the whole course', () => {
 });
 
 describe('a test taken in class', () => {
+  it('is asked again when every lettered answer is the same letter', () => {
+    const paper = (answers: string[]) => ({ title: 'Quiz', instructions: 'Time allowed: 12 minutes.', questions: answers.map((answer, i) => ({ question: `Q${i + 1}? A) x B) y C) z`, points: 1, answer })) });
+    // Six of six keyed A: one guess was full marks.
+    expect(sameLetterKey(paper(['A', 'A) 24.5 cm', '(a)', 'A. Carbon dioxide']))).toMatchObject([{ index: null, flag: { code: 'schemaIssue', values: { path: 'questions' } } }]);
+    expect(sameLetterKey(paper(['A', 'B', 'A'])).length).toBe(0);
+    expect(sameLetterKey(paper(['A', 'A'])).length).toBe(0);
+    // Worked answers are not letters: "A census costs too much." begins with A and keys nothing.
+    expect(sameLetterKey(paper(['A census costs too much.', 'A mean of 12.5', 'A leaf kept in the dark loses its starch.'])).length).toBe(0);
+  });
+
+
   it('is written as a paper: questions with points for students, the key for the teacher', async () => {
     const store = new CourseStore(smallCourse());
     const [first] = orderedLessons(store.getState());
@@ -231,6 +243,15 @@ describe('a test taken in class', () => {
     expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'plan')).toContain("earlier lessons and this lesson's earlier meetings, not what its own meeting has just taught");
     // Unsaid, a graded reading quiz was keyed A six times out of six.
     expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'assignments')).toContain('the right one is at a different letter from question to question');
+    // Its coverage is said by every material in the same words, and listed by the paper alone; its time allowed leaves minutes to hand it out and in.
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'plan')).toContain('It is on what has been taught before it is sat: every material says so in those words and none lists its topics, which the paper alone gives.');
+    // A reading quiz is on the reading set for its lesson, not on the lesson before: said so to the plan, the paper and the rest.
+    store.apply([cmd('lesson.homework', { lessonId: first!.id, homework: { kind: 'test', toward: 'Reading quizzes' } })], { label: { key: 'b' }, source: 'teacher' });
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'plan')).toContain('It is on the reading set for the lesson it is sat in: every material says so');
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'assignments')).toContain('The paper is on the reading set for the lesson it is sat in: cover that');
+    store.apply([cmd('lesson.homework', { lessonId: first!.id, homework: { kind: 'test', toward: 'Unit test' } })], { label: { key: 'b' }, source: 'teacher' });
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'assignments')).toContain('its time allowed is its segment\'s minutes less two or three for handing the paper out and in');
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'assignments')).toContain('The paper is on what has been taught before it is sat: cover that, in proportion to the time each part took');
     const inf = fakeInference(() => ({
       title: 'Unit test',
       instructions: 'You have 40 minutes. Show your work.',

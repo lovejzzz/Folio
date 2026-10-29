@@ -163,8 +163,19 @@ const withoutPoints = (text: string, points: number) => text.trim().replace(new 
  * A test taken in class, kept as an assignment whose steps are its questions, each with its points, and whose
  * answer key is the teacher's alone. Before this a unit test worth half a grade was a line in a plan.
  */
+/** The letter a lettered answer gives ("B", "(c)", "C) 24.5 cm", "D (2 points)"), or nothing: "A census costs too much." keys no letter. */
+const letterOf = (answer: string): string | null => /^\s*\(?([A-Ea-e])(?:\)|[.:]|\s*[—–-]|\s*\(|\s*$)/.exec(answer)?.[1]?.toUpperCase() ?? null;
+
+/** Three or more lettered answers, all the same letter: a reading quiz keyed A six times of six was full marks for one guess. */
+export function sameLetterKey(v: TestDraft): Problem[] {
+  const letters = v.questions.map((q) => letterOf(q.answer)).filter((l): l is string => l !== null);
+  if (letters.length < 3 || new Set(letters).size > 1) return [];
+  return [{ index: null, flag: { code: 'schemaIssue', values: { path: 'questions', issue: `every lettered answer is ${letters[0]}: put the right choice at a different letter from question to question, moving the choices, not the answers` } } }];
+}
+
 export const test: SectionJob<TestDraft> = {
   schema: TestDraft,
+  check: (v) => sameLetterKey(v),
   toCommands: (v, problems, course, lesson) => {
     const total = v.questions.reduce((n, q) => n + q.points, 0);
     const task: Task = {

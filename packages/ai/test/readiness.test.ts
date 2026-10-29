@@ -6,7 +6,7 @@ import { checkAnswers } from '../src/answerCheck';
 import { gradingIn } from '../src/gradingIn';
 import { unsaidWays } from '../src/pieceFacts';
 import { placedWork } from '../src/placement';
-import { announced } from '../src/sections';
+import { announced } from '../src/announce';
 import type { PlanDraft } from '../src/schemas';
 import { fakeInference } from './fake';
 
@@ -151,14 +151,18 @@ describe('a paper sat in a lesson that tests an earlier one', () => {
 });
 
 describe('the sentence Folio adds to announce a test', () => {
-  it('says that a test is sat next time and claims nothing of what it covers', () => {
+  it('says where a test is sat, by the lesson in a course of several meetings, and claims nothing of what it covers', () => {
     // As written in a weekly course: "on what the course has taught up to today", of a quiz that is on next week's lectures.
     const weekly = parseCourse(fixture('batch1-calculus'));
     const [, week2] = orderedLessons(weekly);
     expect(week2!.segments.some((s) => /next time they sit a graded test \(“Weekly recitation quizzes”\), on what the course has taught up to today/.test(s.description))).toBe(true);
     const plan = draftOf(week2!.segments.map((s) => ({ ...s, description: s.description.split('\n').filter((line) => !/next time they sit/i.test(line)).join('\n') })));
     const said = announced(plan, weekly, week2!).segments.at(-1)!.description.split('\n').at(-1)!;
-    expect(said).toBe('Before students leave, tell them that next time they sit a graded test ("Weekly recitation quizzes").');
+    // "Next time" at the end of a recitation was a lecture; the quiz was at the next lesson's problem session, a week off.
+    expect(said).toBe('Before students leave, tell them that at "Limits at infinity, infinite limits and asymptotes" they sit a graded test ("Weekly recitation quizzes").');
+    // A plan that names that lesson with its quiz has announced it, and gets no second sentence.
+    const own = draftOf(plan.segments.map((s, i) => (i === plan.segments.length - 1 ? { ...s, description: `${s.description}\nThe weekly quiz is sat at Limits at infinity, infinite limits and asymptotes.` } : s)));
+    expect(announced(own, weekly, week2!).segments.at(-1)!.description).not.toContain('Before students leave');
   });
 });
 

@@ -1,5 +1,31 @@
 [
  {
+  "version": "0.0.52",
+  "date": "October 29, 2026",
+  "title": "A test, told one way",
+  "lede": "A quiz or test sat in class is now spoken of the same way by every material: where and when it is sat, what it covers, and by what name; and no paper is keyed to one letter.",
+  "sections": [
+   {
+    "heading": "One account of the test",
+    "body": "The materials around a weekly quiz each said their own thing. A lecture's close listed one coverage, a slide another, and the paper asked about neither; a recitation's close said \"next time they sit a graded test\" when the next meeting was a lecture and the quiz a week off; a 15-minute paper sat in a 15-minute slot with no minute to hand it out or in. Now every material says the test is sat at the named lesson, on what was taught before it, and nothing more: the paper alone lists its topics, and its time allowed leaves a few minutes of its slot for the paper to go out and come back.",
+    "image": {
+     "src": "/changelog/0.0.52-test.svg",
+     "alt": "Before: a lecture close, a slide, a recitation close and the paper each giving the weekly quiz a different coverage, time and date. Now: every material says it is on this week's lectures at Friday's problem session; the paper alone lists topics, in 12 minutes of a 15-minute slot",
+     "width": 800,
+     "height": 300
+    }
+   },
+   {
+    "heading": "A quiz by its name",
+    "body": "A component you named in the plural (\"Reading quizzes\") came back with its kind word doubled: \"a Reading quizzes quiz\", \"the Weekly recitation quizzes quiz\", five times in two lessons. Folio now makes the name single where it is doubled: \"a Reading quiz\"."
+   },
+   {
+    "heading": "Never all one letter, and notes on every slide",
+    "body": "A reading quiz was keyed A six times out of six, so one guess scored full marks; a paper whose lettered answers are all the same letter is now written again. And every slide of a deck now carries notes: the writer is asked for them on every slide, an activity slide's saying what the teacher does and says while it is up, and a slide still left without takes the plan's own words for its part. Forty-one slides of two hundred and fifty-four had none."
+   }
+  ]
+ },
+ {
   "version": "0.0.51",
   "date": "October 27, 2026",
   "title": "Graded work in class is yours to collect",

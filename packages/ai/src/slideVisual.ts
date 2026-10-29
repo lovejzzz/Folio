@@ -3,6 +3,9 @@ import type { SlidesDraft } from './schemas';
 
 type SlideDraft = SlidesDraft['slides'][number];
 
+/** A slide's notes, or, left empty, the plan's own words for its segment: 41 slides of 254 had none, 30 of them activity slides, and a teacher presenting from the deck had nothing to say. */
+export const notedFrom = (notes: string, segment?: { description: string }): string => notes.trim() || (segment?.description ?? '');
+
 /** A slide's table or chart as the deck keeps it: rows as long as their headings, a value for every category, or nothing at all. */
 export function slideVisual(table: SlideDraft['table'], chart: SlideDraft['chart'], steps?: SlideDraft['steps'], compare?: SlideDraft['compare'], figure?: SlideDraft['figure']): { visual?: SlideVisual } {
   // A demonstration is kept only when its numbers are ones its method can work: an unsorted list for a search, or a rate of 0, is dropped, never drawn wrong.

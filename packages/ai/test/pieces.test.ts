@@ -108,7 +108,8 @@ describe('a lesson that holds more than one piece of work', () => {
     expect(lessonPieces(first!).map((p) => Boolean(p.standing))).toEqual([false, false]);
     // An older course may still carry the mark: its second paper is written, never copied from the first.
     const store = new CourseStore({ ...quizzes, lessons: { ...quizzes.lessons, [first!.id]: { ...first!, also: [], homework: { ...first!.homework, standing: true } }, [second!.id]: { ...second!, also: [], homework: { ...second!.homework, standing: true } } } });
-    const model = fakeInference(() => ({ title: 'Quiz', instructions: 'Ten minutes.', questions: [1, 2, 3].map((n) => ({ question: `Q${n}?`, points: 2, answer: 'A.' })) }));
+    // (keyed A, B, C: a paper keyed all one letter is asked for again, which is not what is counted here)
+    const model = fakeInference(() => ({ title: 'Quiz', instructions: 'Ten minutes.', questions: [1, 2, 3].map((n) => ({ question: `Q${n}?`, points: 2, answer: `${'ABC'[n - 1]}.` })) }));
     for (const l of [first!, second!]) store.apply((await generateSection(model, store.getState(), l.id, 'assignments')).commands, { label: { key: 'built' }, source: 'ai', undoable: false });
     expect(model.calls).toHaveLength(2);
     const inclass = { ...first!, also: [], homework: { kind: 'inclass' as const, toward: 'Presentation', standing: true } };
@@ -158,7 +159,14 @@ describe('what the next lesson holds that students must hear of now', () => {
     });
     const first = orderedLessons(course)[0]!;
     const told = sectionPrompt(course, first, 'plan');
-    expect(told).toMatch(/announces the test it holds \("Seminar paper"\), what it covers and what to bring/);
+    // Said as "next time" at the end of a recitation, the test was a week away; listed three ways, its coverage was nobody's.
+    expect(told).toMatch(/announces the test it holds \("Seminar paper"\): sat "at [^"]+", on what has been taught before it is sat, and what to bring; no list of its topics, which the paper alone gives/);
+    expect(told).not.toMatch(/never "next time"/);
+    const met = courseFromOutline({ ...req, sessions: [{ kind: 'lecture', minutes: 50 }, { kind: 'problems', minutes: 50 }] }, { ...outline(), lessons: outline().lessons.map((l, i) => (i === 1 ? { ...l, also: [{ kind: 'test' as const, toward: 'Seminar paper', due: null, standing: false }] } : l)) });
+    expect(sectionPrompt(met, orderedLessons(met)[0]!, 'plan')).toMatch(/sat "at [^"]+" \(those words, never "next time", which is this lesson's own next meeting\), on what has been taught before it is sat, this lesson's earlier meetings included/);
+    // The rule that names other lessons only as "next time" gives way, in a course of several meetings, to the title.
+    expect(sectionPrompt(met, orderedLessons(met)[0]!, 'plan')).toContain('so "next time" is this lesson\'s own next meeting; where students must know which lesson (a deadline, a test), the next lesson is named by its title');
+    expect(told).not.toContain('so "next time" is this lesson');
     expect(told).toMatch(/prepares the work graded in class there for the first time \("Presentation"\)/);
     expect(told).toMatch(/No other graded piece is set, handed out or collected in this lesson than those named here\./);
   });
