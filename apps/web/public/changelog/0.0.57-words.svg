@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .warn { fill: #B4452F } .mono { font-family: ui-monospace, Menlo, monospace }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .warn { fill: #E58A73 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">FOUR SMALL WORDS, BEFORE AND AFTER</text>
+  <rect class="card" x="36" y="64" width="350" height="96" rx="12"/>
+  <text class="ink" x="52" y="88" font-size="13" font-weight="600">A sheet named once</text>
+  <text class="warn" x="52" y="112" font-size="12">The sheet has a faulty delete on the sheet.</text>
+  <text class="acc" x="52" y="140" font-size="12">The sheet has a faulty delete.</text>
+  <rect class="card" x="414" y="64" width="350" height="96" rx="12"/>
+  <text class="ink" x="430" y="88" font-size="13" font-weight="600">Points after the stem</text>
+  <text class="warn" x="430" y="112" font-size="12">D. All three perspectives … (1 point)</text>
+  <text class="acc" x="430" y="140" font-size="12">Which founder coined the label? (1 point)</text>
+  <rect class="card" x="36" y="176" width="350" height="96" rx="12"/>
+  <text class="ink" x="52" y="200" font-size="13" font-weight="600">A clause with nothing to point at</text>
+  <text class="warn" x="52" y="224" font-size="12">… sat, this lesson's earlier meetings included</text>
+  <text class="acc" x="52" y="252" font-size="12">… on what has been taught before it is sat</text>
+  <rect class="card" x="414" y="176" width="350" height="96" rx="12"/>
+  <text class="ink" x="430" y="200" font-size="13" font-weight="600">The writer's rules, filtered</text>
+  <text class="warn" x="430" y="224" font-size="12">“Name no topics.” “Say only what the table shows.”</text>
+  <text class="acc" x="430" y="252" font-size="12">Hand out the paper.</text>
+</svg>

@@ -1,5 +1,23 @@
 [
  {
+  "version": "0.0.57",
+  "date": "October 29, 2026",
+  "title": "Small words set right",
+  "lede": "Four small things that readers of thirty-two lessons kept meeting: a sheet named twice in one sentence, a quiz's points glued to its last choice, a coverage clause that pointed at nothing, and more of the writer's rules in the teacher's notes.",
+  "sections": [
+   {
+    "heading": "What eight readers of thirty-two lessons kept meeting",
+    "body": "A plan that said \"Show a faulty delete on the screen\" of a thing the sheet holds was rewritten to \"The sheet has a faulty delete on the sheet\": the sheet is now said once. A multiple-choice question on a paper carried its points after its last choice, \"D. All three perspectives … (1 point)\", which reads as D's points: they now follow the question's stem. A midterm sat at a lesson's first meeting was said to cover \"this lesson's earlier meetings included\", a clause with nothing to point at: it stands only where the paper's segment sits after another meeting. And four more rules written for the writer were found in the teacher's notes as orders (\"Name no topics\", \"Say only what the grading table shows\", \"Add no dates or handling rules beyond what each assignment sheet will say\", \"Do not describe the assignment's tasks\"): they are filtered out like the others. The standing brief of a piece run every time no longer speaks of \"questions or problems\" to a writing or a history class: it speaks of the items of the day, whatever they are.",
+    "image": {
+     "src": "/changelog/0.0.57-words.svg",
+     "alt": "Four small corrections: a sheet named once, a question's points after its stem, a coverage clause dropped where the test sits first, writer's rules filtered",
+     "width": 800,
+     "height": 300
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.56",
   "date": "October 29, 2026",
   "title": "The leader's questions, and what the screen was said to hold",

@@ -163,7 +163,7 @@ describe('what the next lesson holds that students must hear of now', () => {
     expect(told).toMatch(/announces the test it holds \("Seminar paper"\): sat "at [^"]+", on what has been taught before it is sat, and what to bring; no list of its topics, which the paper alone gives/);
     expect(told).not.toMatch(/never "next time"/);
     const met = courseFromOutline({ ...req, sessions: [{ kind: 'lecture', minutes: 50 }, { kind: 'problems', minutes: 50 }] }, { ...outline(), lessons: outline().lessons.map((l, i) => (i === 1 ? { ...l, also: [{ kind: 'test' as const, toward: 'Seminar paper', due: null, standing: false }] } : l)) });
-    expect(sectionPrompt(met, orderedLessons(met)[0]!, 'plan')).toMatch(/sat "at [^"]+" \(those words, never "next time", which is this lesson's own next meeting\), on what has been taught before it is sat, this lesson's earlier meetings included/);
+    expect(sectionPrompt(met, orderedLessons(met)[0]!, 'plan')).toMatch(/sat "at [^"]+" \(those words, never "next time", which is this lesson's own next meeting\), on what has been taught before it is sat, and what to bring/);
     // The rule that names other lessons only as "next time" gives way, in a course of several meetings, to the title.
     expect(sectionPrompt(met, orderedLessons(met)[0]!, 'plan')).toContain('so "next time" is this lesson\'s own next meeting; where students must know which lesson (a deadline, a test), the next lesson is named by its title');
     expect(told).not.toContain('so "next time" is this lesson');
@@ -179,7 +179,7 @@ describe('a piece graded in class every time, with new questions each time', () 
     draft.lessons[2] = { ...draft.lessons[2]!, homework: 'inclass', homeworkToward: 'Presentation', homeworkStanding: true };
     const course = courseFromOutline(req, draft);
     const [first, , third] = orderedLessons(course);
-    for (const lesson of [first!, third!]) expect(lessonContext(course, lesson)).toMatch(/brief \(with its rubric, where it has one\) is one text for every time and holds no questions or problems, so the ones of this time are written out in full/);
+    for (const lesson of [first!, third!]) expect(lessonContext(course, lesson)).toMatch(/brief \(with its rubric, where it has one\) is one text for every time and holds none of a particular time's items \(its questions, problems, texts or prompts\), so this time's are written out in full/);
     // A piece run once (a presentation each student gives) scripts nothing for them.
     expect(lessonContext(courseFromOutline(req, outline()), orderedLessons(courseFromOutline(req, outline()))[0]!)).not.toMatch(/the ones of this time/);
   });

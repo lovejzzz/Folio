@@ -40,7 +40,8 @@ export function onTheSheet<S extends Seg>(seg: S, sheets: string[]): S {
     const put = /^Put (.+?) on the sheet([.!?]?)$/.exec(t);
     if (put) return `The sheet has ${put[1]}${put[2] || '.'}`;
     // "Show a faulty function." is the sheet's to show; a longer order ("Show it and have students…") keeps its verb.
-    if (LEAD.test(t) && !/\band\b|,/.test(t)) return t.replace(/^(?:Show|Display|Project)\s+/, 'The sheet has ');
+    // "Show a faulty delete on the screen." became "The sheet has a faulty delete on the sheet.": the sheet is said once.
+    if (LEAD.test(t) && !/\band\b|,/.test(t)) return t.replace(/^(?:Show|Display|Project)\s+/, 'The sheet has ').replace(/ on the sheet([.!?]?)$/, '$1');
     return t;
   };
   const say = (text: string) => text.split('\n').map((line) => line.split(/(?<=[.!?])[ \t]+/).map(one).join(' ')).join('\n');

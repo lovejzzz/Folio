@@ -157,6 +157,13 @@ export const step: SectionJob<StepDraft> = {
 
 const pointsOf = (n: number) => (n === 1 ? '1 point' : `${n} points`);
 /** The text without the points a model wrote at its end: Folio adds them, and they stood there twice. */
+/** A multiple-choice question's points go after its stem, not after its last choice: "D. … (1 point)" was read as D's points. */
+export const pointed = (question: string, points: number): string => {
+  const text = withoutPoints(question, points);
+  const mark = ` (${pointsOf(points)})`;
+  const first = /\s\(?A[).:]\s/.exec(text);
+  return listsChoices(text) && first ? `${text.slice(0, first.index).trimEnd()}${mark}${text.slice(first.index)}` : `${text}${mark}`;
+};
 const withoutPoints = (text: string, points: number) => text.trim().replace(new RegExp(String.raw`(?:\s*\(${points}\s*(?:points?|pts?|marks?)\))+\s*$`, 'i'), '');
 
 /**
@@ -193,7 +200,7 @@ export const test: SectionJob<TestDraft> = {
       flags: [],
       title: pieceTitle(course, lesson) ?? v.title,
       prompt: v.instructions,
-      steps: v.questions.map((q) => `${withoutPoints(q.question, q.points)} (${pointsOf(q.points)})`),
+      steps: v.questions.map((q) => pointed(q.question, q.points)),
       rubricId: null,
       answerKey: [...v.questions.map((q, i) => `${i + 1}. ${withoutPoints(q.answer, q.points)} (${pointsOf(q.points)})`), `Total: ${pointsOf(total)}`].join('\n'),
       toward: lesson.homework.toward.trim(),
@@ -203,7 +210,7 @@ export const test: SectionJob<TestDraft> = {
 };
 
 // A graded clicker round had a brief ("answer the instructor's questions") and a plan that ran "the clicker questions": nobody wrote one.
-export const EACH_TIME = '; its brief (with its rubric, where it has one) is one text for every time and holds no questions or problems, so the ones of this time are written out in full, with their answers in the notes, in the segment that runs it';
+export const EACH_TIME = '; its brief (with its rubric, where it has one) is one text for every time and holds none of a particular time\'s items (its questions, problems, texts or prompts), so this time\'s are written out in full, with their answers in the notes, in the segment that runs it';
 
 const PIECE: Record<string, string> = { assignment: 'the graded assignment', step: 'a short ungraded step toward', test: 'the graded test', inclass: 'the piece graded in class', none: '' };
 

@@ -13,6 +13,11 @@ const sheetsOf = (lesson: string, title: string) => batch[lesson]!.sheets.filter
 const sheeted = (lesson: string) => new Set(batch[lesson]!.sheets.map((h) => h.usedIn.trim().toLowerCase()));
 
 describe('a segment whose items are on a sheet', () => {
+  it('names the sheet once: "Show a faulty delete on the screen." is not "The sheet has a faulty delete on the sheet."', () => {
+    const now = onTheSheet({ title: 'Delete', description: 'Show a faulty `delete` on the screen.', teacherNotes: '' }, ['Fix delete']);
+    expect(now.description).toBe('Give out the sheet “Fix delete”.\nThe sheet has a faulty `delete`.');
+  });
+
   it('said "on the screen" of statements only the sheet held, as it was written', () => {
     const was = seg('ug-physics-mechanics L1', 'Find and fix the mistake');
     expect(was.description).toContain('three flawed worked statements on the screen');

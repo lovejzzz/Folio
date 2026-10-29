@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { CourseStore, cmd, orderedLessons, staleItems } from '@folio/core';
 import { generateSection, InferenceError, missingTargets, runBuild, runJob, sectionPrompt, courseBackground, type BuildTarget } from '../src';
 import { fakeInference, planDraft, quizDraft, smallCourse } from './fake';
-import { sameLetterKey } from '../src/workJobs';
+import { pointed, sameLetterKey } from '../src/workJobs';
+import { testCoverage } from '../src/scales';
 import { z } from 'zod';
 
 describe('runJob', () => {
@@ -248,6 +249,20 @@ describe('a test taken in class', () => {
     expect(sameLetterKey({ ...paper(['A', 'A', 'A']), questions: paper(['A', 'A', 'A']).questions.map((q) => ({ ...q, question: 'Explain your answer.' })) }).length).toBe(0);
   });
 
+
+  it('puts a multiple-choice question\'s points after its stem, and says the earlier-meetings clause only where there are earlier meetings', () => {
+    // "D. All three perspectives focus exclusively on face-to-face interaction. (1 point)": the points read as D's.
+    expect(pointed('Which founder coined the label? \nA) Durkheim\nB) Weber\nC) Blumer\nD) Mead', 1)).toBe('Which founder coined the label? (1 point)\nA) Durkheim\nB) Weber\nC) Blumer\nD) Mead');
+    expect(pointed('Which is a gas? A) iron B) oxygen C) salt', 2)).toBe('Which is a gas? (2 points) A) iron B) oxygen C) salt');
+    expect(pointed('Explain why a leaf kept in the dark loses its starch. (5 points)', 5)).toBe('Explain why a leaf kept in the dark loses its starch. (5 points)');
+    // A midterm sat at a lesson's first meeting was said to cover "this lesson's earlier meetings included".
+    const met = { ...smallCourse(), shape: { ...smallCourse().shape, sessions: [{ kind: 'lecture', minutes: 75 }, { kind: 'lab', minutes: 50 }] } } as ReturnType<typeof smallCourse>;
+    const at = (session: number) => ({ segments: [{ title: 'Midterm: sitting', session }] }) as unknown as Parameters<typeof testCoverage>[2];
+    expect(testCoverage(met, 'Midterm')).toBe('on what has been taught before it is sat');
+    expect(testCoverage(met, 'Midterm', at(0))).toBe('on what has been taught before it is sat');
+    expect(testCoverage(met, 'Midterm', at(1))).toBe("on what has been taught before it is sat, this lesson's earlier meetings included");
+    expect(testCoverage(met, 'Reading quizzes', at(1))).toBe('on the reading set for the lesson it is sat in');
+  });
 
   it('is written as a paper: questions with points for students, the key for the teacher', async () => {
     const store = new CourseStore(smallCourse());
