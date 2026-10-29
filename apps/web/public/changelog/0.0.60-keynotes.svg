@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .warn { fill: #B4452F } .note { fill: #FFF4E5; stroke: #E8C9A0 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .warn { fill: #E58A73 } .note { fill: #2E2920; stroke: #5A4A33 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">FIVE “NEEDS A LOOK” NOTES ON ONE CHEMISTRY COURSE, ALL FALSE</text>
+  <rect class="note" x="36" y="64" width="728" height="40" rx="10"/>
+  <text class="ink" x="52" y="89" font-size="13">Worked out, it is <tspan class="acc" font-weight="600">H2</tspan>; the text has <tspan class="warn" font-weight="600">H₂</tspan> is limiting.</text>
+  <rect class="note" x="36" y="112" width="728" height="40" rx="10"/>
+  <text class="ink" x="52" y="137" font-size="13">Worked out, it is <tspan class="acc" font-weight="600">(Mg, 8.06, 80.0)</tspan>; the text has <tspan class="warn" font-weight="600">Mg is limiting; the theoretical yield is 8.06 g</tspan> …</text>
+  <rect class="note" x="36" y="160" width="728" height="40" rx="10"/>
+  <text class="ink" x="52" y="185" font-size="13">Worked out, it is <tspan class="acc" font-weight="600">74.1</tspan>; the text there has <tspan class="warn" font-weight="600">1, 2, 2, 1</tspan> (the coefficients of 1(40.08) + 2(16.00) + 2(1.008)).</text>
+  <rect class="note" x="36" y="208" width="728" height="40" rx="10"/>
+  <text class="ink" x="52" y="233" font-size="13">Worked out, the statement is true, and the key has it as false: <tspan class="warn" font-weight="600">2Na + Cl₂ → 2NaCl</tspan>, keyed right.</text>
+  <text class="ink2" x="36" y="276" font-size="13">Off again until the comparison reads a chemistry key as a chemist does; the lab key they were made for is kept as the test.</text>
+</svg>

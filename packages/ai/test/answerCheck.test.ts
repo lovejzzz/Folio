@@ -342,7 +342,7 @@ describe('a form the program could not run', () => {
 describe('what the answer check says to the teacher while most notes are off', () => {
   it('keeps a note about the key or the answer itself, and drops one about an explanation', async () => {
     const { KEY_NOTES, keyNote, plainNote } = await import('../src/answerNote');
-    expect(KEY_NOTES).toBe(true);
+    expect(KEY_NOTES).toBe(false);
     // A lab key's interval 9.02 to 12.98 where the program gives 9.00 to 13.00: found twice, not put right, and dropped in silence.
     const key = plainNote({ code: 'answerCheck', values: { claim: 'answerKey: …`t.test(time)$conf.int` gives approximately', found: "computed ['9.004965', '12.995035'] not among the stored ['9.02', '12.98']" } });
     expect(key.values.claim).toMatch(/^a value in the answer key, after “.*gives approximately”$/);

@@ -1,5 +1,23 @@
 [
  {
+  "version": "0.0.60",
+  "date": "October 29, 2026",
+  "title": "The key notes, measured and switched off",
+  "lede": "0.0.58 began telling the teacher when a program found a key wrong and the writer could not put it right; on the first chemistry course written since, all five such notes were false, so they are off again until the comparison reads chemistry.",
+  "sections": [
+   {
+    "heading": "Five of five",
+    "body": "The notes were right about the lab key they were made for: an interval of 9.02 to 12.98 where the data give 9.00 to 13.00. On a Grade 10 stoichiometry course they were wrong every time: H₂ against H2 and CuCl₂ against CuCl2 (a subscript), a program's tuple (Mg, 8.06, 80.0) against the sentence that says the same, \"74.096 g/mol, or 74.10\" read as the coefficients 1, 2, 2, 1 in front of it, and a balanced equation keyed right called false. A teacher opening the course would have found five \"needs a look\" notes with nothing to look at. The rule Folio set for these notes, on when a reading of thirty-two lessons finds at most one false, stands; they are switched off again, and the five cases are the next thing the comparison learns to read.",
+    "image": {
+     "src": "/changelog/0.0.60-keynotes.svg",
+     "alt": "Five answer-check notes on a chemistry course, each false for a reason of form: a subscript, a tuple, an alternative, a coefficient, a keyed equation",
+     "width": 800,
+     "height": 300
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.59",
   "date": "October 29, 2026",
   "title": "Words for a classroom",
