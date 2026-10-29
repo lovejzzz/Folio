@@ -231,6 +231,21 @@ describe('a test taken in class', () => {
     expect(sameLetterKey(paper(['A', 'A'])).length).toBe(0);
     // Worked answers are not letters: "A census costs too much." begins with A and keys nothing.
     expect(sameLetterKey(paper(['A census costs too much.', 'A mean of 12.5', 'A leaf kept in the dark loses its starch.'])).length).toBe(0);
+    // A question in parts keys "a. B. …": the part's letter is not the choice (a midterm's every answer was taken for A), and a question
+    // that lists no choices keys no letter at all.
+    const parts = {
+      title: 'Midterm',
+      instructions: 'Time allowed: 60 minutes.',
+      questions: [
+        { question: '1. a. Which shape? A) left-skewed B) right-skewed C) symmetric b. Find the mean.', points: 5, answer: 'a. B. The histogram has a long right tail. b. Mean = 3.' },
+        { question: '2. a. Which model? A) Poisson B) geometric C) binomial b. Find P(X = 2).', points: 5, answer: 'a. C. A fixed number of independent checks. b. 0.1536.' },
+        { question: '3. a. Find the standard deviation of the mean. b. Find P(x̄ < 496).', points: 5, answer: 'a. 12/√36 = 2 mL. b. 0.0228.' },
+        { question: '4. a. State the theorem.', points: 4, answer: 'a. Approximately normal for large n.' },
+      ],
+    };
+    expect(sameLetterKey(parts).length).toBe(0);
+    expect(sameLetterKey(paper(['a. B. Long tail.', 'a. B. Fixed checks.', 'a. B. Normal.'])).length).toBe(1);
+    expect(sameLetterKey({ ...paper(['A', 'A', 'A']), questions: paper(['A', 'A', 'A']).questions.map((q) => ({ ...q, question: 'Explain your answer.' })) }).length).toBe(0);
   });
 
 

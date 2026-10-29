@@ -1,5 +1,23 @@
 [
  {
+  "version": "0.0.54",
+  "date": "October 29, 2026",
+  "title": "A part's letter is not a choice",
+  "lede": "A test paper keyed to one letter throughout is written again, so that one guess is not full marks; the check that asks for it now knows a question's part \"a.\" from a choice.",
+  "sections": [
+   {
+    "heading": "A paper's parts, read as its letters",
+    "body": "Since 0.0.52 a test paper with three or more lettered answers all at one letter is asked for again with its choices moved, and a paper still keyed that way carries a note for the teacher. The check read the first letter of every answer, so a midterm whose questions came in parts had \"a. B. The histogram has a long right tail\" read as A, in every question: the paper was asked for again for nothing, and the teacher was told it had come back in the wrong shape when it had not. A letter now counts only in a question that lists its choices, and a part's own letter is read past.",
+    "image": {
+     "src": "/changelog/0.0.54-letters.svg",
+     "alt": "A midterm key whose answers begin with the part's letter a., read before as A, A, A and now as B, C and no letter",
+     "width": 800,
+     "height": 300
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.53",
   "date": "October 29, 2026",
   "title": "Two checks that tell the truth",

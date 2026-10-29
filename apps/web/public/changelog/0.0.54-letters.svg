@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .row { fill: #E3DED3 } .warn { fill: #B4452F } .mono { font-family: ui-monospace, Menlo, monospace }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .row { fill: #3A3B35 } .warn { fill: #E58A73 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">A MIDTERM KEY, AND THE LETTER THE CHECK READ</text>
+  <rect class="card" x="36" y="64" width="440" height="200" rx="14"/>
+  <text class="ink" x="56" y="96" font-size="16" font-weight="600">Answer key</text>
+  <text class="ink" x="56" y="130" font-size="14"><tspan class="mono ink2">1.</tspan> <tspan class="acc" font-weight="600">a.</tspan> <tspan font-weight="600">B.</tspan> The histogram has a long right tail…</text>
+  <text class="ink" x="56" y="162" font-size="14"><tspan class="mono ink2">2.</tspan> <tspan class="acc" font-weight="600">a.</tspan> <tspan font-weight="600">C.</tspan> A fixed number of independent checks…</text>
+  <text class="ink" x="56" y="194" font-size="14"><tspan class="mono ink2">3.</tspan> <tspan class="acc" font-weight="600">a.</tspan> The standard deviation of the mean is 2 mL…</text>
+  <text class="ink2" x="56" y="240" font-size="13">The “a.” is the question’s first part, not a choice.</text>
+  <rect class="card" x="500" y="64" width="264" height="92" rx="14"/>
+  <text class="warn" x="520" y="92" font-size="13" font-weight="600" letter-spacing="0.4">READ BEFORE</text>
+  <text class="warn mono" x="520" y="126" font-size="22" font-weight="700">A  A  A</text>
+  <text class="ink2" x="520" y="146" font-size="12">“every lettered answer is A”: asked again</text>
+  <rect class="card" x="500" y="172" width="264" height="92" rx="14"/>
+  <text class="acc" x="520" y="200" font-size="13" font-weight="600" letter-spacing="0.4">READ NOW</text>
+  <text class="acc" x="520" y="234" font-size="22" font-weight="700">B  C  —</text>
+  <text class="ink2" x="520" y="254" font-size="12">a letter only where choices are listed</text>
+</svg>
