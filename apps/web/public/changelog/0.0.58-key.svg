@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .bg { fill: #F6F3EC } .card { fill: #FCFBF7; stroke: #E3DED3 } .ink { fill: #1E1C17 } .ink2 { fill: #5C584F }
+    .acc { fill: #2B46C4 } .warn { fill: #B4452F } .note { fill: #FFF4E5; stroke: #E8C9A0 } .mono { font-family: ui-monospace, Menlo, monospace }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #22231F } .card { fill: #1C1D19; stroke: #2E2F2A } .ink { fill: #ECE8DF } .ink2 { fill: #B3AEA3 }
+      .acc { fill: #8FA3FF } .warn { fill: #E58A73 } .note { fill: #2E2920; stroke: #5A4A33 }
+    }
+  </style>
+  <rect class="bg" width="800" height="300" rx="20"/>
+  <text class="ink2" x="36" y="46" font-size="15" font-weight="600" letter-spacing="0.6">A LAB KEY, THE PROGRAM, AND WHAT THE TEACHER WAS TOLD</text>
+  <rect class="card" x="36" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="56" y="92" font-size="14" font-weight="600">The key as written</text>
+  <text class="ink2" x="56" y="120" font-size="13">The sample standard deviation is √8,</text>
+  <text class="ink2" x="56" y="140" font-size="13">approximately <tspan class="warn" font-weight="600">2.83</tspan> minutes.</text>
+  <text class="ink2 mono" x="56" y="168" font-size="13">t.test(time)$conf.int gives</text>
+  <text class="ink2" x="56" y="188" font-size="13">approximately <tspan class="warn" font-weight="600">9.02 to 12.98</tspan> minutes.</text>
+  <text class="ink" x="56" y="226" font-size="13" font-weight="600">The program, twice: <tspan class="acc">2.79</tspan>, <tspan class="acc">9.00 to 13.00</tspan></text>
+  <text class="ink2" x="56" y="246" font-size="12">The writer asked to correct it did not manage; before, silence.</text>
+  <rect class="note" x="414" y="64" width="350" height="200" rx="14"/>
+  <text class="ink" x="434" y="92" font-size="13" font-weight="600" letter-spacing="0.4">NEEDS A LOOK</text>
+  <text class="ink2" x="434" y="122" font-size="13">Folio ran this and it didn’t hold: a value in</text>
+  <text class="ink2" x="434" y="142" font-size="13">the answer key, after “t.test(time)$conf.int</text>
+  <text class="ink2" x="434" y="162" font-size="13">gives approximately”. Worked out, it is</text>
+  <text class="ink2" x="434" y="182" font-size="13">9.004965, 12.995035; the text there has</text>
+  <text class="ink2" x="434" y="202" font-size="13">9.02, 12.98. Check the answer and its explanation.</text>
+  <text class="acc" x="434" y="240" font-size="12" font-weight="600">Said for the key itself; notes on explanations still wait.</text>
+</svg>

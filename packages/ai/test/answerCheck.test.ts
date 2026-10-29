@@ -338,3 +338,18 @@ describe('a form the program could not run', () => {
     expect([unsure.unchecked, unsure.checked, [...unsure.held], unsure.flags.size]).toEqual([1, 0, [], 0]);
   });
 });
+
+describe('what the answer check says to the teacher while most notes are off', () => {
+  it('keeps a note about the key or the answer itself, and drops one about an explanation', async () => {
+    const { KEY_NOTES, keyNote, plainNote } = await import('../src/answerNote');
+    expect(KEY_NOTES).toBe(true);
+    // A lab key's interval 9.02 to 12.98 where the program gives 9.00 to 13.00: found twice, not put right, and dropped in silence.
+    const key = plainNote({ code: 'answerCheck', values: { claim: 'answerKey: …`t.test(time)$conf.int` gives approximately', found: "computed ['9.004965', '12.995035'] not among the stored ['9.02', '12.98']" } });
+    expect(key.values.claim).toMatch(/^a value in the answer key, after “.*gives approximately”$/);
+    expect(keyNote(key)).toBe(true);
+    expect(keyNote(plainNote({ code: 'answerCheck', values: { claim: 'keyed choice agrees with the key', found: 'choices stating the computed value: [2]; keyed: 3; computed 7.0' } }))).toBe(true);
+    expect(keyNote(plainNote({ code: 'answerCheck', values: { claim: 'the mistake the explanation names for choice 2', found: 'choice 2, tested as: 7.0' } }))).toBe(false);
+    expect(keyNote(plainNote({ code: 'answerCheck', values: { claim: 'explanation: …the area is', found: "computed ['0.067'] not among the stored ['0.07']" } }))).toBe(false);
+    expect(keyNote({ code: 'reviewNote', values: { where: 'Segment 3', text: 'x' } })).toBe(false);
+  });
+});

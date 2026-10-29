@@ -66,3 +66,13 @@ export const plainNote = (flag: Found): Found => ({ code: 'answerCheck', values:
  * worked out. Back on when the readings behind those notes are measured on kept lessons and come to one false in thirty-two.
  */
 export const ANSWER_NOTES: boolean = false;
+
+/**
+ * A key the program worked out as wrong twice, which the correcting writer could not put right, is said even while the
+ * other notes are off: a lab key's "9.02 to 12.98" for 9.00 to 13.00 was found and then dropped in silence, and a teacher
+ * scored a graded sheet by it. What an explanation says of a wrong choice stays unsaid until measured.
+ */
+export const KEY_NOTES: boolean = true;
+
+/** A note about the key or the answer itself, as plainNote words it: not one about an explanation, a choice's account or a step. */
+export const keyNote = (flag: Flag): boolean => flag.code === 'answerCheck' && /^(?:a value in the answer(?: key)?\b|the keyed choice|the answer given|the answer runs as written)/.test(flag.values.claim);

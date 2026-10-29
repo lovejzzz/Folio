@@ -1,5 +1,5 @@
 import { worthChecking } from '@folio/core';
-import { ANSWER_NOTES, plainNote } from './answerNote';
+import { ANSWER_NOTES, KEY_NOTES, keyNote, plainNote } from './answerNote';
 import type { Flag, Task } from '@folio/core';
 import { RUNNER_ERRORS, type Runner } from '@folio/run';
 import { z } from 'zod';
@@ -240,7 +240,8 @@ export async function withAnswerChecks<C extends { type: string; payload: unknow
   if (!runner || !tasks.some(worthChecking)) return written;
   const checked = await checkAnswers(inference, runner, tasks, signal);
   const { held, fixed } = checked;
-  const flags = ANSWER_NOTES ? checked.flags : new Map<string, Flag[]>();
+  // Notes are off but for the key's own: a wrong key the writer could not put right is said, the rest waits to be measured.
+  const flags = ANSWER_NOTES ? checked.flags : KEY_NOTES ? new Map([...checked.flags].map(([id, fs]) => [id, fs.filter(keyNote)] as const).filter(([, fs]) => fs.length)) : new Map<string, Flag[]>();
   if (!flags.size && !held.size && !fixed.size) return written;
   const mark = (t: Task): Task => (fixed.has(t.id) ? { ...fixed.get(t.id)!, checked: true } : flags.has(t.id) ? { ...t, flags: [...t.flags, ...flags.get(t.id)!] } : held.has(t.id) ? { ...t, checked: true } : t);
   const noted = (c: C): C => (c.type === 'tasks.fill' ? { ...c, payload: { ...(c.payload as object), tasks: ((c as Fill).payload.tasks ?? []).map(mark) } } : c);

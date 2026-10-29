@@ -1,5 +1,23 @@
 [
  {
+  "version": "0.0.58",
+  "date": "October 29, 2026",
+  "title": "A wrong key is said",
+  "lede": "When Folio's program works a key out as wrong, twice, and the writer cannot put it right, the teacher is now told: a lab key's interval was found wrong and dropped in silence.",
+  "sections": [
+   {
+    "heading": "Found, and kept quiet",
+    "body": "Every key with numbers is worked out again by a program. A lab worksheet's key gave a standard deviation of √8 ≈ 2.83 and an interval of 9.02 to 12.98 minutes where the data give 2.79 and 9.00 to 13.00; the program found both, twice, and the writer asked to correct the key did not manage it. Then nothing happened: the notes the check leaves had been switched off, after a reading found several of them false, and the key stood as written for a teacher to score a graded sheet by. A note about the key or the answer itself is now shown even while the others stay off; what an explanation says of a wrong choice, where the false notes came from, waits until a reading measures it.",
+    "image": {
+     "src": "/changelog/0.0.58-key.svg",
+     "alt": "A lab key's interval 9.02 to 12.98 beside the program's 9.00 to 13.00, with the note the teacher now sees",
+     "width": 800,
+     "height": 300
+    }
+   }
+  ]
+ },
+ {
   "version": "0.0.57",
   "date": "October 29, 2026",
   "title": "Small words set right",
