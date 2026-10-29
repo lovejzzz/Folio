@@ -1,5 +1,27 @@
 [
  {
+  "version": "0.0.53",
+  "date": "October 29, 2026",
+  "title": "Two checks that tell the truth",
+  "lede": "Folio's own checks of a lesson, the minutes a segment needs and the keys a program works out, now say less that is false and miss less that is true.",
+  "sections": [
+   {
+    "heading": "The plan's own minutes count",
+    "body": "A segment's work is counted by its parts at fixed rates, and the teacher is told when the count runs over the minutes. Where the plan itself gave a part its minutes, the count ignored them: \"needs about 10 minutes and has 6\" was said of a segment whose notes gave a minute a candidate and two to hear pairs, which is five, and a round of eleven pairs at a minute each was counted at the rate. The plan's own minutes now stand for the parts they are given to, and the note is for what does not add up.",
+    "image": {
+     "src": "/changelog/0.0.53-checks.svg",
+     "alt": "Two checks: a segment's minutes, where the plan's own minutes now count; and a key a program works out, where a form that could not run is written again and never counts as a pass",
+     "width": 800,
+     "height": 300
+    }
+   },
+   {
+    "heading": "A key the program did not reach",
+    "body": "Every key with numbers in it is worked out again by a program from a form a model writes. A recitation's key said an impact speed of 20.3 m/s where the working gives 20.0, and it went unchecked: the form's setup had imported a symbolic-algebra library, which is run again for every value, and the program ran past its time and gave up in silence. A form the program could not run is now written once more, told why, and a second form that could not run leaves the item unchecked rather than counted as passed; the form's writer is also told to leave that library alone."
+   }
+  ]
+ },
+ {
   "version": "0.0.52",
   "date": "October 29, 2026",
   "title": "A test, told one way",

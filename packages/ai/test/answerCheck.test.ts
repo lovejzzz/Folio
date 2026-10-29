@@ -321,3 +321,20 @@ describe('the keys to a lesson\'s sheets', () => {
     expect((await keysChecked(model, undefined, lesson, sheets as never)).handouts).toEqual(sheets);
   });
 });
+
+describe('a form the program could not run', () => {
+  it('is written once more with the reason, and a second form that could not run leaves the item unchecked, never held', async () => {
+    // Setup imported sympy and was run again for each of ten values: the cell ran past its time, and the wrong key stood unchecked.
+    const timedOut = { ...result(''), error: { type: 'TimeoutError', message: 'The cell ran for more than 20 seconds and was stopped.' } } as unknown as CellResult;
+    const verdicts = [timedOut, result(`${JSON.stringify(fail('key'))}\n`), result(`${JSON.stringify(fail('key'))}\n`), result(`${JSON.stringify(fail('key'))}\n`), result(`${JSON.stringify(fail('key'))}\n`)];
+    const runner: Runner = { run: async () => verdicts.shift()!, reset: async () => undefined, versions: async () => ({}), close: () => undefined };
+    const model = fakeInference(() => FORM);
+    const out = await checkAnswers(model, runner, [wrong]);
+    expect(model.calls[1]!.prompt).toContain('A first form could not be run: The cell ran for more than 20 seconds and was stopped. Write one the program finishes in seconds');
+    expect(model.calls[0]!.prompt).not.toContain('could not be run');
+    expect(out.flags.has('t_wrong')).toBe(true);
+    // Once FAIL, then a form whose setup raised: no verdict on the item, which is counted as unchecked and not marked as held.
+    const unsure = await checkAnswers(fakeInference(() => FORM), scripted([fail('key'), { status: 'INVALID', checks: [], why: 'setup raised NameError: x' }]), [wrong]);
+    expect([unsure.unchecked, unsure.checked, [...unsure.held], unsure.flags.size]).toEqual([1, 0, [], 0]);
+  });
+});

@@ -25,7 +25,7 @@ Reply with one JSON object and nothing else (no code fence). Fields:
 
 "checkable": true or false. false only when nothing in the item can be computed by running code (a question of judgement or definition, a free-text answer, an answer that needs the student's own work). Then give "reason_kind": one of "conceptual", "open_answer", "needs_student_work", "needs_data_not_in_item", and stop.
 
-"setup": Python code, run fresh before every expression. It defines exactly the data and names the item gives (the list in the prompt, the array in step 1, the table described in words), with the imports needed. When the item is about a function or class the student writes, write it here exactly as the steps specify it. When the item describes data only in general ("a 4-row, 3-column array", "a sample of 12 observations"), build a small concrete example of it and say so in a comment. Allowed: the standard library, numpy, pandas, scipy, statsmodels, scikit-learn. No files, no network, no input. Under 20 seconds.
+"setup": Python code, run fresh before every expression. It defines exactly the data and names the item gives (the list in the prompt, the array in step 1, the table described in words), with the imports needed. When the item is about a function or class the student writes, write it here exactly as the steps specify it. When the item describes data only in general ("a 4-row, 3-column array", "a sample of 12 observations"), build a small concrete example of it and say so in a comment. Allowed: the standard library, numpy, pandas, scipy, statsmodels, scikit-learn; never sympy (a derivative is written out by hand, a polynomial's roots are found with numpy.roots). No files, no network, no input. Setup is run again before every expression, so it is quick: no heavy import, no large loop.
 
 For a "choice" question:
 "choices": one entry for each choice, {"n": its number, "kind": ...}:
@@ -88,6 +88,8 @@ interface Check {
 interface Verdict {
   status: 'PASS' | 'FAIL' | 'INVALID' | 'UNCHECKABLE';
   checks: Check[];
+  /** Why the program could not run the form: its setup raised, or it ran past its time. */
+  why?: string;
 }
 
 export { worthChecking };
@@ -109,6 +111,9 @@ export async function runForm(runner: Runner, task: Task, form: Form): Promise<V
   await runner.reset();
   const code = `${HARNESS}\n${imports(form)}print(run_check('item.json', 'check.json'))`;
   const res = await runner.run({ code, files: [{ path: 'item.json', data: JSON.stringify(task) }, { path: 'check.json', data: JSON.stringify(form) }] });
+  // Past its time is the form's doing (setup is run again for every expression, and one that imported sympy for ten
+  // values never finished): said back to the form's writer, as a setup that raised is.
+  if (res.error?.type === 'TimeoutError') return { status: 'INVALID', checks: [], why: res.error.message };
   if (res.error && RUNNER_ERRORS.includes(res.error.type)) throw new Error(res.error.message);
   try {
     const out = JSON.parse(res.stdout.trim().split('\n').at(-1) ?? '') as Verdict;
@@ -120,8 +125,9 @@ export async function runForm(runner: Runner, task: Task, form: Form): Promise<V
 }
 
 // The instruction is the same for every item and nine tenths of what is sent: given apart, it is read from the cache after the first call.
-async function fill(inference: Inference, task: Task, signal?: AbortSignal): Promise<Form> {
-  const result = await runJob(inference, { task: 'folio_answer_check', system: 'You write data for a checking program. Reply with one JSON object and nothing else.', context: INSTRUCTION, prompt: JSON.stringify(shownItem(task), null, 1), effort: 'medium', schema: AnswerForm, repair: false, signal });
+async function fill(inference: Inference, task: Task, signal?: AbortSignal, told?: string): Promise<Form> {
+  const again = told ? `\n\nA first form could not be run: ${told.replace(/\.$/, '')}. Write one the program finishes in seconds: the standard library, numpy, pandas and scipy only, nothing slow in the setup.` : '';
+  const result = await runJob(inference, { task: 'folio_answer_check', system: 'You write data for a checking program. Reply with one JSON object and nothing else.', context: INSTRUCTION, prompt: `${JSON.stringify(shownItem(task), null, 1)}${again}`, effort: 'medium', schema: AnswerForm, repair: false, signal });
   return result.value;
 }
 
@@ -164,16 +170,21 @@ export interface AnswerChecks {
 }
 
 async function checkOne(inference: Inference, runner: Runner, task: Task, signal?: AbortSignal): Promise<Flag[] | null> {
-  const once = async (): Promise<Verdict | null> => {
-    const form = await fill(inference, task, signal);
+  const once = async (told?: string): Promise<Verdict | null> => {
+    const form = await fill(inference, task, signal, told);
     return oneAtATime(runner, () => runForm(runner, task, form));
   };
-  const first = await once();
+  let first = await once();
+  // A form the program could not run is written once more with the reason: a recitation's wrong key went unchecked
+  // behind a form that ran past its time, and nobody was told.
+  if (first?.status === 'INVALID' && first.why) first = await once(first.why);
   if (!first || first.status === 'UNCHECKABLE' || first.status === 'INVALID') return null;
   if (first.status === 'PASS') return [];
   // A form can be wrong where the item is right (one in nine was): a second, written afresh, must fail on the same claim.
   const second = await once();
-  if (!second || second.status !== 'FAIL') return [];
+  // A second form the program could not run proves nothing either way: the item is unchecked, never held as passed.
+  if (!second || second.status === 'INVALID' || second.status === 'UNCHECKABLE') return null;
+  if (second.status === 'PASS') return [];
   const again = new Set(second.checks.filter((c) => c.status === 'fail').map(claim));
   const failed = first.checks.filter((c) => c.status === 'fail' && again.has(claim(c)));
   // The key first, and two at most: when the keyed code does not run, everything said of the choices fails with it.

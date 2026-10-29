@@ -29,7 +29,7 @@ export const SegmentParts = z
     z.object({
       segment: z.number().int().min(1).describe('The segment\'s number'),
       parts: z
-        .array(z.object({ what: z.string().describe('What it is, in a few words'), kind: z.enum(KINDS), count: z.number().int().min(1).max(60) }))
+        .array(z.object({ what: z.string().describe('What it is, in a few words'), kind: z.enum(KINDS), count: z.number().int().min(1).max(60), minutes: z.number().min(0).max(120).optional().describe('The minutes the plan itself gives this part in all, when its description or notes say so ("a minute each", "two minutes to hear pairs"); left out otherwise') }))
         .max(8)
         .default([]),
     }),
@@ -41,7 +41,7 @@ export type SegmentParts = z.infer<typeof SegmentParts>;
 
 /** Asked of the plan's reader, after the problems: a count, not a judgment. */
 export const PARTS_ASK =
-  'Then, apart from the problems, count under "parts" what each segment (a break aside) has every student do, as its description and notes say it, one entry for each kind of thing with how many: "short" an answer of a word, a number or a line that needs no working and no reason, or a command typed and run (a set of six short items is six); "worked" an answer that is calculated, or given with its reason, or an output read and explained in a sentence; "paragraph" a paragraph written; "drawing" a diagram, sketch or graph drawn by hand; "listed" one item of a list of things named; "read" a page read; "compare" answers checked once against a neighbor\'s; "pair" one turn of telling or explaining to a partner or another group; "hear" one student\'s answer heard by the class; "report" one pair or group telling the class what it did or found; "scored" one student or pair heard and given a score in turn while the class waits (talk in groups going on at once, marked as the teacher passes, is not counted); "vote" one question voted on once and explained, with no talk after it (hands raised only to open a talk are not a vote); "revote" one question voted on, talked over with neighbors, then explained or voted on again, all in that one count. A segment in which the teacher only presents has no parts. Count what the words ask for and do not judge the time.';
+  'Then, apart from the problems, count under "parts" what each segment (a break aside) has every student do, as its description and notes say it, one entry for each kind of thing with how many: "short" an answer of a word, a number or a line that needs no working and no reason, or a command typed and run (a set of six short items is six); "worked" an answer that is calculated, or given with its reason, or an output read and explained in a sentence; "paragraph" a paragraph written; "drawing" a diagram, sketch or graph drawn by hand; "listed" one item of a list of things named; "read" a page read; "compare" answers checked once against a neighbor\'s; "pair" one turn of telling or explaining to a partner or another group; "hear" one student\'s answer heard by the class; "report" one pair or group telling the class what it did or found; "scored" one student or pair heard and given a score in turn while the class waits (talk in groups going on at once, marked as the teacher passes, is not counted); "vote" one question voted on once and explained, with no talk after it (hands raised only to open a talk are not a vote); "revote" one question voted on, talked over with neighbors, then explained or voted on again, all in that one count. A segment in which the teacher only presents has no parts. Where the plan gives a part its minutes ("one minute for each candidate", "pairs get two minutes"), give them under "minutes", in all for the part. Count what the words ask for and do not judge the time.';
 
 type ReviewNote = Extract<Flag, { code: 'reviewNote' }>;
 
@@ -57,11 +57,14 @@ export function overtime(plan: Pick<PlanDraft, 'segments'>, counted: SegmentPart
   return counted.flatMap((c) => {
     const seg = plan.segments[c.segment - 1];
     if (!seg || seg.kind === 'break' || !c.parts.length) return [];
-    const need = c.parts.reduce((sum, p) => sum + p.count * RATE[p.kind], 0) + (c.parts.some((p) => p.kind === 'vote' || p.kind === 'revote') ? VOTING : 0);
+    // The plan's own minutes for a part stand over the rate: "needs about 10 minutes and has 6" was said of a segment whose
+    // notes gave a minute a candidate and two to hear pairs (5), and of eleven pairs at a minute each counted at the rate.
+    const minutes = (p: SegmentParts[number]['parts'][number]) => p.minutes ?? p.count * RATE[p.kind];
+    const need = c.parts.reduce((sum, p) => sum + minutes(p), 0) + (c.parts.some((p) => p.kind === 'vote' || p.kind === 'revote') ? VOTING : 0);
     // Read again after its mend, a segment still a little over is let be: trimmed within the floor it will not come lower,
     // and "needs 8 minutes and has 6" is no note for a teacher.
     if (need <= (again ? 1.5 : 1.25) * seg.minutes) return [];
-    const list = c.parts.map((p) => `${p.count} × ${p.what} (${p.count * RATE[p.kind]} min)`).join(', ');
+    const list = c.parts.map((p) => `${p.count} × ${p.what} (${minutes(p)} min)`).join(', ');
     // How to cut, and how far: cut to a count that ran high, a practice came back as one atom, "find four faults" with
     // three, a discussion without its rounds and its close. Readers then preferred the plans as first written, 16 to 10.
     const over = need / seg.minutes;

@@ -58,6 +58,10 @@ describe('a segment without a sheet against its minutes', () => {
     const rates = { segments: [seg('practice', 'Shells', 12), { ...seg('practice', 'Break', 5), kind: 'break' as const }] };
     expect(overtime(rates, [{ segment: 1, parts: [{ what: 'diagrams', kind: 'drawing', count: 5 }, { what: 'names', kind: 'listed', count: 4 }] }, { segment: 2, parts: [{ what: 'x', kind: 'paragraph', count: 9 }] }])).toEqual([]);
     expect(overtime({ segments: [seg('practice', 'Pairs read aloud', 11)] }, [{ segment: 1, parts: [{ what: 'pairs heard and scored', kind: 'scored', count: 11 }] }]).map((n) => /about 17 minutes and has 11/.test(n.values.text))).toEqual([true]);
+    // The plan's own minutes for a part stand over the rate: eleven pairs at a minute each fit fourteen; said at twenty, they do not, and the note says twenty.
+    const own = { segments: [seg('practice', 'Pairs heard', 14)] };
+    expect(overtime(own, [{ segment: 1, parts: [{ what: 'pairs heard and scored', kind: 'scored', count: 11, minutes: 11 }, { what: 'brief read', kind: 'read', count: 1, minutes: 3 }] }])).toEqual([]);
+    expect(overtime(own, [{ segment: 1, parts: [{ what: 'pairs heard and scored', kind: 'scored', count: 11, minutes: 20 }] }])[0]!.values.text).toMatch(/needs about 20 minutes and has 14: 11 × pairs heard and scored \(20 min\)/);
     // Read again after its mend, a little over is let be; well over is still said, and to the teacher without the writer's instructions.
     const again = (count: number) => overtime(polls, [{ segment: 1, parts: [{ what: 'questions', kind: 'worked', count }] }], true);
     expect(again(4)).toEqual([]);
