@@ -44,6 +44,8 @@ import { codeFaults } from './codeLines';
 import { withHandouts } from './handouts';
 import { unsaidWays } from './pieceFacts';
 import { planOtherLength, slidesOther } from './askedLength';
+import { ledTurnScripted } from './ledTurn';
+import { unlistedProblems } from './onScreen';
 import { startCommands } from './start';
 import { runJob, type Problem } from './jobs';
 import { SECTION_EFFORT, courseBackground, numberedPassages, sectionPrompt, systemPrompt } from './prompts';
@@ -86,6 +88,8 @@ const plan: SectionJob<PlanDraft> = {
   tidy: (v, course, lesson) => newVocabulary(tidyLessonNames(tidyPlanSources(v), course, lesson), course, lesson),
   check: (v, course, lesson) => [
     ...planOtherLength(v.segments, course, lesson),
+    ...ledTurnScripted(v.segments, course, lesson),
+    ...unlistedProblems(v.segments),
     ...checkSessionMinutes(
       v.segments.map((s) => ({ session: s.session - 1, minutes: s.minutes })),
       lessonSessions(course),

@@ -15,6 +15,7 @@ import { placed } from './lastRead';
 import { wrongOnPurpose } from './onPurpose';
 import { say } from './lessonView';
 import { onTheSheet, saidShown } from './onScreen';
+import { preparedTurn } from './pieceFacts';
 import { neverInstalled } from './rLedger';
 import { withoutSelfReport } from './tidy';
 import { courseBackground, lessonContext, systemPrompt } from './prompts';
@@ -67,12 +68,16 @@ const planText = (plan: Content): string => plan.segments.map((s, i) => `${i + 1
  * rounds, recitation problems) has its questions of the day in this plan's notes and nowhere a student can see:
  * those are a sheet, and nobody else prints it.
  */
-function graded(lesson: Lesson): string {
+function graded(course: Course, lesson: Lesson): string {
   const pieces = lessonPieces(lesson).filter((p) => (p.kind === 'inclass' || p.kind === 'test') && p.toward.trim());
   const name = (p: Lesson['homework']) => `"${p.toward.trim()}"`;
   const whole = pieces.filter((p) => !(p.kind === 'inclass' && p.standing));
-  const daily = pieces.filter((p) => p.kind === 'inclass' && p.standing);
+  // A turn a student prepares (a seminar led, a talk) has no questions of the day for anyone else to print: told to print
+  // "the questions of this time", the sheets' writer gave the leader's discussion four questions of its own.
+  const led = pieces.filter((p) => p.kind === 'inclass' && p.standing && preparedTurn(course, p.toward) === true);
+  const daily = pieces.filter((p) => p.kind === 'inclass' && p.standing && !led.includes(p));
   return [
+    led.length ? `Run in this lesson by a student who prepared it: ${led.map(name).join(', ')}. What they ask and show is theirs: print no questions, prompts or plan for their turn (its brief and rubric are printed elsewhere).` : '',
     whole.length ? `Graded in this lesson, each printed with its own tasks by another writer: ${whole.map(name).join(', ')}. Write no sheet for any of them, whatever the plan calls it (a worksheet, a quiz paper): a sheet of yours would be a second version.` : '',
     daily.length ? `Run in this lesson on a brief that is the same every time: ${daily.map(name).join(', ')}. Its brief and rubric are printed elsewhere, but the questions or problems of this time are only in the plan's notes: print them as a sheet under the piece's name, in full and without their answers, unless the plan puts them to the class from the screen (a poll, clicker questions), where the slides carry them.` : '',
   ]
@@ -95,11 +100,13 @@ export function handoutsPrompt(course: Course, lesson: Lesson, plan: Content): s
   return [
     lessonContext(course, lesson),
     `The lesson plan, as it will be taught:\n${planText(plan)}`,
-    graded(lesson),
+    graded(course, lesson),
     budget(plan),
     [
       'Write the sheets this lesson puts in students\' hands or on the wall, each in full and ready to print: every worksheet, exit ticket (graded or not), organizer, set of cards, text to read, reference sheet, or paper the teacher is to mark or cut beforehand, that the plan names or plainly needs for what it has students do. None when the lesson needs none; six at most, one sheet for one activity, and none for a discussion held aloud.',
       'A sheet the plan describes is that sheet: its numbers, names, examples and questions are the plan\'s own, and where the plan gives only some of them ("ten problems like these") write them all; it asks nothing of a student that the plan has them do elsewhere (at desks, not at the floor line). Give it as blocks in the order a student reads them: a line of instructions; the questions as a list, unnumbered, since the page numbers them; a table to fill in, with its headings and empty cells; a text as paragraphs; cards as a table with one card to a row; and after each question a "yours" for the answer, with as many lines as the answer needs. What students need in hand to do a task alone is on a sheet, never only in the notes for the teacher: the code they are to type or change, and the steps and amounts of a procedure they carry out at a bench or a computer, as a reference sheet. Code is written to run as given in a fresh session: each sheet or task loads or creates every object it uses, gives every argument its result depends on (never a default, such as the bins of a histogram), names no folder of anyone\'s machine (files are opened from the working folder, set the way the course taught), and says of its output only what is certain: a key speaks of the file students were given, not of a data set as it is generally known. A question about a figure carries what it needs on the sheet, as the numbers in a table or a full description in words, never "the histogram on the board": the sheet is written before any slide. A question is never written inside the room for its answer.',
+      // Six studies stood one way on the screen and another on the sheet the next segment worked from, and the key followed the sheet.
+      'What the plan puts on the screen and a sheet of yours also holds is on the sheet in the plan\'s words, unchanged.',
       'What a student should not see is not on the sheet: answers, hints at the answer, what the teacher is looking for. The key to each sheet is written afterwards, from the sheet as it stands: leave "key" empty.',
       'Quotation marks, and the words "excerpt" or "quotation", are only for the exact words of a real text you are sure of; a summary in your own words is called a summary.',
       // A reference sheet said every line was one line of the student's script and gave `filter(!is.na(x))` and `group_by(g)`.

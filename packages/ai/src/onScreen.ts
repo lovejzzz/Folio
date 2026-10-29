@@ -6,6 +6,8 @@
  * so the slides' writer had only the instruction to copy.
  */
 
+import type { Problem } from './jobs';
+
 const SCREEN = /\bon (?:the )?(?:screen|slides?)\b/gi;
 const sentences = (text: string) => text.split(/(?<=[.!?])[ \t]+|\n/).filter((s) => s.trim());
 /** A sentence that tells the teacher to put something before the class: "Show the table", "Put the claim on the screen". */
@@ -54,6 +56,17 @@ export function shownUnlisted(segments: readonly Seg[], sheeted: ReadonlySet<str
     const said = saidShown(s.description);
     return said.length ? [{ title: s.title, said }] : [];
   });
+}
+
+/**
+ * A plan that says a thing is on the screen and lists nothing for it is asked once to list it: a sheet wrote "the two
+ * sentences on the screen" and the slide "work from the sheet", and the two gap sentences, listed nowhere, were on neither.
+ */
+export function unlistedProblems(segments: readonly Seg[]): Problem[] {
+  const said = shownUnlisted(segments);
+  if (!said.length) return [];
+  const issue = `These segments say something is on the screen and list nothing for it under "shown": ${said.map((s) => `"${s.title}" (${s.said.map((x) => `"${x.trim()}"`).join('; ')})`).join('; ')}. List each in full under "shown", exactly as students will see it, or say that it is drawn on the board.`;
+  return [{ index: null, advisory: true, flag: { code: 'schemaIssue', values: { path: 'segments', issue } } }];
 }
 
 /** Said to the slides' writer of what the plan shows without listing: on a slide in full, or drawn on the board and said so. */

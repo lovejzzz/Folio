@@ -1,5 +1,27 @@
 [
  {
+  "version": "0.0.56",
+  "date": "October 29, 2026",
+  "title": "The leader's questions, and what the screen was said to hold",
+  "lede": "A discussion a student prepares to lead gets no questions written for it, and a plan that says something is on the screen now lists it, so that it is somewhere.",
+  "sections": [
+   {
+    "heading": "The leader's own questions",
+    "body": "In a seminar where each student leads one week's discussion, the brief told the leader that the questions were theirs, and the teacher's notes said to suggest none. Yet from the second week on, every lesson put four course-written questions on the screen for the leader's turn, with \"Keep this slide up while the leader runs the discussion\", and printed them as a sheet. The plan's writer had listed them against the rule, and the sheets' writer, told to print \"the questions of this time\" for a piece run on one standing brief, printed them. A plan that lists questions for a turn a student prepares is now asked for again, and the sheets' writer is told that such a turn gets no sheet of questions.",
+    "image": {
+     "src": "/changelog/0.0.56-leader.svg",
+     "alt": "A seminar leader's turn: before, four course-written questions on the screen with the note to keep the slide up; now, the reading's title alone, the questions the leader's own",
+     "width": 800,
+     "height": 300
+    }
+   },
+   {
+    "heading": "Said to be on the screen, listed nowhere",
+    "body": "A plan said that two gap sentences were on the screen and listed neither. The sheet for that segment told students to choose between \"the two sentences on the screen\", and the slide, since the segment works from a sheet, said only to work from the sheet: the sentences were nowhere, and the fourteen-minute activity could not start. A plan that says something is on the screen and lists nothing for it is now asked once to list it in full. In the same lesson six studies stood one way on the screen and another on the sheet the next segment worked from, and the key followed the sheet: the sheets' writer is told that what the plan puts on the screen and a sheet also holds is on the sheet in the plan's words."
+   }
+  ]
+ },
+ {
   "version": "0.0.55",
   "date": "October 29, 2026",
   "title": "Wrong on purpose stays wrong",
