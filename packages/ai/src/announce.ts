@@ -19,10 +19,12 @@ export function announced(v: PlanDraft, course: Course, lesson: Lesson): PlanDra
   // By its component and no more: named by its paper's title, which carried the lesson it is sat in, a quiz on lists was
   // announced as covering stacks and queues; said to be "on what the course has taught up to today", a weekly quiz that
   // is on next week's lectures was announced wrongly the other way. What it covers is the plan's and the paper's to say.
-  const sat = `a graded test ("${test.toward.trim()}")`;
+  // "they sit a graded test ("Lesson quizzes")" read as a rule in a Grade 5 plan: a quiz is taken, and counts toward its component.
+  const kind = /\bquiz/i.test(test.toward) ? 'quiz' : /\b(?:exam|midterm|final)\b/i.test(test.toward) ? 'exam' : 'test';
+  const sat = `a graded ${kind} that counts toward "${test.toward.trim()}"`;
   const last = v.segments.findLastIndex((x) => x.kind !== 'break');
   if (last < 0) return v;
   // Said as "next time" at the end of a recitation, the quiz was a week off and the next meeting a lecture: a lesson of several meetings names the lesson.
   const when = course.shape.sessions.length > 1 ? `at "${next!.title}"` : 'next time';
-  return { ...v, segments: v.segments.map((x, i) => (i === last ? { ...x, description: `${x.description.trimEnd()}\nBefore students leave, tell them that ${when} they sit ${sat}.` } : x)) };
+  return { ...v, segments: v.segments.map((x, i) => (i === last ? { ...x, description: `${x.description.trimEnd()}\nBefore students leave, tell them that ${when} they take ${sat}.` } : x)) };
 }

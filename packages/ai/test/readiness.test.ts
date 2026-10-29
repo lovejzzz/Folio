@@ -23,13 +23,13 @@ describe('a test sat next time, announced in the lesson before', () => {
     const course = parseCourse(fixture('f12-data-structures'));
     const [first, second] = orderedLessons(course);
     // As the plan stood before Folio's sentence was added to it.
-    const plan = draftOf(first!.segments.map((s) => ({ ...s, description: s.description.split('\n').filter((line) => !/next time they sit/i.test(line)).join('\n') })));
+    const plan = draftOf(first!.segments.map((s) => ({ ...s, description: s.description.split('\n').filter((line) => !/next time they (?:sit|take)/i.test(line)).join('\n') })));
     const said = announced(plan, course, first!).segments.at(-1)!.description.split('\n').at(-1)!;
-    expect(said).toMatch(/next time they sit/);
+    expect(said).toMatch(/next time they take/);
     // The paper is on lists and linked lists (lesson 1); the lesson it is sat in teaches stacks and queues.
     expect(second!.title).toBe('Stacks and queues');
     expect(said.toLowerCase()).not.toContain('stacks and queues');
-    expect(said).toBe('Before students leave, tell them that next time they sit a graded test ("Quizzes").');
+    expect(said).toBe('Before students leave, tell them that next time they take a graded quiz that counts toward "Quizzes".');
   });
 });
 
@@ -142,7 +142,7 @@ describe('a paper sat in a lesson that tests an earlier one', () => {
     // As written: the paper's own first question is on a Python list against a linked list, the lesson before.
     const paper = second.taskIds.map((id) => course.tasks[id]!).find((t) => t.kind === 'assignment' && t.toward === 'Quizzes')!;
     expect(paper.kind === 'assignment' && [paper.title, /Python list with a singly linked list/.test(paper.steps[0]!)]).toEqual(['Quizzes: Stacks and queues', true]);
-    expect(pieceTitle(course, { ...second, homework: { kind: 'test', toward: 'Quizzes' }, also: [] })).toBe('Quizzes 1');
+    expect(pieceTitle(course, { ...second, homework: { kind: 'test', toward: 'Quizzes' }, also: [] })).toBe('Quiz 1');
     // In a course whose lesson is a week of several meetings the quiz is on that week, and is named for it.
     const weekly = parseCourse(fixture('batch1-calculus'));
     const week = orderedLessons(weekly)[1]!;
@@ -156,10 +156,10 @@ describe('the sentence Folio adds to announce a test', () => {
     const weekly = parseCourse(fixture('batch1-calculus'));
     const [, week2] = orderedLessons(weekly);
     expect(week2!.segments.some((s) => /next time they sit a graded test \(“Weekly recitation quizzes”\), on what the course has taught up to today/.test(s.description))).toBe(true);
-    const plan = draftOf(week2!.segments.map((s) => ({ ...s, description: s.description.split('\n').filter((line) => !/next time they sit/i.test(line)).join('\n') })));
+    const plan = draftOf(week2!.segments.map((s) => ({ ...s, description: s.description.split('\n').filter((line) => !/next time they (?:sit|take)/i.test(line)).join('\n') })));
     const said = announced(plan, weekly, week2!).segments.at(-1)!.description.split('\n').at(-1)!;
     // "Next time" at the end of a recitation was a lecture; the quiz was at the next lesson's problem session, a week off.
-    expect(said).toBe('Before students leave, tell them that at "Limits at infinity, infinite limits and asymptotes" they sit a graded test ("Weekly recitation quizzes").');
+    expect(said).toBe('Before students leave, tell them that at "Limits at infinity, infinite limits and asymptotes" they take a graded quiz that counts toward "Weekly recitation quizzes".');
     // A plan that names that lesson with its quiz has announced it, and gets no second sentence.
     const own = draftOf(plan.segments.map((s, i) => (i === plan.segments.length - 1 ? { ...s, description: `${s.description}\nThe weekly quiz is sat at Limits at infinity, infinite limits and asymptotes.` } : s)));
     expect(announced(own, weekly, week2!).segments.at(-1)!.description).not.toContain('Before students leave');

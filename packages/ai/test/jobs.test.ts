@@ -255,13 +255,27 @@ describe('a test taken in class', () => {
     expect(pointed('Which founder coined the label? \nA) Durkheim\nB) Weber\nC) Blumer\nD) Mead', 1)).toBe('Which founder coined the label? (1 point)\nA) Durkheim\nB) Weber\nC) Blumer\nD) Mead');
     expect(pointed('Which is a gas? A) iron B) oxygen C) salt', 2)).toBe('Which is a gas? (2 points) A) iron B) oxygen C) salt');
     expect(pointed('Explain why a leaf kept in the dark loses its starch. (5 points)', 5)).toBe('Explain why a leaf kept in the dark loses its starch. (5 points)');
-    // A midterm sat at a lesson's first meeting was said to cover "this lesson's earlier meetings included".
+    // A midterm at a lesson's first meeting was said to cover "this lesson's earlier meetings included": the clause is gone, "so far" says it.
     const met = { ...smallCourse(), shape: { ...smallCourse().shape, sessions: [{ kind: 'lecture', minutes: 75 }, { kind: 'lab', minutes: 50 }] } } as ReturnType<typeof smallCourse>;
-    const at = (session: number) => ({ segments: [{ title: 'Midterm: sitting', session }] }) as unknown as Parameters<typeof testCoverage>[2];
-    expect(testCoverage(met, 'Midterm')).toBe('on what has been taught before it is sat');
-    expect(testCoverage(met, 'Midterm', at(0))).toBe('on what has been taught before it is sat');
-    expect(testCoverage(met, 'Midterm', at(1))).toBe("on what has been taught before it is sat, this lesson's earlier meetings included");
-    expect(testCoverage(met, 'Reading quizzes', at(1))).toBe('on the reading set for the lesson it is sat in');
+    expect(testCoverage(met, 'Midterm')).toBe('on what has been taught so far');
+    expect(testCoverage(met, 'Reading quizzes')).toBe('on the reading assigned for the lesson it is taken in');
+  });
+
+  it('is titled in the singular when numbered, and a Grade 2 first lesson keeps the grading to the teacher', async () => {
+    const { pieceTitle } = await import('../src/workJobs');
+    const { lessonContext } = await import('../src/prompts');
+    const store = new CourseStore(smallCourse());
+    const [first, second, third] = orderedLessons(store.getState());
+    for (const l of [first!, second!]) store.apply([cmd('lesson.homework', { lessonId: l.id, homework: { kind: 'test', toward: 'Lesson quizzes' } })], { label: { key: 'b' }, source: 'teacher' });
+    // "Lesson quizzes 1" is one quiz.
+    expect(pieceTitle(store.getState(), store.getState().lessons[first!.id]!)).toBe('Lesson quiz 1');
+    expect(pieceTitle(store.getState(), store.getState().lessons[second!.id]!)).toBe('Lesson quiz 2');
+    // The first lesson of a Grade 2 unit does not put "100% of the unit grade" on a slide.
+    const grade2 = { ...store.getState(), audience: { ...store.getState().audience, level: 'Grade 2' } };
+    expect(sectionPrompt(grade2, grade2.lessons[first!.id]!, 'plan')).toContain("how it is graded is said in the teacher's notes only");
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'plan')).toContain('how it is assessed and what students need');
+    void third;
+    void lessonContext;
   });
 
   it('is written as a paper: questions with points for students, the key for the teacher', async () => {
@@ -274,14 +288,14 @@ describe('a test taken in class', () => {
     // Unsaid, a graded reading quiz was keyed A six times out of six.
     expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'assignments')).toContain('the right one is at a different letter from question to question');
     // Its coverage is said by every material in the same words, and listed by the paper alone; its time allowed leaves minutes to hand it out and in.
-    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'plan')).toContain('It is on what has been taught before it is sat: every material says so in those words and none lists its topics, which the paper alone gives.');
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'plan')).toContain('It is on what has been taught so far: every material says so in those words and none lists its topics, which the paper alone gives.');
     // A reading quiz is on the reading set for its lesson, not on the lesson before: said so to the plan, the paper and the rest.
     store.apply([cmd('lesson.homework', { lessonId: first!.id, homework: { kind: 'test', toward: 'Reading quizzes' } })], { label: { key: 'b' }, source: 'teacher' });
-    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'plan')).toContain('It is on the reading set for the lesson it is sat in: every material says so');
-    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'assignments')).toContain('The paper is on the reading set for the lesson it is sat in: cover that');
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'plan')).toContain('It is on the reading assigned for the lesson it is taken in: every material says so');
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'assignments')).toContain('The paper is on the reading assigned for the lesson it is taken in: cover that');
     store.apply([cmd('lesson.homework', { lessonId: first!.id, homework: { kind: 'test', toward: 'Unit test' } })], { label: { key: 'b' }, source: 'teacher' });
     expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'assignments')).toContain('its time allowed is its segment\'s minutes less two or three for handing the paper out and in');
-    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'assignments')).toContain('The paper is on what has been taught before it is sat: cover that, in proportion to the time each part took');
+    expect(sectionPrompt(store.getState(), store.getState().lessons[first!.id]!, 'assignments')).toContain('The paper is on what has been taught so far: cover that, in proportion to the time each part took');
     const inf = fakeInference(() => ({
       title: 'Unit test',
       instructions: 'You have 40 minutes. Show your work.',

@@ -217,7 +217,7 @@ const PIECE: Record<string, string> = { assignment: 'the graded assignment', ste
 /** What a lesson holds beside its main piece, for its plan: the plan sets or runs each, and writes none of them. */
 export function otherPieces(lesson: Lesson, due: (piece: Lesson['homework']) => string = () => ''): string {
   // Each by where it happens: told "set before students leave, or run in the lesson", plans ran a weekly paper as silent writing in class.
-  const moment = (p: Lesson['homework']) => (p.kind === 'inclass' ? `run in the lesson${p.standing ? EACH_TIME : ''}` : p.kind === 'test' ? 'sat in the lesson' : p.standing ? 'done outside class every time: the close sets it in a sentence, and no lesson time goes to writing it' : 'set before students leave');
+  const moment = (p: Lesson['homework']) => (p.kind === 'inclass' ? `run in the lesson${p.standing ? EACH_TIME : ''}` : p.kind === 'test' ? 'taken in class' : p.standing ? 'done outside class every time: the close sets it in a sentence, and no lesson time goes to writing it' : 'set before students leave');
   // With when it is due, as the piece itself is told: untold, a page gave a step "by Sunday" that its own text set five weeks on.
   const others = (lesson.also ?? []).filter((p) => p.kind !== 'none').map((p) => `${PIECE[p.kind]}${p.toward.trim() ? ` "${p.toward.trim()}"` : ''} (${[moment(p), due(p)].filter(Boolean).join('; ')})`);
   return others.length ? ` The lesson also holds, each written separately: ${others.join('; ')}. The plan gives each its moment and writes none of them.` : '';
@@ -241,7 +241,8 @@ export function pieceTitle(course: Course, lesson: Lesson): string | null {
   // meetings the paper is on that week, and keeps the week's title.
   if (lesson.homework.kind === 'test' && course.shape.sessions.length <= 1) {
     const sat = course.lessonOrder.map((id) => course.lessons[id]!).filter((l) => lessonPieces(l).some((p) => p.kind === 'test' && p.toward.trim() === toward));
-    return `${toward} ${sat.findIndex((l) => l.id === lesson.id) + 1}`;
+    // "Lesson quizzes 1" is one quiz: the component's name goes singular before its number.
+    return `${toward.replace(/quizzes$/i, (x) => (x[0] === 'Q' ? 'Quiz' : 'quiz')).replace(/(tests|exams)$/i, (x) => x.slice(0, -1))} ${sat.findIndex((l) => l.id === lesson.id) + 1}`;
   }
   return `${toward}: ${lesson.title}`;
 }

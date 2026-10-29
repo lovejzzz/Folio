@@ -127,7 +127,7 @@ export function placementLine(stated: StatedItem[], n: number | null, often = fa
   return [
     'Some of the graded work is placed already, and is not yours to place:',
     every.length ? `every lesson holds ${every.join(', ')};` : '',
-    sat.length ? `the tests are sat in these lessons, and nowhere else: ${sat.join('; ')}. Order what is taught so each test comes after what it covers, and give a lesson that holds a long test little else.` : '',
+    sat.length ? `the tests are taken in these lessons, and nowhere else: ${sat.join('; ')}. Order what is taught so each test comes after what it covers, and give a lesson that holds a long test little else.` : '',
     named.length ? `Under "homework" and "also" you place only ${named.join(', ')}: the lesson that sets each, and the lesson it is due at.` : 'Leave "homework" as "none" and "also" empty.',
   ].filter(Boolean).join(' ');
 }

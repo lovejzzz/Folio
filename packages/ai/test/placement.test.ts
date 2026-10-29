@@ -42,7 +42,7 @@ describe('where a course’s recurring work and its tests fall', () => {
     const late = orderedLessons(courseFromOutline({ ...req, lessonCount: 6 }, outline([lesson({ homework: 'assignment', homeworkToward: 'Project', homeworkDue: 2 }), lesson({}), lesson({}), lesson({}), lesson({}), lesson({})])));
     const project = [late[0]!.homework, ...late[0]!.also].find((p) => p.toward === 'Data analysis project')!;
     expect(late.findIndex((l) => l.id === project.due) + 1).toBe(4);
-    expect(outlinePrompt(req)).toContain('every lesson holds "Weekly lab worksheets"; the tests are sat in these lessons, and nowhere else: lesson 2: "Midterm"; lesson 4: "Final exam".');
+    expect(outlinePrompt(req)).toContain('every lesson holds "Weekly lab worksheets"; the tests are taken in these lessons, and nowhere else: lesson 2: "Midterm"; lesson 4: "Final exam".');
     expect(outlinePrompt(req)).toContain('Under "homework" and "also" you place only "Data analysis project"');
     // An outline that leaves out the one piece it was to place is asked once more, by that piece's name and no other.
     const { generateOutline } = await import('../src');

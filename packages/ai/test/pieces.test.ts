@@ -160,10 +160,10 @@ describe('what the next lesson holds that students must hear of now', () => {
     const first = orderedLessons(course)[0]!;
     const told = sectionPrompt(course, first, 'plan');
     // Said as "next time" at the end of a recitation, the test was a week away; listed three ways, its coverage was nobody's.
-    expect(told).toMatch(/announces the test it holds \("Seminar paper"\): sat "at [^"]+", on what has been taught before it is sat, and what to bring; no list of its topics, which the paper alone gives/);
+    expect(told).toMatch(/announces the test it holds \("Seminar paper"\): taken "at [^"]+", on what has been taught so far, and what to bring; no list of its topics, which the paper alone gives/);
     expect(told).not.toMatch(/never "next time"/);
     const met = courseFromOutline({ ...req, sessions: [{ kind: 'lecture', minutes: 50 }, { kind: 'problems', minutes: 50 }] }, { ...outline(), lessons: outline().lessons.map((l, i) => (i === 1 ? { ...l, also: [{ kind: 'test' as const, toward: 'Seminar paper', due: null, standing: false }] } : l)) });
-    expect(sectionPrompt(met, orderedLessons(met)[0]!, 'plan')).toMatch(/sat "at [^"]+" \(those words, never "next time", which is this lesson's own next meeting\), on what has been taught before it is sat, and what to bring/);
+    expect(sectionPrompt(met, orderedLessons(met)[0]!, 'plan')).toMatch(/taken "at [^"]+" \(those words, never "next time", which is this lesson's own next meeting\), on what has been taught so far, and what to bring/);
     // The rule that names other lessons only as "next time" gives way, in a course of several meetings, to the title.
     expect(sectionPrompt(met, orderedLessons(met)[0]!, 'plan')).toContain('so "next time" is this lesson\'s own next meeting; where students must know which lesson (a deadline, a test), the next lesson is named by its title');
     expect(told).not.toContain('so "next time" is this lesson');

@@ -75,7 +75,12 @@ export function singleKindAll<T>(value: T, names: string[]): T {
 }
 
 /** The text without the sentences that only echo an instruction. Lines of code are never touched. */
-export function withoutEchoes(text: string): string {
+/** "hear only two ideas so the segment fits about 4 minutes": the mend's arithmetic, left in the plan. */
+const FITS = /,?\s*so (?:that )?(?:the (?:segment|activity|step|part|round|whole thing)|it|this|everything) fits(?: in| into| within)? (?:about |roughly |around )?(?:\d+(?:\.\d+)?|the) minutes?\b/gi;
+
+export function withoutEchoes(given: string): string {
+  if (typeof given !== 'string') return given;
+  const text = given.replace(FITS, '');
   if (!ECHOES.test(text)) return text;
   const kept = text.split('\n').map((row) => (row.includes('`') ? row : row.split(/(?<=[.!?])\s+/).filter((sentence) => !ECHOES.test(sentence)).join(' ')));
   return kept.filter((row, i) => row.trim() || !text.split('\n')[i]!.trim()).join('\n').trim();

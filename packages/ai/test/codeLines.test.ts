@@ -168,6 +168,9 @@ describe('an instruction that comes back as advice', () => {
     expect(withoutEchoes('Say the due date in exactly those words, with the title. Collect the sheets.')).toBe('Collect the sheets.');
     // Rules for the writer that reached the teacher's notes in a reading of thirty-two lessons.
     expect(withoutEchoes('Name no topics. Hand out the paper.')).toBe('Hand out the paper.');
+    // The mend's arithmetic left in a Grade 5 plan: "hear only two ideas so the segment fits about 4 minutes."
+    expect(withoutEchoes('Hear only two ideas so the segment fits about 4 minutes. Then move on.')).toBe('Hear only two ideas. Then move on.');
+    expect(withoutEchoes('One short sentence to write (about 1 minute), then pairs compare.')).toBe('One short sentence to write (about 1 minute), then pairs compare.');
     expect(withoutEchoes('Say only what the grading table shows. Students read the table.')).toBe('Students read the table.');
     expect(withoutEchoes('Add no dates or handling rules beyond what each assignment sheet will say. Set the step.')).toBe('Set the step.');
     expect(withoutEchoes('Do not describe the assignment\'s tasks or how it is collected. Close the lab.')).toBe('Close the lab.');

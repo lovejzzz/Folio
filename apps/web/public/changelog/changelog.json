@@ -1,5 +1,27 @@
 [
  {
+  "version": "0.0.59",
+  "date": "October 29, 2026",
+  "title": "Words for a classroom",
+  "lede": "Reading Folio's sample courses as a Grade 5 and a Grade 2 teacher would showed where the pipeline's own words did not belong in a North American classroom: they are changed at the source.",
+  "sections": [
+   {
+    "heading": "What a teacher would not say",
+    "body": "A quiz is taken, not sat: \"This quiz is on what has been taught before it is sat, this lesson's earlier meetings included\" stood on ten lines of a Grade 5 unit, quiz papers and slides included, and read as a rule. Every material now says the quiz is on what has been taught so far, and a reading quiz on the reading assigned for its lesson. The plan's canned announcement, \"next time they sit a graded test (“Lesson quizzes”)\", now says that students take a graded quiz that counts toward Lesson quizzes. A numbered paper is one quiz: \"Lesson quizzes 1\" is \"Lesson quiz 1\". The arithmetic a revision left in the plan (\"hear only two ideas so the segment fits about 4 minutes\") is taken out.",
+    "image": {
+     "src": "/changelog/0.0.59-words.svg",
+     "alt": "Before and after: a quiz paper's coverage line, the plan's announcement, a paper's title, and a Grade 2 first-lesson slide",
+     "width": 800,
+     "height": 300
+    }
+   },
+   {
+    "heading": "Seven-year-olds",
+    "body": "The first lesson of every course introduced how it is graded, so a Grade 2 slide read \"Final drawing and labeling of one life cycle: 100% of the unit grade\". In grades K to 5 the grading is now said in the teacher's notes only."
+   }
+  ]
+ },
+ {
   "version": "0.0.58",
   "date": "October 29, 2026",
   "title": "A wrong key is said",
