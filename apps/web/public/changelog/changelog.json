@@ -1,5 +1,17 @@
 [
  {
+  "version": "0.0.61",
+  "date": "October 29, 2026",
+  "title": "The teacher's own rules",
+  "lede": "A course's first lesson no longer invents the rules a teacher sets: late penalties, make-ups, corrections, AI use and accommodations are said to be announced by the teacher.",
+  "sections": [
+   {
+    "heading": "Stock syllabus rules",
+    "body": "Reading the sample courses as their teachers would, four first lessons of seven had filled \"how this course works\" with rules nobody had given: \"Late papers lose a third of a letter grade per day\", \"Late sets lose 10% a day, up to three days\", make-ups within two school days, quiz corrections that earn back half the points, an AI rule with a disclosure note on every paper, and a two-week window for accommodations, which students may in fact ask for at any time. Every writer is now told that rules the brief and the grading do not give are the teacher's: a material says they are announced, and states none."
+   }
+  ]
+ },
+ {
   "version": "0.0.60",
   "date": "October 29, 2026",
   "title": "The key notes, measured and switched off",

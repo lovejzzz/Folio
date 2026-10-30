@@ -159,6 +159,9 @@ function gradingLine(course: Course): string {
     judgedLine(course),
     // Told that every piece of work "says which one", a course named its final assessment in a dozen materials.
     'Anything the brief or the grading has happen in class, such as a student presentation, a debate or a test, needs a place in the lesson plans; an assignment that prepares for a graded component says which one, and other materials need not. State a component\'s share of the course grade only as the grading gives it; never infer one. Points within a quiz or test are another matter: the plan sets them.',
+    // A first lesson's "how this course works" filled itself with stock syllabus rules in four sample courses of seven:
+    // late penalties, make-ups, half-credit corrections, an AI rule with a disclosure note, a two-week accommodations window.
+    'Rules the brief and the grading do not give (late work, extensions, make-ups, retakes, corrections, the use of AI tools, deadlines for accommodations) are the teacher\'s: a material says they are announced by the teacher, and states none.',
     scaleLine(course),
     rPackages(course),
     inClassPieces(course),

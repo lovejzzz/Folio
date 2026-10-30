@@ -56,6 +56,11 @@ describe('university courses', () => {
 });
 
 describe('every course', () => {
+  it('leaves the rules the brief does not give to the teacher', () => {
+    // Four first lessons of seven sample courses invented late penalties, make-ups and an AI rule.
+    expect(courseBackground(university())).toMatch(/late work, extensions, make-ups, retakes, corrections, the use of AI tools, deadlines for accommodations\) are the teacher's/);
+  });
+
   it('never lets the model invent a quotation, and writes maths in Unicode', () => {
     const s = systemPrompt('en', 'en-GB');
     expect(s).toMatch(/never invent a quotation or a page number/);
