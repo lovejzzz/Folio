@@ -7,7 +7,7 @@ import { base64, figureSlides } from './pptxFigure';
 import { ExportError } from './errors';
 import { MIN_SIZE, fitSize, splitToFit, type Box } from './fit';
 import { compareOnSlide, stepsOnSlide } from './pptxBlocks';
-import { layersSvg, svgToPng } from '@folio/figures';
+import { layersSvg, solidsSvg, svgToPng } from '@folio/figures';
 
 /**
  * Slide decks in the "paper and ink" look: paper background, Georgia ink
@@ -182,9 +182,9 @@ function visualSlide(pptx: PptxGenJS, slide: PptSlide, s: Slide, f: Faces): void
     stepsOnSlide(pptx, slide, v, f, VISUAL);
   } else if (v.kind === 'compare') {
     compareOnSlide(pptx, slide, v, f, VISUAL);
-  } else if (v.kind === 'layers') {
+  } else if (v.kind === 'layers' || v.kind === 'solids') {
     // The drawing as a picture, the same one the slide shows, fitted into the visual's box.
-    const pic = layersSvg(v);
+    const pic = v.kind === 'layers' ? layersSvg(v) : solidsSvg(v);
     const scale = Math.min(VISUAL.w / pic.width, VISUAL.h / pic.height);
     const w = pic.width * scale;
     const h = pic.height * scale;

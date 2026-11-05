@@ -19,7 +19,7 @@ import { textRuns, type Block, type DocLabels, type Language } from '@folio/core
 import { printFonts, printPalette } from '@folio/ui/tokens';
 import { choiceLetter, type ExportLabels } from './labels';
 import { pictureMark, type PlacedPicture } from './docxImages';
-import { framePng, layersSvg, stillFigure, svgToPng } from '@folio/figures';
+import { framePng, layersSvg, solidsSvg, stillFigure, svgToPng } from '@folio/figures';
 import { wordImageType, type ResolvedMedia } from './media';
 import { BULLETS, NUMBERS, SIZE, fontFor, hairline, type FontRole } from './docxTheme';
 
@@ -262,12 +262,12 @@ function slide(ctx: BlockCtx, s: Slide): DocxChild[] {
   if (s.visual?.kind === 'chart') out.push(table(ctx, [s.visual.unit, ...s.visual.categories], s.visual.series.map((x) => [x.name, ...x.values.map(String)])), spacer());
   if (s.visual?.kind === 'figure') out.push(...figure(ctx, s.visual));
   // An exploded drawing of layers is the same picture, and its parts in order under it, so the names read without it.
-  if (s.visual?.kind === 'layers') {
-    const pic = layersSvg(s.visual);
+  if (s.visual?.kind === 'layers' || s.visual?.kind === 'solids') {
+    const pic = s.visual.kind === 'layers' ? layersSvg(s.visual) : solidsSvg(s.visual);
     const width = Math.min(Math.floor(ctx.width / TWIPS_PER_PIXEL), 420);
     if (ctx.placed) {
       const mark = pictureMark(ctx.placed.length);
-      ctx.placed.push({ src: `layers:${ctx.placed.length}:${s.visual.parts.map((x) => `${x.name}/${x.look}/${x.tint}`).join('|')}:${s.visual.open}`, bytes: svgToPng(pic.svg, 3), type: 'png', width, height: Math.round((width * pic.height) / pic.width), description: s.visual.parts.map((x) => x.name).join(', ') });
+      ctx.placed.push({ src: `${s.visual.kind}:${ctx.placed.length}:${JSON.stringify(s.visual.parts)}:${s.visual.open}`, bytes: svgToPng(pic.svg, 3), type: 'png', width, height: Math.round((width * pic.height) / pic.width), description: s.visual.parts.map((x) => x.name).join(', ') });
       out.push(new Paragraph({ keepNext: true, spacing: { before: 120, after: 80 }, children: [new TextRun(mark)] }));
     }
     out.push(...list(ctx, true, s.visual.parts.map((x) => x.name)));

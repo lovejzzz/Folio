@@ -10,3 +10,4 @@ export { SORT_MAX, sortKeyframes, sortBody, sortSvg, sortView, sortLimit, type S
 export { descentKeyframes, descentSvg, descentView, type DescentPose } from './descentScene';
 export { rackKeyframes, rackSvg, rackView, type RackPose } from './rackScene';
 export { layersSvg, lettered, TINTS, type LayersPicture } from './layersScene';
+export { solidsHidden, solidsSvg, type SolidsPicture } from './solidsScene';

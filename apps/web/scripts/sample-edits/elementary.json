@@ -77,5 +77,180 @@
   "find": "Record one change in our sprouting bean",
   "replace": "Record what our sprouting bean looks like today",
   "why": "The slide's copy of the objective, changed with it."
+ },
+ {
+  "lesson": 2,
+  "slide": 4,
+  "why": "A technical drawing of the thing students handle, taken apart (0.0.63 solids): proposed by a CLI read of the whole deck (runs/2026-11-05-layers), rendered, checked for hidden parts and corrected by hand.",
+  "visual": {
+   "kind": "solids",
+   "open": true,
+   "labels": true,
+   "parts": [
+    {
+     "name": "Seed coat",
+     "shape": "egg",
+     "size": [
+      44,
+      29,
+      19
+     ],
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "apart": [
+      0,
+      0,
+      86
+     ],
+     "tint": "amber",
+     "clear": true
+    },
+    {
+     "name": "Food, one half",
+     "shape": "half",
+     "size": [
+      40,
+      26,
+      8
+     ],
+     "at": [
+      0,
+      0,
+      0.5
+     ],
+     "apart": [
+      0,
+      0,
+      50
+     ],
+     "axis": "z",
+     "tint": "amber"
+    },
+    {
+     "name": "Baby plant",
+     "shape": "egg",
+     "size": [
+      9,
+      4,
+      3
+     ],
+     "at": [
+      -15,
+      0,
+      0
+     ],
+     "apart": [
+      0,
+      0,
+      16
+     ],
+     "tint": "green"
+    },
+    {
+     "name": "Food, other half",
+     "shape": "half",
+     "size": [
+      40,
+      26,
+      8
+     ],
+     "at": [
+      0,
+      0,
+      -0.5
+     ],
+     "axis": "-z",
+     "tint": "amber"
+    }
+   ]
+  }
+ },
+ {
+  "lesson": 2,
+  "slide": 6,
+  "why": "A technical drawing of the thing students handle, taken apart (0.0.63 solids): proposed by a CLI read of the whole deck (runs/2026-11-05-layers), rendered, checked for hidden parts and corrected by hand.",
+  "visual": {
+   "kind": "solids",
+   "open": true,
+   "labels": true,
+   "parts": [
+    {
+     "name": "Zip bag",
+     "shape": "box",
+     "size": [
+      150,
+      120,
+      20
+     ],
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "apart": [
+      0,
+      0,
+      30
+     ],
+     "clear": true
+    },
+    {
+     "name": "Bean seed 1",
+     "shape": "egg",
+     "size": [
+      25,
+      15,
+      8
+     ],
+     "at": [
+      -20,
+      0,
+      2
+     ],
+     "apart": [
+      0,
+      0,
+      15
+     ]
+    },
+    {
+     "name": "Bean seed 2",
+     "shape": "egg",
+     "size": [
+      25,
+      15,
+      8
+     ],
+     "at": [
+      20,
+      0,
+      2
+     ],
+     "apart": [
+      0,
+      0,
+      15
+     ]
+    },
+    {
+     "name": "Damp paper towel",
+     "shape": "box",
+     "size": [
+      100,
+      70,
+      4
+     ],
+     "at": [
+      0,
+      0,
+      -4
+     ],
+     "tint": "blue"
+    }
+   ]
+  }
  }
 ]

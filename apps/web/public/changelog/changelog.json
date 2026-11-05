@@ -1,5 +1,27 @@
 [
  {
+  "version": "0.0.63",
+  "date": "November 5, 2026",
+  "title": "Things taken apart, as they are shaped",
+  "lede": "Beside the layered drawing, Folio now draws a real object taken apart: built of simple solids at their real places, each part named, apart or put together. The sample courses use it where students handle the thing itself.",
+  "sections": [
+   {
+    "heading": "A drawing of what students handle",
+    "body": "A stack of square plates suits a screen or the skin, but a bean is not a stack of squares: drawn that way, its baby plant came out as large as the seed. A drawing can now be built of boxes, cylinders, cones, egg shapes and halves of them, each at its place, moved out along its own path when drawn apart, and named beside it. A clear part (a beaker, a bag) is drawn as its outline, so what is inside shows. Folio checks that no part drawn apart still lies hidden under another, and the drawing is the same picture on the slide, in a download and in an export. Names now keep their capitals, and a subscript stays a subscript: CuCl₂, not cucl2.",
+    "image": {
+     "src": "/changelog/0.0.63-solids.svg",
+     "alt": "A lima bean seed taken apart: the seed coat lifted off, one food half above, the tiny baby plant, and the other food half showing its cut face",
+     "width": 396,
+     "height": 258
+    }
+   },
+   {
+    "heading": "In the sample courses",
+    "body": "A model read every slide of the seven sample courses through the command line and proposed drawings where students handle a physical thing; each was drawn, checked and corrected by hand before it went in. Four did: the opened bean and the sealed bag of seeds on a damp towel in Grade 2, and the balance with vinegar and baking soda and the aluminum foil going into copper chloride solution in Grade 10 chemistry. The proposals for the other courses (a grid of squares, folders, cups of water) did not make anything clearer than the slide's words, and were left out."
+   }
+  ]
+ },
+ {
   "version": "0.0.62",
   "date": "November 5, 2026",
   "title": "Layers, taken apart",

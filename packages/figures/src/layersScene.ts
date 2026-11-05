@@ -113,20 +113,27 @@ function plate(look: LayerLook, z: number, tintName: LayerTint): string {
   ].join('');
 }
 
-/** A name in the app's typeface, small capitals drawn as lower case, with its width: unknown characters leave a space. */
+/** Subscript digits (CO₂, CuCl₂) as small digits set low. */
+const SUB = '₀₁₂₃₄₅₆₇₈₉';
+
+/** A name in the app's typeface, as written, with its width: a character with no outline leaves a space. */
 export function lettered(name: string): { polygons: P[][]; width: number } {
   const polygons: P[][] = [];
   let at = 0;
-  for (const ch of name.toLowerCase()) {
-    const glyph = GLYPH_OUTLINES[ch] ?? GLYPH_OUTLINES[' ']!;
-    for (const run of glyph.contours) polygons.push(run.map(([u, v]): P => [at + u * CAP, -v * CAP]));
-    at += glyph.advance * CAP + TRACK;
+  for (const raw of name) {
+    const sub = SUB.indexOf(raw);
+    const ch = sub >= 0 ? String(sub) : raw;
+    const glyph = GLYPH_OUTLINES[ch] ?? GLYPH_OUTLINES[ch.toLowerCase()] ?? GLYPH_OUTLINES[' ']!;
+    const size = sub >= 0 ? CAP * 0.62 : CAP;
+    const drop = sub >= 0 ? CAP * 0.22 : 0;
+    for (const run of glyph.contours) polygons.push(run.map(([u, v]): P => [at + u * size, -v * size + drop]));
+    at += glyph.advance * size + TRACK;
   }
   return { polygons, width: Math.max(0, at - TRACK) };
 }
 
 /** A name set with its baseline at (x, y): to the right of x, or ending at x. */
-function nameAt(name: string, x: number, y: number, right: boolean): string {
+export function nameAt(name: string, x: number, y: number, right: boolean): string {
   const { polygons, width } = lettered(name);
   const left = right ? x : x - width;
   const path = polygons.map((poly) => d(poly.map(([u, v]): P => [left + u, y + v]), true)).join('');

@@ -3,6 +3,7 @@ import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { FigureView } from './figures/FigureView';
 import { LayersView } from './LayersTools';
+import { SolidsView } from './SolidsTools';
 import { CompareView, StepsView } from './SlideBlocks';
 
 type Chart = Extract<SlideVisual, { kind: 'chart' }>;
@@ -149,5 +150,6 @@ export function SlideVisualView({ visual, onChange, live = false }: { visual: Sl
   if (visual.kind === 'steps') return <StepsView v={visual} onChange={onChange} />;
   if (visual.kind === 'compare') return <CompareView v={visual} onChange={onChange} />;
   if (visual.kind === 'layers') return <LayersView v={visual} />;
+  if (visual.kind === 'solids') return <SolidsView v={visual} />;
   return <ChartView v={visual} />;
 }

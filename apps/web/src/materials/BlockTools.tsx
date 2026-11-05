@@ -2,6 +2,7 @@ import type { Slide, SlideVisual } from '@folio/core';
 import { Button } from '@folio/ui';
 import { useT } from '../i18n';
 import { LayersTools } from './LayersTools';
+import { SolidsTools } from './SolidsTools';
 
 type Steps = Extract<SlideVisual, { kind: 'steps' }>;
 type Compare = Extract<SlideVisual, { kind: 'compare' }>;
@@ -59,6 +60,7 @@ export function BlockTools({ slide, onChange }: { slide: Slide; onChange: (visua
   }
   if (v.kind === 'compare') return <CompareTools v={v} onChange={onChange} row={row} />;
   if (v.kind === 'layers') return <LayersTools v={v} slide={slide} onChange={onChange} row={row} />;
+  if (v.kind === 'solids') return <SolidsTools v={v} slide={slide} onChange={onChange} row={row} />;
   return null;
 }
 

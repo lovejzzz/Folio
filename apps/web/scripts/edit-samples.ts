@@ -6,7 +6,7 @@
 // to questions) or, with no lesson given, anywhere in the course. An edit that finds nothing, or finds its words
 // more than once without "all", stops the run: the course has changed under it. Afterwards every section is
 // stamped as written from the course as it now stands, so a teacher's corrections don't mark it out of date.
-import { computeBasis, orderedLessons, parseCourse, type Course, type PageBlock } from '@folio/core';
+import { computeBasis, orderedLessons, parseCourse, SlideVisualSchema, type Course, type PageBlock } from '@folio/core';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SAMPLE_NAMES, type SampleName } from '../src/lib/samples';
@@ -39,6 +39,10 @@ interface Edit {
   nth?: number;
   /** How each graded component is judged, by its name: what the outline now records, for a sample outlined before it did. */
   judged?: Record<string, 'levels' | 'complete'>;
+  /** With `slide` (counted from 1 in the lesson's deck): the picture that slide holds, checked as a course file checks it. A slide that holds one already keeps it unless `over`. */
+  slide?: number;
+  visual?: unknown;
+  over?: boolean;
   /** Replace every occurrence, not just the one. */
   all?: boolean;
   /** Why, for whoever reads the file later. */
@@ -139,6 +143,13 @@ function editOne(name: SampleName): void {
       const one = edit.nth === undefined && placed.length === 1 ? placed[0] : placed[(edit.nth ?? 0) - 1];
       if (!one) throw new Error(`${name}: lesson ${edit.lesson} has ${placed.length} pictures named ${edit.media}`);
       Object.assign(one, edit.caption !== undefined ? { caption: edit.caption } : {}, edit.alt !== undefined ? { alt: edit.alt } : {});
+      continue;
+    }
+    if (edit.visual !== undefined) {
+      const s = orderedLessons(course)[edit.lesson! - 1]?.slides[edit.slide! - 1];
+      if (!s) throw new Error(`${name}: lesson ${edit.lesson} has no slide ${edit.slide}`);
+      if (s.visual && !edit.over) throw new Error(`${name}: lesson ${edit.lesson} slide ${edit.slide} holds a ${s.visual.kind} already`);
+      s.visual = SlideVisualSchema.parse(edit.visual);
       continue;
     }
     if (edit.judged !== undefined) {

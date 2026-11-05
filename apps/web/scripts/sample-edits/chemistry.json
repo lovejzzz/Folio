@@ -54,5 +54,196 @@
   "find": "Students first finish the exit slip in writing",
   "replace": "If the exit slip was not done at slide 11, students finish it in writing",
   "why": "Slide 11's notes already run the exit slip."
+ },
+ {
+  "lesson": 6,
+  "slide": 2,
+  "why": "A technical drawing of the thing students handle, taken apart (0.0.63 solids): proposed by a CLI read of the whole deck (runs/2026-11-05-layers), rendered, checked for hidden parts and corrected by hand.",
+  "visual": {
+   "kind": "solids",
+   "open": true,
+   "labels": true,
+   "parts": [
+    {
+     "name": "Balance base",
+     "shape": "box",
+     "size": [
+      180,
+      180,
+      30
+     ],
+     "at": [
+      0,
+      0,
+      15
+     ],
+     "tint": "gray"
+    },
+    {
+     "name": "Balance pan",
+     "shape": "cylinder",
+     "size": [
+      160,
+      160,
+      6
+     ],
+     "at": [
+      0,
+      0,
+      33
+     ],
+     "apart": [
+      0,
+      0,
+      20
+     ]
+    },
+    {
+     "name": "Beaker",
+     "shape": "cylinder",
+     "size": [
+      60,
+      60,
+      80
+     ],
+     "at": [
+      -30,
+      0,
+      76
+     ],
+     "apart": [
+      0,
+      0,
+      80
+     ],
+     "clear": true
+    },
+    {
+     "name": "Vinegar",
+     "shape": "cylinder",
+     "size": [
+      56,
+      56,
+      45
+     ],
+     "at": [
+      -30,
+      0,
+      60.5
+     ],
+     "apart": [
+      0,
+      0,
+      40
+     ]
+    },
+    {
+     "name": "Boat",
+     "shape": "box",
+     "size": [
+      40,
+      25,
+      8
+     ],
+     "at": [
+      40,
+      0,
+      40
+     ],
+     "apart": [
+      30,
+      0,
+      40
+     ],
+     "clear": true
+    },
+    {
+     "name": "Baking soda",
+     "shape": "box",
+     "size": [
+      34,
+      19,
+      5
+     ],
+     "at": [
+      40,
+      0,
+      41
+     ],
+     "apart": [
+      30,
+      0,
+      40
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "lesson": 8,
+  "slide": 6,
+  "why": "A technical drawing of the thing students handle, taken apart (0.0.63 solids): proposed by a CLI read of the whole deck (runs/2026-11-05-layers), rendered, checked for hidden parts and corrected by hand.",
+  "visual": {
+   "kind": "solids",
+   "open": true,
+   "labels": true,
+   "parts": [
+    {
+     "name": "Beaker",
+     "shape": "cylinder",
+     "size": [
+      70,
+      70,
+      90
+     ],
+     "at": [
+      0,
+      0,
+      45
+     ],
+     "clear": true
+    },
+    {
+     "name": "CuCl₂ solution",
+     "shape": "cylinder",
+     "size": [
+      66,
+      66,
+      40
+     ],
+     "at": [
+      0,
+      0,
+      22
+     ],
+     "apart": [
+      0,
+      0,
+      25
+     ],
+     "tint": "blue"
+    },
+    {
+     "name": "Folded aluminum foil",
+     "shape": "box",
+     "size": [
+      30,
+      6,
+      25
+     ],
+     "at": [
+      0,
+      0,
+      30
+     ],
+     "apart": [
+      0,
+      0,
+      95
+     ],
+     "tint": "gray"
+    }
+   ]
+  }
  }
 ]

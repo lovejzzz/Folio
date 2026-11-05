@@ -128,13 +128,13 @@ export function SlideCanvas({ slide, lang, footer, onChange, live = Boolean(onCh
           {title}
         </div>
         {/* A picture Folio draws takes the room left under the title; words and tables are fitted with the bullets. */}
-        {(slide.visual?.kind === 'figure' || slide.visual?.kind === 'layers') && (
+        {(slide.visual?.kind === 'figure' || slide.visual?.kind === 'layers' || slide.visual?.kind === 'solids') && (
           <div className="folio-slide-gap folio-slide-figure-slot" style={cq(2.2)}>
             <SlideVisualView visual={slide.visual} live={live} onChange={onChange && ((visual) => onChange({ ...slide, visual }))} />
           </div>
         )}
         <div ref={fit}>
-          {slide.visual && slide.visual.kind !== 'figure' && slide.visual.kind !== 'layers' && (
+          {slide.visual && slide.visual.kind !== 'figure' && slide.visual.kind !== 'layers' && slide.visual.kind !== 'solids' && (
             <div className="folio-slide-gap" style={cq(2.2)}>
               <SlideVisualView visual={slide.visual} live={live} onChange={onChange && ((visual) => onChange({ ...slide, visual }))} />
             </div>

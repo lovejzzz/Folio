@@ -63,6 +63,7 @@ function visualText(v: Visual): string {
   if (v.kind === 'chart') return chartText(v);
   if (v.kind === 'figure') return figureText(v);
   if (v.kind === 'steps') return `[a chain of steps, drawn on the slide${v.cycle ? ', the last leading back to the first' : ''}: ${v.steps.map((x, i) => `${i + 1}. ${x.title}${x.detail ? ` (${x.detail})` : ''}`).join('; ')}]`;
+  if (v.kind === 'solids') return `[a drawing of it taken apart on the slide, its parts: ${v.parts.map((x) => x.name).join('; ')}]`;
   if (v.kind === 'layers') return `[an exploded drawing of layers on the slide, top to bottom: ${v.parts.map((x) => x.name).join('; ')}]`;
   return `[set side by side on the slide: ${v.sides.map((x) => `${x.title}: ${x.points.join(', ')}`).join(' | ')}${v.ask ? `; asked: ${v.ask}` : ''}]`;
 }

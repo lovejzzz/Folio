@@ -89,6 +89,9 @@ export type LayerLook = z.infer<typeof LayerLookSchema>;
 export const LayerTintSchema = z.enum(['none', 'blue', 'green', 'red', 'amber', 'violet', 'gray']);
 export type LayerTint = z.infer<typeof LayerTintSchema>;
 
+export const SolidShapeSchema = z.enum(['box', 'cylinder', 'cone', 'egg', 'half']);
+export type SolidShape = z.infer<typeof SolidShapeSchema>;
+
 export const SlideVisualSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('table'), columns: z.array(text), rows: z.array(z.array(text)) }),
   z.object({
@@ -139,6 +142,34 @@ export const SlideVisualSchema = z.discriminatedUnion('kind', [
     /** Drawn apart (exploded), or put together. */
     open: z.boolean().default(true),
     /** Each part named beside it, with a leader line. */
+    labels: z.boolean().default(true),
+  }),
+  // A thing taken apart as it is shaped: each part a simple solid of Folio's own (a box, a cylinder, a cone, an egg
+  // shape or half of one) at its place, moved out along its own path when drawn apart, and named beside it. Built from
+  // numbers and names only: the drawing is Folio's, never a picture or a stylesheet from the course file.
+  z.object({
+    kind: z.literal('solids'),
+    parts: z
+      .array(
+        z.object({
+          name: text,
+          shape: SolidShapeSchema,
+          /** Its extent along x, y and z (z up), before it is turned to lie along `axis`. */
+          size: z.tuple([z.number().min(0.2).max(400), z.number().min(0.2).max(400), z.number().min(0.2).max(400)]),
+          /** Where its centre stands, put together. */
+          at: z.tuple([z.number().min(-400).max(400), z.number().min(-400).max(400), z.number().min(-400).max(400)]),
+          /** How far it moves out when drawn apart. */
+          apart: z.tuple([z.number().min(-400).max(400), z.number().min(-400).max(400), z.number().min(-400).max(400)]).default([0, 0, 0]),
+          /** The axis a cylinder, cone or half runs along; for a half, the side its flat face looks to. */
+          axis: z.enum(['x', 'y', 'z', '-x', '-y', '-z']).default('z'),
+          tint: LayerTintSchema.default('none'),
+          /** Solid, or clear (glass, plastic, a film): drawn as its outline, so what is inside shows. */
+          clear: z.boolean().default(false),
+        }),
+      )
+      .min(1)
+      .max(12),
+    open: z.boolean().default(true),
     labels: z.boolean().default(true),
   }),
 ]);

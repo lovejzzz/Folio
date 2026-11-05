@@ -52,8 +52,9 @@ describe('an exploded drawing of layers', () => {
     expect(svg).not.toContain('#6d4fbf');
   });
 
-  it('sets names in the app\'s typeface, lower case, leaving a space for a character it has no outline for', () => {
-    expect(lettered('Ab').width).toBeCloseTo(lettered('ab').width);
+  it('sets names in the app\'s typeface as written, subscripts small, leaving a space for a character it has no outline for', () => {
+    expect(lettered('Ab').width).not.toBeCloseTo(lettered('ab').width);
+    expect(lettered('CO₂').width).toBeLessThan(lettered('CO2').width);
     expect(lettered('a€b').width).toBeCloseTo(lettered('a b').width);
     expect(lettered('').width).toBe(0);
   });
