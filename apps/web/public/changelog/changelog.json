@@ -1,5 +1,27 @@
 [
  {
+  "version": "0.0.62",
+  "date": "November 5, 2026",
+  "title": "Layers, taken apart",
+  "lede": "A slide can now hold an exploded drawing: a thing made of layers, drawn by Folio as a technical illustration, each layer named, coloured and drawn as you choose, apart or put together, and downloaded as an SVG or a PNG.",
+  "sections": [
+   {
+    "heading": "An exploded drawing on a slide",
+    "body": "Some things are taught by taking them apart: a display, the skin, the Earth, a leaf, a battery cell, a network's layers. Under any slide, \"Layers, taken apart\" gives it a drawing of plates in a column, seen from above at an angle, each named beside it with a leader line. Each layer is renamed in place, drawn plain, with lines, as a grid, with dots, as a row of small bars (the colour filters of a screen) or as a grid with a dot at each crossing, and given a colour. One button puts the layers together and takes them apart again, another hides the names, and the drawing downloads as an SVG or a PNG. It is the same picture on the slide, in the downloaded file, in a PowerPoint deck and in a Word file, with no font to go missing.",
+    "image": {
+     "src": "/changelog/0.0.62-layers.svg",
+     "alt": "An exploded drawing of a liquid-crystal display: cover glass, front polarizer, black matrix, blue, green and red filters, liquid crystal, thin-film transistors, rear polarizer and backlight, each named beside its layer",
+     "width": 543,
+     "height": 693
+    }
+   },
+   {
+    "heading": "Written by Folio, too",
+    "body": "The plan can put a thing taken apart on the screen as one item, \"Layers: top layer → … → bottom layer\", and the slides' writer draws it as an exploded drawing, naming each layer and choosing how it is drawn. A teacher changes any of it under the slide."
+   }
+  ]
+ },
+ {
   "version": "0.0.61",
   "date": "October 29, 2026",
   "title": "The teacher's own rules",

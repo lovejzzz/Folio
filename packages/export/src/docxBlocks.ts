@@ -19,7 +19,7 @@ import { textRuns, type Block, type DocLabels, type Language } from '@folio/core
 import { printFonts, printPalette } from '@folio/ui/tokens';
 import { choiceLetter, type ExportLabels } from './labels';
 import { pictureMark, type PlacedPicture } from './docxImages';
-import { framePng, stillFigure } from '@folio/figures';
+import { framePng, layersSvg, stillFigure, svgToPng } from '@folio/figures';
 import { wordImageType, type ResolvedMedia } from './media';
 import { BULLETS, NUMBERS, SIZE, fontFor, hairline, type FontRole } from './docxTheme';
 
@@ -261,6 +261,17 @@ function slide(ctx: BlockCtx, s: Slide): DocxChild[] {
   if (s.visual?.kind === 'table') out.push(table(ctx, s.visual.columns, s.visual.rows), spacer());
   if (s.visual?.kind === 'chart') out.push(table(ctx, [s.visual.unit, ...s.visual.categories], s.visual.series.map((x) => [x.name, ...x.values.map(String)])), spacer());
   if (s.visual?.kind === 'figure') out.push(...figure(ctx, s.visual));
+  // An exploded drawing of layers is the same picture, and its parts in order under it, so the names read without it.
+  if (s.visual?.kind === 'layers') {
+    const pic = layersSvg(s.visual);
+    const width = Math.min(Math.floor(ctx.width / TWIPS_PER_PIXEL), 420);
+    if (ctx.placed) {
+      const mark = pictureMark(ctx.placed.length);
+      ctx.placed.push({ src: `layers:${ctx.placed.length}:${s.visual.parts.map((x) => `${x.name}/${x.look}/${x.tint}`).join('|')}:${s.visual.open}`, bytes: svgToPng(pic.svg, 3), type: 'png', width, height: Math.round((width * pic.height) / pic.width), description: s.visual.parts.map((x) => x.name).join(', ') });
+      out.push(new Paragraph({ keepNext: true, spacing: { before: 120, after: 80 }, children: [new TextRun(mark)] }));
+    }
+    out.push(...list(ctx, true, s.visual.parts.map((x) => x.name)));
+  }
   // A chain of steps is a row of numbered columns; things side by side are columns under their names, with what is asked of them after.
   if (s.visual?.kind === 'steps') out.push(table(ctx, s.visual.steps.map((x, i) => `${i + 1}. ${x.title}`), [s.visual.steps.map((x) => x.detail)]), spacer());
   if (s.visual?.kind === 'compare') {

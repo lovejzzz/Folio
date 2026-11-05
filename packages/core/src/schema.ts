@@ -84,6 +84,11 @@ export type SlideLayout = z.infer<typeof SlideLayoutSchema>;
 export const FigureIdSchema = z.enum(['binarySearch', 'selectionSort', 'gradientDescent', 'rackBudget']);
 export type FigureId = z.infer<typeof FigureIdSchema>;
 
+export const LayerLookSchema = z.enum(['plain', 'hatch', 'grid', 'dots', 'strips', 'cells']);
+export type LayerLook = z.infer<typeof LayerLookSchema>;
+export const LayerTintSchema = z.enum(['none', 'blue', 'green', 'red', 'amber', 'violet', 'gray']);
+export type LayerTint = z.infer<typeof LayerTintSchema>;
+
 export const SlideVisualSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('table'), columns: z.array(text), rows: z.array(z.array(text)) }),
   z.object({
@@ -115,6 +120,27 @@ export const SlideVisualSchema = z.discriminatedUnion('kind', [
   // Two or three things set side by side, each under its name with a few points of its own, and, where the lesson has
   // one, the question students answer from them. (Things compared under the same headings are a table.)
   z.object({ kind: z.literal('compare'), sides: z.array(z.object({ title: text, points: z.array(text).max(4).default([]) })).min(2).max(3), ask: text.default('') }),
+  // A thing made of layers or parts stacked one on another (a display, the skin, the Earth's interior, a leaf, a battery
+  // cell, a network's layers), drawn by Folio as an exploded technical drawing: plates in a column, top first, each
+  // named. How a face is drawn and its colour are names from Folio's own short lists, never a stylesheet.
+  z.object({
+    kind: z.literal('layers'),
+    parts: z
+      .array(
+        z.object({
+          name: text,
+          /** How the part's face is drawn: plain, hatched, a grid, dots, a row of small bars (filters, cells) or a grid with a dot at each crossing. */
+          look: LayerLookSchema.default('plain'),
+          tint: LayerTintSchema.default('none'),
+        }),
+      )
+      .min(2)
+      .max(10),
+    /** Drawn apart (exploded), or put together. */
+    open: z.boolean().default(true),
+    /** Each part named beside it, with a leader line. */
+    labels: z.boolean().default(true),
+  }),
 ]);
 export type SlideVisual = z.infer<typeof SlideVisualSchema>;
 

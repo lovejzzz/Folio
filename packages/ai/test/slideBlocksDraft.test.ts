@@ -39,3 +39,18 @@ describe('a slide that was given two visuals', () => {
     expect(oneVisualEach([{ ...draft, table: { columns: ['Only'], rows: [] } }])).toHaveLength(1);
   });
 });
+
+describe('layers taken apart, as a slide writer gives them', () => {
+  it('are kept as an exploded drawing with two named parts at the least, and an unknown face or colour falls back', () => {
+    const draft = SlidesDraft.parse({ slides: [1, 2, 3].map((n) => ({ layout: 'bullets', title: `S${n}`, bullets: [], notes: '', segment: 1, ...(n === 2 ? { layers: { parts: [{ name: 'Epidermis', look: 'dots', tint: 'amber' }, { name: 'Dermis', look: 'woven', tint: 'pink' }, { name: ' ' }] } } : {}) })) });
+    const s = draft.slides[1]!;
+    expect(slideVisual(s.table, s.chart, s.steps, s.compare, s.figure, s.layers)).toEqual({ visual: { kind: 'layers', open: true, labels: true, parts: [{ name: 'Epidermis', look: 'dots', tint: 'amber' }, { name: 'Dermis', look: 'plain', tint: 'none' }] } });
+    expect(slideVisual(undefined, undefined, undefined, undefined, undefined, { parts: [{ name: 'Crust', look: 'plain', tint: 'none' }] })).toEqual({});
+  });
+
+  it('are asked of the plan as one on-screen item, top to bottom', () => {
+    const c = smallCourse();
+    const plan = sectionPrompt(c, Object.values(c.lessons)[0]!, 'plan');
+    expect(plan).toContain('a thing taken apart layer by layer as one item "Layers: top layer → … → bottom layer"');
+  });
+});

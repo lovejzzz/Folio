@@ -16,7 +16,7 @@ export interface FigureFaces {
 const LEFT = 0.8;
 const WIDTH = 13.333 - LEFT - 1.0;
 
-function base64(bytes: Uint8Array): string {
+export function base64(bytes: Uint8Array): string {
   let text = '';
   for (let i = 0; i < bytes.length; i += 0x8000) text += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   return btoa(text);

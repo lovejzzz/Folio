@@ -39,3 +39,20 @@ describe('a chain of steps and things side by side, as a file holds them', () =>
     expect(sides).toContain('Which would you give a matrix product, and why?');
   });
 });
+
+describe('an exploded drawing of layers, as a file holds it', () => {
+  const layers = SlideVisualSchema.parse({ kind: 'layers', parts: [{ name: 'Cover glass' }, { name: 'Blue filters', look: 'strips', tint: 'blue' }, { name: 'Backlight', look: 'hatch' }] });
+
+  it('is a picture in a deck, described by its parts', async () => {
+    const xml = await xmlOf(layers);
+    expect(xml).toContain('<p:pic>');
+    expect(xml).toContain('Cover glass, Blue filters, Backlight');
+  });
+
+  it('is a picture in a Word file, with its parts in order under it', async () => {
+    const files = unzipSync(await renderDocx([doc(layers)], { courseTitle: 'C' }));
+    expect(Object.keys(files).some((name) => /^word\/media\/.+\.png$/.test(name))).toBe(true);
+    const text = strFromU8(files['word/document.xml']!);
+    expect(text.indexOf('Cover glass')).toBeLessThan(text.indexOf('Backlight'));
+  });
+});

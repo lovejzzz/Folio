@@ -150,7 +150,7 @@ const slides: SectionJob<SlidesDraft> = {
       lessonId: lesson.id,
       kind: 'slides',
       flags: flagsAt(problems, null),
-      content: { slides: oneVisualEach(v.slides).map(({ table, chart, steps, compare, figure, segment, ...s }) => ({ ...s, id: newId('x'), notes: notedFrom(s.notes, lesson.segments[segment - 1]), ...(lesson.segments[segment - 1] ? { segment: lesson.segments[segment - 1]!.id } : {}), ...slideVisual(table, chart, steps, compare, figure) })) },
+      content: { slides: oneVisualEach(v.slides).map(({ table, chart, steps, compare, figure, layers, segment, ...s }) => ({ ...s, id: newId('x'), notes: notedFrom(s.notes, lesson.segments[segment - 1]), ...(lesson.segments[segment - 1] ? { segment: lesson.segments[segment - 1]!.id } : {}), ...slideVisual(table, chart, steps, compare, figure, layers) })) },
     }),
   ],
 };

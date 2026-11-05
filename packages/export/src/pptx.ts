@@ -3,10 +3,11 @@ import PptxGenJS from 'pptxgenjs';
 import { hasMarks, plainText, textRuns, type Block, type SemanticDoc } from '@folio/core';
 import { printFonts, printPalette } from '@folio/ui/tokens';
 import { cleanDoc } from './xml';
-import { figureSlides } from './pptxFigure';
+import { base64, figureSlides } from './pptxFigure';
 import { ExportError } from './errors';
 import { MIN_SIZE, fitSize, splitToFit, type Box } from './fit';
 import { compareOnSlide, stepsOnSlide } from './pptxBlocks';
+import { layersSvg, svgToPng } from '@folio/figures';
 
 /**
  * Slide decks in the "paper and ink" look: paper background, Georgia ink
@@ -181,6 +182,13 @@ function visualSlide(pptx: PptxGenJS, slide: PptSlide, s: Slide, f: Faces): void
     stepsOnSlide(pptx, slide, v, f, VISUAL);
   } else if (v.kind === 'compare') {
     compareOnSlide(pptx, slide, v, f, VISUAL);
+  } else if (v.kind === 'layers') {
+    // The drawing as a picture, the same one the slide shows, fitted into the visual's box.
+    const pic = layersSvg(v);
+    const scale = Math.min(VISUAL.w / pic.width, VISUAL.h / pic.height);
+    const w = pic.width * scale;
+    const h = pic.height * scale;
+    slide.addImage({ data: `image/png;base64,${base64(svgToPng(pic.svg, 3))}`, x: VISUAL.x + (VISUAL.w - w) / 2, y: VISUAL.y, w, h, altText: `${s.title}: ${v.parts.map((x) => x.name).join(', ')}` });
   } else {
     const named = v.series.some((x) => x.name.trim());
     slide.addChart(v.chart === 'bar' ? pptx.ChartType.bar : pptx.ChartType.line, v.series.map((x) => ({ name: x.name || s.title, labels: v.categories, values: x.values })), {

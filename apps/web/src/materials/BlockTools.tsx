@@ -1,16 +1,18 @@
 import type { Slide, SlideVisual } from '@folio/core';
 import { Button } from '@folio/ui';
 import { useT } from '../i18n';
+import { LayersTools } from './LayersTools';
 
 type Steps = Extract<SlideVisual, { kind: 'steps' }>;
 type Compare = Extract<SlideVisual, { kind: 'compare' }>;
+type Layers = Extract<SlideVisual, { kind: 'layers' }>;
 
 const STEPS_MAX = 6;
 const SIDES_MAX = 3;
 const POINTS_MAX = 4;
 
 /**
- * Under the slide: a teacher gives a slide a chain of steps or things side by side, makes it longer or shorter, or
+ * Under the slide: a teacher gives a slide a chain of steps, things side by side or an exploded drawing of layers, makes it longer or shorter, or
  * takes it off. The words themselves are changed on the slide, where they stand. A slide that holds a table or a
  * chart keeps it: nothing here replaces what is there.
  */
@@ -21,6 +23,7 @@ export function BlockTools({ slide, onChange }: { slide: Slide; onChange: (visua
   if (!v) {
     const steps: Steps = { kind: 'steps', cycle: false, steps: [1, 2, 3].map((n) => ({ title: t.slides.newStep(n), detail: '' })) };
     const compare: Compare = { kind: 'compare', ask: '', sides: [1, 2].map((n) => ({ title: t.slides.newSide(n), points: [t.slides.newPoint] })) };
+    const layers: Layers = { kind: 'layers', open: true, labels: true, parts: [1, 2, 3].map((n) => ({ name: t.slides.newLayer(n), look: 'plain', tint: 'none' })) };
     return (
       <div className={row} role="group" aria-label={t.slides.layouts}>
         <span className="font-semibold">{t.slides.layouts}</span>
@@ -29,6 +32,9 @@ export function BlockTools({ slide, onChange }: { slide: Slide; onChange: (visua
         </Button>
         <Button size="sm" variant="secondary" onPress={() => onChange(compare)}>
           {t.slides.addCompare}
+        </Button>
+        <Button size="sm" variant="secondary" onPress={() => onChange(layers)}>
+          {t.slides.addLayers}
         </Button>
       </div>
     );
@@ -52,6 +58,7 @@ export function BlockTools({ slide, onChange }: { slide: Slide; onChange: (visua
     );
   }
   if (v.kind === 'compare') return <CompareTools v={v} onChange={onChange} row={row} />;
+  if (v.kind === 'layers') return <LayersTools v={v} slide={slide} onChange={onChange} row={row} />;
   return null;
 }
 

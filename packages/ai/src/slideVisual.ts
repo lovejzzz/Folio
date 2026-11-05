@@ -7,9 +7,11 @@ type SlideDraft = SlidesDraft['slides'][number];
 export const notedFrom = (notes: string, segment?: { description: string }): string => notes.trim() || (segment?.description ?? '');
 
 /** A slide's table or chart as the deck keeps it: rows as long as their headings, a value for every category, or nothing at all. */
-export function slideVisual(table: SlideDraft['table'], chart: SlideDraft['chart'], steps?: SlideDraft['steps'], compare?: SlideDraft['compare'], figure?: SlideDraft['figure']): { visual?: SlideVisual } {
+export function slideVisual(table: SlideDraft['table'], chart: SlideDraft['chart'], steps?: SlideDraft['steps'], compare?: SlideDraft['compare'], figure?: SlideDraft['figure'], layers?: SlideDraft['layers']): { visual?: SlideVisual } {
   // A demonstration is kept only when its numbers are ones its method can work: an unsorted list for a search, or a rate of 0, is dropped, never drawn wrong.
   if (figure && !figureProblem(figure)) return { visual: { kind: 'figure', look: 'composite', ...figure } };
+  const parts = layers?.parts.filter((x) => x.name.trim()) ?? [];
+  if (parts.length >= 2) return { visual: { kind: 'layers', parts, open: true, labels: true } };
   const named = steps?.steps.filter((x) => x.title.trim()) ?? []; // two named at the least, of a chain as of things side by side
   if (named.length >= 2) return { visual: { kind: 'steps', steps: named, cycle: steps!.cycle } };
   const sides = compare?.sides.filter((x) => x.title.trim()) ?? [];
@@ -29,9 +31,9 @@ export function slideVisual(table: SlideDraft['table'], chart: SlideDraft['chart
  */
 export function oneVisualEach(slides: SlideDraft[]): SlideDraft[] {
   return slides.flatMap((s) => {
-    const parts = ([{ figure: s.figure }, { steps: s.steps }, { compare: s.compare }, { chart: s.chart }, { table: s.table }] as Partial<SlideDraft>[]).filter((p) => slideVisual(p.table, p.chart, p.steps, p.compare, p.figure).visual);
+    const parts = ([{ figure: s.figure }, { layers: s.layers }, { steps: s.steps }, { compare: s.compare }, { chart: s.chart }, { table: s.table }] as Partial<SlideDraft>[]).filter((p) => slideVisual(p.table, p.chart, p.steps, p.compare, p.figure, p.layers).visual);
     if (parts.length <= 1) return [s];
-    const { table: _t, chart: _c, steps: _s, compare: _m, figure: _f, ...bare } = s;
+    const { table: _t, chart: _c, steps: _s, compare: _m, figure: _f, layers: _l, ...bare } = s;
     return parts.map((p, i) => (i === 0 ? { ...bare, ...p } : { ...bare, layout: 'bullets' as const, title: `${s.title} (continued)`, bullets: [], notes: '', ...p }));
   });
 }

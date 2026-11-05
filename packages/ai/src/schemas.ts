@@ -1,4 +1,4 @@
-import { FigureIdSchema } from '@folio/core';
+import { FigureIdSchema, LayerLookSchema, LayerTintSchema } from '@folio/core';
 import { z } from 'zod';
 
 /**
@@ -162,6 +162,10 @@ export const SlidesDraft = z.object({
           .object({ sides: z.array(z.object({ title: z.string(), points: z.array(z.string()).max(4) })).max(3), ask: z.string().default('') })
           .optional()
           .describe('Only for two or three things the lesson sets side by side, each with its own few points (not the same headings: that is a table); ask is the one question students answer from them, when the plan has one'),
+        layers: z
+          .object({ parts: z.array(z.object({ name: z.string(), look: LayerLookSchema.catch('plain'), tint: LayerTintSchema.catch('none') })).max(10) })
+          .optional()
+          .describe('Only for a thing the lesson takes apart layer by layer (a display, the skin, the Earth, a leaf, a battery cell, a network\'s layers), drawn by Folio as an exploded drawing: two to ten parts from top to bottom, each named in a few words, its face plain, hatch, grid, dots, strips (a row of small bars, such as colour filters) or cells (a grid with a dot at each crossing), and its tint none, blue, green, red, amber, violet or gray (none unless the colour is the point)'),
       }),
     )
     .min(3)

@@ -2,6 +2,7 @@ import type { SlideVisual } from '@folio/core';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
 import { FigureView } from './figures/FigureView';
+import { LayersView } from './LayersTools';
 import { CompareView, StepsView } from './SlideBlocks';
 
 type Chart = Extract<SlideVisual, { kind: 'chart' }>;
@@ -147,5 +148,6 @@ export function SlideVisualView({ visual, onChange, live = false }: { visual: Sl
   if (visual.kind === 'figure') return <FigureView visual={visual} live={live} />;
   if (visual.kind === 'steps') return <StepsView v={visual} onChange={onChange} />;
   if (visual.kind === 'compare') return <CompareView v={visual} onChange={onChange} />;
+  if (visual.kind === 'layers') return <LayersView v={visual} />;
   return <ChartView v={visual} />;
 }
