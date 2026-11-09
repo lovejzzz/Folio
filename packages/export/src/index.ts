@@ -3,7 +3,7 @@ export { renderPptx } from './pptx';
 export { renderXlsx, quizRows, type Sheet } from './xlsx';
 export { renderCsv } from './csv';
 export { writeFolio, readFolio, readFolioFile, courseMediaIds, FOLIO_FORMAT, FOLIO_VERSION, MAX_FOLIO_BYTES, MAX_MEDIA_BYTES, type FolioManifest, type FolioMedia } from './folioFile';
-export { type MediaResolver, type ResolvedMedia } from './media';
+export { DRAWING_REF, drawingRef, type MediaResolver, type ResolvedMedia } from './media';
 export { zipFiles } from './bundle';
 export { slugFilename } from './filenames';
 export { exportCourse, describeExport, MIME, type ExportFormat, type ExportRequest, type ExportFile, type ExportOptions } from './plan';

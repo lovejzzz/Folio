@@ -18,6 +18,8 @@ interface Prefs {
   models: Partial<Record<ProviderId, string>>;
   provider: ProviderId | null;
   localUrl: string;
+  /** Slides drawn as pictures while a lesson is written: off unless the teacher turns it on, since each is a request. */
+  drawings: boolean;
   set: (patch: Partial<Omit<Prefs, 'set'>>) => void;
 }
 
@@ -65,6 +67,7 @@ export function sanitizePrefs(stored: unknown, current: Prefs): Prefs {
     models: record(p.models),
     provider: p.provider === null ? null : PROVIDERS.includes(p.provider as ProviderId) ? (p.provider as ProviderId) : current.provider,
     localUrl: typeof p.localUrl === 'string' && p.localUrl ? p.localUrl : current.localUrl,
+    drawings: p.drawings === true,
   };
 }
 
@@ -80,6 +83,7 @@ export const usePrefs = create<Prefs>()(
       // New visitors write with Folio credits unless they choose a key of their own.
       provider: 'folio',
       localUrl: DEFAULT_LOCAL_URL,
+      drawings: false,
       set: (patch) => set(patch),
     }),
     { name: 'folio.prefs', storage: safeStorage, version: 1, merge: sanitizePrefs },

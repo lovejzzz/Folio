@@ -13,6 +13,7 @@
   "dependencies": {
     "@folio/ai": "workspace:*",
     "@folio/core": "workspace:*",
+    "@folio/draw": "workspace:*",
     "@folio/export": "workspace:*",
     "@folio/figures": "workspace:*",
     "@folio/run": "workspace:*",

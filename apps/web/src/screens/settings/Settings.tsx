@@ -16,6 +16,7 @@ import { dropSession } from '../../state/session';
 import { toast } from '../../state/toasts';
 import { readHint } from '../../state/account';
 import { AccountSection } from './AccountSection';
+import { DrawingsSetting } from './DrawingsSetting';
 import { settingsText } from '../../i18n/settingsText';
 
 function Section({ title, lede, children }: { title: string; lede?: string; children: ReactNode }) {
@@ -97,6 +98,7 @@ function ModelSection() {
           </p>
         )}
         <ActiveNote provider={provider} />
+        <DrawingsSetting />
       </div>
     </Section>
   );

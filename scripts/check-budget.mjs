@@ -8,6 +8,8 @@ const KB = 1024;
 // Total JS and dist include pdf.js (about 0.4 MB, and a 1.3 MB worker) for reading PDF syllabi. It loads only
 // when a PDF is dropped in, so the first load is unchanged; the budgets make room for it and no more.
 // The first load's CSS blocks the first paint: it once carried 31 KB of font rules for a face no page needed.
+// Total JS also holds the drawing kit (Minicharts, about 400 KB of text and two hands): loaded only when a slide drawn
+// as a picture is shown or a drawing is asked for, never on the first page.
 // Total JS is everything a visitor could ever load, most of it on demand; the first load keeps its own, strict budget.
 // It was raised from 3.5 to 3.75 MB in version 0.0.5, for tests, answer keys and due dates, and to 3.9 MB when
 // teachers could add pictures to a page and have them looked at: all of it loaded on demand. To 3.95 MB in version
@@ -16,7 +18,7 @@ const KB = 1024;
 // The sample courses and the changelog's pictures are content, fetched only when opened: each has its own budget,
 // apart from the app's.
 // Samples to 4 MB (2026-10-29): written again with handouts and keys, the seven room courses came to 3.4 MB; a visitor fetches one at a time.
-const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 3.95 * KB * KB, dist: 10 * KB * KB, samples: 4 * KB * KB, changelog: 4 * KB * KB, media: 60 * KB * KB };
+const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 4.4 * KB * KB, dist: 10 * KB * KB, samples: 4 * KB * KB, changelog: 4 * KB * KB, media: 60 * KB * KB };
 // A sample course taught online carries its pictures and clips (public/samples/<name>/media): fetched one at a
 // time as a page is read, never with the course's text, and held to their own budget.
 const isMedia = (f) => /\/samples\/[^/]+\/media\//.test(f);

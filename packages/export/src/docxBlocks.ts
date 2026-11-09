@@ -20,7 +20,7 @@ import { printFonts, printPalette } from '@folio/ui/tokens';
 import { choiceLetter, type ExportLabels } from './labels';
 import { pictureMark, type PlacedPicture } from './docxImages';
 import { framePng, layersSvg, solidsSvg, stillFigure, svgToPng } from '@folio/figures';
-import { wordImageType, type ResolvedMedia } from './media';
+import { drawingRef, wordImageType, type ResolvedMedia } from './media';
 import { BULLETS, NUMBERS, SIZE, fontFor, hairline, type FontRole } from './docxTheme';
 
 export type DocxChild = Paragraph | Table;
@@ -272,6 +272,8 @@ function slide(ctx: BlockCtx, s: Slide): DocxChild[] {
     }
     out.push(...list(ctx, true, s.visual.parts.map((x) => x.name)));
   }
+  // A drawn picture, as the page painted it, and what each of its parts says, so the drawing reads without it.
+  if (s.visual?.kind === 'drawing') out.push(...image(ctx, { t: 'image', src: drawingRef(s.visual.code), alt: s.visual.of, caption: '' }), ...list(ctx, true, s.visual.parts));
   // A chain of steps is a row of numbered columns; things side by side are columns under their names, with what is asked of them after.
   if (s.visual?.kind === 'steps') out.push(table(ctx, s.visual.steps.map((x, i) => `${i + 1}. ${x.title}`), [s.visual.steps.map((x) => x.detail)]), spacer());
   if (s.visual?.kind === 'compare') {

@@ -1,5 +1,5 @@
 import { pageRuns } from './workshop';
-import { buildPlan, missingTargets, toRun, type BuildKind, runBuild, targetKey, type BuildEvent, type BuildSummary, type BuildTarget, type Inference, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
+import { buildPlan, missingTargets, toRun, type BuildKind, runBuild, targetKey, type BuildEvent, type BuildSummary, type BuildTarget, type Drawer, type Inference, type InferenceError, type SectionProgress, type Usage } from '@folio/ai';
 import { attentionItems, cmd, lessonNumber, type GeneratedKind } from '@folio/core';
 import { create } from 'zustand';
 import { router } from '../app/router';
@@ -10,6 +10,10 @@ import { checkingRow, endRow, resetLive, reviewedRow, runningRow, showPartial, s
 import { costSentence, takeUsage } from './spend';
 import { toast } from './toasts';
 import { useUi } from './ui';
+import { usePrefs } from './prefs';
+
+/** Draws a slide picture's code in the page's drawing frame, whose kit is loaded only when a build draws one. */
+const drawCardLater: Drawer = (code) => import('../lib/drawing').then((m) => m.drawCard(code));
 
 export type CellRun = 'queued' | 'building' | 'error';
 
@@ -159,6 +163,7 @@ async function guardedRun(store: Store, inference: Inference, usages: Usage[], c
         inference,
         reviewer: currentReviewer((u) => usages.push(u)) ?? undefined,
         run: pageRuns(store.getState().id),
+        ...(usePrefs.getState().drawings ? { draw: drawCardLater } : {}),
         getCourse: store.getState,
         signal: controller.signal,
         commit: (target, commands) => {

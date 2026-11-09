@@ -7,6 +7,7 @@ const stillWanted = (course: Course, t: BuildTarget) => {
 };
 import { InferenceError, type Inference } from './inference';
 import type { RunOptions } from './runCells';
+import { withDrawings, type Drawer } from './drawings';
 import { generateSection, type SectionProgress } from './sections';
 import { lastRead } from './lastRead';
 import { BUILT_ON_PLAN } from './prompts';
@@ -49,6 +50,8 @@ export interface BuildHost {
   wholeRead?: boolean;
   /** Runs the Python on module pages; without it a page is kept as written. */
   run?: RunOptions;
+  /** Draws a picture's code, when the teacher has slides drawn: each deck then gets up to two pictures before it is put in (drawings.ts). */
+  draw?: Drawer;
   /** Read the latest course before each job so edits made mid-build are respected. */
   getCourse(): Course;
   commit(target: BuildTarget, commands: Command[]): void;
@@ -311,7 +314,9 @@ async function runOne(host: BuildHost, target: BuildTarget, summary: BuildSummar
     const result = await write().catch((error: unknown) => (error instanceof InferenceError && AGAIN.has(error.kind) && !host.signal.aborted ? write() : Promise.reject(error)));
     if (host.signal.aborted) throw new InferenceError('aborted', 'Stopped.');
     if (!stillWanted(host.getCourse(), target)) return;
-    host.commit(target, result.commands);
+    const commands = kind === 'slides' && host.draw ? await withDrawings(host.inference, host.draw, host.getCourse(), target.lessonId, result.commands, host.signal) : result.commands;
+    if (host.signal.aborted || !stillWanted(host.getCourse(), target)) return;
+    host.commit(target, commands);
     summary.built += 1;
     summary.flagged += result.flagged > 0 ? 1 : 0;
     host.onEvent?.({ type: 'done', target, flagged: result.flagged });

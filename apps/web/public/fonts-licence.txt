@@ -16,9 +16,20 @@ Version 1.1, whose full text follows the list.
 - JetBrains Mono: Copyright 2020 The JetBrains Mono Project Authors
   (https://github.com/JetBrains/JetBrainsMono)
 - Noto Serif SC: Copyright Google Inc.
+- Gaegu: Copyright 2018 The Gaegu Project Authors, the
+  hand that drawn slide pictures write in.
+- Young Serif: Copyright 2023 The Young Serif Project Authors
+  (https://github.com/noirblancrouge/YoungSerif), the serif of drawn slide
+  pictures.
 
 The fonts are served through Fontsource (https://fontsource.org), except
 Folio Math, which is made from Source Serif 4 for Folio.
+
+Drawn slide pictures are drawn with Minicharts by April Zhu
+(https://april-zhu.com/minicharts), under the MIT License: Copyright (c) 2026
+April Zhu. Its exploded-view conventions are adapted from diagram-design by
+Cathryn Lavery (MIT). The full MIT text is at
+https://opensource.org/license/mit.
 
 -----------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007

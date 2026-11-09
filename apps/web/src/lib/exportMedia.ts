@@ -2,6 +2,9 @@ import { isLocalMedia, localMediaRef, type Course } from '@folio/core';
 import type { FolioMedia, MediaResolver, ResolvedMedia } from '@folio/export';
 import { mediaAnywhere } from '../state/mediaSync';
 
+/** How an export asks for a drawn slide picture (`drawingRef` in @folio/export, whose code is not loaded here). */
+const DRAWING_REF = 'drawing:';
+
 /**
  * Where an export gets a course's pictures, clips and files: from this device for what the teacher added, and
  * from the site for a sample course's own. Word shows PNG, JPEG and GIF only, and a file full of large
@@ -56,6 +59,12 @@ async function picture(blob: Blob): Promise<ResolvedMedia | null> {
 /** The resolver an export of this course is given. It runs on the page, where the device's media and a canvas are. */
 export function mediaResolver(courseId: string): MediaResolver {
   return async (ref, use) => {
+    // A drawn slide picture: drawn in the page's drawing frame and painted, as the slide shows it.
+    if (ref.startsWith(DRAWING_REF)) {
+      const { drawingPng } = await import('./drawing');
+      const png = await drawingPng(ref.slice(DRAWING_REF.length));
+      return png && { bytes: png.bytes, type: 'image/png', width: png.width, height: png.height };
+    }
     const found = await read(courseId, ref);
     if (!found) return null;
     if (use === 'picture') return picture(found.blob);

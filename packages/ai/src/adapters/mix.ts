@@ -48,6 +48,9 @@ export const FOLIO_MIX: Readonly<Record<string, { model: string; effort: Effort 
 export const FOLIO_OUTPUT_CAPS: Readonly<Record<string, number>> = {
   folio_clarify: 4000,
   folio_picture_check: 3000,
+  // Drawn slides: a pick is a short list; a card is code, 1,500 to 4,000 tokens in the November pilot, with its thinking.
+  folio_draw_pick: 3000,
+  folio_draw_card: 16000,
   // A form for one question: about 900 tokens with its thinking in measured calls.
   // Sol writes a quiz in about 1,500 tokens and a piece of work with its rubric and key in about 2,500.
   folio_quiz: 8000,

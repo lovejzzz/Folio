@@ -27,3 +27,4 @@ export { sheetsRun, workRun } from './sheetRun';
 export * from './checklist';
 export * from './rubricAlone';
 export * from './lessonFacts';
+export { DRAWINGS_PER_LESSON, drawSlide, withDrawings, pickDrawings, slideWords, type Drawer, type Pick as DrawPick } from './drawings';

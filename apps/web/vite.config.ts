@@ -5,9 +5,10 @@ import { defineConfig } from 'vite';
 import { cspHashes, previewHeaders } from './headers.plugin.ts';
 import { preloadFonts, trimFonts } from './fonts.plugin.ts';
 import { runner } from './runner.plugin.ts';
+import { drawFrame } from './draw.plugin.ts';
 
 export default defineConfig({
-  plugins: [trimFonts(), preloadFonts(), react(), babel({ presets: [reactCompilerPreset()] }), tailwindcss(), cspHashes(), runner(), previewHeaders()],
+  plugins: [trimFonts(), preloadFonts(), react(), babel({ presets: [reactCompilerPreset()] }), tailwindcss(), cspHashes(), runner(), drawFrame(), previewHeaders()],
   worker: { format: 'es' },
   build: {
     target: 'es2022',

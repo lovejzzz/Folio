@@ -1,0 +1,20 @@
+{
+  "name": "@folio/draw",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./kit": "./src/kitText.ts",
+    "./node": "./src/node.ts",
+    "./frame": "./src/frame/protocol.ts"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@folio/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@fontsource/gaegu": "^5.3.0",
+    "@fontsource/young-serif": "^5.3.0"
+  }
+}

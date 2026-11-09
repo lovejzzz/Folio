@@ -8,6 +8,7 @@ import { ExportError } from './errors';
 import { MIN_SIZE, fitSize, splitToFit, type Box } from './fit';
 import { compareOnSlide, stepsOnSlide } from './pptxBlocks';
 import { layersSvg, solidsSvg, svgToPng } from '@folio/figures';
+import { drawingRef, type ResolvedMedia } from './media';
 
 /**
  * Slide decks in the "paper and ink" look: paper background, Georgia ink
@@ -166,12 +167,26 @@ function quoteSlide(slide: PptSlide, s: Slide, f: Faces): void {
 /** Where a slide's table or chart stands: under the title, across the width, above a line or two of words. */
 const VISUAL = { x: LEFT, y: 1.85, w: TEXT_W, h: 3.9 };
 
+type Drawing = Extract<NonNullable<Slide['visual']>, { kind: 'drawing' }>;
+
+/** A drawn picture, as the page painted it, fitted into the visual's box; where it could not be painted, what it shows, in words. */
+function drawingOnSlide(slide: PptSlide, s: Slide, v: Drawing, png: ResolvedMedia | undefined, f: Faces): void {
+  const alt = [v.of, ...v.parts].filter(Boolean).join('; ');
+  if (!png) {
+    slide.addText(plainText(alt), { ...VISUAL, fontFace: f.body, fontSize: 16, color: printPalette.ink2, valign: 'top', fit: 'shrink', lang: f.lang, margin: 0 });
+    return;
+  }
+  const scale = Math.min(VISUAL.w / png.width, VISUAL.h / png.height);
+  const [w, h] = [png.width * scale, png.height * scale];
+  slide.addImage({ data: `${png.type};base64,${base64(png.bytes)}`, x: VISUAL.x + (VISUAL.w - w) / 2, y: VISUAL.y, w, h, altText: `${s.title}: ${alt}`.slice(0, 1000) });
+}
+
 /**
  * A slide whose content is a table or a chart: its title, the visual, and under it at most two lines. The
  * table is a table of PowerPoint's own and the chart a chart of its own, drawn from the numbers, so a teacher
  * can restyle either or change a value there.
  */
-function visualSlide(pptx: PptxGenJS, slide: PptSlide, s: Slide, f: Faces): void {
+function visualSlide(pptx: PptxGenJS, slide: PptSlide, s: Slide, f: Faces, pictures: ReadonlyMap<string, ResolvedMedia>): void {
   const v = s.visual!;
   if (v.kind === 'figure') return;
   slide.addText(inline(s.title, { fontFace: f.title }), { x: LEFT, y: 0.55, w: TEXT_W, h: 1.1, fontFace: f.title, fontSize: sized([s.title], { w: TEXT_W, h: 1.1 }, 32, 20), color: printPalette.ink, valign: 'bottom', fit: 'shrink', lang: f.lang, margin: 0 });
@@ -182,6 +197,8 @@ function visualSlide(pptx: PptxGenJS, slide: PptSlide, s: Slide, f: Faces): void
     stepsOnSlide(pptx, slide, v, f, VISUAL);
   } else if (v.kind === 'compare') {
     compareOnSlide(pptx, slide, v, f, VISUAL);
+  } else if (v.kind === 'drawing') {
+    drawingOnSlide(slide, s, v, pictures.get(drawingRef(v.code)), f);
   } else if (v.kind === 'layers' || v.kind === 'solids') {
     // The drawing as a picture, the same one the slide shows, fitted into the visual's box.
     const pic = v.kind === 'layers' ? layersSvg(v) : solidsSvg(v);
@@ -268,7 +285,7 @@ export function oneParagraphProps(file: Uint8Array): Uint8Array {
  * block's notes, which only the teacher copy carries. A deck with no slides
  * gets a single title slide so the file still opens.
  */
-export async function renderPptx(given: SemanticDoc): Promise<Uint8Array> {
+export async function renderPptx(given: SemanticDoc, pictures: ReadonlyMap<string, ResolvedMedia> = new Map()): Promise<Uint8Array> {
   const doc = cleanDoc(given);
   const pptx = new PptxGenJS();
   const f = faces(doc);
@@ -287,7 +304,7 @@ export async function renderPptx(given: SemanticDoc): Promise<Uint8Array> {
       continue;
     }
     const slide = pptx.addSlide({ masterName: MASTER });
-    if (s.visual) visualSlide(pptx, slide, s, f);
+    if (s.visual) visualSlide(pptx, slide, s, f, pictures);
     else LAYOUTS[s.layout](slide, s, f);
     footer(slide, f, s.lesson);
     if (s.notes) slide.addNotes(plainText(s.notes));

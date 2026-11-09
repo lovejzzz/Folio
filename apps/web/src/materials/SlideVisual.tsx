@@ -1,7 +1,9 @@
 import type { SlideVisual } from '@folio/core';
 import { EditableText } from '../components/editing/EditableText';
 import { useT } from '../i18n';
+import { slidesText } from '../i18n/slidesText';
 import { FigureView } from './figures/FigureView';
+import { DrawingView } from './DrawingTools';
 import { LayersView } from './LayersTools';
 import { SolidsView } from './SolidsTools';
 import { CompareView, StepsView } from './SlideBlocks';
@@ -25,13 +27,12 @@ function ceiling(max: number): number {
 const short = (n: number): string => (Math.abs(n) >= 1000 ? n.toLocaleString('en-US') : String(Math.round(n * 100) / 100));
 
 function ChartView({ v }: { v: Chart }) {
-  const t = useT();
   const top = ceiling(Math.max(...v.series.flatMap((s) => s.values), 0));
   const band = (PLOT.right - PLOT.left) / v.categories.length;
   const y = (n: number) => PLOT.bottom - (Math.max(0, n) / top) * (PLOT.bottom - PLOT.top);
   const x = (i: number) => PLOT.left + band * (i + 0.5);
   const one = v.series.length === 1;
-  const label = `${v.chart === 'bar' ? t.slides.barChart : t.slides.lineChart}: ${v.series.map((s) => `${s.name ? `${s.name}: ` : ''}${v.categories.map((c, i) => `${c} ${short(s.values[i] ?? 0)}${v.unit ? ` ${v.unit}` : ''}`).join(', ')}`).join('; ')}`;
+  const label = `${v.chart === 'bar' ? slidesText.barChart : slidesText.lineChart}: ${v.series.map((s) => `${s.name ? `${s.name}: ` : ''}${v.categories.map((c, i) => `${c} ${short(s.values[i] ?? 0)}${v.unit ? ` ${v.unit}` : ''}`).join(', ')}`).join('; ')}`;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="folio-slide-chart w-full" role="img" aria-label={label}>
       {[0, 0.5, 1].map((f) => (
@@ -73,7 +74,7 @@ function ChartView({ v }: { v: Chart }) {
         </text>
       ))}
       <text x={PLOT.left} y={H - 3} fontSize={6} style={{ fill: 'var(--folio-ink-2)' }}>
-        {[v.unit, !one && v.series.map((s, k) => `${k ? '□' : '■'} ${s.name}`).join('   '), v.illustrative && t.slides.illustrative].filter(Boolean).join('   ·   ')}
+        {[v.unit, !one && v.series.map((s, k) => `${k ? '□' : '■'} ${s.name}`).join('   '), v.illustrative && slidesText.illustrative].filter(Boolean).join('   ·   ')}
       </text>
     </svg>
   );
@@ -81,13 +82,12 @@ function ChartView({ v }: { v: Chart }) {
 
 /** The chart's numbers, to change where they stand: the chart is drawn from them again. */
 export function ChartData({ v, onChange }: { v: Chart; onChange: (next: Chart) => void }) {
-  const t = useT();
   const set = (k: number, i: number, text: string) => {
     const n = Number(text.replace(/,/g, ''));
     if (Number.isFinite(n)) onChange({ ...v, series: v.series.map((s, a) => (a === k ? { ...s, values: s.values.map((x, b) => (b === i ? n : x)) } : s)) });
   };
   return (
-    <table className="no-print mt-2 w-full border-collapse font-ui text-12 text-ink-2" aria-label={t.slides.chartData}>
+    <table className="no-print mt-2 w-full border-collapse font-ui text-12 text-ink-2" aria-label={slidesText.chartData}>
       <tbody>
         <tr>
           <th scope="row" className="pr-2 text-left font-semibold">
@@ -95,18 +95,18 @@ export function ChartData({ v, onChange }: { v: Chart; onChange: (next: Chart) =
           </th>
           {v.categories.map((c, i) => (
             <td key={i} className="border border-rule px-1.5 py-0.5">
-              <EditableText as="div" value={c} label={t.slides.category(i + 1)} onCommit={(text) => onChange({ ...v, categories: v.categories.map((x, b) => (b === i ? text : x)) })} />
+              <EditableText as="div" value={c} label={slidesText.category(i + 1)} onCommit={(text) => onChange({ ...v, categories: v.categories.map((x, b) => (b === i ? text : x)) })} />
             </td>
           ))}
         </tr>
         {v.series.map((s, k) => (
           <tr key={k}>
             <th scope="row" className="pr-2 text-left font-semibold">
-              {s.name || t.slides.values}
+              {s.name || slidesText.values}
             </th>
             {s.values.map((n, i) => (
               <td key={i} className="border border-rule px-1.5 py-0.5">
-                <EditableText as="div" value={String(n)} label={t.slides.valueOf(v.categories[i] ?? '')} onCommit={(text) => set(k, i, text)} />
+                <EditableText as="div" value={String(n)} label={slidesText.valueOf(v.categories[i] ?? '')} onCommit={(text) => set(k, i, text)} />
               </td>
             ))}
           </tr>
@@ -151,5 +151,6 @@ export function SlideVisualView({ visual, onChange, live = false }: { visual: Sl
   if (visual.kind === 'compare') return <CompareView v={visual} onChange={onChange} />;
   if (visual.kind === 'layers') return <LayersView v={visual} />;
   if (visual.kind === 'solids') return <SolidsView v={visual} />;
+  if (visual.kind === 'drawing') return <DrawingView v={visual} />;
   return <ChartView v={visual} />;
 }

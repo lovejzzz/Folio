@@ -172,6 +172,22 @@ export const SlideVisualSchema = z.discriminatedUnion('kind', [
     open: z.boolean().default(true),
     labels: z.boolean().default(true),
   }),
+  // A picture a model drew for the slide as a Minicharts card (packages/draw): the slide's content drawn as a thing
+  // from its own subject. Unlike every visual above, it is code. It is run only in the drawing frame, which has no
+  // origin, no network and no storage, and what comes out is shown as a picture: nothing in it runs on the page.
+  z.object({
+    kind: z.literal('drawing'),
+    code: z.string().max(40_000),
+    /** The kind of chart it is drawn as (a loop, an exploded view, a pie…), from the kit's own list. */
+    type: z.string().max(40).default(''),
+    /** What it shows, in a few words, and how to read it: its alt text with the parts' notes. */
+    of: text.default(''),
+    note: text.default(''),
+    /** What each part says when it is touched: the drawing's words, for alt text, Word and the outline. */
+    parts: z.array(text).max(60).default([]),
+    /** The visual it took the place of (steps, a table…), as JSON: what taking the picture off puts back, and what it is drawn again from. */
+    from: z.string().max(20_000).default(''),
+  }),
 ]);
 export type SlideVisual = z.infer<typeof SlideVisualSchema>;
 

@@ -6,7 +6,7 @@ import { renderDocx } from './docx';
 import { slugFilename } from './filenames';
 import { courseMediaIds, writeFolio, type FolioMedia } from './folioFile';
 import { exportLabels } from './labels';
-import type { MediaResolver } from './media';
+import { resolvePictures, type MediaResolver } from './media';
 import { hasNotebook, weekNotebook } from './notebook';
 import { renderQti } from './qti';
 import { renderPptx } from './pptx';
@@ -76,12 +76,15 @@ function docxFile(req: ExportRequest, kinds: MaterialKind[], part: string, opts:
   };
 }
 
-function pptxFile(req: ExportRequest): Planned {
+function pptxFile(req: ExportRequest, opts: ExportOptions): Planned {
   const part = courseLabels(req.course).materials.slides;
   return {
     name: slugFilename(req.course.title, part, audienceLabel(req), 'pptx', scopeName(req)),
     mime: MIME.pptx,
-    make: () => renderPptx(projectOne(req, 'slides')),
+    make: async () => {
+      const doc = projectOne(req, 'slides');
+      return renderPptx(doc, await resolvePictures([doc], opts.media));
+    },
   };
 }
 
@@ -161,7 +164,7 @@ function notebookFiles(req: ExportRequest): Planned[] {
 function zipContents(req: ExportRequest, opts: ExportOptions): Planned[] {
   const l = courseLabels(req.course);
   const files = req.kinds.map((k) => docxFile(req, [k], l.materials[k], opts));
-  if (req.kinds.includes('slides')) files.push(pptxFile(req));
+  if (req.kinds.includes('slides')) files.push(pptxFile(req, opts));
   if (req.kinds.includes('quiz')) files.push(quizFile(req, 'csv'));
   // With the quiz bank, the same questions as Canvas takes them in: only where the answers may go.
   if (req.kinds.includes('quiz') && req.audience === 'teacher') files.push(qtiFile(req));
@@ -175,7 +178,7 @@ function plan(req: ExportRequest, opts: ExportOptions): Planned {
     case 'docx':
       return docxFile(req, req.kinds, partName(req), opts);
     case 'pptx':
-      return pptxFile(req);
+      return pptxFile(req, opts);
     case 'xlsx':
     case 'csv':
       return quizFile(req, req.format);

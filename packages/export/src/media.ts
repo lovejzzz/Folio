@@ -16,6 +16,13 @@ export interface ResolvedMedia {
   name?: string;
 }
 
+/**
+ * A drawn slide picture is asked for as media too: its reference is its code, which the page draws in its drawing
+ * frame and paints. An export runs in a worker, which has neither; without a resolver the slide says its words.
+ */
+export const DRAWING_REF = 'drawing:';
+export const drawingRef = (code: string): string => `${DRAWING_REF}${code}`;
+
 /** `picture` asks for a format Word can show (PNG, JPEG or GIF); `file` for the bytes as they are. */
 export type MediaResolver = (ref: string, use: 'picture' | 'file') => Promise<ResolvedMedia | null>;
 
@@ -30,7 +37,7 @@ export function wordImageType(type: string): WordImageType | null {
 export async function resolvePictures(docs: readonly SemanticDoc[], resolve: MediaResolver | undefined): Promise<Map<string, ResolvedMedia>> {
   const found = new Map<string, ResolvedMedia>();
   if (!resolve) return found;
-  const refs = new Set(docs.flatMap((d) => d.blocks.flatMap((b) => (b.t === 'image' && b.src ? [b.src] : []))));
+  const refs = new Set(docs.flatMap((d) => d.blocks.flatMap((b) => (b.t === 'image' && b.src ? [b.src] : b.t === 'slide' && b.visual?.kind === 'drawing' ? [drawingRef(b.visual.code)] : []))));
   for (const ref of refs) {
     const media = await resolve(ref, 'picture').catch(() => null);
     if (media && wordImageType(media.type) && media.width > 0 && media.height > 0) found.set(ref, media);

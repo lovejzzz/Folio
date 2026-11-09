@@ -14,6 +14,7 @@ import { MATERIAL_KINDS, CourseStore, OnlineSchema, cmd, orderedLessons, parseCo
 import { FOLIO_MIX } from '../../../packages/ai/src/adapters/mix';
 import { withHandouts } from '../../../packages/ai/src/handouts';
 import { planReadAgain } from '../../../packages/ai/src/sections';
+import { drawInNode } from '@folio/draw/node';
 import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, supportedHandout, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawn } from 'node:child_process';
@@ -291,6 +292,7 @@ function noteFlags(name: string, course: Course): void {
  * from the local key page, never printed), so that what a course costs is counted from the tokens each call reports.
  */
 const PAID = ARGS.includes('--paid');
+const DRAW = ARGS.includes('--draw');
 const keyOf = async (name: string) => (await (await fetch(`http://127.0.0.1:8799/key/${name}`, { headers: { 'x-experiment': '1' } })).text()).trim();
 const KEYS = PAID ? { anthropic: await keyOf('anthropic'), openai: await keyOf('openai') } : null;
 /** `--trace <dir>`: every paid call's request and answer, whole, in a file of its own: what a cost study reads. No key is in either. */
@@ -343,6 +345,8 @@ async function build(name: string, store: CourseStore, targets: BuildTarget[], f
     reviewer: inference,
     wholeRead: ARGS.includes('--read'),
     run: RUN ? { runner: RUNNER, r: R ?? undefined, saveFigure: (png) => saveFigure(name, png) } : undefined,
+    // --draw: decks get drawn pictures, as a teacher who turned them on gets; drawn here in Node.
+    ...(DRAW ? { draw: async (code: string) => drawInNode(code) } : {}),
     getCourse: store.getState,
     commit: (_target, commands) => {
       store.apply(commands, { label: { key: 'built' }, source: 'ai', undoable: false });

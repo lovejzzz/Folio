@@ -169,6 +169,11 @@ function mend(prompt: string) {
   return { segments: [], left: [] };
 }
 
+/** A drawn card with no number in it: two jars on a shelf, each touchable. */
+const JARS = `card({id:'jars', name:'Bar chart', of:'two jars', note:'Two jars on a shelf. Touch a jar.', draw(){
+  [['first jar', 120], ['second jar', 300]].forEach(([n, x]) => PT(n, () => { flat(rrect(x, 180, 100, 140, 10), '#c4a46b'); lid(rrect(x, 180, 100, 140, 10)); TX(x + 50, 350, n, {anchor:'middle'}); }, {lift:[0,-6]}));
+}});`;
+
 function answerFor(body: Body, python = false): unknown {
   const system = typeof body.system === 'string' ? body.system : (body.system ?? []).map((b) => b.text).join('\n');
   const prompt = [system, ...body.messages.map((m) => m.content)].join('\n');
@@ -180,6 +185,12 @@ function answerFor(body: Body, python = false): unknown {
   if (prompt.includes('Write the key to each sheet')) return { keys: [{ title: 'Exit ticket', key: 'Light, water and carbon dioxide go in; sugar and oxygen come out.' }], corrections: [] };
   // The sheets a plan hands out: one exit ticket, with its key.
   if (prompt.includes('Write the sheets this lesson puts in students')) return { handouts: [{ title: 'Exit ticket', kind: 'slips', usedIn: 'Exit ticket', copies: 'One per student', key: '', blocks: [{ type: 'para', text: 'Answer before you leave.' }, { type: 'list', items: ['What goes into a leaf, and what comes out?'] }, { type: 'yours', text: 'Your answer' }] }] };
+  // A slide drawn as a picture: the slide the teacher asked for, drawn as two jars, each a part to touch.
+  if (prompt.includes('Pick the slides of this lesson that would gain most')) {
+    const asked = prompt.match(/Choose how to draw slide (\d+)/);
+    return { slides: asked ? [{ slide: Number(asked[1]), type: 'bar', object: 'two jars' }] : [] };
+  }
+  if (prompt.includes('You draw one Minicharts card')) return { type: 'bar', object: 'two jars', code: JARS };
   // The plan review: a plan written by the fake has nothing wrong with it.
   if (prompt.includes('Check this plan the way')) return { issues: [] };
   // Asked before the plan itself: a mend's request quotes the plan's.

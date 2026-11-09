@@ -1,5 +1,37 @@
 [
  {
+  "version": "0.0.64",
+  "date": "November 9, 2026",
+  "title": "Slides drawn as pictures",
+  "lede": "Folio can now draw a slide as a picture of its own subject: a life cycle as a loop of stages, the steps of a plan as the papers each step makes. It is drawn with Minicharts by April Zhu, checked by Folio, and off unless a teacher turns it on.",
+  "sections": [
+   {
+    "heading": "A slide's point, drawn as a thing",
+    "body": "Some slides carry their point better as a picture than as words: a cycle, a sequence, things compared, a thing and its parts. Turned on in Settings, Folio picks up to two slides of each lesson as it is written, chooses a kind of chart for what each teaches and an object from its own subject, and has the AI draw it as a Minicharts card: hand-drawn, to scale, every part named. Each picture is one more AI request, so it is off unless a teacher turns it on; the switch has a small example beside it.",
+    "image": {
+     "src": "/changelog/0.0.64-drawn.webp",
+     "alt": "A slide's table of three life cycles (bean, butterfly, frog), and the same drawn as three loops of stages, each stage a small picture",
+     "width": 576,
+     "height": 300
+    }
+   },
+   {
+    "heading": "Checked before a slide shows it",
+    "body": "A picture says only what its slide says. Folio reads every drawing before it is shown: a number the slide does not give, writing off the edge, nothing to touch, and, for a slide that asks a question, its answer or its choices. In a trial, a drawing for a multiple-choice slide wrote the right choice under its last balance; a question's drawing is now made without the teacher's notes, which hold the answer, and checked for it. A drawing with faults goes back once with them; one that still has faults is not shown, and the slide keeps what it had. The code of a drawing runs only in a frame with no network and no storage, and what comes out is a picture.",
+    "image": {
+     "src": "/changelog/0.0.64-plan.webp",
+     "alt": "Lincoln's Ten Percent Plan drawn as five steps, each a paper or a place: the proclamation, an oath, a pardon, a grid of 100 voters with 10 marked, and a statehouse",
+     "width": 520,
+     "height": 420
+    }
+   },
+   {
+    "heading": "One slide at a time",
+    "body": "Under any slide there is a box for an idea (as marbles in a tray, as a loop) and a button that draws that slide, whether or not drawing is turned on. A drawn slide can be saved as SVG or PNG, drawn again, or taken off, which puts back the steps or table it replaced. Decks and Word files hold the same picture. The words every page loads were trimmed to make room."
+   }
+  ]
+ },
+ {
   "version": "0.0.63",
   "date": "November 5, 2026",
   "title": "Things taken apart, as they are shaped",
