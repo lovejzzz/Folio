@@ -1,5 +1,27 @@
 [
  {
+  "version": "0.0.66",
+  "date": "November 10, 2026",
+  "title": "What came before, by its name",
+  "lede": "Two faults the geology sample's readers found in more than one week, fixed where they were written.",
+  "sections": [
+   {
+    "heading": "Never “last time”",
+    "body": "In a week of two lectures and a lab, the meeting before today may be this week's own lecture, or a midterm. Plans that said “from last time” pointed students at a test. A plan now names what came before by what it was: the lecture on earthquakes, the lab on minerals.",
+    "image": {
+     "src": "/changelog/0.0.66-before.webp",
+     "alt": "A plan line crossed out, “Open with the San Andreas fence offset from last time”, the meeting before having been the midterm, and the same line naming the lecture on earthquakes",
+     "width": 576,
+     "height": 300
+    }
+   },
+   {
+    "heading": "A test asks for what was taught",
+    "body": "A week-5 midterm asked students to name a principle first taught in week 7: it belonged to the subject, so the paper took it as known. A test is now kept to the laws, principles and terms the lessons before it named."
+   }
+  ]
+ },
+ {
   "version": "0.0.65",
   "date": "November 9, 2026",
   "title": "Two university samples, drawn",

@@ -82,11 +82,14 @@ export function sessionList(sessions: Session[]): string {
   return sessions.map((s) => `a ${s.minutes}-minute ${SESSION_NAMES[s.kind]}`).join(', then ');
 }
 
+// Told nothing, plans tied today's lecture to "the fence offset from last time" when the meeting before was the midterm.
+const LAST_TIME = 'What came before is named by what it was (the lecture on faults, the lab on minerals), never "last time": the meeting just before may have been a test.';
+
 function sessionsLine(course: Course): string {
   const sessions = lessonSessions(course);
-  if (sessions.length < 2) return `Each lesson lasts ${course.shape.minutesPerLesson} minutes.`;
+  if (sessions.length < 2) return `Each lesson lasts ${course.shape.minutesPerLesson} minutes.${course.lessonOrder.length > 1 ? ` ${LAST_TIME}` : ''}`;
   const kinds = [...new Set(sessions.map((s) => s.kind))];
-  return `Each lesson meets ${sessions.length} times: ${sessionList(sessions)}. What each is for: ${kinds.map((k) => SESSION_GUIDE[k]).join('; ')}. They fall on different days: "today", "earlier" and "next time" are said of one meeting, and a sheet from another meeting is named by that meeting.`;
+  return `Each lesson meets ${sessions.length} times: ${sessionList(sessions)}. What each is for: ${kinds.map((k) => SESSION_GUIDE[k]).join('; ')}. They fall on different days: "today", "earlier" and "next time" are said of one meeting, and a sheet from another meeting is named by that meeting. ${LAST_TIME}`;
 }
 
 /**
