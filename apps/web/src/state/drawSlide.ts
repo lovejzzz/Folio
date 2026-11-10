@@ -1,6 +1,6 @@
 import { drawSlide, pickDrawings } from '@folio/ai';
 import { cmd, lessonNumber } from '@folio/core';
-import { drawCard } from '../lib/drawing';
+import { pageDrawer } from '../lib/drawing';
 import { drawText } from '../i18n/drawText';
 import { canReach, currentInference, errorMessage } from './model';
 import { activeStore } from './session';
@@ -24,7 +24,7 @@ export async function drawSlideAt(lessonId: string, slideId: string, hint: strin
   if (!lesson || !n) return;
   try {
     const [pick] = await pickDrawings(inference, course, lesson, 1, undefined, { slide: n, hint: hint.trim() });
-    const drawn = pick && (await drawSlide(inference, drawCard, course, lesson, pick));
+    const drawn = pick && (await drawSlide(inference, pageDrawer, course, lesson, pick));
     if (!drawn) return void toast({ message: drawText.noDrawing, tone: 'attention' });
     // Put on the slide as it is now: the teacher may have gone on editing while it was drawn.
     const now = store.getState().lessons[lessonId];

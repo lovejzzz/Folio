@@ -456,6 +456,12 @@ export const GradeCardSchema = z.object({
   length: text.default(''),
   /** Where its data or material comes from, as the brief says. */
   source: text.default(''),
+  /**
+   * The meeting of a lesson it is due at, where the brief names one ("each due at the start of the next lab"). Empty
+   * when it does not: then a piece is due at the lesson's first meeting. Told nothing of this, every lab report of a
+   * course with two lectures and a lab a week was collected at the first lecture, two meetings before the lab.
+   */
+  at: z.enum(['', 'lab', 'lecture', 'seminar', 'recitation', 'section', 'tutorial']).default(''),
 });
 export type GradeCard = z.infer<typeof GradeCardSchema>;
 

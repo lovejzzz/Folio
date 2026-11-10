@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { orderedLessons } from '@folio/core';
 import { OutlineDraft, courseFromOutline, outlinePrompt, type NewCourseRequest } from '../src';
 import { gradingIn } from '../src/gradingIn';
-import { formOf, placedWork } from '../src/placement';
+import { briefWeeks, formOf, placedWork, statedWeeks } from '../src/placement';
 
 const PHYSICS = 'Mechanics for first-year students. Weekly problem sets 20%, recitation group problems 10%, two midterms 20% each, final exam 30%.';
 const tests = (brief: string, n: number) => placedWork(gradingIn(brief), n).flatMap((held, i) => held.filter((p) => p.kind === 'test').map((p) => `${i + 1} ${p.toward}`));
@@ -53,4 +53,17 @@ describe('where a course’s recurring work and its tests fall', () => {
     expect(model.calls).toHaveLength(2);
     expect(model.calls[1]!.prompt).toMatch(/No lesson holds these graded components, named exactly as under "grading": Data analysis project\./);
   });
+
+  it('sits tests in the weeks the brief gives them, when it says how long the course runs', () => {
+    const geo = 'Grading: lab reports 30% (each due at the start of the next lab), two midterm exams in weeks 5 and 9 (15% each), weekly online quizzes 10%, and a final exam after week 12 (30%).';
+    const at = (n: number, weeks?: number) => placedWork(gradingIn(geo), n, true, true, weeks).flatMap((held, i) => held.filter((p) => p.kind === 'test').map((p) => `${i + 1} ${p.toward}`));
+    expect(at(12, 12)).toEqual(['5 Midterm exam 1', '9 Midterm exam 2', '12 Final exam']);
+    // Two lessons a week: the last lesson of each week named.
+    expect(at(24, 12)).toEqual(['10 Midterm exam 1', '18 Midterm exam 2', '24 Final exam']);
+    // Without the course's length the weeks cannot be read as lessons: spread evenly, as before.
+    expect(at(12)).toEqual(['4 Midterm exam 1', '8 Midterm exam 2', '12 Final exam']);
+    expect(briefWeeks('Introduction to physical geology: a 12-week term, each week two lectures.')).toBe(12);
+    expect(statedWeeks('a midterm exam in week 3 (30%)')).toEqual([3]);
+  });
 });
+

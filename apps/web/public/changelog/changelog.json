@@ -1,5 +1,37 @@
 [
  {
+  "version": "0.0.65",
+  "date": "November 9, 2026",
+  "title": "Two university samples, drawn",
+  "lede": "Two new sample courses for first-year university, made by Folio with drawing turned on: a six-week summer session of microeconomics and a twelve-week physical geology course with labs. Making them showed where drawings and deadlines still went wrong, and those are fixed where they are produced.",
+  "sections": [
+   {
+    "heading": "Two new samples",
+    "body": "Principles of microeconomics runs six weeks; Introduction to physical geology runs twelve, with two lectures and a lab each week. Both were written by Folio from a teacher's brief with drawing on, then read in full by expert readers, as every sample is: what they found was corrected, and a drawing that was wrong or unclear was taken off and its slide given back the table or steps it replaced. Ten of twelve drawings stayed in microeconomics and fourteen of twenty-three in geology.",
+    "image": {
+     "src": "/changelog/0.0.65-faults.webp",
+     "alt": "Three kinds of fault drawn as blocks of rock: normal, under tension, the hanging wall down; reverse, under compression, the hanging wall up; strike-slip, under shear, the blocks sliding past",
+     "width": 520,
+     "height": 420
+    }
+   },
+   {
+    "heading": "A drawing is looked at before it is kept",
+    "body": "Where a drawing can be painted, the picture itself is now looked at once, as a student would see it: a label on a mark, a prop that hides the point, a value drawn where it has no meaning. What it finds is mended in the same answer, and the mended card is kept only if it still passes every check. A slide that asks students to work something out (a question, a list to make, the longest to mark) is no longer picked to be drawn as a lesson is written: a picture of what it gives did the working for them. A teacher can still draw one; its notes, which hold the answer, are not shown to the drawing.",
+    "image": {
+     "src": "/changelog/0.0.65-grade.webp",
+     "alt": "Shale, slate, phyllite, schist and gneiss drawn as rising blocks, each with its look: dull and splitting flat, a silky sheen, mica and garnet, light and dark bands",
+     "width": 520,
+     "height": 420
+    }
+   },
+   {
+    "heading": "Deadlines where the brief puts them",
+    "body": "A brief that says lab reports are due at the start of the next lab now has them due at that lab, not at the next lesson's first lecture. Exams placed in stated weeks (midterms in weeks 5 and 9) fall in those weeks. Work set in the last lesson is due on a date the teacher gives, since there is no later meeting. Grading lines with weights in brackets read cleanly, and a weekly quiz is about its own lesson unless the brief says it prepares for the next."
+   }
+  ]
+ },
+ {
   "version": "0.0.64",
   "date": "November 9, 2026",
   "title": "Slides drawn as pictures",

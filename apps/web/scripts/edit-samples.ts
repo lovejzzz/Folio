@@ -39,7 +39,7 @@ interface Edit {
   nth?: number;
   /** How each graded component is judged, by its name: what the outline now records, for a sample outlined before it did. */
   judged?: Record<string, 'levels' | 'complete'>;
-  /** With `slide` (counted from 1 in the lesson's deck): the picture that slide holds, checked as a course file checks it. A slide that holds one already keeps it unless `over`. */
+  /** With `slide` (counted from 1 in the lesson's deck): a find and replace on that slide alone, or the picture that slide holds, checked as a course file checks it. A slide that holds one already keeps it unless `over`. */
   slide?: number;
   visual?: unknown;
   over?: boolean;
@@ -164,7 +164,8 @@ function editOne(name: SampleName): void {
       for (const rubric of Object.values(course.rubrics)) for (const level of rubric.levels) [level.label, level.points] = edit.relabel[level.label] ?? [level.label, level.points];
       continue;
     }
-    const parts = scope(course, edit.lesson);
+    // With `slide`, only that slide: a continued slide's notes repeat the plan's words, which stay.
+    const parts = edit.slide ? [orderedLessons(course)[edit.lesson! - 1]!.slides[edit.slide - 1]!] : scope(course, edit.lesson);
     const found = parts.reduce((n, part) => n + walk(part, edit, false), 0);
     if (found === 0 || (found > 1 && !edit.all)) throw new Error(`${name}: "${edit.find!.slice(0, 60)}" found ${found} times${edit.lesson ? ` in lesson ${edit.lesson}` : ''}`);
     for (const part of parts) walk(part, edit, true);

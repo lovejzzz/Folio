@@ -54,17 +54,45 @@ function spaced(count: number, n: number): number[] {
   return Array.from({ length: count }, (_, k) => Math.min(Math.max(2, Math.round(((k + 1) * n) / (count + 1))), Math.max(2, n - 1)));
 }
 
+/** The weeks a brief gives for a run of tests ("two midterm exams in weeks 5 and 9"), in order; none when it gives none. */
+export function statedWeeks(said: string): number[] {
+  const list = /\bweeks?\s+(\d{1,2}(?:\s*(?:,|and|&)\s*\d{1,2})*)/i.exec(said)?.[1] ?? '';
+  return [...list.matchAll(/\d{1,2}/g)].map((m) => Number(m[0]));
+}
+
+/** How many weeks the brief says the course runs ("a 12-week term"), or none. */
+export const briefWeeks = (brief: string): number | undefined => {
+  const w = /\b(\d{1,2})[- ]week\b/i.exec(brief)?.[1];
+  return w ? Number(w) : undefined;
+};
+
+/**
+ * The lessons that hold a run of tests: in the weeks the brief gives them, where it gives one for each and says how
+ * long the course runs (the last lesson of that week); otherwise evenly through the course. Spread evenly, a brief's
+ * "two midterm exams in weeks 5 and 9" of a twelve-week term were sat in weeks 4 and 8.
+ */
+function testLessons(run: string[], said: string, n: number, weeks?: number): number[] {
+  const given = statedWeeks(said);
+  if (!weeks || given.length !== run.length || given.some((w) => w < 1 || w > weeks)) return spaced(run.length, n);
+  return given.map((w) => Math.min(n, Math.max(1, Math.round((w * n) / weeks))));
+}
+
 /** The pieces the rules place, for each lesson in order. */
-export function placedWork(stated: StatedItem[], n: number, tests = true, often = false): Homework[][] {
+export function placedWork(stated: StatedItem[], n: number, tests = true, often = false, weeks?: number): Homework[][] {
   const lessons: Homework[][] = Array.from({ length: n }, () => []);
   const forms = stated.map((st) => ({ st, form: formOf(st) }));
   // Tests that are not the last one, a run at a time: "Midterm 1" and "Midterm 2" are one run, the four of "four quizzes"
   // another, each spread through the course on its own; two that fall on one lesson, the later moves on by one.
   const runs = new Map<string, string[]>();
-  for (const { st, form } of forms) if (tests && form.kind === 'test' && !form.every && !form.last) runs.set(st.item.replace(/\s+\d+$/, ''), [...(runs.get(st.item.replace(/\s+\d+$/, '')) ?? []), ...Array.from({ length: st.count ?? 1 }, () => st.item)]);
+  const saidOf = new Map<string, string>();
+  for (const { st, form } of forms) if (tests && form.kind === 'test' && !form.every && !form.last) {
+    const key = st.item.replace(/\s+\d+$/, '');
+    runs.set(key, [...(runs.get(key) ?? []), ...Array.from({ length: st.count ?? 1 }, () => st.item)]);
+    saidOf.set(key, st.said);
+  }
   const taken = new Set<number>();
-  for (const run of [...runs.values()].sort((a, b) => a.length - b.length))
-    spaced(run.length, n).forEach((at, k) => {
+  for (const [key, run] of [...runs].sort((a, b) => a[1].length - b[1].length))
+    testLessons(run, saidOf.get(key) ?? '', n, weeks).forEach((at, k) => {
       let free = at;
       while (taken.has(free) && free < n - 1) free += 1;
       taken.add(free);
@@ -92,10 +120,10 @@ const ORDER = { test: 0, inclass: 1, assignment: 2, step: 3, none: 4 } as const;
  * The course with its recurring work and tests placed by rule, and the outline's own pieces kept only for the components
  * whose lessons are its to name. A weekly assignment is due at the next lesson.
  */
-export function withPlacement(course: Course, stated: StatedItem[], tests: boolean): void {
+export function withPlacement(course: Course, stated: StatedItem[], tests: boolean, weeks?: number): void {
   const n = course.lessonOrder.length;
   if (!stated.length || n < 2) return;
-  const placed = placedWork(stated, n, tests, course.shape.sessions.length > 1);
+  const placed = placedWork(stated, n, tests, course.shape.sessions.length > 1, weeks);
   // Where the outline was not told the tests' lessons beforehand (its count of lessons was its own), its tests stand.
   const nominated = new Set(stated.filter((st) => formOf(st).nominated || (!tests && formOf(st).kind === 'test' && !formOf(st).every)).map((st) => st.item));
   // A paper is not due in the lesson of a test, nor in the one before it: the week students sit an exam is the week a
@@ -118,9 +146,9 @@ export function withPlacement(course: Course, stated: StatedItem[], tests: boole
 }
 
 /** Told to the outline's writer before it orders the lessons, so what is taught fits around what is placed. */
-export function placementLine(stated: StatedItem[], n: number | null, often = false): string {
+export function placementLine(stated: StatedItem[], n: number | null, often = false, weeks?: number): string {
   if (!stated.length || !n || n < 2) return '';
-  const placed = placedWork(stated, n, true, often);
+  const placed = placedWork(stated, n, true, often, weeks);
   const every = stated.filter((st) => formOf(st).every).map((st) => `"${st.item}"`);
   const sat = placed.flatMap((held, i) => held.filter((p) => p.kind === 'test' && !formOf(stated.find((st) => st.item === p.toward)!).every).map((p) => `lesson ${i + 1}: "${p.toward}"`));
   const named = stated.filter((st) => formOf(st).nominated).map((st) => `"${st.item}"${st.count ? ` (${st.count} of them)` : ''}`);

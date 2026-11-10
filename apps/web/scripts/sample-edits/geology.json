@@ -1,0 +1,849 @@
+[
+ {
+  "lesson": 1,
+  "slide": 4,
+  "visual": {
+   "kind": "table",
+   "columns": [
+    "Layer",
+    "Thickness or depth",
+    "Main material",
+    "Approximate density (g/cm³)"
+   ],
+   "rows": [
+    [
+     "Continental crust",
+     "about 35 km",
+     "granitic rock",
+     "2.7"
+    ],
+    [
+     "Oceanic crust",
+     "about 7 km",
+     "basalt",
+     "3.0"
+    ],
+    [
+     "Mantle",
+     "to 2,890 km depth",
+     "peridotite",
+     "3.3 at the top"
+    ],
+    [
+     "Outer core",
+     "2,890 to 5,150 km depth",
+     "liquid iron-nickel alloy",
+     "10 to 12"
+    ],
+    [
+     "Inner core",
+     "5,150 to 6,371 km depth",
+     "solid iron-nickel alloy",
+     "about 13"
+    ]
+   ]
+  },
+  "over": true,
+  "why": "Layers drawn at equal thickness and oceanic crust under continental; the visual it replaced is put back."
+ },
+ {
+  "lesson": 1,
+  "slide": 6,
+  "visual": {
+   "kind": "compare",
+   "sides": [
+    {
+     "title": "P waves",
+     "points": [
+      "Compressional waves",
+      "Pass through solids and liquids",
+      "Cross the core, bent at its boundaries"
+     ]
+    },
+    {
+     "title": "S waves",
+     "points": [
+      "Shear waves",
+      "Pass only through solids",
+      "Stop at the core",
+      "So the outer core is liquid"
+     ]
+    }
+   ],
+   "ask": ""
+  },
+  "over": true,
+  "why": "Waves start outside the planet; the P-wave label points at nothing; the visual it replaced is put back."
+ },
+ {
+  "lesson": 2,
+  "slide": 11,
+  "visual": {
+   "kind": "table",
+   "columns": [
+    "Arrangement",
+    "Example mineral",
+    "Oxygens shared per tetrahedron"
+   ],
+   "rows": [
+    [
+     "Isolated",
+     "olivine",
+     "0"
+    ],
+    [
+     "Single chain",
+     "pyroxene (augite)",
+     "2"
+    ],
+    [
+     "Double chain",
+     "amphibole (hornblende)",
+     "2 and 3"
+    ],
+    [
+     "Sheet",
+     "mica, clay",
+     "3"
+    ],
+    [
+     "Framework",
+     "quartz, feldspar",
+     "4"
+    ]
+   ]
+  },
+  "over": true,
+  "why": "The tetrahedra are not shown joined, so the three arrangements look alike; the visual it replaced is put back."
+ },
+ {
+  "lesson": 3,
+  "slide": 5,
+  "visual": {
+   "kind": "steps",
+   "steps": [
+    {
+     "title": "Olivine and calcium-rich plagioclase",
+     "detail": "hottest"
+    },
+    {
+     "title": "Pyroxene",
+     "detail": ""
+    },
+    {
+     "title": "Amphibole",
+     "detail": ""
+    },
+    {
+     "title": "Biotite and sodium-rich plagioclase",
+     "detail": ""
+    },
+    {
+     "title": "K-feldspar and muscovite",
+     "detail": ""
+    },
+    {
+     "title": "Quartz",
+     "detail": "coolest and last"
+    }
+   ],
+   "cycle": false
+  },
+  "over": true,
+  "why": "Answers the slide question; the visual it replaced is put back."
+ },
+ {
+  "lesson": 6,
+  "slide": 14,
+  "visual": {
+   "kind": "table",
+   "columns": [
+    "Process",
+    "From",
+    "To"
+   ],
+   "rows": [
+    [
+     "Weathering, erosion, deposition",
+     "any rock",
+     "sediment"
+    ],
+    [
+     "Lithification",
+     "sediment",
+     "sedimentary rock"
+    ],
+    [
+     "Metamorphism",
+     "any rock",
+     "metamorphic rock"
+    ],
+    [
+     "Melting",
+     "any rock",
+     "magma"
+    ],
+    [
+     "Crystallization",
+     "magma",
+     "igneous rock"
+    ]
+   ]
+  },
+  "over": true,
+  "why": "Answers the slide task (the routes of an igneous rock); the visual it replaced is put back."
+ },
+ {
+  "lesson": 7,
+  "slide": 14,
+  "visual": {
+   "kind": "table",
+   "columns": [
+    "Eon",
+    "Span",
+    "Marker"
+   ],
+   "rows": [
+    [
+     "Hadean",
+     "4.54 to 4.0 billion years ago",
+     "Earth forms; oldest minerals, zircons of about 4.4 billion years"
+    ],
+    [
+     "Archean",
+     "4.0 to 2.5 billion years ago",
+     "oldest well-preserved rocks; first life"
+    ],
+    [
+     "Proterozoic",
+     "2.5 billion to 541 million years ago",
+     "oxygen builds up; complex cells and first animals"
+    ],
+    [
+     "Phanerozoic",
+     "541 million years ago to now",
+     "abundant visible fossils"
+    ]
+   ]
+  },
+  "over": true,
+  "why": "Answers the slide task (which eon lasted longest); the visual it replaced is put back."
+ },
+ {
+  "lesson": 8,
+  "slide": 3,
+  "visual": {
+   "kind": "steps",
+   "steps": [
+    {
+     "title": "Plates move steadily",
+     "detail": "while the fault stays locked"
+    },
+    {
+     "title": "Rock bends",
+     "detail": "and stores elastic energy"
+    },
+    {
+     "title": "Friction is overcome",
+     "detail": "and the fault slips"
+    },
+    {
+     "title": "Rock springs back",
+     "detail": "and energy radiates as seismic waves"
+    }
+   ],
+   "cycle": false
+  },
+  "over": true,
+  "why": "A false equation and not the slide point; the visual it replaced is put back."
+ },
+ {
+  "lesson": 8,
+  "slide": 17,
+  "visual": {
+   "kind": "table",
+   "columns": [
+    "Hazard",
+    "Cause",
+    "Where worst"
+   ],
+   "rows": [
+    [
+     "Ground shaking",
+     "Surface and S waves",
+     "Soft sediment, weak buildings"
+    ],
+    [
+     "Tsunami",
+     "Sudden sea-floor uplift or drop",
+     "Low coasts facing a subduction zone"
+    ],
+    [
+     "Liquefaction",
+     "Rising pore-water pressure",
+     "Loose, saturated sand and fill"
+    ]
+   ]
+  },
+  "over": true,
+  "why": "Damage types not shown; tsunami missing; the visual it replaced is put back."
+ },
+ {
+  "lesson": 11,
+  "slide": 7,
+  "visual": {
+   "kind": "steps",
+   "steps": [
+    {
+     "title": "Soil and unsaturated zone",
+     "detail": "Pores hold air and some water"
+    },
+    {
+     "title": "Water table",
+     "detail": "Top of the saturated zone"
+    },
+    {
+     "title": "Saturated zone in sand (unconfined aquifer)",
+     "detail": "Pores filled with water"
+    },
+    {
+     "title": "Clay aquitard",
+     "detail": "Passes water too slowly"
+    },
+    {
+     "title": "Saturated sand (confined aquifer)",
+     "detail": "Lies beneath the aquitard"
+    },
+    {
+     "title": "Bedrock",
+     "detail": "Base of this profile"
+    }
+   ],
+   "cycle": false
+  },
+  "over": true,
+  "why": "The water table drawn as an underground lake; the visual it replaced is put back."
+ },
+ {
+  "lesson": 1,
+  "find": "Pairs receive the Plate boundaries world map sheet: a world map showing",
+  "replace": "Pairs receive the Plate boundaries world map sheet, which the instructor prepares in advance from a printed plate-boundary world map (no map is included in these materials): a world map showing",
+  "why": "The map the 30-minute activity and lab report task 4 depend on exists nowhere in the materials, and nobody is told to supply it."
+ },
+ {
+  "lesson": 1,
+  "find": "Use the Plate boundaries world map.",
+  "replace": "Use the Plate boundaries world map your instructor gives each pair.",
+  "why": "Tells students where the map comes from, since it is not printed on this sheet."
+ },
+ {
+  "lesson": 1,
+  "find": "These plates are labeled: Nubian,",
+  "replace": "These plates are labeled: Nubian (African),",
+  "why": "The Nubian plate is the African plate; listing both as separate plates is contradictory."
+ },
+ {
+  "lesson": 1,
+  "find": "North American, African and Adriatic",
+  "replace": "North American and Adriatic",
+  "why": "Removes the duplicate African label (Nubian is the African plate)."
+ },
+ {
+  "lesson": 1,
+  "find": "North American, African, and Adriatic plates labeled",
+  "replace": "North American and Adriatic plates labeled (the Nubian plate is the African plate)",
+  "why": "Same duplicate plate label in the plan."
+ },
+ {
+  "lesson": 1,
+  "find": "In 1936 Inge Lehmann used waves that bounced off the center to show that the inner core is solid.",
+  "replace": "In 1936 Inge Lehmann used faint P waves that arrived where the liquid outer core should have kept them out to show that Earth has a distinct inner core; later seismic work showed that the inner core is solid.",
+  "why": "Lehmann's waves were reflected/refracted at the inner-core boundary, not the center, and she showed an inner core exists; its solidity was established later (Birch 1940, free oscillations 1971)."
+ },
+ {
+  "lesson": 1,
+  "find": "and that Lehmann (1936) found a solid inner core.",
+  "replace": "and that Lehmann (1936) found the inner core, later shown to be solid.",
+  "why": "Lehmann discovered the inner core; she did not show it was solid."
+ },
+ {
+  "lesson": 1,
+  "find": "Lehmann (1936) found a solid inner core",
+  "replace": "Lehmann (1936) found the inner core, later shown to be solid",
+  "why": "Same attribution slip on the slide (apply after the plan edit above).",
+  "all": true
+ },
+ {
+  "lesson": 1,
+  "find": "In 1936 Inge Lehmann showed that the P waves are bent in a way that requires a solid inner core inside the liquid outer core.",
+  "replace": "In 1936 Inge Lehmann showed that faint P waves reaching the shadow zone require a distinct inner core inside the liquid outer core; later evidence showed that the inner core is solid.",
+  "why": "Speaker note overstates what Lehmann showed."
+ },
+ {
+  "lesson": 1,
+  "find": "Earle ch. 2 (Plate Tectonics)",
+  "replace": "Earle ch. 10 (Plate Tectonics)",
+  "why": "The plan's shown text names ch. 2 (Minerals) while the slide and close correctly name ch. 10."
+ },
+ {
+  "lesson": 1,
+  "find": "Common slip: doubling the speed as though the given value were the total separation rate across both sides.",
+  "replace": "Common slip: halving the speed as though the given value were the total separation rate across both sides.",
+  "why": "Treating 2.5 cm/yr as the total spreading rate would halve the one-side speed, not double it."
+ },
+ {
+  "lesson": 1,
+  "find": "core radius 3,480 km",
+  "replace": "core radius 3,481 km",
+  "why": "Plan's shown text disagrees with the slide (6,371 − 2,890 = 3,481 km)."
+ },
+ {
+  "lesson": 1,
+  "find": "Steps: Weigh the sample on the balance → Half-fill the cylinder and read the water level",
+  "replace": "Steps: Weigh the sample on the balance → Fill the cylinder deep enough to cover the sample and read the water level",
+  "why": "Half-filling may not cover a hand sample; the handout and plan require full immersion without overflow."
+ },
+ {
+  "lesson": 1,
+  "find": "Half-fill the cylinder and read the water level",
+  "replace": "Fill the cylinder deep enough to cover the sample and read the water level",
+  "why": "Same step on the slide (apply after the plan edit above).",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "with the Mohs table on the screen",
+  "replace": "with the Mohs scale on the Mineral properties reference table",
+  "why": "The lab has no slides; the Mohs scale students need is on the reference table handout."
+ },
+ {
+  "lesson": 2,
+  "find": "with the Mohs table on the sheet",
+  "replace": "with the Mohs scale on the Mineral properties reference table",
+  "why": "The Hardness and streak record sheet has no Mohs table; the reference table does."
+ },
+ {
+  "lesson": 3,
+  "find": "Composition fixes the column and cooling fixes the row.",
+  "replace": "Composition fixes the row and cooling fixes the column.",
+  "why": "Plan reverses the chart the slide, handout and speaker notes describe (silica sets the row)."
+ },
+ {
+  "lesson": 3,
+  "find": "Correct the reading reference assigned last time:",
+  "replace": "Repeat the reading assigned last time:",
+  "why": "Nothing was wrong with last lesson's reading (Earle ch. 3 and 4); 'correct' is edit residue."
+ },
+ {
+  "lesson": 3,
+  "find": "Reading correction:",
+  "replace": "Reading reminder:",
+  "why": "Same residue in the speaker notes."
+ },
+ {
+  "lesson": 3,
+  "find": "introduces the three records on the sheet",
+  "replace": "introduces the three records shown on the screen",
+  "why": "The sheet holds only headings and answer lines; the records are on the slide."
+ },
+ {
+  "lesson": 3,
+  "find": "lahars buried the town of Armero, with more than 20,000 deaths",
+  "replace": "lahars buried the town of Armero, with more than 20,000 deaths; a hazard map had shown Armero at risk, but no clear evacuation order reached the town in time",
+  "why": "The key's supported response (act on a clear warning) rests on a fact the introduction never gives students."
+ },
+ {
+  "lesson": 3,
+  "find": "and 57 people died",
+  "replace": "and 57 people died, most of them outside the restricted zones",
+  "why": "The key's supported response (zones need a margin) rests on a fact the introduction never gives students."
+ },
+ {
+  "lesson": 3,
+  "find": "Students first predict to a partner, for 1 minute, which of olivine and quartz sits higher in Bowen’s reaction series, crystallizing at the higher temperature.",
+  "replace": "The prediction was taken on the previous slide; use this one to set the two branches side by side.",
+  "why": "Speaker note repeats the prediction after the answer has already been shown.",
+  "slide": 6
+ },
+ {
+  "lesson": 3,
+  "find": "Record only the texture and the name today.",
+  "replace": "Record only the texture and the name today, and leave the other columns blank.",
+  "why": "The sheet has eight columns but students are told to fill two; say so plainly so they do not lose time."
+ },
+ {
+  "lesson": 4,
+  "find": "is opened. Students copy the recording table into their notebooks.",
+  "replace": "is opened. Pairs then take the Weathered samples record sheet.",
+  "why": "The recording table is handed out as a printed sheet; copying it wastes lab time."
+ },
+ {
+  "lesson": 4,
+  "find": "Students copy the recording table into their notebooks.",
+  "replace": "Pairs take the Weathered samples record sheet.",
+  "why": "Same leftover in the plan (apply after the speaker-note edit above).",
+  "all": true
+ },
+ {
+  "lesson": 4,
+  "find": "Pairs classify each case on the screen as physical or chemical.",
+  "replace": "Cases 4 to 6 of the same activity; the answers are in the note for slide 6.",
+  "why": "Duplicated instruction residue from splitting one segment over two slides.",
+  "slide": 7
+ },
+ {
+  "lesson": 4,
+  "find": "Pairs get a described profile on the screen and label the horizon of each of its five layers from top to bottom, giving a clue only for the A and B horizons.",
+  "replace": "The rest of the same profile; the answers are in the note for slide 15.",
+  "why": "Duplicated instruction residue from splitting one segment over two slides.",
+  "slide": 16
+ },
+ {
+  "lesson": 5,
+  "find": "Which is older, the dike or the layers? Give the principle you used. (2 points)",
+  "replace": "Which is older, the dike or the layers? Explain how you can tell. (2 points)",
+  "why": "Midterm 1 is sat in week 5, but the principle of cross-cutting relationships is first taught in lesson 7, so the item must not require naming it."
+ },
+ {
+  "lesson": 5,
+  "find": "The dike cuts across them and therefore formed after them, according to the principle of cross-cutting relationships (1 point).",
+  "replace": "The dike cuts across them and therefore formed after them (1 point). Naming the principle of cross-cutting relationships is not required; it is taught later, with geologic time.",
+  "why": "Key aligned with the revised item, which no longer asks for a principle not yet taught."
+ },
+ {
+  "lesson": 5,
+  "find": "Time allowed: 40 minutes.",
+  "replace": "Time allowed: 43 minutes.",
+  "why": "The lesson plan gives the exam itself 43 minutes and calls time at the end of that segment, so the paper should state the same time.",
+  "all": true
+ },
+ {
+  "lesson": 5,
+  "find": "The teacher links last time’s rounding and sorting to transport",
+  "replace": "The teacher links the rounding and sorting met in the weathering and erosion lesson to transport",
+  "why": "The meeting just before this lecture was Midterm exam 1, so “last time” points to the wrong meeting."
+ },
+ {
+  "lesson": 5,
+  "find": "Link last time’s rounding and sorting to transport.",
+  "replace": "Link the rounding and sorting met in the weathering and erosion lesson to transport.",
+  "why": "The previous meeting was the midterm, not a lecture on rounding and sorting."
+ },
+ {
+  "lesson": 5,
+  "find": "suppose a sandstone bed has large cross-beds with a fine-grained layer above that grades upward from coarse to fine.",
+  "replace": "suppose a sandstone bed has large cross-beds with a layer above that grades upward from coarse to fine.",
+  "why": "A layer cannot be called fine-grained and also grade up from coarse to fine."
+ },
+ {
+  "lesson": 6,
+  "find": "A mudstone buried deep in a collision zone is heated until it melts to magma, and the magma cools slowly and crystallizes into an igneous rock. No metamorphic stage appears on this route.",
+  "replace": "A sandstone or mudstone carried down and heated until it melts to magma is drawn on the cycle as one melting arrow, and the magma cools slowly and crystallizes into an igneous rock. On the diagram this route skips the metamorphic box, although in a real collision zone the rock recrystallizes on its way to melting.",
+  "why": "A mudstone heated to melting in a collision zone necessarily passes through metamorphic conditions, so saying no metamorphic stage occurs is physically false."
+ },
+ {
+  "lesson": 6,
+  "find": "The teacher shows how differential stress aligns platy minerals perpendicular to the greatest compressive stress, which gives foliation.\nStudents predict what shale becomes at slightly higher temperature, and which feature changes, before the sequence goes up.\nThe teacher then gives slate, phyllite, schist and gneiss with the index minerals, and the non-foliated rocks marble, quartzite and hornfels.",
+  "replace": "Walk the table: limestone gives marble, quartz sandstone gives quartzite, and mudstone baked beside an intrusion gives hornfels. Ask which of the three could also form under differential stress without becoming foliated, and why.",
+  "why": "This note repeated the earlier segment text, including a prediction that comes before the sequence slide, which is already past at this slide.",
+  "slide": 7
+ },
+ {
+  "lesson": 7,
+  "find": "Tie to the metamorphic lesson from last time: heating can reset a mineral’s clock",
+  "replace": "Tie to the metamorphic rocks lesson: heating can reset a mineral’s clock",
+  "why": "The meeting just before this one was the relative-dating lecture, not the metamorphic lesson."
+ },
+ {
+  "lesson": 7,
+  "find": "Tie to last time: heating in metamorphism can reset a mineral’s clock",
+  "replace": "Tie to the metamorphic rocks lesson: heating in metamorphism can reset a mineral’s clock",
+  "why": "Last time was the relative-dating lecture."
+ },
+ {
+  "lesson": 7,
+  "find": "Coins and dice should be kept off the floor to avoid slips.",
+  "replace": "Coins should be kept off the floor to avoid slips.",
+  "why": "No activity in this lab uses dice."
+ },
+ {
+  "lesson": 7,
+  "find": "Compare it with the ratio you found for three half-lives in the decay table. Explain any difference.",
+  "replace": "Compare it with the ratio expected after three half-lives, worked out in lecture by extending the decay table. Explain any difference.",
+  "why": "The decay table shown to students stops at two half-lives; the three-half-life row was only worked orally in lecture."
+ },
+ {
+  "lesson": 8,
+  "find": "Assign a Modified Mercalli level to each town's report using the key, plot each town on the map, write its level beside it, then draw lines between towns of equal level.",
+  "replace": "Assign a Modified Mercalli level to each town's report using the key. Then plot Mercalli level against distance from the epicenter on the grid, using one symbol for bedrock towns and another for towns on soft ground, and write each town's name beside its point.",
+  "why": "The table gives only distances, not positions, and no two towns share a level, so plotting towns on a map and joining equal levels is impossible as written."
+ },
+ {
+  "lesson": 8,
+  "find": "One per student; one blank kilometer-grid map for plotting the towns per pair",
+  "replace": "One per student; one sheet of graph paper per pair",
+  "why": "Towns cannot be placed on a kilometer-grid map without positions; the revised task is a level-versus-distance graph."
+ },
+ {
+  "lesson": 8,
+  "find": "The ground type column gives the information on the ground-type map.",
+  "replace": "Ground type at each town.",
+  "why": "There is no ground-type map; the caption points to something that does not exist."
+ },
+ {
+  "lesson": 8,
+  "find": "Compare your lines with the ground types. Describe how the lines differ from circles around the epicenter, and explain why.",
+  "replace": "Compare the bedrock towns with the soft-ground towns on your graph. If intensity depended on distance alone, what would the graph show? Describe how your graph differs, and explain why.",
+  "why": "The prompt referred to equal-level lines that cannot be drawn from the data."
+ },
+ {
+  "lesson": 8,
+  "find": "Pairs take the Intensity survey map: felt reports from towns after a hypothetical earthquake, a Modified Mercalli key, and a second map of ground type.",
+  "replace": "Pairs take the Intensity survey sheet: felt reports from six towns after a hypothetical earthquake, each with its distance and ground type, and a Modified Mercalli key.",
+  "why": "The plan described a second, ground-type map that the sheet does not contain."
+ },
+ {
+  "lesson": 8,
+  "find": "Pairs assign a Mercalli level to each town’s report and mark it on the map, then draw lines between equal levels.",
+  "replace": "Pairs assign a Mercalli level to each town’s report and plot level against distance, marking bedrock and soft-ground towns differently.",
+  "why": "Towns have no positions and no two share a level, so marking them on a map and joining equal levels cannot be done."
+ },
+ {
+  "lesson": 8,
+  "find": "They compare the lines with the ground-type map and each partner writes an answer to the prompt in their own record.",
+  "replace": "They compare the two groups of towns and each partner writes an answer to the prompt in their own record.",
+  "why": "Matches the revised graph task; there is no ground-type map."
+ },
+ {
+  "lesson": 8,
+  "find": "Expected: the lines are not circles around the epicenter. Higher levels sit on soft sediment even at a distance, and lower levels on bedrock.",
+  "replace": "Expected: intensity does not fall off with distance alone. Soft-sediment towns plot above bedrock towns at similar distances.",
+  "why": "Matches the revised graph task."
+ },
+ {
+  "lesson": 8,
+  "find": "Map labels: place VI beside Alder Point, VIII beside Brookfield, IV beside Cedar Mills, VII beside Delta Landing and III beside Eastgate, with V beside Fairview. Accept the justified alternative for Eastgate described above.\nEqual-level lines: no towns have the same assigned level, so no town-to-town connections satisfy this instruction. Distances alone also do not specify unique town positions or contour shapes.",
+  "replace": "Graph: points at (10 km, VI) Alder Point, (12, VIII) Brookfield, (30, IV) Cedar Mills, (32, VII) Delta Landing, (55, III) Eastgate and (58, V) Fairview, with bedrock and soft-ground towns marked differently. Accept the justified alternative for Eastgate described above.",
+  "why": "The key admitted the original instruction could not be carried out; it now keys the revised graph."
+ },
+ {
+  "lesson": 8,
+  "find": "A defensible schematic contour interpretation extends higher-intensity areas toward soft sediment rather than forming concentric circles.",
+  "replace": "On the graph the soft-ground towns sit two to three levels above bedrock towns at similar distances, so intensity is not set by distance alone.",
+  "why": "Contours are no longer drawn in the revised task."
+ },
+ {
+  "lesson": 8,
+  "find": "One partner reads the traces and calls out values while the other converts and draws. Swap roles for each station.",
+  "replace": "One partner reads the arrival times from the table and calls out values while the other converts and draws. Swap roles for each station.",
+  "why": "No seismogram traces are supplied; the arrival times are given in the table."
+ },
+ {
+  "lesson": 8,
+  "find": "Pairs take the Epicenter location worksheet: seismograms from stations A, B and C, and a map",
+  "replace": "Pairs take the Epicenter location worksheet: arrival times for stations A, B and C, and a map",
+  "why": "The worksheet holds arrival-time readings, not seismograms."
+ },
+ {
+  "lesson": 8,
+  "find": "One partner reads the traces and calls out values while the other converts and draws; they swap roles for each station.",
+  "replace": "One partner reads the arrival times and calls out values while the other converts and draws; they swap roles for each station.",
+  "why": "No seismogram traces are supplied."
+ },
+ {
+  "lesson": 8,
+  "find": "A seismic station records a P wave 18 seconds after an earthquake begins. At the same station, the S wave arrives 25 seconds after the earthquake begins.",
+  "replace": "A seismic station records a P wave 10 seconds after an earthquake begins. At the same station, the S wave arrives 17 seconds after the earthquake begins.",
+  "why": "With the course speeds, a P arrival at 18 s puts the station 108 km away and S would arrive at about 31 s; the times contradicted the 59 km answer."
+ },
+ {
+  "lesson": 8,
+  "find": "A. 151 km. B. 210 km. C. 59 km. D. 361 km.",
+  "replace": "A. 84 km. B. 143 km. C. 59 km. D. 227 km.",
+  "why": "Distractors recomputed from the new arrival times (P time, S time and their sum each multiplied by 8.4)."
+ },
+ {
+  "lesson": 8,
+  "find": "The S–P interval is 25 − 18 = 7 s;",
+  "replace": "The S–P interval is 17 − 10 = 7 s;",
+  "why": "Key aligned with the corrected arrival times."
+ },
+ {
+  "lesson": 9,
+  "find": "A stream carries sand from a steep mountain channel onto a broad, flatter valley floor. As the water slows, what is most likely to happen to much of the sand? A. It dissolves. B. It is deposited. C. It changes into metamorphic rock. D. It moves faster downstream.",
+  "replace": "A fault cuts a sandstone layer and the shale layer above it. How old is the fault compared with the two layers? A. Older than both layers B. Younger than both layers C. Older than the sandstone but younger than the shale D. The same age as the sandstone",
+  "why": "The week-9 quiz on folds, faults and mountain building tested next week's stream topics, which are not taught until after it is due."
+ },
+ {
+  "lesson": 9,
+  "find": "A stream is 4 m wide, has an average depth of 0.5 m, and flows at an average velocity of 2 m/s. Discharge equals cross-sectional area multiplied by average velocity. What is its discharge? A. 1 m³/s B. 2 m³/s C. 4 m³/s D. 8 m³/s",
+  "replace": "On flat ground, a contact crosses a section line drawn perpendicular to its strike, and it dips 45°. With the same horizontal and vertical scale, how far from its surface trace, measured horizontally, does the contact lie at 1 km depth? A. 0.5 km B. 0.7 km C. 1 km D. 2 km",
+  "why": "The week-9 quiz on folds, faults and mountain building tested next week's stream topics, which are not taught until after it is due."
+ },
+ {
+  "lesson": 9,
+  "find": "A drainage divide separates two drainage basins. Rain falling on opposite sides of the divide generally does what? A. Enters the same stream at the same point. B. Flows only into groundwater. C. Remains on the divide. D. Drains toward different stream systems.",
+  "replace": "Marine limestone lies near the summit of Everest. What best explains how it got there? A. Sea level was once about 8,850 m higher than today. B. It formed from volcanic ash erupted at the summit. C. Glaciers carried it up the mountain. D. Continental collision lifted sea-floor sediments as the crust shortened and thickened.",
+  "why": "The week-9 quiz on folds, faults and mountain building tested next week's stream topics, which are not taught until after it is due."
+ },
+ {
+  "lesson": 9,
+  "find": "2. B. Slower water deposits much of its sand as its capacity to transport sediment decreases.",
+  "replace": "2. B. A fault is younger than the rocks it cuts (cross-cutting relationships).",
+  "why": "Key follows the replaced quiz question 2."
+ },
+ {
+  "lesson": 9,
+  "find": "3. C. Cross-sectional area = 4 m × 0.5 m = 2 m². Discharge = 2 m² × 2 m/s = 4 m³/s.",
+  "replace": "3. C. Horizontal distance = depth ÷ tan 45° = 1 km ÷ 1 = 1 km.",
+  "why": "Key follows the replaced quiz question 3."
+ },
+ {
+  "lesson": 9,
+  "find": "4. D. A drainage divide separates land draining toward different stream systems.",
+  "replace": "4. D. Collision folds, faults and thickens the crust, lifting sea-floor sediments high above sea level.",
+  "why": "Key follows the replaced quiz question 4."
+ },
+ {
+  "lesson": 9,
+  "find": "Time allowed: 40 minutes.",
+  "replace": "Time allowed: 42 minutes.",
+  "why": "The lesson plan gives the exam segment 42 minutes; the paper said 40.",
+  "all": true
+ },
+ {
+  "lesson": 9,
+  "find": "fence offset from last time",
+  "replace": "fence offset from the earthquakes lesson",
+  "why": "The meeting before this lecture was the midterm, not the earthquakes lesson where the fence offset was shown (appears in the plan and the speaker notes; replace both).",
+  "all": true
+ },
+ {
+  "lesson": 10,
+  "find": "Catching 600 mL of outflow in 30 s gives 20 cm³/s, since 1 mL = 1 cm³.",
+  "replace": "Catching 480 mL of outflow in 30 s gives 16 cm³/s, since 1 mL = 1 cm³, so the surface-speed estimate runs a little high, as expected.",
+  "why": "The worked stream-table numbers had the outflow larger than the surface-float estimate, the opposite of what the plan and key say to expect, since a surface float moves faster than the mean flow."
+ },
+ {
+  "lesson": 10,
+  "find": "so 600 mL gives 20 cm³/s.",
+  "replace": "so 480 mL gives 16 cm³/s, a little below the surface-speed estimate.",
+  "why": "The worked stream-table numbers had the outflow larger than the surface-float estimate, the opposite of what the plan and key say to expect, since a surface float moves faster than the mean flow."
+ },
+ {
+  "lesson": 10,
+  "find": "which holds tables for channel width, depth, float time and outflow, and a grid for channel sketches",
+  "replace": "which holds tables for channel width, depth, float time and outflow",
+  "why": "The recording sheet has no sketch grid; channel sketches are on the separate meander and flood sheets."
+ },
+ {
+  "lesson": 10,
+  "find": "A floodplain is part of the river’s channel system.",
+  "replace": "A floodplain is part of the river system: the river reoccupies it in floods.",
+  "why": "A floodplain lies beside the channel, not in it; it belongs to the river system, which reoccupies it in floods."
+ },
+ {
+  "lesson": 10,
+  "find": "closes by saying that a floodplain is part of the river’s channel system",
+  "replace": "closes by saying that a floodplain is part of the river system, which the river reoccupies in floods",
+  "why": "A floodplain lies beside the channel, not in it; it belongs to the river system, which reoccupies it in floods."
+ },
+ {
+  "lesson": 10,
+  "find": "Close by saying that a floodplain is part of the river’s channel system",
+  "replace": "Close by saying that a floodplain is part of the river system, which the river reoccupies in floods",
+  "why": "A floodplain lies beside the channel, not in it; it belongs to the river system, which reoccupies it in floods."
+ },
+ {
+  "lesson": 11,
+  "find": "The table rises under hills because recharge is slower to drain than to arrive.",
+  "replace": "The table stands higher under hills because recharge enters there and drains toward the valleys only slowly through the pores.",
+  "why": "The water table is high under hills because recharge enters there and drains toward valley outlets only slowly; 'drains more slowly than it arrives' describes a table that would keep rising."
+ },
+ {
+  "lesson": 11,
+  "find": "The table rises under hills because water drains away more slowly than it arrives as recharge.",
+  "replace": "The table stands higher under hills because recharge enters there and drains toward the valleys only slowly through the pores.",
+  "why": "The water table is high under hills because recharge enters there and drains toward valley outlets only slowly; 'drains more slowly than it arrives' describes a table that would keep rising."
+ },
+ {
+  "lesson": 11,
+  "find": "Silt holds a lot of water but drained almost nothing in a 30-second test. What does that say about its pores?",
+  "replace": "If silt holds a lot of water but drains very little in a 30-second test, what does that say about its pores?",
+  "why": "The discussion stated a lab result as fact before (or regardless of) what students measure."
+ },
+ {
+  "lesson": 11,
+  "find": "After each portion, stir with a rod to free trapped air, then wait one minute.",
+  "replace": "After each portion, tap the side of the cylinder gently to free trapped air (do not stir, which changes the packing), then wait one minute.",
+  "why": "Stirring changes the packing and bulk volume after the 100 mL volume is fixed, as Folio's own note says; tapping frees air without remixing."
+ },
+ {
+  "lesson": 11,
+  "find": "stirring with a rod to free trapped air",
+  "replace": "tapping the side of the cylinder gently to free trapped air",
+  "why": "Plan matches the corrected bench procedure."
+ },
+ {
+  "lesson": 12,
+  "find": "Lab reports: Glaciers, due at next lab’s start",
+  "replace": "Lab reports: Glaciers and climate, due on the date the instructor announces",
+  "why": "This is the last week of the course, so there is no next lab for the report to be due at."
+ },
+ {
+  "lesson": 12,
+  "find": "Weekly online quizzes: Glaciers, submitted online",
+  "replace": "Weekly online quizzes: Glaciers and climate, submitted online by the announced deadline",
+  "why": "Name matches the assignment, and the deadline is the one the instructor announces."
+ },
+ {
+  "lesson": 12,
+  "find": "Lab reports: Glaciers is part of Lab reports (30%) and is due at the start of the next lab. Weekly online quizzes: Glaciers is part of",
+  "replace": "Lab reports: Glaciers and climate is part of Lab reports (30%); this is the last lab, so the instructor announces its due date. Weekly online quizzes: Glaciers and climate is part of",
+  "why": "This is the last week of the course, so there is no next lab for the report to be due at."
+ },
+ {
+  "lesson": 12,
+  "find": "Lab reports: Glaciers is due at the start of the next lab.",
+  "replace": "This is the last lab, so the instructor announces when Lab reports: Glaciers and climate is due.",
+  "why": "This is the last week of the course, so there is no next lab for the report to be due at."
+ },
+ {
+  "lesson": 12,
+  "find": "Weekly online quizzes: Glaciers is submitted online before the lesson it is due at, and the instructor announces that deadline.",
+  "replace": "Weekly online quizzes: Glaciers and climate is submitted online by the deadline the instructor announces.",
+  "why": "There is no later lesson for the quiz to be due at; the instructor's announced deadline is the only one."
+ },
+ {
+  "lesson": 12,
+  "find": "scored individually using the rubric below. Lab reports are due at the start of the next lab.",
+  "replace": "scored individually using the rubric below. This is the last lab of the course, so it is due on the date the instructor announces.",
+  "why": "This is the last week of the course, so there is no next lab for the report to be due at."
+ },
+ {
+  "lesson": 12,
+  "find": "rubric on the assignment. Lab reports are due at the start of the next lab.",
+  "replace": "rubric on the assignment. This is the last lab, so announce the report’s due date.",
+  "why": "This is the last week of the course, so there is no next lab for the report to be due at. (Appears in the plan and the speaker notes; replace both.)",
+  "all": true
+ },
+ {
+  "lesson": 12,
+  "find": "It is submitted online before the lesson it is due at; the instructor announces that deadline.",
+  "replace": "It is submitted online by the deadline the instructor announces.",
+  "why": "There is no later lesson for the quiz to be due at (plan and speaker notes; replace both).",
+  "all": true
+ },
+ {
+  "lesson": 12,
+  "find": "Use Darcy's law to find the flow rate q in m/s.",
+  "replace": "Use Darcy's law, q = K × i, to find the flow rate q in m/s.",
+  "why": "Darcy's law and hydraulic conductivity were never taught in the groundwater lesson, and the practice problem gave no formula."
+ },
+ {
+  "lesson": 12,
+  "find": "State the direction of groundwater flow in relation to hydraulic head.",
+  "replace": "State the direction of groundwater flow in relation to hydraulic head (the water table elevation).",
+  "why": "The groundwater lesson taught flow from high to low water table elevation and never used the term hydraulic head."
+ }
+]

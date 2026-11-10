@@ -17,8 +17,8 @@ const KB = 1024;
 // we measure with: none of it loads before a course is built.
 // The sample courses and the changelog's pictures are content, fetched only when opened: each has its own budget,
 // apart from the app's.
-// Samples to 4 MB (2026-10-29): written again with handouts and keys, the seven room courses came to 3.4 MB; a visitor fetches one at a time.
-const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 4.4 * KB * KB, dist: 10 * KB * KB, samples: 4 * KB * KB, changelog: 4 * KB * KB, media: 60 * KB * KB };
+// Samples to 6 MB (2026-11-09): a visitor fetches one at a time; twelve courses, two of them twelve weeks or more, came to 4.8 MB.
+const budgets = { initialGzip: 150 * KB, initialCss: 20 * KB, totalJs: 4.4 * KB * KB, dist: 10 * KB * KB, samples: 6 * KB * KB, changelog: 4 * KB * KB, media: 60 * KB * KB };
 // A sample course taught online carries its pictures and clips (public/samples/<name>/media): fetched one at a
 // time as a page is read, never with the course's text, and held to their own budget.
 const isMedia = (f) => /\/samples\/[^/]+\/media\//.test(f);

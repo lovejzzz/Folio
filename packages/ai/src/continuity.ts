@@ -187,10 +187,20 @@ export function earlierNotes(lesson: Lesson): string {
 
 /** What the lesson sets as homework, when it is due and what is handed in today, so its plan and materials agree: untold, each plan guessed. */
 /** When the work a lesson sets is handed in, in the words a plan or an assignment can use. */
+const MEETING: Record<string, string> = { lab: 'lab', lecture: 'lecture', seminar: 'seminar', recitation: 'problems', section: 'problems', tutorial: 'problems' };
+/** The meeting a piece is handed in at, where the brief named one ("at the start of the next lab") and the course has it. */
+function dueMeeting(course: Course, toward: string): string {
+  const at = course.grading.find((g) => g.item.trim() === toward.trim())?.card?.at ?? '';
+  return at && course.shape.sessions.length > 1 && course.shape.sessions.some((s) => s.kind === MEETING[at]) ? at : '';
+}
+
 /** When a piece is due, as a clause: "due at the start of the next lesson". Empty when it is not handed in at a later lesson. */
 function dueWhen(course: Course, lesson: Lesson): string {
   const due = lesson.homework.due ? course.lessons[lesson.homework.due] : undefined;
   const gap = due ? course.lessonOrder.indexOf(due.id) - course.lessonOrder.indexOf(lesson.id) : 0;
+  // Set in the last lesson, work has no later meeting: told nothing, a last lab report was due "at next lab's start".
+  const last = !due && lesson.id === course.lessonOrder.at(-1) && (lesson.homework.kind === 'assignment' || lesson.homework.kind === 'step');
+  if (last) return 'due after the course\'s last meeting, "on the date your instructor announces" (in these words: there is no later lesson or meeting to hand it in at)';
   if (!due || gap < 1) return '';
   // A week's work is due on its Sunday: told "at the start of the next lesson", an online assignment gave a room course's deadline.
   if (hasModulePages(course)) return `due by Sunday night ${gap === 1 ? 'of next week' : `${gap} weeks from now`}`;
@@ -198,6 +208,9 @@ function dueWhen(course: Course, lesson: Lesson): string {
   // brief and "the meeting on developing literature review drafts" on the slide, and a student could not tell which meeting.
   // In a lesson of several meetings "next time" is also its own next meeting: a set due "at the start of next time" was announced in the third lecture, before the recitation.
   const met = course.shape.sessions.length > 1;
+  // At the meeting the brief names: told "the first meeting of" the next lesson, every lab report was due at a lecture.
+  const at = dueMeeting(course, lesson.homework.toward);
+  if (at) return `due "at the start of the ${at} of ${due.title}" (in these words; it is collected at that ${at}, not at the lesson's first meeting)`;
   if (gap === 1 && met) return `due "at the first meeting of ${due.title}" (never "next time", which is also this lesson's next meeting)`;
   return gap === 1 ? 'due at the start of the next lesson' : `due at the start of the lesson ${gap} lessons after this one, "${due.title}" (wherever students are told the deadline it is in these words, "at the start of the class on ${due.title}", never a paraphrase, a count of lessons, or a week or date of your own)`;
 }
@@ -215,7 +228,8 @@ export function dueLesson(course: Course, lesson: Lesson): string {
   const due = lesson.homework.due ? course.lessons[lesson.homework.due] : undefined;
   if (!due) return '';
   const works = readBefore(due).works;
-  return ` The lesson it is due at is "${due.title}": ${due.summary.trim()}${works.length ? ` Students read for it: ${works.join('; ')}.` : ''}`;
+  // Shown unmarked, a "weekly online quiz" the brief tied to no reading was written on the next lesson's topic.
+  return ` Only if the brief says it prepares students for a lesson: the lesson it is due at is "${due.title}": ${due.summary.trim()}${works.length ? ` Students read for it: ${works.join('; ')}.` : ''}`;
 }
 
 /**
@@ -287,12 +301,14 @@ export function homeworkLine(course: Course, lesson: Lesson): string {
           const named = pieceTitle(course, { ...l, homework: p });
           const what = set?.kind === 'assignment' ? `"${set.title}"` : p.kind === 'step' ? 'the short step' : `"${named ?? (p.toward.trim() || 'the assignment')}"`;
           // A standing piece is about the lesson it is due at: told where it was set, plans collected papers "on last time's readings".
-          if (p.standing) return `${what} (the one written for this lesson, on this lesson's reading or topic)`;
-          return `${what} (set in "${l.title}"${p.kind === 'step' ? ', an ungraded step' : ''})`;
+          const at = dueMeeting(course, p.toward);
+          const when = at ? `, collected at the start of this lesson's ${at}, not at its first meeting` : '';
+          if (p.standing) return `${what} (the one written for this lesson, on this lesson's reading or topic${when})`;
+          return `${what} (set in "${l.title}"${p.kind === 'step' ? ', an ungraded step' : ''}${when})`;
         }),
     );
   // Set, due and collected were three guesses: one piece had two due dates and a close that said "give its due date".
-  const due = `${otherPieces(lesson, (p) => dueWhen(course, { ...lesson, homework: p }))}${collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan's opening says, by its name, that it is due now; how it reaches the teacher is said only where the course's facts on graded pieces give a way, in their words. Its tasks were written apart from this plan, so no segment counts on their details (how many items, which terms).` : ''}`;
+  const due = `${otherPieces(lesson, (p) => dueWhen(course, { ...lesson, homework: p }))}${collected.length ? ` Due at the start of this lesson: ${collected.join('; ')}. The plan says, by its name, that it is due now, at the meeting it is collected at; how it reaches the teacher is said only where the course's facts on graded pieces give a way, in their words. Its tasks were written apart from this plan, so no segment counts on their details (how many items, which terms).` : ''}`;
   // "Sets no homework" beside a standing weekly paper had half the plans run the paper in class instead.
   // A close \"handed out the brief\" of a 20% paper that this lesson did not hold, and no brief existed.
   const only = ' No other graded piece is set, handed out or collected in this lesson than those named here.';

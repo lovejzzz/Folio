@@ -14,7 +14,7 @@ import { MATERIAL_KINDS, CourseStore, OnlineSchema, cmd, orderedLessons, parseCo
 import { FOLIO_MIX } from '../../../packages/ai/src/adapters/mix';
 import { withHandouts } from '../../../packages/ai/src/handouts';
 import { planReadAgain } from '../../../packages/ai/src/sections';
-import { drawInNode } from '@folio/draw/node';
+import { nodeDrawer, picturesIn, redrawCourse } from './sampleDrawings';
 import { BUILT_ON_PLAN, briefWithAnswers, clarifyCourse, costOf, courseFromOutline, createInference, lessonsToPlan, minutesToPlan, generateOutline, missingTargets, runBuild, supportedHandout, type BuildHost, type BuildTarget, type NewCourseRequest, type Usage } from '@folio/ai';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawn } from 'node:child_process';
@@ -47,6 +47,10 @@ export const BRIEFS: Record<SampleName, string> = {
     'Writing argumentative essays for grade 8 English language arts: a three-week unit of fifteen 45-minute lessons. Students learn to state a clear claim, support it with reasons and evidence from two short articles, explain how the evidence supports the claim, answer a counterclaim, and organize a five-paragraph essay with an introduction and a conclusion. The topic is one they care about: should school start later? Use the two attached opinion articles, one for and one against, as the evidence students read, mark up and cite. Build the essay in steps across the unit: a planning organizer, model paragraphs, drafting in class, a peer review session and revision. Grading: the final essay 60% with a rubric, the organizer and drafts 25%, and short quizzes on the terms of argument 15%.',
   university:
     'Introduction to ethics for first-year university students: a 14-week semester, each week a 75-minute lecture and a 50-minute seminar. The textbook is James Rachels and Stuart Rachels, The Elements of Moral Philosophy, with primary readings each week. Week 1, what morality is (Rachels, chapter 1). Week 2, how to argue about ethics (Anthony Weston, A Rulebook for Arguments). Week 3, cultural relativism (Rachels, chapter 2). Week 4, utilitarianism (John Stuart Mill, Utilitarianism, chapter 2; Rachels, chapters 7 and 8). Week 5, Kant (Immanuel Kant, Groundwork of the Metaphysics of Morals, section II; Rachels, chapters 9 and 10). Week 6, virtue ethics (Aristotle, Nicomachean Ethics, book II; Rachels, chapter 12). Week 7, social contract theory (Thomas Hobbes, Leviathan, chapters 13 to 15; Rachels, chapter 6). Week 8, the theories tested on hard cases (Judith Jarvis Thomson, "The Trolley Problem"). Weeks 9 and 10, what we owe distant strangers (Peter Singer, "Famine, Affluence, and Morality"; Thomas Nagel, "The Problem of Global Justice"). Week 11, the moral status of animals (Peter Singer, "All Animals Are Equal"; Carl Cohen, "The Case for the Use of Animals in Biomedical Research"). Week 12, who is responsible when an AI system causes harm (Andreas Matthias, "The responsibility gap"; Robert Sparrow, "Killer Robots"). Week 13, from a case to an argument: writing the final paper. Week 14, review for the exam. Students prepare the seminar discussion questions in advance. Grading: weekly reading responses of 400 to 500 words 20%, seminar participation 10%, a 1,200-word paper defending one theory, due in week 7, 20%, a 2,000-word argumentative paper on one of the applied questions, due in week 13, 25%, and a final exam 25%, with rubrics for the papers.',
+  microeconomics:
+    'Principles of microeconomics for first-year undergraduates: a six-week summer session, each week a two-hour lecture and a one-hour problem section. Textbook: OpenStax, Principles of Microeconomics 3e. Week by week: 1, scarcity, choice and opportunity cost, and the production possibilities frontier; 2, demand, supply and market equilibrium, and what shifts each curve; 3, elasticity and its uses (taxes, total revenue); 4, consumer choice and the costs of a firm in the short and long run; 5, perfect competition and monopoly; 6, externalities, public goods and what governments do about them. Students work with tables of numbers and graphs every week. Weekly problem sets 30% (due before the next lecture), a midterm exam in week 3 (30%), a final exam at the end of week 6 (40%).',
+  geology:
+    'Introduction to physical geology for first-year undergraduates: a 12-week term, each week two 50-minute lectures and a two-hour lab. Textbook: Steven Earle, Physical Geology, 2nd edition (BCcampus open textbook). Week by week: 1, Earth\'s layers and plate tectonics; 2, minerals; 3, igneous rocks and volcanoes; 4, weathering, erosion and soils; 5, sedimentary rocks; 6, metamorphic rocks and the rock cycle; 7, geologic time and how rocks are dated; 8, earthquakes; 9, folds, faults and mountain building; 10, streams and floods; 11, groundwater; 12, glaciers and climate. Labs, done in pairs with the department\'s hand samples: mineral identification, igneous and sedimentary rock identification, metamorphic rocks, topographic maps, geologic maps and cross sections, and a stream table. Grading: lab reports 30% (each due at the start of the next lab), two midterm exams in weeks 5 and 9 (15% each), weekly online quizzes 10%, and a final exam after week 12 (30%).',
   'water-cycle':
     'The water cycle for grade 5 science: five 50-minute lessons. Follow my attached notes. Students explain evaporation, condensation, precipitation and collection, build a water cycle model, and finish with a labeled diagram and a paragraph tracing one water drop. Grading: the diagram and paragraph 70%, lesson quizzes 30%. Support my two below-grade readers and the Spanish-speaking newcomer in every lesson with picture word banks, sentence frames and the key terms in Spanish.',
   ratios:
@@ -85,9 +89,11 @@ const schemaNote = (schema: unknown) => `\n\nAnswer with one JSON object that ma
  */
 async function viaClaude(body: Record<string, unknown>): Promise<string> {
   const system = textOf(body.system ?? '');
-  const prompt = (body.messages as { content: unknown }[]).map((m) => textOf(m.content)).join('\n\n');
+  // Pictures cannot be typed into the CLI: each is saved as a file it is told to read, with Read its one tool.
+  const pictures = picturesIn(body.messages as { content: unknown }[], CWD);
+  const prompt = (body.messages as { content: unknown }[]).map((m) => textOf(m.content)).join('\n\n') + (pictures.length ? `\n\nThe attached ${pictures.length === 1 ? 'picture is the file' : 'pictures are the files'} ${pictures.join(', ')}: read ${pictures.length === 1 ? 'it' : 'them'} before you answer.` : '');
   const config = body.output_config as { effort?: string; format?: { schema?: unknown } } | undefined;
-  const args = ['-p', '--model', String(body.model), '--output-format', 'json', '--tools', '', '--no-session-persistence', '--max-turns', '1', '--strict-mcp-config'];
+  const args = ['-p', '--model', String(body.model), '--output-format', 'json', '--tools', pictures.length ? 'Read' : '', '--no-session-persistence', '--max-turns', pictures.length ? String(pictures.length + 2) : '1', '--strict-mcp-config', ...(pictures.length ? ['--allowedTools', 'Read'] : [])];
   args.push('--system-prompt', system + (config?.format?.schema ? schemaNote(config.format.schema) : ''));
   if (config?.effort) args.push('--effort', config.effort);
   const out = JSON.parse(await run('claude', args, prompt)) as { result?: string; is_error?: boolean; usage?: { output_tokens?: number; output_tokens_details?: { thinking_tokens?: number } } };
@@ -180,6 +186,10 @@ const POLICIES: Record<SampleName, string> = {
   chemistry:
     'Goggles, apron and closed-toe shoes are required on lab days; a student without them observes and writes up the data from a partner. No food or drink in the lab.\n\nProblem sets are due at the start of class two days after they are set. Late sets lose 10% a day, up to three days.\n\nLab reports are written individually from data collected with a partner; shared data is fine, shared wording is not.\n\nBring a scientific calculator and a periodic table every day. The unit test allows both.',
   unity: '',
+  microeconomics:
+    'Problem sets are submitted online before the next lecture; a late set loses 10% a day and is not accepted after the answers are posted.\n\nA calculator is allowed on both exams; a phone is not. Bring a ruler and pencil to every problem section for graphs.',
+  geology:
+    'Lab safety: closed-toe shoes in the lab, and the acid bottle (dilute HCl, for the fizz test) is used only with goggles on. Hand samples stay in their trays and go back where they came from.\n\nLab reports are due at the start of the next lab; a missed lab can be made up in the same week’s open lab hour.',
   reconstruction:
     'This unit includes sources that describe racial violence and use the language of their time. We read them as evidence, we do not repeat slurs aloud, and anyone may step out for a moment without asking.\n\nExit tickets are collected every lesson and cannot be made up without an excused absence.\n\nThe document-based essay is submitted on paper or through the class site by the start of class on the due date; late essays lose 5% a day.\n\nQuote and cite the documents we read in class. Wording copied from anywhere without quotation marks is plagiarism.',
 };
@@ -293,6 +303,7 @@ function noteFlags(name: string, course: Course): void {
  */
 const PAID = ARGS.includes('--paid');
 const DRAW = ARGS.includes('--draw');
+
 const keyOf = async (name: string) => (await (await fetch(`http://127.0.0.1:8799/key/${name}`, { headers: { 'x-experiment': '1' } })).text()).trim();
 const KEYS = PAID ? { anthropic: await keyOf('anthropic'), openai: await keyOf('openai') } : null;
 /** `--trace <dir>`: every paid call's request and answer, whole, in a file of its own: what a cost study reads. No key is in either. */
@@ -346,7 +357,7 @@ async function build(name: string, store: CourseStore, targets: BuildTarget[], f
     wholeRead: ARGS.includes('--read'),
     run: RUN ? { runner: RUNNER, r: R ?? undefined, saveFigure: (png) => saveFigure(name, png) } : undefined,
     // --draw: decks get drawn pictures, as a teacher who turned them on gets; drawn here in Node.
-    ...(DRAW ? { draw: async (code: string) => drawInNode(code) } : {}),
+    ...(DRAW ? { draw: nodeDrawer } : {}),
     getCourse: store.getState,
     commit: (_target, commands) => {
       store.apply(commands, { label: { key: 'built' }, source: 'ai', undoable: false });
@@ -388,17 +399,16 @@ function chooseMaterials(store: CourseStore): void {
 }
 
 async function make(name: string, polishOnly: boolean): Promise<void> {
-  const started = Date.now();
-  const failed: string[] = [];
+  const [started, failed] = [Date.now(), [] as string[]];
   let store: CourseStore;
   if (polishOnly) {
     const saved = JSON.parse(readFileSync(join(OUT, `${name}.json`), 'utf8')) as { lessonOrder: string[]; lessons: Record<string, { gen: Record<string, unknown> }> };
-    // --redo quiz,assignments: those parts of the first lessons are written again from the plans as they stand, to
-    // compare ways of writing one part on the same lessons.
+    // --redo quiz,assignments: those parts of the first lessons written again from the plans as they stand, to compare.
     for (const id of saved.lessonOrder.slice(0, Number(option('--lessons') ?? saved.lessonOrder.length))) for (const kind of (option('--redo') ?? '').split(',').filter((k) => k && k !== 'handouts' && k !== 'review')) delete saved.lessons[id]!.gen[kind];
     if (ARGS.includes('--fresh')) asOutlined(saved as never);
     store = new CourseStore(parseCourse(saved));
     chooseMaterials(store);
+    if ((option('--redo') ?? '').split(',').includes('drawings')) return redrawCourse(inference, store, (course) => writeFileSync(join(OUT, `${name}.json`), JSON.stringify(course)), Number(option('--lessons') ?? 99), (n) => console.log(`${name}: lesson ${n} drawn again`));
     // --redo handouts: the sheets alone, written again from the plan as it stands.
     // --redo review: the plan as it stands read and mended again (and its sheets written from what comes of it), to try a
     // change to the reading on plans already written.
@@ -412,6 +422,7 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
         const flags = store.getState().lessons[id]!.gen.plan?.flags ?? [];
         appendFileSync(LOG, `${JSON.stringify({ reread: name, arm: process.env.ARM, lesson: lesson.title, mended: [...new Set(touched)], counted: sent.filter((t) => t.includes('Counted by its parts')).map((t) => t.slice(0, 300)), notes: flags.map((f) => (f.code === 'reviewNote' ? `${f.values.where}: ${f.values.text}`.slice(0, 400) : f.code)) })}\n`);
       }
+      return;
     } else if ((option('--redo') ?? '').split(',').includes('handouts')) {
       for (const id of store.getState().lessonOrder.slice(0, Number(option('--lessons') ?? 99))) {
         const lesson = store.getState().lessons[id]!;
@@ -459,6 +470,7 @@ async function make(name: string, polishOnly: boolean): Promise<void> {
 }
 
 const polishOnly = ARGS.includes('--polish');
+// --redo drawings (with --draw, and --polish): each deck's pictures drawn again as the pipeline draws them now, nothing else.
 // --mix '{"folio_assignments":{"model":"claude-sonnet-5-5","effort":"medium"}}': who writes a part, for an experiment.
 if (option('--mix')) Object.assign(FOLIO_MIX as Record<string, unknown>, JSON.parse(option('--mix')!));
 const names = ARGS.filter((a, i) => !a.startsWith('--') && !['--out', '--briefs', '--lessons', '--trace', '--redo', '--mix', '--materials'].includes(ARGS[i - 1] ?? ''));

@@ -13,7 +13,9 @@ import { useUi } from './ui';
 import { usePrefs } from './prefs';
 
 /** Draws a slide picture's code in the page's drawing frame, whose kit is loaded only when a build draws one. */
-const drawCardLater: Drawer = (code) => import('../lib/drawing').then((m) => m.drawCard(code));
+const drawCardLater: Drawer = Object.assign((code: string) => import('../lib/drawing').then((m) => m.drawCard(code)), {
+  paint: (drawn: Parameters<NonNullable<Drawer['paint']>>[0]) => import('../lib/drawing').then((m) => m.paintDrawn(drawn)),
+});
 
 export type CellRun = 'queued' | 'building' | 'error';
 

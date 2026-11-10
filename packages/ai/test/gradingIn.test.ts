@@ -41,4 +41,33 @@ describe('the graded components a brief states', () => {
     expect(read('Quizzes 30%, lab reports 40%, final exam 20%.')).toEqual([]);
     expect(read('About 20% of the course is lab work and 80% lecture.')).toEqual([]);
   });
+
+  it('reads a weight written in brackets after the name, and leaves out the week it is in', () => {
+    expect(read('Weekly problem sets 30% (due before the next lecture), a midterm exam in week 3 (30%), a final exam at the end of week 6 (40%).')).toEqual(['Weekly problem sets 30', 'Midterm exam 30', 'Final exam 40']);
+    expect(read('Grading: lab reports 30% (each due at the start of the next lab), two midterm exams in weeks 5 and 9 (15% each), weekly online quizzes 10%, and a final exam after week 12 (30%).')).toEqual(['Lab reports 30', 'Midterm exam 1 15', 'Midterm exam 2 15', 'Weekly online quizzes 10', 'Final exam 30']);
+  });
+});
+
+describe('the meeting a piece is due at', () => {
+  it('is read from the brief, and told to the writers where the course has that meeting', async () => {
+    const [lab] = gradingIn('Grading: lab reports 30% (each due at the start of the next lab), two midterm exams 15% each, a final exam 40%.');
+    expect(cardIn(lab!.said).at).toBe('lab');
+    expect(cardIn('weekly problem sets 30% (due before the next lecture)').at).toBe('lecture');
+    expect(cardIn('a final paper 40%').at).toBe('');
+    const { smallCourse } = await import('./fake');
+    const { dueWords } = await import('../src/continuity');
+    const base = smallCourse();
+    const grading = [{ id: 'g1', item: 'Lab reports', weight: 30, judged: 'levels' as const, card: { who: 'individual' as const, prepared: false, handIn: 'unsaid' as const, allowed: '', length: '', source: '', at: 'lab' as const } }];
+    const withSessions = (kinds: ('lecture' | 'lab')[]) => ({ ...base, grading, shape: { ...base.shape, sessions: kinds.map((kind) => ({ kind, minutes: 50 })) } });
+    let course = withSessions(['lecture', 'lab']);
+    const [a, b] = course.lessonOrder;
+    const lesson = { ...course.lessons[a!]!, homework: { kind: 'assignment' as const, toward: 'Lab reports', due: b! } };
+    expect(dueWords(course, lesson)).toContain(`"at the start of the lab of ${course.lessons[b!]!.title}"`);
+    course = withSessions(['lecture', 'lecture']);
+    expect(dueWords(course, lesson)).not.toContain('the lab of');
+    // Set in the last lesson, it has no later meeting: the teacher gives the date.
+    const end = course.lessonOrder.at(-1)!;
+    expect(dueWords(course, { ...course.lessons[end]!, homework: { kind: 'assignment', toward: 'Lab reports', due: '' } })).toContain('on the date your instructor announces');
+    expect(dueWords(course, { ...course.lessons[a!]!, homework: { kind: 'assignment', toward: 'Lab reports', due: '' } })).toBe('');
+  });
 });

@@ -190,7 +190,7 @@ describe('weekly work the brief has students do before a lesson', () => {
     const course = courseFromOutline(req, outline());
     const [first, second] = orderedLessons(course);
     const weekly = { ...first!, also: [], homework: { kind: 'assignment' as const, toward: 'Weekly response papers', due: second!.id } };
-    expect(sectionPrompt(course, weekly, 'assignments')).toMatch(/unless the brief has students do it before a lesson to prepare for it.*The lesson it is due at is "Functionalism": S2\./);
+    expect(sectionPrompt(course, weekly, 'assignments')).toMatch(/unless the brief has students do it before a lesson to prepare for it.*Only if the brief says it prepares students for a lesson: the lesson it is due at is "Functionalism": S2\./);
   });
 });
 

@@ -1,0 +1,336 @@
+[
+ {
+  "find": "Midterm exam in week 3 (",
+  "replace": "Midterm exam",
+  "all": true,
+  "why": "The grading reader cut the name at its bracketed weight; fixed in the pipeline (gradingIn tidy)."
+ },
+ {
+  "lesson": 1,
+  "find": "No. Opportunity cost is the value of the best alternative you give up, not the money you pay.",
+  "replace": "No. Opportunity cost is the value of the best alternative you give up, not just the money you pay.",
+  "why": "The ticket money is part of the cost (what it could have bought), so saying opportunity cost is 'not the money you pay' contradicts the example that follows."
+ },
+ {
+  "lesson": 1,
+  "find": "The ticket price is not the whole cost. You also gave up the $60.",
+  "replace": "The ticket price is not the whole cost. You also gave up the $60 you would have earned, so the full cost of the evening is $20 + $60 = $80: what the ticket money could have bought plus the best other use of your time.",
+  "why": "The answer never states the cost, and without the reason students read $20 + $60 as the 'adding every alternative' mistake the next sentence warns against."
+ },
+ {
+  "lesson": 1,
+  "find": "Weekly problem sets: due at the start of next time",
+  "replace": "Weekly problem sets: due at the start of the next lecture",
+  "why": "The brief says problem sets are due before the next lecture, and a problem section meets in between, so 'next time' can be read as the problem section.",
+  "all": true
+ },
+ {
+  "lesson": 1,
+  "find": "This assignment is due at the start of next time.",
+  "replace": "This assignment is due at the start of the next lecture.",
+  "why": "The brief says problem sets are due before the next lecture, and a problem section meets in between, so 'next time' is ambiguous.",
+  "all": true
+ },
+ {
+  "lesson": 2,
+  "find": "suppose a rise in repair costs reduces the quantity supplied by 40 rentals per day at every listed price.",
+  "replace": "suppose a rise in repair costs reduces the quantity supplied by 40 rentals per day at every listed price from $6 to $14; at $4, no rentals are supplied.",
+  "why": "Taking 40 from 30 at $4 gives −10 rentals, which students are told to plot."
+ },
+ {
+  "lesson": 2,
+  "find": "The new quantities supplied at $4, $6, $8, $10, $12 and $14 are −10, 10, 30, 50, 70 and 90, respectively. Since negative rentals are not feasible, the listed change is meaningful over the relevant positive-quantity range.",
+  "replace": "The new quantities supplied at $4, $6, $8, $10, $12 and $14 are 0, 10, 30, 50, 70 and 90, respectively.",
+  "why": "Matches the corrected question, which no longer produces a negative quantity."
+ },
+ {
+  "lesson": 2,
+  "find": "Why does my notes’ answer say the demand curve does not move?",
+  "replace": "Why do my notes say the demand curve does not move?",
+  "why": "Garbled phrasing that points to an 'answer' the student never sees."
+ },
+ {
+  "lesson": 2,
+  "find": "Weekly problem sets (30% of the course grade): due at the start of next time",
+  "replace": "Weekly problem sets (30% of the course grade): due at the start of the next lecture",
+  "why": "The brief says problem sets are due before the next lecture, and a problem section meets in between, so 'next time' is ambiguous."
+ },
+ {
+  "lesson": 2,
+  "find": "This assignment is due at the start of next time.",
+  "replace": "This assignment is due at the start of the next lecture.",
+  "why": "The brief says problem sets are due before the next lecture, and a problem section meets in between, so 'next time' is ambiguous.",
+  "all": true
+ },
+ {
+  "lesson": 3,
+  "find": "label demand elastic or inelastic.",
+  "replace": "label demand elastic, inelastic or unit elastic.",
+  "why": "The $4 to $6 interval is exactly unit elastic (1.00), so the question as written allows no correct label."
+ },
+ {
+  "lesson": 3,
+  "find": " The first interval is unit elastic rather than elastic or inelastic; accept that correct classification despite the requested labels.",
+  "replace": "",
+  "why": "Not needed once the question allows the unit-elastic label."
+ },
+ {
+  "lesson": 3,
+  "find": "“1.00, so demand is unit elastic” incorrectly treats the percentage changes as equal; “2.00, so demand is elastic” uses starting values instead of midpoints.",
+  "replace": "“1.00, so demand is unit elastic” uses starting values instead of midpoints (−20 ÷ 100 = −20% against 2 ÷ 10 = 20%); “2.00, so demand is elastic” matches neither method.",
+  "why": "Starting-value bases give exactly 1.00, not 2.00, so the explanation pins the start-value mistake on the wrong option."
+ },
+ {
+  "lesson": 3,
+  "find": "ch. 6 (Consumer Choice)",
+  "replace": "ch. 6 (Consumer Choices)",
+  "why": "The OpenStax 3e chapter title is 'Consumer Choices' (applies to every occurrence: slide, plan and its shown text).",
+  "all": true
+ },
+ {
+  "lesson": 3,
+  "find": "Work alone with a calculator.",
+  "replace": "Work alone, with a calculator if you have one.",
+  "why": "No material tells students to bring a calculator (only a ruler and pencil), and the numbers can be done by hand.",
+  "all": true
+ },
+ {
+  "lesson": 3,
+  "find": "This assignment is due at the start of next time.",
+  "replace": "This assignment is due at the start of the next lecture.",
+  "why": "The brief says problem sets are due before the next lecture, and a problem section meets in between; the slide already says 'next lesson'.",
+  "all": true
+ },
+ {
+  "lesson": 4,
+  "find": "In the bakery table, the third batch has MC = $20, below the ATC of $60 ÷ 1 = $100 at one batch and the ATC of $65 at two.",
+  "replace": "In the bakery table, the third batch has MC = $20, below the ATC of $65 at two batches, so ATC falls to $50.",
+  "why": "ATC at one batch is $100 ÷ 1, not $60 ÷ 1, and the third batch's MC should be compared with the average it changes, the ATC at two batches."
+ },
+ {
+  "lesson": 4,
+  "find": "ch. 9 (Monopoly and Antitrust)",
+  "replace": "ch. 9 (Monopoly)",
+  "why": "In OpenStax Principles of Microeconomics 3e, ch. 9 is “Monopoly”; “Monopoly and Antitrust Policy” is ch. 11, and the plan itself says ch. 9 (Monopoly).",
+  "all": true
+ },
+ {
+  "lesson": 4,
+  "find": "Remind students to bring graph paper, a ruler and a pencil to the problem section and to this meeting for the graphs.",
+  "replace": "Check that students have graph paper, a ruler and a pencil for today’s graphs, and remind them to bring them to the problem section.",
+  "why": "Reminding students at the start of a meeting to bring materials to that same meeting cannot be acted on."
+ },
+ {
+  "lesson": 5,
+  "find": "ch. 9 (Monopoly and Antitrust)",
+  "replace": "ch. 9 (Monopoly)",
+  "why": "In OpenStax 3e ch. 9 is “Monopoly”; antitrust is ch. 11.",
+  "all": true
+ },
+ {
+  "lesson": 5,
+  "find": "A common error is to stop at 1 batch because MC rises from $20 to $30 later.",
+  "replace": "A common error is to stop at 3 batches because MC starts rising after the third batch, from $20 to $30.",
+  "why": "Nobody stops at 1 batch because MC rises later; the real slip is stopping where MC turns upward instead of where it passes the price."
+ },
+ {
+  "lesson": 5,
+  "find": "Mistake: stopping at Q = 1 because its MC of $40 is below $50 but treating the later falling MC as a reason to stop.",
+  "replace": "Mistake: stopping at Q = 3 because MC starts to rise there, from $20 to $30; what matters is whether the next batch’s MC is still at or below the $50 price.",
+  "why": "The stated mistake is self-contradictory and does not describe a slip students make."
+ },
+ {
+  "lesson": 5,
+  "find": "Common mistake: stopping at Q = 1 because its MC of $40 is below $50, or treating the later fall in MC as a reason to stop.",
+  "replace": "Common mistake: stopping at Q = 3 because MC starts to rise there; what matters is whether the next batch’s MC is still at or below the $50 price.",
+  "why": "Same garbled mistake as in the plan notes."
+ },
+ {
+  "lesson": 5,
+  "find": "Each batch covers its own variable cost and also pays part of the fixed cost.",
+  "replace": "Revenue of $140 covers the $120 variable cost and pays $20 toward the fixed cost.",
+  "why": "Not every batch covers its own cost: the first batch has MC $40 above the $35 price; only the total does."
+ },
+ {
+  "lesson": 5,
+  "find": "For the competitive benchmark, use the output where the demand price equals marginal cost.",
+  "replace": "For the competitive benchmark, use the largest output at which the demand price is at least marginal cost.",
+  "why": "With these numbers no whole-batch output has demand price equal to MC (at 4 batches $64 vs $60, at 5 batches $52 vs $80), so the instruction cannot be followed as written."
+ },
+ {
+  "lesson": 5,
+  "find": "At the competitive benchmark, Q = 4 and price = MC = $64; profit is $256 − $240 = $16.",
+  "replace": "At the competitive benchmark, Q = 4, the last batch whose demand price ($64) is at least its marginal cost ($60); price is $64 and profit is $256 − $240 = $16.",
+  "why": "MC of the fourth batch is $240 − $180 = $60, not $64."
+ },
+ {
+  "lesson": 5,
+  "find": "Next time: a graded exam that counts toward Final exam",
+  "replace": "Next time: the last lesson, ending with a review for the Final exam",
+  "why": "Lesson 6 holds no exam: it reviews for the Final exam, which is sat afterwards on a day the teacher announces."
+ },
+ {
+  "lesson": 5,
+  "find": "Before students leave, tell them that next time they take a graded exam that counts toward “Final exam”.",
+  "replace": "Before students leave, tell them that next time ends with a review for the Final exam, which is sat afterwards on a day you announce.",
+  "why": "Lesson 6 holds no exam; the Final exam is sat after it."
+ },
+ {
+  "lesson": 5,
+  "find": "Before students leave, tell them that next time they take a graded exam that counts toward Final exam.",
+  "replace": "Before students leave, tell them that next time ends with a review for the Final exam, which is sat afterwards on a day you announce.",
+  "why": "Lesson 6 holds no exam; the Final exam is sat after it."
+ },
+ {
+  "lesson": 5,
+  "find": "Use the table on your The monopolist's table sheet.",
+  "replace": "Use the table on your sheet “The monopolist's table”.",
+  "why": "Template residue: the sheet name was dropped into the sentence ungrammatically."
+ },
+ {
+  "lesson": 5,
+  "find": "Grid: batches 0 to 6 across, dollars 0 to 110 up, with the MC, AVC and ATC curves from the table plotted on it.",
+  "replace": "Grid: batches 0 to 6 across, dollars 0 to 110 up. First plot the MC, AVC and ATC curves from the table.",
+  "why": "The handout gives blank lines, not a grid with the curves already plotted, so the student must plot them."
+ },
+ {
+  "lesson": 6,
+  "find": "This assignment is due before the next lecture.",
+  "replace": "The teacher announces this assignment’s deadline in class.",
+  "why": "This is the last lecture of the course, and the slide says the deadline is announced now."
+ },
+ {
+  "lesson": 6,
+  "find": "Each load causes $12 of external noise cost.",
+  "replace": "Each load causes $20 of external noise cost.",
+  "why": "With $12 and the original costs, the market and socially best quantities are both 3 loads, so the problem shows no overproduction and no net loss."
+ },
+ {
+  "lesson": 6,
+  "find": "private marginal costs of $20, $30, $40, $50 and $60, respectively",
+  "replace": "private marginal costs of $12, $22, $32, $42 and $52, respectively",
+  "why": "Together with the $20 external cost, these give a market of 4 loads at $42 and a best quantity of 3 loads at $52, as in the paper mill example."
+ },
+ {
+  "lesson": 6,
+  "find": "Social marginal costs are $32, $42, $52, $62 and $72. The market quantity is 3 loads, where marginal benefit and private marginal cost are both $52 and $40 respectively, while the fourth load’s benefit is below its private cost. The socially best quantity is 3 loads: the third load’s benefit and social marginal cost are both $52. The last market load causes no net loss because its benefit equals social marginal cost. The graph should put quantity on the horizontal axis and dollars per load on the vertical axis, with social marginal cost $12 above private marginal cost and both quantities marked at 3. A common mistake is to treat the external cost as already included in private cost.",
+  "replace": "Social marginal costs are $32, $42, $52, $62 and $72. The market quantity is 4 loads, where marginal benefit and private marginal cost are both $42; the fifth load’s benefit of $32 is below its private cost of $52. The socially best quantity is 3 loads, where marginal benefit and social marginal cost are both $52; the fourth load’s benefit of $42 is below its social cost of $62. The fourth load, the last at the market quantity, costs society $62 and is worth $42 to buyers, a net loss of $20. The graph should put quantity on the horizontal axis and dollars per load on the vertical axis, with social marginal cost $20 above private marginal cost, the market quantity marked at 4 and the best quantity at 3. A common mistake is to treat the external cost as already included in private cost.",
+  "why": "Key rewritten for the corrected numbers; the old key also misstated the untaxed outcome."
+ },
+ {
+  "lesson": 6,
+  "find": "A $12 tax per load makes the laundromat face social marginal cost. Three loads trade; buyers pay $52 and the laundromat keeps $40 per load. Relative to the untaxed price of $52, the seller bears the $12 tax in this discrete schedule. The tax aligns the cost faced by the laundromat with social cost; it does not require output or noise to fall to zero. Accept an explanation that the quantity remains at 3 because the third load still has benefit equal to social cost.",
+  "replace": "A $20 tax per load makes the laundromat face social marginal cost. Three loads trade; buyers pay $52 and the laundromat keeps $32 per load. Compared with the untaxed price of $42, buyers pay $10 more and the laundromat keeps $10 less, so they share the tax. The tax moves output to 3 loads, where the last load is worth what it costs society; it does not require noise to fall to zero, and the 3 remaining loads still cause noise.",
+  "why": "The old key's untaxed price of $52 was false (at $52 the laundromat would supply a fourth load), so its claim that the seller bears the whole tax was wrong."
+ },
+ {
+  "lesson": 6,
+  "find": "Buyers and the mill share the $20, as with any tax on a market.",
+  "replace": "Buyers pay $10 more than the untaxed $40 and the mill keeps $10 less, so here they share the $20 equally.",
+  "why": "How a tax is shared depends on the slopes of demand and supply, so it is not the same for any tax; this example gives an equal split."
+ },
+ {
+  "lesson": 6,
+  "find": "Who pays for the smoke?",
+  "replace": "Who pays for the river damage?",
+  "why": "The prompt is about mill waste killing fish in a river; there is no smoke in it."
+ },
+ {
+  "lesson": 4,
+  "slide": 11,
+  "visual": {
+   "kind": "table",
+   "columns": [
+    "Batches per day",
+    "Small plant ATC",
+    "Medium plant ATC",
+    "Large plant ATC"
+   ],
+   "rows": [
+    [
+     "4",
+     "$45",
+     "$60",
+     "$80"
+    ],
+    [
+     "8",
+     "$55",
+     "$40",
+     "$52"
+    ],
+    [
+     "12",
+     "$65",
+     "$38",
+     "$42"
+    ],
+    [
+     "16",
+     "$75",
+     "$42",
+     "$36"
+    ],
+    [
+     "20",
+     "$110",
+     "$50",
+     "$40"
+    ],
+    [
+     "24",
+     "Cannot produce",
+     "$60",
+     "$48"
+    ]
+   ]
+  },
+  "over": true,
+  "why": "Drawn with costs at zero output and the 12-batch answer marked; the table it replaced is put back. Its 8, 16 and 24 batch rows now match the handout's table, and the rows between follow them."
+ },
+ {
+  "lesson": 5,
+  "slide": 9,
+  "visual": {
+   "kind": "table",
+   "columns": [
+    "Batches",
+    "Price"
+   ],
+   "rows": [
+    [
+     "1",
+     "$85"
+    ],
+    [
+     "2",
+     "$75"
+    ],
+    [
+     "3",
+     "$65"
+    ],
+    [
+     "4",
+     "$55"
+    ],
+    [
+     "5",
+     "$45"
+    ],
+    [
+     "6",
+     "$35"
+    ]
+   ]
+  },
+  "over": true,
+  "why": "Drawn as each batch selling at its own price, the misconception the slide corrects; the table is put back."
+ },
+ {
+  "lesson": 4,
+  "find": "Spending the whole budget does not by itself maximize utility. Three smoothies and four sandwiches cost $20 and give 140 utils. Two smoothies and four sandwiches cost $16 and give 120 utils.",
+  "replace": "The classmate’s bundle costs only $16, so it does not spend the whole budget, and spending the whole budget would not by itself make a bundle best. Three smoothies and four sandwiches cost $20 and give 136 utils. Two smoothies and four sandwiches cost $16 and give 116 utils.",
+  "why": "The utils are 88 + 48 = 136 and 68 + 48 = 116, as the explanation below already says; 140 and 120 are wrong."
+ }
+]

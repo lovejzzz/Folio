@@ -190,6 +190,8 @@ function answerFor(body: Body, python = false): unknown {
     const asked = prompt.match(/Choose how to draw slide (\d+)/);
     return { slides: asked ? [{ slide: Number(asked[1]), type: 'bar', object: 'two jars' }] : [] };
   }
+  // The look at a drawn card: it is right as drawn.
+  if (prompt.includes('Above is a card drawn for this slide')) return { ok: true, faults: [], code: '' };
   if (prompt.includes('You draw one Minicharts card')) return { type: 'bar', object: 'two jars', code: JARS };
   // The plan review: a plan written by the fake has nothing wrong with it.
   if (prompt.includes('Check this plan the way')) return { issues: [] };

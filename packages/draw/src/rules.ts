@@ -40,3 +40,11 @@ export const PICK_RULES = `Some slides carry their point better as a drawing tha
 - Pick a slide only if what it says can be drawn from its own words and numbers, without adding facts.
 - For each, choose the chart type (its id from the type list) that fits what the slide teaches, and an object from the slide's own subject that can hold that type's form, said in a few words.
 - Pick fewer, or none, when no slide would gain.`;
+
+/** What a look at a drawn card asks: the picture, as a student would see it on the slide. */
+export const LOOK_RULES = `Above is a card drawn for this slide, and the picture it drew is attached. Look at the picture as a student would see it on the slide:
+- Does it show the slide's point at a glance, as the slide says it? A picture of something beside the point (a prop, a scene) is a fault.
+- Is anything overlapping (a label on a mark or on another label), cut off, floating, or too small to read?
+- Does it agree with the slide (the same names, the same numbers, nothing added) and with the subject: is there anything a teacher of it would call wrong or misleading, such as a value drawn where it has no meaning?
+- If the slide asks students something, does the picture answer it? It must not.
+If it is right, answer ok: true, with no faults and no code. Otherwise answer ok: false, list the faults in a few words each, and give the whole card again with them fixed (code). Keep what is right as it is.`;

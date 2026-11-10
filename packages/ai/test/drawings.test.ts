@@ -1,7 +1,7 @@
 import { cmd, type Command, type Slide } from '@folio/core';
 import { drawInNode } from '@folio/draw/node';
 import { describe, expect, it } from 'vitest';
-import { slideWords, withDrawings } from '../src';
+import { drawSlide, slideWords, withDrawings } from '../src';
 import { fakeInference, smallCourse } from './fake';
 
 const bars = (label: string) => `card({id:'seeds', name:'Bar chart', of:'seeds sprouted', note:'Each bar is the seeds that sprouted that day. Touch a bar.',
@@ -80,5 +80,56 @@ describe('what a question slide may be drawn from', () => {
     const model = fakeInference((req) => (req.task === 'folio_draw_pick' ? { slides: [{ slide: 1, type: 'bar', object: 'a balance' }] } : { type: 'bar', object: 'x', code: bars('String(v)') }));
     await withDrawings(model, async (code) => drawInNode(code), course, lessonId, commands);
     for (const c of model.calls) expect(c.prompt).not.toContain('Answer: B');
+  });
+});
+
+describe('a drawn card looked at once', () => {
+  const painted = (code: string) => Object.assign(async (c: string) => drawInNode(c), { paint: async () => ({ type: 'image/png', data: 'iVBORw0KGgo=' }), code });
+
+  it('keeps the card when the look finds it right, and shows the look the picture', async () => {
+    const { course, lessonId, commands } = deck();
+    const model = fakeInference((req) => (req.task === 'folio_draw_pick' ? { slides: [{ slide: 2, type: 'bar', object: 'pots' }] } : req.task === 'folio_draw_look' ? { ok: true, faults: [], code: '' } : { type: 'bar', object: 'pots', code: bars('String(v)') }));
+    const out = deckOf(await withDrawings(model, painted(''), course, lessonId, commands));
+    expect(out[1]!.visual).toMatchObject({ kind: 'drawing', code: bars('String(v)') });
+    const look = model.calls.find((c) => c.task === 'folio_draw_look')!;
+    expect(look.images).toHaveLength(1);
+  });
+
+  it('takes the card the look mended, but only if it still passes every check', async () => {
+    const mended = bars("d + ' ' + String(v)");
+    for (const [answer, kept] of [
+      [mended, mended],
+      [bars('String(v * 7)'), bars('String(v)')],
+    ] as const) {
+      const { course, lessonId, commands } = deck();
+      const model = fakeInference((req) => (req.task === 'folio_draw_pick' ? { slides: [{ slide: 2, type: 'bar', object: 'pots' }] } : req.task === 'folio_draw_look' ? { ok: false, faults: ['The labels sit on the bars.'], code: answer } : { type: 'bar', object: 'pots', code: bars('String(v)') }));
+      const out = deckOf(await withDrawings(model, painted(''), course, lessonId, commands));
+      expect(out[1]!.visual).toMatchObject({ kind: 'drawing', code: kept });
+    }
+  });
+});
+
+describe('a slide that asks students something', () => {
+  const q: Slide = { id: 'o', layout: 'bullets', title: 'Three plant sizes', bullets: ['Average cost per batch at 6, 12 and 24 batches', 'Which plant would you build to make 12 batches?'], notes: 'The medium plant: $38 a batch.' };
+  const task: Slide = { id: 't', layout: 'bullets', title: 'The four eons', bullets: ['Copy the tables. Mark which eon lasted longest.'], notes: 'The Proterozoic.' };
+  const fill = (course: ReturnType<typeof smallCourse>, s: Slide[]) => [cmd('section.fill', { lessonId: course.lessonOrder[0]!, kind: 'slides', content: { slides: s }, flags: [] } as never)];
+  const answer = (req: { task: string }) => (req.task === 'folio_draw_pick' ? { slides: [{ slide: 1, type: 'line', object: 'ovens' }] } : { type: 'line', object: 'x', code: bars('String(v)') });
+
+  it('is not picked as a lesson is written: a picture of what it gives would do the working', async () => {
+    const course = smallCourse();
+    const model = fakeInference(answer);
+    const out = await withDrawings(model, async (code) => drawInNode(code), course, course.lessonOrder[0]!, fill(course, [q, task]));
+    expect(model.calls).toHaveLength(0);
+    expect(deckOf(out)).toEqual([q, task]);
+  });
+
+  it('is drawn when the teacher asks, without its notes, and told not to answer it', async () => {
+    const course = smallCourse();
+    const model = fakeInference(answer);
+    const lesson = { ...course.lessons[course.lessonOrder[0]!]!, slides: [q] };
+    await drawSlide(model, async (code) => drawInNode(code), course, lesson, { slide: 1, type: 'line', object: 'ovens' });
+    const card = model.calls.find((c) => c.task === 'folio_draw_card')!;
+    expect(card.prompt).not.toContain('$38');
+    expect(card.prompt).toContain('never its answer');
   });
 });

@@ -17,6 +17,8 @@ test('a slide drawn as a picture in the drawing frame, shown, and taken off agai
   const picture = page.getByRole('img', { name: 'two jars; first jar; second jar' }).last();
   await expect(picture).toBeVisible({ timeout: 20_000 });
   expect(await picture.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+  // Looked at once, as a picture.
+  expect(calls.some((c) => c.messages[0]!.content.includes('Above is a card drawn for this slide'))).toBe(true);
   // The teacher's idea went to the call that chose how to draw it.
   expect(calls.some((c) => c.messages[0]!.content.includes('The teacher asks: "as jars"'))).toBe(true);
   // In a deck, the same picture, painted.

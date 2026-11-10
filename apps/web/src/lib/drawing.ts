@@ -1,4 +1,5 @@
-import type { DrawResult } from '@folio/draw';
+import type { Drawer, Picture } from '@folio/ai';
+import type { DrawResult, Drawn } from '@folio/draw';
 import type { FromFrame, ToFrame } from '@folio/draw/frame';
 
 /**
@@ -111,3 +112,25 @@ export async function drawingPng(code: string, width = 1560): Promise<{ bytes: U
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
   return blob && { bytes: new Uint8Array(await blob.arrayBuffer()), width, height };
 }
+
+/** A drawn card painted as the AI is shown it: JPEG, the sheet at twice its size. */
+export async function paintDrawn(drawn: Drawn): Promise<Picture | null> {
+  const [kit, { pictureOf }] = await Promise.all([import('@folio/draw/kit'), import('@folio/draw')]);
+  const url = URL.createObjectURL(new Blob([pictureOf(drawn, kit)], { type: 'image/svg+xml' }));
+  try {
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = 1040;
+    canvas.height = 840;
+    canvas.getContext('2d')?.drawImage(img, 0, 0, 1040, 840);
+    const data = canvas.toDataURL('image/jpeg', 0.85);
+    return { type: 'image/jpeg', data: data.slice(data.indexOf(',') + 1) };
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+/** The drawer a build or a teacher's request is given: drawn in the frame, painted on a canvas to be looked at. */
+export const pageDrawer: Drawer = Object.assign((code: string) => drawCard(code), { paint: paintDrawn });

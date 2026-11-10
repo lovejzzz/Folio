@@ -20,7 +20,7 @@ export interface StatedItem {
  * Read by the model, three outlines of one brief had a quiz handed in "on paper" once and unsaid twice, and a length of
  * "3,000 words" and "3,000-word report". What the clause does not say is left unsaid.
  */
-export function cardIn(said: string): { who: 'individual' | 'pair' | 'group'; groupSize?: number; prepared: boolean; handIn: 'paper' | 'online' | 'none' | 'unsaid'; points?: number; allowed: string; length: string; source: string } {
+export function cardIn(said: string): { who: 'individual' | 'pair' | 'group'; groupSize?: number; prepared: boolean; handIn: 'paper' | 'online' | 'none' | 'unsaid'; points?: number; allowed: string; length: string; source: string; at: '' | MeetingKind } {
   const size = /\bgroups? of (\d{1,2}|two|three|four|five|six)\b/i.exec(said)?.[1];
   const words = /\b(\d[\d,]*)(?:-| )words?\b/i.exec(said)?.[1];
   const pages = /\b(\d{1,2}(?:\s*(?:-|–|to)\s*\d{1,2})?)(?:-| )pages?\b/i.exec(said)?.[1];
@@ -34,13 +34,18 @@ export function cardIn(said: string): { who: 'individual' | 'pair' | 'group'; gr
     allowed: [...new Set(allowed)].join(', '),
     length: words ? `${words} words` : pages ? `${pages} pages` : '',
     source: '',
+    at: (DUE_AT.exec(said)?.[1]?.toLowerCase() as MeetingKind | undefined) ?? '',
   };
 }
+
+type MeetingKind = 'lab' | 'lecture' | 'seminar' | 'recitation' | 'section' | 'tutorial';
+/** "due at the start of the next lab", "due before each seminar": the kind of meeting a piece is handed in at. */
+const DUE_AT = /\bdue (?:at|by|before|in) (?:the (?:start|beginning) of )?(?:the |each |every )?(?:next |following )?(lab|lecture|seminar|recitation|section|tutorial)s?\b/i;
 
 const COUNTS: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
 const COUNT = new RegExp(`^(?:(${Object.keys(COUNTS).join('|')}|\\d{1,2})\\s+)`, 'i');
 /** Where the name of a component ends and what is said about it begins. */
-const QUALIFIER = /\s+(?:with\b|such as\b|of (?:one|\d)|in the (?:last|first|final)\b|at the (?:start|end)\b|before each\b|every\b|each\b|that\b|which\b|due\b|on paper\b|in R\b).*$/i;
+const QUALIFIER = /\s+(?:with\b|such as\b|of (?:one|\d)|in the (?:last|first|final)\b|(?:in|after|by) weeks? \d|at the (?:start|end)\b|before each\b|every\b|each\b|that\b|which\b|due\b|on paper\b|in R\b).*$/i;
 const PERCENT = /(\d{1,3}(?:\.\d+)?)\s*%(\s+each)?/g;
 
 /** "midterms" → "midterm", "quizzes" → "quiz", "analysis papers" → "analysis paper"; a word that is not a plural is left. */
@@ -48,7 +53,8 @@ function singular(name: string): string {
   return name.replace(/(\w+)$/, (word) => (/(?:zz|ss|x|ch|sh)es$/i.test(word) ? word.replace(/(?<=zz|ss|x|ch|sh)es$/i, '').replace(/zz$/i, 'z') : /ies$/i.test(word) ? word.replace(/ies$/i, 'y') : /[^s]s$/i.test(word) && !/(?:sis|us|is)$/i.test(word) ? word.slice(0, -1) : word));
 }
 
-const tidy = (name: string) => name.replace(/\s*\([^)]*\)/g, '').replace(/^(?:and|plus)\s+/i, '').replace(/^(?:an?|the)\s+/i, '').replace(/^\d[\d,]*-word\s+/i, '').replace(QUALIFIER, '').replace(/\s+/g, ' ').trim();
+// A weight written in brackets ("a midterm exam in week 3 (30%)") leaves its opening bracket behind the name: it goes too.
+const tidy = (name: string) => name.replace(/\s*\([^)]*\)/g, '').replace(/[\s([,:–—-]+$/, '').replace(/^(?:and|plus)\s+/i, '').replace(/^(?:an?|the)\s+/i, '').replace(/^\d[\d,]*-word\s+/i, '').replace(QUALIFIER, '').replace(/\s+/g, ' ').trim();
 /** The first letter raised, unless the word has its own capitals ("iClicker"). */
 const capital = (name: string) => (/^[a-z][A-Z]/.test(name) ? name : name.charAt(0).toUpperCase() + name.slice(1));
 
